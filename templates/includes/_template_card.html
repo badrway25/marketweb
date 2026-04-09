@@ -1,0 +1,67 @@
+{% comment %}
+Template Card Component
+-----------------------
+Context variables:
+  - template: WebTemplate instance (name, slug, short_description, price, is_free, category, brand)
+  - template.brand: TemplateBrand (brand_name, tagline, palette)
+  - template.assets: TemplateAsset queryset (thumbnail via first preview asset)
+
+For static/hardcoded usage, pass individual vars or use the inline example below.
+{% endcomment %}
+
+<article class="mw-template-card">
+  <!-- Image -->
+  <div class="mw-template-card-img">
+    {% if template.assets.first %}
+      <img src="{{ template.assets.first.file.url }}"
+           alt="{{ template.assets.first.alt_text|default:template.name }}"
+           loading="lazy">
+    {% else %}
+      <div class="mw-img-placeholder mw-aspect-16-9">
+        <i class="bi bi-window-desktop"></i>
+      </div>
+    {% endif %}
+
+    <!-- Category Badge -->
+    {% if template.category %}
+      <span class="mw-badge">{{ template.category.name }}</span>
+    {% endif %}
+
+    <!-- Hover Actions -->
+    <div class="mw-template-card-actions">
+      <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima rapida">
+        <i class="bi bi-eye"></i>
+      </a>
+      <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Salva nei preferiti">
+        <i class="bi bi-heart"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="mw-template-card-body">
+    {% if template.brand %}
+      <div class="mw-template-card-brand">{{ template.brand.brand_name }}</div>
+    {% endif %}
+
+    <h3 class="mw-template-card-title">
+      <a href="#">{{ template.name }}</a>
+    </h3>
+
+    {% if template.short_description %}
+      <p class="mw-template-card-desc mw-line-clamp-2">{{ template.short_description }}</p>
+    {% endif %}
+
+    <!-- Footer: Price + CTA -->
+    <div class="mw-template-card-footer">
+      <div class="mw-template-card-price">
+        {% if template.is_free %}
+          <span class="mw-badge mw-badge-free">Gratis</span>
+        {% else %}
+          <span class="currency">&euro;</span>{{ template.price }}
+        {% endif %}
+      </div>
+      <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
+    </div>
+  </div>
+</article>

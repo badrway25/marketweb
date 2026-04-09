@@ -15,32 +15,33 @@
 10. [x] Set up basic URL routing skeleton across all apps
 
 ### Premium-UI Session
-1. [ ] Create `templates/base.html` master template with Bootstrap 5 CDN/local
-2. [ ] Design and implement the SCSS design system (colors, typography, spacing variables)
-3. [ ] Create premium navigation component (header + mobile menu)
-4. [ ] Create premium footer component
-5. [ ] Build homepage skeleton with hero section, featured categories, featured templates
-6. [ ] Build category listing page template
-7. [ ] Build template detail page template
-8. [ ] Build premium card component for template listings
-9. [ ] Set up `static/` directory structure
-10. [ ] Ensure RTL-ready class structure from the start
+1. [x] Create `templates/base.html` master template with Bootstrap 5 CDN/local
+2. [x] Design and implement the CSS design system (colors, typography, spacing variables)
+3. [x] Create premium navigation component (header + mobile menu)
+4. [x] Create premium footer component
+5. [x] Build homepage skeleton with hero section, featured categories, featured templates
+6. [x] Build category listing page template
+7. [x] Build template detail page template
+8. [x] Build premium card component for template listings
+9. [x] Set up `static/` directory structure
+10. [x] Ensure RTL-ready class structure from the start
 
-## Next — Phase 2 (after Phase 1 complete)
+## Next — Phase 1.5 (Integration & Polish)
+- [ ] Merge backend-core and premium-ui branches to master
+- [ ] Wire homepage category cards to actual Category queryset from backend views
+- [ ] Wire featured templates section to WebTemplate.objects.filter(featured=True)
+- [ ] Create catalog views: CategoryListView, TemplateListView, TemplateDetailView
+- [ ] Connect template_card partial to real WebTemplate model data
+- [ ] Add category card href to actual category URL ({% url 'catalog:category' category.slug %})
+- [ ] Replace image placeholders with seed template screenshots
+- [ ] Add search functionality to filter bar
 
-### Backend-Core
-- [ ] Editor app models: EditableRegion, RegionType
-- [ ] Projects app models: CustomerProject (with UUID), ProjectRevision, ProjectContent
-- [ ] Commerce app models: PricePlan, Order, OrderItem, License
-- [ ] DRF API endpoints for catalog (list, detail, filter)
-- [ ] DRF API endpoints for editor save/load
-- [ ] User authentication views (register, login, dashboard)
-- [ ] Catalog selectors: featured templates, by category, by tag
-- [ ] Catalog services: template CRUD operations
-
-### Premium-UI
+## Next — Phase 2 (after Phase 1.5 complete)
 - [ ] Template preview system (iframe or server-rendered)
-- [ ] Editor app basic UI
-- [ ] User authentication pages (login, register, password reset)
-- [ ] User dashboard page
-- [ ] Cart and checkout page skeletons
+- [ ] Editor app models and basic UI
+- [ ] Projects app: save/load customer customizations
+- [ ] DRF API endpoints for editor save/load
+- [ ] User authentication views (register, login, dashboard) + account templates
+- [ ] Commerce templates: cart, checkout, order confirmation
+- [ ] RTL bundle switching logic for Arabic (detect lang=ar, swap Bootstrap CSS)
+- [ ] Add {% trans %} tags throughout for i18n readiness

@@ -1,0 +1,224 @@
+/* ============================================================
+   MarketWeb — Page-Specific Styles
+   ============================================================ */
+
+/* --- Homepage ----------------------------------------------- */
+
+.mw-home-hero {
+  padding-top: 6rem;
+}
+
+.mw-home-hero .mw-overline {
+  color: var(--mw-accent-light);
+}
+
+/* Featured templates grid on homepage */
+.mw-featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--mw-space-6);
+}
+
+@media (max-width: 767.98px) {
+  .mw-featured-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Category grid on homepage */
+.mw-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--mw-space-5);
+}
+
+@media (max-width: 575.98px) {
+  .mw-category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* How it works section */
+.mw-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--mw-space-6);
+  counter-reset: step;
+}
+
+.mw-step {
+  text-align: center;
+  counter-increment: step;
+  position: relative;
+}
+
+.mw-step-number {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--mw-radius-full);
+  background: var(--mw-secondary);
+  color: var(--mw-neutral-0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mw-font-display);
+  font-weight: var(--mw-weight-bold);
+  font-size: var(--mw-text-lg);
+  margin-bottom: var(--mw-space-4);
+}
+
+.mw-step h4 {
+  font-size: var(--mw-text-lg);
+  margin-bottom: var(--mw-space-2);
+}
+
+.mw-step p {
+  font-size: var(--mw-text-sm);
+  color: var(--mw-neutral-500);
+  margin: 0;
+}
+
+/* Testimonials */
+.mw-testimonial {
+  background: var(--mw-surface);
+  border-radius: var(--mw-radius-xl);
+  padding: var(--mw-space-6);
+  border: 1px solid var(--mw-neutral-200);
+}
+
+.mw-testimonial-quote {
+  font-size: var(--mw-text-lg);
+  font-style: italic;
+  color: var(--mw-neutral-700);
+  line-height: var(--mw-leading-relaxed);
+  margin-bottom: var(--mw-space-5);
+  position: relative;
+  padding-inline-start: var(--mw-space-5);
+  border-inline-start: 3px solid var(--mw-secondary);
+}
+
+.mw-testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: var(--mw-space-3);
+}
+
+.mw-testimonial-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--mw-radius-full);
+  background: linear-gradient(135deg, var(--mw-secondary-light), var(--mw-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mw-neutral-0);
+  font-weight: var(--mw-weight-bold);
+  font-size: var(--mw-text-sm);
+}
+
+.mw-testimonial-name {
+  font-weight: var(--mw-weight-semibold);
+  color: var(--mw-neutral-900);
+  font-size: var(--mw-text-sm);
+}
+
+.mw-testimonial-role {
+  font-size: var(--mw-text-xs);
+  color: var(--mw-neutral-500);
+}
+
+
+/* --- Catalog / Listing Page --------------------------------- */
+
+.mw-listing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--mw-space-6);
+}
+
+@media (max-width: 767.98px) {
+  .mw-listing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mw-listing-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mw-space-4);
+  margin-bottom: var(--mw-space-6);
+}
+
+.mw-listing-count {
+  font-size: var(--mw-text-sm);
+  color: var(--mw-neutral-500);
+}
+
+.mw-listing-sort {
+  display: flex;
+  align-items: center;
+  gap: var(--mw-space-2);
+  font-size: var(--mw-text-sm);
+  color: var(--mw-neutral-600);
+}
+
+/* Empty state */
+.mw-empty-state {
+  text-align: center;
+  padding: var(--mw-space-16) var(--mw-space-6);
+}
+
+.mw-empty-state-icon {
+  font-size: var(--mw-text-6xl);
+  color: var(--mw-neutral-300);
+  margin-bottom: var(--mw-space-5);
+}
+
+.mw-empty-state h3 {
+  color: var(--mw-neutral-700);
+  margin-bottom: var(--mw-space-3);
+}
+
+.mw-empty-state p {
+  color: var(--mw-neutral-500);
+  max-width: 24rem;
+  margin-inline: auto;
+}
+
+
+/* --- Template Detail Page ----------------------------------- */
+
+.mw-detail-section {
+  padding-top: 6rem; /* below fixed nav */
+}
+
+.mw-detail-tabs {
+  border-bottom: 2px solid var(--mw-neutral-100);
+  margin-bottom: var(--mw-space-6);
+}
+
+.mw-detail-tabs .nav-link {
+  font-size: var(--mw-text-sm);
+  font-weight: var(--mw-weight-medium);
+  color: var(--mw-neutral-500);
+  padding: var(--mw-space-3) var(--mw-space-4);
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all var(--mw-transition-fast);
+}
+
+.mw-detail-tabs .nav-link:hover {
+  color: var(--mw-neutral-800);
+}
+
+.mw-detail-tabs .nav-link.active {
+  color: var(--mw-secondary);
+  border-bottom-color: var(--mw-secondary);
+}
+
+.mw-related-section {
+  background: var(--mw-surface-sunken);
+}

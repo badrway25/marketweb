@@ -70,3 +70,46 @@ Follow Bootstrap 5 defaults:
 - Use logical properties where possible (margin-inline-start vs margin-left)
 - Test navigation, cards, forms in RTL mode
 - Bootstrap RTL bundle handles most grid/utility flipping
+
+## Implemented Design System (Session 2)
+
+### CSS Architecture
+Three CSS files loaded in this order:
+1. `design-system.css` — Variables, base resets, typography, buttons, badges, utilities
+2. `components.css` — Navbar, cards, hero, footer, stats, filter bar, detail components
+3. `pages.css` — Homepage, listing, detail page-specific styles
+
+### Color Palette (as implemented)
+| Token                | Hex       | Usage                          |
+|----------------------|-----------|--------------------------------|
+| `--mw-primary`       | `#1B2A4A` | Dark navy — hero backgrounds   |
+| `--mw-primary-light` | `#2C3E6B` | Gradient end                   |
+| `--mw-secondary`     | `#6366F1` | Indigo — CTAs, links, accents  |
+| `--mw-secondary-dark`| `#4F46E5` | Hover states                   |
+| `--mw-accent`        | `#F59E0B` | Amber — highlights, overlines  |
+| `--mw-neutral-50`    | `#F8FAFC` | Sunken surface backgrounds     |
+| `--mw-neutral-900`   | `#0F172A` | Darkest text, footer background|
+
+### Typography (as implemented)
+| Role     | Font               | Weights Used  |
+|----------|--------------------|---------------|
+| Display  | Plus Jakarta Sans  | 500–800       |
+| Body     | Inter              | 400–700       |
+
+Type scale: 12, 14, 16, 18, 20, 24, 30, 36, 48, 60px (1.25 ratio)
+
+### Component Inventory
+| Component          | File              | Key Classes                    |
+|--------------------|-------------------|--------------------------------|
+| Navbar             | `_navbar.html`    | `.mw-navbar`, `.scrolled`      |
+| Footer             | `_footer.html`    | `.mw-footer`, `.mw-footer-*`  |
+| Template Card      | `_template_card`  | `.mw-template-card`            |
+| Category Card      | `_category_card`  | `.mw-category-card`            |
+| Hero               | `_hero.html`      | `.mw-hero`, `.mw-hero-*`      |
+| Buttons            | design-system.css | `.mw-btn`, `.mw-btn-primary`   |
+| Badges             | design-system.css | `.mw-badge`, `.mw-badge-free`  |
+| Stats              | components.css    | `.mw-stat`, `.mw-stat-value`   |
+| Filter Bar         | components.css    | `.mw-filter-bar`               |
+| Detail Panel       | components.css    | `.mw-detail-panel`             |
+| Testimonials       | pages.css         | `.mw-testimonial`              |
+| Steps              | pages.css         | `.mw-steps`, `.mw-step`        |

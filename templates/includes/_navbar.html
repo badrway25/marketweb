@@ -1,0 +1,71 @@
+{% load static %}
+<nav class="mw-navbar" id="mw-navbar">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between">
+
+      <!-- Brand -->
+      <a class="mw-navbar-brand" href="{% url 'pages:home' %}">
+        <span class="brand-mark">M</span>
+        MarketWeb
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="d-none d-lg-flex align-items-center gap-1">
+        <a class="nav-link" href="{% url 'pages:home' %}">Home</a>
+        <a class="nav-link" href="#">Template</a>
+        <a class="nav-link" href="#">Categorie</a>
+        <a class="nav-link" href="#">Prezzi</a>
+        <a class="nav-link" href="#">Chi Siamo</a>
+      </div>
+
+      <!-- Desktop Actions -->
+      <div class="d-none d-lg-flex align-items-center gap-3">
+        <a href="#" class="mw-btn mw-btn-ghost">
+          <i class="bi bi-person"></i> Accedi
+        </a>
+        <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">
+          <i class="bi bi-rocket-takeoff"></i> Inizia Gratis
+        </a>
+      </div>
+
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler d-lg-none" type="button" id="mw-menu-toggle"
+              aria-label="Apri menu di navigazione" aria-expanded="false">
+        <i class="bi bi-list" style="font-size: 1.5rem; color: var(--mw-neutral-800);"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mw-mobile-overlay d-lg-none" id="mw-mobile-overlay"></div>
+
+  <!-- Mobile Slide-Out Menu -->
+  <div class="navbar-collapse d-lg-none" id="mw-mobile-menu">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+      <a class="mw-navbar-brand" href="{% url 'pages:home' %}">
+        <span class="brand-mark">M</span>
+        MarketWeb
+      </a>
+      <button class="mw-btn mw-btn-icon mw-btn-ghost" id="mw-menu-close" aria-label="Chiudi menu">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <nav class="d-flex flex-column gap-1 mb-5">
+      <a class="nav-link" href="{% url 'pages:home' %}">Home</a>
+      <a class="nav-link" href="#">Template</a>
+      <a class="nav-link" href="#">Categorie</a>
+      <a class="nav-link" href="#">Prezzi</a>
+      <a class="nav-link" href="#">Chi Siamo</a>
+    </nav>
+
+    <div class="d-flex flex-column gap-3">
+      <a href="#" class="mw-btn mw-btn-secondary w-100">
+        <i class="bi bi-person"></i> Accedi
+      </a>
+      <a href="#" class="mw-btn mw-btn-primary w-100">
+        <i class="bi bi-rocket-takeoff"></i> Inizia Gratis
+      </a>
+    </div>
+  </div>
+</nav>

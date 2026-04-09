@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ template.name|default:"Template Detail" }}{% endblock %}
+{% block meta_description %}{{ template.short_description|default:"Scopri questo template web premium su MarketWeb. Personalizzabile, moderno e pronto all'uso." }}{% endblock %}
+
+{% block content %}
+
+<!-- Detail Section -->
+<section class="mw-detail-section mw-section">
+  <div class="container">
+
+    <!-- Breadcrumb -->
+    <nav class="mw-breadcrumb mb-4" aria-label="Breadcrumb">
+      <a href="{% url 'pages:home' %}">Home</a>
+      <span class="separator">/</span>
+      <a href="#">Template</a>
+      <span class="separator">/</span>
+      {% if template.category %}
+        <a href="#">{{ template.category.name }}</a>
+        <span class="separator">/</span>
+      {% endif %}
+      <span class="current">{{ template.name|default:"Vertex" }}</span>
+    </nav>
+
+    <div class="row g-5">
+
+      <!-- Main Content -->
+      <div class="col-lg-8">
+
+        <!-- Gallery -->
+        <div class="mw-detail-gallery mb-5">
+          {% if template.assets.first %}
+            <img src="{{ template.assets.first.file.url }}" alt="{{ template.name }}">
+          {% else %}
+            <div class="mw-img-placeholder mw-aspect-16-9" style="font-size: 3rem;">
+              <i class="bi bi-window-desktop"></i>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav mw-detail-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc-panel" type="button" role="tab">Descrizione</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="features-tab" data-bs-toggle="tab" data-bs-target="#features-panel" type="button" role="tab">Caratteristiche</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews-panel" type="button" role="tab">Recensioni</button>
+          </li>
+        </ul>
+
+        <div class="tab-content py-4">
+          <!-- Description Tab -->
+          <div class="tab-pane fade show active" id="desc-panel" role="tabpanel">
+            {% if template.description %}
+              {{ template.description|linebreaks }}
+            {% else %}
+              <p>Questo template &egrave; stato progettato con attenzione ai dettagli per offrirti una base professionale e completamente personalizzabile. Ogni sezione &egrave; stata pensata per massimizzare l'impatto visivo e la conversione dei visitatori in clienti.</p>
+              <p>Include sezioni per servizi, portfolio, team, testimonianze e contatti. Completamente responsive e ottimizzato per i motori di ricerca.</p>
+              <h4 class="mt-4">Cosa include</h4>
+              <ul>
+                <li>Homepage con hero section animata</li>
+                <li>Pagina servizi con layout a griglia</li>
+                <li>Sezione portfolio con filtri interattivi</li>
+                <li>Pagina chi siamo con profili team</li>
+                <li>Modulo contatto con mappa integrata</li>
+                <li>Blog con sistema di categorie</li>
+              </ul>
+            {% endif %}
+          </div>
+
+          <!-- Features Tab -->
+          <div class="tab-pane fade" id="features-panel" role="tabpanel">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <h5><i class="bi bi-phone me-2 text-primary"></i> Responsive Design</h5>
+                <p class="text-muted">Perfetto su desktop, tablet e smartphone.</p>
+              </div>
+              <div class="col-md-6">
+                <h5><i class="bi bi-speedometer2 me-2 text-primary"></i> Ottimizzato per le Performance</h5>
+                <p class="text-muted">Caricamento rapido per una migliore esperienza utente.</p>
+              </div>
+              <div class="col-md-6">
+                <h5><i class="bi bi-search me-2 text-primary"></i> SEO Ready</h5>
+                <p class="text-muted">Struttura HTML semantica e meta tag ottimizzati.</p>
+              </div>
+              <div class="col-md-6">
+                <h5><i class="bi bi-brush me-2 text-primary"></i> Facile da Personalizzare</h5>
+                <p class="text-muted">Modifica colori, font e contenuti con il nostro editor visuale.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reviews Tab -->
+          <div class="tab-pane fade" id="reviews-panel" role="tabpanel">
+            <p class="text-muted">Le recensioni saranno disponibili a breve.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <div class="mw-detail-sidebar">
+          <div class="mw-detail-panel">
+            <!-- Price -->
+            <div class="mw-detail-price mb-4">
+              {% if template.is_free %}
+                <span class="mw-badge mw-badge-free" style="font-size: var(--mw-text-lg); padding: 0.5rem 1.25rem;">Gratis</span>
+              {% else %}
+                <span class="currency">&euro;</span>{{ template.price|default:"79" }}
+              {% endif %}
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="d-grid gap-3 mb-5">
+              <a href="#" class="mw-btn mw-btn-primary mw-btn-lg w-100">
+                <i class="bi bi-cart-plus"></i> Aggiungi al Carrello
+              </a>
+              <a href="#" class="mw-btn mw-btn-secondary w-100">
+                <i class="bi bi-eye"></i> Anteprima Live
+              </a>
+            </div>
+
+            <hr class="my-4" style="border-color: var(--mw-neutral-100);">
+
+            <!-- Meta Info -->
+            <div class="mw-detail-meta">
+              {% if template.brand %}
+              <div class="mw-detail-meta-row">
+                <span class="mw-detail-meta-label">Brand</span>
+                <span class="mw-detail-meta-value">{{ template.brand.brand_name }}</span>
+              </div>
+              {% endif %}
+              <div class="mw-detail-meta-row">
+                <span class="mw-detail-meta-label">Categoria</span>
+                <span class="mw-detail-meta-value">{{ template.category.name|default:"Agency" }}</span>
+              </div>
+              <div class="mw-detail-meta-row">
+                <span class="mw-detail-meta-label">Responsive</span>
+                <span class="mw-detail-meta-value"><i class="bi bi-check-circle-fill text-success"></i> S&igrave;</span>
+              </div>
+              <div class="mw-detail-meta-row">
+                <span class="mw-detail-meta-label">Personalizzabile</span>
+                <span class="mw-detail-meta-value"><i class="bi bi-check-circle-fill text-success"></i> S&igrave;</span>
+              </div>
+              <div class="mw-detail-meta-row" style="border-bottom: none;">
+                <span class="mw-detail-meta-label">Aggiornamenti</span>
+                <span class="mw-detail-meta-value">Gratuiti</span>
+              </div>
+            </div>
+
+            {% if template.tags.all %}
+            <hr class="my-4" style="border-color: var(--mw-neutral-100);">
+            <div class="mw-tag-list">
+              {% for tag in template.tags.all %}
+                <span class="mw-tag">{{ tag.name }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Related Templates -->
+<section class="mw-section mw-related-section">
+  <div class="container">
+    <div class="mw-section-header">
+      <h3>Template Simili</h3>
+      <p>Scopri altri template della stessa categoria.</p>
+    </div>
+    <div class="mw-featured-grid">
+      <!-- Related templates would be inserted here via context -->
+    </div>
+  </div>
+</section>
+
+{% endblock %}

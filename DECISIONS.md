@@ -21,10 +21,9 @@
 **Decision:** Use Bootstrap 5 as the CSS framework, but heavily customized via SCSS variables and custom components.
 **Rationale:** Bootstrap provides responsive grid, utilities, and accessibility out of the box. Custom SCSS prevents the "default Bootstrap" look and achieves premium aesthetics.
 
-## D-006: Django 5.2.7 LTS — Keeping Current Version (2026-04-09)
+## D-006: Django 5.2.7 LTS (2026-04-09)
 **Decision:** Use Django 5.2.7 (the version actually installed), not 6.0.4 as stated in the auto-generated settings comment.
-**Rationale:** 5.2 is the current LTS release. The settings.py was generated from a template that referenced 6.0.4, but our environment has 5.2.7. No upgrade planned for Phase 1.
-**Updated (Session 2):** Fixed settings.py docstring to reference Django 5.2.7 instead of 6.0.
+**Rationale:** 5.2 is the current LTS release. The settings.py was generated from a template that referenced 6.0.4, but our environment has 5.2.7.
 
 ## D-007: UUIDs for Customer-Facing IDs (2026-04-09)
 **Decision:** Use UUIDs for public-facing resources (projects, orders, licenses). Integer PKs internally.
@@ -42,14 +41,26 @@
 **Decision:** Italian is the primary language, with EN, FR, AR as secondary.
 **Rationale:** Project originates in Italian market. Arabic requires RTL support.
 
-## D-011: WebTemplate Status Workflow (2026-04-09)
-**Decision:** WebTemplate uses a 4-state status field: draft → review → published → archived.
-**Rationale:** Supports content moderation workflow. Only `published` templates visible to customers. `archived` for soft-deletion.
+## D-011: `mw-` CSS Class Prefix (2026-04-09)
+**Decision:** All custom CSS classes use `mw-` prefix (e.g., `.mw-btn`, `.mw-template-card`, `.mw-hero`).
+**Rationale:** Avoids collision with Bootstrap utility classes and third-party CSS. Makes custom styles easily identifiable.
 
-## D-012: Category Descriptions in Italian (2026-04-09)
-**Decision:** Seed category descriptions written in Italian (primary language).
-**Rationale:** Aligns with D-010. Translations will be handled by i18n layer in Phase 4.
+## D-012: Plus Jakarta Sans + Inter Font Pairing (2026-04-09)
+**Decision:** Plus Jakarta Sans for display/headings, Inter for body text. Both from Google Fonts.
+**Rationale:** Plus Jakarta Sans has a distinctive, premium feel with excellent weight range (500-800). Inter is the gold standard for UI body text with excellent readability. Both are free and well-supported.
 
-## D-013: SlugModel Auto-Generation with Unicode Support (2026-04-09)
-**Decision:** SlugModel.save() auto-generates slug from `name` field using `allow_unicode=True`.
-**Rationale:** Supports Italian/French accented characters in slugs. Slug only auto-generated when empty — allows manual override.
+## D-013: CSS Custom Properties Over SCSS (2026-04-09)
+**Decision:** Use native CSS custom properties (variables) instead of SCSS for the design system.
+**Rationale:** Zero build step for development. Custom properties work at runtime (theming possible). Can add SCSS later if needed without breaking existing styles. SCSS can still be introduced later for nesting/imports.
+
+## D-014: Template Cards Reference Backend Model Fields (2026-04-09)
+**Decision:** Template card partials use `template.name`, `template.brand.brand_name`, `template.category.name`, `template.price`, `template.is_free`, `template.short_description`, `template.assets.first.file.url` — matching backend-core's catalog models.
+**Rationale:** Ensures seamless integration when backend views pass model instances to templates. Static fallback content provided for development without backend data.
+
+## D-015: Static Fallback Content in Listing Pages (2026-04-09)
+**Decision:** Listing pages include `{% if templates %}...{% else %}...{% endif %}` blocks with hardcoded realistic content.
+**Rationale:** Allows the UI to be previewed and developed independently of backend views. Fallback content uses realistic Italian text matching CONTENT_GUIDELINES.md. Will be replaced by dynamic data as backend views are connected.
+
+## D-016: All Template Content in Italian (2026-04-09)
+**Decision:** All UI text, placeholder content, and microcopy written in Italian as the primary language.
+**Rationale:** Per D-010, Italian is the primary market language. i18n/{% trans %} tags will be added in Phase 4 for multilingual support.
