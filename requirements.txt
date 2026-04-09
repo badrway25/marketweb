@@ -1,0 +1,27 @@
+# Core
+Django==5.2.7
+djangorestframework==3.16.1
+drf-spectacular==0.29.0
+django-filter==25.2
+
+# Forms & UI
+django-crispy-forms==2.6
+crispy-bootstrap5==2026.3
+
+# Media & Images
+Pillow==12.1.0
+
+# Payments
+stripe==14.1.0
+
+# Async Tasks
+celery==5.6.2
+django-celery-beat==2.9.0
+
+# Database (production)
+# psycopg2-binary==2.9.x  # uncomment for PostgreSQL
+
+# Dev tools
+black==26.3.1
+ruff==0.15.9
+pytest==9.0.3
