@@ -140,3 +140,54 @@ The Bootstrap JS bundle had the same SRI hash issue.
 
 ### Key Takeaway
 The entire "duplicate navbar" and "broken layout" was a single root cause: **bad SRI hash on Bootstrap CDN link**. No template inheritance issues, no duplicate includes — the HTML structure was always correct.
+
+## Session 4 — Catalog Integration Phase 1 (2026-04-09)
+
+**Agent:** Catalog Integration
+**Goal:** Connect the premium UI templates to real database-backed querysets. Implement catalog views, selectors, URLs, seed data, and wire all pages to real Category and WebTemplate models.
+
+### Actions Taken
+1. **Fixed seed_categories.py** — Removed `bi-` prefix from icon field (partial already adds it), updated category names to Italian display names (Ristorante, Medico, Avvocato, Immobiliare), enriched descriptions
+2. **Created `apps/catalog/selectors.py`** — 7 selector functions: `get_active_categories`, `get_active_categories_with_counts`, `get_published_templates`, `get_featured_templates`, `get_templates_by_category`, `get_template_detail`, `get_related_templates`
+3. **Created `apps/catalog/views.py`** — `CategoryListView`, `TemplateListView` (with optional category filtering via URL kwarg), `TemplateDetailView` with related templates
+4. **Wired `apps/catalog/urls.py`** — 4 URL patterns: `/templates/` (all), `/templates/categories/` (category list), `/templates/<category_slug>/` (filtered), `/templates/<category_slug>/<slug>/` (detail)
+5. **Updated `apps/pages/views.py`** — `HomePageView` now passes `categories` (with annotated counts) and `featured_templates` (limit=6) to context
+6. **Updated `templates/pages/home.html`** — Replaced 8 hardcoded category cards with `{% for category in categories %}` loop using `_category_card.html` partial. Replaced 6 hardcoded template cards with `{% for tmpl in featured_templates %}` loop using `_template_card.html` partial. Updated hero CTA and "Vedi Tutti" links to `{% url 'catalog:template_list' %}`
+7. **Updated `templates/includes/_category_card.html`** — Added real URL via `{% url 'catalog:template_list_by_category' category.slug %}`, updated count to use annotated `template_count`
+8. **Updated `templates/includes/_template_card.html`** — Added real URLs to card title, "Scopri" button, and eye preview action via `{% url 'catalog:template_detail' template.category.slug template.slug %}`. Added `floatformat:0` to price display
+9. **Updated `templates/catalog/template_detail.html`** — Fixed breadcrumb links (Template → `/templates/`, Category → `/templates/<slug>/`), wired related templates section with `{% for %}` loop
+10. **Updated `templates/catalog/template_list.html`** — Replaced static fallback with dynamic `{% for %}` + `{% empty %}` pattern, made category dropdown dynamic with `onchange` navigation, fixed breadcrumbs
+11. **Updated `templates/catalog/category_list.html`** — Removed static fallback, uses dynamic `{% for %}` loop
+12. **Updated `templates/includes/_navbar.html`** — Wired "Template" and "Categorie" nav links to real URLs (both desktop and mobile)
+13. **Created `apps/catalog/management/commands/seed_templates.py`** — 16 realistic WebTemplate + TemplateBrand entries across all 8 MVP categories (2 per category), matching homepage copy exactly (Vertex Studio, Osteria Moderna, SaluteVita Clinic, Chiara Studio, Pragma Corp, Studio Legale Ferri)
+14. **Seeded database** — 8 categories + 16 templates with brands, all status=published, 6 featured
+
+### Files Created (3 new files)
+- `apps/catalog/selectors.py` — 7 selector functions for catalog reads
+- `apps/catalog/views.py` — 3 class-based views (CategoryList, TemplateList, TemplateDetail)
+- `apps/catalog/management/commands/seed_templates.py` — 16 templates with brand identities
+
+### Files Modified (8 files)
+- `apps/catalog/urls.py` — 4 URL patterns (was empty)
+- `apps/catalog/management/commands/seed_categories.py` — Italian names, fixed icons, richer descriptions
+- `apps/pages/views.py` — HomePageView now passes real querysets
+- `templates/pages/home.html` — Dynamic category and featured template loops
+- `templates/includes/_category_card.html` — Real URLs and annotated counts
+- `templates/includes/_template_card.html` — Real URLs and formatted prices
+- `templates/includes/_navbar.html` — Real URLs for Template and Categorie links
+- `templates/catalog/template_detail.html` — Fixed breadcrumbs, wired related templates
+- `templates/catalog/template_list.html` — Dynamic data, dynamic filter dropdown
+- `templates/catalog/category_list.html` — Removed static fallback
+
+### Key Decisions
+- D-017: Category names in Italian for display, English slugs for URLs
+- D-018: Two-segment URL for detail (`/<category>/<slug>/`) to avoid slug collisions across categories
+- D-019: Selectors return querysets (not lists) to allow further filtering and pagination
+- D-020: Icon field stores Bootstrap icon name without `bi-` prefix (partial adds the prefix)
+
+### Verified Pages (Playwright)
+- `http://127.0.0.1:8099/` — Homepage: 8 categories with counts, 6 featured templates, all links working
+- `http://127.0.0.1:8099/templates/` — All 16 templates, dynamic category dropdown, breadcrumbs
+- `http://127.0.0.1:8099/templates/agency/` — Filtered to 2 agency templates, correct title and description
+- `http://127.0.0.1:8099/templates/agency/vertex-creative-agency/` — Full detail page with breadcrumbs, related templates
+- `http://127.0.0.1:8099/templates/categories/` — All 8 categories with counts and links

@@ -19,7 +19,7 @@
           Scegli tra template premium progettati per ogni settore, personalizzali con il nostro editor visuale e lancia la tua presenza online senza scrivere codice.
         </p>
         <div class="mw-hero-actions">
-          <a href="#" class="mw-btn mw-btn-primary mw-btn-lg">
+          <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-primary mw-btn-lg">
             Esplora i Template <i class="bi bi-arrow-right"></i>
           </a>
           <a href="#" class="mw-btn mw-btn-white mw-btn-lg">
@@ -76,55 +76,9 @@
     </div>
 
     <div class="mw-category-grid">
-
-      <a class="mw-category-card" href="#">
-        <div class="mw-category-card-icon"><i class="bi bi-megaphone"></i></div>
-        <div class="mw-category-card-name">Agency</div>
-        <div class="mw-category-card-count">12 template</div>
-      </a>
-
-      <a class="mw-category-card" href="#">
-        <div class="mw-category-card-icon"><i class="bi bi-building"></i></div>
-        <div class="mw-category-card-name">Business</div>
-        <div class="mw-category-card-count">18 template</div>
-      </a>
-
-      <a class="mw-category-card" href="#">
-        <div class="mw-category-card-icon"><i class="bi bi-cup-hot"></i></div>
-        <div class="mw-category-card-name">Ristorante</div>
-        <div class="mw-category-card-count">15 template</div>
-      </a>
-
-      <a class="mw-category-card" href="#">
-        <div class="mw-category-card-icon"><i class="bi bi-heart-pulse"></i></div>
-        <div class="mw-category-card-name">Medico</div>
-        <div class="mw-category-card-count">9 template</div>
-      </a>
-
-      <a class="mw-category-card" href="#">
-        <div class="mw-category-card-icon"><i class="bi bi-briefcase"></i></div>
-        <div class="mw-category-card-name">Avvocato</div>
-        <div class="mw-category-card-count">8 template</div>
-      </a>
-
-      <a class="mw-category-card" href="#">
-        <div class="mw-category-card-icon"><i class="bi bi-house-door"></i></div>
-        <div class="mw-category-card-name">Immobiliare</div>
-        <div class="mw-category-card-count">11 template</div>
-      </a>
-
-      <a class="mw-category-card" href="#">
-        <div class="mw-category-card-icon"><i class="bi bi-palette"></i></div>
-        <div class="mw-category-card-name">Portfolio</div>
-        <div class="mw-category-card-count">14 template</div>
-      </a>
-
-      <a class="mw-category-card" href="#">
-        <div class="mw-category-card-icon"><i class="bi bi-cart3"></i></div>
-        <div class="mw-category-card-name">eCommerce</div>
-        <div class="mw-category-card-count">10 template</div>
-      </a>
-
+      {% for category in categories %}
+        {% include "includes/_category_card.html" with category=category %}
+      {% endfor %}
     </div>
   </div>
 </section>
@@ -140,149 +94,13 @@
     </div>
 
     <div class="mw-featured-grid">
-
-      <!-- Template Card 1: Agency -->
-      <article class="mw-template-card">
-        <div class="mw-template-card-img">
-          <div class="mw-img-placeholder mw-aspect-16-9">
-            <i class="bi bi-window-desktop"></i>
-          </div>
-          <span class="mw-badge">Agency</span>
-          <div class="mw-template-card-actions">
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima"><i class="bi bi-eye"></i></a>
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Preferiti"><i class="bi bi-heart"></i></a>
-          </div>
-        </div>
-        <div class="mw-template-card-body">
-          <div class="mw-template-card-brand">Vertex Studio</div>
-          <h3 class="mw-template-card-title"><a href="#">Vertex &mdash; Creative Agency</a></h3>
-          <p class="mw-template-card-desc mw-line-clamp-2">Template audace e moderno per agenzie creative. Layout dinamico con portfolio interattivo e sezione case study.</p>
-          <div class="mw-template-card-footer">
-            <div class="mw-template-card-price"><span class="currency">&euro;</span>79</div>
-            <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
-          </div>
-        </div>
-      </article>
-
-      <!-- Template Card 2: Restaurant -->
-      <article class="mw-template-card">
-        <div class="mw-template-card-img">
-          <div class="mw-img-placeholder mw-aspect-16-9">
-            <i class="bi bi-window-desktop"></i>
-          </div>
-          <span class="mw-badge">Ristorante</span>
-          <div class="mw-template-card-actions">
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima"><i class="bi bi-eye"></i></a>
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Preferiti"><i class="bi bi-heart"></i></a>
-          </div>
-        </div>
-        <div class="mw-template-card-body">
-          <div class="mw-template-card-brand">Osteria Moderna</div>
-          <h3 class="mw-template-card-title"><a href="#">Gusto &mdash; Fine Dining</a></h3>
-          <p class="mw-template-card-desc mw-line-clamp-2">Eleganza e calore per ristoranti raffinati. Menu digitale, prenotazione tavoli e galleria fotografica immersiva.</p>
-          <div class="mw-template-card-footer">
-            <div class="mw-template-card-price"><span class="currency">&euro;</span>59</div>
-            <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
-          </div>
-        </div>
-      </article>
-
-      <!-- Template Card 3: Medical -->
-      <article class="mw-template-card">
-        <div class="mw-template-card-img">
-          <div class="mw-img-placeholder mw-aspect-16-9">
-            <i class="bi bi-window-desktop"></i>
-          </div>
-          <span class="mw-badge">Medico</span>
-          <div class="mw-template-card-actions">
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima"><i class="bi bi-eye"></i></a>
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Preferiti"><i class="bi bi-heart"></i></a>
-          </div>
-        </div>
-        <div class="mw-template-card-body">
-          <div class="mw-template-card-brand">SaluteVita Clinic</div>
-          <h3 class="mw-template-card-title"><a href="#">Salute &mdash; Studio Medico</a></h3>
-          <p class="mw-template-card-desc mw-line-clamp-2">Rassicurante e professionale per studi medici. Prenotazione online, profili dottori e area paziente dedicata.</p>
-          <div class="mw-template-card-footer">
-            <div class="mw-template-card-price"><span class="currency">&euro;</span>69</div>
-            <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
-          </div>
-        </div>
-      </article>
-
-      <!-- Template Card 4: Free Portfolio -->
-      <article class="mw-template-card">
-        <div class="mw-template-card-img">
-          <div class="mw-img-placeholder mw-aspect-16-9">
-            <i class="bi bi-window-desktop"></i>
-          </div>
-          <span class="mw-badge">Portfolio</span>
-          <div class="mw-template-card-actions">
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima"><i class="bi bi-eye"></i></a>
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Preferiti"><i class="bi bi-heart"></i></a>
-          </div>
-        </div>
-        <div class="mw-template-card-body">
-          <div class="mw-template-card-brand">Chiara Studio</div>
-          <h3 class="mw-template-card-title"><a href="#">Chiara &mdash; Portfolio Creativo</a></h3>
-          <p class="mw-template-card-desc mw-line-clamp-2">Design minimale e raffinato per freelancer e creativi. Galleria filtrata, bio animata e integrazione social.</p>
-          <div class="mw-template-card-footer">
-            <div class="mw-template-card-price"><span class="mw-badge mw-badge-free">Gratis</span></div>
-            <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
-          </div>
-        </div>
-      </article>
-
-      <!-- Template Card 5: Business -->
-      <article class="mw-template-card">
-        <div class="mw-template-card-img">
-          <div class="mw-img-placeholder mw-aspect-16-9">
-            <i class="bi bi-window-desktop"></i>
-          </div>
-          <span class="mw-badge">Business</span>
-          <div class="mw-template-card-actions">
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima"><i class="bi bi-eye"></i></a>
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Preferiti"><i class="bi bi-heart"></i></a>
-          </div>
-        </div>
-        <div class="mw-template-card-body">
-          <div class="mw-template-card-brand">Pragma Corp</div>
-          <h3 class="mw-template-card-title"><a href="#">Pragma &mdash; Corporate Suite</a></h3>
-          <p class="mw-template-card-desc mw-line-clamp-2">Autorevolezza e solidit&agrave; per aziende e consulenti. Sezione servizi, team, partnership e modulo contatto avanzato.</p>
-          <div class="mw-template-card-footer">
-            <div class="mw-template-card-price"><span class="currency">&euro;</span>89</div>
-            <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
-          </div>
-        </div>
-      </article>
-
-      <!-- Template Card 6: Lawyer -->
-      <article class="mw-template-card">
-        <div class="mw-template-card-img">
-          <div class="mw-img-placeholder mw-aspect-16-9">
-            <i class="bi bi-window-desktop"></i>
-          </div>
-          <span class="mw-badge">Avvocato</span>
-          <div class="mw-template-card-actions">
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima"><i class="bi bi-eye"></i></a>
-            <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Preferiti"><i class="bi bi-heart"></i></a>
-          </div>
-        </div>
-        <div class="mw-template-card-body">
-          <div class="mw-template-card-brand">Studio Legale Ferri</div>
-          <h3 class="mw-template-card-title"><a href="#">Lex &mdash; Studio Legale</a></h3>
-          <p class="mw-template-card-desc mw-line-clamp-2">Autorevole e rassicurante per studi legali. Aree di pratica, profili avvocati, consulenza online e blog giuridico.</p>
-          <div class="mw-template-card-footer">
-            <div class="mw-template-card-price"><span class="currency">&euro;</span>69</div>
-            <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
-          </div>
-        </div>
-      </article>
-
+      {% for tmpl in featured_templates %}
+        {% include "includes/_template_card.html" with template=tmpl %}
+      {% endfor %}
     </div>
 
     <div class="text-center mt-5">
-      <a href="#" class="mw-btn mw-btn-secondary mw-btn-lg">
+      <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-secondary mw-btn-lg">
         Vedi Tutti i Template <i class="bi bi-arrow-right"></i>
       </a>
     </div>

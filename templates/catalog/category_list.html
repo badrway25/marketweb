@@ -24,60 +24,9 @@
   <div class="container">
     <div class="mw-category-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));">
 
-      {% if categories %}
-        {% for category in categories %}
-          {% include "includes/_category_card.html" with category=category template_count=category.templates.count %}
-        {% endfor %}
-      {% else %}
-        <!-- Static fallback for development -->
-        <a class="mw-category-card" href="#">
-          <div class="mw-category-card-icon"><i class="bi bi-megaphone"></i></div>
-          <div class="mw-category-card-name">Agency</div>
-          <div class="mw-category-card-count">12 template</div>
-        </a>
-
-        <a class="mw-category-card" href="#">
-          <div class="mw-category-card-icon"><i class="bi bi-building"></i></div>
-          <div class="mw-category-card-name">Business</div>
-          <div class="mw-category-card-count">18 template</div>
-        </a>
-
-        <a class="mw-category-card" href="#">
-          <div class="mw-category-card-icon"><i class="bi bi-cup-hot"></i></div>
-          <div class="mw-category-card-name">Ristorante</div>
-          <div class="mw-category-card-count">15 template</div>
-        </a>
-
-        <a class="mw-category-card" href="#">
-          <div class="mw-category-card-icon"><i class="bi bi-heart-pulse"></i></div>
-          <div class="mw-category-card-name">Medico</div>
-          <div class="mw-category-card-count">9 template</div>
-        </a>
-
-        <a class="mw-category-card" href="#">
-          <div class="mw-category-card-icon"><i class="bi bi-briefcase"></i></div>
-          <div class="mw-category-card-name">Avvocato</div>
-          <div class="mw-category-card-count">8 template</div>
-        </a>
-
-        <a class="mw-category-card" href="#">
-          <div class="mw-category-card-icon"><i class="bi bi-house-door"></i></div>
-          <div class="mw-category-card-name">Immobiliare</div>
-          <div class="mw-category-card-count">11 template</div>
-        </a>
-
-        <a class="mw-category-card" href="#">
-          <div class="mw-category-card-icon"><i class="bi bi-palette"></i></div>
-          <div class="mw-category-card-name">Portfolio</div>
-          <div class="mw-category-card-count">14 template</div>
-        </a>
-
-        <a class="mw-category-card" href="#">
-          <div class="mw-category-card-icon"><i class="bi bi-cart3"></i></div>
-          <div class="mw-category-card-name">eCommerce</div>
-          <div class="mw-category-card-count">10 template</div>
-        </a>
-      {% endif %}
+      {% for category in categories %}
+        {% include "includes/_category_card.html" with category=category %}
+      {% endfor %}
 
     </div>
   </div>

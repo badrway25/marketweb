@@ -3,10 +3,10 @@ Category Card Component
 -----------------------
 Context variables:
   - category: Category instance (name, slug, icon, description)
-  - template_count: number of templates in this category (optional)
+  - category.template_count: annotated count (from selectors) or use category.templates.count
 {% endcomment %}
 
-<a class="mw-category-card" href="#">
+<a class="mw-category-card" href="{% url 'catalog:template_list_by_category' category.slug %}">
   <div class="mw-category-card-icon">
     {% if category.icon %}
       <i class="bi bi-{{ category.icon }}"></i>
@@ -15,7 +15,9 @@ Context variables:
     {% endif %}
   </div>
   <div class="mw-category-card-name">{{ category.name }}</div>
-  {% if template_count is not None %}
-    <div class="mw-category-card-count">{{ template_count }} template</div>
-  {% endif %}
+  <div class="mw-category-card-count">
+    {% if category.template_count is not None %}
+      {{ category.template_count }} template
+    {% endif %}
+  </div>
 </a>

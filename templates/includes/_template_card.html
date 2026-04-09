@@ -5,8 +5,6 @@ Context variables:
   - template: WebTemplate instance (name, slug, short_description, price, is_free, category, brand)
   - template.brand: TemplateBrand (brand_name, tagline, palette)
   - template.assets: TemplateAsset queryset (thumbnail via first preview asset)
-
-For static/hardcoded usage, pass individual vars or use the inline example below.
 {% endcomment %}
 
 <article class="mw-template-card">
@@ -29,7 +27,7 @@ For static/hardcoded usage, pass individual vars or use the inline example below
 
     <!-- Hover Actions -->
     <div class="mw-template-card-actions">
-      <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima rapida">
+      <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima rapida">
         <i class="bi bi-eye"></i>
       </a>
       <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Salva nei preferiti">
@@ -45,7 +43,7 @@ For static/hardcoded usage, pass individual vars or use the inline example below
     {% endif %}
 
     <h3 class="mw-template-card-title">
-      <a href="#">{{ template.name }}</a>
+      <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}">{{ template.name }}</a>
     </h3>
 
     {% if template.short_description %}
@@ -58,10 +56,10 @@ For static/hardcoded usage, pass individual vars or use the inline example below
         {% if template.is_free %}
           <span class="mw-badge mw-badge-free">Gratis</span>
         {% else %}
-          <span class="currency">&euro;</span>{{ template.price }}
+          <span class="currency">&euro;</span>{{ template.price|floatformat:0 }}
         {% endif %}
       </div>
-      <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
+      <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
     </div>
   </div>
 </article>

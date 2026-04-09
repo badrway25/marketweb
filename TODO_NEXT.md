@@ -26,21 +26,28 @@
 9. [x] Set up `static/` directory structure
 10. [x] Ensure RTL-ready class structure from the start
 
-## Next — Phase 1.5 (Integration & Polish)
+## Completed — Phase 1.5 (Integration & Polish)
 - [x] Merge backend-core and premium-ui branches to master
 - [x] Fix Bootstrap CSS/JS loading (SRI hash mismatch — updated to 5.3.8)
 - [x] Fix navbar duplication (caused by Bootstrap CSS not loading)
 - [x] Category grid 4+4 balanced layout
 - [x] Typography/spacing polish for Bootstrap reboot compatibility
-- [ ] Wire homepage category cards to actual Category queryset from backend views
-- [ ] Wire featured templates section to WebTemplate.objects.filter(featured=True)
-- [ ] Create catalog views: CategoryListView, TemplateListView, TemplateDetailView
-- [ ] Connect template_card partial to real WebTemplate model data
-- [ ] Add category card href to actual category URL ({% url 'catalog:category' category.slug %})
-- [ ] Replace image placeholders with seed template screenshots
-- [ ] Add search functionality to filter bar
+- [x] Wire homepage category cards to actual Category queryset from backend views
+- [x] Wire featured templates section to WebTemplate.objects.filter(featured=True)
+- [x] Create catalog views: CategoryListView, TemplateListView, TemplateDetailView
+- [x] Connect template_card partial to real WebTemplate model data
+- [x] Add category card href to actual category URL ({% url 'catalog:template_list_by_category' category.slug %})
+- [x] Create seed_templates management command (16 templates, 16 brands, all 8 categories)
+- [x] Wire navbar Template/Categorie links to real URLs
+- [x] Dynamic category dropdown in template listing filter bar
+- [x] Fix breadcrumbs in detail and listing pages
+- [x] Wire related templates section in detail page
 
-## Next — Phase 2 (after Phase 1.5 complete)
+## Next — Phase 2 (Interactivity & Accounts)
+- [ ] Replace image placeholders with seed template screenshots (static images or generated)
+- [ ] Add search functionality to filter bar (query param + selector)
+- [ ] Add sort functionality (price, date, popularity)
+- [ ] Pagination for template listing (Django Paginator)
 - [ ] Template preview system (iframe or server-rendered)
 - [ ] Editor app models and basic UI
 - [ ] Projects app: save/load customer customizations
@@ -49,3 +56,5 @@
 - [ ] Commerce templates: cart, checkout, order confirmation
 - [ ] RTL bundle switching logic for Arabic (detect lang=ar, swap Bootstrap CSS)
 - [ ] Add {% trans %} tags throughout for i18n readiness
+- [ ] Wire Prezzi and Chi Siamo navbar links to real pages
+- [ ] Tags seeding and tag filtering on listing page

@@ -14,10 +14,10 @@
     <nav class="mw-breadcrumb mb-4" aria-label="Breadcrumb">
       <a href="{% url 'pages:home' %}">Home</a>
       <span class="separator">/</span>
-      <a href="#">Template</a>
+      <a href="{% url 'catalog:template_list' %}">Template</a>
       <span class="separator">/</span>
       {% if template.category %}
-        <a href="#">{{ template.category.name }}</a>
+        <a href="{% url 'catalog:template_list_by_category' template.category.slug %}">{{ template.category.name }}</a>
         <span class="separator">/</span>
       {% endif %}
       <span class="current">{{ template.name|default:"Vertex" }}</span>
@@ -177,7 +177,9 @@
       <p>Scopri altri template della stessa categoria.</p>
     </div>
     <div class="mw-featured-grid">
-      <!-- Related templates would be inserted here via context -->
+      {% for tmpl in related_templates %}
+        {% include "includes/_template_card.html" with template=tmpl %}
+      {% endfor %}
     </div>
   </div>
 </section>

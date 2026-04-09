@@ -64,3 +64,23 @@
 ## D-016: All Template Content in Italian (2026-04-09)
 **Decision:** All UI text, placeholder content, and microcopy written in Italian as the primary language.
 **Rationale:** Per D-010, Italian is the primary market language. i18n/{% trans %} tags will be added in Phase 4 for multilingual support.
+
+## D-017: Category Names in Italian, Slugs in English (2026-04-09)
+**Decision:** Category `name` field uses Italian display names (Ristorante, Medico, Avvocato, Immobiliare) while `slug` stays English (restaurant, medical, lawyer, real-estate).
+**Rationale:** Italian names match the homepage UI and D-016. English slugs are URL-friendly and internationally readable. International categories (Agency, Business, Portfolio, eCommerce) are the same in both languages.
+
+## D-018: Two-Segment Detail URL `/<category>/<slug>/` (2026-04-09)
+**Decision:** Template detail uses `/templates/<category_slug>/<template_slug>/` instead of `/templates/<slug>/`.
+**Rationale:** Prevents slug collisions across categories (e.g., two categories could each have a "starter" template). Also improves SEO with category context in the URL and enables breadcrumb navigation.
+
+## D-019: Selectors Return QuerySets (2026-04-09)
+**Decision:** Catalog selectors return Django QuerySets, not evaluated lists.
+**Rationale:** Allows views to chain additional filters, annotations, or pagination on top. QuerySets are lazy — no DB hit until the template iterates.
+
+## D-020: Icon Field Without `bi-` Prefix (2026-04-09)
+**Decision:** Category `icon` stores just the icon name (e.g., "megaphone") without the `bi-` prefix. The template partial renders `<i class="bi bi-{{ category.icon }}">`.
+**Rationale:** Previous seed data stored "bi-rocket-takeoff" which would render as `bi bi-bi-rocket-takeoff` (double prefix). Keeping the raw name is more portable — could switch icon libraries later.
+
+## D-021: Static Fallbacks Removed After Catalog Integration (2026-04-09)
+**Decision:** Removed all hardcoded static fallback content from listing pages. Pages now show `{% empty %}` states instead.
+**Rationale:** D-015 was a temporary measure for UI development. With catalog views and seed data in place, static fallbacks are no longer needed and would mask missing data issues.

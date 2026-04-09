@@ -1,0 +1,469 @@
+from decimal import Decimal
+
+from django.core.management.base import BaseCommand
+
+from apps.catalog.models import Category, TemplateBrand, WebTemplate
+
+
+SEED_TEMPLATES = [
+    # ── Agency (2) ──────────────────────────────────────────────
+    {
+        "name": "Vertex — Creative Agency",
+        "slug": "vertex-creative-agency",
+        "category_slug": "agency",
+        "short_description": "Template audace e moderno per agenzie creative. Layout dinamico con portfolio interattivo e sezione case study.",
+        "description": (
+            "Vertex è il template definitivo per agenzie digitali e creative che vogliono fare colpo. "
+            "Design audace con transizioni fluide, portfolio a griglia filtrabile, sezione case study con metriche di impatto, "
+            "pagina team con profili dinamici, e un modulo contatto integrato con mappa.\n\n"
+            "Include: homepage con hero animata, pagina servizi, portfolio filtrato, case study dettagliati, "
+            "pagina chi siamo con timeline aziendale, blog con categorie e sidebar, modulo contatto avanzato."
+        ),
+        "price": Decimal("79.00"),
+        "is_free": False,
+        "featured": True,
+        "order": 1,
+        "brand": {
+            "brand_name": "Vertex Studio",
+            "tagline": "Dove la creatività incontra la strategia",
+            "palette": {"primary": "#0D0D0D", "secondary": "#6366F1", "accent": "#F59E0B"},
+            "typography": "Space Grotesk + Inter",
+            "personality": "audace, tech-forward, dinamico",
+            "logo_concept": "Lettera V stilizzata con angoli netti che richiama una freccia verso l'alto, in gradiente indigo-viola",
+        },
+    },
+    {
+        "name": "Aura — Digital Studio",
+        "slug": "aura-digital-studio",
+        "category_slug": "agency",
+        "short_description": "Eleganza minimale per studi digitali e agenzie boutique. Focus su portfolio visivo e storytelling del brand.",
+        "description": (
+            "Aura è pensato per agenzie boutique che comunicano attraverso la qualità del lavoro. "
+            "Layout pulito con ampi spazi bianchi, galleria portfolio fullscreen, "
+            "animazioni scroll-based sottili e sezione testimonianze clienti.\n\n"
+            "Include: homepage narrativa, portfolio con lightbox, pagina servizi modulare, "
+            "sezione clienti con loghi, blog minimal, pagina contatti con calendario prenotazioni."
+        ),
+        "price": Decimal("69.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 2,
+        "brand": {
+            "brand_name": "Aura Creative",
+            "tagline": "Design che parla da sé",
+            "palette": {"primary": "#1A1A2E", "secondary": "#E2E8F0", "accent": "#8B5CF6"},
+            "typography": "Plus Jakarta Sans + Inter",
+            "personality": "minimale, sofisticato, elegante",
+            "logo_concept": "Cerchio sfumato con effetto aurora boreale, tipografia sans-serif leggera",
+        },
+    },
+    # ── Business (2) ────────────────────────────────────────────
+    {
+        "name": "Pragma — Corporate Suite",
+        "slug": "pragma-corporate-suite",
+        "category_slug": "business",
+        "short_description": "Autorevolezza e solidità per aziende e consulenti. Sezione servizi, team, partnership e modulo contatto avanzato.",
+        "description": (
+            "Pragma trasmette professionalità e affidabilità dal primo scroll. "
+            "Progettato per aziende consolidate, società di consulenza e imprese B2B che necessitano "
+            "di una presenza online autorevole.\n\n"
+            "Include: homepage corporate con video hero, pagina servizi con icone personalizzabili, "
+            "sezione team con ruoli e contatti diretti, pagina partnership e clienti, "
+            "area risorse con download PDF, modulo contatto multi-step."
+        ),
+        "price": Decimal("89.00"),
+        "is_free": False,
+        "featured": True,
+        "order": 1,
+        "brand": {
+            "brand_name": "Pragma Corp",
+            "tagline": "Soluzioni concrete per il tuo business",
+            "palette": {"primary": "#1E293B", "secondary": "#3B82F6", "accent": "#10B981"},
+            "typography": "Inter + Merriweather",
+            "personality": "professionale, autorevole, affidabile",
+            "logo_concept": "Monogramma P geometrico in navy e blu, linee nette che evocano struttura e solidità",
+        },
+    },
+    {
+        "name": "Elevate — Startup Landing",
+        "slug": "elevate-startup-landing",
+        "category_slug": "business",
+        "short_description": "Landing page ad alta conversione per startup e SaaS. Hero potente, social proof e pricing table integrati.",
+        "description": (
+            "Elevate è progettato per startup, SaaS e aziende tech che necessitano di una landing page "
+            "che converte. Design moderno con gradiente, animazioni di ingresso, "
+            "sezione features con icone, pricing table comparativo e integrazione newsletter.\n\n"
+            "Include: hero con CTA doppia, sezione benefici, features grid, "
+            "testimonial carousel, pricing table a 3 colonne, FAQ accordion, footer CTA."
+        ),
+        "price": Decimal("59.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 2,
+        "brand": {
+            "brand_name": "Elevate Tech",
+            "tagline": "Lancia il tuo prodotto con impatto",
+            "palette": {"primary": "#0F172A", "secondary": "#7C3AED", "accent": "#22D3EE"},
+            "typography": "Satoshi + Inter",
+            "personality": "moderno, energico, tech-forward",
+            "logo_concept": "Freccia ascendente stilizzata in gradiente viola-ciano, forme geometriche dinamiche",
+        },
+    },
+    # ── Ristorante (2) ─────────────────────────────────────────
+    {
+        "name": "Gusto — Fine Dining",
+        "slug": "gusto-fine-dining",
+        "category_slug": "restaurant",
+        "short_description": "Eleganza e calore per ristoranti raffinati. Menu digitale, prenotazione tavoli e galleria fotografica immersiva.",
+        "description": (
+            "Gusto cattura l'essenza della ristorazione italiana d'eccellenza. "
+            "Fotografia hero a schermo pieno, menu digitale con categorie e allergeni, "
+            "sistema di prenotazione tavoli integrato, galleria con lightbox per gli ambienti.\n\n"
+            "Include: homepage con slideshow, menu digitale interattivo, "
+            "sezione chef con filosofia culinaria, galleria ambienti, "
+            "widget prenotazione, pagina eventi privati, mappa con indicazioni."
+        ),
+        "price": Decimal("59.00"),
+        "is_free": False,
+        "featured": True,
+        "order": 1,
+        "brand": {
+            "brand_name": "Osteria Moderna",
+            "tagline": "Tradizione e innovazione a tavola",
+            "palette": {"primary": "#2C1810", "secondary": "#D4A574", "accent": "#8B0000"},
+            "typography": "Playfair Display + Lato",
+            "personality": "caldo, elegante, autentico",
+            "logo_concept": "Forchetta e foglia d'ulivo intrecciate in oro su fondo scuro, tipografia serif elegante",
+        },
+    },
+    {
+        "name": "Sapore — Trattoria & Pizzeria",
+        "slug": "sapore-trattoria-pizzeria",
+        "category_slug": "restaurant",
+        "short_description": "Caloroso e accogliente per trattorie e pizzerie. Menu con foto, ordini online e recensioni Google integrate.",
+        "description": (
+            "Sapore è il template perfetto per trattorie, pizzerie e ristoranti informali "
+            "che vogliono un sito web invitante e funzionale. "
+            "Design caloroso con palette terrosa, menu fotografico, "
+            "pulsante ordini online e widget recensioni.\n\n"
+            "Include: homepage con hero e piatto del giorno, menu con foto e prezzi, "
+            "sezione a domicilio con CTA, galleria Instagram, "
+            "recensioni Google/TripAdvisor embed, mappa e orari."
+        ),
+        "price": Decimal("49.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 2,
+        "brand": {
+            "brand_name": "Trattoria Da Nonna Rosa",
+            "tagline": "Il sapore di casa, dal 1987",
+            "palette": {"primary": "#4A2C2A", "secondary": "#E8D5B7", "accent": "#C0392B"},
+            "typography": "Libre Baskerville + Source Sans 3",
+            "personality": "caloroso, familiare, genuino",
+            "logo_concept": "Spiga di grano e mattarello in stile illustrato, colori caldi su fondo crema",
+        },
+    },
+    # ── Medico (2) ──────────────────────────────────────────────
+    {
+        "name": "Salute — Studio Medico",
+        "slug": "salute-studio-medico",
+        "category_slug": "medical",
+        "short_description": "Rassicurante e professionale per studi medici. Prenotazione online, profili dottori e area paziente dedicata.",
+        "description": (
+            "Salute comunica competenza e fiducia fin dal primo impatto. "
+            "Progettato per studi medici, poliambulatori e cliniche private "
+            "che necessitano di una presenza online professionale e rassicurante.\n\n"
+            "Include: homepage con servizi e team medico, sistema prenotazione visite, "
+            "profili dottori con specializzazioni e CV, area paziente con documentazione, "
+            "sezione convenzioni e assicurazioni, blog salute con categorie, modulo contatti urgenti."
+        ),
+        "price": Decimal("69.00"),
+        "is_free": False,
+        "featured": True,
+        "order": 1,
+        "brand": {
+            "brand_name": "SaluteVita Clinic",
+            "tagline": "La tua salute, la nostra missione",
+            "palette": {"primary": "#0B4F6C", "secondary": "#01BAEF", "accent": "#20BF55"},
+            "typography": "Nunito Sans + Inter",
+            "personality": "rassicurante, professionale, moderno",
+            "logo_concept": "Croce medica stilizzata con cuore integrato in blu-verde, forme morbide e accoglienti",
+        },
+    },
+    {
+        "name": "Benessere — Centro Olistico",
+        "slug": "benessere-centro-olistico",
+        "category_slug": "medical",
+        "short_description": "Sereno e armonioso per centri benessere e studi olistici. Prenotazione trattamenti e sezione blog integrata.",
+        "description": (
+            "Benessere trasmette serenità e armonia, perfetto per centri wellness, "
+            "studi di fisioterapia, osteopatia e pratiche olistiche.\n\n"
+            "Include: homepage con atmosfera rilassante, catalogo trattamenti con prezzi, "
+            "calendario prenotazioni, profili terapisti, sezione testimonianze pazienti, "
+            "blog benessere con consigli, galleria ambienti."
+        ),
+        "price": Decimal("59.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 2,
+        "brand": {
+            "brand_name": "Studio Armonia",
+            "tagline": "Equilibrio tra corpo e mente",
+            "palette": {"primary": "#2D4A3E", "secondary": "#A7C4BC", "accent": "#D4A574"},
+            "typography": "Cormorant Garamond + Nunito",
+            "personality": "sereno, naturale, accogliente",
+            "logo_concept": "Foglia e goccia d'acqua in verde salvia, linee organiche e fluide",
+        },
+    },
+    # ── Avvocato (2) ────────────────────────────────────────────
+    {
+        "name": "Lex — Studio Legale",
+        "slug": "lex-studio-legale",
+        "category_slug": "lawyer",
+        "short_description": "Autorevole e rassicurante per studi legali. Aree di pratica, profili avvocati, consulenza online e blog giuridico.",
+        "description": (
+            "Lex è il template per studi legali che vogliono trasmettere esperienza e affidabilità. "
+            "Design sobrio e autorevole con palette scura e accenti oro.\n\n"
+            "Include: homepage con aree di pratica in evidenza, profili avvocati con CV e specializzazioni, "
+            "sezione risultati e casi di successo, form richiesta consulenza online, "
+            "blog giuridico con categorie per area di diritto, pagina contatti con mappa sedi."
+        ),
+        "price": Decimal("69.00"),
+        "is_free": False,
+        "featured": True,
+        "order": 1,
+        "brand": {
+            "brand_name": "Studio Legale Ferri",
+            "tagline": "Competenza e dedizione al servizio della giustizia",
+            "palette": {"primary": "#1A1A2E", "secondary": "#C5A55A", "accent": "#8B0000"},
+            "typography": "Cormorant Garamond + Inter",
+            "personality": "autorevole, classico, sobrio",
+            "logo_concept": "Bilancia della giustizia stilizzata in oro su fondo navy, tipografia serif classica",
+        },
+    },
+    {
+        "name": "Juris — Avvocato Moderno",
+        "slug": "juris-avvocato-moderno",
+        "category_slug": "lawyer",
+        "short_description": "Design contemporaneo per avvocati e professionisti legali. Prenotazione consulenze e area clienti riservata.",
+        "description": (
+            "Juris offre un approccio moderno alla comunicazione legale. "
+            "Design pulito e accessibile che rompe con l'immagine tradizionale dello studio legale.\n\n"
+            "Include: homepage con servizi e CTA prenotazione, sezione aree di pratica con dettaglio, "
+            "sistema prenotazione consulenza online, area clienti riservata con documenti, "
+            "FAQ giuridiche, blog con articoli e guide, profilo avvocato dettagliato."
+        ),
+        "price": Decimal("59.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 2,
+        "brand": {
+            "brand_name": "Avv. Martini & Partners",
+            "tagline": "Il diritto dalla tua parte",
+            "palette": {"primary": "#2D3748", "secondary": "#4299E1", "accent": "#ECC94B"},
+            "typography": "DM Sans + Inter",
+            "personality": "moderno, accessibile, trasparente",
+            "logo_concept": "Lettera M con colonne stilizzate, blu e grigio ardesia, design contemporaneo",
+        },
+    },
+    # ── Immobiliare (2) ─────────────────────────────────────────
+    {
+        "name": "Casa — Agenzia Immobiliare",
+        "slug": "casa-agenzia-immobiliare",
+        "category_slug": "real-estate",
+        "short_description": "Aspirazionale e funzionale per agenzie immobiliari. Ricerca immobili, schede proprietà e tour virtuali.",
+        "description": (
+            "Casa è il template per agenzie immobiliari che vogliono presentare il proprio portfolio "
+            "con eleganza e funzionalità. Design aspirazionale con fotografie grandi e filtri di ricerca.\n\n"
+            "Include: homepage con immobili in evidenza e ricerca rapida, griglia annunci filtrabile "
+            "per zona/prezzo/tipologia, scheda proprietà con galleria e planimetria, "
+            "pagina agenti con contatto diretto, sezione valutazione immobili, blog immobiliare."
+        ),
+        "price": Decimal("79.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 1,
+        "brand": {
+            "brand_name": "Domus Immobiliare",
+            "tagline": "La casa dei tuoi sogni ti aspetta",
+            "palette": {"primary": "#1B2838", "secondary": "#2ECC71", "accent": "#E67E22"},
+            "typography": "Poppins + Inter",
+            "personality": "aspirazionale, affidabile, elegante",
+            "logo_concept": "Tetto stilizzato con chiave integrata in verde su fondo scuro, forme geometriche moderne",
+        },
+    },
+    {
+        "name": "Villa — Immobili di Lusso",
+        "slug": "villa-immobili-lusso",
+        "category_slug": "real-estate",
+        "short_description": "Esclusivo per immobili di pregio. Gallerie immersive, tour 360° e presentazione proprietà cinematografica.",
+        "description": (
+            "Villa è il template per agenzie specializzate in immobili di pregio e lusso. "
+            "Ogni pixel trasmette esclusività e attenzione al dettaglio.\n\n"
+            "Include: homepage con video hero e proprietà in evidenza, schede immobili con galleria fullscreen, "
+            "integrazione tour 360°, sezione quartiere con mappa interattiva, "
+            "form richiesta visita privata, area agenti esclusivi."
+        ),
+        "price": Decimal("99.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 2,
+        "brand": {
+            "brand_name": "Villa Prestige",
+            "tagline": "L'eccellenza nell'immobiliare di lusso",
+            "palette": {"primary": "#0A0A0A", "secondary": "#C9A96E", "accent": "#FFFFFF"},
+            "typography": "Cormorant Garamond + Montserrat",
+            "personality": "lussuoso, esclusivo, cinematografico",
+            "logo_concept": "Monogramma VP in oro su nero, serif elegante con spaziatura ampia",
+        },
+    },
+    # ── Portfolio (2) ───────────────────────────────────────────
+    {
+        "name": "Chiara — Portfolio Creativo",
+        "slug": "chiara-portfolio-creativo",
+        "category_slug": "portfolio",
+        "short_description": "Design minimale e raffinato per freelancer e creativi. Galleria filtrata, bio animata e integrazione social.",
+        "description": (
+            "Chiara lascia che il lavoro parli da sé. Design minimale con ampio spazio bianco "
+            "e focus assoluto sulle immagini del portfolio.\n\n"
+            "Include: homepage con galleria masonry filtrabile, pagina progetto con dettaglio e processo creativo, "
+            "sezione about con bio e timeline professionale, pagina contatti con form e social links, "
+            "integrazione Instagram e Behance."
+        ),
+        "price": Decimal("0.00"),
+        "is_free": True,
+        "featured": True,
+        "order": 1,
+        "brand": {
+            "brand_name": "Chiara Studio",
+            "tagline": "Ogni progetto racconta una storia",
+            "palette": {"primary": "#FAFAFA", "secondary": "#111111", "accent": "#FF6B6B"},
+            "typography": "Syne + Inter",
+            "personality": "minimale, raffinato, personale",
+            "logo_concept": "Nome 'Chiara' in font handwritten con punto rosso corallo, sfondo bianco puro",
+        },
+    },
+    {
+        "name": "Pixel — Portfolio Fotografico",
+        "slug": "pixel-portfolio-fotografico",
+        "category_slug": "portfolio",
+        "short_description": "Immersivo e drammatico per fotografi. Galleria fullscreen, slideshow e presentazione progetto cinematografica.",
+        "description": (
+            "Pixel è il template per fotografi che vogliono presentare il proprio lavoro "
+            "con impatto visivo massimo. Background scuro che esalta ogni fotografia.\n\n"
+            "Include: homepage con slideshow fullscreen, gallerie per progetto con lightbox, "
+            "pagina about con attrezzatura e approccio, sezione servizi fotografici, "
+            "form preventivo con dettagli evento, blog con storie dai set."
+        ),
+        "price": Decimal("49.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 2,
+        "brand": {
+            "brand_name": "Pixel Photography",
+            "tagline": "L'arte di catturare l'attimo",
+            "palette": {"primary": "#0A0A0A", "secondary": "#E0E0E0", "accent": "#FF4444"},
+            "typography": "Archivo + Inter",
+            "personality": "drammatico, immersivo, professionale",
+            "logo_concept": "Diaframma di obiettivo stilizzato in bianco su nero, linee nette e precise",
+        },
+    },
+    # ── eCommerce (2) ───────────────────────────────────────────
+    {
+        "name": "Bottega — Shop Artigianale",
+        "slug": "bottega-shop-artigianale",
+        "category_slug": "ecommerce",
+        "short_description": "Caldo e autentico per negozi artigianali e prodotti Made in Italy. Catalogo, carrello e storytelling del prodotto.",
+        "description": (
+            "Bottega è il template per artigiani, produttori locali e negozi di prodotti autentici "
+            "che vogliono vendere online mantenendo il calore della bottega tradizionale.\n\n"
+            "Include: homepage con prodotti in evidenza e storia del brand, catalogo filtrato per categoria, "
+            "scheda prodotto con galleria, varianti e recensioni, carrello e checkout, "
+            "sezione about con storia dell'artigiano, blog con processo produttivo."
+        ),
+        "price": Decimal("69.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 1,
+        "brand": {
+            "brand_name": "La Bottega di Martino",
+            "tagline": "Fatto a mano, fatto col cuore",
+            "palette": {"primary": "#3E2723", "secondary": "#D7CCC8", "accent": "#FF8F00"},
+            "typography": "Libre Baskerville + Nunito Sans",
+            "personality": "artigianale, caldo, autentico",
+            "logo_concept": "Mani che modellano argilla stilizzate in marrone caldo, tipografia serif classica",
+        },
+    },
+    {
+        "name": "Luxe — Fashion Store",
+        "slug": "luxe-fashion-store",
+        "category_slug": "ecommerce",
+        "short_description": "Esclusivo e raffinato per moda e accessori. Lookbook, quick view e checkout premium con stripe integrato.",
+        "description": (
+            "Luxe è il template per brand di moda, accessori e lifestyle che puntano "
+            "all'esperienza di acquisto premium.\n\n"
+            "Include: homepage con hero video e collezione stagionale, catalogo con quick view e filtri avanzati, "
+            "pagina prodotto con zoom, taglie e wishlist, lookbook con shoppable images, "
+            "carrello slide-out, checkout Stripe integrato, area account cliente."
+        ),
+        "price": Decimal("89.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 2,
+        "brand": {
+            "brand_name": "Maison Luxe",
+            "tagline": "Stile senza compromessi",
+            "palette": {"primary": "#000000", "secondary": "#F5F5F5", "accent": "#B8860B"},
+            "typography": "Cormorant Garamond + Montserrat",
+            "personality": "lussuoso, minimale, sofisticato",
+            "logo_concept": "Nome 'LUXE' in maiuscolo spaziato, serif sottile, con linea oro sottostante",
+        },
+    },
+]
+
+
+class Command(BaseCommand):
+    help = "Seed the database with realistic WebTemplate and TemplateBrand data for all MVP categories"
+
+    def handle(self, *args, **options):
+        categories = {c.slug: c for c in Category.objects.all()}
+        if not categories:
+            self.stderr.write(self.style.ERROR("No categories found. Run seed_categories first."))
+            return
+
+        created_count = 0
+        for t_data in SEED_TEMPLATES:
+            category = categories.get(t_data["category_slug"])
+            if not category:
+                self.stderr.write(f"  Category '{t_data['category_slug']}' not found, skipping {t_data['name']}")
+                continue
+
+            template, created = WebTemplate.objects.get_or_create(
+                slug=t_data["slug"],
+                defaults={
+                    "name": t_data["name"],
+                    "category": category,
+                    "description": t_data["description"],
+                    "short_description": t_data["short_description"],
+                    "price": t_data["price"],
+                    "is_free": t_data["is_free"],
+                    "featured": t_data["featured"],
+                    "order": t_data["order"],
+                    "status": WebTemplate.Status.PUBLISHED,
+                },
+            )
+
+            if created:
+                created_count += 1
+                brand_data = t_data["brand"]
+                TemplateBrand.objects.get_or_create(
+                    template=template,
+                    defaults=brand_data,
+                )
+                self.stdout.write(f"  Created: {t_data['name']} ({brand_data['brand_name']})")
+            else:
+                self.stdout.write(f"  Exists:  {t_data['name']}")
+
+        self.stdout.write(
+            self.style.SUCCESS(f"\nDone. {created_count} templates created.")
+        )
