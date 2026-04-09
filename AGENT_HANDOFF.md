@@ -1,23 +1,24 @@
 # Agent Handoff
 
-Last updated: 2026-04-09 — after Catalog Integration Phase 1 (Session 4)
+Last updated: 2026-04-09 — after Catalog Enhancements Phase 1 (Session 5)
 
 ## Current State
 
-**Merged and running.** Backend-core and premium-UI branches merged to master. Catalog integration complete — all marketplace pages are now database-backed with real querysets.
+**Catalog enhancements complete.** Preview images, search, sort, and pagination all implemented and verified. Branch: `catalog-enhancements` worktree (not yet merged to master).
 
-**Session 4 completed:** Catalog views, selectors, URLs, and seed data. Homepage, listing, detail, and category pages all wired to real Category and WebTemplate models. 16 templates with brand identities seeded across all 8 MVP categories.
+**Session 5 completed:** SVG preview images for all 16 templates, search across name/description/brand, sort by recent/price/name, pagination at 12/page, asset prefetching, empty state UX.
 
-**UI status:** All premium UI preserved. Homepage renders: hero, stats, 8 dynamic category cards (with real counts), 6 featured template cards (from DB), how-it-works, testimonials, CTA. Listing page shows all 16 templates with dynamic category filter dropdown. Detail page has working breadcrumbs, tabs, sidebar, and related templates section.
+**UI status:** All premium UI preserved — no CSS or component structure changes. Filter bar now functional with form-based search and sort. Pagination shows page numbers with Previous/Next navigation.
 
 ## What's Working
 
 | Page                          | URL                                        | Status  |
 |-------------------------------|-------------------------------------------|---------|
-| Homepage                      | `/`                                        | Dynamic |
-| Template listing (all)        | `/templates/`                              | Dynamic |
-| Template listing (filtered)   | `/templates/<category_slug>/`              | Dynamic |
-| Template detail               | `/templates/<category_slug>/<slug>/`       | Dynamic |
+| Homepage                      | `/`                                        | Dynamic, with preview images |
+| Template listing (all)        | `/templates/`                              | Search, sort, paginated |
+| Template listing (filtered)   | `/templates/<category_slug>/`              | Search, sort, paginated |
+| Template listing (search)     | `/templates/?q=studio&sort=price_asc`      | Working |
+| Template detail               | `/templates/<category_slug>/<slug>/`       | Gallery shows SVG preview |
 | Category listing              | `/templates/categories/`                   | Dynamic |
 | Admin                         | `/admin/`                                  | Working |
 
@@ -26,7 +27,7 @@ Last updated: 2026-04-09 — after Catalog Integration Phase 1 (Session 4)
 - **8 categories** — Agency, Business, Ristorante, Medico, Avvocato, Immobiliare, Portfolio, eCommerce
 - **16 templates** — 2 per category, all status=published, 6 marked featured
 - **16 brands** — One TemplateBrand per template with palette, typography, personality
-- **0 assets** — No images yet (placeholder icons shown)
+- **16 assets** — One TemplateAsset (type=preview) per template, SVG mockups in media/template_assets/
 - **0 tags** — Tag model exists but no tags seeded yet
 
 ## Key Architecture (Catalog)
@@ -59,19 +60,23 @@ Models (catalog/models.py)        ← Category, WebTemplate, TemplateBrand, Temp
 
 **Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md
 
-### Immediate tasks (Phase 2):
+### Immediate tasks (Phase 2b):
 
-1. **Add template preview images** — Either create placeholder screenshots or use CSS-generated previews. TemplateAsset model is ready, `_template_card.html` already handles `template.assets.first`.
+1. **Tag seeding and filtering** — Tag model exists. Seed relevant tags per template, add tag filter chips to listing page. Tags display already works on detail page sidebar.
 
-2. **Search and sort functionality** — The filter bar in `template_list.html` has a search input and sort dropdown but they're not wired to backend queries. Add query params handling in `TemplateListView` and corresponding selectors.
+2. **User authentication** — `accounts` app exists with custom User model. Build register, login, dashboard views and templates.
 
-3. **Pagination** — `TemplateListView` should paginate. The template already has pagination HTML (using `templates.has_other_pages`). Add `paginate_by = 12` to the view.
+3. **Commerce flow** — Cart, checkout, order confirmation templates and views.
 
-4. **Tag seeding and filtering** — Tag model exists. Seed relevant tags per template, add tag filter to listing page.
+4. **Replace SVG previews with real screenshots** — When actual template HTML pages exist, generate real screenshots with Playwright and replace the SVG placeholders via `generate_previews --force`.
 
-5. **User authentication** — `accounts` app exists with custom User model. Build register, login, dashboard views and templates.
+5. **PostgreSQL full-text search** — When deploying to production, replace `icontains` search in `get_listing_templates()` with PostgreSQL `SearchVector`/`SearchQuery` for better relevance ranking.
 
-6. **Commerce flow** — Cart, checkout, order confirmation templates and views.
+### Key Files for This Work Area
+- `apps/catalog/selectors.py` — All read logic (search, sort, filter)
+- `apps/catalog/views.py` — TemplateListView with pagination
+- `templates/catalog/template_list.html` — Filter bar, grid, pagination
+- `apps/catalog/management/commands/generate_previews.py` — SVG preview generator
 
 ### Constraints
 - Do not redesign the existing architecture or model structure

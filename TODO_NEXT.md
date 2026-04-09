@@ -43,11 +43,16 @@
 - [x] Fix breadcrumbs in detail and listing pages
 - [x] Wire related templates section in detail page
 
-## Next — Phase 2 (Interactivity & Accounts)
-- [ ] Replace image placeholders with seed template screenshots (static images or generated)
-- [ ] Add search functionality to filter bar (query param + selector)
-- [ ] Add sort functionality (price, date, popularity)
-- [ ] Pagination for template listing (Django Paginator)
+## Completed — Phase 2a (Catalog Enhancements)
+- [x] Generate SVG preview images for all 16 templates (branded mockups via generate_previews command)
+- [x] Add search functionality (query param `?q=` + icontains across name/description/brand)
+- [x] Add sort functionality (recent, price asc/desc, name A-Z)
+- [x] Pagination for template listing (paginate_by=12, full page nav with param preservation)
+- [x] Asset prefetching to eliminate N+1 queries on listing pages
+- [x] Empty state with search feedback and clear button
+
+## Next — Phase 2b (Interactivity & Accounts)
+- [ ] Tags seeding and tag filtering on listing page
 - [ ] Template preview system (iframe or server-rendered)
 - [ ] Editor app models and basic UI
 - [ ] Projects app: save/load customer customizations
@@ -57,4 +62,5 @@
 - [ ] RTL bundle switching logic for Arabic (detect lang=ar, swap Bootstrap CSS)
 - [ ] Add {% trans %} tags throughout for i18n readiness
 - [ ] Wire Prezzi and Chi Siamo navbar links to real pages
-- [ ] Tags seeding and tag filtering on listing page
+- [ ] Replace SVG previews with real template screenshots (when actual template HTML exists)
+- [ ] PostgreSQL full-text search upgrade (replace icontains when in production)

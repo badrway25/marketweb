@@ -1,6 +1,5 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, ListView
 
-from apps.catalog.models import Category, WebTemplate
 from apps.catalog import selectors
 
 
@@ -15,19 +14,32 @@ class CategoryListView(ListView):
 class TemplateListView(ListView):
     template_name = "catalog/template_list.html"
     context_object_name = "templates"
+    paginate_by = 12
 
     def get_queryset(self):
-        category_slug = self.kwargs.get("category_slug")
-        if category_slug:
-            self.category, qs = selectors.get_templates_by_category(category_slug)
-            return qs
-        self.category = None
-        return selectors.get_published_templates()
+        self.search_query = self.request.GET.get("q", "").strip()
+        self.sort_by = self.request.GET.get("sort", "recent")
+
+        self.category, qs = selectors.get_listing_templates(
+            category_slug=self.kwargs.get("category_slug"),
+            search_query=self.search_query or None,
+            sort_by=self.sort_by,
+        )
+        return qs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["category"] = getattr(self, "category", None)
+        ctx["category"] = self.category
         ctx["categories"] = selectors.get_active_categories()
+        ctx["search_query"] = self.search_query
+        ctx["current_sort"] = self.sort_by
+        ctx["sort_options"] = selectors.SORT_LABELS
+
+        # Query string without 'page' — used for pagination links
+        params = self.request.GET.copy()
+        params.pop("page", None)
+        ctx["filter_query_string"] = params.urlencode()
+
         return ctx
 
 

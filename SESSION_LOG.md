@@ -191,3 +191,37 @@ The entire "duplicate navbar" and "broken layout" was a single root cause: **bad
 - `http://127.0.0.1:8099/templates/agency/` — Filtered to 2 agency templates, correct title and description
 - `http://127.0.0.1:8099/templates/agency/vertex-creative-agency/` — Full detail page with breadcrumbs, related templates
 - `http://127.0.0.1:8099/templates/categories/` — All 8 categories with counts and links
+
+## Session 5 — Catalog Enhancements Phase 1 (2026-04-09)
+
+**Agent:** Catalog Enhancements (worktree: catalog-enhancements)
+**Goal:** Add template preview images, search, sort, and pagination to the catalog listing page.
+
+### Actions Taken
+1. **Created `generate_previews.py` management command** — Generates branded SVG mockup images for all published templates. Each SVG is a 1200x675 (16:9) website mockup with browser chrome (traffic lights + URL bar), navbar, hero section, content cards, and footer — all colored using the template's brand palette. Two layout variants (split-hero and centered-hero) alternate for visual variety.
+2. **Updated `selectors.py`** — Added `prefetch_related("assets")` to `get_published_templates()` to eliminate N+1 queries on listing pages. Added `get_listing_templates()` for combined search/sort/filter with keyword-based search across name, description, short_description, and brand_name. Added `SORT_OPTIONS` and `SORT_LABELS` dictionaries for sort configuration.
+3. **Updated `views.py`** — Added `paginate_by = 12` to `TemplateListView`. Replaced separate category/queryset logic with `get_listing_templates()`. Added `search_query`, `current_sort`, `sort_options`, and `filter_query_string` to template context.
+4. **Updated `template_list.html`** — Wrapped filter bar in `<form method="get">`. Search input now submits as `?q=` param and preserves value. Sort dropdown submits form on change. Category dropdown preserves search/sort params when navigating. Pagination uses `page_obj` with page number links and preserves all filter params. Empty state shows search query feedback and "Cancella ricerca" button. Template count uses `paginator.count` for accurate total.
+5. **Generated 16 preview assets** — Ran `generate_previews` command, creating TemplateAsset records (type=preview) for all 16 templates. SVGs stored in `media/template_assets/2026/04/`.
+
+### Files Created (1 new file)
+- `apps/catalog/management/commands/generate_previews.py` — SVG preview generator with 2 layout variants
+
+### Files Modified (3 files)
+- `apps/catalog/selectors.py` — Added asset prefetch, `get_listing_templates()`, sort constants
+- `apps/catalog/views.py` — Added pagination, search/sort handling, filter context
+- `templates/catalog/template_list.html` — Form-based filter bar, working pagination, empty state
+
+### Key Decisions
+- D-022: SVG-based preview images using brand palettes (not Pillow PNGs or CSS-only placeholders)
+- D-023: Search uses Django ORM `icontains` across 4 fields (name, short_description, description, brand_name)
+- D-024: Sort options: recent, price asc/desc, name A-Z (no "popular" — no view count model yet)
+- D-025: Pagination at 12 per page (4 rows of 3 on desktop)
+
+### Verified Pages (Playwright)
+- `http://127.0.0.1:8098/` — Homepage with SVG preview images in featured cards
+- `http://127.0.0.1:8098/templates/` — 16 templates, pagination (page 1 of 2), filter bar
+- `http://127.0.0.1:8098/templates/?q=studio&sort=price_asc` — Search returns 7 results, sorted by price
+- `http://127.0.0.1:8098/templates/?q=zzzznotfound` — Empty state with feedback and clear button
+- `http://127.0.0.1:8098/templates/restaurant/` — Category filter: 2 restaurant templates
+- `http://127.0.0.1:8098/templates/restaurant/gusto-fine-dining/` — Detail page with SVG gallery image

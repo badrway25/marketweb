@@ -84,3 +84,19 @@
 ## D-021: Static Fallbacks Removed After Catalog Integration (2026-04-09)
 **Decision:** Removed all hardcoded static fallback content from listing pages. Pages now show `{% empty %}` states instead.
 **Rationale:** D-015 was a temporary measure for UI development. With catalog views and seed data in place, static fallbacks are no longer needed and would mask missing data issues.
+
+## D-022: SVG Preview Images Using Brand Palettes (2026-04-09)
+**Decision:** Generate structured SVG files that look like website mockups (browser chrome + page layout), colored with each template's brand palette. Stored via TemplateAsset model (asset_type='preview').
+**Rationale:** SVGs scale perfectly, are lightweight, and each is visually unique because of the distinct brand palettes. The browser-chrome framing makes them look like real screenshots. They can be replaced with actual screenshots later without changing any template code — just swap the TemplateAsset file.
+
+## D-023: Search via ORM icontains Across 4 Fields (2026-04-09)
+**Decision:** Search filters using Django ORM `Q(name__icontains=q) | Q(short_description__icontains=q) | Q(description__icontains=q) | Q(brand__brand_name__icontains=q)`.
+**Rationale:** Simple, works with SQLite in dev. PostgreSQL full-text search can replace this in production via a selector swap — no view or template changes needed.
+
+## D-024: Four Sort Options, No "Popular" (2026-04-09)
+**Decision:** Sort options are: recent (default), price ascending, price descending, name A-Z. "Popular" sort omitted.
+**Rationale:** No view/download count model exists yet. Adding a dummy popularity sort would be misleading. Can add when commerce or analytics tracking is implemented.
+
+## D-025: Pagination at 12 Per Page (2026-04-09)
+**Decision:** `paginate_by = 12` on TemplateListView.
+**Rationale:** 12 items = 4 rows of 3 cards on desktop, a comfortable scroll depth. Matches the 3-column grid layout. With 16 templates, produces 2 pages — enough to verify pagination works.
