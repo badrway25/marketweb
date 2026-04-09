@@ -194,7 +194,7 @@
 
 .mw-template-card-title {
   font-family: var(--mw-font-display);
-  font-size: var(--mw-text-lg);
+  font-size: var(--mw-text-lg) !important;
   font-weight: var(--mw-weight-semibold);
   color: var(--mw-neutral-900);
   margin-bottom: var(--mw-space-2);
@@ -305,7 +305,8 @@
   align-items: center;
   overflow: hidden;
   background: linear-gradient(160deg, var(--mw-neutral-900) 0%, var(--mw-primary) 40%, var(--mw-primary-light) 100%);
-  padding-top: 5rem; /* space for fixed navbar */
+  padding-top: 5rem;
+  padding-bottom: var(--mw-space-10);
 }
 
 .mw-hero::before {

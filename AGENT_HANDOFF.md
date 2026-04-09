@@ -1,14 +1,14 @@
 # Agent Handoff
 
-Last updated: 2026-04-09 — after Premium-UI Phase 1 (Session 2)
+Last updated: 2026-04-09 — after UI Integration Fix (Session 3)
 
 ## Current State
 
-**Backend-Core (Session 2, worktree-backend-core):** Complete. 7 apps created, custom User model, catalog models (Category, WebTemplate, TemplateBrand, TemplateAsset, Tag), admin, migrations, seed data, URL routing. Exists in `worktree-backend-core` branch.
+**Merged and running.** Backend-core and premium-UI branches have been merged to master. The integrated project runs on `python manage.py runserver`.
 
-**Premium-UI (Session 2, worktree-premium-ui):** Complete. Full design system, 14 template/static files created. Base template, navbar, footer, homepage, category list, template list, template detail, card components. All Italian content, no lorem ipsum.
+**Session 3 fixed:** Bootstrap CSS/JS failed to load due to incorrect SRI integrity hashes (5.3.3 hashes were wrong). Updated to Bootstrap 5.3.8 with correct hashes. This was the sole root cause of the duplicate navbar and broken layout — the HTML template structure was always correct.
 
-**Merge needed:** Both worktrees must be merged to master before integration work can begin. No file conflicts expected — backend owns `apps/`, premium-UI owns `templates/` and `static/`.
+**UI status:** Homepage renders cleanly — hero, stats, 4x2 category grid, 3x2 template cards, how-it-works steps, testimonials, gradient CTA, 5-column footer. Navbar is fixed+blur, mobile slide-out works. All Bootstrap utilities functional.
 
 ## For Backend-Core Session
 

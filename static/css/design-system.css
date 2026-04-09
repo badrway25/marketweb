@@ -146,6 +146,7 @@ h1, h2, h3, h4, h5, h6,
   font-weight: var(--mw-weight-bold);
   line-height: var(--mw-leading-tight);
   color: var(--mw-neutral-900);
+  margin-top: 0;
   margin-bottom: var(--mw-space-4);
 }
 
@@ -188,12 +189,17 @@ h6, .mw-h6 { font-size: var(--mw-text-lg); font-weight: var(--mw-weight-medium);
 
 a {
   color: var(--mw-secondary);
-  text-decoration: none;
+  text-decoration: none !important;
   transition: color var(--mw-transition-fast);
 }
 
 a:hover {
   color: var(--mw-secondary-dark);
+}
+
+/* Override Bootstrap reboot underline on links */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
 }
 
 /* --- Buttons ------------------------------------------------ */

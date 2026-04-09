@@ -27,7 +27,11 @@
 10. [x] Ensure RTL-ready class structure from the start
 
 ## Next — Phase 1.5 (Integration & Polish)
-- [ ] Merge backend-core and premium-ui branches to master
+- [x] Merge backend-core and premium-ui branches to master
+- [x] Fix Bootstrap CSS/JS loading (SRI hash mismatch — updated to 5.3.8)
+- [x] Fix navbar duplication (caused by Bootstrap CSS not loading)
+- [x] Category grid 4+4 balanced layout
+- [x] Typography/spacing polish for Bootstrap reboot compatibility
 - [ ] Wire homepage category cards to actual Category queryset from backend views
 - [ ] Wire featured templates section to WebTemplate.objects.filter(featured=True)
 - [ ] Create catalog views: CategoryListView, TemplateListView, TemplateDetailView

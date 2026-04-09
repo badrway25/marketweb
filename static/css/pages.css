@@ -5,7 +5,8 @@
 /* --- Homepage ----------------------------------------------- */
 
 .mw-home-hero {
-  padding-top: 6rem;
+  padding-top: 7rem;
+  padding-bottom: var(--mw-space-12);
 }
 
 .mw-home-hero .mw-overline {
@@ -28,11 +29,17 @@
 /* Category grid on homepage */
 .mw-category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--mw-space-5);
 }
 
-@media (max-width: 575.98px) {
+@media (max-width: 991.98px) {
+  .mw-category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 767.98px) {
   .mw-category-grid {
     grid-template-columns: repeat(2, 1fr);
   }

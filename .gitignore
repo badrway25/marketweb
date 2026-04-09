@@ -39,3 +39,10 @@ htmlcov/
 # Node (if added later)
 node_modules/
 .claude/worktrees/
+
+# Screenshots / debug
+*.png
+
+# Playwright
+.playwright-mcp/
+

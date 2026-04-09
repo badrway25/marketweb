@@ -102,3 +102,41 @@
 - Add RTL bundle switching logic (detect lang=ar, swap Bootstrap CSS)
 - Build accounts/ and commerce/ templates (login, register, cart, checkout)
 - Connect template_card to real WebTemplate queryset data
+
+## Session 3 — UI Integration Fix & Polish (2026-04-09)
+
+**Agent:** Premium-UI
+**Goal:** Diagnose and fix navbar duplication and layout breakage after backend/UI merge. Polish visual output.
+
+### Root Cause Found
+**Bootstrap 5.3.3 CSS failed to load due to an incorrect SRI integrity hash** in `base.html`. The `<link>` tag was present with the correct href, but the browser rejected the file because the `sha384-...` hash didn't match the actual file content from jsdelivr CDN. This meant:
+- **Zero Bootstrap CSS loaded** — no grid system, no responsive utilities, no component styles
+- `d-lg-none` had no effect → mobile slide-out menu rendered visibly on desktop = **duplicate navbar**
+- `.container`, `.row`, `.col-*` had no effect → broken grid layouts throughout
+- `d-none d-lg-flex` had no effect → desktop nav links and mobile elements all visible simultaneously
+
+The Bootstrap JS bundle had the same SRI hash issue.
+
+### Actions Taken
+1. Used Playwright to inspect the running page — confirmed `display: block` on the mobile menu element that should have been `display: none` via `d-lg-none`
+2. Enumerated loaded stylesheets — discovered Bootstrap CSS completely absent (only 5 sheets: Google Fonts, Bootstrap Icons, and 3 custom CSS files)
+3. Confirmed `link.sheet === null` (failed load) while `link.href` was correct — pointed to SRI hash mismatch
+4. Updated Bootstrap CDN from 5.3.3 (bad SRI) to **5.3.8** (current, correct SRI hashes) for both CSS and JS
+5. Verified fix: Bootstrap loaded, `d-lg-none` works, mobile menu hidden, grid system functional
+6. **Polish fixes:**
+   - Category grid: changed from `auto-fill, minmax(180px)` to `repeat(4, 1fr)` for balanced 4+4 layout
+   - Hero padding: consolidated padding-top (7rem for navbar clearance) and added bottom padding
+   - Typography: added explicit `margin-top: 0` on headings to prevent Bootstrap reboot conflicts
+   - Links: added `!important` on `text-decoration: none` to override Bootstrap's reboot link underlines
+   - Card title: added `!important` on font-size to prevent global h3 size from overriding card context
+   - `_hero.html` partial: removed `mw-home-hero` class (should be generic, not page-specific)
+
+### Files Modified (5 files)
+- `templates/base.html` — Bootstrap CDN 5.3.3→5.3.8 with correct SRI hashes (CSS + JS)
+- `static/css/design-system.css` — Link `text-decoration: none !important`, heading `margin-top: 0`
+- `static/css/components.css` — Hero `padding-bottom`, card title `font-size !important`
+- `static/css/pages.css` — Category grid `repeat(4, 1fr)` with responsive breakpoints, hero padding
+- `templates/includes/_hero.html` — Removed `mw-home-hero` class from generic partial
+
+### Key Takeaway
+The entire "duplicate navbar" and "broken layout" was a single root cause: **bad SRI hash on Bootstrap CDN link**. No template inheritance issues, no duplicate includes — the HTML structure was always correct.
