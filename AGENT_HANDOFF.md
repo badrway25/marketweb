@@ -1,12 +1,14 @@
 # Agent Handoff
 
-Last updated: 2026-04-09 — after Orchestrator Bootstrap (Session 1)
+Last updated: 2026-04-09 — after Premium-UI Phase 1 (Session 2)
 
 ## Current State
 
-The project is a fresh Django 5.2.7 scaffold with no apps, no migrations, and no commits. All coordination files and architecture documents have been created. The project is ready for Phase 1 implementation by two parallel workstreams.
+**Backend-Core (Session 2, worktree-backend-core):** Complete. 7 apps created, custom User model, catalog models (Category, WebTemplate, TemplateBrand, TemplateAsset, Tag), admin, migrations, seed data, URL routing. Exists in `worktree-backend-core` branch.
 
-**Critical:** No `migrate` has been run yet. The custom User model MUST be created before the first migration.
+**Premium-UI (Session 2, worktree-premium-ui):** Complete. Full design system, 14 template/static files created. Base template, navbar, footer, homepage, category list, template list, template detail, card components. All Italian content, no lorem ipsum.
+
+**Merge needed:** Both worktrees must be merged to master before integration work can begin. No file conflicts expected — backend owns `apps/`, premium-UI owns `templates/` and `static/`.
 
 ## For Backend-Core Session
 
@@ -152,6 +154,58 @@ The project is a fresh Django 5.2.7 scaffold with no apps, no migrations, and no
 - Create a simple view in `apps/pages/views.py` for the homepage if needed, but keep it minimal
 - Document design decisions in BRAND_SYSTEM_GUIDELINES.md
 - Update TODO_NEXT.md and AGENT_HANDOFF.md when done
+
+### Status: COMPLETE
+All 10 tasks finished. See SESSION_LOG.md Session 2 for details.
+
+## For Integration Session (Phase 1.5)
+
+**Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md, BRAND_SYSTEM_GUIDELINES.md
+
+### Your immediate tasks:
+
+1. **Merge both worktrees to master:**
+   - `worktree-backend-core` — has all apps/, models, migrations, admin, settings updates
+   - `worktree-premium-ui` — has all templates/, static/, design system, settings changes
+   - Resolve any settings.py conflict (backend-core version is more complete, just ensure TEMPLATES DIRS and STATICFILES_DIRS are present)
+
+2. **Create catalog views:**
+   - `CategoryListView` — pass `categories` queryset to `catalog/category_list.html`
+   - `TemplateListView` — pass `templates` queryset to `catalog/template_list.html`, support category filtering
+   - `TemplateDetailView` — pass `template` with `select_related('brand', 'category')` to `catalog/template_detail.html`
+
+3. **Update catalog URLs:**
+   - `/templates/` → TemplateListView
+   - `/templates/<category_slug>/` → TemplateListView (filtered)
+   - `/templates/<slug>/` → TemplateDetailView
+
+4. **Wire homepage to real data:**
+   - Update `HomePageView` to pass `categories` (active, ordered) and `featured_templates` (featured=True) to context
+   - Update `home.html` to use `{% for %}` loops over real querysets instead of hardcoded cards
+
+5. **Add seed template data:**
+   - Create at least 2-3 WebTemplate instances with TemplateBrand data for each MVP category
+   - Match the brand names used in the static homepage content (Vertex Studio, Osteria Moderna, SaluteVita Clinic, Chiara Studio, Pragma Corp, Studio Legale Ferri)
+
+### Key files and their expected context variables:
+
+| Template                        | Expected Context                                             |
+|---------------------------------|--------------------------------------------------------------|
+| `pages/home.html`               | `categories`, `featured_templates`                            |
+| `catalog/category_list.html`    | `categories` (with `.templates.count`)                        |
+| `catalog/template_list.html`    | `templates`, `category` (optional, for filtered view)         |
+| `catalog/template_detail.html`  | `template` (with `.brand`, `.category`, `.assets`, `.tags`)   |
+
+### Template card model field mapping:
+
+| Card Element          | Model Field                          |
+|-----------------------|--------------------------------------|
+| Image                 | `template.assets.first.file.url`     |
+| Category badge        | `template.category.name`             |
+| Brand name            | `template.brand.brand_name`          |
+| Title                 | `template.name`                      |
+| Description           | `template.short_description`         |
+| Price                 | `template.price`, `template.is_free` |
 
 ## Coordination Rules
 
