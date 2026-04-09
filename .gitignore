@@ -38,3 +38,4 @@ htmlcov/
 
 # Node (if added later)
 node_modules/
+.claude/worktrees/
