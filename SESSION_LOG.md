@@ -44,3 +44,71 @@
 ### Next Steps
 - **Backend-core:** Create app scaffolds, custom User model, core base models, catalog models, admin — see AGENT_HANDOFF.md
 - **Premium-UI:** Create design system, base template, homepage, navigation, card components — see AGENT_HANDOFF.md
+
+---
+
+## Session 2 — Backend-Core Phase 1 (2026-04-09)
+
+**Agent:** Backend-Core
+**Goal:** Implement all backend foundation — app scaffolds, models, admin, migrations, seed data, URL routing.
+
+### Actions Taken
+1. Created `apps/` directory with 7 app packages (core, accounts, catalog, editor, projects, commerce, pages), each with `__init__.py`, `models.py`, `admin.py`, `apps.py`, `services.py`, `selectors.py`, `urls.py`, `tests.py`
+2. Created custom User model (`apps.accounts.models.User`) extending AbstractUser with UUID field
+3. Updated `marketweb/settings.py`:
+   - Added all 7 apps + DRF + drf-spectacular + django-filters + crispy-forms to INSTALLED_APPS
+   - Set `AUTH_USER_MODEL = "accounts.User"`
+   - Configured TEMPLATES DIRS to `BASE_DIR / "templates"`
+   - Set `LANGUAGE_CODE = "it"`, `TIME_ZONE = "Europe/Rome"`
+   - Configured STATIC_ROOT, STATICFILES_DIRS, MEDIA_URL, MEDIA_ROOT
+   - Set DEFAULT_AUTO_FIELD
+   - Added REST_FRAMEWORK, SPECTACULAR_SETTINGS, CRISPY config
+4. Created core abstract base models: `TimestampedModel`, `SlugModel`
+5. Created catalog models: `Category`, `Tag`, `WebTemplate`, `TemplateBrand`, `TemplateAsset`
+6. Registered all models in Django admin with list_display, list_filter, search_fields, inlines
+7. Ran `makemigrations` — created `accounts/0001_initial.py` and `catalog/0001_initial.py`
+8. Ran `migrate` — all migrations applied cleanly (accounts.User before admin)
+9. Created `seed_categories` management command — seeded 8 MVP categories
+10. Set up URL routing skeleton: main urls.py includes all app url modules with namespaces
+11. Created `HomePageView` in pages app
+12. All Django checks pass with 0 issues
+
+### Files Created
+- `apps/__init__.py`
+- `apps/core/` — `__init__.py`, `apps.py`, `models.py`, `admin.py`, `services.py`, `selectors.py`, `urls.py`, `tests.py`
+- `apps/accounts/` — `__init__.py`, `apps.py`, `models.py`, `admin.py`, `services.py`, `selectors.py`, `urls.py`, `tests.py`
+- `apps/catalog/` — `__init__.py`, `apps.py`, `models.py`, `admin.py`, `services.py`, `selectors.py`, `urls.py`, `tests.py`
+- `apps/editor/` — `__init__.py`, `apps.py`, `models.py`, `admin.py`, `services.py`, `selectors.py`, `urls.py`, `tests.py`
+- `apps/projects/` — `__init__.py`, `apps.py`, `models.py`, `admin.py`, `services.py`, `selectors.py`, `urls.py`, `tests.py`
+- `apps/commerce/` — `__init__.py`, `apps.py`, `models.py`, `admin.py`, `services.py`, `selectors.py`, `urls.py`, `tests.py`
+- `apps/pages/` — `__init__.py`, `apps.py`, `models.py`, `admin.py`, `services.py`, `selectors.py`, `urls.py`, `tests.py`, `views.py`
+- `apps/catalog/management/commands/seed_categories.py`
+- `apps/accounts/migrations/0001_initial.py`
+- `apps/catalog/migrations/0001_initial.py`
+- `static/` (empty, for premium-UI)
+- `templates/` (empty, for premium-UI)
+
+### Files Modified
+- `marketweb/settings.py` — full configuration update
+- `marketweb/urls.py` — URL routing skeleton
+
+### Models Added
+- `accounts.User` (AbstractUser + UUID)
+- `catalog.Category` (name, slug, description, icon, order, is_active)
+- `catalog.Tag` (name, slug)
+- `catalog.WebTemplate` (name, slug, category FK, description, price, status, preview_url, etc.)
+- `catalog.TemplateBrand` (OneToOne to WebTemplate: brand_name, tagline, palette JSON, typography, personality)
+- `catalog.TemplateAsset` (FK to WebTemplate: file, asset_type, alt_text, order)
+- `core.TimestampedModel` (abstract: created_at, updated_at)
+- `core.SlugModel` (abstract: slug with auto-generation)
+
+### Migrations Created
+- `accounts/0001_initial.py` — User model
+- `catalog/0001_initial.py` — Category, Tag, WebTemplate, TemplateBrand, TemplateAsset
+
+### Blockers
+- None
+
+### Next Steps
+- **Premium-UI** can now safely build templates, knowing the model structure and URL namespaces
+- Phase 2: editor models, projects models, DRF API endpoints, auth views
