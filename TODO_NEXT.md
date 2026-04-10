@@ -77,14 +77,26 @@
 - [x] Cleaned the stale asset row + orphan file, regenerated benessere with the wellness archetype, verified canonical filename
 - [x] Visually verified all 4 medical cards in `/templates/medical/` are now clearly distinct
 
+## Completed — Phase 2f.1 (Restaurant Pilot, 2026-04-10, Session 9)
+- [x] Vocabulary additions in `apps/catalog/template_dna.py` (3 archetypes, 3 hero/navbar/footer/card/button styles, 3 tones, 3 conversion patterns, 3 imagery directions)
+- [x] DNA entries for `gusto-fine-dining`, `sapore-trattoria-pizzeria`, `brace-street-food-lab` (NEW)
+- [x] New seed template `Brace — Street Food Lab` in `seed_templates.py` (palette black/yellow/red, Big Shoulders Display + Inter)
+- [x] 3 new imagery pools (`restaurant-fine`, `restaurant-trattoria`, `restaurant-street`) in `preview_imagery.py` with fully-distinct URL sets
+- [x] 3 archetype compositions: `restaurant/fine-dining.html`, `restaurant/trattoria-warm.html`, `restaurant/street-modern.html`
+- [x] All 3 restaurant previews regenerated, canonical filenames clean (no orphan suffixes), visually verified at 1600×900
+- [x] Visually verified `/templates/restaurant/` listing — 3 visibly distinct cards
+- [x] Verified detail pages for all 3 restaurants
+- [x] Regression check on `/templates/medical/` — 4 medical archetypes still intact
+
 ## Next — Phase 2f (DNA Rollout to Other Categories)
-- [ ] **Restaurant pilot** — design 3 archetypes (`fine-dining`, `trattoria-warm`, `street-modern`), maybe add a 4th template; same pattern as medical
+- [x] ~~**Restaurant pilot**~~ — done (Session 9 — fine-dining + trattoria-warm + street-modern, 3 templates)
 - [ ] **Agency pilot** — design 3 archetypes (`bold-grid`, `editorial-quiet`, `case-study-led`)
 - [ ] **Lawyer pilot** — design 2 archetypes (`classic-gold`, `modern-transparent`) — already half-way there since Lex and Juris have very different tones
 - [ ] **Real-estate pilot** — design 2 archetypes (`mass-market`, `ultra-luxury-cinematic`)
 - [ ] Once 4+ categories use DNA, decide whether to delete legacy per-category compositions or keep them as scaffolding for "starter" templates
-- [ ] Promote `imagery_key` URLs from "reuse existing" to dedicated photo pools per archetype (currently medical-family/specialist/wellness recycle from medical+lawyer+real-estate to stay offline-safe — find proper Unsplash IDs once)
+- [ ] Promote `imagery_key` URLs from "reuse existing" to dedicated photo pools per archetype (medical-family/specialist/wellness still recycle from medical+lawyer+real-estate to stay offline-safe — find proper Unsplash IDs once. Restaurant pools already done in Session 9)
 - [ ] Add an admin DNA inspector page (read-only) so non-developers can see which archetype each template uses
+- [ ] Validate Unsplash URLs at config-load time (Session 9 hit one HTTP 404 — `photo-1606755962773-d324e6f8e2c2` — that the generator silently fell back from). Quick `--validate-imagery` flag would catch these before a full regeneration run.
 
 ## Next — Phase 2d (Preview Polish, still pending)
 - [ ] Optimize preview PNGs (Pillow `optimize=True` or oxipng/pngquant) — current ~4 MB/file is heavy

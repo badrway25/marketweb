@@ -1,0 +1,318 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: street-modern
+   FOR     : street food / fast casual / smashburger lab
+   HERO    : product-cutout (giant display L · tilted product R)
+   NAVBAR  : black floating pill with bright accent ORDER button
+   CARDS   : product-grid (4-up with photo + price + Add)
+   FOOTER  : delivery-strip (Glovo / Deliveroo / JustEat / Uber)
+============================================================ #}
+{% block extra_css %}
+  body { background: var(--secondary); color: var(--primary); }
+  .pv-frame { background: var(--secondary); }
+
+  /* === BLACK FLOATING PILL NAV === */
+  .sm-nav {
+    position: absolute; top: 22px; left: 50%; transform: translateX(-50%);
+    height: 60px; padding: 0 10px 0 22px;
+    display: flex; align-items: center; gap: 26px;
+    background: var(--primary); color: #fff;
+    border-radius: 999px; z-index: 10;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.30);
+    border: 2px solid var(--primary);
+  }
+  .sm-nav .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--heading); font-weight: 700;
+    font-size: 22px; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--secondary);
+  }
+  .sm-nav .logo .mark {
+    width: 36px; height: 36px;
+    background: var(--secondary); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-weight: 700; font-size: 22px;
+    border-radius: 6px; transform: rotate(-3deg);
+  }
+  .sm-nav .links {
+    display: flex; gap: 22px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: #fff;
+  }
+  .sm-nav .order {
+    background: var(--accent); color: #fff;
+    padding: 12px 22px; border-radius: 999px;
+    font-family: var(--body); font-size: 12px; font-weight: 800;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .sm-nav .order:after { content: '→'; }
+
+  /* === HERO === */
+  .sm-hero {
+    position: absolute; top: 110px; left: 0; right: 0; height: 432px;
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 0;
+  }
+  .sm-hero .left {
+    padding: 28px 40px 0 64px; position: relative;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .sm-hero .pretitle {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--primary);
+    background: var(--secondary); padding: 8px 14px;
+    border: 2px solid var(--primary); border-radius: 999px;
+    align-self: flex-start;
+  }
+  .sm-hero .pretitle .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); animation: none;
+  }
+
+  .sm-hero h1 {
+    margin-top: 16px;
+    font-family: var(--heading); font-size: 156px; font-weight: 800;
+    line-height: 0.82; letter-spacing: -0.025em;
+    color: var(--primary); text-transform: uppercase;
+  }
+  .sm-hero h1 em {
+    font-style: normal; color: var(--accent);
+    background: var(--primary); padding: 0 14px;
+    display: inline-block; transform: rotate(-1deg);
+    box-shadow: 6px 6px 0 var(--accent);
+  }
+
+  .sm-hero p {
+    margin-top: 14px;
+    font-family: var(--body); font-size: 15px; line-height: 1.45;
+    color: var(--primary); max-width: 480px; font-weight: 500;
+  }
+
+  .sm-hero .ctas {
+    margin-top: 16px; display: flex; gap: 12px; align-items: center;
+  }
+  .sm-hero .ctas .btn {
+    background: var(--accent); color: #fff;
+    padding: 16px 28px;
+    font-family: var(--body); font-size: 14px; font-weight: 800;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    box-shadow: 6px 6px 0 var(--primary);
+    border: 2px solid var(--primary);
+  }
+  .sm-hero .ctas .btn.alt {
+    background: var(--secondary); color: var(--primary);
+  }
+  .sm-hero .ctas .meta {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--primary);
+    border-left: 2px solid var(--primary); padding-left: 12px;
+  }
+
+  /* RIGHT — tilted product cutout */
+  .sm-hero .right {
+    position: relative; overflow: visible;
+  }
+  .sm-hero .right .photo {
+    position: absolute; top: -10px; right: -30px; width: 720px; height: 480px;
+    background: url('{{ imagery.0 }}') center/cover;
+    border: 8px solid var(--primary);
+    box-shadow: 14px 14px 0 var(--accent), 14px 14px 0 4px var(--primary);
+    transform: rotate(3deg);
+    filter: contrast(1.1) saturate(1.1);
+  }
+  .sm-hero .right .badge {
+    position: absolute; top: 26px; left: 0;
+    background: var(--accent); color: #fff;
+    width: 138px; height: 138px; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: var(--heading); font-weight: 800;
+    transform: rotate(-12deg);
+    border: 4px solid var(--primary);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    z-index: 5;
+  }
+  .sm-hero .right .badge .from {
+    font-family: var(--body); font-size: 9px; font-weight: 800;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(255,255,255,0.8);
+  }
+  .sm-hero .right .badge .price {
+    font-family: var(--heading); font-size: 42px; line-height: 1;
+    margin-top: 4px;
+  }
+  .sm-hero .right .badge .lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 800;
+    letter-spacing: 0.14em; text-transform: uppercase; margin-top: 4px;
+    color: rgba(255,255,255,0.95);
+  }
+
+  .sm-hero .stat-tag {
+    position: absolute; bottom: 14px; left: 0;
+    display: flex; gap: 14px; z-index: 4;
+  }
+  .sm-hero .stat-tag .blk {
+    background: var(--primary); color: var(--secondary);
+    padding: 10px 14px;
+    font-family: var(--heading); font-weight: 800; font-size: 22px;
+    line-height: 1;
+    border: 2px solid var(--primary);
+    box-shadow: 4px 4px 0 var(--accent);
+  }
+  .sm-hero .stat-tag .blk small {
+    display: block;
+    font-family: var(--body); font-weight: 800; font-size: 8px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(255,230,0,0.8); margin-top: 3px;
+  }
+
+  /* === PRODUCT GRID === */
+  .sm-grid {
+    position: absolute; left: 64px; right: 64px; top: 558px; height: 270px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  }
+  .sm-card {
+    background: var(--primary); color: #fff;
+    border: 3px solid var(--primary);
+    display: flex; flex-direction: column;
+    box-shadow: 6px 6px 0 var(--accent);
+    position: relative;
+  }
+  .sm-card .img {
+    height: 130px; background-size: cover; background-position: center;
+    border-bottom: 3px solid var(--primary);
+    filter: contrast(1.05) saturate(1.05);
+  }
+  .sm-card .body {
+    padding: 12px 14px; flex: 1;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .sm-card .name {
+    font-family: var(--heading); font-size: 24px; font-weight: 800;
+    line-height: 1; color: var(--secondary); text-transform: uppercase;
+  }
+  .sm-card .desc {
+    font-family: var(--body); font-size: 10px; line-height: 1.4;
+    color: rgba(255,255,255,0.7); flex: 1;
+  }
+  .sm-card .row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 6px;
+  }
+  .sm-card .price {
+    font-family: var(--heading); font-size: 22px; font-weight: 800;
+    color: var(--secondary);
+  }
+  .sm-card .add {
+    background: var(--accent); color: #fff;
+    padding: 7px 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 800;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    border: 2px solid var(--secondary);
+  }
+  .sm-card .badge-corner {
+    position: absolute; top: -10px; right: -10px;
+    background: var(--accent); color: #fff;
+    padding: 5px 10px;
+    font-family: var(--body); font-size: 9px; font-weight: 800;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    border: 2px solid var(--primary);
+    transform: rotate(8deg);
+  }
+
+  /* === DELIVERY STRIP at bottom === */
+  .sm-delivery {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 60px;
+    background: var(--primary); color: var(--secondary);
+    display: flex; align-items: center; padding: 0 64px; gap: 20px;
+    border-top: 4px solid var(--accent);
+  }
+  .sm-delivery .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 800;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--secondary);
+    border-right: 2px solid rgba(255,230,0,0.30);
+    padding-right: 18px;
+  }
+  .sm-delivery .partners {
+    display: flex; gap: 22px; flex: 1;
+    font-family: var(--heading); font-size: 18px; font-weight: 800;
+    letter-spacing: 0.04em; color: rgba(255,230,0,0.85);
+  }
+  .sm-delivery .status {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #fff;
+    padding: 9px 16px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    border: 2px solid var(--secondary);
+  }
+  .sm-delivery .status .pulse {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--secondary); border: 1px solid #fff;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="sm-nav">
+    <div class="logo"><span class="mark">{{ brand_name|first }}</span> {{ brand_name }}</div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <span class="order">{{ dna.content.primary_cta }}</span>
+  </nav>
+
+  <section class="sm-hero">
+    <div class="left">
+      <div>
+        <span class="pretitle"><span class="dot"></span> {{ dna.content.eyebrow }}</span>
+        <h1>{{ dna.content.headline|safe }}</h1>
+        <p>{{ dna.content.subhead }}</p>
+      </div>
+      <div class="ctas">
+        <span class="btn">{{ dna.content.primary_cta }}</span>
+        <span class="btn alt">{{ dna.content.secondary_cta }}</span>
+        <span class="meta">{{ dna.content.phone }}</span>
+      </div>
+    </div>
+    <div class="right">
+      <div class="photo"></div>
+      <div class="badge">
+        <span class="from">DA</span>
+        <span class="price">{{ dna.content.hero_badge_price }}</span>
+        <span class="lbl">{{ dna.content.hero_badge_label }}</span>
+      </div>
+      <div class="stat-tag">
+        {% for big, lbl in dna.content.stat_blocks %}
+          <div class="blk">{{ big }}<small>{{ lbl }}</small></div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="sm-grid">
+    {% for name, desc, price, badge in dna.content.products %}
+      <div class="sm-card">
+        {% if badge %}<span class="badge-corner">{{ badge }}</span>{% endif %}
+        <div class="img" style="background-image:url('{{ imagery|at:forloop.counter|default:imagery.0 }}')"></div>
+        <div class="body">
+          <div class="name">{{ name }}</div>
+          <div class="desc">{{ desc }}</div>
+          <div class="row">
+            <span class="price">{{ price }}</span>
+            <span class="add">+ Aggiungi</span>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+
+  <div class="sm-delivery">
+    <span class="lbl">Disponibile su</span>
+    <div class="partners">
+      {% for p in dna.content.delivery_partners %}<span>{{ p }}</span>{% endfor %}
+    </div>
+    <span class="status"><span class="pulse"></span> {{ dna.content.counter_status_label }} · {{ dna.content.counter_status_value }}</span>
+  </div>
+{% endblock %}

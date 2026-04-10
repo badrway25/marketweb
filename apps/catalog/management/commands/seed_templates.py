@@ -163,6 +163,34 @@ SEED_TEMPLATES = [
             "logo_concept": "Spiga di grano e mattarello in stile illustrato, colori caldi su fondo crema",
         },
     },
+    {
+        "name": "Brace — Street Food Lab",
+        "slug": "brace-street-food-lab",
+        "category_slug": "restaurant",
+        "short_description": "Bold e brutalista per smashburger, pizza al taglio e street food d'autore. Product hero, griglia ordini e integrazione delivery.",
+        "description": (
+            "Brace è il template per format urbani di street food, smashburger lab e pizzerie "
+            "al taglio che vogliono comunicare energia, ritmo e qualità senza i fronzoli del fine "
+            "dining. Display type compresso, palette black-on-yellow, gerarchie brutaliste, e una "
+            "product grid pensata per convertire al primo scroll.\n\n"
+            "Include: hero a tutta pagina con product cutout e badge prezzo, menu griglia 4-up "
+            "con descrizione e CTA aggiungi, integrazione partner delivery (Glovo, Deliveroo, "
+            "Just Eat, Uber Eats), strip 'coda al banco' in tempo reale, mappa con orari estesi, "
+            "sezione lavora con noi e store dedicato a sughi e merchandising."
+        ),
+        "price": Decimal("65.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 3,
+        "brand": {
+            "brand_name": "Brace Street Lab",
+            "tagline": "Bruciato al fuoco vivo, servito al volo",
+            "palette": {"primary": "#0F0F0F", "secondary": "#FFE600", "accent": "#FF3D00"},
+            "typography": "Big Shoulders Display + Inter",
+            "personality": "audace, brutalista, urbano, rapido",
+            "logo_concept": "Lettera B incisa con ombra di fiamma stilizzata in giallo elettrico su fondo nero, font Anton condensato",
+        },
+    },
     # ── Medico (2) ──────────────────────────────────────────────
     {
         "name": "Salute — Studio Medico",

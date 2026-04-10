@@ -1,38 +1,49 @@
 # Agent Handoff
 
-Last updated: 2026-04-10 — after Medical Pilot Fix (Session 8)
+Last updated: 2026-04-10 — after Restaurant Pilot Phase 2f.1 (Session 9)
 
 ## Current State
 
-**Template DNA System Phase 1 complete + medical pilot fix shipped.** Templates inside the same category are no longer recolors of each other — each one has a unique "DNA" (archetype + hero/navbar/footer/cards/conversion/density/tone) that drives a bespoke HTML composition. The Medical category is the working pilot with **4 genuinely distinct templates (clinic, family, specialist, wellness), all visually validated end-to-end on `/templates/medical/`**.
+**Template DNA System now has TWO validated category pilots: Medical (4 archetypes) and Restaurant (3 archetypes).** Templates inside the same category are no longer recolors of each other — each one has a unique "DNA" (archetype + hero/navbar/footer/cards/conversion/density/tone) that drives a bespoke HTML composition.
 
-Branch: `medical-pilot-fix` worktree (built on top of `template-dna-system`, neither merged to master yet).
+- **Medical** pilot: 4 genuinely distinct templates (clinic, family, specialist, wellness), validated on `/templates/medical/`
+- **Restaurant** pilot: 3 genuinely distinct templates (fine-dining, trattoria-warm, street-modern), validated on `/templates/restaurant/`
 
-## Session 8 fix — what was wrong and what changed
+Branch: `restaurant-template-pilot` worktree (built on top of `medical-pilot-fix` → `template-dna-system`, **none merged to master yet**).
 
-The visual review caught that `benessere-centro-olistico` (wellness archetype) was rendering with a clinic-shaped preview (same booking widget, same `Cardiologia/Pediatria/Diagnostica/Fisioterapia` cards, same headline `La tua salute, la nostra missione` as Salute), only differing in palette. After end-to-end inspection, the registry, composition resolver, asset table, and `assets.first` were all correct — the bug was a **stale PNG file** generated *before* the DNA/wellness composition existed (when the generator legitimately fell back to the legacy `templates/preview_compositions/medical.html`, which has clinic content hardcoded). On the next `generate_previews` run, the fallback skip prevented the regeneration. Fix: deleted the stale TemplateAsset row + orphan PNG, re-ran `generate_previews --only benessere-centro-olistico`, verified the new wellness PNG and the listing.
+## Session 9 — Restaurant Pilot Phase 2f.1
 
-**No code or template changes** — the fix was data-only. See SESSION_LOG.md Session 8 for the full timeline. New polish entries added to TODO_NEXT.md to prevent the timing trap from recurring (DNA-aware staleness detection + clean `--force` file removal).
+Replicated the medical DNA pilot for the Restaurant category. Three brand-new HTML compositions, three distinct imagery pools, one new seed template, full visual verification.
 
-## What changed in this session
+| Layer            | Before                                          | After                                                                       |
+|------------------|-------------------------------------------------|-----------------------------------------------------------------------------|
+| Restaurant templates | 2 (Gusto, Sapore)                           | 3 (added Brace — Street Food Lab)                                           |
+| Restaurant archetypes | 1 (legacy fallback only)                   | 3 (fine-dining, trattoria-warm, street-modern)                              |
+| Restaurant compositions | 1 (legacy `restaurant.html`)             | 4 (legacy + 3 new under `restaurant/<archetype>.html`)                      |
+| Restaurant imagery pools | 1 (`restaurant`)                         | 4 (`restaurant`, `restaurant-fine`, `restaurant-trattoria`, `restaurant-street`) |
+| Total templates  | 18                                              | 19                                                                          |
 
-| Layer            | Before                                              | After                                                                  |
-|------------------|-----------------------------------------------------|------------------------------------------------------------------------|
-| Differentiation  | Per-category composition (palette/font only)        | Per-template DNA → per-template archetype HTML                         |
-| Composition path | `preview_compositions/<category>.html`              | `preview_compositions/<category>/<archetype>.html` (DNA) or fallback   |
-| Imagery          | One photo pool per category                         | Per-template `imagery_key` → distinct pool per archetype               |
-| Medical templates| 2                                                   | 4 (added Famiglia — Studio Pediatrico, Cardio — Studio Specialistico)  |
-| Medical archetypes | 1 (institutional clinic only)                     | 4 (clinic, family, specialist, wellness)                               |
+The DNA system is still **strictly additive** — templates without a DNA entry continue to render via the legacy per-category composition. The legacy `templates/preview_compositions/restaurant.html` is retained as a safety net for any future restaurant template not yet pulled into an archetype.
 
-The DNA system is **strictly additive** — templates without a DNA entry continue to render via the legacy per-category composition. No category is forced to migrate at once.
+## What makes the 3 restaurant templates genuinely different (not recolors)
+
+| Slug                       | Archetype       | Hero                  | Navbar         | Cards            | Conversion              | Tone           | Display Font           |
+|----------------------------|-----------------|-----------------------|----------------|------------------|-------------------------|----------------|------------------------|
+| gusto-fine-dining          | fine-dining     | editorial-plate       | serif-centered | course-index     | concierge-reservation   | editorial-chef | Playfair Display       |
+| sapore-trattoria-pizzeria  | trattoria-warm  | warm-photo-frame      | warm-bar       | chalkboard-day   | phone-and-whatsapp      | familiar-warm  | Caveat (handwritten)   |
+| brace-street-food-lab      | street-modern   | product-cutout        | bold-pill      | product-grid     | order-now-delivery      | energetic-bold | Big Shoulders Display  |
+
+Differences span page background colour family, navbar shape and position, hero composition (editorial split-plate vs polaroid + handwritten manifesto vs giant condensed display + tilted product cutout), card stride (5-row Roman-numeral course list vs 5-day chalkboard daily specials vs 4-up product grid with corner badges), button language (gold-underline serif ghost vs rustic rounded with shadow + tilt vs brutalist block-bold with hard offset shadow), density (very-airy → medium → compact), and copy tone (editorial chef → familiar warm → energetic bold).
 
 ## What's Working
 
-| Page                          | URL                                        | Status (port 8097) |
+| Page                          | URL                                        | Status (port 8101) |
 |-------------------------------|--------------------------------------------|--------------------|
-| Homepage featured grid        | `/`                                        | Salute (clinic archetype) appears in featured grid |
-| Template listing (all)        | `/templates/`                              | 18 templates × paginated |
-| Template listing (medical)    | `/templates/medical/`                      | 4 medical templates × 4 visibly different archetypes |
+| Homepage featured grid        | `/`                                        | Salute (clinic), Pragma, Vertex, Lex, Chiara, Gusto in featured grid |
+| Template listing (all)        | `/templates/`                              | 19 templates × paginated |
+| Template listing (medical)    | `/templates/medical/`                      | 4 medical templates × 4 visibly different archetypes (regression OK) |
+| Template listing (restaurant) | `/templates/restaurant/`                   | 3 restaurant templates × 3 visibly different archetypes |
+| Template detail (each restaurant) | `/templates/restaurant/<slug>/`        | Gallery shows the new archetype PNG |
 | Template detail (each medical)| `/templates/medical/<slug>/`               | Gallery shows the new archetype PNG |
 
 ## How the DNA system works
@@ -43,15 +54,16 @@ apps/catalog/template_dna.py
   │                     FOOTER_STYLES, CARD_STYLES, BUTTON_STYLES,
   │                     DENSITY_PROFILES, TONES, CONVERSION_PATTERNS,
   │                     IMAGERY_DIRECTIONS
-  ├── TEMPLATE_DNA: dict[slug, dna]  # the registry
+  ├── TEMPLATE_DNA: dict[slug, dna]  # the registry (7 entries: 4 medical + 3 restaurant)
   └── get_dna(slug), has_dna(slug)
 
 apps/catalog/templatetags/preview_extras.py
   └── `at` filter — `{{ imagery|at:forloop.counter }}` for safe loop indexing
 
 apps/catalog/preview_imagery.py
-  └── New keys: medical-family, medical-specialist, medical-wellness
-      (each draws from a curated mix of already-cached Unsplash URLs)
+  └── Per-archetype keys:
+      • medical-family / medical-specialist / medical-wellness  (recycle existing URLs, offline-safe)
+      • restaurant-fine / restaurant-trattoria / restaurant-street  (fully-distinct URL sets)
 
 apps/catalog/management/commands/generate_previews.py
   ├── _resolve_composition(template, dna)
@@ -65,6 +77,11 @@ templates/preview_compositions/medical/
   ├── family.html      — pastel pill nav, organic-shape portrait, intro trio + hours strip
   ├── specialist.html  — minimal serif nav, editorial headline, drop cap, 01/02 fields, press band
   └── wellness.html    — full-bleed hero, glass pill nav, dotted-leader pricelist, therapists strip
+
+templates/preview_compositions/restaurant/
+  ├── fine-dining.html    — centered serif wordmark, editorial split-plate, course index, concierge tile, press strip
+  ├── trattoria-warm.html — cream warm-bar nav, polaroid photo card, Caveat handwritten manifesto, chalkboard daily specials, family + hours band
+  └── street-modern.html  — black floating pill nav, giant condensed display + tilted product cutout + price badge, 4-up product grid, delivery strip
 ```
 
 Run with `python manage.py generate_previews [--force] [--only <slug>]`.
@@ -72,32 +89,44 @@ Run with `python manage.py generate_previews [--force] [--only <slug>]`.
 ## Database State
 
 - 8 categories (unchanged)
-- **18** templates (was 16; +2 medical: famiglia-pediatria, cardio-studio-specialistico)
-- 18 brands
-- 18 preview assets — 4 medical now use the new per-archetype compositions
-- 47 + 18 cached source photos (3 new pools: medical-family, medical-specialist, medical-wellness)
+- **19** templates (was 18; +1 restaurant: brace-street-food-lab)
+- 19 brands
+- 19 preview assets — 4 medical + 3 restaurant now use the new per-archetype compositions
+- ~70 cached source photos across 11 pools (3 new restaurant pools added in Session 9)
 
 ## For Next Session
 
-**Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md, this file, then `apps/catalog/template_dna.py` (the new source of truth for differentiation)
+**Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md, this file, then `apps/catalog/template_dna.py` (the source of truth for differentiation), then peek at `templates/preview_compositions/restaurant/` and `medical/` for the structural reference compositions.
 
-### Watch out for the Session 8 timing trap
-When you add a DNA entry to a slug that *already* has a generated preview, that preview was rendered through the legacy fallback and is now stale. The `generate_previews` "skip if exists" branch will not regenerate it. Always run `python manage.py generate_previews --force --only <slug>` after creating or modifying a DNA entry for an existing template. The polish list in TODO_NEXT.md tracks the proper safety net (DNA staleness detection in the generator).
+### Watch out for the Session 8/9 timing trap (still unfixed)
+When you add a DNA entry to a slug that *already* has a generated preview, that preview was rendered through the legacy fallback and is now stale. The `generate_previews` "skip if exists" branch will not regenerate it. Always run `python manage.py generate_previews --force --only <slug>` after creating or modifying a DNA entry for an existing template — **AND** delete the canonical-named PNG file on disk first, otherwise Django storage will append a random suffix to the new file (the DB row will still point correctly to the suffixed file, so functionally fine, but the disk gets cluttered with orphans).
+
+The clean recipe used in Session 9 to avoid the orphan trap:
+```bash
+# 1. Delete the row + canonical file + any suffixed file via a small Django shell snippet
+python -c "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','marketweb.settings'); django.setup(); ..."
+# 2. Then re-run WITHOUT --force so the new file lands at the canonical name (no collision)
+python manage.py generate_previews --only <slug>
+```
 
 ### Immediate next step (highest impact)
-**Replicate the DNA pilot for the Restaurant category.** Same recipe:
+**Replicate the DNA pilot for the Agency category.** Same recipe:
 
-1. Open `apps/catalog/template_dna.py` and add 3 entries: gusto-fine-dining → `fine-dining`, sapore-trattoria-pizzeria → `trattoria-warm`, plus 1 NEW template `street-modern` (e.g. burger/pizza counter brand).
+1. Open `apps/catalog/template_dna.py` and add 3 entries: vertex-creative-agency → `bold-grid`, aura-digital-studio → `editorial-quiet`, plus 1 NEW template `case-study-led` (e.g. a strategy/branding agency that leads with case studies).
 2. Add the new template to `apps/catalog/management/commands/seed_templates.py`.
-3. Create `templates/preview_compositions/restaurant/fine-dining.html`, `restaurant/trattoria-warm.html`, `restaurant/street-modern.html`. Use the medical files as the structural reference — each must have a **completely different** hero, navbar, cards, and footer composition (not just different palettes).
-4. Add 2 new imagery keys in `preview_imagery.py` if you want each restaurant archetype to pull from a distinct food photo pool.
-5. `python manage.py seed_templates && python manage.py generate_previews --force --only <slug>` for each.
-6. Verify with Playwright at `/templates/restaurant/`.
+3. Create `templates/preview_compositions/agency/bold-grid.html`, `agency/editorial-quiet.html`, `agency/case-study-led.html`. Use the **restaurant** and **medical** files as the structural reference — each must have a completely different hero, navbar, cards, and footer composition.
+4. Add 3 new imagery keys (`agency-bold`, `agency-editorial`, `agency-cases`) in `preview_imagery.py`. The restaurant pilot taught us that fully-distinct URL sets produce noticeably better differentiation than recycling — copy that approach.
+5. Choose multi-weight Google Fonts only (`_base.html` requests `wght@500;600;700;800` and Google Fonts CSS2 returns 400 if no requested weight exists). Big Shoulders Display, Playfair Display, Caveat, Space Grotesk, DM Sans, Manrope are all safe.
+6. Use the clean delete + regenerate-without-force recipe above for any existing slug that gains DNA.
+7. Verify with Playwright at `/templates/agency/`.
 
-### Phase 2d polish (still pending from previous session)
+### Phase 2d polish (still pending from previous sessions)
 1. Optimize PNG file sizes (~4 MB → ~500 KB via Pillow `optimize=True` or oxipng)
 2. Cormorant Garamond on dark backgrounds reads thin (Lex, Villa, Cardio specialist) — consider bumping weight or swapping serif at low luminance
 3. Add `media/preview_imagery/` to .gitignore
+4. **DNA-fallback timing trap safety net** — see TODO_NEXT.md for options (a/b/c)
+5. **`--force` orphan cleanup** — auto-delete the canonical file before saving so Django storage doesn't suffix
+6. **Imagery URL validation** — Session 9 hit one HTTP 404 from Unsplash; a `--validate-imagery` flag would catch these before a full regeneration run
 
 ### Phase 3 (Interactivity & Accounts) — unchanged
 1. Tag seeding and filtering
@@ -127,4 +156,5 @@ When you add a DNA entry to a slug that *already* has a generated preview, that 
 - Premium-UI owns: templates/, static/, design system, frontend components
 - **Real-preview-assets** owns: `apps/catalog/preview_imagery.py`, `apps/catalog/management/commands/generate_previews.py`, `templates/preview_compositions/`
 - **Template-DNA-system** owns: `apps/catalog/template_dna.py`, `apps/catalog/templatetags/preview_extras.py`, `templates/preview_compositions/<category>/<archetype>.html` files
-- All sessions update: SESSION_LOG.md, DECISIONS.md, TODO_NEXT.md, AGENT_HANDOFF.md, TEMPLATE_REGISTRY.json at end
+- **DNA-pilot sessions** (medical, restaurant, ...) own per-category vocabulary additions in `template_dna.py`, the per-category composition folder, and the matching imagery pool keys
+- All sessions update: SESSION_LOG.md, DECISIONS.md, TODO_NEXT.md, AGENT_HANDOFF.md, TEMPLATE_REGISTRY.json, BRAND_SYSTEM_GUIDELINES.md, CATEGORY_ROADMAP.md at end

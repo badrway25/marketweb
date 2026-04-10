@@ -460,3 +460,122 @@ The bug is therefore **not** in the DNA/registry/resolver — it's a per-templat
 
 ### Exact next step
 Phase 2f Restaurant pilot — unchanged from Session 7. The medical pilot is now fully validated and ready to ship as the differentiation reference for the next category.
+
+## Session 9 — Restaurant Pilot Phase 2f (2026-04-10)
+
+**Agent:** Restaurant-template-pilot (worktree: restaurant-template-pilot)
+**Goal:** Replicate the medical DNA pilot for the Restaurant category. Three genuinely distinct archetypes (`fine-dining`, `trattoria-warm`, `street-modern`) — not recolors of each other.
+
+### Problem
+After the medical pilot validated the per-template DNA system, the Restaurant category was the obvious next migration (highest user-visible priority of the remaining 7). Two restaurant templates existed (Gusto, Sapore) but were both being rendered through the legacy `templates/preview_compositions/restaurant.html`, which is a single composition — so even though they had different palettes and brands, they collapsed visually into the same skeleton.
+
+### What Changed
+
+| Layer            | Before                                              | After                                                                  |
+|------------------|-----------------------------------------------------|------------------------------------------------------------------------|
+| Restaurant templates | 2 (Gusto fine dining, Sapore trattoria)         | 3 (added Brace — Street Food Lab)                                      |
+| Restaurant archetypes | 1 (legacy fallback only)                       | 3 (fine-dining, trattoria-warm, street-modern)                         |
+| Restaurant compositions | 1 (templates/preview_compositions/restaurant.html) | 4 (legacy still in place + new restaurant/<archetype>.html × 3)  |
+| Imagery pools    | 1 (`restaurant`)                                    | 4 (`restaurant`, `restaurant-fine`, `restaurant-trattoria`, `restaurant-street`) |
+| Total templates  | 18                                                  | 19                                                                     |
+
+### DNA registry additions (apps/catalog/template_dna.py)
+
+Added vocabulary entries:
+- **LAYOUT_ARCHETYPES**: `fine-dining`, `trattoria-warm`, `street-modern`
+- **HERO_STYLES**: `editorial-plate`, `warm-photo-frame`, `product-cutout`
+- **NAVBAR_STYLES**: `serif-centered`, `warm-bar`, `bold-pill`
+- **FOOTER_STYLES**: `concierge-press`, `hours-warm`, `delivery-strip`
+- **CARD_STYLES**: `course-index`, `chalkboard-day`, `product-grid`
+- **BUTTON_STYLES**: `ghost-gold-serif`, `rustic-rounded`, `block-bold`
+- **TONES**: `editorial-chef`, `familiar-warm`, `energetic-bold`
+- **CONVERSION_PATTERNS**: `concierge-reservation`, `phone-and-whatsapp`, `order-now-delivery`
+- **IMAGERY_DIRECTIONS**: `moody-plated`, `rustic-trattoria`, `street-pop-product`
+
+Added DNA entries for:
+- `gusto-fine-dining` → archetype `fine-dining` (Playfair Display + Lato, very-airy)
+- `sapore-trattoria-pizzeria` → archetype `trattoria-warm` (Caveat + Inter, medium)
+- `brace-street-food-lab` → archetype `street-modern` (Big Shoulders Display + Inter, compact) — NEW
+
+### How the 3 restaurant templates are genuinely different
+| Slug                       | Archetype       | Hero                  | Navbar         | Cards            | Conversion              | Tone           | Display Font           |
+|----------------------------|-----------------|-----------------------|----------------|------------------|-------------------------|----------------|------------------------|
+| gusto-fine-dining          | fine-dining     | editorial-plate       | serif-centered | course-index     | concierge-reservation   | editorial-chef | Playfair Display       |
+| sapore-trattoria-pizzeria  | trattoria-warm  | warm-photo-frame      | warm-bar       | chalkboard-day   | phone-and-whatsapp      | familiar-warm  | Caveat (handwritten)   |
+| brace-street-food-lab      | street-modern   | product-cutout        | bold-pill      | product-grid     | order-now-delivery      | energetic-bold | Big Shoulders Display  |
+
+These three are not recolors. They differ in: page background colour family (cream paper vs warm butter vs bright yellow), navbar shape and position (centered serif wordmark with hairline rule vs warm cream sticky bar with phone CTA vs floating black pill), hero composition (split editorial plate vs polaroid photo + handwritten manifesto vs giant condensed display + tilted product cutout), card stride (5-row Roman-numeral course list vs 5-day chalkboard daily specials vs 4-up product grid with corner badges), button language (gold-underline serif ghost vs rustic rounded with shadow + tilt vs brutalist block with hard offset shadow), density (very-airy vs medium vs compact), and copy tone (editorial chef vs familiar warm vs energetic bold).
+
+### New seed template (apps/catalog/management/commands/seed_templates.py)
+
+```python
+{
+    "name": "Brace — Street Food Lab",
+    "slug": "brace-street-food-lab",
+    "category_slug": "restaurant",
+    "price": Decimal("65.00"),
+    "brand": {
+        "brand_name": "Brace Street Lab",
+        "tagline": "Bruciato al fuoco vivo, servito al volo",
+        "palette": {"primary": "#0F0F0F", "secondary": "#FFE600", "accent": "#FF3D00"},
+        "typography": "Big Shoulders Display + Inter",
+        "personality": "audace, brutalista, urbano, rapido",
+        ...
+    },
+}
+```
+
+### New imagery pools (apps/catalog/preview_imagery.py)
+
+- **restaurant-fine** — chef plating hero, moody plated dishes, editorial portrait reused from portfolio pool
+- **restaurant-trattoria** — warm restaurant interior hero, rustic dish gallery, all rotated from existing restaurant pool
+- **restaurant-street** — bold burger hero (NEW), pizza counter (NEW), 4 new product shots (1 URL had to be replaced after Unsplash 404)
+
+All three pools use intentionally distinct heroes so no two restaurants share the same image set.
+
+### New composition files (templates/preview_compositions/restaurant/)
+
+- **fine-dining.html** — centered serif "Osteria Moderna" wordmark with hairline rule, eyebrow + giant serif manifesto headline left, full-bleed plate photo right with Michelin pill, dark brown band below with course-index (Roman numerals + dish + paired wine), concierge tile right side, press strip footer
+- **trattoria-warm.html** — cream warm-bar nav with handwritten brand stamp + giant phone CTA + WhatsApp pill, polaroid-tilt photo card on left + Caveat handwritten "Da Nonna Rosa" manifesto on right, dark chalkboard strip with 5 day cards, family strip + warm hours band at the bottom
+- **street-modern.html** — black floating pill nav with bright accent ORDINA ORA button, giant condensed "BRUCIATO AL FUOCO VIVO." display headline left + tilted burger photo right with red price-circle badge and hard offset shadow, 4-up product grid with corner badges (TOP/VEG/NEW), black delivery strip at the bottom with Glovo/Deliveroo/JustEat/Uber + counter status pulse badge
+
+### Generation pipeline notes
+
+- First `generate_previews --force` regeneration of gusto + sapore correctly produced fine-dining + trattoria PNGs but Django storage appended random suffixes (`_ATXLO3k`, `_bZn14ob`) because the canonical-named files from the legacy fallback pass were still on disk. The DB rows correctly pointed to the suffixed files, so functionality was fine, but to keep the disk clean (Session 8 lessons), I deleted both rows + all canonical and suffixed files for the 3 restaurant slugs and re-ran `generate_previews --only <slug>` (without `--force`) so the new files landed at canonical filenames.
+- One `restaurant-street` URL (`photo-1606755962773-d324e6f8e2c2`) returned HTTP 404 from Unsplash on the first run. The generator's padding fallback handled it gracefully (5 of 6 images cached, missing slot fell back to hero), but I replaced the URL with `photo-1601050690597-df0568f70950` for cleanliness and re-ran.
+
+### Files Created (4)
+- `templates/preview_compositions/restaurant/fine-dining.html`
+- `templates/preview_compositions/restaurant/trattoria-warm.html`
+- `templates/preview_compositions/restaurant/street-modern.html`
+- (no schema migration — DNA is a Python registry, not a model field)
+
+### Files Modified (3)
+- `apps/catalog/template_dna.py` — vocabulary additions + 3 restaurant DNA entries
+- `apps/catalog/preview_imagery.py` — 3 new imagery pools (restaurant-fine, restaurant-trattoria, restaurant-street)
+- `apps/catalog/management/commands/seed_templates.py` — new Brace — Street Food Lab seed entry
+
+### Database delta
+- 18 → 19 published templates (Brace — Street Food Lab created)
+- 3 restaurant previews regenerated with their new archetypes (fine-dining, trattoria-warm, street-modern)
+- 19 brands, 19 preview assets, 4 medical archetypes still intact, 53+ cached source photos (3 new pools)
+
+### Verified (Playwright MCP, port 8101)
+- `/templates/restaurant/` — listing now shows 3 restaurants with visibly different previews. Brace appears as a brutalist black/yellow card, Sapore as a warm cream + chalkboard card, Gusto as an editorial cream-paper + dark band card. No two read as the same skeleton.
+- `/templates/restaurant/gusto-fine-dining/` — detail page shows the new editorial fine-dining preview in the gallery, related templates section unbroken
+- `/templates/restaurant/sapore-trattoria-pizzeria/` — detail page shows new trattoria preview with handwritten Caveat headline rendering correctly
+- `/templates/restaurant/brace-street-food-lab/` — detail page shows new street-food preview, all metadata correct (€65, status Published)
+- `/templates/medical/` — unchanged, all 4 medical archetypes still distinct (regression check passed)
+- `/templates/` — all-templates listing now shows 19 templates across pages, no broken cards
+- `/` — homepage hero, featured grid, category cards (Ristorante now shows 3 templates)
+
+### Key Decisions
+- D-039: Restaurant pilot uses 3 archetypes, not 2 — added a brand-new template (Brace) to fill the fast-casual gap
+- D-040: All restaurant archetypes use multi-weight Google Fonts — Anton/Bebas Neue/Archivo Black rejected because `_base.html` requests `wght@500;600;700;800` and Google Fonts CSS2 returns 400 when no requested weight exists. Big Shoulders Display covers the full range and has the right industrial look for street-modern.
+- D-041: Restaurant imagery pools use fully-distinct URL sets (unlike the medical pilot, which recycled photos to stay offline-safe). This guarantees sibling restaurant cards never share an image.
+
+### Blockers
+- None. Pilot fully working. The known `--force` orphan-file issue surfaced again (3 rows ended up with random suffixes after the first regeneration pass) — workaround applied (clean delete + regen without --force). Still tracked in TODO_NEXT.md as an unresolved Phase 2d polish item.
+
+### Exact next step
+Phase 2f continues with the **Agency** category (3 archetypes: bold-grid, editorial-quiet, case-study-led). Same recipe: design DNA → write 3 archetype HTML files → 3 imagery keys → seed any new templates → regenerate → verify with Playwright.

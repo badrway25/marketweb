@@ -55,6 +55,10 @@ LAYOUT_ARCHETYPES: dict[str, str] = {
     "family":     "Family/pediatric practice — soft, warm, portrait-led, pastel.",
     "specialist": "High-end specialist — editorial magazine layout with serif drama.",
     "wellness":   "Wellness/holistic centre — spa-like with treatment pricelist.",
+    # Restaurant pilot
+    "fine-dining":    "Editorial tasting-menu venue — serif drama, full-bleed plate, numbered courses, concierge tile.",
+    "trattoria-warm": "Family trattoria — handwritten chalkboard daily menu, family portraits, warm hours strip.",
+    "street-modern":  "Fast-casual street food — bold display type, tilted product cutout, order-now grid + delivery strip.",
 }
 
 HERO_STYLES: dict[str, str] = {
@@ -62,6 +66,9 @@ HERO_STYLES: dict[str, str] = {
     "centered-soft":         "Rounded portrait card + warm headline + accent CTA.",
     "editorial-serif":       "Huge serif headline left, intimate portrait right.",
     "full-bleed-manifesto":  "Full-bleed photo + centered manifesto overlay.",
+    "editorial-plate":       "Full-bleed plate photo right + huge serif manifesto headline left + course index gutter.",
+    "warm-photo-frame":      "Photo card left + warm chalkboard headline & daily menu right.",
+    "product-cutout":        "Tilted product photo right + giant condensed display headline left + price badge.",
 }
 
 NAVBAR_STYLES: dict[str, str] = {
@@ -69,6 +76,9 @@ NAVBAR_STYLES: dict[str, str] = {
     "pill-floating":   "Floating rounded pill navbar, transparent over hero.",
     "minimal-serif":   "Centered serif logo with thin underline rule.",
     "soft-pastel":     "Translucent bar, soft pastel link colors, no hard edges.",
+    "serif-centered":  "Centered serif wordmark with hairline rule and small reservation link right.",
+    "warm-bar":        "Cream sticky bar with handwritten brand on left and big phone CTA on right.",
+    "bold-pill":       "Black pill nav floating top, bright accent ORDER button on the right.",
 }
 
 FOOTER_STYLES: dict[str, str] = {
@@ -76,6 +86,9 @@ FOOTER_STYLES: dict[str, str] = {
     "compact-2col":     "Brand + opening hours, single line copyright.",
     "centered-minimal": "Centered logo, single legal line.",
     "spa-social":       "Social row + newsletter + minimal links.",
+    "concierge-press":  "Concierge tile + press logos band.",
+    "hours-warm":       "Hours strip + WhatsApp + map (warm cream).",
+    "delivery-strip":   "Delivery partner logos + counter status + order CTA.",
 }
 
 CARD_STYLES: dict[str, str] = {
@@ -83,13 +96,19 @@ CARD_STYLES: dict[str, str] = {
     "portrait-stack":  "3-up portrait cards with name + role + bio.",
     "editorial-large": "2-up oversized cards with serif numeral + caption.",
     "pricelist":       "Two-column menu: name+desc left, dotted leader, price right.",
+    "course-index":    "Numbered serif course list with name + paired wine + ingredient line.",
+    "chalkboard-day":  "Daily-special chalkboard cards with handwritten dish name + price tag.",
+    "product-grid":    "Square product cards with photo + price + Add button.",
 }
 
 BUTTON_STYLES: dict[str, str] = {
-    "rounded-solid":   "10px radius, solid accent fill.",
-    "pill-soft":       "999px pill, soft pastel fill.",
-    "ghost-underline": "Transparent, accent text, animated underline.",
-    "square-bold":     "0px radius, heavy border, primary fill.",
+    "rounded-solid":     "10px radius, solid accent fill.",
+    "pill-soft":         "999px pill, soft pastel fill.",
+    "ghost-underline":   "Transparent, accent text, animated underline.",
+    "square-bold":       "0px radius, heavy border, primary fill.",
+    "ghost-gold-serif":  "Underline serif text in gold accent — concierge style.",
+    "rustic-rounded":    "Warm rounded button with red fill and slight tilt.",
+    "block-bold":        "Heavy block button, bright accent fill, arrow icon, no radius.",
 }
 
 DENSITY_PROFILES: dict[str, str] = {
@@ -100,17 +119,23 @@ DENSITY_PROFILES: dict[str, str] = {
 }
 
 TONES: dict[str, str] = {
-    "institutional": "Authoritative, formal, third-person, evidence-led.",
-    "warm-family":   "Personal, second-person, reassuring, child-friendly.",
-    "prestigious":   "Editorial, expert, restrained, status-led.",
-    "serene":        "Sensorial, slow-paced, nature-led, mindful.",
+    "institutional":  "Authoritative, formal, third-person, evidence-led.",
+    "warm-family":    "Personal, second-person, reassuring, child-friendly.",
+    "prestigious":    "Editorial, expert, restrained, status-led.",
+    "serene":         "Sensorial, slow-paced, nature-led, mindful.",
+    "editorial-chef": "Aulic, sensorial, restrained, chef-as-author.",
+    "familiar-warm":  "Caloroso, dialettale, di casa, alla mano.",
+    "energetic-bold": "Brutale, urbano, scanzonato, no-nonsense.",
 }
 
 CONVERSION_PATTERNS: dict[str, str] = {
-    "booking-widget":   "Embedded date/time/specialty selector in hero.",
-    "phone-and-chat":   "Prominent phone CTA + WhatsApp/chat pill.",
-    "private-request":  "Underline link 'Richiedi visita privata' + email.",
-    "calendar-spot":    "Inline mini-calendar with bookable spots.",
+    "booking-widget":         "Embedded date/time/specialty selector in hero.",
+    "phone-and-chat":         "Prominent phone CTA + WhatsApp/chat pill.",
+    "private-request":        "Underline link 'Richiedi visita privata' + email.",
+    "calendar-spot":           "Inline mini-calendar with bookable spots.",
+    "concierge-reservation":  "Concierge tile + email + 'Riserva la serata' link, no public form.",
+    "phone-and-whatsapp":     "Giant phone number + WhatsApp pill, family-style.",
+    "order-now-delivery":     "ORDINA ORA primary CTA + delivery partners strip + counter status.",
 }
 
 IMAGERY_DIRECTIONS: dict[str, str] = {
@@ -118,6 +143,9 @@ IMAGERY_DIRECTIONS: dict[str, str] = {
     "family-warmth":        "Pediatricians with kids, families, soft daylight.",
     "editorial-portrait":   "Single specialist portrait, low-key, magazine cover energy.",
     "spa-nature":           "Stone, water, plants, candles, slow tactile imagery.",
+    "moody-plated":         "Dark plated dishes, low-key tungsten light, fine-dining mood.",
+    "rustic-trattoria":     "Warm wood tables, hands kneading dough, terra-cotta tones.",
+    "street-pop-product":   "Bold burger / pizza / fritti cutouts, daylight high-contrast.",
 }
 
 
@@ -252,6 +280,140 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
                 ("Domenica",   "Reperibilità telefonica"),
             ],
             "nav_links": ["Lo studio", "Le pediatre", "Servizi", "Orari", "Scrivici"],
+        },
+    },
+
+    # ─────────────────────────────────────────────────────────────
+    # Restaurant pilot — 3 distinct archetypes
+    # (fine-dining · trattoria-warm · street-modern)
+    # ─────────────────────────────────────────────────────────────
+
+    # ── R1) FINE DINING — editorial tasting menu ─────────────────
+    "gusto-fine-dining": {
+        "archetype":          "fine-dining",
+        "hero_style":         "editorial-plate",
+        "navbar_style":       "serif-centered",
+        "footer_style":       "concierge-press",
+        "section_order":      ["nav", "editorial-hero", "course-index", "concierge", "press"],
+        "card_style":         "course-index",
+        "button_style":       "ghost-gold-serif",
+        "density":            "very-airy",
+        "tone":               "editorial-chef",
+        "imagery_direction":  "moody-plated",
+        "imagery_key":        "restaurant-fine",
+        "conversion_pattern": "concierge-reservation",
+        "font_pairing":       ("Playfair Display", "Lato"),
+        "content": {
+            "eyebrow":       "Tavolo unico · Milano Brera · 14 coperti",
+            "headline":      'Una serata in <em>otto atti.</em>',
+            "subhead":       "Un menù degustazione che cambia ogni due settimane secondo il mercato del giorno. Solo cena. Solo prenotazione. Solo per quattordici.",
+            "primary_cta":   "Riserva la serata",
+            "secondary_cta": "Lo chef",
+            "phone":         "+39 02 3611 9920",
+            "chef_name":     "Lorenzo Fioravanti",
+            "chef_role":     "Chef patron · 1 stella Michelin",
+            "courses": [
+                ("I",   "Ostrica & cetriolo",          "acetosella, perle di yuzu",        "Champagne Selosse"),
+                ("II",  "Risotto al midollo",           "estratto di prezzemolo, caffè",     "Soave Pieropan '21"),
+                ("III", "Capesanta arrostita",          "burro nocciola, capperi di Pantelleria", "Riesling Pacherhof"),
+                ("IV",  "Piccione di Bresse",           "fichi neri, cardamomo verde",      "Barolo Cannubi '17"),
+                ("V",   "Cioccolato 80%",               "olio EVO, sale Maldon",             "Marsala Vintage '99"),
+            ],
+            "concierge": {
+                "label":  "Concierge personale",
+                "name":   "Greta Vallesi",
+                "role":   "Maître & cellar manager",
+                "email":  "greta@osteriamoderna.it",
+            },
+            "press": ["GUIDA MICHELIN", "GAMBERO ROSSO", "IDENTITÀ GOLOSE", "CORRIERE LIVING", "VOGUE FOOD"],
+            "nav_links": ["Filosofia", "Menu degustazione", "Carta dei vini", "Le sale", "Riserva"],
+        },
+    },
+
+    # ── R2) TRATTORIA-WARM — family chalkboard ───────────────────
+    "sapore-trattoria-pizzeria": {
+        "archetype":          "trattoria-warm",
+        "hero_style":         "warm-photo-frame",
+        "navbar_style":       "warm-bar",
+        "footer_style":       "hours-warm",
+        "section_order":      ["warm-nav", "framed-hero", "daily-chalkboard", "family-strip", "hours-band"],
+        "card_style":         "chalkboard-day",
+        "button_style":       "rustic-rounded",
+        "density":            "medium",
+        "tone":               "familiar-warm",
+        "imagery_direction":  "rustic-trattoria",
+        "imagery_key":        "restaurant-trattoria",
+        "conversion_pattern": "phone-and-whatsapp",
+        "font_pairing":       ("Caveat", "Inter"),
+        "content": {
+            "eyebrow":       "Trattoria di famiglia · Trastevere · dal 1987",
+            "headline":      'Da Nonna Rosa, come a casa <em>vostra.</em>',
+            "subhead":       "Pasta tirata a mano la mattina, pizza in forno a legna la sera, e un bicchiere di vino della casa offerto a chi torna due volte.",
+            "primary_cta":   "Chiama: 06 581 4488",
+            "secondary_cta": "WhatsApp",
+            "phone":         "06 581 4488",
+            "daily_specials": [
+                ("Lun", "Cacio e pepe",          "tonnarelli tirati a mano",   "€ 10"),
+                ("Mar", "Bucatini all'amatriciana", "guanciale di Amatrice",      "€ 11"),
+                ("Mer", "Coda alla vaccinara",    "ricetta di Nonna Rosa",      "€ 14"),
+                ("Gio", "Gnocchi al sugo d'arrosto","fatti al mattino",         "€ 11"),
+                ("Ven", "Baccalà in pastella",    "pomodorini confit",          "€ 13"),
+            ],
+            "family": [
+                ("Nonna Rosa",   "Pasta fresca dal '87"),
+                ("Marco Trezzi", "Pizzaiolo · forno a legna"),
+                ("Giulia Trezzi","Sala e dolci di casa"),
+            ],
+            "hours": [
+                ("Mar – Sab", "12:30 – 15:00  ·  19:00 – 23:30"),
+                ("Domenica",  "12:30 – 15:00 (solo pranzo)"),
+                ("Lunedì",    "Riposo settimanale"),
+            ],
+            "review_quote": "«Mi sono sentito nella cucina della nonna che non ho mai avuto.»",
+            "review_author": "Gambero Rosso · Tre Spicchi",
+            "nav_links": ["La storia", "I piatti", "Pizza la sera", "Eventi", "Trovaci"],
+        },
+    },
+
+    # ── R3) STREET-MODERN — fast-casual product grid ────────────
+    "brace-street-food-lab": {
+        "archetype":          "street-modern",
+        "hero_style":         "product-cutout",
+        "navbar_style":       "bold-pill",
+        "footer_style":       "delivery-strip",
+        "section_order":      ["bold-nav", "cutout-hero", "product-grid", "delivery-strip"],
+        "card_style":         "product-grid",
+        "button_style":       "block-bold",
+        "density":            "compact",
+        "tone":               "energetic-bold",
+        "imagery_direction":  "street-pop-product",
+        "imagery_key":        "restaurant-street",
+        "conversion_pattern": "order-now-delivery",
+        "font_pairing":       ("Big Shoulders Display", "Inter"),
+        "content": {
+            "eyebrow":       "Street food lab · Bologna · Via Indipendenza 42",
+            "headline":      'BRUCIATO AL <em>FUOCO VIVO.</em>',
+            "subhead":       "Smashburger di scottona piemontese, focacce al taglio, fritti contro corrente. Ordini al banco, ritiri al numero, divori al volo.",
+            "primary_cta":   "Ordina ora",
+            "secondary_cta": "Vedi il menu",
+            "phone":         "Bologna · 12:00 → 24:00 · ogni giorno",
+            "hero_badge_price": "€ 9.50",
+            "hero_badge_label": "DOPPIO BRACE",
+            "products": [
+                ("DOPPIO BRACE",  "Doppia scottona, cheddar fuso, salsa Brace",     "€ 9.50", "TOP"),
+                ("FRITTO MISTO",  "Crocchette di patata, jalapeño, baccalà",        "€ 6.00", ""),
+                ("PIZZA AL TAGLIO","Pomodoro San Marzano DOP, fior di latte",       "€ 4.50", "VEG"),
+                ("SODA BRACE",     "Limonata fatta in casa con basilico",            "€ 3.00", "NEW"),
+            ],
+            "delivery_partners": ["GLOVO", "DELIVEROO", "JUSTEAT", "UBER EATS"],
+            "counter_status_label": "CODA AL BANCO",
+            "counter_status_value": "≈ 4 MIN",
+            "stat_blocks": [
+                ("12.000",  "burger / mese"),
+                ("4.9 ★",   "su 1.380 recensioni"),
+                ("100%",    "scottona piemontese"),
+            ],
+            "nav_links": ["IL LAB", "MENU", "STORE", "ORDINA"],
         },
     },
 

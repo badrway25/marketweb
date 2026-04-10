@@ -46,6 +46,43 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80&auto=format&fit=crop",
     ],
+    # Per-archetype restaurant pools — see apps/catalog/template_dna.py.
+    # Each pool is intentionally distinct from the others so two restaurants
+    # in the catalog never share the same image set. Where possible we
+    # reuse URLs already cached by other categories (offline-safe).
+    "restaurant-fine": [
+        # 0: hero - chef plating (warm side-light, fine-dining feel)
+        "https://images.unsplash.com/photo-1577106263724-2c8e03bfe9cf?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature - moody dish (low-key)
+        "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: course imagery (gallery + chef portrait reused from portfolio pool)
+        "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80&auto=format&fit=crop",
+    ],
+    "restaurant-trattoria": [
+        # 0: hero - warm restaurant interior (existing)
+        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature - rustic pasta dish
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: dish-of-the-day cards (mix of restaurant pool + a warmer business interior)
+        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1577106263724-2c8e03bfe9cf?w=800&q=80&auto=format&fit=crop",
+    ],
+    "restaurant-street": [
+        # 0: hero - bold burger product shot (NEW)
+        "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature - pizza counter (NEW)
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: product grid items (NEW street-food shots)
+        "https://images.unsplash.com/photo-1571091655789-405eb7a3a3a8?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=800&q=80&auto=format&fit=crop",
+    ],
     "medical": [
         # 0: hero - bright modern clinic
         "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?w=1600&q=80&auto=format&fit=crop",

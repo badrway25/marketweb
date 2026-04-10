@@ -6,7 +6,7 @@
 |----------|-------------|--------------|------------------------------------------|-----------------|
 | 1        | Agency      | agency       | Digital/creative agencies                | 2 (no DNA yet)  |
 | 2        | Business    | business     | General business, corporate              | 2 (no DNA yet)  |
-| 3        | Restaurant  | restaurant   | Restaurants, cafés, food delivery        | 2 (no DNA yet)  |
+| 3        | **Restaurant** | restaurant | Restaurants, cafés, food delivery       | **3 / 3 ✅ DNA pilot — fine-dining + trattoria-warm + street-modern** |
 | 4        | **Medical** | medical      | Clinics, doctors, health practices       | **4 / 4 ✅ DNA pilot — clinic + family + specialist + wellness** |
 | 5        | Lawyer      | lawyer       | Law firms, legal practices               | 2 (no DNA yet)  |
 | 6        | Real Estate | real-estate  | Agencies, property listings              | 2 (no DNA yet)  |
@@ -14,8 +14,8 @@
 | 8        | eCommerce   | ecommerce    | Online stores, product showcases         | 2 (no DNA yet)  |
 
 ### DNA migration order (Phase 2f)
-1. ✅ Medical — done (Session 7)
-2. Restaurant — fine-dining / trattoria-warm / street-modern (3 archetypes)
+1. ✅ Medical — done (Session 7 — clinic / family / specialist / wellness)
+2. ✅ Restaurant — done (Session 9 — fine-dining / trattoria-warm / street-modern)
 3. Agency — bold-grid / editorial-quiet / case-study-led (3 archetypes)
 4. Lawyer — classic-gold / modern-transparent (2 archetypes — Lex and Juris already have very different tones)
 5. Real Estate — mass-market / ultra-luxury-cinematic (2 archetypes)

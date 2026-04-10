@@ -1,0 +1,285 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: fine-dining
+   FOR     : editorial tasting-menu venue (chef-led, prix fixe)
+   HERO    : editorial-plate (text+course-index L · plate R)
+   NAVBAR  : centered serif wordmark with hairline rule
+   CARDS   : course-index (Roman numeral · dish · paired wine)
+   CONVERS : concierge tile (no public form) + press band
+============================================================ #}
+{% block extra_css %}
+  body { background: #fbf6ec; color: #1f1611; }
+  .pv-frame { background: #fbf6ec; }
+
+  /* === SERIF CENTERED NAV === */
+  .fd-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 70px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 64px; border-bottom: 1px solid rgba(31,22,17,0.10);
+    background: rgba(251,246,236,0.94); backdrop-filter: blur(6px); z-index: 10;
+  }
+  .fd-nav .links-l, .fd-nav .links-r {
+    display: flex; gap: 30px; font-family: var(--body);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.20em;
+    text-transform: uppercase; color: #6e5e4f;
+  }
+  .fd-nav .logo {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    text-align: center; color: var(--primary);
+  }
+  .fd-nav .logo .name {
+    font-family: var(--heading); font-size: 26px; font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .fd-nav .logo .sub {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 9px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--accent); font-weight: 700;
+  }
+  .fd-nav .reserve {
+    font-family: var(--heading); font-style: italic;
+    font-size: 14px; color: var(--primary);
+    border-bottom: 1.5px solid var(--secondary); padding-bottom: 2px;
+  }
+
+  /* === HERO === */
+  .fd-hero {
+    position: absolute; top: 70px; left: 0; right: 0; height: 530px;
+    display: grid; grid-template-columns: 1fr 1.05fr; gap: 0;
+  }
+  .fd-hero .left {
+    padding: 50px 56px 0 90px; position: relative;
+  }
+  .fd-hero .eyebrow {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .fd-hero .eyebrow:before { content: ''; width: 30px; height: 1.5px; background: var(--accent); }
+
+  .fd-hero h1 {
+    margin-top: 26px;
+    font-family: var(--heading); font-size: 78px; font-weight: 500;
+    line-height: 0.96; letter-spacing: -0.02em; color: var(--primary);
+  }
+  .fd-hero h1 em { font-style: italic; color: var(--accent); font-weight: 500; }
+
+  .fd-hero p {
+    margin-top: 22px; font-family: var(--heading);
+    font-size: 16px; line-height: 1.6; color: #5d4d3f;
+    max-width: 460px; font-weight: 400; font-style: italic;
+  }
+
+  .fd-hero .ctas {
+    margin-top: 26px; display: flex; align-items: center; gap: 26px;
+  }
+  .fd-hero .ctas .gold {
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--primary); border-bottom: 1.5px solid var(--secondary);
+    padding-bottom: 4px; display: inline-flex; align-items: center; gap: 12px;
+  }
+  .fd-hero .ctas .gold:after { content: '→'; font-family: var(--heading); font-size: 18px; color: var(--secondary); }
+  .fd-hero .ctas .meta {
+    font-family: var(--body); font-size: 11px; color: #8a7a6b;
+    letter-spacing: 0.04em;
+  }
+  .fd-hero .ctas .meta strong {
+    display: block; font-family: var(--heading); font-size: 16px; color: var(--primary);
+    font-style: italic; margin-top: 2px;
+  }
+
+  /* === RIGHT — full-bleed plate === */
+  .fd-hero .right {
+    position: relative;
+    background: url('{{ imagery.0 }}') center/cover;
+    border-left: 8px solid var(--secondary);
+    filter: contrast(1.05) saturate(0.95);
+  }
+  .fd-hero .right:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(20,12,8,0.05) 0%, rgba(20,12,8,0.55) 100%);
+  }
+  .fd-hero .plate-credit {
+    position: absolute; bottom: 24px; left: 28px; right: 28px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    color: #fbf6ec; z-index: 2;
+    font-family: var(--body); font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .fd-hero .plate-credit strong {
+    display: block; font-family: var(--heading); font-style: italic;
+    font-size: 18px; letter-spacing: 0; text-transform: none; margin-top: 4px;
+    color: var(--secondary);
+  }
+  .fd-hero .stars {
+    position: absolute; top: 28px; right: 28px;
+    background: rgba(20,12,8,0.65); color: var(--secondary);
+    padding: 8px 14px; border-radius: 999px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    border: 1px solid rgba(212,165,116,0.5);
+    backdrop-filter: blur(6px); z-index: 2;
+  }
+
+  /* === BOTTOM BAND : course index L · concierge R === */
+  .fd-band {
+    position: absolute; left: 0; right: 0; top: 600px; bottom: 0;
+    background: var(--primary); color: #fbf6ec;
+    padding: 32px 90px 22px;
+    display: grid; grid-template-columns: 1.65fr 0.85fr; gap: 56px;
+  }
+
+  .fd-courses .head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid rgba(251,246,236,0.18); padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+  .fd-courses .head h3 {
+    font-family: var(--heading); font-size: 20px; font-weight: 500; font-style: italic;
+    color: var(--secondary); letter-spacing: 0.02em;
+  }
+  .fd-courses .head .price {
+    font-family: var(--body); font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(251,246,236,0.65);
+  }
+  .fd-courses .head .price strong {
+    color: var(--secondary); font-size: 13px; font-weight: 700;
+  }
+  .fd-courses .row {
+    display: grid; grid-template-columns: 36px 1fr auto;
+    gap: 14px; align-items: baseline;
+    padding: 7px 0; border-bottom: 1px dashed rgba(251,246,236,0.15);
+  }
+  .fd-courses .row .num {
+    font-family: var(--heading); font-size: 14px; font-style: italic;
+    color: var(--secondary); font-weight: 600;
+  }
+  .fd-courses .row .name {
+    font-family: var(--heading); font-size: 16px; font-weight: 600;
+    color: #fbf6ec;
+  }
+  .fd-courses .row .name span {
+    font-family: var(--body); font-size: 11px; color: rgba(251,246,236,0.62);
+    margin-left: 8px; font-style: italic; font-weight: 400;
+  }
+  .fd-courses .row .wine {
+    font-family: var(--body); font-size: 10px;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--secondary);
+  }
+
+  /* === CONCIERGE TILE === */
+  .fd-concierge {
+    background: rgba(251,246,236,0.06); border: 1px solid rgba(212,165,116,0.30);
+    padding: 22px 24px; border-radius: 4px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .fd-concierge .label {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--secondary);
+  }
+  .fd-concierge .name {
+    font-family: var(--heading); font-size: 22px; font-weight: 500;
+    font-style: italic; color: #fbf6ec; margin-top: 2px;
+  }
+  .fd-concierge .role {
+    font-family: var(--body); font-size: 11px; color: rgba(251,246,236,0.65);
+    letter-spacing: 0.04em;
+  }
+  .fd-concierge .email {
+    margin-top: 6px; padding-top: 12px;
+    border-top: 1px dashed rgba(251,246,236,0.18);
+    font-family: var(--heading); font-size: 14px; font-style: italic;
+    color: var(--secondary);
+  }
+  .fd-concierge .reserve {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #fbf6ec; border-bottom: 1.5px solid var(--secondary);
+    padding-bottom: 5px; display: inline-flex; align-items: center; gap: 10px;
+    align-self: flex-start;
+  }
+  .fd-concierge .reserve:after { content: '→'; color: var(--secondary); }
+
+  /* === PRESS strip at the very bottom === */
+  .fd-press {
+    position: absolute; left: 90px; right: 90px; bottom: 12px;
+    border-top: 1px solid rgba(251,246,236,0.18); padding-top: 10px;
+    display: flex; align-items: center; gap: 30px;
+    color: rgba(251,246,236,0.55);
+    font-family: var(--heading); font-size: 13px; letter-spacing: 0.10em;
+  }
+  .fd-press .lbl {
+    font-family: var(--body); font-size: 9px;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--secondary); font-weight: 700;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="fd-nav">
+    <div class="links-l">
+      {% for link in dna.content.nav_links %}{% if forloop.counter <= 2 %}<span>{{ link }}</span>{% endif %}{% endfor %}
+    </div>
+    <div class="logo">
+      <div class="name">{{ brand_name }}</div>
+      <div class="sub">{{ dna.content.eyebrow }}</div>
+    </div>
+    <div class="links-r">
+      {% for link in dna.content.nav_links %}{% if forloop.counter > 2 and forloop.counter <= 4 %}<span>{{ link }}</span>{% endif %}{% endfor %}
+      <span class="reserve">{{ dna.content.primary_cta }} →</span>
+    </div>
+  </nav>
+
+  <section class="fd-hero">
+    <div class="left">
+      <div class="eyebrow">Menu degustazione · Autunno 2026</div>
+      <h1>{{ dna.content.headline|safe }}</h1>
+      <p>{{ dna.content.subhead }}</p>
+      <div class="ctas">
+        <span class="gold">{{ dna.content.primary_cta }}</span>
+        <div class="meta">Direzione di sala<strong>{{ dna.content.concierge.name }}</strong></div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="stars">★ Una stella Michelin</div>
+      <div class="plate-credit">
+        <span>Quinto atto<strong>Cioccolato 80% · olio · sale</strong></span>
+        <span>Fotografia<strong>Vincenzo Lauro</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="fd-band">
+    <div class="fd-courses">
+      <div class="head">
+        <h3>Otto atti — autunno '26</h3>
+        <div class="price">Coperto unico <strong>€ 180 / persona</strong> · vini in abbinamento + €&nbsp;90</div>
+      </div>
+      {% for num, name, ingredients, wine in dna.content.courses %}
+        <div class="row">
+          <span class="num">{{ num }}.</span>
+          <span class="name">{{ name }} <span>· {{ ingredients }}</span></span>
+          <span class="wine">{{ wine }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="fd-concierge">
+      <span class="label">{{ dna.content.concierge.label }}</span>
+      <div class="name">{{ dna.content.concierge.name }}</div>
+      <div class="role">{{ dna.content.concierge.role }}</div>
+      <div class="email">{{ dna.content.concierge.email }}</div>
+      <span class="reserve">Riserva privatamente</span>
+    </div>
+
+    <div class="fd-press">
+      <span class="lbl">Press</span>
+      {% for outlet in dna.content.press %}<span>{{ outlet }}</span>{% endfor %}
+    </div>
+  </section>
+{% endblock %}

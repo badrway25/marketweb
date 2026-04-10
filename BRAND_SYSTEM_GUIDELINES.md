@@ -149,6 +149,23 @@ Every template registered in `apps/catalog/template_dna.py` defines:
 | specialist | High-end private specialist           | editorial-serif    | minimal-serif  | editorial-large  | private-request  | prestigious    |
 | wellness   | Holistic / spa / osteopathy           | full-bleed-manifesto | pill-floating | pricelist        | calendar-spot    | serene         |
 
+### Pilot category: Restaurant (3 archetypes)
+| Archetype       | Use case                                 | Hero            | Navbar          | Cards            | Conversion              | Tone             |
+|-----------------|------------------------------------------|-----------------|-----------------|------------------|-------------------------|------------------|
+| fine-dining     | Editorial tasting-menu venue (chef-led)  | editorial-plate | serif-centered  | course-index     | concierge-reservation   | editorial-chef   |
+| trattoria-warm  | Family trattoria / pizzeria di quartiere | warm-photo-frame| warm-bar        | chalkboard-day   | phone-and-whatsapp      | familiar-warm    |
+| street-modern   | Fast-casual smashburger / street food    | product-cutout  | bold-pill       | product-grid     | order-now-delivery      | energetic-bold   |
+
+**What makes restaurant siblings genuinely different (not recolors):**
+- **Page background** — fine-dining cream paper (#fbf6ec) · trattoria warm butter (#fdf6e7) · street-modern bright yellow body
+- **Navbar geometry** — centered serif wordmark with hairline rule · cream sticky bar with handwritten brand + giant phone CTA · floating black pill with bright accent ORDER button
+- **Hero composition** — editorial split-plate (text + course list left · plate right) · polaroid photo card left + handwritten Caveat manifesto right · giant condensed display headline left + tilted product cutout with price-circle badge right
+- **Card stride** — 5-row Roman-numeral course index · 5-day chalkboard daily specials · 4-up product grid with corner badges
+- **Button language** — gold-underline serif ghost · rustic rounded with shadow + tilt · brutalist block-bold with hard offset shadow
+- **Conversion CTA** — concierge tile (no public form, only an email) · giant phone number + WhatsApp pill · ORDINA ORA + delivery partners strip + counter status
+- **Typography** — Playfair Display + Lato (editorial serif) · Caveat + Inter (handwritten chalkboard) · Big Shoulders Display + Inter (industrial condensed)
+- **Imagery pool** — restaurant-fine (chef plating, moody plates) · restaurant-trattoria (warm restaurant interior, rustic dishes) · restaurant-street (burgers, pizza counter — fully separate URLs)
+
 ### How to design a new archetype
 1. **Identify the buyer.** Who is shopping for this and what do they want to see in the first scroll?
 2. **Pick distinct dimensions.** No two archetypes in the same category should share more than ~3 of the dimensions above.
