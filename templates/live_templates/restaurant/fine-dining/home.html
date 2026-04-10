@@ -1,0 +1,312 @@
+{% extends "live_templates/restaurant/fine-dining/_base.html" %}
+
+{% block extra_css %}
+  /* HERO — text left, full-bleed plate right */
+  .fd-hero {
+    display: grid; grid-template-columns: 1fr 1.18fr;
+    min-height: 720px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .fd-hero .text { padding: 96px 56px 96px 90px; position: relative; }
+  .fd-hero .text .eyebrow {
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--secondary);
+  }
+  .fd-hero .text .eyebrow:before { content: ''; width: 36px; height: 1px; background: var(--secondary); }
+  .fd-hero .text h1 {
+    margin-top: 38px; font-size: 108px; font-weight: 500;
+    line-height: 0.92; letter-spacing: -0.028em; max-width: 11ch;
+  }
+  .fd-hero .text p {
+    margin-top: 36px; max-width: 50ch;
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .fd-hero .text .actions { margin-top: 56px; display: flex; gap: 32px; align-items: center; }
+  .fd-hero .text .gold-link {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--secondary);
+    border-bottom: 1.5px solid var(--secondary); padding-bottom: 4px;
+    display: inline-flex; align-items: center; gap: 14px;
+  }
+  .fd-hero .text .gold-link:after { content: '→'; font-style: italic; }
+  .fd-hero .text .pipe { width: 1px; height: 32px; background: var(--rule); }
+  .fd-hero .text .meta {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--ink-dim); line-height: 1.5;
+  }
+  .fd-hero .text .meta strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 17px; color: var(--secondary); letter-spacing: 0; text-transform: none;
+  }
+
+  .fd-hero .plate {
+    background: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80') center/cover;
+    filter: contrast(1.06) saturate(0.95) brightness(0.78);
+    position: relative;
+  }
+  .fd-hero .plate:after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(11,9,7,0.55) 0%, rgba(11,9,7,0) 30%),
+      linear-gradient(180deg, rgba(11,9,7,0.10) 0%, rgba(11,9,7,0.55) 100%);
+  }
+  .fd-hero .plate .star-tag {
+    position: absolute; top: 36px; right: 40px; z-index: 2;
+    background: rgba(11,9,7,0.55);
+    color: var(--secondary);
+    border: 1px solid rgba(212,165,116,0.55);
+    padding: 9px 18px; backdrop-filter: blur(6px);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+  }
+  .fd-hero .plate .credit {
+    position: absolute; left: 40px; right: 40px; bottom: 36px; z-index: 2;
+    color: var(--ink);
+    display: flex; justify-content: space-between; align-items: flex-end;
+    font-family: var(--body); font-size: 9px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+  }
+  .fd-hero .plate .credit strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 22px; color: var(--secondary); letter-spacing: 0; text-transform: none;
+  }
+
+  /* facts band */
+  .fd-facts {
+    background: var(--bg-2);
+    padding: 48px 90px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 36px; border-bottom: 1px solid var(--rule);
+  }
+  .fd-facts .fact { display: flex; align-items: baseline; gap: 18px; }
+  .fd-facts .fact .num {
+    font-family: var(--heading); font-style: italic; font-size: 56px; font-weight: 500;
+    color: var(--secondary); letter-spacing: -0.02em; line-height: 0.9;
+  }
+  .fd-facts .fact .lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-soft); line-height: 1.5; max-width: 22ch;
+  }
+
+  /* manifesto */
+  .fd-manifesto { padding: 96px 90px; max-width: 1100px; margin: 0 auto; }
+  .fd-manifesto p {
+    font-family: var(--heading); font-style: italic; font-size: 28px;
+    line-height: 1.55; color: var(--ink); font-weight: 400;
+    max-width: 36ch; margin: 0 auto;
+  }
+  .fd-manifesto p:first-letter {
+    font-family: var(--heading); font-size: 116px; font-weight: 600;
+    float: left; line-height: 0.85; color: var(--secondary);
+    padding: 8px 16px 0 0; margin-top: 6px; font-style: normal;
+  }
+
+  /* signature courses */
+  .fd-courses { padding: 80px 90px; max-width: 1280px; margin: 0 auto; }
+  .fd-courses .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--secondary);
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 48px;
+  }
+  .fd-courses .lbl:before, .fd-courses .lbl:after {
+    content: ''; flex: 1; height: 1px; background: var(--rule-2);
+  }
+  .fd-courses .row {
+    display: grid; grid-template-columns: 60px 1fr auto;
+    gap: 24px; align-items: baseline;
+    padding: 18px 0; border-bottom: 1px dashed var(--rule-2);
+  }
+  .fd-courses .row .num {
+    font-family: var(--heading); font-style: italic; font-size: 28px;
+    color: var(--secondary); font-weight: 500;
+  }
+  .fd-courses .row .name {
+    font-family: var(--heading); font-size: 24px; font-weight: 500;
+    color: var(--ink);
+    display: flex; align-items: baseline; gap: 16px;
+  }
+  .fd-courses .row .name .desc {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 15px; color: var(--ink-soft);
+  }
+  .fd-courses .row .wine {
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--secondary); white-space: nowrap;
+  }
+  .fd-courses .footline {
+    margin-top: 36px; padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--body); font-size: 11px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .fd-courses .footline .price {
+    font-family: var(--heading); font-style: italic;
+    font-size: 22px; color: var(--secondary);
+    text-transform: none; letter-spacing: 0;
+  }
+
+  /* chef */
+  .fd-chef {
+    background: var(--bg-2);
+    padding: 96px 90px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .fd-chef-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 80px; align-items: center;
+  }
+  .fd-chef .portrait {
+    aspect-ratio: 4/5;
+    background:
+      linear-gradient(180deg, rgba(11,9,7,0) 60%, rgba(11,9,7,0.5) 100%),
+      url('https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=80') center/cover;
+    filter: grayscale(15%) contrast(1.05) brightness(0.85);
+    border-left: 6px solid var(--secondary);
+  }
+  .fd-chef .info .role {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--secondary);
+  }
+  .fd-chef .info h3 {
+    margin-top: 14px;
+    font-family: var(--heading); font-style: italic;
+    font-size: 72px; font-weight: 500; line-height: 1.0;
+    color: var(--secondary); letter-spacing: -0.02em;
+  }
+  .fd-chef .info p {
+    margin-top: 32px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 21px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .fd-chef .info .links {
+    margin-top: 36px; display: flex; gap: 36px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+  }
+  .fd-chef .info .links a {
+    color: var(--secondary); border-bottom: 1.5px solid var(--secondary); padding-bottom: 4px;
+  }
+
+  /* press strip */
+  .fd-press {
+    padding: 36px 90px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; gap: 48px; flex-wrap: wrap;
+    background: var(--bg);
+  }
+  .fd-press .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--secondary);
+  }
+  .fd-press .item {
+    font-family: var(--heading); font-size: 17px;
+    color: var(--ink-soft); letter-spacing: 0.06em;
+  }
+
+  /* CTA strip */
+  .fd-cta { padding: 96px 90px; text-align: center; }
+  .fd-cta h2 {
+    font-family: var(--heading); font-size: 64px; font-weight: 500;
+    line-height: 1.0; letter-spacing: -0.02em;
+    max-width: 18ch; margin: 0 auto;
+  }
+  .fd-cta .actions { margin-top: 36px; display: flex; gap: 32px; justify-content: center; }
+{% endblock %}
+
+{% block content %}
+  <section class="fd-hero">
+    <div class="text">
+      <div class="eyebrow">{{ page_data.eyebrow }}</div>
+      <h1>{{ page_data.headline|safe }}</h1>
+      <p>{{ page_data.intro }}</p>
+      <div class="actions">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}" class="gold-link">{{ page_data.primary_cta }}</a>
+        <span class="pipe"></span>
+        <div class="meta">
+          Lo chef
+          <strong>{{ page_data.chef.name }}</strong>
+        </div>
+      </div>
+    </div>
+    <div class="plate">
+      <span class="star-tag">★ Atto V · Cioccolato 80%</span>
+      <div class="credit">
+        <span>Fotografia<strong>Vincenzo Lauro</strong></span>
+        <span>Cucina<strong>{{ page_data.chef.name }}</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="fd-facts">
+    {% for num, lbl in page_data.facts %}
+      <div class="fact">
+        <span class="num">{{ num }}</span>
+        <span class="lbl">{{ lbl }}</span>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section class="fd-manifesto">
+    <p>{{ page_data.manifesto_drop_cap }}{{ page_data.manifesto }}</p>
+  </section>
+
+  <section class="fd-courses">
+    <div class="lbl">Cinque atti del menù in corso · autunno '26</div>
+    {% for num, name, ingredients, wine in page_data.signature_courses %}
+      <div class="row">
+        <span class="num">{{ num }}.</span>
+        <span class="name">
+          <span>{{ name }}</span>
+          <span class="desc">{{ ingredients }}</span>
+        </span>
+        <span class="wine">{{ wine }}</span>
+      </div>
+    {% endfor %}
+    <div class="footline">
+      <span><span class="price">€ 180</span>  / persona · vini in abbinamento + €90</span>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}" class="ghost-btn" style="border-color:var(--secondary);color:var(--secondary);">Otto atti completi →</a>
+    </div>
+  </section>
+
+  <section class="fd-chef">
+    <div class="fd-chef-inner">
+      <div class="portrait"></div>
+      <div class="info">
+        <div class="role">{{ page_data.chef.role }}</div>
+        <h3>{{ page_data.chef.name }}</h3>
+        <p>{{ page_data.chef.bio }}</p>
+        <div class="links">
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'filosofia' %}">La filosofia</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}">Il diario</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fd-press">
+    <span class="lbl">Pubblicato su</span>
+    {% for outlet in page_data.press %}
+      <span class="item">{{ outlet }}</span>
+    {% endfor %}
+  </section>
+
+  <section class="fd-cta">
+    <h2>Quattordici coperti, <em>due servizi a settimana.</em></h2>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}" class="gold-btn">Riserva la serata</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}" class="ghost-btn">Vedi il menù completo</a>
+    </div>
+  </section>
+{% endblock %}

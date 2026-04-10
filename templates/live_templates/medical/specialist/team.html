@@ -1,0 +1,107 @@
+{% extends "live_templates/medical/specialist/_base.html" %}
+
+{% block extra_css %}
+  .sp-doctors { padding: 24px 90px 80px; max-width: 1280px; margin: 0 auto; }
+  .sp-doctors .doctor {
+    display: grid; grid-template-columns: 380px 1fr;
+    gap: 64px; padding: 56px 0;
+    border-top: 1px solid var(--rule);
+    align-items: start;
+  }
+  .sp-doctors .doctor:last-child { border-bottom: 1px solid var(--rule); }
+
+  .sp-doctors .portrait {
+    aspect-ratio: 4/5;
+    border-left: 6px solid var(--accent);
+    background-size: cover; background-position: center;
+    filter: grayscale(15%) contrast(1.05);
+    position: relative;
+  }
+  .sp-doctors .portrait:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(28,22,18,0) 60%, rgba(28,22,18,0.4) 100%);
+  }
+  .sp-doctors .portrait .signature {
+    position: absolute; left: 18px; bottom: 16px; z-index: 2;
+    color: var(--paper);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+  }
+  .sp-doctors .portrait .signature strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-style: italic; font-size: 18px;
+    letter-spacing: 0; text-transform: none; color: var(--accent);
+    font-weight: 500;
+  }
+
+  .sp-doctors .info .role {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-doctors .info h3 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 60px; font-weight: 500;
+    line-height: 1.0; letter-spacing: -0.022em;
+  }
+  .sp-doctors .info .tags {
+    margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .sp-doctors .info .tags span {
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); padding: 6px 14px;
+    border: 1px solid var(--accent);
+  }
+  .sp-doctors .info .bio {
+    margin-top: 28px; max-width: 60ch;
+    font-family: var(--heading); font-style: italic; font-size: 19px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .sp-doctors .info .links {
+    margin-top: 28px; display: flex; gap: 32px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .sp-doctors .info .links a {
+    color: var(--ink); border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+
+  /* Vary the portrait by index */
+  .sp-doctors .doctor:nth-child(1) .portrait { background-image: url('https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=900&q=80'); }
+  .sp-doctors .doctor:nth-child(2) .portrait { background-image: url('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=80'); }
+  .sp-doctors .doctor:nth-child(3) .portrait { background-image: url('https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=900&q=80'); }
+{% endblock %}
+
+{% block content %}
+  <section class="sp-lead">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="sp-doctors">
+    {% for d in page_data.doctors %}
+      <div class="doctor">
+        <div class="portrait">
+          <div class="signature">
+            Roma · Parioli
+            <strong>{{ d.name }}</strong>
+          </div>
+        </div>
+        <div class="info">
+          <div class="role">{{ d.role }}</div>
+          <h3>{{ d.name }}</h3>
+          <div class="tags">
+            {% for t in d.tags %}<span>{{ t }}</span>{% endfor %}
+          </div>
+          <p class="bio">{{ d.bio }}</p>
+          <div class="links">
+            {% for label, href in d.links %}
+              <a href="{{ href }}">{{ label }} →</a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock %}

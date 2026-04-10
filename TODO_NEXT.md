@@ -88,6 +88,19 @@
 - [x] Verified detail pages for all 3 restaurants
 - [x] Regression check on `/templates/medical/` — 4 medical archetypes still intact
 
+## Completed — Phase 2g (Template Completeness Pilot, 2026-04-10, Session 11)
+- [x] Designed scalable inner-page architecture: content registry + per-archetype skin folder + single dispatcher view
+- [x] `apps/catalog/template_content.py` — content registry pattern with helpers (`has_live_template`, `get_content`, `get_pages`, `find_page`, `find_post`)
+- [x] `LiveTemplateView` in `apps/catalog/views.py` — resolves WebTemplate → DNA → content in `setup()`, dispatches to per-archetype/page-kind template
+- [x] Three new URL patterns: `live_template_home`, `live_template_page`, `live_template_post`
+- [x] `templates/live_templates/medical/specialist/` skin: standalone `_base.html` + 8 page templates (home, about, services, team, blog_list, blog_detail, contact, appointment)
+- [x] `templates/live_templates/restaurant/fine-dining/` skin: standalone `_base.html` + 7 page templates (home, about, menu, gallery, reservations, blog_list, blog_detail)
+- [x] **Cardio pilot complete** — 8 inner pages, all in Italian, prestigious editorial chrome, realistic Roma Parioli cardiology copy
+- [x] **Gusto pilot complete** — 7 inner pages, all in Italian, dark editorial fine-dining chrome, realistic Brera Michelin restaurant copy
+- [x] Marketplace detail page conditional CTA: "Apri anteprima completa" when content is registered, legacy CTA otherwise (strictly additive)
+- [x] 17 routes verified via Django test client (2 marketplace detail + 15 inner preview pages, all 200)
+- [x] Bug fix: hoisted DNA/content resolution from `get_template_names` to `setup` (TemplateView builds context before names)
+
 ## Completed — Phase 2f.1.1 (Restaurant Pilot Fix Pass, 2026-04-10, Session 10)
 - [x] Audited all 3 restaurant templates end-to-end (DNA → composition path → asset row → file on disk → imagery pool URLs)
 - [x] Identified root cause: (a) `restaurant-fine` and `restaurant-trattoria` pools shared 5 of 6 URLs (only hero differed); (b) both compositions used cream top + dark bottom band, creating identical thumbnails despite different layouts
@@ -101,6 +114,19 @@
 - [x] Verified `/templates/restaurant/` listing thumbnails after JS cache-bust (browser was serving cached old PNGs)
 - [x] Verified `/templates/restaurant/gusto-fine-dining/` and `/templates/restaurant/sapore-trattoria-pizzeria/` detail pages
 - [x] Regression check on `/templates/medical/` — unaffected
+
+## Next — Phase 2g.1 (Template Completeness Validation)
+- [ ] **Add a second template under an existing archetype** to validate content-only reuse:
+      Option A — `dermatologia-elite-roma` (specialist archetype, re-uses Cardio chrome): proves the Medical specialist 8-page model travels with content alone
+      Option B — `tartufo-truffle-house` (fine-dining archetype, re-uses Gusto chrome): proves the Restaurant fine-dining 7-page model travels with content alone
+      Recipe per template: 1 entry in `template_dna.py`, 1 entry in `template_content.py`, 1 row in `seed_templates.py`. Zero new HTML.
+- [ ] Add a "previous / next page" navigation hint at the bottom of each inner page (cycle through `pages` list)
+- [ ] Add per-page meta/OG tags using the page's content block (currently the `_base.html` only emits a static tagline meta-description)
+- [ ] Promote `template_content.py` content to a `TemplatePage` model + migration + seed-from-registry command (D-042 deferred this — pilot phase needs to settle first)
+- [ ] Wire the editor app to load a live preview page as a customizable surface (Phase 3)
+- [ ] Imagery in inline styles (e.g. doctor portraits in `team.html`, plate hero in `home.html`) currently hardcodes Unsplash CDN URLs. Move to a `page_imagery` block in the content registry so each template can pick its own.
+- [ ] Build inner pages for the second restaurant DNA archetypes (`trattoria-warm`, `street-modern`) once we know how the abstraction holds for fine-dining
+- [ ] Build inner pages for the other 3 medical archetypes (`clinic`, `family`, `wellness`)
 
 ## Next — Phase 2f (DNA Rollout to Other Categories)
 - [x] ~~**Restaurant pilot**~~ — done in Session 9, fixed in Session 10 (3 templates: fine-dining + trattoria-warm + street-modern, all visibly distinct)

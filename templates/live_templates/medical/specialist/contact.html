@@ -1,0 +1,176 @@
+{% extends "live_templates/medical/specialist/_base.html" %}
+
+{% block extra_css %}
+  .sp-contact { padding: 24px 90px 80px; max-width: 1200px; margin: 0 auto; }
+
+  .sp-contact .grid {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px;
+    margin-top: 24px;
+  }
+
+  /* left col: blocks + form */
+  .sp-blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .sp-blocks .b {
+    padding: 28px 0; border-top: 1.5px solid var(--accent);
+  }
+  .sp-blocks .b .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-blocks .b .v {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 28px; font-weight: 500;
+    color: var(--primary); line-height: 1.15;
+  }
+  .sp-blocks .b .sub {
+    margin-top: 8px;
+    font-family: var(--body); font-size: 13px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  /* right col: hours + transport */
+  .sp-side {
+    background: var(--paper-2); padding: 36px 36px;
+    border-left: 6px solid var(--accent);
+  }
+  .sp-side h4 {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .sp-side .row {
+    display: grid; grid-template-columns: 110px 1fr 1fr; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--rule);
+    font-family: var(--body); font-size: 13px;
+  }
+  .sp-side .row .day { font-weight: 700; color: var(--primary); }
+  .sp-side .row .am, .sp-side .row .pm { color: var(--ink-soft); }
+  .sp-side h4.transport { margin-top: 32px; }
+  .sp-side .t {
+    padding: 10px 0; border-bottom: 1px dashed var(--rule);
+    display: flex; gap: 12px; font-family: var(--body); font-size: 13px;
+  }
+  .sp-side .t span:first-child {
+    font-weight: 700; color: var(--accent); width: 64px;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    padding-top: 3px;
+  }
+  .sp-side .t span:last-child { color: var(--ink-soft); flex: 1; }
+
+  /* form */
+  .sp-form {
+    margin-top: 64px; max-width: 720px;
+    padding-top: 48px; border-top: 1px solid var(--rule);
+  }
+  .sp-form h3 {
+    font-family: var(--heading); font-size: 40px; font-weight: 500;
+    color: var(--primary); line-height: 1.1;
+  }
+  .sp-form .intro {
+    margin-top: 14px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 18px;
+    color: var(--ink-soft);
+  }
+  .sp-form form { margin-top: 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px; }
+  .sp-form .field { display: flex; flex-direction: column; gap: 6px; }
+  .sp-form .field.full { grid-column: 1 / -1; }
+  .sp-form label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .sp-form input, .sp-form select, .sp-form textarea {
+    background: transparent; border: 0; border-bottom: 1.5px solid var(--rule);
+    padding: 10px 0; font-family: var(--body); font-size: 16px;
+    color: var(--ink); outline: none; transition: border-color .15s ease;
+  }
+  .sp-form input:focus, .sp-form select:focus, .sp-form textarea:focus {
+    border-color: var(--accent);
+  }
+  .sp-form textarea { min-height: 120px; resize: vertical; }
+  .sp-form .submit { grid-column: 1 / -1; padding-top: 8px; }
+  .sp-form .submit button {
+    background: var(--primary); color: var(--paper);
+    padding: 18px 36px; border: 0;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    cursor: pointer;
+    border-bottom: 3px solid var(--accent);
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="sp-lead">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="sp-contact">
+    <div class="grid">
+      <div>
+        <div class="sp-blocks">
+          {% for label, value, sub in page_data.blocks %}
+            <div class="b">
+              <div class="lbl">{{ label }}</div>
+              <div class="v">{{ value }}</div>
+              <div class="sub">{{ sub }}</div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="sp-form">
+          <h3>{{ page_data.form_title }}</h3>
+          <p class="intro">{{ page_data.form_intro }}</p>
+          <form>
+            <div class="field">
+              <label>Nome</label>
+              <input type="text" placeholder="Mario">
+            </div>
+            <div class="field">
+              <label>Cognome</label>
+              <input type="text" placeholder="Rossi">
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" placeholder="mario.rossi@email.it">
+            </div>
+            <div class="field">
+              <label>Telefono</label>
+              <input type="tel" placeholder="+39 333 ...">
+            </div>
+            <div class="field full">
+              <label>Oggetto</label>
+              <input type="text" placeholder="Informazioni su una visita di controllo">
+            </div>
+            <div class="field full">
+              <label>Messaggio</label>
+              <textarea placeholder="Resta in poche righe — la segreteria ti contatta entro la giornata lavorativa."></textarea>
+            </div>
+            <div class="submit">
+              <button type="button">Invia messaggio</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <aside class="sp-side">
+        <h4>Orari di apertura</h4>
+        {% for day, am, pm in page_data.hours %}
+          <div class="row">
+            <span class="day">{{ day }}</span>
+            <span class="am">{{ am }}</span>
+            <span class="pm">{{ pm }}</span>
+          </div>
+        {% endfor %}
+
+        <h4 class="transport">Come raggiungerci</h4>
+        {% for label, text in page_data.transport %}
+          <div class="t">
+            <span>{{ label }}</span>
+            <span>{{ text }}</span>
+          </div>
+        {% endfor %}
+      </aside>
+    </div>
+  </section>
+{% endblock %}

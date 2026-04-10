@@ -684,3 +684,142 @@ Playwright Chromium aggressively caches the preview PNG files when the URL is ex
 1. Each agency imagery pool MUST have zero URL overlap with the others — hand-check every photo via the Read tool before committing
 2. Each agency composition must have a completely different page-level macro tone (e.g. bold-grid = dark with bright accent, editorial-quiet = light with serif, case-study-led = colorful blocks)
 3. No two agency compositions should both use a "X-on-top, Y-on-bottom" colour split — make the silhouettes different at thumbnail scale
+
+## Session 11 — Template Completeness Pilot Phase (2026-04-10)
+
+**Agent:** Template Completeness Pilot (worktree: `template-completeness-pilot`)
+**Goal:** Prove that a marketplace template is a *complete multi-page website product*, not just a single homepage preview. Build full inner-page sets for two pilot templates — `cardio-studio-specialistico` and `gusto-fine-dining` — with their own About / Services / Blog / Contact / Reservations / Appointment pages, all inheriting per-template DNA chrome.
+
+### Why this session
+The DNA system (Sessions 7-10) made each template's *front door* visually unique. But every template still resolved to a single screenshot — a buyer could not see what an "About" page or a "Contact" page would actually look like for that brand. A premium marketplace cannot sell something its buyers can't navigate. This session builds the inner-page architecture so customers can verify a template is a real, complete website before buying.
+
+### Architecture introduced
+
+Three new layers, all strictly opt-in per template — non-pilot templates are unaffected.
+
+**1. Content registry — `apps/catalog/template_content.py`**
+A Python dict keyed by `WebTemplate.slug`. Each entry holds `pages` (the nav list) and one structured content block per page slug, plus a `posts` list for blog/news inner pages. Realistic Italian copy throughout — no lorem ipsum, no boilerplate. Two templates can share an archetype skin but ship completely different content.
+
+**2. Per-archetype skin — `templates/live_templates/<category>/<archetype>/`**
+Each archetype gets a `_base.html` that is a *complete standalone HTML document* (it does NOT extend the marketplace `base.html`). It loads the DNA's font pairing from Google Fonts, injects brand palette into CSS variables, and provides a fixed nav + footer + `{% block content %}`. Each inner page (`home.html`, `about.html`, `services.html`, `team.html`, `blog_list.html`, `blog_detail.html`, `contact.html`, `appointment.html` for medical; `home.html`, `about.html`, `menu.html`, `gallery.html`, `reservations.html`, `blog_list.html`, `blog_detail.html` for restaurant) extends that base and overrides `extra_css` + `content`.
+
+**3. Single dispatcher view — `LiveTemplateView`**
+Lives in `apps/catalog/views.py`. Resolves WebTemplate → DNA → content registry, computes `live_templates/<category>/<archetype>/<page-kind>.html`, validates the page slug, returns 404 if either the DNA entry or the content registry entry is missing. Handles three URL shapes: `home`, `inner page`, and `inner-page/post-slug` (blog/news article). Resolution happens in `setup()` because `TemplateView` calls `get_context_data` BEFORE `get_template_names`.
+
+The marketplace's existing `template_detail.html` got a single conditional CTA: when `has_live_preview=True` is in context, the "Anteprima Live" button becomes "Apri anteprima completa" and points at `live_template_home`. Templates without content registry entries keep the old CTA and behave exactly as before — the system is strictly additive.
+
+### Pilot 1 — Cardio (Studio Marani Cardiologia)
+
+DNA: `specialist` archetype · cream `#f7f3ee` + charcoal `#1c1612` + accent red `#9c2a2a` · Cormorant Garamond + Inter · prestigious / very-airy / private-request.
+
+Eight pages, all in Italian, all written for a Roma Parioli private cardiology clinic:
+
+| Page             | Slug             | What is on it |
+|------------------|------------------|---------------|
+| Home             | `/preview/`      | Editorial hero (cream + charcoal sidebar with Lancet quote), 3-fact band, drop-cap manifesto, signature visits 4-up on dark band, chief portrait (Dr. Marani) with bio, press strip, CTA strip |
+| Lo Studio        | `studio`         | Five-row chronological timeline 2010 to 2024, dark "Metodo" section with three method paragraphs and drop cap, four "promesse" 4-up, dark CTA band |
+| Visite           | `visite`         | Six visit packages with name + duration meta + description + price (220 to 980 euro), administrative footnote, dark CTA band |
+| Medici           | `medici`         | Three doctors with portrait + role + 3 specialty tags + bio + links — Dr. Marani, Dr.ssa Salieri, Dr. Lombardi |
+| Pubblicazioni    | `pubblicazioni`  | Lead post with image + 4 compact list rows, all 5 article entries with authors and read time |
+| Article detail   | `pubblicazioni/<slug>` | Long-form editorial article with crumbs, kicker, drop-cap lede, body composed of `(p|h2|ol|blockquote)` blocks, footer meta — first article ("secondo parere") has full body, 4 others fall back to lede-only |
+| Contatti         | `contatti`       | Four contact blocks (address, phone, email, urgenze), opening hours table 7-day, transport block, message form |
+| Richiedi visita  | `richiedi-visita`| 4-step process explanation, dark form band with 8 fields + consent + secondary contact alternative, administrative footnote |
+
+### Pilot 2 — Gusto (Osteria Moderna)
+
+DNA: `fine-dining` archetype · charcoal `#0b0907` + gold `#d4a574` + burgundy `#8b0000` · Playfair Display + Lato · editorial-chef / very-airy / concierge-reservation.
+
+Seven pages, all in Italian, all written for a 14-seat Michelin-starred Brera restaurant:
+
+| Page          | Slug         | What is on it |
+|---------------|--------------|---------------|
+| Casa          | `/preview/`  | Full-bleed plate hero right · 108px italic Playfair headline left, 3-fact band, drop-cap manifesto, 5-course signature index with gold dotted leaders + wine pairings, chef portrait (Lorenzo Fioravanti), press strip, CTA strip |
+| Filosofia     | `filosofia`  | Five-row chronological timeline 2014 to 2024, dark "Metodo" section with three method paragraphs and drop cap, four "promesse" 4-up |
+| Menu          | `menu`       | Full eight-course `autunno '26` menu with ingredient lists and wine pairings, separate `Carta dei vini` section with 4 wine highlights, footer pricing note |
+| Atmosfera     | `atmosfera`  | Four numbered room descriptions, 6-image magazine grid (4-col + 2-col mix) with overlay captions, italic CTA bottom |
+| Diario        | `diario`     | Lead post + 4 compact list rows, all 5 articles with authors |
+| Article detail| `diario/<slug>` | Long-form editorial article with same block system as Cardio — first article ("menu autunno '26") fully written, 4 fall back to lede-only |
+| Prenota       | `prenota`    | 4-step process, concierge tile (Greta Vallesi portrait + bio + email + phone), 6-day hours table, private events tile, 9-field reservation form with consent |
+
+### Files Added
+
+```
+apps/catalog/template_content.py                                  (NEW — content registry + helpers)
+templates/live_templates/medical/specialist/_base.html            (NEW — Cardio chrome)
+templates/live_templates/medical/specialist/home.html             (NEW)
+templates/live_templates/medical/specialist/about.html            (NEW)
+templates/live_templates/medical/specialist/services.html         (NEW)
+templates/live_templates/medical/specialist/team.html             (NEW)
+templates/live_templates/medical/specialist/blog_list.html        (NEW)
+templates/live_templates/medical/specialist/blog_detail.html      (NEW)
+templates/live_templates/medical/specialist/contact.html          (NEW)
+templates/live_templates/medical/specialist/appointment.html      (NEW)
+templates/live_templates/restaurant/fine-dining/_base.html        (NEW — Gusto chrome)
+templates/live_templates/restaurant/fine-dining/home.html         (NEW)
+templates/live_templates/restaurant/fine-dining/about.html        (NEW)
+templates/live_templates/restaurant/fine-dining/menu.html         (NEW)
+templates/live_templates/restaurant/fine-dining/gallery.html      (NEW)
+templates/live_templates/restaurant/fine-dining/reservations.html (NEW)
+templates/live_templates/restaurant/fine-dining/blog_list.html    (NEW)
+templates/live_templates/restaurant/fine-dining/blog_detail.html  (NEW)
+```
+
+### Files Modified
+
+- `apps/catalog/views.py` — added `LiveTemplateView` (TemplateView subclass), wired `has_live_preview` flag into `TemplateDetailView` context
+- `apps/catalog/urls.py` — three new URL patterns: `live_template_home`, `live_template_page`, `live_template_post`
+- `templates/catalog/template_detail.html` — conditional CTA: "Apri anteprima completa" for content-registered templates, legacy "Anteprima Live" for the rest
+
+### Bug found and fixed mid-session
+First `LiveTemplateView` implementation did the WebTemplate/DNA/content resolution inside `get_template_names()`. Django's `TemplateView.get()` calls `get_context_data()` BEFORE `get_template_names()`, so `self.template_obj` did not exist yet when the context builder tried to read it. Fixed by hoisting all resolution into `setup()`, which runs once per request before `get()`. Captured the lesson in D-044.
+
+### Verified
+- `python manage.py check` — 0 issues
+- 17 routes hit via Django test client (with `ALLOWED_HOSTS=['*']` override) — all 200, no template errors:
+  - 8 Cardio inner pages including blog detail
+  - 7 Gusto inner pages including news detail
+  - Both marketplace detail pages still 200
+- `cardio` detail page now shows the new "Apri anteprima completa" CTA with `/preview/` href; `salute` (no live preview) keeps the legacy "Anteprima Live" CTA — strictly additive
+- Cardio home page contains all 6 expected nav links to inner pages
+- Gusto menu page contains all 8 expected courses
+- Gusto Diario page nav shows `is-current` highlight on the active page
+- Rendered HTML inspection confirms: DOCTYPE, font URLs (Cormorant Garamond + Inter for Cardio, Playfair Display + Lato for Gusto), brand palette injected into `:root`, complete nav + footer chrome
+
+### Database delta
+None. No migrations, no model changes, no seed updates. Content lives in code (per D-034 and D-042 rationale).
+
+### Key Decisions
+- D-042: Live multi-page templates as a code-driven content registry (deferred from `TemplatePage` model)
+- D-043: Per-archetype standalone `_base.html` skins under `templates/live_templates/` — they do NOT extend the marketplace `base.html`
+- D-044: `LiveTemplateView` resolves DNA + content in `setup()`, not `get_template_names()`
+- D-045: "Apri anteprima completa" CTA is conditional on content-registry presence — templates without inner-page content keep the legacy CTA
+
+### What is now reusable across all future templates
+- `LiveTemplateView` and the three URL patterns
+- The content-registry pattern (`template_content.py`) — adding a new template means adding ONE new top-level dict
+- The per-archetype skin folder structure — any future template that picks an existing archetype gets the chrome for free
+- Brand palette to CSS variable injection
+- Nav loop / `is-current` highlight pattern
+- Footer pattern with site-data block
+
+### What still needs per-archetype work
+- Each NEW archetype needs its own `_base.html` (the chrome is intentionally bespoke — that is the entire point of DNA)
+- Each NEW archetype's page kinds need their own page templates (the layout vocabulary is category-specific — a `menu.html` is meaningless for a medical template)
+- The "page kinds" themselves are category-flavoured (medical has `appointment`, restaurant has `reservations` and `menu`, etc.) — future categories will introduce their own page kinds
+
+### Blockers
+None. Both pilots render end-to-end and are navigable.
+
+### Exact next step
+**Pick the third pilot to validate the abstraction.** Most useful candidates:
+1. A second `specialist` template (e.g. add a new `dermatologia-elite` template that re-uses the Cardio chrome — proves zero-archetype-work, just content) — confirms the *content registry* abstraction.
+2. A second `fine-dining` template (e.g. `tartufo-truffle-house`) — same reason for restaurant.
+3. The next archetype in the same category (e.g. add inner pages for Salute under the `clinic` archetype) — confirms per-archetype chrome variation.
+
+(2) is probably the strongest signal: it tests that the 7-page restaurant model travels with content alone. If it does, future templates become "1 DNA entry + 1 content block" with zero new HTML.
+
+After that, optionally:
+- Promote `template_content.py` content to a `TemplatePage` model so customers can edit it (D-042 deferred this on purpose; the pilot phase needs to settle first)
+- Wire the editor app to load these page templates as customizable surfaces (Phase 3)
+- Add a "previous / next page" navigation hint at the bottom of each inner page
+- Add per-page meta/OG tags using the page's content

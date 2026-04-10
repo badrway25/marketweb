@@ -1,0 +1,134 @@
+{% extends "live_templates/restaurant/fine-dining/_base.html" %}
+
+{% block extra_css %}
+  /* timeline */
+  .fd-timeline { padding: 24px 90px 80px; max-width: 1100px; margin: 0 auto; }
+  .fd-timeline .row {
+    display: grid; grid-template-columns: 140px 1fr; gap: 56px;
+    padding: 36px 0; border-top: 1px solid var(--rule);
+  }
+  .fd-timeline .row:last-child { border-bottom: 1px solid var(--rule); }
+  .fd-timeline .year {
+    font-family: var(--heading); font-style: italic; font-size: 64px; font-weight: 500;
+    color: var(--secondary); line-height: 0.9; letter-spacing: -0.02em;
+  }
+  .fd-timeline .text {
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    color: var(--ink); line-height: 1.5; max-width: 60ch; padding-top: 18px;
+  }
+
+  /* method */
+  .fd-method {
+    background: var(--bg-2);
+    padding: 96px 90px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .fd-method-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px;
+  }
+  .fd-method h2 {
+    font-family: var(--heading); font-style: italic;
+    font-size: 64px; font-weight: 500; color: var(--secondary);
+    max-width: 8ch; line-height: 1.0; letter-spacing: -0.02em;
+  }
+  .fd-method .ps p {
+    margin-bottom: 26px; max-width: 64ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.75;
+    color: var(--ink); font-weight: 300;
+  }
+  .fd-method .ps p:first-of-type:first-letter {
+    font-family: var(--heading); font-size: 96px; font-weight: 600;
+    float: left; line-height: 0.85; color: var(--secondary);
+    padding: 8px 16px 0 0; margin-top: 6px;
+  }
+
+  /* values 4-up */
+  .fd-values { padding: 96px 90px; max-width: 1280px; margin: 0 auto; }
+  .fd-values .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px;
+    margin-top: 48px;
+  }
+  .fd-values .v {
+    padding-top: 18px; border-top: 1.5px solid var(--secondary);
+  }
+  .fd-values .v h4 {
+    font-family: var(--heading); font-style: italic;
+    font-size: 28px; font-weight: 500; color: var(--secondary);
+  }
+  .fd-values .v p {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: var(--ink-soft); max-width: 28ch; font-weight: 300;
+  }
+
+  /* CTA band */
+  .fd-cta-band {
+    background: var(--bg);
+    padding: 64px 90px;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 48px; flex-wrap: wrap;
+  }
+  .fd-cta-band h3 {
+    font-family: var(--heading); font-style: italic;
+    font-size: 44px; font-weight: 500; line-height: 1.1;
+    color: var(--ink); max-width: 24ch;
+  }
+  .fd-cta-band h3 em { color: var(--secondary); font-style: italic; }
+  .fd-cta-band .actions { display: flex; gap: 28px; }
+  .fd-cta-band .actions a {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--secondary); border-bottom: 1.5px solid var(--secondary); padding-bottom: 4px;
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="fd-lead">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="fd-timeline">
+    {% for year, text in page_data.history %}
+      <div class="row">
+        <span class="year">{{ year }}</span>
+        <p class="text">{{ text }}</p>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section class="fd-method">
+    <div class="fd-method-inner">
+      <h2>{{ page_data.method_title }}</h2>
+      <div class="ps">
+        {% for p in page_data.method_paragraphs %}
+          <p>{{ p }}</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="fd-values">
+    <span class="sec-label">Cosa garantiamo</span>
+    <h2 style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro promesse che <em>non cambiano mai</em>.</h2>
+    <div class="grid">
+      {% for title, blurb in page_data.values %}
+        <div class="v">
+          <h4>{{ title }}</h4>
+          <p>{{ blurb }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="fd-cta-band">
+    <h3>Vuoi vedere il menù <em>in corso questa settimana?</em></h3>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}">Otto atti dell'autunno '26 →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}">Riserva la serata →</a>
+    </div>
+  </section>
+{% endblock %}

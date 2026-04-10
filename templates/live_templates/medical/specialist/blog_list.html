@@ -1,0 +1,121 @@
+{% extends "live_templates/medical/specialist/_base.html" %}
+
+{% block extra_css %}
+  .sp-posts { padding: 24px 90px 80px; max-width: 1100px; margin: 0 auto; }
+
+  /* lead post */
+  .sp-lead-post {
+    display: grid; grid-template-columns: 1.1fr 1fr;
+    gap: 56px; align-items: center;
+    padding: 56px 0;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sp-lead-post .img {
+    aspect-ratio: 4/3;
+    background:
+      linear-gradient(180deg, rgba(28,22,18,0) 60%, rgba(28,22,18,0.45) 100%),
+      url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=80') center/cover;
+    border-left: 6px solid var(--accent);
+    filter: grayscale(15%) contrast(1.05);
+  }
+  .sp-lead-post .body .kicker {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-lead-post .body h2 {
+    margin-top: 18px;
+    font-family: var(--heading); font-size: 56px; font-weight: 500;
+    line-height: 1.04; letter-spacing: -0.02em; max-width: 14ch;
+  }
+  .sp-lead-post .body .meta {
+    margin-top: 22px;
+    font-family: var(--body); font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .sp-lead-post .body .lede {
+    margin-top: 22px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    line-height: 1.5; color: var(--ink-soft);
+  }
+  .sp-lead-post .body .read {
+    margin-top: 28px; display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink);
+    border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+  .sp-lead-post .body .read:after { content: '→'; font-family: var(--heading); font-size: 18px; color: var(--accent); }
+
+  /* compact list */
+  .sp-list { padding-top: 24px; }
+  .sp-list .row {
+    display: grid; grid-template-columns: 100px 1fr 200px;
+    gap: 36px; align-items: baseline;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .sp-list .row .num {
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    color: var(--accent);
+  }
+  .sp-list .row .title {
+    font-family: var(--heading); font-size: 28px; font-weight: 500;
+    line-height: 1.15; letter-spacing: -0.01em;
+  }
+  .sp-list .row .title a:hover { color: var(--accent); }
+  .sp-list .row .lede {
+    margin-top: 8px; max-width: 60ch;
+    font-family: var(--body); font-size: 14px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .sp-list .row .meta {
+    text-align: right;
+    font-family: var(--body); font-size: 10px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .sp-list .row .meta strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-style: italic; font-size: 16px;
+    color: var(--accent); letter-spacing: 0; text-transform: none;
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="sp-lead">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="sp-posts">
+    {% with first_post=posts.0 %}
+    <div class="sp-lead-post">
+      <div class="img"></div>
+      <div class="body">
+        <div class="kicker">{{ first_post.kicker }}</div>
+        <h2><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'pubblicazioni' first_post.slug %}">{{ first_post.title }}</a></h2>
+        <div class="meta">{{ first_post.date }} · {{ first_post.read_min }} min · {{ first_post.author }}</div>
+        <p class="lede">{{ first_post.lede }}</p>
+        <a class="read" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'pubblicazioni' first_post.slug %}">Leggi l'articolo completo</a>
+      </div>
+    </div>
+    {% endwith %}
+
+    <div class="sp-list">
+      {% for post in posts %}
+        {% if not forloop.first %}
+          <div class="row">
+            <span class="num">{{ forloop.counter|stringformat:"02d" }}.</span>
+            <div>
+              <div class="title"><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'pubblicazioni' post.slug %}">{{ post.title }}</a></div>
+              <p class="lede">{{ post.lede }}</p>
+            </div>
+            <div class="meta">
+              {{ post.date }} · {{ post.read_min }} min
+              <strong>{{ post.author }}</strong>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

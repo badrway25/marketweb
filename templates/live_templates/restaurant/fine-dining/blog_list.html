@@ -1,0 +1,119 @@
+{% extends "live_templates/restaurant/fine-dining/_base.html" %}
+
+{% block extra_css %}
+  .fd-posts { padding: 24px 90px 80px; max-width: 1100px; margin: 0 auto; }
+
+  /* lead post */
+  .fd-lead-post {
+    display: grid; grid-template-columns: 1.1fr 1fr;
+    gap: 56px; align-items: center;
+    padding: 56px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .fd-lead-post .img {
+    aspect-ratio: 4/3;
+    background:
+      linear-gradient(180deg, rgba(11,9,7,0) 60%, rgba(11,9,7,0.5) 100%),
+      url('https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=1200&q=80') center/cover;
+    border-left: 6px solid var(--secondary);
+    filter: grayscale(15%) contrast(1.05) brightness(0.85);
+  }
+  .fd-lead-post .body .kicker {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--secondary);
+  }
+  .fd-lead-post .body h2 {
+    margin-top: 18px;
+    font-family: var(--heading); font-size: 56px; font-weight: 500;
+    line-height: 1.05; letter-spacing: -0.022em; max-width: 14ch;
+  }
+  .fd-lead-post .body .meta {
+    margin-top: 22px;
+    font-family: var(--body); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .fd-lead-post .body .lede {
+    margin-top: 22px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    line-height: 1.5; color: var(--ink-soft);
+  }
+  .fd-lead-post .body .read {
+    margin-top: 28px; display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--secondary);
+    border-bottom: 1.5px solid var(--secondary); padding-bottom: 4px;
+  }
+  .fd-lead-post .body .read:after { content: '→'; font-style: italic; }
+
+  /* compact list */
+  .fd-list { padding-top: 24px; }
+  .fd-list .row {
+    display: grid; grid-template-columns: 100px 1fr 200px;
+    gap: 36px; align-items: baseline;
+    padding: 32px 0; border-bottom: 1px solid var(--rule);
+  }
+  .fd-list .row .num {
+    font-family: var(--heading); font-style: italic; font-size: 28px;
+    color: var(--secondary);
+  }
+  .fd-list .row .title {
+    font-family: var(--heading); font-size: 30px; font-weight: 500;
+    line-height: 1.1; letter-spacing: -0.018em; color: var(--ink);
+  }
+  .fd-list .row .title a:hover { color: var(--secondary); }
+  .fd-list .row .lede {
+    margin-top: 10px; max-width: 60ch;
+    font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: var(--ink-soft); font-weight: 300;
+  }
+  .fd-list .row .meta {
+    text-align: right;
+    font-family: var(--body); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-dim);
+  }
+  .fd-list .row .meta strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-style: italic; font-size: 17px;
+    color: var(--secondary); letter-spacing: 0; text-transform: none;
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="fd-lead">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="fd-posts">
+    {% with first_post=posts.0 %}
+    <div class="fd-lead-post">
+      <div class="img"></div>
+      <div class="body">
+        <div class="kicker">{{ first_post.kicker }}</div>
+        <h2><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'diario' first_post.slug %}">{{ first_post.title }}</a></h2>
+        <div class="meta">{{ first_post.date }} · {{ first_post.read_min }} min · {{ first_post.author }}</div>
+        <p class="lede">{{ first_post.lede }}</p>
+        <a class="read" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'diario' first_post.slug %}">Leggi l'articolo</a>
+      </div>
+    </div>
+    {% endwith %}
+
+    <div class="fd-list">
+      {% for post in posts %}
+        {% if not forloop.first %}
+          <div class="row">
+            <span class="num">{{ forloop.counter|stringformat:"02d" }}.</span>
+            <div>
+              <div class="title"><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'diario' post.slug %}">{{ post.title }}</a></div>
+              <p class="lede">{{ post.lede }}</p>
+            </div>
+            <div class="meta">
+              {{ post.date }} · {{ post.read_min }} min
+              <strong>{{ post.author }}</strong>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

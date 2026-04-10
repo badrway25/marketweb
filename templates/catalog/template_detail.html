@@ -120,9 +120,18 @@
               <a href="#" class="mw-btn mw-btn-primary mw-btn-lg w-100">
                 <i class="bi bi-cart-plus"></i> Aggiungi al Carrello
               </a>
-              <a href="#" class="mw-btn mw-btn-secondary w-100">
-                <i class="bi bi-eye"></i> Anteprima Live
-              </a>
+              {% if has_live_preview %}
+                <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}" class="mw-btn mw-btn-secondary w-100" target="_blank" rel="noopener">
+                  <i class="bi bi-eye"></i> Apri anteprima completa
+                </a>
+                <p class="mw-detail-preview-note text-muted small mb-0 mt-1">
+                  Template completo · navigabile su tutte le pagine interne
+                </p>
+              {% else %}
+                <a href="#" class="mw-btn mw-btn-secondary w-100">
+                  <i class="bi bi-eye"></i> Anteprima Live
+                </a>
+              {% endif %}
             </div>
 
             <hr class="my-4" style="border-color: var(--mw-neutral-100);">

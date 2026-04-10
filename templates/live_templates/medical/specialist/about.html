@@ -1,0 +1,129 @@
+{% extends "live_templates/medical/specialist/_base.html" %}
+
+{% block extra_css %}
+  /* Two-col timeline */
+  .sp-history { padding: 24px 90px 80px; max-width: 1100px; margin: 0 auto; }
+  .sp-history .row {
+    display: grid; grid-template-columns: 140px 1fr; gap: 48px;
+    padding: 32px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-history .row:last-child { border-bottom: 1px solid var(--rule); }
+  .sp-history .year {
+    font-family: var(--heading); font-size: 56px; font-weight: 500;
+    color: var(--accent); line-height: 0.9; letter-spacing: -0.02em;
+  }
+  .sp-history .text {
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    color: var(--ink); line-height: 1.5; max-width: 56ch; padding-top: 14px;
+  }
+
+  /* method block */
+  .sp-method {
+    background: var(--paper-2);
+    padding: 90px 90px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sp-method-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; }
+  .sp-method h2 {
+    font-size: 56px; max-width: 8ch; font-weight: 500; line-height: 1.0;
+    letter-spacing: -0.02em;
+  }
+  .sp-method .ps p {
+    font-family: var(--body); font-size: 16px; line-height: 1.7;
+    color: var(--ink); margin-bottom: 22px; max-width: 64ch;
+  }
+  .sp-method .ps p:first-of-type:first-letter {
+    font-family: var(--heading); font-size: 76px; font-weight: 600;
+    float: left; line-height: 0.85; color: var(--accent);
+    padding: 6px 12px 0 0; margin-top: 4px;
+  }
+
+  /* values 4-up */
+  .sp-values {
+    padding: 90px 90px; max-width: 1200px; margin: 0 auto;
+  }
+  .sp-values .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+    margin-top: 40px;
+  }
+  .sp-values .v {
+    padding-top: 18px;
+    border-top: 1.5px solid var(--accent);
+  }
+  .sp-values .v h4 {
+    font-family: var(--heading); font-size: 24px; font-weight: 500;
+  }
+  .sp-values .v p {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 13px; line-height: 1.6;
+    color: var(--ink-soft); max-width: 28ch;
+  }
+
+  /* CTA bottom */
+  .sp-cta-band {
+    background: var(--primary); color: var(--paper);
+    padding: 60px 90px; display: flex; align-items: center; justify-content: space-between;
+    gap: 48px; flex-wrap: wrap;
+  }
+  .sp-cta-band h3 {
+    font-family: var(--heading); font-size: 36px; font-weight: 500; line-height: 1.15;
+    color: var(--paper); max-width: 24ch;
+  }
+  .sp-cta-band h3 em { color: var(--accent); }
+  .sp-cta-band .actions { display: flex; gap: 24px; }
+  .sp-cta-band .actions a {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--paper); border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="sp-lead">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="sp-history">
+    {% for year, text in page_data.history %}
+      <div class="row">
+        <span class="year">{{ year }}</span>
+        <p class="text">{{ text }}</p>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section class="sp-method">
+    <div class="sp-method-inner">
+      <h2>{{ page_data.method_title }}</h2>
+      <div class="ps">
+        {% for p in page_data.method_paragraphs %}
+          <p>{{ p }}</p>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="sp-values">
+    <span class="sec-label">Cosa garantiamo</span>
+    <h2>Quattro impegni che <em>non cambiano mai.</em></h2>
+    <div class="grid">
+      {% for title, blurb in page_data.values %}
+        <div class="v">
+          <h4>{{ title }}</h4>
+          <p>{{ blurb }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="sp-cta-band">
+    <h3>Vuoi conoscere i medici dello studio <em>prima di prenotare?</em></h3>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}">I tre medici dello studio →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}">Richiedi visita privata →</a>
+    </div>
+  </section>
+{% endblock %}

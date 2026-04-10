@@ -1,0 +1,124 @@
+{% extends "live_templates/medical/specialist/_base.html" %}
+
+{% block extra_css %}
+  .sp-article { max-width: 760px; margin: 0 auto; padding: 64px 24px 80px; }
+  .sp-article .crumbs {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+    display: flex; gap: 12px; align-items: center;
+  }
+  .sp-article .crumbs a { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; }
+  .sp-article .crumbs span { color: var(--ink-soft); }
+
+  .sp-article .kicker {
+    margin-top: 36px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-article h1 {
+    margin-top: 18px;
+    font-family: var(--heading); font-size: 64px; font-weight: 500;
+    line-height: 1.05; letter-spacing: -0.022em;
+  }
+  .sp-article .meta {
+    margin-top: 24px; padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+    display: flex; gap: 24px; align-items: center;
+    font-family: var(--body); font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .sp-article .meta strong {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 17px; color: var(--accent); letter-spacing: 0; text-transform: none;
+  }
+
+  .sp-article .lede {
+    margin-top: 36px;
+    font-family: var(--heading); font-style: italic; font-size: 26px;
+    line-height: 1.5; color: var(--ink); max-width: 36ch;
+  }
+  .sp-article .lede:first-letter {
+    font-family: var(--heading); font-size: 116px; font-weight: 600;
+    float: left; line-height: 0.85; color: var(--accent);
+    padding: 8px 16px 0 0; margin-top: 6px;
+  }
+
+  .sp-article .body { margin-top: 48px; }
+  .sp-article .body p {
+    margin-bottom: 22px;
+    font-family: var(--body); font-size: 17px; line-height: 1.75;
+    color: var(--ink); max-width: 64ch;
+  }
+  .sp-article .body h2 {
+    margin-top: 48px; margin-bottom: 18px;
+    font-family: var(--heading); font-size: 36px; font-weight: 500;
+    color: var(--primary); line-height: 1.15;
+  }
+  .sp-article .body ol {
+    margin-bottom: 22px; padding-left: 20px;
+    font-family: var(--body); font-size: 17px; line-height: 1.75; color: var(--ink);
+  }
+  .sp-article .body ol li { padding: 6px 0; }
+  .sp-article .body ol li::marker { color: var(--accent); font-weight: 700; }
+  .sp-article .body blockquote {
+    margin: 36px 0; padding: 0 32px;
+    border-left: 4px solid var(--accent);
+    font-family: var(--heading); font-style: italic; font-size: 26px;
+    line-height: 1.5; color: var(--primary);
+  }
+
+  .sp-article .footer-meta {
+    margin-top: 64px; padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .sp-article .footer-meta a {
+    color: var(--ink); border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+{% endblock %}
+
+{% block content %}
+  <article class="sp-article">
+    <nav class="crumbs">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'pubblicazioni' %}">Pubblicazioni</a>
+      <span>/</span>
+      <span>{{ post.kicker }}</span>
+    </nav>
+
+    <div class="kicker">{{ post.kicker }}</div>
+    <h1>{{ post.title }}</h1>
+    <div class="meta">
+      <span><strong>{{ post.author }}</strong></span>
+      <span>{{ post.date }}</span>
+      <span>{{ post.read_min }} min di lettura</span>
+    </div>
+
+    <p class="lede">{{ post.lede }}</p>
+
+    <div class="body">
+      {% for kind, text in post.body %}
+        {% if kind == "p" %}
+          <p>{{ text }}</p>
+        {% elif kind == "h2" %}
+          <h2>{{ text }}</h2>
+        {% elif kind == "ol" %}
+          <ol>
+            {% for li in text %}<li>{{ li }}</li>{% endfor %}
+          </ol>
+        {% elif kind == "blockquote" %}
+          <blockquote>{{ text }}</blockquote>
+        {% endif %}
+      {% empty %}
+        <p>Articolo in preparazione editoriale. La pubblicazione integrale sarà disponibile a breve.</p>
+        <p>Questo segnaposto descrive la voce dell'articolo: una nota clinica scritta dal medico, in tono diretto e privo di tecnicismi, pensata per pazienti e familiari che cercano informazioni affidabili.</p>
+      {% endfor %}
+    </div>
+
+    <div class="footer-meta">
+      <span>Studio Marani · Cardiologia clinica</span>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'pubblicazioni' %}">← Tutte le pubblicazioni</a>
+    </div>
+  </article>
+{% endblock %}

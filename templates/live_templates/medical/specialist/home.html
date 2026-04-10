@@ -1,0 +1,271 @@
+{% extends "live_templates/medical/specialist/_base.html" %}
+
+{% block extra_css %}
+  .sp-hero {
+    padding: 90px 90px 64px 90px;
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.55fr 1fr; gap: 64px;
+    align-items: stretch;
+  }
+  .sp-hero .left .eyebrow {
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-hero .left .eyebrow:before { content: ''; width: 36px; height: 1.5px; background: var(--accent); }
+  .sp-hero h1 {
+    margin-top: 30px; font-size: 92px; font-weight: 500; line-height: 0.97;
+    letter-spacing: -0.025em; max-width: 12ch;
+  }
+  .sp-hero .intro {
+    margin-top: 32px; max-width: 52ch;
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .sp-hero .actions { margin-top: 48px; display: flex; gap: 28px; align-items: center; }
+  .sp-hero .right {
+    background: linear-gradient(180deg, #2a201a 0%, #1c1612 100%);
+    border-left: 8px solid var(--accent);
+    padding: 36px 40px;
+    color: var(--paper);
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 460px;
+  }
+  .sp-hero .right .top {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(247,243,238,0.45);
+  }
+  .sp-hero .right .top strong {
+    display: block; margin-top: 10px;
+    font-family: var(--heading); font-size: 22px; color: var(--accent);
+    text-transform: none; letter-spacing: 0; font-weight: 500;
+  }
+  .sp-hero .right .quote {
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    line-height: 1.45; color: rgba(247,243,238,0.92);
+  }
+  .sp-hero .right .quote-author {
+    margin-top: 18px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .sp-hero .right .pulse {
+    display: flex; gap: 24px; padding-top: 24px;
+    border-top: 1px solid rgba(247,243,238,0.18);
+  }
+  .sp-hero .right .pulse div {
+    font-family: var(--body); font-size: 9px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(247,243,238,0.45);
+  }
+  .sp-hero .right .pulse strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-size: 18px; color: var(--paper);
+    text-transform: none; letter-spacing: 0;
+  }
+
+  /* facts band */
+  .sp-facts {
+    background: var(--paper-2); padding: 48px 90px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 36px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sp-facts .fact { display: flex; align-items: baseline; gap: 18px; }
+  .sp-facts .fact .num {
+    font-family: var(--heading); font-size: 56px; font-weight: 500;
+    color: var(--primary); letter-spacing: -0.02em; line-height: 0.9;
+  }
+  .sp-facts .fact .lbl {
+    font-family: var(--body); font-size: 13px; font-weight: 500;
+    color: var(--ink-soft); line-height: 1.4; max-width: 22ch;
+  }
+
+  /* manifesto */
+  .sp-manifesto { padding: 90px 90px; max-width: 1100px; margin: 0 auto; }
+  .sp-manifesto p {
+    font-family: var(--heading); font-size: 26px; line-height: 1.55;
+    color: var(--ink); font-weight: 400; max-width: 36ch; margin: 0 auto;
+  }
+  .sp-manifesto p:first-letter {
+    font-family: var(--heading); font-size: 116px; font-weight: 600;
+    float: left; line-height: 0.85; color: var(--accent);
+    padding: 8px 16px 0 0; margin-top: 6px;
+  }
+
+  /* signature visits — 4 large numbered fields */
+  .sp-fields {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 36px 48px;
+    margin-top: 48px;
+  }
+  .sp-fields .field { padding-top: 18px; border-top: 1.5px solid rgba(247,243,238,0.18); }
+  .sp-fields .field .num {
+    font-family: var(--heading); font-size: 14px; color: var(--accent);
+    font-weight: 600; letter-spacing: 0.04em;
+  }
+  .sp-fields .field h4 {
+    margin-top: 4px;
+    font-family: var(--heading); font-size: 26px; font-weight: 500;
+    color: var(--paper);
+  }
+  .sp-fields .field p {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 13px; line-height: 1.6;
+    color: rgba(247,243,238,0.7); max-width: 38ch;
+  }
+
+  /* chief block */
+  .sp-chief {
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px;
+    align-items: center;
+  }
+  .sp-chief .portrait {
+    aspect-ratio: 4/5;
+    background:
+      linear-gradient(180deg, rgba(28,22,18,0) 50%, rgba(28,22,18,0.45) 100%),
+      url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=900&q=80') center/cover;
+    border-left: 8px solid var(--accent);
+    filter: grayscale(15%) contrast(1.05);
+  }
+  .sp-chief .info .role {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-chief .info h3 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 56px; font-weight: 500;
+    line-height: 1.0; letter-spacing: -0.022em;
+  }
+  .sp-chief .info p {
+    margin-top: 24px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 19px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .sp-chief .info .links {
+    margin-top: 32px; display: flex; gap: 32px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .sp-chief .info .links a {
+    color: var(--ink); border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+
+  /* press strip */
+  .sp-press {
+    background: var(--paper-2); padding: 36px 90px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; gap: 48px; flex-wrap: wrap;
+  }
+  .sp-press .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-press .item {
+    font-family: var(--heading); font-size: 17px;
+    color: var(--ink-soft); letter-spacing: 0.04em;
+  }
+
+  /* CTA strip */
+  .sp-cta {
+    text-align: center; padding: 90px 90px;
+    background: var(--paper);
+  }
+  .sp-cta h2 {
+    font-size: 60px; max-width: 16ch; margin: 0 auto;
+  }
+  .sp-cta .actions {
+    margin-top: 36px; display: flex; gap: 28px; justify-content: center;
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="sp-hero">
+    <div class="left">
+      <div class="eyebrow">{{ page_data.eyebrow }}</div>
+      <h1>{{ page_data.headline|safe }}</h1>
+      <p class="intro">{{ page_data.intro }}</p>
+      <div class="actions">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}" class="gold-btn">{{ page_data.primary_cta }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}" class="ghost-btn">{{ page_data.secondary_cta }}</a>
+      </div>
+    </div>
+    <aside class="right">
+      <div class="top">
+        Direzione clinica
+        <strong>{{ page_data.chief.name }}</strong>
+      </div>
+      <div>
+        <p class="quote">«La cardiologia non è una catena di montaggio. È un dialogo lungo, fatto di tempo.»</p>
+        <div class="quote-author">— Lancet · 2024</div>
+      </div>
+      <div class="pulse">
+        <div>Studio<strong>Roma · Parioli</strong></div>
+        <div>Da<strong>2010</strong></div>
+        <div>Riferimento<strong>Cardiologia clinica</strong></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="sp-facts">
+    {% for num, lbl in page_data.facts %}
+      <div class="fact">
+        <span class="num">{{ num }}</span>
+        <span class="lbl">{{ lbl }}</span>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section class="sp-manifesto">
+    <p>{{ page_data.manifesto_drop_cap }}{{ page_data.manifesto }}</p>
+  </section>
+
+  <section class="sp-section dark">
+    <span class="sec-label">Visite & percorsi</span>
+    <h2>Sei percorsi clinici, <em>una sola firma.</em></h2>
+    <p class="sec-intro">Quattro fra le visite più richieste dello studio. L'elenco completo è nella pagina <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'visite' %}" style="color:var(--accent);border-bottom:1px solid var(--accent);">Visite</a>.</p>
+
+    <div class="sp-fields">
+      {% for num, title, blurb in page_data.signature_visits %}
+        <div class="field">
+          <div class="num">{{ num }} / 04</div>
+          <h4>{{ title }}</h4>
+          <p>{{ blurb }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="sp-section">
+    <span class="sec-label">Direzione clinica</span>
+    <h2>Una sola firma <em>per ogni cartella.</em></h2>
+
+    <div class="sp-chief" style="margin-top: 56px;">
+      <div class="portrait"></div>
+      <div class="info">
+        <div class="role">{{ page_data.chief.role }}</div>
+        <h3>{{ page_data.chief.name }}</h3>
+        <p>{{ page_data.chief.bio }}</p>
+        <div class="links">
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}">Tutti i medici</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'pubblicazioni' %}">Pubblicazioni</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sp-press">
+    <span class="lbl">Pubblicato su</span>
+    {% for outlet in page_data.press %}
+      <span class="item">{{ outlet }}</span>
+    {% endfor %}
+  </section>
+
+  <section class="sp-cta">
+    <h2>Ogni visita è <em>concordata personalmente</em> con il medico.</h2>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}" class="gold-btn">Richiedi visita privata</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}" class="ghost-btn">Contatti dello studio</a>
+    </div>
+  </section>
+{% endblock %}

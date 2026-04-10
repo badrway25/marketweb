@@ -1,17 +1,58 @@
 # Agent Handoff
 
-Last updated: 2026-04-10 — after Restaurant Pilot Fix Pass (Session 10)
+Last updated: 2026-04-10 — after Template Completeness Pilot Phase (Session 11)
 
 ## Current State
 
-**Template DNA System now has TWO validated category pilots: Medical (4 archetypes) and Restaurant (3 archetypes).** Templates inside the same category are no longer recolors of each other — each one has a unique "DNA" (archetype + hero/navbar/footer/cards/conversion/density/tone) that drives a bespoke HTML composition.
+**Two pilot templates now ship as full multi-page websites — not just preview screenshots.** The DNA system (Sessions 7-10) made each template's homepage visually unique. Session 11 added the missing piece: every template can now be a *navigable, complete website product*.
 
-- **Medical** pilot: 4 genuinely distinct templates (clinic, family, specialist, wellness), validated on `/templates/medical/`
-- **Restaurant** pilot: 3 genuinely distinct templates (fine-dining, trattoria-warm, street-modern), **Session 9 shipped weak Gusto/Sapore differentiation; Session 10 fixed it** — Gusto now fully DARK editorial, Sapore now fully BRIGHT cream scrapbook, Brace untouched
+- **`cardio-studio-specialistico`** (Medical · specialist archetype): 8 navigable inner pages — Home, Lo Studio, Visite, Medici, Pubblicazioni (list + article detail), Contatti, Richiedi visita
+- **`gusto-fine-dining`** (Restaurant · fine-dining archetype): 7 navigable inner pages — Casa, Filosofia, Menu (otto atti), Atmosfera, Diario (list + article detail), Prenota
+- All 17 routes (8 + 7 + 2 marketplace detail) verified 200 via Django test client
+- The system is **strictly opt-in per template** — every other template in the catalog behaves exactly as before
 
-Branch: `restaurant-template-pilot` worktree (built on top of `medical-pilot-fix` → `template-dna-system`, **none merged to master yet**).
+The marketplace template detail page now shows "Apri anteprima completa" (linking to the full live site) when content is registered, and falls back to the old "Anteprima Live" placeholder otherwise.
 
-## Session 10 — Restaurant Pilot Fix Pass
+Branch: `template-completeness-pilot` worktree (built on top of `restaurant-template-pilot` → ... → `template-dna-system`, **none merged to master yet**).
+
+## Session 11 — Template Completeness Pilot Phase
+
+Three architectural layers introduced:
+
+1. **Content registry** — `apps/catalog/template_content.py`. Python dict keyed by `WebTemplate.slug` holding the page list, per-page content blocks (eyebrow, headline, sections, lists), and a `posts` list for blog/news inner pages. All Italian, all realistic, no boilerplate.
+
+2. **Per-archetype standalone skin** — `templates/live_templates/<category>/<archetype>/`. Each archetype gets its own `_base.html` that is a *complete HTML document* (NOT extending the marketplace `base.html`), loading the DNA's font pairing and brand palette. Each page kind (`home.html`, `about.html`, `services.html`, `team.html`, `blog_list.html`, `blog_detail.html`, `contact.html`, `appointment.html`, `menu.html`, `gallery.html`, `reservations.html`) extends that base and overrides `extra_css` + `content`.
+
+3. **Single dispatcher view** — `LiveTemplateView` in `apps/catalog/views.py`. Resolves WebTemplate → DNA → content registry in `setup()` (NOT `get_template_names`, see D-044 trap), computes the template path `live_templates/<category>/<archetype>/<page-kind>.html`, returns 404 if either DNA or content is missing.
+
+Three new URL patterns:
+```
+/templates/<cat>/<slug>/preview/                         → live_template_home
+/templates/<cat>/<slug>/preview/<page>/                  → live_template_page
+/templates/<cat>/<slug>/preview/<page>/<post_slug>/      → live_template_post
+```
+
+### What makes a template "complete" now
+
+A template earns the "Apri anteprima completa" CTA on its detail page once it has BOTH:
+1. A DNA entry in `apps/catalog/template_dna.py` (archetype + chrome decisions)
+2. A content registry entry in `apps/catalog/template_content.py` (the editorial copy for every page)
+
+Without either, it falls back to the legacy `Anteprima Live` placeholder and the new URL space returns 404. Every template that's been in the catalog before Session 11 still works exactly as it did.
+
+### What is now reusable across all future templates
+- `LiveTemplateView` and the three URL patterns
+- The content-registry pattern (`template_content.py`) — adding a new template = adding ONE new top-level dict
+- The per-archetype skin folder structure — any new template that picks an existing archetype gets the chrome FOR FREE, just needs content
+- Brand palette → CSS variable injection
+- Nav loop with `is-current` highlight
+- Footer pattern with site-data block
+
+### What still needs per-archetype work
+- Each NEW archetype needs its own `_base.html` (intentionally bespoke — that's the point of DNA)
+- Each NEW archetype's page kinds need their own page templates (a `menu.html` is meaningless for a medical template)
+
+## Old: Session 10 — Restaurant Pilot Fix Pass
 
 Visual review of Session 9 found that **only Brace was clearly distinct**. Gusto and Sapore had two overlapping problems:
 
@@ -134,16 +175,26 @@ python manage.py generate_previews --only <slug>
 ```
 
 ### Immediate next step (highest impact)
-**Replicate the DNA pilot for the Agency category.** Same recipe — but apply Session 10 lessons rigorously:
+**Add a third template to validate that the inner-page abstraction holds with content alone.** Pick ONE of:
 
-1. Open `apps/catalog/template_dna.py` and add 3 entries: vertex-creative-agency → `bold-grid`, aura-digital-studio → `editorial-quiet`, plus 1 NEW template `case-study-led` (e.g. a strategy/branding agency that leads with case studies).
-2. Add the new template to `apps/catalog/management/commands/seed_templates.py`.
-3. **Decide each composition's macro page tone BEFORE writing CSS** — never two with the same silhouette. E.g.: bold-grid = full-bleed dark with bright accent; editorial-quiet = pure white minimal; case-study-led = colorful blocks with black type. Three different page-level macro tones.
-4. Create `templates/preview_compositions/agency/bold-grid.html`, `agency/editorial-quiet.html`, `agency/case-study-led.html`. Use the **restaurant** (post-Session 10) and **medical** files as the structural reference — each must have a completely different hero, navbar, cards, and footer composition. **DO NOT** put a dark band on the bottom of a light layout — that's the silhouette trap from Session 10.
-5. Add 3 new imagery keys (`agency-bold`, `agency-editorial`, `agency-cases`) in `preview_imagery.py`. **HAND-CHECK every Unsplash candidate via curl + Read** — Session 10 caught a clothing-store photo that way. Each pool must have ZERO URL overlap with the others. Aim for 6 photos per pool.
-6. Choose multi-weight Google Fonts only (`_base.html` requests `wght@500;600;700;800` and Google Fonts CSS2 returns 400 if no requested weight exists). Big Shoulders Display, Playfair Display, Caveat, Space Grotesk, DM Sans, Manrope are all safe.
-7. Use the clean delete + regenerate-without-force recipe (also clear `media/preview_imagery/<new-key>/` if you change URLs after a first generation pass).
-8. Verify with Playwright at `/templates/agency/`. **Cache-bust each `<img>` via `browser_evaluate` before screenshotting** — see the browser cache trap note above. Inspect direct PNG URLs with `?v=N` query strings.
+- **Option A — second `specialist` template** (e.g. `dermatologia-elite-roma`): proves the Medical specialist 8-page model travels with content alone. Recipe:
+  1. Add a row to `apps/catalog/management/commands/seed_templates.py`
+  2. Add a DNA entry to `apps/catalog/template_dna.py` (archetype: `specialist`)
+  3. Add a content block to `apps/catalog/template_content.py` (use `CARDIO_CONTENT` as the structural reference — same keys, different copy)
+  4. Run `python manage.py seed_templates` to insert the new row
+  5. Hit `/templates/medical/dermatologia-elite-roma/preview/` — should render with the Cardio chrome but completely different content
+  6. **Zero new HTML files needed.** If something breaks, the abstraction failed and we need to identify where.
+
+- **Option B — second `fine-dining` template** (e.g. `tartufo-truffle-house`): proves the Restaurant fine-dining 7-page model travels with content alone. Same recipe, use `GUSTO_CONTENT` as reference.
+
+(B) is the stronger signal — restaurant is the most visually-loaded category and the one most likely to expose hidden assumptions.
+
+After validating, pick one of the Phase 2g.1 backlog items in TODO_NEXT.md (previous/next page nav, per-page meta tags, imagery in registry, or building inner pages for the other 4 medical / 2 restaurant archetypes).
+
+### Phase 2f — DNA rollout to other categories (still pending)
+The DNA rollout from Sessions 7-10 stopped after Restaurant. Three more categories still need archetype splits — Agency (3 archetypes), Lawyer (2), Real Estate (2). See the previous handoff note for the recipe; the constraint is now both:
+1. Distinct preview compositions per archetype (Sessions 7-10 lessons)
+2. Inner-page chrome under `templates/live_templates/<category>/<archetype>/` if the new templates are to ship as full sites (Session 11 architecture)
 
 ### Phase 2d polish (still pending from previous sessions)
 1. Optimize PNG file sizes (~4 MB → ~500 KB via Pillow `optimize=True` or oxipng)
@@ -160,13 +211,21 @@ python manage.py generate_previews --only <slug>
 4. Editor + projects integration
 5. Live demo iframe per template
 
-### Key Files for the DNA System
+### Key Files for the DNA System (preview screenshots — Sessions 7-10)
 - `apps/catalog/template_dna.py` — DNA registry + vocabulary (the source of truth)
 - `apps/catalog/templatetags/preview_extras.py` — `at` filter for image indexing in loops
 - `apps/catalog/preview_imagery.py` — `IMAGERY_CONFIG` with per-archetype keys
 - `apps/catalog/management/commands/generate_previews.py` — DNA-aware pipeline
-- `templates/preview_compositions/<category>/<archetype>.html` — bespoke per-template HTML
+- `templates/preview_compositions/<category>/<archetype>.html` — bespoke per-template preview HTML (1600x900 fixed)
 - `templates/preview_compositions/<category>.html` — legacy fallback for non-DNA templates
+
+### Key Files for the Live Template System (multi-page websites — Session 11)
+- `apps/catalog/template_content.py` — content registry (per-template page copy + helpers `has_live_template`/`get_content`/`find_page`/`find_post`)
+- `apps/catalog/views.py` — `LiveTemplateView` (resolves DNA + content in `setup()`, dispatches to per-archetype/page-kind template)
+- `apps/catalog/urls.py` — three URL patterns: `live_template_home`, `live_template_page`, `live_template_post`
+- `templates/live_templates/<category>/<archetype>/_base.html` — standalone HTML doc for the archetype (NOT extending `base.html`)
+- `templates/live_templates/<category>/<archetype>/<page-kind>.html` — per-page-kind layouts (home, about, services, team, blog_list, blog_detail, contact, appointment, menu, gallery, reservations)
+- `templates/catalog/template_detail.html` — conditional CTA (`Apri anteprima completa` if content registered)
 
 ### Constraints (unchanged)
 - Do not redesign architecture or model structure
@@ -182,4 +241,5 @@ python manage.py generate_previews --only <slug>
 - **Real-preview-assets** owns: `apps/catalog/preview_imagery.py`, `apps/catalog/management/commands/generate_previews.py`, `templates/preview_compositions/`
 - **Template-DNA-system** owns: `apps/catalog/template_dna.py`, `apps/catalog/templatetags/preview_extras.py`, `templates/preview_compositions/<category>/<archetype>.html` files
 - **DNA-pilot sessions** (medical, restaurant, ...) own per-category vocabulary additions in `template_dna.py`, the per-category composition folder, and the matching imagery pool keys
+- **Template-completeness-pilot** owns: `apps/catalog/template_content.py`, `LiveTemplateView`, the live preview URL patterns, `templates/live_templates/<category>/<archetype>/` skin folders
 - All sessions update: SESSION_LOG.md, DECISIONS.md, TODO_NEXT.md, AGENT_HANDOFF.md, TEMPLATE_REGISTRY.json, BRAND_SYSTEM_GUIDELINES.md, CATEGORY_ROADMAP.md at end

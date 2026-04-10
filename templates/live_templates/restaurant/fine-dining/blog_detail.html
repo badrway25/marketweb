@@ -1,0 +1,112 @@
+{% extends "live_templates/restaurant/fine-dining/_base.html" %}
+
+{% block extra_css %}
+  .fd-article { max-width: 760px; margin: 0 auto; padding: 64px 24px 96px; }
+  .fd-article .crumbs {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--ink-soft);
+    display: flex; gap: 12px; align-items: center;
+  }
+  .fd-article .crumbs a { color: var(--secondary); border-bottom: 1px solid var(--secondary); padding-bottom: 1px; }
+
+  .fd-article .kicker {
+    margin-top: 36px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--secondary);
+  }
+  .fd-article h1 {
+    margin-top: 18px;
+    font-family: var(--heading); font-size: 64px; font-weight: 500;
+    line-height: 1.05; letter-spacing: -0.025em; color: var(--ink);
+  }
+  .fd-article .meta {
+    margin-top: 24px; padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+    display: flex; gap: 24px; align-items: center;
+    font-family: var(--body); font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .fd-article .meta strong {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 17px; color: var(--secondary); letter-spacing: 0; text-transform: none;
+  }
+
+  .fd-article .lede {
+    margin-top: 36px;
+    font-family: var(--heading); font-style: italic; font-size: 28px;
+    line-height: 1.5; color: var(--ink); max-width: 36ch; font-weight: 500;
+  }
+  .fd-article .lede:first-letter {
+    font-family: var(--heading); font-size: 124px; font-weight: 600;
+    float: left; line-height: 0.85; color: var(--secondary);
+    padding: 8px 18px 0 0; margin-top: 6px; font-style: normal;
+  }
+
+  .fd-article .body { margin-top: 56px; }
+  .fd-article .body p {
+    margin-bottom: 26px;
+    font-family: var(--body); font-size: 17px; font-weight: 300; line-height: 1.8;
+    color: var(--ink); max-width: 64ch;
+  }
+  .fd-article .body h2 {
+    margin-top: 56px; margin-bottom: 18px;
+    font-family: var(--heading); font-style: italic;
+    font-size: 36px; font-weight: 500; color: var(--secondary); line-height: 1.15;
+  }
+  .fd-article .body blockquote {
+    margin: 48px 0; padding: 0 32px;
+    border-left: 4px solid var(--secondary);
+    font-family: var(--heading); font-style: italic; font-size: 28px;
+    line-height: 1.45; color: var(--ink);
+    max-width: 36ch;
+  }
+
+  .fd-article .footer-meta {
+    margin-top: 64px; padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .fd-article .footer-meta a { color: var(--secondary); border-bottom: 1.5px solid var(--secondary); padding-bottom: 4px; }
+{% endblock %}
+
+{% block content %}
+  <article class="fd-article">
+    <nav class="crumbs">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}">Diario</a>
+      <span>/</span>
+      <span style="color:var(--ink-soft);">{{ post.kicker }}</span>
+    </nav>
+
+    <div class="kicker">{{ post.kicker }}</div>
+    <h1>{{ post.title }}</h1>
+    <div class="meta">
+      <span><strong>{{ post.author }}</strong></span>
+      <span>{{ post.date }}</span>
+      <span>{{ post.read_min }} min di lettura</span>
+    </div>
+
+    <p class="lede">{{ post.lede }}</p>
+
+    <div class="body">
+      {% for kind, text in post.body %}
+        {% if kind == "p" %}
+          <p>{{ text }}</p>
+        {% elif kind == "h2" %}
+          <h2>{{ text }}</h2>
+        {% elif kind == "blockquote" %}
+          <blockquote>{{ text }}</blockquote>
+        {% endif %}
+      {% empty %}
+        <p>Articolo in preparazione editoriale. La pubblicazione integrale sarà disponibile a breve, scritta personalmente dallo chef o dal maître.</p>
+        <p>Questo segnaposto descrive la voce del Diario di Sala: brevi note di lavoro, riflessioni sui produttori, racconti di serate memorabili. Mai più di duemila parole, mai meno di cinquecento.</p>
+      {% endfor %}
+    </div>
+
+    <div class="footer-meta">
+      <span>Osteria Moderna · Il diario di sala</span>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}">← Tutto il diario</a>
+    </div>
+  </article>
+{% endblock %}

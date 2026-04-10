@@ -1,0 +1,204 @@
+{% extends "live_templates/medical/specialist/_base.html" %}
+
+{% block extra_css %}
+  /* process steps */
+  .sp-process { padding: 24px 90px 24px; max-width: 1200px; margin: 0 auto; }
+  .sp-process .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+    margin-top: 24px;
+  }
+  .sp-process .step {
+    padding-top: 18px;
+    border-top: 1.5px solid var(--accent);
+  }
+  .sp-process .step .num {
+    font-family: var(--heading); font-size: 14px; color: var(--accent);
+    font-weight: 600; letter-spacing: 0.04em;
+  }
+  .sp-process .step h4 {
+    margin-top: 6px;
+    font-family: var(--heading); font-size: 26px; font-weight: 500;
+    color: var(--primary); line-height: 1.15;
+  }
+  .sp-process .step p {
+    margin-top: 14px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  /* form on dark band */
+  .sp-form-band {
+    background: var(--primary); color: var(--paper);
+    margin-top: 80px; padding: 80px 90px;
+  }
+  .sp-form-band-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px;
+  }
+  .sp-form-band h2 {
+    font-family: var(--heading); font-size: 56px; font-weight: 500;
+    color: var(--paper); line-height: 1.0; letter-spacing: -0.02em;
+  }
+  .sp-form-band h2 em { color: var(--accent); }
+  .sp-form-band .side-note {
+    margin-top: 32px;
+    font-family: var(--heading); font-style: italic; font-size: 18px;
+    color: rgba(247,243,238,0.65); max-width: 30ch; line-height: 1.55;
+  }
+  .sp-form-band .side-note small {
+    display: block; margin-top: 24px;
+    font-family: var(--body); font-size: 11px; font-style: normal;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .sp-form-band form {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px 36px;
+  }
+  .sp-form-band .field { display: flex; flex-direction: column; gap: 8px; }
+  .sp-form-band .field.full { grid-column: 1 / -1; }
+  .sp-form-band label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(247,243,238,0.55);
+  }
+  .sp-form-band input, .sp-form-band select, .sp-form-band textarea {
+    background: transparent; border: 0;
+    border-bottom: 1.5px solid rgba(247,243,238,0.18);
+    padding: 10px 0; font-family: var(--body); font-size: 16px;
+    color: var(--paper); outline: none;
+  }
+  .sp-form-band input::placeholder,
+  .sp-form-band select::placeholder,
+  .sp-form-band textarea::placeholder {
+    color: rgba(247,243,238,0.35);
+  }
+  .sp-form-band input:focus, .sp-form-band select:focus, .sp-form-band textarea:focus {
+    border-color: var(--accent);
+  }
+  .sp-form-band textarea { min-height: 130px; resize: vertical; }
+  .sp-form-band .consent {
+    grid-column: 1 / -1;
+    display: flex; gap: 14px; align-items: flex-start;
+    font-family: var(--body); font-size: 12px; line-height: 1.5;
+    color: rgba(247,243,238,0.65);
+  }
+  .sp-form-band .consent input { flex: 0 0 auto; width: 16px; height: 16px; }
+  .sp-form-band .submit-row {
+    grid-column: 1 / -1;
+    padding-top: 12px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .sp-form-band .submit-row button {
+    background: var(--accent); color: var(--primary);
+    padding: 18px 36px; border: 0;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer;
+  }
+  .sp-form-band .submit-row .alt {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(247,243,238,0.55);
+  }
+  .sp-form-band .submit-row .alt a { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; }
+
+  .sp-foot-note {
+    background: var(--paper-2);
+    padding: 36px 90px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    text-align: center;
+    font-family: var(--body); font-size: 13px; line-height: 1.6;
+    color: var(--ink-soft); max-width: 800px; margin: 0 auto;
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="sp-lead">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="sp-process">
+    <span class="sec-label">Come funziona</span>
+    <h2 style="margin-top:14px;font-size:42px;font-weight:500;line-height:1.1;letter-spacing:-0.018em;max-width:18ch;">Quattro passaggi, in <em>quattro giorni lavorativi.</em></h2>
+
+    <div class="grid">
+      {% for num, title, blurb in page_data.process %}
+        <div class="step">
+          <div class="num">{{ num }} / 04</div>
+          <h4>{{ title }}</h4>
+          <p>{{ blurb }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="sp-form-band">
+    <div class="sp-form-band-inner">
+      <div>
+        <h2>{{ page_data.form_title }}</h2>
+        <p class="side-note">
+          Riserva qualche minuto. Le richieste compilate con cura sono lette dal medico per intero — quelle frettolose, no.
+          <small>↓ Modulo riservato</small>
+        </p>
+      </div>
+
+      <form>
+        <div class="field">
+          <label>Nome e cognome</label>
+          <input type="text" placeholder="Mario Rossi">
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" placeholder="mario@email.it">
+        </div>
+        <div class="field">
+          <label>Telefono</label>
+          <input type="tel" placeholder="+39 333 ...">
+        </div>
+        <div class="field">
+          <label>Età</label>
+          <input type="number" placeholder="52">
+        </div>
+        <div class="field">
+          <label>Tipo di visita</label>
+          <select>
+            <option>Prima visita</option>
+            <option>Secondo parere</option>
+            <option>Programma prevenzione</option>
+            <option>Visita di controllo</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Disponibilità preferite</label>
+          <select>
+            <option>Mattina</option>
+            <option>Pomeriggio</option>
+            <option>Indifferente</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Medico curante</label>
+          <input type="text" placeholder="Dr. ...">
+        </div>
+        <div class="field full">
+          <label>Breve descrizione del caso</label>
+          <textarea placeholder="Sintomi, esami già eseguiti, diagnosi attuale, terapia in corso. Resta nelle dieci righe."></textarea>
+        </div>
+        <div class="consent">
+          <input type="checkbox">
+          <span>{{ page_data.consent }}</span>
+        </div>
+        <div class="submit-row">
+          <button type="button">Invia richiesta</button>
+          <span class="alt">In alternativa: <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}">parla con la segreteria</a></span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sp-foot-note">
+    {{ page_data.footnote }}
+  </section>
+{% endblock %}

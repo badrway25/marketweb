@@ -1,0 +1,123 @@
+{% extends "live_templates/restaurant/fine-dining/_base.html" %}
+
+{% block extra_css %}
+  /* Rooms list */
+  .fd-rooms { padding: 24px 90px 80px; max-width: 1100px; margin: 0 auto; }
+  .fd-rooms .room {
+    display: grid; grid-template-columns: 200px 1fr;
+    gap: 56px; padding: 36px 0; border-top: 1px solid var(--rule);
+  }
+  .fd-rooms .room:last-child { border-bottom: 1px solid var(--rule); }
+  .fd-rooms .room .num {
+    font-family: var(--heading); font-style: italic;
+    font-size: 64px; font-weight: 500; color: var(--secondary);
+    line-height: 0.9; letter-spacing: -0.02em;
+  }
+  .fd-rooms .room h3 {
+    font-family: var(--heading); font-size: 36px; font-weight: 500;
+    color: var(--ink); line-height: 1.1;
+  }
+  .fd-rooms .room p {
+    margin-top: 14px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 19px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+
+  /* Image grid — magazine layout */
+  .fd-gallery {
+    padding: 24px 90px 96px; max-width: 1280px; margin: 0 auto;
+  }
+  .fd-gallery .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 320px 320px 320px;
+    gap: 18px;
+  }
+  .fd-gallery .img {
+    background-size: cover; background-position: center;
+    filter: contrast(1.05) saturate(0.95) brightness(0.85);
+    position: relative; overflow: hidden;
+  }
+  .fd-gallery .img:hover { filter: contrast(1.1) saturate(1) brightness(0.95); }
+  .fd-gallery .img:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(11,9,7,0) 60%, rgba(11,9,7,0.65) 100%);
+    pointer-events: none;
+  }
+  .fd-gallery .img .cap {
+    position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 2;
+    color: var(--ink);
+    font-family: var(--heading); font-style: italic; font-size: 14px;
+    line-height: 1.4;
+  }
+
+  /* span helpers */
+  .fd-gallery .a { grid-column: span 4; grid-row: span 2; background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80'); }
+  .fd-gallery .b { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=80'); }
+  .fd-gallery .c { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=80'); }
+  .fd-gallery .d { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=900&q=80'); }
+  .fd-gallery .e { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=900&q=80'); }
+  .fd-gallery .f { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80'); }
+
+  .fd-cta-bottom {
+    background: var(--bg-2);
+    padding: 80px 90px; text-align: center;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .fd-cta-bottom h2 {
+    font-family: var(--heading); font-style: italic;
+    font-size: 56px; font-weight: 500; color: var(--secondary);
+    max-width: 18ch; margin: 0 auto; line-height: 1.05;
+  }
+  .fd-cta-bottom p {
+    margin-top: 18px;
+    font-family: var(--heading); font-style: italic; font-size: 20px;
+    color: var(--ink-soft); max-width: 50ch; margin-left: auto; margin-right: auto;
+  }
+  .fd-cta-bottom .actions { margin-top: 36px; display: flex; gap: 32px; justify-content: center; }
+  .fd-cta-bottom .actions a {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--secondary); border-bottom: 1.5px solid var(--secondary); padding-bottom: 4px;
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="fd-lead">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="fd-rooms">
+    {% for title, blurb in page_data.rooms %}
+      <div class="room">
+        <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
+        <div>
+          <h3>{{ title }}</h3>
+          <p>{{ blurb }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section class="fd-gallery">
+    <div class="grid">
+      <div class="img a"><div class="cap">{{ page_data.captions.0 }}</div></div>
+      <div class="img b"><div class="cap">{{ page_data.captions.1 }}</div></div>
+      <div class="img c"><div class="cap">{{ page_data.captions.2 }}</div></div>
+      <div class="img d"><div class="cap">{{ page_data.captions.3 }}</div></div>
+      <div class="img e"><div class="cap">{{ page_data.captions.4 }}</div></div>
+      <div class="img f"><div class="cap">{{ page_data.captions.5 }}</div></div>
+    </div>
+  </section>
+
+  <section class="fd-cta-bottom">
+    <h2>«Per fotografare il piatto, qui, lo si guarda con calma da seduti.»</h2>
+    <p>Quattordici coperti per servizio. Solo prenotazione. Solo cena. Mer – Sab.</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}">Riserva la serata →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}">Vedi il menù →</a>
+    </div>
+  </section>
+{% endblock %}

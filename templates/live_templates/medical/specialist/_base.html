@@ -1,0 +1,246 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary:   {{ theme.primary }};
+    --secondary: {{ theme.secondary }};
+    --accent:    {{ theme.accent }};
+    --paper:     #f7f3ee;
+    --paper-2:   #efe8dd;
+    --ink:       #1c1612;
+    --ink-soft:  #6e5e52;
+    --rule:      rgba(28,22,18,0.10);
+    --rule-soft: rgba(28,22,18,0.05);
+    --heading: '{{ theme.heading_font }}', Georgia, serif;
+    --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1,h2,h3,h4,h5 { font-family: var(--heading); font-weight: 500; line-height: 1.08; letter-spacing: -0.018em; color: var(--primary); }
+  em { font-style: italic; color: var(--accent); font-weight: 500; }
+
+  /* ============================================================
+     MARKETPLACE BAR — minimal "you are in a preview" hint
+  ============================================================ */
+  .mp-bar {
+    background: #0f0e0c; color: #f7f3ee; font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .mp-bar .mp-back { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; font-weight: 600; }
+  .mp-bar .mp-name { color: rgba(247,243,238,0.55); }
+
+  /* ============================================================
+     SITE NAV — minimal serif (centered logo, hairline rule)
+  ============================================================ */
+  .sp-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    padding: 22px 56px;
+    background: rgba(247,243,238,0.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .sp-nav .left, .sp-nav .right {
+    display: flex; gap: 30px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .sp-nav .right { justify-content: flex-end; }
+  .sp-nav .left a, .sp-nav .right a { transition: color .15s ease; }
+  .sp-nav .left a.is-current, .sp-nav .right a.is-current { color: var(--accent); }
+  .sp-nav .left a:hover, .sp-nav .right a:hover { color: var(--ink); }
+  .sp-nav .logo { display: flex; align-items: center; gap: 12px; }
+  .sp-nav .logo .crest {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1.5px solid var(--accent); display: flex; align-items: center; justify-content: center;
+    color: var(--accent); font-family: var(--heading); font-weight: 600; font-size: 16px;
+  }
+  .sp-nav .logo .word { font-family: var(--heading); font-size: 22px; font-weight: 600; letter-spacing: 0.01em; }
+
+  /* ============================================================
+     PAGE LEAD — eyebrow + huge serif headline + intro
+  ============================================================ */
+  .sp-lead { padding: 90px 90px 56px; max-width: 1200px; margin: 0 auto; }
+  .sp-lead .eyebrow {
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-lead .eyebrow:before { content: ''; width: 32px; height: 1.5px; background: var(--accent); }
+  .sp-lead h1 {
+    margin-top: 28px; font-size: 76px; font-weight: 500; line-height: 1.0;
+    letter-spacing: -0.022em; color: var(--primary); max-width: 11ch;
+  }
+  .sp-lead .intro {
+    margin-top: 26px; max-width: 60ch;
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    line-height: 1.5; color: var(--ink-soft); font-weight: 400;
+  }
+  .sp-lead .meta-row {
+    margin-top: 48px; display: flex; flex-wrap: wrap; align-items: center; gap: 28px;
+  }
+  .sp-lead .gold-btn {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink); border-bottom: 1.5px solid var(--accent);
+    padding: 4px 0; display: inline-flex; align-items: center; gap: 14px;
+  }
+  .sp-lead .gold-btn:after { content: '→'; font-family: var(--heading); font-size: 18px; color: var(--accent); }
+  .sp-lead .ghost-btn {
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-soft); border-bottom: 1px solid var(--rule);
+    padding: 4px 0;
+  }
+  .sp-lead .ghost-btn:hover { color: var(--ink); }
+
+  /* ============================================================
+     SECTION TITLES & HELPERS
+  ============================================================ */
+  .sp-section { padding: 80px 90px; max-width: 1200px; margin: 0 auto; }
+  .sp-section.dark { background: var(--primary); color: var(--paper); max-width: none; padding: 80px 90px; }
+  .sp-section.dark h2,
+  .sp-section.dark h3,
+  .sp-section.dark h4 { color: var(--paper); }
+  .sp-section.dark em { color: var(--accent); }
+  .sp-section .sec-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-section h2 {
+    margin-top: 14px; font-size: 48px; font-weight: 500; line-height: 1.08;
+    letter-spacing: -0.018em; max-width: 18ch;
+  }
+  .sp-section .sec-intro {
+    margin-top: 18px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 18px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .sp-section.dark .sec-intro { color: rgba(247,243,238,0.72); }
+
+  .sp-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 56px 64px; }
+  .sp-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px 56px; }
+  .sp-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px 36px; }
+
+  /* ============================================================
+     FOOTER — centered minimal w/ press band
+  ============================================================ */
+  .sp-foot {
+    margin-top: 24px;
+    background: var(--primary); color: var(--paper);
+    padding: 64px 90px 32px; font-family: var(--body); font-size: 13px;
+  }
+  .sp-foot .top {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 48px; border-bottom: 1px solid rgba(247,243,238,0.18);
+  }
+  .sp-foot .top h5 {
+    color: var(--accent); font-family: var(--body);
+    font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 16px;
+  }
+  .sp-foot .brand .word {
+    font-family: var(--heading); font-size: 24px; color: var(--paper);
+    margin-bottom: 8px;
+  }
+  .sp-foot .brand p { color: rgba(247,243,238,0.65); max-width: 32ch; line-height: 1.55; }
+  .sp-foot .col p, .sp-foot .col a { color: rgba(247,243,238,0.7); display: block; padding: 4px 0; }
+  .sp-foot .col a:hover { color: var(--accent); }
+  .sp-foot .bot {
+    padding-top: 24px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 11px; color: rgba(247,243,238,0.45);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .sp-foot .bot a:hover { color: var(--accent); }
+
+  /* Page-specific block can extend with extra css */
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}" class="mp-back">← Torna a MarketWeb</a>
+  <span class="mp-name">Anteprima completa · {{ template.name }}</span>
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}" class="mp-back">Altri template medicali →</a>
+</div>
+
+<nav class="sp-nav">
+  <div class="left">
+    {% for p in pages %}
+      {% if forloop.counter <= 3 %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="logo">
+    <span class="crest">{{ site.logo_initial }}</span>
+    <span class="word">{{ site.logo_word }}</span>
+  </div>
+  <div class="right">
+    {% for p in pages %}
+      {% if forloop.counter > 3 %}
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="sp-foot">
+  <div class="top">
+    <div class="brand">
+      <h5>Lo studio</h5>
+      <div class="word">{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="col">
+      <h5>Pagine</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>Contatti</h5>
+      <p>{{ site.address }}</p>
+      <p>{{ site.phone }}</p>
+      <p>{{ site.email }}</p>
+    </div>
+    <div class="col">
+      <h5>Orari</h5>
+      <p>{{ site.hours_compact }}</p>
+      <p>Sabato · solo reperibilità</p>
+      <p>Domenica · chiuso</p>
+    </div>
+  </div>
+  <div class="bot">
+    <span>© 2026 {{ site.logo_word }} · Iscrizione OMCeO Roma 12 / 4408</span>
+    <span><a href="#">Privacy</a> &middot; <a href="#">Cookie</a> &middot; <a href="#">Note legali</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
