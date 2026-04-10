@@ -232,12 +232,13 @@
     <div class="col">
       <h5>Orari</h5>
       <p>{{ site.hours_compact }}</p>
-      <p>Sabato · solo reperibilità</p>
-      <p>Domenica · chiuso</p>
+      {% for row in site.hours_footer_rows %}
+        <p>{{ row }}</p>
+      {% endfor %}
     </div>
   </div>
   <div class="bot">
-    <span>© 2026 {{ site.logo_word }} · Iscrizione OMCeO Roma 12 / 4408</span>
+    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
     <span><a href="#">Privacy</a> &middot; <a href="#">Cookie</a> &middot; <a href="#">Note legali</a></span>
   </div>
 </footer>

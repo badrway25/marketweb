@@ -121,40 +121,42 @@
         <div class="sp-form">
           <h3>{{ page_data.form_title }}</h3>
           <p class="intro">{{ page_data.form_intro }}</p>
+          {% with ph=page_data.form_placeholders %}
           <form>
             <div class="field">
               <label>Nome</label>
-              <input type="text" placeholder="Mario">
+              <input type="text" placeholder="{{ ph.first_name }}">
             </div>
             <div class="field">
               <label>Cognome</label>
-              <input type="text" placeholder="Rossi">
+              <input type="text" placeholder="{{ ph.last_name }}">
             </div>
             <div class="field">
               <label>Email</label>
-              <input type="email" placeholder="mario.rossi@email.it">
+              <input type="email" placeholder="{{ ph.email }}">
             </div>
             <div class="field">
               <label>Telefono</label>
-              <input type="tel" placeholder="+39 333 ...">
+              <input type="tel" placeholder="{{ ph.phone }}">
             </div>
             <div class="field full">
               <label>Oggetto</label>
-              <input type="text" placeholder="Informazioni su una visita di controllo">
+              <input type="text" placeholder="{{ ph.subject }}">
             </div>
             <div class="field full">
               <label>Messaggio</label>
-              <textarea placeholder="Resta in poche righe — la segreteria ti contatta entro la giornata lavorativa."></textarea>
+              <textarea placeholder="{{ ph.message }}"></textarea>
             </div>
             <div class="submit">
               <button type="button">Invia messaggio</button>
             </div>
           </form>
+          {% endwith %}
         </div>
       </div>
 
       <aside class="sp-side">
-        <h4>Orari di apertura</h4>
+        <h4>{{ page_data.hours_heading }}</h4>
         {% for day, am, pm in page_data.hours %}
           <div class="row">
             <span class="day">{{ day }}</span>
@@ -163,7 +165,7 @@
           </div>
         {% endfor %}
 
-        <h4 class="transport">Come raggiungerci</h4>
+        <h4 class="transport">{{ page_data.transport_heading }}</h4>
         {% for label, text in page_data.transport %}
           <div class="t">
             <span>{{ label }}</span>

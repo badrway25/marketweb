@@ -82,7 +82,7 @@
 {% block content %}
   <article class="sp-article">
     <nav class="crumbs">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'pubblicazioni' %}">Pubblicazioni</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}">{{ page.label }}</a>
       <span>/</span>
       <span>{{ post.kicker }}</span>
     </nav>
@@ -111,14 +111,15 @@
           <blockquote>{{ text }}</blockquote>
         {% endif %}
       {% empty %}
-        <p>Articolo in preparazione editoriale. La pubblicazione integrale sarà disponibile a breve.</p>
-        <p>Questo segnaposto descrive la voce dell'articolo: una nota clinica scritta dal medico, in tono diretto e privo di tecnicismi, pensata per pazienti e familiari che cercano informazioni affidabili.</p>
+        {% for p in page_data.empty_body_fallback_paragraphs %}
+          <p>{{ p }}</p>
+        {% endfor %}
       {% endfor %}
     </div>
 
     <div class="footer-meta">
-      <span>Studio Marani · Cardiologia clinica</span>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'pubblicazioni' %}">← Tutte le pubblicazioni</a>
+      <span>{{ page_data.footer_strap|default:site.logo_word }}</span>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}">← Tutte le {{ page.label|lower }}</a>
     </div>
   </article>
 {% endblock %}

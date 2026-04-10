@@ -84,16 +84,22 @@ Adding `dermatologia-elite-roma` under the `specialist` archetype required only:
 3. One new content block in `apps/catalog/template_content.py`
 **Zero new HTML files.** All 9 routes (marketplace detail + 7 inner preview pages + 1 post detail) return 200. The specialist chrome renders with the new brand palette, fonts, copy, doctors, press list, and services.
 
-**Confirmed leaks in the specialist chrome** that a second template cannot override via content alone — logged under Session 13 in SESSION_LOG.md and DECISIONS.md D-046. These bake cardio-specific text directly into HTML:
-- `_base.html:240` — `OMCeO Roma 12 / 4408` (footer license, appears on EVERY page)
-- `home.html:199-205` — `«La cardiologia non è una catena...»` quote, `Lancet · 2024`, `Roma · Parioli`, `2010`, `Cardiologia clinica` pulse band
-- `services.html:100` — `Una visita allo Studio Marani è concordata personalmente` (brand name baked in)
-- `team.html:87` — `Roma · Parioli` portrait signature (every doctor card)
-- `team.html:70-72` — 3 hardcoded Unsplash portrait URLs (caps the archetype at 3 doctors and re-uses cardio's photos)
-- `blog_detail.html:120` — `Studio Marani · Cardiologia clinica` footer
-- blog parent slug is hardcoded to `pubblicazioni` in blog_list + blog_detail URL reverses
+### Specialist copy-abstraction lift (Session 14) — Phase 2g.2 CLOSED
+The 17 cardio-specific literal leaks in the specialist chrome identified by Session 13 are **all removed**. The chrome is now editorially reusable — a third specialist template (e.g. `ortopedia-studio-privato`) can ship with ONLY a seed row + DNA entry + content block. All 25 routes (Cardio 9 + Derm 9 + Gusto 7) remain 200. Zero cardio-specific literal leaks detected in rendered dermatologia HTML after the lift.
 
-The validation succeeded as a structural reuse proof but revealed the chrome needs a **copy-abstraction pass** before more specialist templates can ship cleanly. See TODO_NEXT.md Phase 2g.2 for the lift-copy-to-content-or-site plan.
+Specific fixes:
+- `_base.html` — `site.license` and `site.hours_footer_rows` now drive the footer strap and day rows
+- `home.html` — hero right sidebar (quote, author, pulse triple, top label), chief portrait URL, all section labels and headings, and CTA all from `page_data.*`
+- `about.html` — values label/heading + CTA band heading/labels from `page_data.*`
+- `services.html` — brand-name leak (`Studio Marani`) removed via `visite.cta_heading`; footnote heading + CTA labels abstracted
+- `team.html` — `nth-child` portrait CSS rules deleted; per-doctor inline styles with `d.portrait`; portrait signature reads `d.portrait_city|default:medici.portrait_city`; **3-doctor cap removed**
+- `blog_list.html` + `blog_detail.html` — hardcoded `'pubblicazioni'` slug replaced with `blog_parent_slug` context variable computed in `LiveTemplateView.get_context_data()`. D-044's hard constraint is lifted (**see D-048**). Lead image + footer strap + empty-body fallback all from content.
+- `contact.html` — form placeholders from `contatti.form_placeholders` dict; sidebar headings from `contatti.hours_heading`/`transport_heading`
+- `appointment.html` — hand-written form replaced with a generic `{% for f in page_data.form_fields %}` loop; `form_fields` reshaped to dicts with `options` for selects and `full_width` for row spans
+
+**New formal decision:** D-047 — Chrome-Authoring Contract. Every string in a per-archetype skin must be a CSS rule, a generic archetype label, a `{{ context.var }}`, or a `{% for %}` loop item. Applied from the first authoring pass of any new skin, this eliminates the need for any follow-up lift pass.
+
+**Next:** Phase 2g.3 — repeat the same lift on `templates/live_templates/restaurant/fine-dining/`. Add a second fine-dining template (e.g. `tartufo-truffle-house`) and run the leak-audit sweep on Gusto-specific strings. See TODO_NEXT.md Phase 2g.3.
 
 ### Page kinds vocabulary (so far)
 The page-kind names referenced in `template_content.py` map to template files. Each archetype defines which kinds it supports.

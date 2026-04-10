@@ -139,66 +139,83 @@
 
 **Validation result:** structurally the abstraction is reusable (zero new HTML files, all routes 200). Editorially the chrome leaks cardio-specific copy in 17 distinct sites across 7 files, appearing on every dermatology page. The follow-up work is Phase 2g.2 below.
 
-## Next — Phase 2g.2 (Copy-Abstraction Lift on Specialist Chrome)
-Before the next archetype-reuse template ships, move every cardio-specific literal out of `templates/live_templates/medical/specialist/*.html` into the content registry. This is a mechanical lift — no new HTML files, no new archetypes, no architectural changes.
+## Completed — Phase 2g.2 (Copy-Abstraction Lift on Specialist Chrome, 2026-04-11, Session 14)
+Moved every cardio-specific literal out of `templates/live_templates/medical/specialist/*.html` into the content registry. Mechanical lift — zero new HTML files, zero new archetypes, zero architectural changes.
 
 ### Site-wide chrome fixes (_base.html)
-- [ ] Move `OMCeO Roma 12 / 4408` out of `_base.html:240` into `site.license` (new field); populate in CARDIO_CONTENT and DERMATOLOGIA_CONTENT
-- [ ] Move `Sabato · solo reperibilità` / `Domenica · chiuso` out of `_base.html:235-236` into `site.hours_footer_rows` (new list field)
+- [x] Moved `OMCeO Roma 12 / 4408` out of `_base.html` into `site.license`
+- [x] Moved `Sabato · solo reperibilità` / `Domenica · chiuso` into `site.hours_footer_rows`
 
 ### Home page fixes (home.html)
-- [ ] Move the hero-right quote `«La cardiologia non è una catena di montaggio...»` out of `home.html:199` into `home.hero_sidebar_quote`
-- [ ] Move the quote attribution `— Lancet · 2024` out of `home.html:200` into `home.hero_sidebar_author`
-- [ ] Move the pulse triple `Roma · Parioli / 2010 / Cardiologia clinica` out of `home.html:203-205` into `home.hero_sidebar_pulse` (list of `(label, value)` tuples)
-- [ ] Move the `Direzione clinica` pulse-top label from `home.html:195` into `home.hero_sidebar_top_label`
-- [ ] Move the chief portrait URL out of `home.html:127` inline CSS into `home.chief.portrait`
-- [ ] Move the signature-visits section heading `Sei percorsi clinici, una sola firma.` out of `home.html:225` into `home.signature_visits_heading`
-- [ ] Move the section intro fragment out of `home.html:226` into `home.signature_visits_intro_html`
-- [ ] Move the chief section heading `Una sola firma per ogni cartella.` out of `home.html:241` into `home.chief_heading`
-- [ ] Move the final CTA heading `Ogni visita è concordata personalmente...` out of `home.html:265` into `home.cta_heading`
-- [ ] Move the CTA primary label `Richiedi visita privata` out of `home.html:267` into `home.cta_primary_label`
-- [ ] Move the CTA secondary label `Contatti dello studio` out of `home.html:268` into `home.cta_secondary_label`
+- [x] Moved the hero-right quote into `home.hero_sidebar_quote`
+- [x] Moved the quote attribution into `home.hero_sidebar_author`
+- [x] Moved the pulse triple into `home.hero_sidebar_pulse` (list of `(label, value)` tuples)
+- [x] Moved the `Direzione clinica` pulse-top label into `home.hero_sidebar_top_label`
+- [x] Moved the chief portrait URL out of inline CSS into `home.chief.portrait`
+- [x] Moved the signature-visits section heading into `home.signature_visits_heading`
+- [x] Moved the section intro fragment into `home.signature_visits_intro` (plain text, no inline link)
+- [x] Moved the chief section heading into `home.chief_heading`
+- [x] Moved the final CTA heading into `home.cta_heading`
+- [x] Moved the CTA primary label into `home.cta_primary_label`
+- [x] Moved the CTA secondary label into `home.cta_secondary_label`
+- [x] Bonus: added `home.signature_visits_label`, `home.chief_label`, `home.press_label` for full section-label coverage
 
 ### About / Studio page fixes (about.html)
-- [ ] Move the values section label `Cosa garantiamo` out of `about.html:110` into `studio.values_label`
-- [ ] Move the values section heading `Quattro impegni che non cambiano mai.` out of `about.html:111` into `studio.values_heading`
-- [ ] Move the CTA band heading `Vuoi conoscere i medici dello studio prima di prenotare?` out of `about.html:123` into `studio.cta_heading`
-- [ ] Move the CTA primary label (currently hardcoded `I tre medici dello studio →`, which also bakes in "tre") out of `about.html:125` into `studio.cta_primary_label`
-- [ ] Move the CTA secondary label out of `about.html:126` into `studio.cta_secondary_label`
+- [x] Moved the values section label into `studio.values_label`
+- [x] Moved the values section heading into `studio.values_heading`
+- [x] Moved the CTA band heading into `studio.cta_heading`
+- [x] Moved the CTA primary label into `studio.cta_primary_label`
+- [x] Moved the CTA secondary label into `studio.cta_secondary_label`
 
 ### Services page fixes (services.html)
-- [ ] Move the `Note amministrative` heading out of `services.html:94` into `visite.footnote_heading`
-- [ ] Move the CTA heading `Una visita allo Studio Marani è concordata personalmente.` out of `services.html:100` into `visite.cta_heading` — **this is the most visible brand-name leak in the entire chrome**
-- [ ] Move the CTA primary label out of `services.html:102` into `visite.cta_primary_label`
-- [ ] Move the CTA secondary label out of `services.html:103` into `visite.cta_secondary_label`
+- [x] Moved the `Note amministrative` heading into `visite.footnote_heading`
+- [x] Moved the CTA heading `Una visita allo Studio Marani è concordata personalmente.` into `visite.cta_heading` — **this was the most visible brand-name leak in the entire chrome**
+- [x] Moved the CTA primary label into `visite.cta_primary_label`
+- [x] Moved the CTA secondary label into `visite.cta_secondary_label`
 
 ### Team page fixes (team.html)
-- [ ] Move each doctor's portrait URL out of the `nth-child` CSS rules at `team.html:70-72` into `doctors[i].portrait` (per-doctor). Replace the three `nth-child` rules with a single per-iteration inline `style="background-image: url('{{ d.portrait }}')"` in the template loop. Removes the 3-doctor cap.
-- [ ] Move `Roma · Parioli` out of the portrait signature at `team.html:87` into `medici.portrait_city` (or per-doctor `doctors[i].portrait_city` if some doctors are in different cities)
+- [x] Moved each doctor's portrait URL out of `nth-child` CSS rules into per-doctor `doctors[i].portrait`. Replaced the three `nth-child` rules with a single per-iteration inline `style="background-image: url('{{ d.portrait }}')"`. **3-doctor cap removed.**
+- [x] Moved `Roma · Parioli` out of the portrait signature into `medici.portrait_city` (with per-doctor override via `d.portrait_city|default:`)
 
 ### Blog list / detail page fixes
-- [ ] Move the lead-post hero image URL out of `blog_list.html:17` inline CSS into `pubblicazioni.lead_image` OR `posts[0].hero_image`
-- [ ] Replace the hardcoded `'pubblicazioni'` slug in URL reverses at `blog_list.html:95,98,109` and `blog_detail.html:85,121` with a context variable `blog_parent_slug` computed in `LiveTemplateView.get_context_data()` by finding the page entry where `kind == 'blog_list'`
-- [ ] Move `Studio Marani · Cardiologia clinica` out of `blog_detail.html:120` into `pubblicazioni.footer_strap` (or default to `site.logo_word + " · " + site.tag`)
-- [ ] Move the empty-body fallback copy at `blog_detail.html:114-115` into a constant at the top of the template or into `pubblicazioni.empty_body_fallback_paragraphs`
+- [x] Moved the lead-post hero image URL out of inline CSS into `pubblicazioni.lead_image`
+- [x] Replaced the hardcoded `'pubblicazioni'` slug in URL reverses with a context variable `blog_parent_slug` computed in `LiveTemplateView.get_context_data()` from the page entry where `kind == 'blog_list'`. **D-044's hardcoded-slug constraint is lifted** (see D-048).
+- [x] Moved `Studio Marani · Cardiologia clinica` into `pubblicazioni.footer_strap` (with `|default:site.logo_word` fallback)
+- [x] Moved the empty-body fallback copy into `pubblicazioni.empty_body_fallback_paragraphs` (list)
+- [x] Bonus: breadcrumb + "Tutte le …" footer link now use `{{ page.label }}` / `{{ page.label|lower }}` — no hardcoded "Pubblicazioni"
 
 ### Contact page fixes (contact.html)
-- [ ] Move the form's placeholder copy (`Mario`, `Rossi`, `mario.rossi@email.it`, `+39 333 ...`, `Informazioni su una visita di controllo`, `Resta in poche righe — la segreteria...`) out of `contact.html:127,131,135,139,143,147` into `contatti.form_placeholders` (dict)
-- [ ] Move `Orari di apertura` / `Come raggiungerci` sidebar headings out of `contact.html:157,166` into `contatti.hours_heading` / `contatti.transport_heading`
+- [x] Moved form placeholders into `contatti.form_placeholders` (dict: first_name, last_name, email, phone, subject, message)
+- [x] Moved `Orari di apertura` / `Come raggiungerci` sidebar headings into `contatti.hours_heading` / `contatti.transport_heading`
 
 ### Appointment page fixes (appointment.html)
-- [ ] Move the process section label `Come funziona` out of `appointment.html:123` into `richiedi-visita.process_label`
-- [ ] Move the process section heading `Quattro passaggi, in quattro giorni lavorativi.` out of `appointment.html:124` into `richiedi-visita.process_heading`
-- [ ] Move the form-band side-note out of `appointment.html:142-143` into `richiedi-visita.form_band_side_note`
-- [ ] Move the form placeholders out of `appointment.html:150,154,158,162,183,187` into `richiedi-visita.form_placeholders`
-- [ ] **Replace the hardcoded visit-type `<select>` options at `appointment.html:166-171`** with a loop over `richiedi-visita.form_fields` (already in content registry but currently unused by the template because the select is hand-written)
-- [ ] **Replace the hardcoded availability `<select>` options at `appointment.html:173-180`** same way
-- [ ] Move the submit button label `Invia richiesta` out of `appointment.html:194` into `richiedi-visita.submit_label`
+- [x] Moved the process section label into `richiedi-visita.process_label`
+- [x] Moved the process section heading into `richiedi-visita.process_heading`
+- [x] Moved the form-band side-note into `richiedi-visita.form_band_side_note` + `form_band_side_note_small`
+- [x] **Replaced the entire hand-written `<form>`** — the 8-field, 2-select, 2-full-width `<form>` block is now a single `{% for f in page_data.form_fields %}` loop. `form_fields` was reshaped from `(label, placeholder, type)` tuples into richer dicts: `{label, type, full_width, placeholder OR options}`. The select options are pulled from `f.options` instead of being hand-written.
+- [x] Moved the submit button label into `richiedi-visita.submit_label`
 
-### Validation after Phase 2g.2
-- [ ] Re-run the Session 13 leak-audit sweep on `dermatologia-elite-roma` — should now find ZERO cardio-specific strings on any page
-- [ ] Add `tartufo-truffle-house` under `fine-dining` (or any second restaurant specialist-style reuse) and perform the same leak audit on the fine-dining chrome. Repeat the lift for any leaks found there.
-- [ ] Document the "chrome-authoring contract" in AGENT_HANDOFF.md: "Every string in a per-archetype skin must either be a CSS rule or come from `site.*` / `page_data.*` / loop items — no literal brand-like text, no literal city names, no literal CTA labels."
+### Validation after Phase 2g.2 (Session 14)
+- [x] **Leak audit:** Grepped rendered HTML of all 8 dermatologia pages for 26 cardio-specific literals. **Zero leaks.** Session 13's 17 distinct leaks are all gone.
+- [x] **Positive sweep on Cardio:** 52 expected hallmark strings still rendered across all 8 pages. No regression.
+- [x] **Positive sweep on Dermatologia:** 46 expected dermatology strings all rendered — the new content fields successfully drive every place the chrome reads them.
+- [x] **Route sweep:** 25/25 routes green via Django test client (Cardio 9 + Derm 9 + Gusto 7 regression).
+- [x] **`python manage.py check`:** clean.
+- [x] **Template file grep:** zero hardcoded Unsplash URLs and zero cardio-brand literals remaining in the 9 specialist chrome files.
+- [x] **Chrome-authoring contract** formally recorded as **D-047** in DECISIONS.md.
+- [x] **`blog_parent_slug` lifecycle** formally recorded as **D-048** in DECISIONS.md.
+
+## Next — Phase 2g.3 (Fine-Dining Copy-Abstraction Lift)
+Apply the same Phase 2g.2 recipe to `templates/live_templates/restaurant/fine-dining/` before the next fine-dining template ships.
+
+- [ ] Add a second fine-dining template — suggested: `tartufo-truffle-house` (Piedmont truffle restaurant, autumn season, different chef/brand) — with ONLY a seed row, DNA entry, content block. Zero new HTML files.
+- [ ] Run the Session 13-style leak audit: grep the rendered HTML of all 7 fine-dining inner pages for `Fioravanti`, `Osteria Moderna`, `Brera`, `Tarbouriech`, `Vallesi`, `Barolo Cannubi`, `Otto atti`, etc.
+- [ ] For each leak found, add a new field under the appropriate block (`site`, `home.*`, `filosofia.*`, `menu.*`, `atmosfera.*`, `diario.*`, `prenota.*`) in both `GUSTO_CONTENT` and the new template's content block
+- [ ] Replace the hardcoded `'diario'` URL reverses in `restaurant/fine-dining/blog_list.html` and `blog_detail.html` with `blog_parent_slug` (same fix as Session 14)
+- [ ] Replace any hardcoded image URLs with inline `style="background-image: url('{{ ... }}')"` reading from per-item fields
+- [ ] Re-run the leak sweep against the new template — should show ZERO Gusto-specific strings
+- [ ] Re-run a 17-route regression sweep against Cardio + Gusto + Dermatologia + new template
+- [ ] Update DECISIONS.md if any new pattern emerges (e.g. per-menu-course field structure, wine-region labels, etc.)
 
 ## Next — Phase 2g.1 (Template Completeness Validation) — [follow-up items still pending]
 - [ ] Add a "previous / next page" navigation hint at the bottom of each inner page (cycle through `pages` list)

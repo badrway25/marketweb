@@ -107,8 +107,8 @@
   </section>
 
   <section class="sp-values">
-    <span class="sec-label">Cosa garantiamo</span>
-    <h2>Quattro impegni che <em>non cambiano mai.</em></h2>
+    <span class="sec-label">{{ page_data.values_label }}</span>
+    <h2>{{ page_data.values_heading|safe }}</h2>
     <div class="grid">
       {% for title, blurb in page_data.values %}
         <div class="v">
@@ -120,10 +120,10 @@
   </section>
 
   <section class="sp-cta-band">
-    <h3>Vuoi conoscere i medici dello studio <em>prima di prenotare?</em></h3>
+    <h3>{{ page_data.cta_heading|safe }}</h3>
     <div class="actions">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}">I tre medici dello studio →</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}">Richiedi visita privata →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}">{{ page_data.cta_primary_label }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}">{{ page_data.cta_secondary_label }}</a>
     </div>
   </section>
 {% endblock %}

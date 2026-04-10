@@ -145,6 +145,14 @@ class LiveTemplateView(TemplateView):
         ctx["posts"]     = self.content.get("posts", [])
         ctx["post"]      = self.post
 
+        # Blog parent page slug — used by blog_list/blog_detail chrome templates
+        # so they don't have to hardcode the per-template slug ('pubblicazioni',
+        # 'diario', ...). Resolved from the first page whose kind == 'blog_list'.
+        ctx["blog_parent_slug"] = next(
+            (p["slug"] for p in self.content["pages"] if p["kind"] == "blog_list"),
+            None,
+        )
+
         # Theme tokens for CSS variable injection in the per-archetype _base
         heading_font, body_font = self.dna["font_pairing"]
         ctx["theme"] = {

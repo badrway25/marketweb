@@ -12,11 +12,16 @@
   }
   .sp-lead-post .img {
     aspect-ratio: 4/3;
-    background:
-      linear-gradient(180deg, rgba(28,22,18,0) 60%, rgba(28,22,18,0.45) 100%),
-      url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=80') center/cover;
+    background-color: var(--paper-2);
+    background-size: cover; background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
     border-left: 6px solid var(--accent);
     filter: grayscale(15%) contrast(1.05);
+  }
+  .sp-lead-post .img:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(28,22,18,0) 60%, rgba(28,22,18,0.45) 100%);
   }
   .sp-lead-post .body .kicker {
     font-family: var(--body); font-size: 11px; font-weight: 700;
@@ -89,13 +94,13 @@
   <section class="sp-posts">
     {% with first_post=posts.0 %}
     <div class="sp-lead-post">
-      <div class="img"></div>
+      <div class="img"{% if page_data.lead_image %} style="background-image: url('{{ page_data.lead_image }}');"{% endif %}></div>
       <div class="body">
         <div class="kicker">{{ first_post.kicker }}</div>
-        <h2><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'pubblicazioni' first_post.slug %}">{{ first_post.title }}</a></h2>
+        <h2><a href="{% url 'catalog:live_template_post' template.category.slug template.slug blog_parent_slug first_post.slug %}">{{ first_post.title }}</a></h2>
         <div class="meta">{{ first_post.date }} · {{ first_post.read_min }} min · {{ first_post.author }}</div>
         <p class="lede">{{ first_post.lede }}</p>
-        <a class="read" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'pubblicazioni' first_post.slug %}">Leggi l'articolo completo</a>
+        <a class="read" href="{% url 'catalog:live_template_post' template.category.slug template.slug blog_parent_slug first_post.slug %}">Leggi l'articolo completo</a>
       </div>
     </div>
     {% endwith %}
@@ -106,7 +111,7 @@
           <div class="row">
             <span class="num">{{ forloop.counter|stringformat:"02d" }}.</span>
             <div>
-              <div class="title"><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'pubblicazioni' post.slug %}">{{ post.title }}</a></div>
+              <div class="title"><a href="{% url 'catalog:live_template_post' template.category.slug template.slug blog_parent_slug post.slug %}">{{ post.title }}</a></div>
               <p class="lede">{{ post.lede }}</p>
             </div>
             <div class="meta">

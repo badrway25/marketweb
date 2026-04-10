@@ -122,11 +122,16 @@
   }
   .sp-chief .portrait {
     aspect-ratio: 4/5;
-    background:
-      linear-gradient(180deg, rgba(28,22,18,0) 50%, rgba(28,22,18,0.45) 100%),
-      url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=900&q=80') center/cover;
+    background-color: var(--paper-2);
+    background-size: cover; background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
     border-left: 8px solid var(--accent);
     filter: grayscale(15%) contrast(1.05);
+  }
+  .sp-chief .portrait:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(28,22,18,0) 50%, rgba(28,22,18,0.45) 100%);
   }
   .sp-chief .info .role {
     font-family: var(--body); font-size: 11px; font-weight: 700;
@@ -192,17 +197,17 @@
     </div>
     <aside class="right">
       <div class="top">
-        Direzione clinica
+        {{ page_data.hero_sidebar_top_label }}
         <strong>{{ page_data.chief.name }}</strong>
       </div>
       <div>
-        <p class="quote">«La cardiologia non è una catena di montaggio. È un dialogo lungo, fatto di tempo.»</p>
-        <div class="quote-author">— Lancet · 2024</div>
+        <p class="quote">{{ page_data.hero_sidebar_quote }}</p>
+        <div class="quote-author">{{ page_data.hero_sidebar_author }}</div>
       </div>
       <div class="pulse">
-        <div>Studio<strong>Roma · Parioli</strong></div>
-        <div>Da<strong>2010</strong></div>
-        <div>Riferimento<strong>Cardiologia clinica</strong></div>
+        {% for label, value in page_data.hero_sidebar_pulse %}
+          <div>{{ label }}<strong>{{ value }}</strong></div>
+        {% endfor %}
       </div>
     </aside>
   </section>
@@ -221,9 +226,9 @@
   </section>
 
   <section class="sp-section dark">
-    <span class="sec-label">Visite & percorsi</span>
-    <h2>Sei percorsi clinici, <em>una sola firma.</em></h2>
-    <p class="sec-intro">Quattro fra le visite più richieste dello studio. L'elenco completo è nella pagina <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'visite' %}" style="color:var(--accent);border-bottom:1px solid var(--accent);">Visite</a>.</p>
+    <span class="sec-label">{{ page_data.signature_visits_label }}</span>
+    <h2>{{ page_data.signature_visits_heading|safe }}</h2>
+    <p class="sec-intro">{{ page_data.signature_visits_intro }}</p>
 
     <div class="sp-fields">
       {% for num, title, blurb in page_data.signature_visits %}
@@ -237,35 +242,37 @@
   </section>
 
   <section class="sp-section">
-    <span class="sec-label">Direzione clinica</span>
-    <h2>Una sola firma <em>per ogni cartella.</em></h2>
+    <span class="sec-label">{{ page_data.chief_label }}</span>
+    <h2>{{ page_data.chief_heading|safe }}</h2>
 
     <div class="sp-chief" style="margin-top: 56px;">
-      <div class="portrait"></div>
+      <div class="portrait" style="background-image: url('{{ page_data.chief.portrait }}');"></div>
       <div class="info">
         <div class="role">{{ page_data.chief.role }}</div>
         <h3>{{ page_data.chief.name }}</h3>
         <p>{{ page_data.chief.bio }}</p>
         <div class="links">
           <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}">Tutti i medici</a>
-          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'pubblicazioni' %}">Pubblicazioni</a>
+          {% if blog_parent_slug %}
+            <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}">Pubblicazioni</a>
+          {% endif %}
         </div>
       </div>
     </div>
   </section>
 
   <section class="sp-press">
-    <span class="lbl">Pubblicato su</span>
+    <span class="lbl">{{ page_data.press_label }}</span>
     {% for outlet in page_data.press %}
       <span class="item">{{ outlet }}</span>
     {% endfor %}
   </section>
 
   <section class="sp-cta">
-    <h2>Ogni visita è <em>concordata personalmente</em> con il medico.</h2>
+    <h2>{{ page_data.cta_heading|safe }}</h2>
     <div class="actions">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}" class="gold-btn">Richiedi visita privata</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}" class="ghost-btn">Contatti dello studio</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}" class="gold-btn">{{ page_data.cta_primary_label }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}" class="ghost-btn">{{ page_data.cta_secondary_label }}</a>
     </div>
   </section>
 {% endblock %}

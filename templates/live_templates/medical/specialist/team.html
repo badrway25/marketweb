@@ -65,11 +65,6 @@
   .sp-doctors .info .links a {
     color: var(--ink); border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
   }
-
-  /* Vary the portrait by index */
-  .sp-doctors .doctor:nth-child(1) .portrait { background-image: url('https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=900&q=80'); }
-  .sp-doctors .doctor:nth-child(2) .portrait { background-image: url('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=80'); }
-  .sp-doctors .doctor:nth-child(3) .portrait { background-image: url('https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=900&q=80'); }
 {% endblock %}
 
 {% block content %}
@@ -82,9 +77,9 @@
   <section class="sp-doctors">
     {% for d in page_data.doctors %}
       <div class="doctor">
-        <div class="portrait">
+        <div class="portrait"{% if d.portrait %} style="background-image: url('{{ d.portrait }}');"{% endif %}>
           <div class="signature">
-            Roma · Parioli
+            {{ d.portrait_city|default:page_data.portrait_city }}
             <strong>{{ d.name }}</strong>
           </div>
         </div>

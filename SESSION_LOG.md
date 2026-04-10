@@ -1056,3 +1056,106 @@ None. The validation produced a clean result *and* a clear action plan for the f
 **Phase 2g.2 — copy-abstraction lift pass on the specialist chrome.** Move every cardio-specific literal out of `templates/live_templates/medical/specialist/*.html` into either (a) new `site.*` fields consumed by `_base.html` (footer license, compact hours, etc.), (b) new `page_data.*` sub-fields consumed by each page file (section/CTA headings), or (c) new per-item imagery fields (`doctors[i].portrait`, `home.hero_sidebar.*`, `blog_list.lead_image`). Then update both `CARDIO_CONTENT` and `DERMATOLOGIA_CONTENT` to populate these new fields, and re-run the leak-audit sweep — it should show every dermatology page as clean of cardio-specific strings. After that, the next archetype-reuse template (e.g. a third specialist or the first fine-dining reuse) will ship without any copy polish.
 
 After Phase 2g.2 closes, resume Phase 2f DNA rollout: Agency → Lawyer → Real Estate archetype splits, applying BOTH the Session 10 imagery-distinctness lesson and the Session 13 content-must-not-be-hardcoded lesson from the start of each new archetype's authoring pass.
+
+
+## Session 14 — Specialist Copy-Abstraction Lift (2026-04-11)
+
+**Agent:** Specialist Chrome Refactor
+**Goal:** Execute Phase 2g.2 — move every cardio-specific literal out of the 9 files under `templates/live_templates/medical/specialist/` into structured fields in the content registry. Zero new HTML files. Preserve Cardio + Dermatologia behavior. Leave the chrome ready for a third specialist template with no copy polish needed.
+
+### Branch / worktree
+`specialist-copy-abstraction` (built on top of `archetype-reuse-validation` → ... → `template-dna-system`, **none merged to master yet**).
+
+### What changed
+
+**`apps/catalog/template_content.py`** — extended both `CARDIO_CONTENT` and `DERMATOLOGIA_CONTENT` with a structured set of new fields under their existing blocks. No new top-level keys, no new architectural concepts — every addition sits semantically where the chrome already consumed data:
+
+| Block               | New fields                                                                                                                                                                   |
+|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `site`              | `license`, `hours_footer_rows` (list of strings)                                                                                                                             |
+| `home`              | `hero_sidebar_top_label`, `hero_sidebar_quote`, `hero_sidebar_author`, `hero_sidebar_pulse` (list of `(label,value)`), `signature_visits_label`, `signature_visits_heading`, `signature_visits_intro`, `chief_label`, `chief_heading`, `press_label`, `cta_heading`, `cta_primary_label`, `cta_secondary_label`; and `home.chief.portrait` (per-chief URL) |
+| `studio` (about)    | `values_label`, `values_heading`, `cta_heading`, `cta_primary_label`, `cta_secondary_label`                                                                                  |
+| `visite` (services) | `footnote_heading`, `cta_heading`, `cta_primary_label`, `cta_secondary_label`                                                                                                |
+| `medici` (team)     | `portrait_city`; and per-doctor `doctors[i].portrait` URL (removes the 3-doctor cap previously baked into `nth-child` CSS)                                                   |
+| `pubblicazioni`     | `lead_image`, `footer_strap`, `empty_body_fallback_paragraphs` (list)                                                                                                        |
+| `contatti`          | `form_placeholders` (dict: `first_name`/`last_name`/`email`/`phone`/`subject`/`message`), `hours_heading`, `transport_heading`                                               |
+| `richiedi-visita`   | `process_label`, `process_heading`, `form_band_side_note`, `form_band_side_note_small`, `submit_label`; and `form_fields` **reshaped** from `(label, placeholder, type)` tuples into richer dicts: `{label, type, full_width, placeholder OR options}` — the template now loops over this instead of hand-writing the form |
+
+**`apps/catalog/views.py`** — `LiveTemplateView.get_context_data()` now computes `blog_parent_slug` from the first page whose `kind == 'blog_list'`. This removes the D-044/Session 13 hard constraint that the blog parent page slug had to be literally `'pubblicazioni'`. (Dermatologia still calls its blog page `pubblicazioni` because the content was authored that way, but future templates can call it `diario`, `osservatorio`, `rassegna`, anything — the chrome no longer cares.)
+
+**9 HTML files under `templates/live_templates/medical/specialist/`** — every cardio literal pulled out, replaced with `{{ page_data.* }}`, `{{ site.* }}`, loop iterations, or (for URLs) `blog_parent_slug`. Specifically:
+
+- **`_base.html`** — footer license + hours footer rows now loop from `site.license` / `site.hours_footer_rows`. Removed hardcoded `OMCeO Roma 12 / 4408`, `Sabato · solo reperibilità`, `Domenica · chiuso`.
+- **`home.html`** — hero right sidebar (top label, quote, attribution, pulse triple) now reads from `page_data.hero_sidebar_*`. Chief portrait URL moved from inline `background: url(...)` to inline `style="background-image: url('{{ page_data.chief.portrait }}')"`. Signature-visits section label/heading/intro, chief label/heading, press label, bottom CTA heading + two button labels all now come from `page_data.*`. Removed hardcoded Unsplash URL `photo-1559757148-5c350d0d3c56`.
+- **`about.html`** — values label/heading + CTA band heading/primary label/secondary label all from `page_data.*`. Removed the "I tre medici" hardcoded count leak.
+- **`services.html`** — footnote heading + CTA band heading/labels from `page_data.*`. Removed the "Studio Marani" brand-name leak (the most visible one in the entire chrome).
+- **`team.html`** — the three `nth-child` CSS rules with hardcoded Unsplash URLs are **gone**. Each doctor now uses an inline `style="background-image: url('{{ d.portrait }}')"` computed from the content registry. The 3-doctor cap is removed — future specialist templates can have any number of doctors. Portrait signature reads `{{ d.portrait_city|default:page_data.portrait_city }}`.
+- **`blog_list.html`** — lead post background image moved from CSS url() to inline style reading `page_data.lead_image`. All three hardcoded `'pubblicazioni'` URL reverses replaced with `blog_parent_slug`.
+- **`blog_detail.html`** — both hardcoded `'pubblicazioni'` URL reverses replaced with `blog_parent_slug`. Breadcrumb and footer "Tutte le …" now use `{{ page.label }}` / `{{ page.label|lower }}`. Footer strap reads `page_data.footer_strap|default:site.logo_word`. Empty-body fallback paragraphs loop from `page_data.empty_body_fallback_paragraphs`.
+- **`contact.html`** — form placeholders read from `page_data.form_placeholders` dict (keys: first_name, last_name, email, phone, subject, message). Sidebar headings `Orari di apertura` / `Come raggiungerci` now come from `page_data.hours_heading` / `page_data.transport_heading`.
+- **`appointment.html`** — the hand-written `<form>` (8 fields, 2 hardcoded select blocks) **replaced** with a single `{% for f in page_data.form_fields %}` loop that handles `text`/`email`/`tel`/`number`/`textarea`/`select` via field-type branching and applies `full_width` to mark grid-full rows. The two select dropdowns that previously baked in Cardio's visit types now pull their options from `form_fields[i].options`. Process label, process heading, form band side note + small, and submit button label all from `page_data.*`.
+
+### Database delta
+None. Pure content + template refactor. 0 migrations, 0 seed changes, 0 new assets.
+
+### Files touched
+11 modified, 0 added, 0 deleted (verified via `git status`):
+
+```
+ M apps/catalog/template_content.py
+ M apps/catalog/views.py
+ M templates/live_templates/medical/specialist/_base.html
+ M templates/live_templates/medical/specialist/about.html
+ M templates/live_templates/medical/specialist/appointment.html
+ M templates/live_templates/medical/specialist/blog_detail.html
+ M templates/live_templates/medical/specialist/blog_list.html
+ M templates/live_templates/medical/specialist/contact.html
+ M templates/live_templates/medical/specialist/home.html
+ M templates/live_templates/medical/specialist/services.html
+ M templates/live_templates/medical/specialist/team.html
+```
+
+### Validation — it works
+
+1. **`python manage.py check` — clean.**
+2. **Full route sweep — 25/25 green via Django test client:**
+   - Cardio: marketplace detail + 7 inner pages + 1 post detail = 9 routes (200)
+   - Dermatologia: marketplace detail + 7 inner pages + 1 post detail = 9 routes (200)
+   - Gusto regression: marketplace detail + 6 inner pages + 1 post detail = 8 routes (200)
+3. **Cardio-leak sweep on dermatologia — ZERO leaks.** The sweep grepped the rendered HTML of all 8 dermatology pages for 26 cardio-specific literals (`Marani`, `OMCeO Roma 12 / 4408`, `cardiologia`, `Cardiologia`, `Parioli`, `catena di montaggio`, `Lancet`, `Riccardo Marani`, `Margherita Salieri`, `Andrea Lombardi`, `Salieri`, `Lombardi`, `Prima visita`, `Secondo parere`, `Programma prevenzione`, `Visita di controllo`, `ecocardiograf`, `Holter`, `ECG`, `Policlinico Umberto`, `Sant'Andrea di Roma`, `Braunwald`, `Institut de Cardiologie`, `Piccione`, `Tarbouriech`, `cardiolog`). **All 8 pages came back clean.** Session 13's 17 distinct leaks are now 0.
+4. **Positive content sweep on Cardio — 52 expected cardio strings, all present.** The rendered Cardio HTML still contains every hallmark string (Studio Marani, Lancet quote, Riccardo Marani, Roma · Parioli, Richiedi visita privata, Ogni visita è concordata, Prima visita, Secondo parere, Programma prevenzione, Visita di controllo, Pubblicato su, all three doctor portraits by photo ID, the Studio Marani · Cardiologia clinica footer strap on the blog detail page, etc.). No regression.
+5. **Positive content sweep on Dermatologia — 46 expected dermatology strings, all present.** Rendered HTML contains Studio Ricciardi, Alessandra Ricciardi, Via Veneto, JAMA Dermatology, Quattro aree cliniche, Un solo archivio, Cosa garantiamo, Le tre dermatologhe, Mappatura nevi, Chirurgia dermatologica, Medicina estetica, Invia richiesta, Studio Ricciardi · Dermatologia integrata footer strap, and the three new dermatologia portrait photo IDs (1594824476967, 1582750433449, 1666214280557). The derm content block still drives every field it used to drive.
+6. **Template file grep — ZERO hardcoded Unsplash URLs** in any of the 9 specialist chrome files (was 4 before: 3 nth-child portraits in `team.html`, 1 chief portrait in `home.html`, 1 blog lead in `blog_list.html`).
+7. **Template file grep — ZERO cardio-brand literals** in any of the 9 specialist chrome files. Previously every file leaked.
+
+### What the chrome now guarantees
+
+Every string in the 9 specialist chrome files now either:
+- is a CSS rule (tokens, colors, fonts, layout), or
+- is a generic archetype label (`Nome`, `Cognome`, `Email`, `Telefono`, `Oggetto`, `Messaggio`, `Invia messaggio`, `Privacy`, `Cookie`, `Note legali`, `Anteprima completa`, `← Torna a MarketWeb`, `Altri template medicali →`, `Tutti i medici`, `Lo studio`, `Pagine`, `Contatti`, `Orari`, `Leggi l'articolo completo`, `In alternativa:`, `parla con la segreteria`, `min di lettura`, `© 2026`), or
+- is a template context variable (`{{ site.* }}`, `{{ page_data.* }}`, `{{ d.* }}`, `{{ post.* }}`, `{{ blog_parent_slug }}`, etc.), or
+- comes from a `{% for %}` loop over a content registry list.
+
+### Chrome-authoring contract (new — D-047)
+
+Any future per-archetype skin (e.g. the Agency `editorial-quiet` skin, the Lawyer `modern-transparent` skin) must follow the same rule from its first authoring pass:
+
+> **Every string in a per-archetype skin must either be a CSS rule or come from `site.*` / `page_data.*` / loop items. No literal brand names. No literal city names. No literal quotes. No literal CTA labels. No literal form select options. No hardcoded image URLs.**
+
+Session 13's leak cost the next reuse template zero-copy-polish ambition. This contract prevents that from happening a second time.
+
+### Lessons from Session 14
+
+1. **"Abstract the literals, not the structure."** The chrome's visual structure (grid layouts, typography, colors, spacing, the `.sp-lead`/`.sp-section`/`.sp-chief`/`.sp-doctors`/`.sp-form-band` class system) was already correct. The leak was purely textual — every fix was a one-line `{{ page_data.X }}` substitution. This is a good sign for future reuse passes: if the visual identity is clean, a leak audit is genuinely mechanical.
+2. **`form_fields` as dict-of-dicts beats tuples.** The old `(label, placeholder, type)` tuple format couldn't represent select options or full-width rows without the chrome hand-writing them. Switching to `{"label":..., "type":..., "placeholder":..., "options":[], "full_width":bool}` let the chrome template become a single generic form loop. This pattern is now the reference for any future archetype that has a form.
+3. **`blog_parent_slug` is the simplest way to kill the hardcoded-URL-reverse trap.** Computing it once in the view from `pages[i].kind == 'blog_list'` means every blog URL reverse in the chrome becomes `{% url '...' cat slug blog_parent_slug post.slug %}`. No content block ever needs to know its own slug. This is the D-044 permanent fix (was: "the blog parent page slug must be literally `pubblicazioni`" — it is no longer).
+4. **`nth-child` for per-item imagery is the hidden item-count cap.** The three `team.html` CSS rules (`nth-child(1)`, `nth-child(2)`, `nth-child(3)`) didn't just hardcode URLs — they capped the number of doctors at 3 and the chrome silently broke on a fourth. Moving portraits to per-doctor inline styles both fixes the URL leak AND removes the cap. General rule: **any per-item visual data that varies should live on the item, not the chrome.**
+5. **Positive sweeps matter as much as negative sweeps.** Grepping for cardio literals proves the leak is gone. Grepping for dermatology's OWN hallmark strings proves the content block is still wired to every field the chrome reads. Both sweeps passed on the first run after the refactor — a good signal that the refactor was faithful.
+
+### Blockers
+None. Phase 2g.2 closes cleanly. The specialist archetype is now truly reusable.
+
+### Exact next step
+**Phase 2f continuation — add a second fine-dining template (e.g. `tartufo-truffle-house`) under the Gusto chrome and repeat the same leak-audit sweep on the `templates/live_templates/restaurant/fine-dining/` chrome.** Expect the same class of leaks there — brand-name strings, hardcoded Unsplash URLs for the chef portrait and dish photos, possibly hardcoded menu course counts or wine region labels in the `menu.html` file. Apply the exact same abstraction pattern: extend the content registry with structured fields, move every literal out of the HTML, re-run the 25-route sweep, re-run the leak sweep. When that closes, the archetype-reuse validation officially extends to both specialist AND fine-dining — and the pattern is proven general.
+
+After that, resume Phase 2f DNA rollout: Agency → Lawyer → Real Estate archetype splits, applying **all three** lessons from the session arc: Session 10's imagery-distinctness rule, Session 11's content-registry-as-registry rule, Session 13's leak-audit-with-rendering-grep rule, and Session 14's chrome-authoring-contract rule (D-047) from the first authoring pass of every new skin.

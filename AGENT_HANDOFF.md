@@ -1,6 +1,51 @@
 # Agent Handoff
 
-Last updated: 2026-04-10 — after Archetype Reuse Validation (Session 13)
+Last updated: 2026-04-11 — after Specialist Copy-Abstraction Lift (Session 14)
+
+## Session 14 — Specialist Copy-Abstraction Lift (2026-04-11)
+
+**Question asked:** Can the specialist chrome HTML files be made truly reusable — so a third specialist template (after Cardio and Dermatologia) ships with zero copy polish — by moving every hardcoded cardio literal out of HTML into the content registry, WITHOUT adding any new HTML files?
+
+**Answer:** **Yes.** Phase 2g.2 is closed. All 17 leak points identified in Session 13's audit are resolved via purely mechanical moves. The specialist archetype is now editorially reusable.
+
+### What changed
+Eleven files modified, zero added, zero deleted:
+- `apps/catalog/template_content.py` — CARDIO_CONTENT + DERMATOLOGIA_CONTENT gained ~30 new fields each, grouped semantically under existing blocks (`site.license`, `site.hours_footer_rows`, `home.hero_sidebar_*`, `home.chief.portrait`, `home.signature_visits_*`, `home.chief_label`/`heading`, `home.press_label`, `home.cta_*`, `studio.values_*`, `studio.cta_*`, `visite.footnote_heading`, `visite.cta_*`, `medici.portrait_city`, per-doctor `doctors[i].portrait`, `pubblicazioni.lead_image`, `pubblicazioni.footer_strap`, `pubblicazioni.empty_body_fallback_paragraphs`, `contatti.form_placeholders`, `contatti.hours_heading`, `contatti.transport_heading`, `richiedi-visita.process_label`/`heading`, `richiedi-visita.form_band_side_note`/`_small`, `richiedi-visita.submit_label`). The `richiedi-visita.form_fields` list was **reshaped** from `(label, placeholder, type)` tuples into richer dicts `{label, type, full_width, placeholder OR options}` so the appointment form's two selects can loop their options from data instead of being hand-written.
+- `apps/catalog/views.py` — `LiveTemplateView.get_context_data()` now computes `blog_parent_slug` from the content registry's `pages` list (first entry where `kind == 'blog_list'`). Template blog URL reverses consume this variable instead of hardcoding `'pubblicazioni'`. **D-044's hardcoded-blog-slug constraint is lifted** — see D-048.
+- Nine HTML files under `templates/live_templates/medical/specialist/` — every cardio literal swapped for `{{ page_data.* }}`, `{{ site.* }}`, loop iteration, or `blog_parent_slug`. The `team.html` `nth-child` portrait CSS rules are gone, replaced with per-doctor inline styles (which also removes the 3-doctor cap). The `appointment.html` hand-written form is gone, replaced with a single generic field loop.
+
+### Hard validation
+1. **`python manage.py check` — clean.**
+2. **Route sweep — 25/25 green** via Django test client:
+   - Cardio: 9 routes (marketplace detail + 7 inner preview pages + 1 post detail)
+   - Dermatologia: 9 routes (same structure)
+   - Gusto regression: 7 routes (marketplace detail + 6 inner pages + 1 post detail)
+3. **Cardio-leak sweep on dermatologia — ZERO leaks.** Rendered HTML of all 8 dermatologia pages was grepped for 26 cardio literals (`Marani`, `OMCeO Roma 12 / 4408`, `cardiologia`, `Cardiologia`, `Parioli`, `catena di montaggio`, `Lancet`, `Riccardo Marani`, `Salieri`, `Lombardi`, `Prima visita`, `Secondo parere`, `Programma prevenzione`, `Visita di controllo`, `ecocardiograf`, `Holter`, `ECG`, `Policlinico Umberto`, `Braunwald`, `Institut de Cardiologie`, etc.). **All 8 pages came back clean.**
+4. **Positive content sweep — Cardio 52/52, Dermatologia 46/46** expected strings all present. The content blocks still drive every field the chrome reads.
+5. **Template file grep — zero hardcoded Unsplash URLs, zero cardio-brand literals** in any of the 9 specialist chrome files.
+
+### The chrome-authoring contract (D-047)
+
+Every string in a per-archetype skin must satisfy exactly one of four criteria:
+1. **CSS rule** (color, font, layout — the visual identity)
+2. **Generic archetype label** — applies identically to every template that could use this archetype (`Nome`, `Email`, `Privacy`, `Invia messaggio`, `Leggi l'articolo completo`, `© 2026`, etc.)
+3. **Template context variable** (`{{ site.* }}`, `{{ page_data.* }}`, `{{ d.* }}`, `{{ post.* }}`, `{{ blog_parent_slug }}`)
+4. **Loop iteration** over a content registry list
+
+**Never:** literal brand name, literal city name, literal quote, literal CTA heading, literal form select option, hardcoded image URL.
+
+This contract is now a chrome-authoring precondition for Phase 2f (Agency, Lawyer, Real Estate archetype splits) and Phase 2g.3 (fine-dining copy-abstraction lift). Applied from the first authoring pass of any new skin, it eliminates the need for a follow-up lift pass entirely.
+
+### What to do next
+**Phase 2g.3 — repeat this exact lift on `templates/live_templates/restaurant/fine-dining/`.** The fine-dining chrome was authored during Session 11 in the same style as the specialist chrome and almost certainly has the same class of leaks (Lorenzo Fioravanti brand-name references, Brera district in the chef portrait, hardcoded Michelin press list labels, hardcoded `'diario'` URL reverses in blog files, hardcoded Unsplash URLs for chef/plate/room photos). The recipe is documented in TODO_NEXT.md Phase 2g.3:
+1. Add a second fine-dining template (suggested: `tartufo-truffle-house` — Piedmont truffle restaurant, autumn menu, different chef/brand) with ONLY a seed row + DNA entry + content block.
+2. Run the leak sweep against it: grep rendered HTML for `Fioravanti`, `Osteria Moderna`, `Brera`, `Tarbouriech`, `Vallesi`, `Otto atti`, `Barolo Cannubi`, etc.
+3. For each leak, add a structured field in the appropriate block and update both Gusto and the new template's content.
+4. Replace any hardcoded `'diario'` URL reverses with `blog_parent_slug` (already computed in the view).
+5. Replace any hardcoded image URLs with inline `style="background-image: url('{{ ... }}')"` reading from per-item fields.
+6. Re-run a full regression sweep (Cardio 9 + Derm 9 + Gusto 7 + new template 7 = 32 routes).
+
+After Phase 2g.3 closes, both archetypes in use are proven reusable and the pattern is general. Then resume Phase 2f DNA rollout (Agency, Lawyer, Real Estate) applying D-047 from the first authoring pass of every new skin.
 
 ## Session 13 — Archetype Reuse Validation (2026-04-10)
 

@@ -120,8 +120,8 @@
   </section>
 
   <section class="sp-process">
-    <span class="sec-label">Come funziona</span>
-    <h2 style="margin-top:14px;font-size:42px;font-weight:500;line-height:1.1;letter-spacing:-0.018em;max-width:18ch;">Quattro passaggi, in <em>quattro giorni lavorativi.</em></h2>
+    <span class="sec-label">{{ page_data.process_label }}</span>
+    <h2 style="margin-top:14px;font-size:42px;font-weight:500;line-height:1.1;letter-spacing:-0.018em;max-width:18ch;">{{ page_data.process_heading|safe }}</h2>
 
     <div class="grid">
       {% for num, title, blurb in page_data.process %}
@@ -139,59 +139,34 @@
       <div>
         <h2>{{ page_data.form_title }}</h2>
         <p class="side-note">
-          Riserva qualche minuto. Le richieste compilate con cura sono lette dal medico per intero — quelle frettolose, no.
-          <small>↓ Modulo riservato</small>
+          {{ page_data.form_band_side_note }}
+          {% if page_data.form_band_side_note_small %}
+            <small>{{ page_data.form_band_side_note_small }}</small>
+          {% endif %}
         </p>
       </div>
 
       <form>
-        <div class="field">
-          <label>Nome e cognome</label>
-          <input type="text" placeholder="Mario Rossi">
-        </div>
-        <div class="field">
-          <label>Email</label>
-          <input type="email" placeholder="mario@email.it">
-        </div>
-        <div class="field">
-          <label>Telefono</label>
-          <input type="tel" placeholder="+39 333 ...">
-        </div>
-        <div class="field">
-          <label>Età</label>
-          <input type="number" placeholder="52">
-        </div>
-        <div class="field">
-          <label>Tipo di visita</label>
-          <select>
-            <option>Prima visita</option>
-            <option>Secondo parere</option>
-            <option>Programma prevenzione</option>
-            <option>Visita di controllo</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Disponibilità preferite</label>
-          <select>
-            <option>Mattina</option>
-            <option>Pomeriggio</option>
-            <option>Indifferente</option>
-          </select>
-        </div>
-        <div class="field full">
-          <label>Medico curante</label>
-          <input type="text" placeholder="Dr. ...">
-        </div>
-        <div class="field full">
-          <label>Breve descrizione del caso</label>
-          <textarea placeholder="Sintomi, esami già eseguiti, diagnosi attuale, terapia in corso. Resta nelle dieci righe."></textarea>
-        </div>
+        {% for f in page_data.form_fields %}
+          <div class="field{% if f.full_width %} full{% endif %}">
+            <label>{{ f.label }}</label>
+            {% if f.type == "select" %}
+              <select>
+                {% for opt in f.options %}<option>{{ opt }}</option>{% endfor %}
+              </select>
+            {% elif f.type == "textarea" %}
+              <textarea placeholder="{{ f.placeholder }}"></textarea>
+            {% else %}
+              <input type="{{ f.type }}" placeholder="{{ f.placeholder }}">
+            {% endif %}
+          </div>
+        {% endfor %}
         <div class="consent">
           <input type="checkbox">
           <span>{{ page_data.consent }}</span>
         </div>
         <div class="submit-row">
-          <button type="button">Invia richiesta</button>
+          <button type="button">{{ page_data.submit_label }}</button>
           <span class="alt">In alternativa: <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}">parla con la segreteria</a></span>
         </div>
       </form>

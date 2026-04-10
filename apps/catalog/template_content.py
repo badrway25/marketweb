@@ -68,6 +68,11 @@ CARDIO_CONTENT: dict[str, Any] = {
         "email":        "studio@maranicardiologia.it",
         "address":      "Viale Parioli 142 · 00197 Roma",
         "hours_compact": "Lun – Ven · 9:00 – 19:00",
+        "hours_footer_rows": [
+            "Sabato · solo reperibilità",
+            "Domenica · chiuso",
+        ],
+        "license":      "Iscrizione OMCeO Roma 12 / 4408",
         "footer_intro":
             "Studio specialistico privato di cardiologia clinica e prevenzione "
             "cardiovascolare. Riceviamo solo su appuntamento.",
@@ -121,10 +126,43 @@ CARDIO_CONTENT: dict[str, Any] = {
                 "e perfezionato all'Institut de Cardiologie de Montréal. "
                 "Membro della Società Italiana di Cardiologia e dell'European Society of Cardiology. "
                 "Autore di oltre 40 pubblicazioni indicizzate.",
+            "portrait":
+                "https://images.unsplash.com/photo-1559757148-5c350d0d3c56"
+                "?auto=format&fit=crop&w=900&q=80",
         },
 
         "press": ["LANCET", "European Heart Journal", "Corriere Salute",
                   "Sole 24 Ore", "RAI Med"],
+        "press_label": "Pubblicato su",
+
+        # Hero right sidebar (the dark pulse column next to the headline)
+        "hero_sidebar_top_label": "Direzione clinica",
+        "hero_sidebar_quote":
+            "«La cardiologia non è una catena di montaggio. "
+            "È un dialogo lungo, fatto di tempo.»",
+        "hero_sidebar_author": "— Lancet · 2024",
+        "hero_sidebar_pulse": [
+            ("Studio",      "Roma · Parioli"),
+            ("Da",          "2010"),
+            ("Riferimento", "Cardiologia clinica"),
+        ],
+
+        # Signature-visits section (the dark 01/02/03/04 field grid)
+        "signature_visits_label":   "Visite & percorsi",
+        "signature_visits_heading": "Sei percorsi clinici, <em>una sola firma.</em>",
+        "signature_visits_intro":
+            "Quattro fra le visite più richieste dello studio. "
+            "L'elenco completo è nella pagina Visite.",
+
+        # Chief-doctor section
+        "chief_label":   "Direzione clinica",
+        "chief_heading": "Una sola firma <em>per ogni cartella.</em>",
+
+        # Bottom CTA band
+        "cta_heading":
+            "Ogni visita è <em>concordata personalmente</em> con il medico.",
+        "cta_primary_label":   "Richiedi visita privata",
+        "cta_secondary_label": "Contatti dello studio",
     },
 
     # ─── LO STUDIO (about) ─────────────────────────────────────
@@ -176,6 +214,16 @@ CARDIO_CONTENT: dict[str, Any] = {
             ("Tracciabilità","Cartella clinica completa, ricostruibile in ogni momento."),
             ("Discrezione", "Riservatezza assoluta sui dati e sulle persone."),
         ],
+
+        # Values section label + heading
+        "values_label":   "Cosa garantiamo",
+        "values_heading": "Quattro impegni che <em>non cambiano mai.</em>",
+
+        # Bottom CTA band
+        "cta_heading":
+            "Vuoi conoscere i medici dello studio <em>prima di prenotare?</em>",
+        "cta_primary_label":   "I tre medici dello studio →",
+        "cta_secondary_label": "Richiedi visita privata →",
     },
 
     # ─── VISITE (services) ─────────────────────────────────────
@@ -224,6 +272,14 @@ CARDIO_CONTENT: dict[str, Any] = {
             "rilascia ricevuta sanitaria con apposita marca da bollo. Per i "
             "pazienti residenti fuori Roma è possibile concordare un pacchetto "
             "che includa la teleconsultazione di follow-up.",
+
+        "footnote_heading": "Note amministrative",
+
+        # Bottom CTA band
+        "cta_heading":
+            "Una visita allo Studio Marani è <em>concordata personalmente</em>.",
+        "cta_primary_label":   "Modulo di richiesta →",
+        "cta_secondary_label": "Numero diretto della segreteria →",
     },
 
     # ─── MEDICI (team) ─────────────────────────────────────────
@@ -235,6 +291,8 @@ CARDIO_CONTENT: dict[str, Any] = {
             "metodi e standard di refertazione. Ogni paziente, però, ha sempre "
             "un solo medico di riferimento.",
 
+        "portrait_city": "Roma · Parioli",
+
         "doctors": [
             {
                 "name":  "Dr. Riccardo Marani",
@@ -245,6 +303,9 @@ CARDIO_CONTENT: dict[str, Any] = {
                     "perfezionato in ecocardiografia clinica all'Institut de Cardiologie "
                     "de Montréal. Membro SIC e ESC. Autore di oltre quaranta pubblicazioni "
                     "indicizzate, fra cui due capitoli del trattato Braunwald-Italia.",
+                "portrait":
+                    "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
+                    "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("PubMed", "#"),
                     ("ORCID",  "#"),
@@ -259,6 +320,9 @@ CARDIO_CONTENT: dict[str, Any] = {
                     "a Padova. Coordinatrice del programma di prevenzione cardiovascolare "
                     "familiare dello Studio Marani dal 2024. Si occupa in particolare di "
                     "donne in età perimenopausale e di nuclei familiari con storia di eventi precoci.",
+                "portrait":
+                    "https://images.unsplash.com/photo-1559839734-2b71ea197ec2"
+                    "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("Curriculum", "#"),
                 ],
@@ -272,6 +336,9 @@ CARDIO_CONTENT: dict[str, Any] = {
                     "avanzata al Saint-Joseph di Parigi. Dal 2018 referente per la "
                     "diagnostica strumentale dello studio. Consulente cardiologico "
                     "per due società sportive di Serie B.",
+                "portrait":
+                    "https://images.unsplash.com/photo-1622253692010-333f2da6031d"
+                    "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("Pubblicazioni", "#"),
                 ],
@@ -287,6 +354,21 @@ CARDIO_CONTENT: dict[str, Any] = {
             "Una selezione delle pubblicazioni dello studio e dei testi divulgativi "
             "scritti per il pubblico generale. Tutti i contenuti sono rivisti "
             "personalmente dal Dr. Marani prima della pubblicazione.",
+
+        # Lead post background image (blog_list hero)
+        "lead_image":
+            "https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+            "?auto=format&fit=crop&w=900&q=80",
+
+        # Blog-detail footer strap + fallback body
+        "footer_strap": "Studio Marani · Cardiologia clinica",
+        "empty_body_fallback_paragraphs": [
+            "Articolo in preparazione editoriale. La pubblicazione integrale sarà "
+            "disponibile a breve.",
+            "Questo segnaposto descrive la voce dell'articolo: una nota clinica "
+            "scritta dal medico, in tono diretto e privo di tecnicismi, pensata "
+            "per pazienti e familiari che cercano informazioni affidabili.",
+        ],
     },
 
     "posts": [
@@ -412,6 +494,20 @@ CARDIO_CONTENT: dict[str, Any] = {
         "form_intro":
             "Per richieste non urgenti — informazioni sulle visite, costi, "
             "logistica — scrivici qui sotto. Risponde personalmente la segreteria clinica.",
+
+        "hours_heading":     "Orari di apertura",
+        "transport_heading": "Come raggiungerci",
+
+        "form_placeholders": {
+            "first_name": "Mario",
+            "last_name":  "Rossi",
+            "email":      "mario.rossi@email.it",
+            "phone":      "+39 333 ...",
+            "subject":    "Informazioni su una visita di controllo",
+            "message":
+                "Resta in poche righe — la segreteria ti contatta "
+                "entro la giornata lavorativa.",
+        },
     },
 
     # ─── RICHIEDI VISITA (appointment) ─────────────────────────
@@ -422,6 +518,9 @@ CARDIO_CONTENT: dict[str, Any] = {
             "Non esiste un calendario online. Lo studio riserva ogni primo "
             "appuntamento dopo aver letto una breve descrizione del caso. "
             "Le richieste vengono valutate personalmente dal medico entro 48 ore.",
+
+        "process_label":   "Come funziona",
+        "process_heading": "Quattro passaggi, in <em>quattro giorni lavorativi.</em>",
 
         "process": [
             ("01", "Compila il modulo",
@@ -438,17 +537,40 @@ CARDIO_CONTENT: dict[str, Any] = {
              "dei documenti da portare e l'indirizzo dello studio con le indicazioni di accesso."),
         ],
 
-        "form_title":  "Modulo di richiesta",
+        "form_title": "Modulo di richiesta",
+        "form_band_side_note":
+            "Riserva qualche minuto. Le richieste compilate con cura sono lette "
+            "dal medico per intero — quelle frettolose, no.",
+        "form_band_side_note_small": "↓ Modulo riservato",
+
+        # Per-field dicts: `type` drives the input kind, `full_width` marks full-row
+        # fields, selects carry their option list inline. The chrome loops this list
+        # directly instead of hand-writing the form.
         "form_fields": [
-            ("Nome e cognome",                  "Mario Rossi",                "text"),
-            ("Email",                           "mario.rossi@email.it",       "email"),
-            ("Telefono",                        "+39 333 ...",                "tel"),
-            ("Tipo di visita",                  "Prima visita / Secondo parere / Programma prevenzione", "select"),
-            ("Età",                             "52",                         "number"),
-            ("Medico curante",                  "Dr. ...",                    "text"),
-            ("Breve descrizione del caso",      "Sintomi, esami già eseguiti, diagnosi attuale, terapia in corso. Resta nelle dieci righe.", "textarea"),
-            ("Disponibilità preferite",         "Mattina / Pomeriggio / Indifferente", "select"),
+            {"label": "Nome e cognome", "placeholder": "Mario Rossi",
+             "type": "text", "full_width": False},
+            {"label": "Email", "placeholder": "mario@email.it",
+             "type": "email", "full_width": False},
+            {"label": "Telefono", "placeholder": "+39 333 ...",
+             "type": "tel", "full_width": False},
+            {"label": "Età", "placeholder": "52",
+             "type": "number", "full_width": False},
+            {"label": "Tipo di visita", "type": "select", "full_width": False,
+             "options": ["Prima visita", "Secondo parere",
+                         "Programma prevenzione", "Visita di controllo"]},
+            {"label": "Disponibilità preferite", "type": "select", "full_width": False,
+             "options": ["Mattina", "Pomeriggio", "Indifferente"]},
+            {"label": "Medico curante", "placeholder": "Dr. ...",
+             "type": "text", "full_width": True},
+            {"label": "Breve descrizione del caso",
+             "placeholder":
+                 "Sintomi, esami già eseguiti, diagnosi attuale, terapia in corso. "
+                 "Resta nelle dieci righe.",
+             "type": "textarea", "full_width": True},
         ],
+
+        "submit_label": "Invia richiesta",
+
         "consent":
             "Acconsento al trattamento dei dati personali secondo l'informativa "
             "privacy ai sensi del Regolamento UE 679/2016. I dati clinici "
@@ -900,6 +1022,11 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
         "email":        "studio@ricciardidermatologia.it",
         "address":      "Via Veneto 116 · 00187 Roma",
         "hours_compact": "Lun – Ven · 10:00 – 20:00",
+        "hours_footer_rows": [
+            "Sabato · chirurgia su agenda",
+            "Domenica · chiuso",
+        ],
+        "license":      "Iscrizione OMCeO Roma 3 / 11982",
         "footer_intro":
             "Studio specialistico privato di dermatologia clinica, chirurgica ed "
             "estetica. Riceviamo solo su appuntamento.",
@@ -956,10 +1083,43 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
                 "Sloan Kettering di New York e in chirurgia dermatologica alla Charité di "
                 "Berlino. Membro SIDeMaST, EADV e International Dermoscopy Society. "
                 "Autrice di oltre cinquanta pubblicazioni indicizzate.",
+            "portrait":
+                "https://images.unsplash.com/photo-1594824476967-48c8b964273f"
+                "?auto=format&fit=crop&w=900&q=80",
         },
 
         "press": ["JAMA Dermatology", "British Journal of Dermatology",
                   "Vanity Fair Wellness", "Corriere Salute", "Vogue Italia"],
+        "press_label": "Pubblicato su",
+
+        # Hero right sidebar (dark pulse column)
+        "hero_sidebar_top_label": "Direzione clinica",
+        "hero_sidebar_quote":
+            "«La pelle non è un sintomo da zittire. "
+            "È un tessuto che parla — basta imparare ad ascoltarlo.»",
+        "hero_sidebar_author": "— JAMA Dermatology · 2025",
+        "hero_sidebar_pulse": [
+            ("Studio",      "Roma · Via Veneto"),
+            ("Da",          "2008"),
+            ("Riferimento", "Dermatologia integrata"),
+        ],
+
+        # Signature-visits section (dark 01/02/03/04 field grid)
+        "signature_visits_label":   "Visite & percorsi",
+        "signature_visits_heading": "Quattro aree cliniche, <em>un solo archivio.</em>",
+        "signature_visits_intro":
+            "Le quattro aree in cui lavoriamo ogni giorno. "
+            "L'elenco completo dei percorsi è nella pagina Visite.",
+
+        # Chief-doctor section
+        "chief_label":   "Direzione clinica",
+        "chief_heading": "Un solo archivio <em>per ogni pelle.</em>",
+
+        # Bottom CTA band
+        "cta_heading":
+            "Ogni visita è <em>preparata personalmente</em> dal medico.",
+        "cta_primary_label":   "Richiedi visita privata",
+        "cta_secondary_label": "Contatti dello studio",
     },
 
     # ─── LO STUDIO (about) ─────────────────────────────────────
@@ -1018,6 +1178,16 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
             ("Tracciabilità",    "Archivio fotografico permanente, consegnabile al paziente in qualsiasi momento."),
             ("Estetica clinica", "Nessun trattamento estetico senza visita dermatologica preliminare."),
         ],
+
+        # Values section label + heading
+        "values_label":   "Cosa garantiamo",
+        "values_heading": "Quattro impegni che <em>non cambiano mai.</em>",
+
+        # Bottom CTA band
+        "cta_heading":
+            "Vuoi conoscere le dermatologhe dello studio <em>prima di prenotare?</em>",
+        "cta_primary_label":   "Le tre dermatologhe dello studio →",
+        "cta_secondary_label": "Richiedi visita privata →",
     },
 
     # ─── VISITE (services) ─────────────────────────────────────
@@ -1073,6 +1243,14 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
             "rilascia ricevuta sanitaria con marca da bollo. I preventivi per "
             "chirurgia dermatologica sono sempre scritti e firmati dal medico in "
             "anticipo, comprensivi di eventuali esami istologici e visite di follow-up.",
+
+        "footnote_heading": "Note amministrative",
+
+        # Bottom CTA band
+        "cta_heading":
+            "Una visita allo Studio Ricciardi è <em>preparata personalmente</em>.",
+        "cta_primary_label":   "Modulo di richiesta →",
+        "cta_secondary_label": "Numero diretto della segreteria →",
     },
 
     # ─── MEDICI (team) ─────────────────────────────────────────
@@ -1083,6 +1261,8 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
             "Lo studio è composto da tre dermatologhe che condividono cartelle, "
             "archivio dermatoscopico e protocollo clinico. Ogni paziente, però, "
             "ha sempre una sola dermatologa di riferimento.",
+
+        "portrait_city": "Roma · Via Veneto",
 
         "doctors": [
             {
@@ -1095,6 +1275,9 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
                     "Memorial Sloan Kettering di New York. Membro SIDeMaST, EADV e "
                     "International Dermoscopy Society. Autrice di oltre cinquanta "
                     "pubblicazioni indicizzate, fra cui due capitoli del trattato Bolognia-Italia.",
+                "portrait":
+                    "https://images.unsplash.com/photo-1594824476967-48c8b964273f"
+                    "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("PubMed", "#"),
                     ("ORCID",  "#"),
@@ -1109,6 +1292,9 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
                     "dermatologica alla Charité di Berlino. Dal 2015 responsabile della "
                     "sala chirurgica ambulatoriale dello studio. Consulente chirurgico "
                     "per due reparti dermatologici universitari romani.",
+                "portrait":
+                    "https://images.unsplash.com/photo-1582750433449-648ed127bb54"
+                    "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("Curriculum", "#"),
                 ],
@@ -1123,6 +1309,9 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
                     "Center di Boston. Dal 2024 responsabile del percorso di medicina "
                     "estetica dermatologica dello Studio Ricciardi. Nessuna delega a "
                     "personale non medico.",
+                "portrait":
+                    "https://images.unsplash.com/photo-1666214280557-f1b5022eb634"
+                    "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("Pubblicazioni", "#"),
                 ],
@@ -1138,6 +1327,21 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
             "Una selezione dei lavori dello studio e dei testi divulgativi scritti "
             "per il pubblico generale. Tutti i contenuti sono rivisti personalmente "
             "dalla Dott.ssa Ricciardi prima della pubblicazione.",
+
+        # Lead post background image (blog_list hero)
+        "lead_image":
+            "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
+            "?auto=format&fit=crop&w=900&q=80",
+
+        # Blog-detail footer strap + fallback body
+        "footer_strap": "Studio Ricciardi · Dermatologia integrata",
+        "empty_body_fallback_paragraphs": [
+            "Articolo in preparazione editoriale. La pubblicazione integrale sarà "
+            "disponibile a breve.",
+            "Questo segnaposto descrive la voce dell'articolo: una nota clinica "
+            "scritta dalla dermatologa, in tono diretto e privo di tecnicismi, "
+            "pensata per pazienti e familiari che cercano informazioni affidabili.",
+        ],
     },
 
     "posts": [
@@ -1269,6 +1473,20 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
             "Per richieste non urgenti — informazioni sulle visite, costi, "
             "preparazione alla mappatura — scrivici qui sotto. Risponde "
             "personalmente la segreteria clinica.",
+
+        "hours_heading":     "Orari di apertura",
+        "transport_heading": "Come raggiungerci",
+
+        "form_placeholders": {
+            "first_name": "Maria",
+            "last_name":  "Bianchi",
+            "email":      "maria.bianchi@email.it",
+            "phone":      "+39 335 ...",
+            "subject":    "Informazioni sulla prima visita dermatologica",
+            "message":
+                "Resta in poche righe — la segreteria ti contatta "
+                "entro 24 ore lavorative.",
+        },
     },
 
     # ─── RICHIEDI VISITA (appointment) ─────────────────────────
@@ -1279,6 +1497,10 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
             "Non esiste un calendario online. Lo studio riserva ogni prima visita "
             "dopo aver letto una breve descrizione del caso. Le richieste vengono "
             "valutate personalmente dal medico entro 48 ore lavorative.",
+
+        "process_label":   "Come funziona",
+        "process_heading":
+            "Quattro passaggi, in <em>quarantotto ore lavorative.</em>",
 
         "process": [
             ("01", "Compila il modulo",
@@ -1297,17 +1519,37 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
              "struccata e senza smalto se prevista mappatura."),
         ],
 
-        "form_title":  "Modulo di richiesta",
+        "form_title": "Modulo di richiesta",
+        "form_band_side_note":
+            "Riserva qualche minuto. Le richieste preparate con cura sono lette "
+            "dalla dermatologa per intero — quelle frettolose, no.",
+        "form_band_side_note_small": "↓ Modulo riservato",
+
         "form_fields": [
-            ("Nome e cognome",                  "Maria Bianchi",                "text"),
-            ("Email",                           "maria.bianchi@email.it",       "email"),
-            ("Telefono",                        "+39 335 ...",                  "tel"),
-            ("Tipo di visita",                  "Dermatologica / Mappatura nevi / Chirurgica / Estetica", "select"),
-            ("Età",                             "38",                           "number"),
-            ("Medico curante",                  "Dr. ...",                      "text"),
-            ("Breve descrizione del caso",      "Motivo della visita, lesioni di interesse, sintomi recenti, terapie in corso. Resta nelle dieci righe.", "textarea"),
-            ("Disponibilità preferite",         "Mattina / Pomeriggio / Indifferente", "select"),
+            {"label": "Nome e cognome", "placeholder": "Maria Bianchi",
+             "type": "text", "full_width": False},
+            {"label": "Email", "placeholder": "maria@email.it",
+             "type": "email", "full_width": False},
+            {"label": "Telefono", "placeholder": "+39 335 ...",
+             "type": "tel", "full_width": False},
+            {"label": "Età", "placeholder": "38",
+             "type": "number", "full_width": False},
+            {"label": "Tipo di visita", "type": "select", "full_width": False,
+             "options": ["Visita dermatologica", "Mappatura nevi",
+                         "Chirurgia dermatologica", "Medicina estetica"]},
+            {"label": "Disponibilità preferite", "type": "select", "full_width": False,
+             "options": ["Mattina", "Pomeriggio", "Indifferente"]},
+            {"label": "Medico curante", "placeholder": "Dr. ...",
+             "type": "text", "full_width": True},
+            {"label": "Breve descrizione del caso",
+             "placeholder":
+                 "Motivo della visita, lesioni di interesse, sintomi recenti, "
+                 "terapie in corso. Resta nelle dieci righe.",
+             "type": "textarea", "full_width": True},
         ],
+
+        "submit_label": "Invia richiesta",
+
         "consent":
             "Acconsento al trattamento dei dati personali secondo l'informativa "
             "privacy ai sensi del Regolamento UE 679/2016. I dati clinici e le "

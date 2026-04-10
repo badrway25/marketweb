@@ -91,16 +91,16 @@
 
   <section class="sp-foot-note">
     <div class="inner">
-      <h4>Note amministrative</h4>
+      <h4>{{ page_data.footnote_heading }}</h4>
       <p>{{ page_data.footnote }}</p>
     </div>
   </section>
 
   <section class="sp-cta-band">
-    <h2>Una visita allo Studio Marani è <em>concordata personalmente</em>.</h2>
+    <h2>{{ page_data.cta_heading|safe }}</h2>
     <div class="actions">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}">Modulo di richiesta →</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}">Numero diretto della segreteria →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}">{{ page_data.cta_primary_label }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}">{{ page_data.cta_secondary_label }}</a>
     </div>
   </section>
 {% endblock %}
