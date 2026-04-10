@@ -417,6 +417,47 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         },
     },
 
+    # ── 5) SPECIALIST (derm) — archetype reuse validation ────────
+    # Second template on the `specialist` archetype. Proves that a new
+    # multi-page template can ship with ZERO new HTML files: same chrome,
+    # different brand / palette / content / tone / font pairing.
+    "dermatologia-elite-roma": {
+        "archetype":          "specialist",
+        "hero_style":         "editorial-serif",
+        "navbar_style":       "minimal-serif",
+        "footer_style":       "centered-minimal",
+        "section_order":      ["nav", "editorial-hero", "drop-cap", "fields", "press", "footer"],
+        "card_style":         "editorial-large",
+        "button_style":       "ghost-underline",
+        "density":            "very-airy",
+        "tone":               "prestigious",
+        "imagery_direction":  "editorial-portrait",
+        "imagery_key":        "medical-specialist",
+        "conversion_pattern": "private-request",
+        "font_pairing":       ("Bodoni Moda", "Inter"),
+        "content": {
+            "eyebrow":       "Dermatologia clinica · Roma Veneto",
+            "headline":      'La pelle è una <em>carta d\'identità.</em> La leggiamo per intero.',
+            "subhead":       "Dermatologia clinica, chirurgica ed estetica in un unico studio privato a Via Veneto. Mappa nei digitale, chirurgia in day-hospital, laser e medicina estetica dermatologica.",
+            "primary_cta":   "Richiedi visita privata",
+            "phone":         "+39 06 487 2311",
+            "drop_cap":      "O",
+            "intro_paragraph": (
+                "gni pelle racconta una storia che è scritta dall'ambiente, dal tempo, "
+                "dai geni e dalle abitudini. Il dermatologo è il lettore di quella storia — "
+                "con il dermatoscopio, con le mani, con l'occhio allenato di chi ha visto "
+                "decine di migliaia di pazienti. Allo Studio Ricciardi non abbiamo mai "
+                "fretta di concludere una visita."
+            ),
+            "fields": [
+                ("01", "Mappatura nevi digitale", "Videodermatoscopia ad alta risoluzione di tutti i nevi con archiviazione digitale e confronto con l'archivio storico del paziente."),
+                ("02", "Chirurgia dermatologica in day-hospital", "Escissione di lesioni sospette in anestesia locale con esame istologico dedicato e chirurgia plastica ricostruttiva inclusa."),
+            ],
+            "press": ["JAMA Dermatology", "British Journal of Dermatology", "Vanity Fair Wellness", "Corriere Salute", "Vogue Italia"],
+            "nav_links": ["Studio", "Visite", "Pubblicazioni", "Contatti"],
+        },
+    },
+
     # ── 4) SPECIALIST — editorial high-end ───────────────────────
     "cardio-studio-specialistico": {
         "archetype":          "specialist",

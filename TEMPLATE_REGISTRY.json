@@ -1,6 +1,6 @@
 {
-  "version": "0.5.0",
-  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, completeness flag and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. Templates with `live_preview: true` ALSO have a content registry entry in apps/catalog/template_content.py and a per-archetype skin folder under templates/live_templates/<category>/<archetype>/, making them fully navigable multi-page websites accessible at /templates/<cat>/<slug>/preview/.",
+  "version": "0.6.0",
+  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, completeness flag and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. Templates with `live_preview: true` ALSO have a content registry entry in apps/catalog/template_content.py and (re-)use a per-archetype skin folder under templates/live_templates/<category>/<archetype>/, making them fully navigable multi-page websites accessible at /templates/<cat>/<slug>/preview/. As of v0.6.0 the `specialist` skin hosts TWO templates (cardio + dermatologia-elite-roma) — the archetype-reuse validation that proved a new full multi-page template can ship with zero new HTML files.",
   "last_updated": "2026-04-10",
   "templates": [
     {
@@ -189,6 +189,29 @@
       "live_preview": true,
       "live_pages": ["home", "studio", "visite", "medici", "pubblicazioni", "pubblicazioni/<post>", "contatti", "richiedi-visita"],
       "price": 109,
+      "featured": false,
+      "status": "published"
+    },
+    {
+      "slug": "dermatologia-elite-roma",
+      "name": "Dermatologia Elite — Studio Ricciardi",
+      "category": "medical",
+      "brand_name": "Studio Ricciardi Dermatologia",
+      "tagline": "Dermatologia clinica, chirurgica ed estetica · Roma Veneto",
+      "palette": {"primary": "#1c1612", "secondary": "#f7f3ee", "accent": "#3d5437"},
+      "typography": "Bodoni Moda + Inter",
+      "personality": "editoriale, meticoloso, estetico-clinico",
+      "archetype": "specialist",
+      "hero_style": "editorial-serif",
+      "navbar_style": "minimal-serif",
+      "density": "very-airy",
+      "tone": "prestigious",
+      "conversion_pattern": "private-request",
+      "live_preview": true,
+      "live_pages": ["home", "studio", "visite", "medici", "pubblicazioni", "pubblicazioni/<post>", "contatti", "richiedi-visita"],
+      "archetype_reuse": true,
+      "reuse_notes": "Second template on the `specialist` archetype. Reuses the same live_templates/medical/specialist/ skin as cardio-studio-specialistico — ZERO new HTML files. Differentiated via brand (Studio Ricciardi), accent (forest green #3d5437 vs cardio red #9c2a2a), font (Bodoni Moda vs Cormorant), and dermatology-specific content registry.",
+      "price": 115,
       "featured": false,
       "status": "published"
     },

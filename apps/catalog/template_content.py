@@ -871,11 +871,464 @@ GUSTO_CONTENT: dict[str, Any] = {
 
 
 # ---------------------------------------------------------------------------
+# DERMATOLOGIA ELITE — Studio Ricciardi Dermatologia (specialist archetype)
+# Archetype-reuse validation: second template on the `specialist` archetype.
+# Re-uses the Cardio chrome WITHOUT adding any new HTML. Differentiated by
+# brand (Studio Ricciardi, not Marani), accent (forest green, not clinical red),
+# font (Bodoni Moda, not Cormorant), editorial tone (dermatology: clinical +
+# surgical + aesthetic), specialties, doctors, prices, press list and editorial
+# copy. Page slugs follow CARDIO_CONTENT exactly because the specialist chrome
+# hardcodes `pubblicazioni` as the blog parent page slug.
+# ---------------------------------------------------------------------------
+
+DERMATOLOGIA_CONTENT: dict[str, Any] = {
+    "pages": [
+        {"slug": "home",            "label": "Studio",          "kind": "home"},
+        {"slug": "studio",          "label": "Lo Studio",       "kind": "about"},
+        {"slug": "visite",          "label": "Visite",          "kind": "services"},
+        {"slug": "medici",          "label": "Medici",          "kind": "team"},
+        {"slug": "pubblicazioni",   "label": "Pubblicazioni",   "kind": "blog_list"},
+        {"slug": "contatti",        "label": "Contatti",        "kind": "contact"},
+        {"slug": "richiedi-visita", "label": "Richiedi visita", "kind": "appointment"},
+    ],
+
+    "site": {
+        "logo_initial": "R",
+        "logo_word":    "Studio Ricciardi",
+        "tag":          "Dermatologia clinica, chirurgica ed estetica · Roma Veneto",
+        "phone":        "+39 06 487 2311",
+        "email":        "studio@ricciardidermatologia.it",
+        "address":      "Via Veneto 116 · 00187 Roma",
+        "hours_compact": "Lun – Ven · 10:00 – 20:00",
+        "footer_intro":
+            "Studio specialistico privato di dermatologia clinica, chirurgica ed "
+            "estetica. Riceviamo solo su appuntamento.",
+    },
+
+    # ─── HOME ──────────────────────────────────────────────────
+    "home": {
+        "eyebrow":  "Dermatologia clinica · Roma Veneto",
+        "headline": "La pelle è una <em>carta d'identità</em>. La leggiamo per intero.",
+        "intro":
+            "Dermatologia clinica, chirurgica ed estetica in un unico studio privato a "
+            "Via Veneto. Mappa nei digitale, diagnosi precoce dei tumori cutanei, "
+            "chirurgia dermatologica in day-hospital e medicina estetica dermatologica.",
+        "primary_cta":   "Richiedi visita privata",
+        "primary_href":  "richiedi-visita",
+        "secondary_cta": "Lo studio",
+        "secondary_href":"studio",
+
+        "facts": [
+            ("18",    "anni di dermatologia privata"),
+            ("2.400", "mappature nevi all'anno"),
+            ("3",     "sale dedicate · 1 chirurgica"),
+        ],
+
+        "manifesto_drop_cap": "O",
+        "manifesto":
+            "gni pelle racconta una storia che è scritta dall'ambiente, dal tempo, "
+            "dai geni e dalle abitudini. Il dermatologo è il lettore di quella storia — "
+            "con il dermatoscopio, con le mani, con l'occhio allenato di chi ha visto "
+            "decine di migliaia di pazienti prima di voi. Allo Studio Ricciardi non "
+            "abbiamo mai fretta di concludere una visita.",
+
+        "signature_visits": [
+            ("01", "Mappatura nevi digitale",
+             "Videodermatoscopia ad alta risoluzione di tutti i nevi, archiviazione "
+             "digitale e confronto con l'archivio storico del paziente. Refertata in giornata."),
+            ("02", "Chirurgia dermatologica in day-hospital",
+             "Escissione di lesioni sospette in anestesia locale con esame istologico "
+             "dedicato. Piccola chirurgia plastica ricostruttiva inclusa nel percorso."),
+            ("03", "Laser dermatologico",
+             "Laser CO2 frazionato, laser vascolare e laser depilatorio di ultima "
+             "generazione per cicatrici, vascolarizzazioni e chirurgia cutanea non invasiva."),
+            ("04", "Medicina estetica dermatologica",
+             "Filler, tossina botulinica, peeling medici e skinbooster eseguiti "
+             "personalmente dal medico dermatologo. Mai delegati a personale non medico."),
+        ],
+
+        "chief": {
+            "name":  "Dott.ssa Alessandra Ricciardi",
+            "role":  "Direttore clinico · Dermatologa",
+            "bio":
+                "Specialista in dermatologia e venereologia all'Università Cattolica del "
+                "Sacro Cuore di Roma, perfezionata in dermoscopia avanzata al Memorial "
+                "Sloan Kettering di New York e in chirurgia dermatologica alla Charité di "
+                "Berlino. Membro SIDeMaST, EADV e International Dermoscopy Society. "
+                "Autrice di oltre cinquanta pubblicazioni indicizzate.",
+        },
+
+        "press": ["JAMA Dermatology", "British Journal of Dermatology",
+                  "Vanity Fair Wellness", "Corriere Salute", "Vogue Italia"],
+    },
+
+    # ─── LO STUDIO (about) ─────────────────────────────────────
+    "studio": {
+        "eyebrow":  "Lo studio",
+        "headline": "Diciotto anni di <em>dermatologia privata</em> integrata.",
+        "intro":
+            "Lo Studio Ricciardi nasce nel 2008 dall'idea che la dermatologia "
+            "contemporanea non possa vivere di sole visite di controllo: servono "
+            "tempo clinico, chirurgia dedicata e un ambulatorio estetico che parli "
+            "la stessa lingua della diagnosi.",
+
+        "history": [
+            ("2008",
+             "Apertura del primo studio in Via Veneto 116, tre stanze e una segretaria. "
+             "La prima visita dermatologica viene erogata il 4 febbraio 2008."),
+            ("2012",
+             "Arriva la videodermatoscopia digitale FotoFinder ATBM, prima installazione "
+             "in un privato romano. Le mappature nevi passano da cartacee ad archivio "
+             "digitale incrementale, confrontabili anno dopo anno sulla stessa macchina."),
+            ("2015",
+             "Allestimento della sala chirurgica ambulatoriale dedicata, con anestesista "
+             "esterno per gli interventi più complessi. Nasce il servizio di chirurgia "
+             "dermatologica in day-hospital."),
+            ("2019",
+             "Arrivo del laser CO2 frazionato Lumenis UltraPulse e del laser vascolare "
+             "Candela Vbeam Prima. Nasce l'area dermatologica laser, con protocolli "
+             "dedicati a cicatrici, cheratosi attiniche e lesioni vascolari."),
+            ("2024",
+             "Ingresso della Dott.ssa Morelli come responsabile del percorso di medicina "
+             "estetica dermatologica. L'estetica diventa, per la prima volta nello studio, "
+             "un ambulatorio firmato da un dermatologo a tempo pieno."),
+        ],
+
+        "method_title": "Metodo",
+        "method_paragraphs": [
+            "Una visita allo Studio Ricciardi inizia sempre da una domanda semplice: "
+            "quando ha iniziato a notarla? Quella data è il nostro vero punto di "
+            "partenza. Le lesioni cutanee non si leggono soltanto in sezione: si "
+            "leggono nel tempo, confrontando fotografie, referti e sensazioni del paziente.",
+            "Per ogni paziente costruiamo un archivio dermatoscopico digitale che "
+            "accompagna la persona per tutta la vita: dalla prima visita in adolescenza "
+            "fino ai controlli della maturità. Ogni nevo viene fotografato, catalogato "
+            "e confrontato a ogni controllo successivo. È il cambiamento, non l'immagine "
+            "isolata, a generare il sospetto clinico.",
+            "La chirurgia dermatologica, quando indicata, viene eseguita in giornata, "
+            "in anestesia locale, dallo stesso medico che ha posto l'indicazione. "
+            "Il pezzo istologico viene affidato a un laboratorio specializzato in "
+            "dermatopatologia, con il quale dialoghiamo direttamente al telefono "
+            "per i casi di maggior complessità.",
+        ],
+
+        "values": [
+            ("Precisione",       "Videodermatoscopia digitale per ogni paziente, a ogni controllo."),
+            ("Prevenzione",      "Mappatura nevi annuale inserita d'ufficio in agenda dal secondo anno."),
+            ("Tracciabilità",    "Archivio fotografico permanente, consegnabile al paziente in qualsiasi momento."),
+            ("Estetica clinica", "Nessun trattamento estetico senza visita dermatologica preliminare."),
+        ],
+    },
+
+    # ─── VISITE (services) ─────────────────────────────────────
+    "visite": {
+        "eyebrow":  "Le visite",
+        "headline": "Sei percorsi clinici, <em>una sola cartella.</em>",
+        "intro":
+            "Ogni visita allo Studio Ricciardi è un percorso clinico definito, "
+            "con una durata, un costo e un piano di follow-up scritti. "
+            "Nessun forfait nascosto, nessun preventivo a voce.",
+
+        "treatments": [
+            ("Visita dermatologica completa",
+             "40 min · prima visita",
+             "Anamnesi estesa, esame obiettivo della cute su tutto il corpo (compresi "
+             "cuoio capelluto, cavo orale e area genitale), dermatoscopia manuale, "
+             "refertazione personale e piano di follow-up scritto.",
+             "€ 180"),
+            ("Mappatura nevi digitale",
+             "60 min · FotoFinder ATBM",
+             "Videodermatoscopia ad alta risoluzione di tutti i nevi, archiviazione "
+             "digitale, confronto con l'archivio storico, relazione scritta con il "
+             "dettaglio delle lesioni a rischio.",
+             "€ 240"),
+            ("Chirurgia dermatologica ambulatoriale",
+             "Su indicazione · day-hospital",
+             "Escissione di lesioni sospette in anestesia locale, esame istologico "
+             "eseguito da laboratorio specializzato in dermatopatologia, refertazione "
+             "entro otto giorni lavorativi con consulto telefonico dedicato.",
+             "da € 320"),
+            ("Laser CO2 frazionato",
+             "45 min · singola seduta",
+             "Trattamento di cicatrici, rughe periorali, macchie solari e cheratosi "
+             "attiniche con sistema Lumenis UltraPulse. Prima seduta sempre dopo "
+             "visita dermatologica dedicata.",
+             "€ 420"),
+            ("Peeling medico dermatologico",
+             "30 min · ciclo 4 sedute",
+             "Peeling superficiali e medi (TCA, mandelico, salicilico, fenolo "
+             "diluito) eseguiti personalmente dalla dermatologa, con protocollo "
+             "individualizzato per fototipo e danno attinico.",
+             "€ 260 / seduta"),
+            ("Percorso prevenzione annuale",
+             "Annuale · 3 incontri",
+             "Visita dermatologica completa, mappatura nevi digitale con confronto "
+             "storico, consulto fotoprotettivo personalizzato, canale diretto con "
+             "il medico per urgenze minori durante l'anno.",
+             "€ 580"),
+        ],
+
+        "footnote":
+            "Tutti i pagamenti sono detraibili come spese sanitarie. Lo studio "
+            "rilascia ricevuta sanitaria con marca da bollo. I preventivi per "
+            "chirurgia dermatologica sono sempre scritti e firmati dal medico in "
+            "anticipo, comprensivi di eventuali esami istologici e visite di follow-up.",
+    },
+
+    # ─── MEDICI (team) ─────────────────────────────────────────
+    "medici": {
+        "eyebrow":  "I medici",
+        "headline": "Tre firme, una sola <em>sala operatoria.</em>",
+        "intro":
+            "Lo studio è composto da tre dermatologhe che condividono cartelle, "
+            "archivio dermatoscopico e protocollo clinico. Ogni paziente, però, "
+            "ha sempre una sola dermatologa di riferimento.",
+
+        "doctors": [
+            {
+                "name":  "Dott.ssa Alessandra Ricciardi",
+                "role":  "Direttore clinico · Dermatologa",
+                "tags":  ["Dermoscopia avanzata", "Tumori cutanei", "Dermatologia clinica"],
+                "bio":
+                    "Specialista in dermatologia e venereologia all'Università Cattolica "
+                    "del Sacro Cuore di Roma, perfezionata in dermoscopia avanzata al "
+                    "Memorial Sloan Kettering di New York. Membro SIDeMaST, EADV e "
+                    "International Dermoscopy Society. Autrice di oltre cinquanta "
+                    "pubblicazioni indicizzate, fra cui due capitoli del trattato Bolognia-Italia.",
+                "links": [
+                    ("PubMed", "#"),
+                    ("ORCID",  "#"),
+                ],
+            },
+            {
+                "name":  "Dott. Emanuele Vitali",
+                "role":  "Dermatologo · Chirurgia dermatologica",
+                "tags":  ["Chirurgia ambulatoriale", "Plastica ricostruttiva", "Dermatopatologia"],
+                "bio":
+                    "Specialista al Policlinico Gemelli di Roma, perfezionato in chirurgia "
+                    "dermatologica alla Charité di Berlino. Dal 2015 responsabile della "
+                    "sala chirurgica ambulatoriale dello studio. Consulente chirurgico "
+                    "per due reparti dermatologici universitari romani.",
+                "links": [
+                    ("Curriculum", "#"),
+                ],
+            },
+            {
+                "name":  "Dott.ssa Caterina Morelli",
+                "role":  "Dermatologa · Estetica & Laser",
+                "tags":  ["Laser CO2", "Medicina estetica", "Peeling medici"],
+                "bio":
+                    "Specialista all'Università di Padova, dottorato di ricerca in "
+                    "dermatologia estetica. Perfezionata in laserterapia al Wellman "
+                    "Center di Boston. Dal 2024 responsabile del percorso di medicina "
+                    "estetica dermatologica dello Studio Ricciardi. Nessuna delega a "
+                    "personale non medico.",
+                "links": [
+                    ("Pubblicazioni", "#"),
+                ],
+            },
+        ],
+    },
+
+    # ─── PUBBLICAZIONI (blog list / detail) ────────────────────
+    "pubblicazioni": {
+        "eyebrow":  "Pubblicazioni & approfondimenti",
+        "headline": "Lavori scientifici, <em>letture critiche</em>, divulgazione dermatologica.",
+        "intro":
+            "Una selezione dei lavori dello studio e dei testi divulgativi scritti "
+            "per il pubblico generale. Tutti i contenuti sono rivisti personalmente "
+            "dalla Dott.ssa Ricciardi prima della pubblicazione.",
+    },
+
+    "posts": [
+        {
+            "slug":     "mappatura-nei-quando-farla",
+            "kicker":   "Prevenzione",
+            "title":    "Mappatura nevi: ogni quanto farla davvero",
+            "date":     "18 marzo 2026",
+            "read_min": 7,
+            "author":   "Dott.ssa Alessandra Ricciardi",
+            "lede":
+                "La domanda più frequente in ambulatorio è anche quella con la "
+                "risposta più sfumata. Non esiste una frequenza universale: esiste "
+                "il tuo fototipo, il tuo archivio e la tua storia familiare.",
+            "body": [
+                ("p", "Ogni anno in Italia vengono diagnosticati circa quindicimila nuovi casi "
+                      "di melanoma cutaneo. È il tumore della pelle con la più alta letalità e, "
+                      "allo stesso tempo, quello con la prognosi migliore quando preso in tempo. "
+                      "Il confine fra queste due realtà si chiama dermoscopia digitale seriata."),
+                ("h2", "Le tre categorie di rischio"),
+                ("ol", [
+                    "Paziente senza familiarità, pochi nevi (meno di 30), fototipo II-III: mappatura ogni 24 mesi.",
+                    "Paziente con molti nevi (oltre 50), fototipo chiaro o pregresse scottature solari in età infantile: mappatura annuale.",
+                    "Paziente con familiarità di primo grado per melanoma o nevo sospetto in archivio: mappatura ogni sei-dodici mesi."
+                ]),
+                ("p", "Le frequenze indicate non sono regole rigide: ogni dermatologo le "
+                      "adatta al singolo paziente. Quello che conta è che la mappatura non "
+                      "sia una prestazione isolata, ma un atto clinico ripetuto nel tempo — "
+                      "con le stesse macchine, lo stesso medico e lo stesso archivio digitale."),
+                ("h2", "Cosa significa 'archivio digitale'"),
+                ("p", "Significa che ogni nevo viene fotografato in videodermatoscopia ad alta "
+                      "risoluzione e archiviato con coordinate cutanee precise. A ogni controllo "
+                      "successivo il medico non guarda un nevo nuovo: confronta la stessa foto "
+                      "con quella dell'anno precedente. È il cambiamento, non l'immagine isolata, "
+                      "a generare il sospetto clinico."),
+                ("blockquote",
+                 "La mappatura nevi non serve a cercare un melanoma. Serve a sapere, di ogni "
+                 "lesione, come era l'anno scorso. È un atto di memoria clinica, prima che di diagnosi."),
+                ("p", "Per i nuovi pazienti la prima mappatura è sempre un atto fondativo: "
+                      "le fotografie di oggi diventano il metro di confronto per i prossimi "
+                      "dieci anni. Vale la pena dedicarci un'ora di tempo clinico, e metà "
+                      "della prima visita ne è dedicata."),
+            ],
+        },
+        {
+            "slug":     "chirurgia-dermatologica-ambulatoriale",
+            "kicker":   "Chirurgia dermatologica",
+            "title":    "Chirurgia dermatologica in day-hospital: cosa aspettarsi davvero",
+            "date":     "2 marzo 2026",
+            "read_min": 5,
+            "author":   "Dott. Emanuele Vitali",
+            "lede":
+                "Le escissioni dermatologiche ambulatoriali fanno paura solo fino "
+                "al momento dell'anestesia. Dopo, nel 95% dei casi, il paziente esce "
+                "dallo studio con la stessa camminata con cui è entrato.",
+        },
+        {
+            "slug":     "laser-co2-cicatrici",
+            "kicker":   "Laser dermatologico",
+            "title":    "Laser CO2 frazionato: quando è la scelta giusta per le cicatrici",
+            "date":     "15 febbraio 2026",
+            "read_min": 6,
+            "author":   "Dott.ssa Caterina Morelli",
+            "lede":
+                "Il laser CO2 frazionato non cancella le cicatrici: le rimodella. "
+                "Capire questa distinzione è il primo passo verso una scelta "
+                "realistica e priva di aspettative irrealizzabili.",
+        },
+        {
+            "slug":     "fotoprotezione-quotidiana",
+            "kicker":   "Prevenzione",
+            "title":    "Fotoprotezione quotidiana: le tre regole che davvero contano",
+            "date":     "28 gennaio 2026",
+            "read_min": 4,
+            "author":   "Dott.ssa Alessandra Ricciardi",
+            "lede":
+                "Un SPF 50 applicato in quantità sbagliata vale un SPF 15 applicato "
+                "bene. Dopo quindicimila visite dermatologiche, l'80% dei pazienti "
+                "sbaglia sempre lo stesso passaggio.",
+        },
+        {
+            "slug":     "medicina-estetica-dermatologica",
+            "kicker":   "Estetica clinica",
+            "title":    "Perché allo Studio Ricciardi l'estetica la fa solo il dermatologo",
+            "date":     "10 gennaio 2026",
+            "read_min": 5,
+            "author":   "Dott.ssa Caterina Morelli",
+            "lede":
+                "La medicina estetica dermatologica non è un mestiere da delegare. "
+                "Una scelta netta che raccontiamo ai pazienti alla prima visita, "
+                "senza giri di parole.",
+        },
+    ],
+
+    # ─── CONTATTI (contact) ────────────────────────────────────
+    "contatti": {
+        "eyebrow":  "Contatti",
+        "headline": "Una sola segreteria, <em>una sola persona</em> dall'altra parte del filo.",
+        "intro":
+            "Lo studio risponde personalmente alle telefonate dal lunedì al venerdì. "
+            "La segreteria clinica è gestita dalla Sig.ra Bianca Martelli, che "
+            "conosce ogni cartella e ogni paziente per nome da oltre dieci anni.",
+
+        "blocks": [
+            ("Indirizzo",   "Via Veneto 116", "00187 Roma · interno 3, scala A"),
+            ("Telefono",    "+39 06 487 2311",   "Risposta diretta 10:00 – 20:00"),
+            ("Email",       "studio@ricciardidermatologia.it", "Risposta entro 24 ore lavorative"),
+            ("Urgenze",     "+39 339 221 7080",  "Linea riservata pazienti in carico"),
+        ],
+
+        "hours": [
+            ("Lunedì",     "10:00 – 14:00", "15:30 – 20:00"),
+            ("Martedì",    "10:00 – 14:00", "15:30 – 20:00"),
+            ("Mercoledì",  "10:00 – 14:00", "15:30 – 20:00"),
+            ("Giovedì",    "10:00 – 14:00", "15:30 – 20:00"),
+            ("Venerdì",    "10:00 – 14:00", "15:30 – 19:00"),
+            ("Sabato",     "Chirurgia su agenda", "Solo interventi programmati"),
+            ("Domenica",   "Chiuso", "—"),
+        ],
+
+        "transport": [
+            ("Metro",   "Linea A · fermata Barberini, 7 minuti a piedi"),
+            ("Auto",    "Parcheggio convenzionato Saba Ludovisi, ingresso da Via Sicilia"),
+            ("Treno",   "Stazione Termini · 11 minuti in taxi"),
+        ],
+
+        "form_title": "Scrivi allo studio",
+        "form_intro":
+            "Per richieste non urgenti — informazioni sulle visite, costi, "
+            "preparazione alla mappatura — scrivici qui sotto. Risponde "
+            "personalmente la segreteria clinica.",
+    },
+
+    # ─── RICHIEDI VISITA (appointment) ─────────────────────────
+    "richiedi-visita": {
+        "eyebrow":  "Richiesta visita dermatologica",
+        "headline": "Una visita dermatologica <em>non si prenota</em>: si prepara.",
+        "intro":
+            "Non esiste un calendario online. Lo studio riserva ogni prima visita "
+            "dopo aver letto una breve descrizione del caso. Le richieste vengono "
+            "valutate personalmente dal medico entro 48 ore lavorative.",
+
+        "process": [
+            ("01", "Compila il modulo",
+             "Bastano dieci righe per inquadrare la tua richiesta. Se hai lesioni "
+             "sospette, aggiungi una fotografia: aiuta a valutare la priorità in anticipo."),
+            ("02", "Lettura clinica",
+             "Il medico legge personalmente la richiesta entro 48 ore lavorative e "
+             "valuta se la prima visita è di dermatologia clinica, chirurgica o estetica."),
+            ("03", "Proposta di appuntamento",
+             "La segreteria propone due fasce orarie compatibili con le tue esigenze "
+             "e con la durata della visita (40 min per la generale, 60 min per la "
+             "mappatura nevi completa)."),
+            ("04", "Conferma e preparazione",
+             "Ricevi via email l'elenco di cosa portare (esami precedenti, foto di "
+             "lesioni, terapia in corso) e le indicazioni pratiche per la visita — "
+             "struccata e senza smalto se prevista mappatura."),
+        ],
+
+        "form_title":  "Modulo di richiesta",
+        "form_fields": [
+            ("Nome e cognome",                  "Maria Bianchi",                "text"),
+            ("Email",                           "maria.bianchi@email.it",       "email"),
+            ("Telefono",                        "+39 335 ...",                  "tel"),
+            ("Tipo di visita",                  "Dermatologica / Mappatura nevi / Chirurgica / Estetica", "select"),
+            ("Età",                             "38",                           "number"),
+            ("Medico curante",                  "Dr. ...",                      "text"),
+            ("Breve descrizione del caso",      "Motivo della visita, lesioni di interesse, sintomi recenti, terapie in corso. Resta nelle dieci righe.", "textarea"),
+            ("Disponibilità preferite",         "Mattina / Pomeriggio / Indifferente", "select"),
+        ],
+        "consent":
+            "Acconsento al trattamento dei dati personali secondo l'informativa "
+            "privacy ai sensi del Regolamento UE 679/2016. I dati clinici e le "
+            "fotografie dermatoscopiche sono custoditi in archivio digitale cifrato "
+            "con accesso limitato al medico curante.",
+
+        "footnote":
+            "Lo studio non risponde a richieste anonime e non rilascia opinioni "
+            "cliniche via email senza visita. Per informazioni amministrative "
+            "(costi, orari, parcheggio) usa la pagina contatti.",
+    },
+}
+
+
+# ---------------------------------------------------------------------------
 # Top-level registry
 # ---------------------------------------------------------------------------
 
 TEMPLATE_CONTENT: dict[str, dict[str, Any]] = {
     "cardio-studio-specialistico": CARDIO_CONTENT,
+    "dermatologia-elite-roma":     DERMATOLOGIA_CONTENT,
     "gusto-fine-dining":           GUSTO_CONTENT,
 }
 

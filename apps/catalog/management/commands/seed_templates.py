@@ -296,6 +296,36 @@ SEED_TEMPLATES = [
             "logo_concept": "Iniziali M+C in serif maiuscolo con linea sottile sotto, oro su fondo carta",
         },
     },
+    {
+        "name": "Dermatologia Elite — Studio Ricciardi",
+        "slug": "dermatologia-elite-roma",
+        "category_slug": "medical",
+        "short_description": "Editoriale e prestigioso per dermatologi privati. Mappa nei digitale, chirurgia dermatologica, estetica clinica.",
+        "description": (
+            "Dermatologia Elite riutilizza la chrome editoriale dell'archetipo Specialist con "
+            "contenuto dedicato agli studi dermatologici di altissimo profilo. Accento botanico "
+            "forest-green al posto del rosso clinico, tipografia Bodoni Moda al posto di Cormorant "
+            "per una sensazione di editoriale estetico-medico.\n\n"
+            "Include: homepage con headline sulla 'carta d'identità' della pelle, fact-band "
+            "18 anni / 2.400 mappature / 3 sale, manifesto con drop cap, quattro percorsi clinici "
+            "numerati (mappa nei / chirurgia / laser / estetica), pagina Lo Studio con timeline "
+            "2008→2024, Visite con sei tariffe dettagliate, Medici con tre dermatologhe, cinque "
+            "pubblicazioni (di cui una con articolo integrale), Contatti con orari doppia fascia "
+            "e Richiedi visita con processo in quattro step."
+        ),
+        "price": Decimal("115.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 5,
+        "brand": {
+            "brand_name": "Studio Ricciardi Dermatologia",
+            "tagline": "Dermatologia clinica, chirurgica ed estetica · Roma Veneto",
+            "palette": {"primary": "#1c1612", "secondary": "#f7f3ee", "accent": "#3d5437"},
+            "typography": "Bodoni Moda + Inter",
+            "personality": "editoriale, meticoloso, estetico-clinico",
+            "logo_concept": "Monogramma R in serif maiuscolo con linea sottile sotto, verde-bosco su fondo carta",
+        },
+    },
     # ── Avvocato (2) ────────────────────────────────────────────
     {
         "name": "Lex — Studio Legale",

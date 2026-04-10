@@ -7,7 +7,7 @@
 | 1        | Agency      | agency       | Digital/creative agencies                | 2 (no DNA yet)  |
 | 2        | Business    | business     | General business, corporate              | 2 (no DNA yet)  |
 | 3        | **Restaurant** | restaurant | Restaurants, cafés, food delivery       | **3 / 3 ✅ DNA pilot — fine-dining + trattoria-warm + street-modern** |
-| 4        | **Medical** | medical      | Clinics, doctors, health practices       | **4 / 4 ✅ DNA pilot — clinic + family + specialist + wellness** |
+| 4        | **Medical** | medical      | Clinics, doctors, health practices       | **5 / 4 ✅ DNA pilot — clinic + family + specialist ×2 + wellness (specialist archetype now hosts cardio + dermatologia-elite-roma, reuse validated)** |
 | 5        | Lawyer      | lawyer       | Law firms, legal practices               | 2 (no DNA yet)  |
 | 6        | Real Estate | real-estate  | Agencies, property listings              | 2 (no DNA yet)  |
 | 7        | Portfolio   | portfolio    | Freelancers, designers, photographers    | 2 (no DNA yet)  |
@@ -64,10 +64,11 @@ A template is **completeness-ready** (eligible for the live multi-page preview) 
 
 When all three are in place, the template's marketplace detail page automatically shows "Apri anteprima completa" → linking to a real, navigable, multi-page website with that template's brand chrome.
 
-### Completeness coverage (Session 11)
+### Completeness coverage (Session 13 — archetype reuse validation)
 | Template                      | DNA | Content | Skin folder                                    | Status |
 |-------------------------------|-----|---------|------------------------------------------------|--------|
 | cardio-studio-specialistico   | ✅  | ✅       | medical/specialist (8 pages)                   | **Complete** |
+| dermatologia-elite-roma       | ✅  | ✅       | medical/specialist (REUSED · 8 pages · 0 new HTML) | **Complete (reuse)** |
 | gusto-fine-dining             | ✅  | ✅       | restaurant/fine-dining (7 pages)               | **Complete** |
 | salute-studio-medico          | ✅  | —       | medical/clinic (skin folder not yet created)   | preview-only |
 | benessere-centro-olistico     | ✅  | —       | medical/wellness                               | preview-only |
@@ -75,6 +76,24 @@ When all three are in place, the template's marketplace detail page automaticall
 | sapore-trattoria-pizzeria     | ✅  | —       | restaurant/trattoria-warm                      | preview-only |
 | brace-street-food-lab         | ✅  | —       | restaurant/street-modern                       | preview-only |
 | (all others)                  | —   | —       | —                                              | preview-only |
+
+### Archetype reuse validation result (Session 13)
+Adding `dermatologia-elite-roma` under the `specialist` archetype required only:
+1. One new row in `apps/catalog/management/commands/seed_templates.py`
+2. One new DNA entry in `apps/catalog/template_dna.py`
+3. One new content block in `apps/catalog/template_content.py`
+**Zero new HTML files.** All 9 routes (marketplace detail + 7 inner preview pages + 1 post detail) return 200. The specialist chrome renders with the new brand palette, fonts, copy, doctors, press list, and services.
+
+**Confirmed leaks in the specialist chrome** that a second template cannot override via content alone — logged under Session 13 in SESSION_LOG.md and DECISIONS.md D-046. These bake cardio-specific text directly into HTML:
+- `_base.html:240` — `OMCeO Roma 12 / 4408` (footer license, appears on EVERY page)
+- `home.html:199-205` — `«La cardiologia non è una catena...»` quote, `Lancet · 2024`, `Roma · Parioli`, `2010`, `Cardiologia clinica` pulse band
+- `services.html:100` — `Una visita allo Studio Marani è concordata personalmente` (brand name baked in)
+- `team.html:87` — `Roma · Parioli` portrait signature (every doctor card)
+- `team.html:70-72` — 3 hardcoded Unsplash portrait URLs (caps the archetype at 3 doctors and re-uses cardio's photos)
+- `blog_detail.html:120` — `Studio Marani · Cardiologia clinica` footer
+- blog parent slug is hardcoded to `pubblicazioni` in blog_list + blog_detail URL reverses
+
+The validation succeeded as a structural reuse proof but revealed the chrome needs a **copy-abstraction pass** before more specialist templates can ship cleanly. See TODO_NEXT.md Phase 2g.2 for the lift-copy-to-content-or-site plan.
 
 ### Page kinds vocabulary (so far)
 The page-kind names referenced in `template_content.py` map to template files. Each archetype defines which kinds it supports.

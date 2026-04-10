@@ -932,3 +932,127 @@ None. Both issues are fully resolved and validated end-to-end.
 
 ### Exact next step
 Back to **Phase 2g.1 validation** — add a second template under an existing archetype (e.g. `tartufo-truffle-house` under `fine-dining`, or `dermatologia-elite-roma` under `specialist`) to prove the content-registry abstraction travels. With the wider width system and the `preview_asset` property in place, any new template picks up the improvements for free — no per-archetype CSS tweaks needed.
+
+## Session 13 — Archetype Reuse Validation (2026-04-10)
+
+**Agent:** Backend-Core + Content
+**Worktree:** `archetype-reuse-validation`
+**Goal:** Prove that a new full multi-page template can be added under an existing archetype with ONLY three edits — one seed row, one DNA entry, one content block — and ZERO new HTML files. Option B of the two validation paths proposed in Session 12's handoff: a second template on the Medical `specialist` archetype (`dermatologia-elite-roma`).
+
+### The validation hypothesis
+The Session 11 architecture was designed around a "content registry + per-archetype skin folder + single dispatcher view" separation. The theory: once an archetype's skin folder exists, dropping a new template under it should be a matter of editorial authoring (brand, palette, copy, images) rather than chrome rebuilding. Sessions 11 and 12 shipped two templates (Cardio + Gusto) but each was the *first* template under its archetype — the reuse path had never actually been exercised. Without a second template under an existing archetype, the reuse claim was untested.
+
+### Chosen template
+- **Slug:** `dermatologia-elite-roma`
+- **Category:** medical
+- **Archetype:** specialist (reused from `cardio-studio-specialistico`)
+- **Brand:** Studio Ricciardi Dermatologia (Dott.ssa Alessandra Ricciardi + 2 colleagues)
+- **Location:** Via Veneto 116, Roma (Ludovisi) — *not* Parioli, to make it visibly a different studio from the cardio pilot
+- **Accent:** `#3d5437` forest green — *not* cardio's `#9c2a2a` clinical red
+- **Font pairing:** `Bodoni Moda + Inter` — *not* cardio's `Cormorant Garamond + Inter`
+- **Positioning:** Dermatologia clinica + chirurgica + estetica (3 pillars, different from cardio's clinical + second-opinion positioning)
+- **Price:** €115 (vs. cardio €109)
+
+### Actions taken
+1. Read the specialist chrome files end-to-end (`_base.html`, `home.html`, `about.html`, `services.html`, `team.html`, `blog_list.html`, `blog_detail.html`, `contact.html`, `appointment.html`) to catalog every `{{ page_data.* }}` / `{{ site.* }}` / `{{ posts.* }}` key the chrome consumes — this is the "contract" a content block must satisfy. Also cataloged every *hardcoded string* in the chrome (cardio-specific text that content cannot override) to inform both the authoring constraints and the post-validation lesson log.
+2. Added `SEED_TEMPLATES` entry for `dermatologia-elite-roma` in `apps/catalog/management/commands/seed_templates.py` with the new brand (name, tagline, palette, typography, personality, logo concept) — distinct from Cardio's across every dimension. Price €115, order=5, not featured.
+3. Added DNA entry for `dermatologia-elite-roma` in `apps/catalog/template_dna.py` with `archetype="specialist"` and all the specialist defaults (hero_style, navbar_style, footer_style, section_order, card_style, button_style, density, tone, imagery_direction, imagery_key, conversion_pattern), but overriding `font_pairing` to `("Bodoni Moda", "Inter")` and populating a fresh `content` block for the preview composition.
+4. Added `DERMATOLOGIA_CONTENT` dict to `apps/catalog/template_content.py` with the same structural key layout as `CARDIO_CONTENT` — 7 pages (home/studio/visite/medici/pubblicazioni/contatti/richiedi-visita), 5 blog posts (first with full `body` block), site-wide footer chrome data, and distinct Italian copy throughout: dermatology specialties, three dermatologhe with dermatopatologia/chirurgia/estetica roles, six treatment rows with pricing (visita €180 → percorso annuale €580), contact block pointing to Via Veneto 116, and a full "Modulo di richiesta" process block. Kept the `pubblicazioni` slug for the blog page because `blog_list.html` and `blog_detail.html` hardcode it in URL reverses.
+5. Ran `python manage.py check` — 0 issues.
+6. Ran `python manage.py seed_templates` — created one new row (`Dermatologia Elite — Studio Ricciardi`), all others untouched.
+7. Verified the DB state via Django shell: slug present, category=medical, brand palette accent=`#3d5437`, `has_dna()` → True, `has_live_template()` → True, medical category now has 5 templates (was 4).
+8. Ran the Django test client across all 9 routes with `ALLOWED_HOSTS=['*']` override for the in-process call:
+   - `/templates/medical/dermatologia-elite-roma/` (marketplace detail) → 200
+   - `/templates/medical/dermatologia-elite-roma/preview/` (home) → 200
+   - `.../preview/studio/` → 200
+   - `.../preview/visite/` → 200
+   - `.../preview/medici/` → 200
+   - `.../preview/pubblicazioni/` → 200
+   - `.../preview/pubblicazioni/mappatura-nei-quando-farla/` (post detail) → 200
+   - `.../preview/contatti/` → 200
+   - `.../preview/richiedi-visita/` → 200
+9. Content assertion sweep on the home page: confirmed the rendered HTML contains `Studio Ricciardi`, `carta d'identità`, `Bodoni Moda`, `#3d5437`, `Alessandra Ricciardi`, `JAMA Dermatology`, `Mappatura nevi digitale`, `Via Veneto 116`, and `2.400` — i.e., the new content is actually reaching the page, not silently falling back to Cardio's.
+10. Cardio-leak sweep across all 8 dermatology pages: cataloged exactly which cardio-specific strings bleed through the chrome despite the content swap (see Findings below).
+11. Regression sweep: 15 routes on `cardio-studio-specialistico` (all 7 inner pages + marketplace detail) and 8 routes on `gusto-fine-dining` (all 6 inner pages + blog detail + marketplace detail), plus homepage + `/templates/` + `/templates/medical/` + `/templates/restaurant/` — 19 total — ALL 200. No regression.
+
+### Files Modified
+- `apps/catalog/management/commands/seed_templates.py` — +29 lines (one new entry after Cardio)
+- `apps/catalog/template_dna.py` — +42 lines (one new entry before Cardio, keyed as the "5th specialist" slot)
+- `apps/catalog/template_content.py` — +355 lines (full `DERMATOLOGIA_CONTENT` block + one new line in `TEMPLATE_CONTENT` registry)
+- `CATEGORY_ROADMAP.md` — marked specialist as hosting two templates
+- `DECISIONS.md` — D-046 added
+- `TEMPLATE_REGISTRY.json` — version bumped to 0.6.0, dermatologia entry added with `archetype_reuse: true` flag
+- `TODO_NEXT.md` — Phase 2g.2 (copy-abstraction pass) added
+- `AGENT_HANDOFF.md` — Session 13 section added
+- `SESSION_LOG.md` — this entry
+
+### Files NOT modified (the whole point of the validation)
+- **Zero** HTML files touched. Not in `templates/live_templates/medical/specialist/`. Not in `templates/preview_compositions/`. Not in `templates/catalog/`. Not in `templates/includes/`. The Session 11 chrome absorbed the new template without a single `.html` edit. `git status` confirms three modified `.py` files and zero modified or new `.html` files.
+
+### Database delta
+- `+1` WebTemplate row (`dermatologia-elite-roma`)
+- `+1` TemplateBrand row (`Studio Ricciardi Dermatologia`)
+- `+0` TemplateAsset rows (no preview PNG generated — the validation is about the live preview, not the thumbnail)
+- Total: 20 templates (was 19), 20 brands (was 19), 19 preview assets (unchanged)
+- Medical category: 5 templates (was 4) — clinic, family, specialist ×2, wellness
+
+### Verified end-to-end
+- All 9 dermatology routes: 200 via Django test client
+- Content correctly substituted: brand palette, fonts, headlines, facts, manifesto, signature visits, chief doctor name + bio, press list, all 7 inner pages, 5 blog posts, full body of the lead post
+- Regression on Cardio + Gusto + marketplace pages: 19 routes, all 200
+- `python manage.py check`: 0 issues
+- `git status`: only 3 `.py` files modified, 0 HTML files touched
+
+### Findings — the abstraction is **structurally reusable** but **editorially leaking**
+
+The validation's primary hypothesis (routes 200 with zero HTML edits) succeeded on the first try. But the cardio-leak audit found that the specialist chrome was written as if Cardio would be its only tenant — cardio-specific text is baked into the HTML in seven distinct places, and **every** dermatology page shows at least one of them:
+
+| Leak site                                 | Appears on       | What leaks                                                                  |
+|-------------------------------------------|------------------|-----------------------------------------------------------------------------|
+| `_base.html:240`                          | ALL 8 pages      | `© 2026 ... · Iscrizione OMCeO Roma 12 / 4408` (wrong license number)       |
+| `home.html:199` (hero right quote)        | home             | `«La cardiologia non è una catena di montaggio. È un dialogo lungo ...»`     |
+| `home.html:200` (quote author)            | home             | `— Lancet · 2024`                                                           |
+| `home.html:203-205` (pulse triple)        | home             | `Roma · Parioli` / `2010` / `Cardiologia clinica`                           |
+| `home.html:225` (section head)            | home             | `Sei percorsi clinici, una sola firma.` (literal cardio headline)            |
+| `home.html:241` (section head)            | home             | `Una sola firma per ogni cartella.`                                         |
+| `home.html:265` (CTA band)                | home             | `Ogni visita è concordata personalmente con il medico.`                     |
+| `about.html:111` (values heading)         | studio           | `Quattro impegni che non cambiano mai.`                                     |
+| `about.html:123-126` (CTA band)           | studio           | `Vuoi conoscere i medici dello studio prima di prenotare?` + `I tre medici dello studio →` (also assumes exactly 3) |
+| `services.html:100` (CTA heading)         | visite           | `Una visita allo Studio Marani è concordata personalmente.` ← **literal brand name leak** |
+| `team.html:70-72` (CSS portraits)         | medici           | 3 hardcoded Unsplash portrait URLs — caps the archetype at 3 doctors AND shows cardio's same photos for the dermatology team |
+| `team.html:87` (portrait signature)       | medici           | `Roma · Parioli` (every doctor card)                                        |
+| `blog_list.html:17` (lead post image)     | pubblicazioni    | Hardcoded Unsplash CSS background image                                     |
+| `blog_list.html` + `blog_detail.html`     | pubblicazioni / post | `{% url ... 'pubblicazioni' %}` — the blog parent page slug is a literal, not looked up from the content registry |
+| `blog_detail.html:120` (footer strap)     | post             | `Studio Marani · Cardiologia clinica` ← **literal brand leak**              |
+| `appointment.html:142` (side-note)        | richiedi-visita  | Hardcoded marketing copy about "richieste compilate con cura"                |
+| `appointment.html:166-180` (select)       | richiedi-visita  | Hardcoded visit-type options: `Prima visita / Secondo parere / Programma prevenzione / Visita di controllo` (the content registry `form_fields` list is never consulted for option rendering) |
+
+The **Studio Marani brand name leaks twice** (services CTA + blog detail footer), the **Parioli district leaks twice** (home pulse + team portrait signature), and the **wrong medical license number** leaks on every single page. A real buyer would immediately see a mismatched brand mid-scroll.
+
+**The abstraction is not broken — it's incomplete.** The contract (content registry keys the chrome consumes) is well-defined. The violation is that the original Session 11 authoring pass embedded cardio's *sample* copy directly as literals in the chrome, under the assumption that the chrome was still single-tenant. Fixing it requires moving those literals out of the HTML into the content registry (typically via new `site.*` or `page_data.*` sub-keys), NOT adding new HTML files.
+
+### Why this doesn't block the validation result
+The validation asked: "can a new template be created with one seed entry, one DNA entry, one content entry, and zero new HTML files?" The answer is **yes** — every route 200s, every content variable renders, the font/palette/nav all switch correctly. The leaks are a separate, pre-existing bug in the Session 11 authoring pass that the validation exposed. Without this validation we would not have found them.
+
+### Key Decisions Made
+- **D-046** added: formally documents the archetype-reuse validation result + the copy-leak finding + the Phase 2g.2 copy-abstraction lift plan
+
+### Key Lessons for Future Archetype Authoring
+1. **When building a skin folder that will host >1 template, every string that is NOT a CSS rule must come from context.** The sample copy used during Phase 1 authoring should not live in the HTML as a literal — it should live in the content block, and the HTML should read `{{ page_data.cta_heading }}` instead of inlining the heading. Concrete rules:
+   - Section titles that vary by template → `page_data.<section>_heading`
+   - CTA band headings and labels → `page_data.<section>_cta_heading` / `_cta_primary_label` / `_cta_secondary_label`
+   - Pulse-bar / portrait-signature / footer-license values → `site.license`, `site.pulse_triple`, `medici.portrait_city`
+   - Hero-sidebar quote + author → `home.hero_sidebar_quote` + `hero_sidebar_author`
+   - URL reverses for page kinds (e.g. blog parent slug) → discovered from `pages` registry list at render time (find the entry where `kind == 'blog_list'`), not hardcoded
+2. **Imagery in inline CSS is a reuse blocker.** `team.html`'s three nth-child background-image rules mean every template reusing the specialist chrome shares the same three doctor photos. Move to a `doctors[i].portrait` URL in the content registry, consumed via `style="background-image: url('{{ d.portrait }}')"`.
+3. **The "pubblicazioni" slug lock is the most dangerous leak** because it silently limits the reuse pattern to templates whose blog parent page is literally named `pubblicazioni` — any other naming (e.g. `blog`, `news`, `diario`) causes a NoReverseMatch at the URL resolution step. The fix is to compute the blog parent slug in the dispatcher view and pass it as `blog_parent_slug` in context.
+4. **The chrome's hardcoded 3-doctor cap** (via the three `nth-child` rules) means any fourth doctor added to a content block will render without a portrait. Move the portrait imagery into content and drop the cap.
+5. **Validation must include a full leak audit, not just a 200-status check.** A 200 response proves the routes resolve; it does not prove the content swap is complete. Always grep the rendered HTML for the *previous* template's brand name and district/city to catch leaks early.
+
+### Blockers
+None. The validation produced a clean result *and* a clear action plan for the follow-up Phase 2g.2 work.
+
+### Exact next step
+**Phase 2g.2 — copy-abstraction lift pass on the specialist chrome.** Move every cardio-specific literal out of `templates/live_templates/medical/specialist/*.html` into either (a) new `site.*` fields consumed by `_base.html` (footer license, compact hours, etc.), (b) new `page_data.*` sub-fields consumed by each page file (section/CTA headings), or (c) new per-item imagery fields (`doctors[i].portrait`, `home.hero_sidebar.*`, `blog_list.lead_image`). Then update both `CARDIO_CONTENT` and `DERMATOLOGIA_CONTENT` to populate these new fields, and re-run the leak-audit sweep — it should show every dermatology page as clean of cardio-specific strings. After that, the next archetype-reuse template (e.g. a third specialist or the first fine-dining reuse) will ship without any copy polish.
+
+After Phase 2g.2 closes, resume Phase 2f DNA rollout: Agency → Lawyer → Real Estate archetype splits, applying BOTH the Session 10 imagery-distinctness lesson and the Session 13 content-must-not-be-hardcoded lesson from the start of each new archetype's authoring pass.

@@ -1,6 +1,38 @@
 # Agent Handoff
 
-Last updated: 2026-04-10 — after Template Polish Fixes (Session 12)
+Last updated: 2026-04-10 — after Archetype Reuse Validation (Session 13)
+
+## Session 13 — Archetype Reuse Validation (2026-04-10)
+
+**Question asked:** Can a new full multi-page template be added under an existing archetype (the Medical `specialist` archetype, previously single-tenant by Cardio) with ONLY three edits — one seed row, one DNA entry, one content block — and **zero** new HTML files? This was the Option A validation path proposed at the end of Session 12.
+
+**Answer:** **Yes, structurally.** `dermatologia-elite-roma` (Studio Ricciardi Dermatologia · Via Veneto 116 · forest green accent `#3d5437` · Bodoni Moda + Inter · three dermatologhe · six treatments · five publications) now ships as a full navigable 7-inner-page website on the same specialist chrome as Cardio. All 9 routes (marketplace detail + home + 6 inner pages + 1 post detail) return 200 via Django test client. `git status` confirms three modified `.py` files (`seed_templates.py`, `template_dna.py`, `template_content.py`) and zero modified or new HTML files. 19-URL regression sweep on Cardio + Gusto + catalog pages all 200. **The Session 11 architecture works as intended for content-driven reuse.**
+
+**BUT editorially the chrome leaks.** The same audit that confirmed the 200 statuses also found that cardio-specific copy is baked into the HTML in 17 distinct sites across 7 files, appearing on every single dermatology page. The most visible leaks: (1) `OMCeO Roma 12 / 4408` on every page's footer (wrong license number for the derm studio), (2) `«La cardiologia non è una catena di montaggio...»` quote in the home hero's right column, (3) `Roma · Parioli` in the home pulse band and in every doctor's portrait signature, (4) `Studio Marani` brand name in the services CTA heading and the blog detail footer, (5) three hardcoded Unsplash portrait URLs in `team.html`'s nth-child CSS rules (Dermatologia's team shows Cardio's doctors' photos, and the 3-doctor cap is baked into the layout). See SESSION_LOG.md Session 13 for the full 17-row leak table.
+
+**Why this is not a blocker for the validation verdict but IS a blocker for the next reuse template:** The architecture separates "chrome + data" correctly; the implementation simply baked sample copy into the chrome during the Session 11 authoring pass. Fixing it is a mechanical lift — move the literals out of `.html` files into new `site.*` / `page_data.*` / per-item fields in the content registry. No new HTML files, no new architecture. **See TODO_NEXT.md Phase 2g.2 for the exhaustive lift plan.**
+
+### What changed in Session 13
+**New template: `dermatologia-elite-roma`** — 2nd template on the `specialist` archetype
+- `seed_templates.py` — new row, order=5, price €115, brand "Studio Ricciardi Dermatologia" with palette `{primary:#1c1612, secondary:#f7f3ee, accent:#3d5437}` and typography `Bodoni Moda + Inter`
+- `template_dna.py` — new DNA entry keyed `dermatologia-elite-roma`, archetype `specialist`, all the specialist defaults, font_pairing overridden to `("Bodoni Moda", "Inter")`, fresh `content` block for the preview composition
+- `template_content.py` — new `DERMATOLOGIA_CONTENT` dict with all 7 pages, 5 posts (first with full body), site chrome data, dermatology-specific copy throughout. Page slugs kept as `home / studio / visite / medici / pubblicazioni / contatti / richiedi-visita` to match the hardcoded `pubblicazioni` URL reverse in the blog files
+- `TEMPLATE_REGISTRY.json` — version 0.6.0, dermatologia entry added with `archetype_reuse: true` flag
+- `CATEGORY_ROADMAP.md` — specialist archetype now hosts 2 templates; reuse validation result logged
+- `DECISIONS.md` — D-046 added (formal record of the validation result + the copy-leak finding + the Phase 2g.2 plan)
+
+### Database delta
+- `+1` WebTemplate row, `+1` TemplateBrand row, 0 new TemplateAssets (no PNG regenerated — validation is about the live preview, not the thumbnail)
+- Medical category is now 5 templates (clinic, family, specialist ×2, wellness)
+- Total marketplace: 20 templates / 20 brands / 19 preview assets
+
+### The hard constraints discovered (critical for any future reuse)
+1. **The blog parent page slug must be literally `pubblicazioni`.** `blog_list.html:95,98,109` and `blog_detail.html:85,121` hardcode `{% url 'catalog:live_template_page' ... 'pubblicazioni' %}` in URL reverses. Any other naming causes `NoReverseMatch`. Dermatologia's blog page is therefore called Pubblicazioni, not "Blog" or "Diario". **Phase 2g.2 fix:** compute `blog_parent_slug` in `LiveTemplateView.get_context_data()` from the content registry's `pages` list.
+2. **The chrome caps the team at 3 doctors.** `team.html:70-72` uses `nth-child(1/2/3) .portrait { background-image: ... }`. A fourth doctor would render without a portrait. **Phase 2g.2 fix:** move to per-doctor `doctors[i].portrait` URLs.
+3. **The chief doctor portrait image is shared** — `home.html:127` hardcodes a single Unsplash URL in inline CSS. Dermatologia's chief shows the same photo as Cardio's chief. **Phase 2g.2 fix:** move to `home.chief.portrait`.
+4. **The blog-list lead post image is shared** — `blog_list.html:17` hardcodes another Unsplash URL. **Phase 2g.2 fix:** move to `pubblicazioni.lead_image` or `posts[0].hero_image`.
+5. **The appointment page `<select>` options are hardcoded** — `appointment.html:166-180` bakes in the cardio visit types (Prima visita / Secondo parere / Programma prevenzione / Visita di controllo) instead of reading from `richiedi-visita.form_fields` which already exists in both content blocks. **Phase 2g.2 fix:** template loop over `form_fields`.
+6. **Seven distinct section headings / CTA labels are literal cardio copy.** See the TODO_NEXT.md Phase 2g.2 checklist for the complete per-file enumeration.
 
 ## Session 12 — Template Polish Fixes (2026-04-10)
 
@@ -175,7 +207,9 @@ Run with `python manage.py generate_previews [--force] [--only <slug>]`.
 
 ## For Next Session
 
-**Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md, this file, then `apps/catalog/template_dna.py` (the source of truth for differentiation), then peek at `templates/preview_compositions/restaurant/` and `medical/` for the structural reference compositions.
+**Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md, this file, then `apps/catalog/template_dna.py` + `apps/catalog/template_content.py` (the two registries the reuse validation depended on), then `apps/catalog/views.py` → `LiveTemplateView` (the dispatcher view), then open any file under `templates/live_templates/medical/specialist/` to see the chrome that now hosts two templates (Cardio + Dermatologia).
+
+**The highest-impact next task is Phase 2g.2 — the copy-abstraction lift** on the specialist chrome, documented exhaustively in TODO_NEXT.md. It's a mechanical move-literals-out-of-HTML-into-content-registry pass — no new HTML files, no new architecture, just pulling hardcoded cardio strings out of 7 files and wiring them to new `site.*` / `page_data.*` / per-item fields. When done, re-running the Session 13 leak audit on the dermatologia pages should show zero cardio-specific strings, and the next archetype-reuse template (e.g. a third specialist, or the first fine-dining reuse) will ship without any copy polish.
 
 ### Lessons from Session 10 — read these before designing any new category
 
@@ -195,22 +229,12 @@ python -c "import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','ma
 python manage.py generate_previews --only <slug>
 ```
 
-### Immediate next step (highest impact)
-**Add a third template to validate that the inner-page abstraction holds with content alone.** Pick ONE of:
+### Immediate next step (highest impact) — Phase 2g.2
+**~~Add a third template~~ The archetype-reuse validation was completed in Session 13 with `dermatologia-elite-roma` under the `specialist` archetype. Structurally it worked (zero new HTML files, all 9 routes 200). But the audit uncovered 17 distinct copy leaks in the chrome that must be fixed before the next reuse template ships. See TODO_NEXT.md Phase 2g.2 for the full lift plan.**
 
-- **Option A — second `specialist` template** (e.g. `dermatologia-elite-roma`): proves the Medical specialist 8-page model travels with content alone. Recipe:
-  1. Add a row to `apps/catalog/management/commands/seed_templates.py`
-  2. Add a DNA entry to `apps/catalog/template_dna.py` (archetype: `specialist`)
-  3. Add a content block to `apps/catalog/template_content.py` (use `CARDIO_CONTENT` as the structural reference — same keys, different copy)
-  4. Run `python manage.py seed_templates` to insert the new row
-  5. Hit `/templates/medical/dermatologia-elite-roma/preview/` — should render with the Cardio chrome but completely different content
-  6. **Zero new HTML files needed.** If something breaks, the abstraction failed and we need to identify where.
+After Phase 2g.2 closes, run the same validation on the restaurant side — add a second `fine-dining` template (e.g. `tartufo-truffle-house`) under the Gusto chrome and repeat the leak audit. The fine-dining chrome likely has the same class of literals baked in; a second lift pass will be needed there too.
 
-- **Option B — second `fine-dining` template** (e.g. `tartufo-truffle-house`): proves the Restaurant fine-dining 7-page model travels with content alone. Same recipe, use `GUSTO_CONTENT` as reference.
-
-(B) is the stronger signal — restaurant is the most visually-loaded category and the one most likely to expose hidden assumptions.
-
-After validating, pick one of the Phase 2g.1 backlog items in TODO_NEXT.md (previous/next page nav, per-page meta tags, imagery in registry, or building inner pages for the other 4 medical / 2 restaurant archetypes).
+Then resume Phase 2f DNA rollout: Agency → Lawyer → Real Estate archetype splits. When authoring each new archetype's skin, apply the Session 13 lesson from the start: **every string in a per-archetype skin must either be a CSS rule or come from `site.*` / `page_data.*` / loop items** — no literal brand-like text, no literal city names, no literal CTA labels.
 
 ### Phase 2f — DNA rollout to other categories (still pending)
 The DNA rollout from Sessions 7-10 stopped after Restaurant. Three more categories still need archetype splits — Agency (3 archetypes), Lawyer (2), Real Estate (2). See the previous handoff note for the recipe; the constraint is now both:
