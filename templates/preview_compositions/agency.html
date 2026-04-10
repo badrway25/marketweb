@@ -1,0 +1,180 @@
+{% extends "preview_compositions/_base.html" %}
+{% block extra_css %}
+  body { background: var(--primary); }
+  .pv-frame { background: var(--primary); color: #fff; }
+
+  .a-hero {
+    position: absolute; left: 64px; top: 130px; right: 64px; height: 460px;
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 38px;
+  }
+  .a-text { display: flex; flex-direction: column; justify-content: center; }
+  .a-text .pv-pill { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.18); color: #cbd5e1; }
+  .a-text h1 {
+    margin-top: 26px; font-size: 88px; font-weight: 800; line-height: 0.92;
+    letter-spacing: -0.025em;
+  }
+  .a-text h1 em { font-style: italic; color: var(--accent); font-weight: 700; }
+  .a-text h1 .stroke {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--accent);
+  }
+  .a-text p { margin-top: 26px; font-size: 18px; line-height: 1.65; opacity: 0.78; max-width: 540px; }
+  .a-text .actions { margin-top: 36px; display: flex; align-items: center; gap: 24px; }
+  .a-text .actions .arrow {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--accent); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800;
+  }
+  .a-text .actions .label { font-size: 14px; line-height: 1.4; }
+  .a-text .actions .label strong { font-family: var(--heading); font-size: 16px; display: block; }
+
+  .a-stack {
+    position: relative;
+  }
+  .a-card-1, .a-card-2 {
+    position: absolute; border-radius: 18px; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  }
+  .a-card-1 {
+    left: 0; top: 20px; width: 70%; height: 380px;
+    background: url('{{ imagery.0 }}') center/cover;
+  }
+  .a-card-1::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.7));
+  }
+  .a-card-1 .meta {
+    position: absolute; left: 22px; bottom: 22px; right: 22px; z-index: 2; color: #fff;
+  }
+  .a-card-1 .meta .pv-pill.solid { background: var(--accent); color: var(--primary); }
+  .a-card-1 .meta h4 { font-size: 22px; margin-top: 10px; }
+  .a-card-1 .meta .row { display: flex; align-items: center; gap: 14px; margin-top: 12px; font-size: 12px; opacity: 0.85; }
+  .a-card-2 {
+    right: 0; top: 200px; width: 60%; height: 230px;
+    background: url('{{ imagery.1 }}') center/cover;
+    border: 4px solid var(--primary);
+  }
+  .a-card-2::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.65));
+  }
+  .a-card-2 .meta { position: absolute; left: 18px; bottom: 16px; color: #fff; z-index: 2; }
+  .a-card-2 .meta .pv-pill.solid { background: var(--accent); color: var(--primary); font-size: 9px; padding: 4px 10px; }
+  .a-card-2 .meta h5 { margin-top: 8px; font-family: var(--heading); font-size: 16px; }
+
+  .a-marquee {
+    position: absolute; left: 0; right: 0; top: 612px; height: 50px;
+    background: var(--accent); color: var(--primary);
+    display: flex; align-items: center; gap: 60px; padding-left: 40px;
+    font-family: var(--heading); font-size: 18px; font-weight: 800; letter-spacing: 0.04em;
+    text-transform: uppercase; overflow: hidden;
+  }
+  .a-marquee span::after { content: " ✦"; opacity: 0.65; padding-left: 60px; }
+
+  .a-cases {
+    position: absolute; left: 64px; right: 64px; top: 700px;
+  }
+  .a-cases .head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
+  .a-cases .head h3 { font-size: 22px; }
+  .a-cases .head h3 em { font-style: italic; color: var(--accent); }
+  .a-cases .head .lnk { font-size: 12px; opacity: 0.7; letter-spacing: 0.06em; text-transform: uppercase; }
+  .a-cases-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .a-case {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 0; overflow: hidden;
+  }
+  .a-case .img { height: 90px; background-size: cover; background-position: center; }
+  .a-case .meta { padding: 12px 16px 16px; }
+  .a-case .meta .num { font-size: 10px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+  .a-case .meta h5 { margin-top: 6px; font-size: 14px; }
+  .a-case .meta p { margin-top: 4px; font-size: 11px; opacity: 0.6; line-height: 1.5; }
+{% endblock %}
+
+{% block body %}
+  <nav class="pv-nav" style="color:#fff;">
+    <div class="pv-logo">
+      <span class="pv-mark">{{ brand_name|first }}</span>
+      {{ brand_name }}<sup style="font-size:9px;opacity:0.5;margin-left:4px;">©</sup>
+    </div>
+    <div class="pv-links">
+      <span>Studio</span><span>Lavoro</span><span>Servizi</span><span>Insights</span><span>Contatti</span>
+    </div>
+    <div class="pv-cta">
+      <span style="opacity:0.6;font-size:12px;">disponibili da Q3 2026</span>
+      <span class="btn">Inizia un progetto</span>
+    </div>
+  </nav>
+
+  <div class="a-hero">
+    <div class="a-text">
+      <span class="pv-pill">Independent design &amp; tech studio · Milano</span>
+      <h1>Brand <em>audaci.</em><br>Esperienze<br><span class="stroke">indimenticabili.</span></h1>
+      <p>{{ hero_subtitle|default:"Aiutiamo founders ambiziosi a costruire identità visive, prodotti digitali e narrative che spostano l'ago della bilancia. Niente template, niente compromessi." }}</p>
+      <div class="actions">
+        <div class="arrow">↗</div>
+        <div class="label"><strong>Guarda i nostri lavori</strong>34 case studies · 2018 — 2026</div>
+      </div>
+    </div>
+    <div class="a-stack">
+      <div class="a-card-1">
+        <div class="meta">
+          <span class="pv-pill solid">Brand identity</span>
+          <h4>Lumen — Renewable energy</h4>
+          <div class="row"><span>2026</span><span>·</span><span>Milano</span></div>
+        </div>
+      </div>
+      <div class="a-card-2">
+        <div class="meta">
+          <span class="pv-pill solid">Product</span>
+          <h5>Vega Mobile App</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="a-marquee">
+    <span>Branding</span><span>Web Design</span><span>Product</span><span>Motion</span><span>Strategy</span><span>Branding</span>
+  </div>
+
+  <div class="a-cases">
+    <div class="head">
+      <h3>Lavori <em>recenti</em></h3>
+      <span class="lnk">200+ progetti  ·  Vedi tutti  →</span>
+    </div>
+    <div class="a-cases-grid">
+      <div class="a-case">
+        <div class="img" style="background-image:url('{{ imagery.2 }}')"></div>
+        <div class="meta">
+          <div class="num">01 / Branding</div>
+          <h5>Atelier Norma</h5>
+          <p>Identità visiva per atelier sartoriale</p>
+        </div>
+      </div>
+      <div class="a-case">
+        <div class="img" style="background-image:url('{{ imagery.3 }}')"></div>
+        <div class="meta">
+          <div class="num">02 / Web</div>
+          <h5>Helios Bank</h5>
+          <p>Redesign della piattaforma fintech</p>
+        </div>
+      </div>
+      <div class="a-case">
+        <div class="img" style="background-image:url('{{ imagery.4 }}')"></div>
+        <div class="meta">
+          <div class="num">03 / App</div>
+          <h5>Cinetic</h5>
+          <p>App di tracking biomeccanico</p>
+        </div>
+      </div>
+      <div class="a-case">
+        <div class="img" style="background-image:url('{{ imagery.5 }}')"></div>
+        <div class="meta">
+          <div class="num">04 / Motion</div>
+          <h5>Polar Studios</h5>
+          <p>Reel di lancio per studio creativo</p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

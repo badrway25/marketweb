@@ -1,0 +1,155 @@
+{% extends "preview_compositions/_base.html" %}
+{% block extra_css %}
+  .b-hero {
+    position: absolute; inset: 0 0 320px 0;
+    background: var(--primary);
+    display: grid; grid-template-columns: 1.1fr 0.9fr;
+    color: #fff;
+  }
+  .b-hero-text {
+    padding: 130px 50px 0 64px;
+    background: linear-gradient(120deg, var(--primary), var(--primary-dark));
+    position: relative;
+  }
+  .b-hero-text .pv-pill { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.18); color: #cbd5e1; }
+  .b-hero-text h1 {
+    margin-top: 22px; font-size: 64px; font-weight: 700; line-height: 1.06;
+  }
+  .b-hero-text h1 em { font-style: normal; color: var(--accent); }
+  .b-hero-text p { margin-top: 22px; font-size: 18px; line-height: 1.6; opacity: 0.82; max-width: 540px; }
+  .b-hero-text .actions { margin-top: 32px; display: flex; gap: 16px; }
+  .b-hero-text .clients { margin-top: 46px; }
+  .b-hero-text .clients .lbl { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.5; }
+  .b-hero-text .clients .row { display: flex; gap: 32px; margin-top: 14px; }
+  .b-hero-text .clients .row .logo {
+    font-family: var(--heading); font-weight: 700; font-size: 18px; opacity: 0.6;
+    letter-spacing: 0.04em;
+  }
+
+  .b-hero-img {
+    position: relative;
+  }
+  .b-hero-img::before {
+    content: ""; position: absolute; inset: 0;
+    background: url('{{ imagery.0 }}') center/cover;
+  }
+  .b-hero-img::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(110deg, var(--primary) 0%, transparent 30%);
+  }
+  .b-hero-img .meta-card {
+    position: absolute; right: 64px; bottom: 60px;
+    background: #fff; color: #0f172a;
+    padding: 20px 24px; border-radius: 14px; width: 280px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    z-index: 2;
+  }
+  .b-hero-img .meta-card .top { display: flex; align-items: center; gap: 12px; }
+  .b-hero-img .meta-card .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--secondary); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: var(--heading); }
+  .b-hero-img .meta-card .name { font-family: var(--heading); font-size: 14px; font-weight: 700; }
+  .b-hero-img .meta-card .role { font-size: 11px; color: #64748b; }
+  .b-hero-img .meta-card .quote { font-size: 12px; line-height: 1.55; color: #475569; margin-top: 12px; font-style: italic; }
+  .b-hero-img .meta-card .stars { color: #fbbf24; font-size: 12px; margin-top: 8px; letter-spacing: 2px; }
+
+  .b-stats {
+    position: absolute; left: 64px; right: 64px; bottom: 220px;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 24px 50px rgba(15,23,42,0.08);
+    padding: 28px 38px;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border: 1px solid #e2e8f0;
+    z-index: 5;
+  }
+  .b-stats .stat { padding: 0 22px; border-right: 1px solid #e2e8f0; }
+  .b-stats .stat:last-child { border-right: 0; }
+  .b-stats .stat .num { font-family: var(--heading); font-size: 32px; font-weight: 700; color: var(--primary); }
+  .b-stats .stat .num em { color: var(--accent); font-style: normal; }
+  .b-stats .stat .lbl { font-size: 12px; color: #64748b; margin-top: 6px; }
+
+  .b-services {
+    position: absolute; left: 64px; right: 64px; bottom: 36px;
+  }
+  .b-services .head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 16px; }
+  .b-services .head h3 { font-size: 22px; color: var(--primary); }
+  .b-services .head .lnk { font-size: 12px; color: var(--secondary); font-weight: 600; }
+  .b-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .b-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 22px;
+    height: 130px;
+  }
+  .b-card .icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: rgba(59,130,246,0.1); color: var(--secondary);
+    display: flex; align-items: center; justify-content: center; font-weight: 800;
+  }
+  .b-card h5 { margin-top: 10px; font-size: 14px; color: var(--primary); }
+  .b-card p { margin-top: 4px; font-size: 11px; color: #64748b; line-height: 1.5; }
+{% endblock %}
+
+{% block body %}
+  <div class="b-hero">
+    <div class="b-hero-text">
+      <span class="pv-pill">Consulenza strategica · B2B</span>
+      <h1>{{ hero_title|default:"Soluzioni concrete per <em>far crescere</em> il tuo business"|safe }}</h1>
+      <p>{{ hero_subtitle|default:"Affianchiamo le PMI italiane nella trasformazione digitale, nell'ottimizzazione dei processi e nella crescita sostenibile. Risultati misurabili, niente promesse vuote." }}</p>
+      <div class="actions">
+        <span class="pv-btn">Richiedi una call</span>
+        <span class="pv-btn outline">I nostri servizi</span>
+      </div>
+      <div class="clients">
+        <div class="lbl">Hanno scelto Pragma</div>
+        <div class="row">
+          <span class="logo">NORDEA®</span>
+          <span class="logo">VECTRA</span>
+          <span class="logo">FINOVA</span>
+          <span class="logo">·  ATLAS</span>
+          <span class="logo">+ 80</span>
+        </div>
+      </div>
+    </div>
+    <div class="b-hero-img">
+      <div class="meta-card">
+        <div class="top">
+          <div class="avatar">M</div>
+          <div>
+            <div class="name">Marco Bianchi</div>
+            <div class="role">CEO, Vectra Industries</div>
+          </div>
+        </div>
+        <p class="quote">"Hanno trasformato il nostro processo di vendita in 4 mesi. Pipeline cresciuta del 38%."</p>
+        <div class="stars">★★★★★</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="pv-nav is-on-image">
+    <div class="pv-logo"><span class="pv-mark">{{ brand_name|first }}</span> {{ brand_name }}</div>
+    <div class="pv-links">
+      <span>Servizi</span><span>Settori</span><span>Casi studio</span><span>Risorse</span><span>Chi siamo</span>
+    </div>
+    <div class="pv-cta">
+      <span style="opacity:0.65;font-size:12px;">info@pragmacorp.it</span>
+      <span class="btn">Parliamone</span>
+    </div>
+  </nav>
+
+  <div class="b-stats">
+    <div class="stat"><div class="num"><em>200</em>+</div><div class="lbl">Clienti soddisfatti</div></div>
+    <div class="stat"><div class="num">15<em>y</em></div><div class="lbl">di esperienza</div></div>
+    <div class="stat"><div class="num">98<em>%</em></div><div class="lbl">tasso di retention</div></div>
+    <div class="stat"><div class="num">€45<em>M</em></div><div class="lbl">valore generato</div></div>
+  </div>
+
+  <div class="b-services">
+    <div class="head">
+      <h3>Servizi di consulenza</h3>
+      <span class="lnk">Tutti i servizi  →</span>
+    </div>
+    <div class="b-grid">
+      <div class="b-card"><div class="icon">↗</div><h5>Strategia commerciale</h5><p>Pipeline, sales enablement e revenue ops.</p></div>
+      <div class="b-card"><div class="icon">⚙</div><h5>Trasformazione digitale</h5><p>Audit, roadmap tecnologica e change management.</p></div>
+      <div class="b-card"><div class="icon">◆</div><h5>Ottimizzazione processi</h5><p>Lean, BPMN e automazione end-to-end.</p></div>
+      <div class="b-card"><div class="icon">↻</div><h5>Sostenibilità ESG</h5><p>Compliance CSRD, reportistica e governance.</p></div>
+    </div>
+  </div>
+{% endblock %}

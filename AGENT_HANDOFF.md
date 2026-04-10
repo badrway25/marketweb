@@ -1,94 +1,105 @@
 # Agent Handoff
 
-Last updated: 2026-04-09 — after Catalog Enhancements Phase 1 (Session 5)
+Last updated: 2026-04-10 — after Real Preview Assets Phase 2 (Session 6)
 
 ## Current State
 
-**Catalog enhancements complete.** Preview images, search, sort, and pagination all implemented and verified. Branch: `catalog-enhancements` worktree (not yet merged to master).
+**Real preview assets phase 2 complete.** Each of the 16 templates now has a PNG preview that looks like a real homepage screenshot — actual photographic content (restaurant interiors, doctors, lady justice, modern houses, fashion editorial, etc.) composed into a category-appropriate layout and screenshot via headless Chromium.
 
-**Session 5 completed:** SVG preview images for all 16 templates, search across name/description/brand, sort by recent/price/name, pagination at 12/page, asset prefetching, empty state UX.
+Branch: `real-preview-assets` worktree (not yet merged to master).
 
-**UI status:** All premium UI preserved — no CSS or component structure changes. Filter bar now functional with form-based search and sort. Pagination shows page numbers with Previous/Next navigation.
+## What changed in this session
+
+| Layer            | Before                                  | After                                                      |
+|------------------|-----------------------------------------|------------------------------------------------------------|
+| Asset format     | Inline SVG wireframe                    | 1600×900 PNG screenshot of real HTML                      |
+| Photo content    | None (colored rectangles)               | Real Unsplash photos cached locally                        |
+| Layout source    | String-formatted SVG in Python          | Django HTML templates per category (8 layouts)             |
+| Brand fidelity   | Palette only                            | Palette + Google Font pair + accent contrast              |
+| Generator        | Pure Python                             | Three-phase: ORM → Playwright/Chromium → ORM              |
+
+The `TemplateAsset` API and the existing `template.assets.first.file.url` template usage are unchanged — listing/detail templates needed zero edits.
 
 ## What's Working
 
-| Page                          | URL                                        | Status  |
-|-------------------------------|-------------------------------------------|---------|
-| Homepage                      | `/`                                        | Dynamic, with preview images |
-| Template listing (all)        | `/templates/`                              | Search, sort, paginated |
-| Template listing (filtered)   | `/templates/<category_slug>/`              | Search, sort, paginated |
-| Template listing (search)     | `/templates/?q=studio&sort=price_asc`      | Working |
-| Template detail               | `/templates/<category_slug>/<slug>/`       | Gallery shows SVG preview |
-| Category listing              | `/templates/categories/`                   | Dynamic |
-| Admin                         | `/admin/`                                  | Working |
+| Page                          | URL                                        | Status (port 8096) |
+|-------------------------------|--------------------------------------------|--------------------|
+| Homepage featured grid        | `/`                                        | 6 cards × real-imagery PNGs |
+| Template listing (all)        | `/templates/`                              | 16 templates × real PNGs, paginated |
+| Template listing (filtered)   | `/templates/<category_slug>/`              | Same as above, category-filtered |
+| Template detail               | `/templates/<category_slug>/<slug>/`       | Gallery + related templates show real PNGs |
+| Category listing              | `/templates/categories/`                   | Working (no preview imagery on this page) |
 
-## Database State
-
-- **8 categories** — Agency, Business, Ristorante, Medico, Avvocato, Immobiliare, Portfolio, eCommerce
-- **16 templates** — 2 per category, all status=published, 6 marked featured
-- **16 brands** — One TemplateBrand per template with palette, typography, personality
-- **16 assets** — One TemplateAsset (type=preview) per template, SVG mockups in media/template_assets/
-- **0 tags** — Tag model exists but no tags seeded yet
-
-## Key Architecture (Catalog)
+## How the new pipeline works
 
 ```
-Views (catalog/views.py)          ← Thin CBVs, delegate to selectors
-  ↓
-Selectors (catalog/selectors.py)  ← QuerySet-based read functions
-  ↓
-Models (catalog/models.py)        ← Category, WebTemplate, TemplateBrand, TemplateAsset, Tag
+apps/catalog/preview_imagery.py
+  ├── IMAGERY_CONFIG: {category_slug: [hero_url, feature_url, *card_urls]}
+  ├── ensure_cached(category_slug) → list[Path]   # download once, cache forever
+  └── _cache_path() / _download() helpers
+
+templates/preview_compositions/
+  ├── _base.html          # shared chrome, brand vars, fonts, 1600×900 viewport
+  ├── restaurant.html     # hero photo + menu cards with food
+  ├── medical.html        # split hero + booking card + service cards
+  ├── lawyer.html         # diagonal hero + practice areas + testimonial
+  ├── agency.html         # dark theme + case studies + marquee
+  ├── business.html       # corporate hero + stats bar + services
+  ├── real-estate.html    # hero photo + search bar + property cards
+  ├── portfolio.html      # editorial hero + project tiles
+  └── ecommerce.html      # promo bar + hero + product grid
+
+apps/catalog/management/commands/generate_previews.py
+  Phase A — ORM: select templates, render HTML strings, gather imagery cache
+  Phase B — Playwright: open Chromium, screenshot each HTML temp file
+  Phase C — ORM: persist TemplateAsset rows pointing at the new PNGs
 ```
 
-### URL Patterns (`catalog/urls.py`)
-```
-/templates/                           → TemplateListView (all published)
-/templates/categories/                → CategoryListView
-/templates/<category_slug>/           → TemplateListView (filtered by category)
-/templates/<category_slug>/<slug>/    → TemplateDetailView
-```
+Run with `python manage.py generate_previews [--force] [--only <slug>]`.
 
-### Context Variables Per Template
-| Template                        | Context                                                      |
-|---------------------------------|--------------------------------------------------------------|
-| `pages/home.html`               | `categories` (with template_count), `featured_templates`     |
-| `catalog/category_list.html`    | `categories` (with template_count)                           |
-| `catalog/template_list.html`    | `templates`, `category` (if filtered), `categories` (for dropdown) |
-| `catalog/template_detail.html`  | `template` (with brand, category, tags, assets), `related_templates` |
+## Database State (unchanged from Phase 2a, only file format flipped)
+
+- 8 categories
+- 16 templates (status=published, 6 featured)
+- 16 brands
+- 16 preview assets — **all PNG now**, no SVG remnants in DB
+- 47 cached source photos in `media/preview_imagery/<category>/`
 
 ## For Next Session
 
-**Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md
+**Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md, this file
 
-### Immediate tasks (Phase 2b):
+### Immediate polish opportunities (Phase 2d)
+1. **Per-template imagery overrides** — Both ecommerce templates currently share the same fashion shots. Add an optional `imagery_overrides` JSONField on `TemplateBrand` and merge it into the context in `_build_context()`. This is the highest-impact next step for visual differentiation.
+2. **PNG optimisation** — Each preview is ~4 MB at 2× DPI. Pipe screenshots through Pillow with `optimize=True` (or convert to JPEG quality 88) to bring listing-page weight under 5 MB total instead of ~50 MB.
+3. **Hero text legibility on dark serif palettes** — Cormorant Garamond at 70px+ on dark navy reads thin (lawyer + villa). Either bump font weight to 800 in those compositions or swap the heading font when palette luminance is below a threshold.
+4. **Add `media/preview_imagery/` to .gitignore** — It's a local cache and shouldn't be committed.
 
-1. **Tag seeding and filtering** — Tag model exists. Seed relevant tags per template, add tag filter chips to listing page. Tags display already works on detail page sidebar.
+### Phase 3 (Interactivity & Accounts) — unchanged from prior handoff
+1. Tag seeding and filtering
+2. User authentication views
+3. Commerce flow
+4. Editor + projects integration
+5. Live demo iframe per template
 
-2. **User authentication** — `accounts` app exists with custom User model. Build register, login, dashboard views and templates.
+### Key Files for Preview System
+- `apps/catalog/preview_imagery.py` — imagery config + cache
+- `apps/catalog/management/commands/generate_previews.py` — pipeline command
+- `templates/preview_compositions/_base.html` — shared brand vars, fonts, chrome
+- `templates/preview_compositions/<category>.html` — per-category layout
+- `media/preview_imagery/` — local imagery cache (gitignore candidate)
+- `media/template_assets/<YYYY>/<MM>/*.png` — generated previews (committed via Django FileField)
 
-3. **Commerce flow** — Cart, checkout, order confirmation templates and views.
-
-4. **Replace SVG previews with real screenshots** — When actual template HTML pages exist, generate real screenshots with Playwright and replace the SVG placeholders via `generate_previews --force`.
-
-5. **PostgreSQL full-text search** — When deploying to production, replace `icontains` search in `get_listing_templates()` with PostgreSQL `SearchVector`/`SearchQuery` for better relevance ranking.
-
-### Key Files for This Work Area
-- `apps/catalog/selectors.py` — All read logic (search, sort, filter)
-- `apps/catalog/views.py` — TemplateListView with pagination
-- `templates/catalog/template_list.html` — Filter bar, grid, pagination
-- `apps/catalog/management/commands/generate_previews.py` — SVG preview generator
-
-### Constraints
-- Do not redesign the existing architecture or model structure
-- Preserve the premium UI — do not change CSS classes or component structure
-- Follow the services/selectors pattern for new business logic
-- All content in Italian per D-016
+### Constraints (unchanged)
+- Do not redesign architecture or model structure
+- Preserve premium UI — listing/detail/card templates should not be modified for preview changes
+- Follow services/selectors pattern for new business logic
+- Italian content (D-016)
 - Update coordination files at end of session
 
 ## Coordination Rules
 
 - Backend-core owns: models, migrations, admin, services, selectors, management commands
 - Premium-UI owns: templates/, static/, design system, frontend components
-- Catalog integration owns: views, URLs, wiring templates to querysets
-- Neither session should overwrite the other's files
+- **Real-preview-assets** owns: `apps/catalog/preview_imagery.py`, `apps/catalog/management/commands/generate_previews.py`, `templates/preview_compositions/`
 - Both sessions update: SESSION_LOG.md, DECISIONS.md, TODO_NEXT.md, AGENT_HANDOFF.md at end

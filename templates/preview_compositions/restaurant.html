@@ -1,0 +1,137 @@
+{% extends "preview_compositions/_base.html" %}
+{% block extra_css %}
+  .r-hero {
+    position: absolute; inset: 0 0 320px 0;
+    background-image: linear-gradient(135deg, rgba(0,0,0,0.55), rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.65)), url('{{ imagery.0 }}');
+    background-size: cover; background-position: center;
+  }
+  .r-hero-content {
+    position: absolute; left: 64px; bottom: 360px; max-width: 760px;
+    color: #fff;
+  }
+  .r-hero-content .pv-pill { margin-bottom: 22px; }
+  .r-hero-content h1 {
+    font-size: 80px; font-weight: 700; line-height: 0.96;
+    text-shadow: 0 4px 28px rgba(0,0,0,0.35);
+  }
+  .r-hero-content h1 em { font-style: italic; color: var(--accent); }
+  .r-hero-content p {
+    font-size: 19px; line-height: 1.55; margin-top: 22px;
+    opacity: 0.92; max-width: 580px;
+  }
+  .r-hero-actions { margin-top: 34px; display: flex; gap: 16px; }
+
+  .r-meta {
+    position: absolute; right: 64px; bottom: 360px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(10px);
+    color: #fff; padding: 26px 32px; border-radius: 18px;
+    width: 280px;
+  }
+  .r-meta .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.16); font-size: 13px; }
+  .r-meta .row:last-child { border: 0; }
+  .r-meta .row strong { font-family: var(--heading); font-size: 14px; }
+
+  .r-menu {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 320px;
+    background: #fff; padding: 38px 64px 0; display: flex; gap: 28px;
+  }
+  .r-menu-head { width: 240px; flex-shrink: 0; }
+  .r-menu-head .pv-pill { margin-bottom: 14px; }
+  .r-menu-head h3 { font-size: 30px; color: var(--primary); }
+  .r-menu-head p { font-size: 13px; color: #64748b; margin-top: 12px; line-height: 1.55; }
+
+  .r-menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; flex: 1; }
+  .r-menu-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+    overflow: hidden; box-shadow: 0 2px 0 rgba(15,23,42,0.02);
+    display: flex; flex-direction: column;
+  }
+  .r-menu-card .img { height: 130px; }
+  .r-menu-card .body { padding: 14px 16px 16px; }
+  .r-menu-card .body h4 { font-size: 15px; color: var(--primary); }
+  .r-menu-card .body .desc { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.45; min-height: 30px; }
+  .r-menu-card .body .row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+  .r-menu-card .body .price {
+    font-family: var(--heading); font-weight: 700; font-size: 16px; color: var(--accent);
+  }
+  .r-menu-card .body .tag {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #94a3b8;
+  }
+{% endblock %}
+
+{% block body %}
+  <div class="r-hero"></div>
+
+  <nav class="pv-nav is-on-image">
+    <div class="pv-logo"><span class="pv-mark">{{ brand_name|first }}</span> {{ brand_name }}</div>
+    <div class="pv-links">
+      <span>Menu</span><span>La Cantina</span><span>Eventi</span><span>Lo Chef</span><span>Contatti</span>
+    </div>
+    <div class="pv-cta">
+      <span>+39 02 4756 9012</span>
+      <span class="btn">Prenota tavolo</span>
+    </div>
+  </nav>
+
+  <div class="r-hero-content">
+    <span class="pv-pill">Cucina d'autore · Centro Storico</span>
+    <h1>{{ hero_title|default:tagline }}</h1>
+    <p>{{ hero_subtitle|default:"Un viaggio nei sapori della tradizione italiana, reinterpretati con materie prime di stagione e tecniche contemporanee." }}</p>
+    <div class="r-hero-actions">
+      <span class="pv-btn">Prenota un tavolo</span>
+      <span class="pv-btn outline">Scopri il menu</span>
+    </div>
+  </div>
+
+  <div class="r-meta">
+    <div class="row"><span>Aperto oggi</span><strong>19:30 — 23:30</strong></div>
+    <div class="row"><span>Recensioni</span><strong><span class="pv-stars">★★★★★</span> 4.9</strong></div>
+    <div class="row"><span>Prezzo medio</span><strong>€55</strong></div>
+    <div class="row"><span>Coperti</span><strong>42</strong></div>
+  </div>
+
+  <div class="r-menu">
+    <div class="r-menu-head">
+      <span class="pv-pill dark">Selezione dello chef</span>
+      <h3>I piatti del momento</h3>
+      <p>Una piccola selezione del nostro menu d'autunno, costruito ogni settimana con i prodotti del mercato.</p>
+    </div>
+    <div class="r-menu-grid">
+      <div class="r-menu-card">
+        <div class="img pv-img" style="background-image:url('{{ imagery.2 }}')"></div>
+        <div class="body">
+          <h4>Tagliolini al tartufo</h4>
+          <div class="desc">Pasta fresca, tartufo nero di Norcia</div>
+          <div class="row"><span class="tag">Primo</span><span class="price">€24</span></div>
+        </div>
+      </div>
+      <div class="r-menu-card">
+        <div class="img pv-img" style="background-image:url('{{ imagery.3 }}')"></div>
+        <div class="body">
+          <h4>Filetto al Barolo</h4>
+          <div class="desc">Manzo piemontese, riduzione al vino rosso</div>
+          <div class="row"><span class="tag">Secondo</span><span class="price">€32</span></div>
+        </div>
+      </div>
+      <div class="r-menu-card">
+        <div class="img pv-img" style="background-image:url('{{ imagery.4 }}')"></div>
+        <div class="body">
+          <h4>Risotto allo zafferano</h4>
+          <div class="desc">Carnaroli, zafferano d'Abruzzo, ossobuco</div>
+          <div class="row"><span class="tag">Primo</span><span class="price">€22</span></div>
+        </div>
+      </div>
+      <div class="r-menu-card">
+        <div class="img pv-img" style="background-image:url('{{ imagery.5 }}')"></div>
+        <div class="body">
+          <h4>Tiramisù della casa</h4>
+          <div class="desc">Mascarpone, savoiardi al caffè artigianale</div>
+          <div class="row"><span class="tag">Dolce</span><span class="price">€10</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

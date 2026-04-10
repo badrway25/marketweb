@@ -1,0 +1,121 @@
+{% comment %}
+Shared base for preview compositions.
+
+Renders a 1600x900 viewport (16:9). Each child template extends this
+and overrides the {% block body %} with a category-specific layout.
+
+Context variables expected from generate_previews:
+  - brand_name        : str  — e.g. "Osteria Moderna"
+  - tagline           : str  — e.g. "Tradizione e innovazione a tavola"
+  - primary           : hex  — brand primary color
+  - secondary         : hex  — brand secondary color
+  - accent            : hex  — brand accent color
+  - primary_dark      : hex  — auto-darkened primary
+  - on_primary        : str  — "#fff" or "#0f172a" depending on contrast
+  - imagery           : list[str] — file:// URIs (length 6 expected)
+  - heading_font      : str  — Google Font family for headings
+  - body_font         : str  — Google Font family for body
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>{{ brand_name }} — Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ heading_font|urlencode }}:wght@500;600;700;800&family={{ body_font|urlencode }}:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: {{ primary }};
+    --primary-dark: {{ primary_dark }};
+    --secondary: {{ secondary }};
+    --accent: {{ accent }};
+    --on-primary: {{ on_primary }};
+    --heading: '{{ heading_font }}', system-ui, -apple-system, sans-serif;
+    --body: '{{ body_font }}', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 1600px;
+    height: 900px;
+    overflow: hidden;
+    font-family: var(--body);
+    color: #0f172a;
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4, h5 { font-family: var(--heading); line-height: 1.1; letter-spacing: -0.01em; }
+
+  /* ==== Shared chrome & navbar ==== */
+  .pv-frame { width: 1600px; height: 900px; position: relative; background: #fff; overflow: hidden; }
+  .pv-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 76px;
+    display: flex; align-items: center; padding: 0 64px; z-index: 10;
+    color: var(--on-primary);
+  }
+  .pv-nav.is-on-image { background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0)); }
+  .pv-nav.is-solid { background: var(--primary); }
+  .pv-nav .pv-logo {
+    font-family: var(--heading); font-weight: 800; font-size: 22px;
+    letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px;
+  }
+  .pv-nav .pv-logo .pv-mark {
+    width: 32px; height: 32px; border-radius: 8px; background: var(--accent);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--primary); font-weight: 800;
+  }
+  .pv-nav .pv-links {
+    display: flex; gap: 36px; margin-left: 56px; font-size: 14px; font-weight: 500;
+    opacity: 0.92;
+  }
+  .pv-nav .pv-cta {
+    margin-left: auto; display: flex; align-items: center; gap: 14px;
+    font-size: 14px;
+  }
+  .pv-nav .pv-cta .btn {
+    background: var(--accent); color: var(--primary); padding: 11px 22px;
+    border-radius: 999px; font-weight: 700; font-size: 13px;
+  }
+  .pv-nav .pv-cta .btn.outline {
+    background: transparent; color: var(--on-primary); border: 1.5px solid currentColor;
+  }
+
+  /* ==== Buttons ==== */
+  .pv-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 30px; border-radius: 10px;
+    font-family: var(--body); font-weight: 600; font-size: 15px;
+    background: var(--accent); color: var(--primary);
+  }
+  .pv-btn.outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.55); }
+  .pv-btn.dark { background: var(--primary); color: var(--on-primary); }
+
+  /* ==== Pill ==== */
+  .pv-pill {
+    display: inline-block; padding: 6px 14px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    background: rgba(255,255,255,0.14); color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .pv-pill.solid { background: var(--accent); color: var(--primary); border-color: transparent; }
+  .pv-pill.dark { background: rgba(15,23,42,0.06); color: var(--primary); border-color: rgba(15,23,42,0.08); }
+
+  /* ==== Star row ==== */
+  .pv-stars { color: #fbbf24; letter-spacing: 2px; font-size: 14px; }
+
+  /* ==== Image utility ==== */
+  .pv-img {
+    background-size: cover; background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>
+  <div class="pv-frame">
+    {% block body %}{% endblock %}
+  </div>
+</body>
+</html>

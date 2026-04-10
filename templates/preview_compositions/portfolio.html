@@ -1,0 +1,143 @@
+{% extends "preview_compositions/_base.html" %}
+{% block extra_css %}
+  .pv-frame { background: #fafafa; }
+
+  .p-nav-row {
+    position: absolute; top: 0; left: 0; right: 0; height: 76px;
+    display: flex; align-items: center; padding: 0 64px;
+    color: var(--secondary);
+  }
+  .p-nav-row .pv-logo { font-family: var(--heading); font-size: 22px; color: var(--secondary); }
+  .p-nav-row .pv-logo .dot { color: var(--accent); }
+  .p-nav-row .pv-links { display: flex; gap: 36px; margin-left: 56px; font-size: 13px; color: var(--secondary); opacity: 0.75; }
+  .p-nav-row .pv-cta {
+    margin-left: auto; display: flex; align-items: center; gap: 14px;
+    font-size: 13px;
+  }
+  .p-nav-row .pv-cta .btn {
+    background: var(--secondary); color: #fff; padding: 11px 22px; border-radius: 999px; font-weight: 600;
+  }
+
+  .p-hero {
+    position: absolute; left: 64px; right: 64px; top: 110px; height: 460px;
+    display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px;
+  }
+  .p-text { display: flex; flex-direction: column; justify-content: center; }
+  .p-text .pv-pill { background: rgba(17,17,17,0.05); border-color: rgba(17,17,17,0.1); color: var(--secondary); }
+  .p-text h1 {
+    margin-top: 22px; font-size: 96px; line-height: 0.92; font-weight: 700;
+    color: var(--secondary); letter-spacing: -0.03em;
+  }
+  .p-text h1 em { font-style: italic; color: var(--accent); font-weight: 500; }
+  .p-text p { margin-top: 28px; font-size: 17px; line-height: 1.65; color: #555; max-width: 480px; }
+  .p-text .signature { margin-top: 28px; display: flex; align-items: center; gap: 16px; }
+  .p-text .signature .avatar {
+    width: 48px; height: 48px; border-radius: 50%; background-size: cover; background-position: center;
+    background-image: url('{{ imagery.2 }}');
+  }
+  .p-text .signature .who { font-size: 13px; }
+  .p-text .signature .who strong { display: block; font-family: var(--heading); font-size: 15px; color: var(--secondary); }
+  .p-text .signature .who span { color: #888; }
+
+  .p-art {
+    position: relative;
+  }
+  .p-art .main {
+    position: absolute; left: 0; top: 0; width: 75%; height: 100%;
+    background: url('{{ imagery.0 }}') center/cover;
+    border-radius: 6px;
+  }
+  .p-art .accent {
+    position: absolute; right: 0; top: 60px; width: 40%; height: 70%;
+    background: url('{{ imagery.1 }}') center/cover;
+    border-radius: 6px;
+    border: 6px solid #fafafa;
+  }
+  .p-art .tag {
+    position: absolute; left: 18px; bottom: 18px;
+    background: rgba(0,0,0,0.65); color: #fff; padding: 8px 14px; border-radius: 999px;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; backdrop-filter: blur(8px);
+  }
+  .p-art .tag .accent-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+
+  .p-projects {
+    position: absolute; left: 64px; right: 64px; bottom: 36px;
+  }
+  .p-projects .head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 18px; }
+  .p-projects .head h3 { font-family: var(--heading); font-size: 24px; color: var(--secondary); }
+  .p-projects .head h3 em { font-style: italic; color: var(--accent); }
+  .p-projects .head .filter { display: flex; gap: 10px; font-size: 11px; }
+  .p-projects .head .filter span { padding: 6px 14px; border-radius: 999px; border: 1px solid #e2e8f0; color: #64748b; }
+  .p-projects .head .filter span.active { background: var(--secondary); color: #fff; border-color: var(--secondary); }
+
+  .p-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .p-tile {
+    height: 220px; border-radius: 6px; overflow: hidden; position: relative;
+    background-size: cover; background-position: center;
+  }
+  .p-tile::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.65));
+  }
+  .p-tile .meta { position: absolute; left: 16px; right: 16px; bottom: 14px; color: #fff; z-index: 2; }
+  .p-tile .meta .num { font-size: 10px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+  .p-tile .meta h5 { margin-top: 4px; font-family: var(--heading); font-size: 17px; }
+  .p-tile .meta .yr { font-size: 11px; opacity: 0.7; }
+{% endblock %}
+
+{% block body %}
+  <nav class="p-nav-row">
+    <div class="pv-logo">{{ brand_name }}<span class="dot">.</span></div>
+    <div class="pv-links">
+      <span>Lavoro</span><span>Chi sono</span><span>Approccio</span><span>Diario</span><span>Contatti</span>
+    </div>
+    <div class="pv-cta">
+      <span style="opacity:0.6;">disponibile da Giugno</span>
+      <span class="btn">Lavoriamo insieme</span>
+    </div>
+  </nav>
+
+  <div class="p-hero">
+    <div class="p-text">
+      <span class="pv-pill">Selected work · 2018 — 2026</span>
+      <h1>Ogni progetto<br>una <em>storia.</em></h1>
+      <p>{{ hero_subtitle|default:"Sono una designer indipendente che lavora con brand, editori e artisti. Identità visive, art direction, libri e siti su misura — niente di pre-confezionato." }}</p>
+      <div class="signature">
+        <div class="avatar"></div>
+        <div class="who"><strong>{{ brand_name }}</strong><span>Independent designer · Milano</span></div>
+      </div>
+    </div>
+    <div class="p-art">
+      <div class="main"></div>
+      <div class="accent"></div>
+      <div class="tag"><span class="accent-dot"></span>Featured · Atlas Magazine</div>
+    </div>
+  </div>
+
+  <div class="p-projects">
+    <div class="head">
+      <h3>Lavori <em>recenti</em></h3>
+      <div class="filter">
+        <span class="active">Tutti</span>
+        <span>Branding</span>
+        <span>Editoriale</span>
+        <span>Web</span>
+        <span>Illustrazione</span>
+      </div>
+    </div>
+    <div class="p-grid">
+      <div class="p-tile" style="background-image:url('{{ imagery.2 }}')">
+        <div class="meta"><div class="num">01 / Branding</div><h5>Atelier Norma</h5><div class="yr">2026</div></div>
+      </div>
+      <div class="p-tile" style="background-image:url('{{ imagery.3 }}')">
+        <div class="meta"><div class="num">02 / Editorial</div><h5>Atlas Issue 14</h5><div class="yr">2026</div></div>
+      </div>
+      <div class="p-tile" style="background-image:url('{{ imagery.4 }}')">
+        <div class="meta"><div class="num">03 / Web</div><h5>Lumen Studio</h5><div class="yr">2025</div></div>
+      </div>
+      <div class="p-tile" style="background-image:url('{{ imagery.5 }}')">
+        <div class="meta"><div class="num">04 / Illustration</div><h5>Polare — Visual Series</h5><div class="yr">2025</div></div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

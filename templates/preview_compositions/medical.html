@@ -1,0 +1,156 @@
+{% extends "preview_compositions/_base.html" %}
+{% block extra_css %}
+  .m-top { position: absolute; top: 0; left: 0; right: 0; height: 76px; background: var(--primary); }
+
+  .m-hero {
+    position: absolute; top: 76px; left: 0; right: 0; height: 470px;
+    display: flex;
+  }
+  .m-hero-text {
+    width: 50%; padding: 64px 64px 0;
+    background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+    color: #fff; position: relative;
+  }
+  .m-hero-text .pv-pill { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.25); }
+  .m-hero-text h1 {
+    margin-top: 24px; font-size: 60px; font-weight: 700; line-height: 1.05;
+  }
+  .m-hero-text h1 em { font-style: normal; color: var(--accent); }
+  .m-hero-text p { margin-top: 22px; font-size: 17px; line-height: 1.6; opacity: 0.88; max-width: 520px; }
+  .m-hero-actions { margin-top: 32px; display: flex; gap: 14px; }
+
+  .m-stats {
+    position: absolute; bottom: 30px; left: 64px; right: 64px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    color: rgba(255,255,255,0.92);
+  }
+  .m-stats .stat .num { font-family: var(--heading); font-size: 26px; font-weight: 700; color: var(--accent); }
+  .m-stats .stat .lbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; }
+
+  .m-hero-img { width: 50%; position: relative; }
+  .m-hero-img .photo {
+    position: absolute; inset: 0;
+    background: url('{{ imagery.0 }}') center/cover;
+  }
+  .m-hero-img .booking-card {
+    position: absolute; left: -60px; bottom: 38px; width: 320px;
+    background: #fff; border-radius: 18px; padding: 20px 22px;
+    box-shadow: 0 24px 60px rgba(11,79,108,0.25); border: 1px solid #e2e8f0;
+  }
+  .m-hero-img .booking-card h4 { font-size: 16px; color: var(--primary); }
+  .m-hero-img .booking-card .field { margin-top: 12px; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 12px; color: #64748b; display: flex; align-items: center; justify-content: space-between; }
+  .m-hero-img .booking-card .field strong { color: var(--primary); }
+  .m-hero-img .booking-card .cta { margin-top: 14px; background: var(--primary); color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 13px; }
+
+  .m-services {
+    position: absolute; left: 64px; right: 64px; top: 580px;
+  }
+  .m-services .head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 22px; }
+  .m-services .head h2 { font-size: 32px; color: var(--primary); }
+  .m-services .head .lnk { font-size: 13px; font-weight: 600; color: var(--secondary); }
+
+  .m-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .m-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 0 rgba(11,79,108,0.04);
+  }
+  .m-card .img { height: 130px; background-size: cover; background-position: center; }
+  .m-card .body { padding: 16px 18px 18px; }
+  .m-card .icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(11,79,108,0.08); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800;
+    margin-top: -32px; border: 4px solid #fff;
+    background: var(--accent); color: var(--primary);
+  }
+  .m-card h4 { margin-top: 10px; font-size: 16px; color: var(--primary); }
+  .m-card p { font-size: 12px; color: #64748b; margin-top: 6px; line-height: 1.5; }
+  .m-card .cta { margin-top: 12px; font-size: 12px; color: var(--secondary); font-weight: 600; }
+{% endblock %}
+
+{% block body %}
+  <div class="m-hero">
+    <div class="m-hero-text">
+      <span class="pv-pill">Cliniche specialistiche · Milano</span>
+      <h1>{{ hero_title|default:"La tua salute, la nostra <em>missione</em>"|safe }}</h1>
+      <p>{{ hero_subtitle|default:"Un team di oltre 40 specialisti, percorsi diagnostici integrati e un'esperienza paziente pensata per metterti a tuo agio dal primo contatto." }}</p>
+      <div class="m-hero-actions">
+        <span class="pv-btn">Prenota una visita</span>
+        <span class="pv-btn outline">Tutti i servizi</span>
+      </div>
+      <div class="m-stats">
+        <div class="stat"><div class="num">40+</div><div class="lbl">Specialisti</div></div>
+        <div class="stat"><div class="num">12</div><div class="lbl">Reparti</div></div>
+        <div class="stat"><div class="num">98%</div><div class="lbl">Pazienti soddisfatti</div></div>
+      </div>
+    </div>
+    <div class="m-hero-img">
+      <div class="photo"></div>
+      <div class="booking-card">
+        <h4>Prenota online</h4>
+        <div class="field"><span>Specialità</span><strong>Cardiologia</strong></div>
+        <div class="field"><span>Data</span><strong>Mar 14 Apr · 10:30</strong></div>
+        <div class="field"><span>Dottore</span><strong>Dr.ssa Conti</strong></div>
+        <div class="cta">Conferma prenotazione</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="pv-nav is-solid">
+    <div class="pv-logo"><span class="pv-mark">{{ brand_name|first }}</span> {{ brand_name }}</div>
+    <div class="pv-links">
+      <span>Specialità</span><span>Equipe medica</span><span>Convenzioni</span><span>Area paziente</span><span>Contatti</span>
+    </div>
+    <div class="pv-cta">
+      <span>Numero verde 800 123 456</span>
+      <span class="btn">Prenota visita</span>
+    </div>
+  </nav>
+
+  <div class="m-services">
+    <div class="head">
+      <h2>I nostri servizi specialistici</h2>
+      <span class="lnk">Vedi tutti i 40+ servizi  →</span>
+    </div>
+    <div class="m-grid">
+      <div class="m-card">
+        <div class="img" style="background-image:url('{{ imagery.1 }}')"></div>
+        <div class="body">
+          <div class="icon">+</div>
+          <h4>Cardiologia</h4>
+          <p>Visite, ECG e diagnostica avanzata con i nostri cardiologi.</p>
+          <div class="cta">Prenota →</div>
+        </div>
+      </div>
+      <div class="m-card">
+        <div class="img" style="background-image:url('{{ imagery.2 }}')"></div>
+        <div class="body">
+          <div class="icon">+</div>
+          <h4>Pediatria</h4>
+          <p>Cura dell'infanzia, vaccinazioni e bilanci di salute.</p>
+          <div class="cta">Prenota →</div>
+        </div>
+      </div>
+      <div class="m-card">
+        <div class="img" style="background-image:url('{{ imagery.3 }}')"></div>
+        <div class="body">
+          <div class="icon">+</div>
+          <h4>Diagnostica</h4>
+          <p>Ecografia, TAC e risonanza magnetica in giornata.</p>
+          <div class="cta">Prenota →</div>
+        </div>
+      </div>
+      <div class="m-card">
+        <div class="img" style="background-image:url('{{ imagery.4 }}')"></div>
+        <div class="body">
+          <div class="icon">+</div>
+          <h4>Fisioterapia</h4>
+          <p>Riabilitazione personalizzata con équipe dedicata.</p>
+          <div class="cta">Prenota →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

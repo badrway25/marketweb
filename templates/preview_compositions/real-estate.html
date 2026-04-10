@@ -1,0 +1,158 @@
+{% extends "preview_compositions/_base.html" %}
+{% block extra_css %}
+  .re-hero {
+    position: absolute; inset: 0 0 320px 0;
+    background-image: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.50) 100%), url('{{ imagery.0 }}');
+    background-size: cover; background-position: center;
+  }
+  .re-hero-content {
+    position: absolute; left: 64px; right: 64px; top: 170px; color: #fff;
+  }
+  .re-hero-content .pv-pill { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.3); }
+  .re-hero-content h1 {
+    margin-top: 22px; font-size: 78px; line-height: 1.0; max-width: 900px;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.4); font-weight: 600;
+  }
+  .re-hero-content h1 em { font-style: italic; color: var(--secondary); font-weight: 500; }
+  .re-hero-content p {
+    margin-top: 18px; font-size: 17px; opacity: 0.92; max-width: 600px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+
+  .re-search {
+    position: absolute; left: 64px; right: 64px; bottom: 360px;
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 30px 80px rgba(15,23,42,0.32);
+    padding: 22px 28px; display: grid;
+    grid-template-columns: 2.2fr 1.6fr 1.6fr 1.6fr 1.4fr; gap: 0;
+    align-items: center; height: 92px;
+  }
+  .re-search .field {
+    padding: 0 22px; border-right: 1px solid #e2e8f0; height: 56px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .re-search .field:last-of-type { border-right: 0; }
+  .re-search .field .lbl { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
+  .re-search .field .val { font-family: var(--heading); font-size: 16px; font-weight: 600; color: var(--primary); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .re-search .field .val .chev { font-size: 9px; color: #94a3b8; }
+  .re-search .submit {
+    background: var(--primary); color: #fff; border-radius: 12px;
+    height: 56px; display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 14px; letter-spacing: 0.02em;
+    margin: 0 8px;
+  }
+
+  .re-listings {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 320px;
+    background: #f8fafc; padding: 38px 64px 0;
+  }
+  .re-listings .head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 22px; }
+  .re-listings .head h3 { font-size: 26px; color: var(--primary); }
+  .re-listings .head h3 em { color: var(--accent); font-style: italic; }
+  .re-listings .head .lnk { font-size: 13px; font-weight: 600; color: var(--secondary); }
+  .re-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .re-card {
+    background: #fff; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+  }
+  .re-card .img { height: 130px; position: relative; background-size: cover; background-position: center; }
+  .re-card .img .badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--accent); color: var(--primary);
+    padding: 4px 10px; border-radius: 999px; font-size: 9px;
+    font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .re-card .img .heart {
+    position: absolute; top: 10px; right: 10px;
+    width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.95);
+    display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 14px;
+  }
+  .re-card .meta { padding: 14px 16px 16px; }
+  .re-card .meta .price { font-family: var(--heading); font-size: 18px; color: var(--primary); font-weight: 700; }
+  .re-card .meta h5 { font-size: 13px; color: var(--primary); margin-top: 6px; }
+  .re-card .meta .addr { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .re-card .meta .specs { display: flex; gap: 14px; margin-top: 10px; font-size: 11px; color: #64748b; padding-top: 10px; border-top: 1px solid #f1f5f9; }
+  .re-card .meta .specs span strong { color: var(--primary); font-weight: 700; }
+{% endblock %}
+
+{% block body %}
+  <div class="re-hero"></div>
+
+  <nav class="pv-nav is-on-image">
+    <div class="pv-logo"><span class="pv-mark">{{ brand_name|first }}</span> {{ brand_name }}</div>
+    <div class="pv-links">
+      <span>Vendita</span><span>Affitto</span><span>Nuove costruzioni</span><span>Valutazione</span><span>I nostri agenti</span>
+    </div>
+    <div class="pv-cta">
+      <span>+39 02 8765 4321</span>
+      <span class="btn">Area riservata</span>
+    </div>
+  </nav>
+
+  <div class="re-hero-content">
+    <span class="pv-pill">Oltre 600 immobili selezionati · Lombardia &amp; Piemonte</span>
+    <h1>{{ hero_title|default:"Trova la casa <em>dei tuoi sogni</em>"|safe }}</h1>
+    <p>{{ hero_subtitle|default:"Selezioniamo a mano ogni proprietà. Visite private, valutazioni gratuite e supporto dalla prima visita al rogito." }}</p>
+  </div>
+
+  <div class="re-search">
+    <div class="field"><div class="lbl">Località</div><div class="val">Milano, Centro <span class="chev">▾</span></div></div>
+    <div class="field"><div class="lbl">Tipologia</div><div class="val">Appartamento <span class="chev">▾</span></div></div>
+    <div class="field"><div class="lbl">Prezzo</div><div class="val">€500K — €1.2M <span class="chev">▾</span></div></div>
+    <div class="field"><div class="lbl">Camere</div><div class="val">3+ <span class="chev">▾</span></div></div>
+    <div class="submit">🔍  Cerca immobile</div>
+  </div>
+
+  <div class="re-listings">
+    <div class="head">
+      <h3>In <em>evidenza</em> questa settimana</h3>
+      <span class="lnk">Vedi tutti i 600+ immobili  →</span>
+    </div>
+    <div class="re-grid">
+      <div class="re-card">
+        <div class="img" style="background-image:url('{{ imagery.1 }}')">
+          <span class="badge">Esclusiva</span><span class="heart">♡</span>
+        </div>
+        <div class="meta">
+          <div class="price">€ 1.250.000</div>
+          <h5>Attico panoramico con terrazzo</h5>
+          <div class="addr">Milano · Brera</div>
+          <div class="specs"><span><strong>4</strong> camere</span><span><strong>180</strong> m²</span><span><strong>2</strong> bagni</span></div>
+        </div>
+      </div>
+      <div class="re-card">
+        <div class="img" style="background-image:url('{{ imagery.2 }}')">
+          <span class="badge">Nuova</span><span class="heart">♡</span>
+        </div>
+        <div class="meta">
+          <div class="price">€ 890.000</div>
+          <h5>Villa moderna con giardino</h5>
+          <div class="addr">Como · Cernobbio</div>
+          <div class="specs"><span><strong>5</strong> camere</span><span><strong>240</strong> m²</span><span><strong>3</strong> bagni</span></div>
+        </div>
+      </div>
+      <div class="re-card">
+        <div class="img" style="background-image:url('{{ imagery.3 }}')">
+          <span class="badge">Lusso</span><span class="heart">♡</span>
+        </div>
+        <div class="meta">
+          <div class="price">€ 2.400.000</div>
+          <h5>Villa storica restaurata</h5>
+          <div class="addr">Lago Maggiore · Stresa</div>
+          <div class="specs"><span><strong>7</strong> camere</span><span><strong>420</strong> m²</span><span><strong>4</strong> bagni</span></div>
+        </div>
+      </div>
+      <div class="re-card">
+        <div class="img" style="background-image:url('{{ imagery.4 }}')">
+          <span class="badge">Trattativa</span><span class="heart">♡</span>
+        </div>
+        <div class="meta">
+          <div class="price">€ 650.000</div>
+          <h5>Loft di design in zona Tortona</h5>
+          <div class="addr">Milano · Navigli</div>
+          <div class="specs"><span><strong>2</strong> camere</span><span><strong>120</strong> m²</span><span><strong>2</strong> bagni</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

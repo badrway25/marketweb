@@ -100,3 +100,28 @@
 ## D-025: Pagination at 12 Per Page (2026-04-09)
 **Decision:** `paginate_by = 12` on TemplateListView.
 **Rationale:** 12 items = 4 rows of 3 cards on desktop, a comfortable scroll depth. Matches the 3-column grid layout. With 16 templates, produces 2 pages — enough to verify pagination works.
+
+## D-029: HTML Compositions + Playwright Screenshots for Previews (2026-04-10)
+**Decision:** Replace SVG-string previews with PNG screenshots of Django-rendered HTML pages, captured via headless Chromium (Playwright sync API).
+**Rationale:** A premium marketplace cannot ship grey wireframes. Real homepage screenshots with photographic content communicate template value at a glance and dramatically improve conversion intent. HTML+CSS gives us the same expressive control as a real website (fonts, gradients, real photos) without re-implementing a layout engine in Python. The `TemplateAsset` API stays the same, so listing/detail templates need zero changes — only the file format moves from `.svg` to `.png`.
+**Trade-off:** Heavier dependency surface (Playwright + Chromium binary), larger asset files (~4 MB vs ~5 KB), and screenshot generation requires a browser process. Acceptable because previews are generated offline and served as static media.
+
+## D-030: Per-Category Preview Compositions, Brand-Customised at Render Time (2026-04-10)
+**Decision:** One HTML composition per MVP category (8 total), parameterised by brand palette + typography. Multiple templates inside a category share the same layout and stock imagery; brand identity comes from injected colours and Google Font pairing.
+**Rationale:** 8 well-crafted layouts is a much better quality bar than 16+ rushed ones. Category specificity (a restaurant looks like a restaurant, a clinic looks like a clinic) is the primary signal users need. Brand differentiation via palette + type still gives each preview its own colour signature without doubling the maintenance cost.
+**Trade-off:** Two templates in the same category have identical photo content. Mitigation path: add an optional `imagery_overrides` field on `TemplateBrand` later if buyers report confusion.
+
+## D-031: Curated Stock Imagery via Cached Unsplash URLs (2026-04-10)
+**Decision:** Imagery is configured as a Python dict (`apps/catalog/preview_imagery.IMAGERY_CONFIG`) of category → list of Unsplash CDN URLs, with a `ensure_cached()` helper that downloads them once into `media/preview_imagery/<category>/<sha>.jpg` and returns local file paths.
+**Rationale:** A single config file is the swap point. To move to local stock, licensed images, or AI-generated illustrations later, only the config changes — compositions and the generator stay untouched. The cache means subsequent runs are offline-friendly and idempotent. Unsplash CDN URLs are stable and free for commercial use under Unsplash's license.
+**Trade-off:** First run requires network access; broken URLs degrade gracefully (the affected slot just falls back to the hero photo, padded by `_build_context`).
+
+## D-032: Three-Phase generate_previews Pipeline (2026-04-10)
+**Decision:** The command runs in three sequential phases: (A) all ORM reads + HTML rendering, (B) Playwright headless screenshots with no ORM access, (C) all ORM writes (TemplateAsset persistence).
+**Rationale:** `playwright.sync_api.sync_playwright()` runs an asyncio loop on the calling thread. Inside its `with` block, Django's ORM raises `SynchronousOnlyOperation` because the loop is "running". Splitting work into three phases avoids the conflict cleanly without `sync_to_async` shims.
+**Trade-off:** All templates' rendered HTML must be held in memory before screenshots start. At 16 templates × ~10 KB HTML = 160 KB, this is irrelevant.
+
+## D-033: 1600×900 PNG at 2× Device Scale (2026-04-10)
+**Decision:** Previews render at viewport 1600×900 with `device_scale_factor=2`, output PNG. Resulting files are ~3200×1800 pixels and ~4 MB each.
+**Rationale:** 16:9 matches the 4:3-to-16:9 ratio expected by the existing template card. 2× DPI keeps text crisp on retina displays. PNG preserves the sharp UI lines (buttons, dividers) without JPEG halos.
+**Trade-off:** ~70 MB total media for 16 templates. Acceptable for development; for production we should add an optional `--optimize` step that runs `oxipng`/`pngquant` or pipes through Pillow with `optimize=True`/JPEG conversion.

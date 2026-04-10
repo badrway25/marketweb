@@ -225,3 +225,77 @@ The entire "duplicate navbar" and "broken layout" was a single root cause: **bad
 - `http://127.0.0.1:8098/templates/?q=zzzznotfound` — Empty state with feedback and clear button
 - `http://127.0.0.1:8098/templates/restaurant/` — Category filter: 2 restaurant templates
 - `http://127.0.0.1:8098/templates/restaurant/gusto-fine-dining/` — Detail page with SVG gallery image
+
+## Session 6 — Real Preview Assets Phase 2 (2026-04-10)
+
+**Agent:** Real Preview Assets (worktree: real-preview-assets)
+**Goal:** Replace abstract SVG previews with realistic image-based homepage screenshots so each template card actually communicates the look-and-feel of a real website.
+
+### Problem
+Phase 1 SVG previews (and the unreleased "preview-realism phase 1" 8-layout SVGs) still felt like wireframes. They communicated category at best, but never visual richness. Buyers cannot judge a template marketplace from grey rectangles.
+
+### Pipeline
+1. **Curated stock imagery library** (`apps/catalog/preview_imagery.py`)
+   - `IMAGERY_CONFIG`: 8 categories × 6 Unsplash CDN URLs each (hero, feature, 4 cards)
+   - `ensure_cached(category_slug)` downloads + caches to `media/preview_imagery/<category>/<sha>.jpg`
+   - Subsequent runs hit local files; nothing leaves the machine
+   - Swap images/sources later by editing the config — no other code changes needed
+
+2. **HTML preview compositions** (`templates/preview_compositions/*.html`)
+   - One template per MVP category: `restaurant`, `medical`, `lawyer`, `agency`, `business`, `real-estate`, `portfolio`, `ecommerce`
+   - Shared `_base.html` with brand-palette CSS variables, Google Fonts (heading + body), 1600×900 fixed viewport, navbar/button utilities
+   - Each composition is a believable homepage: hero with photo+headline+CTA, content grid (menu/services/practice areas/products/listings/case studies), realistic Italian copy, brand color injected via context vars
+   - All copy in Italian (D-016)
+
+3. **Playwright generator rewrite** (`apps/catalog/management/commands/generate_previews.py`)
+   - **Three-phase pipeline** to avoid Django ORM ↔ Playwright sync-loop conflicts:
+     - Phase A — materialise queryset, render HTML strings, gather imagery cache (all ORM access)
+     - Phase B — open Chromium, navigate to each rendered HTML temp file via `file://`, screenshot 1600×900 at `device_scale_factor=2`
+     - Phase C — persist `TemplateAsset` rows pointing at the new PNG files
+   - `--force` regenerates and replaces; `--only <slug>` targets a single template
+   - Heading/body Google Font pair derived from `TemplateBrand.typography` (with sensible fallbacks for paid fonts like Satoshi → Manrope)
+   - Auto-darkens primary, computes contrast text colour via WCAG-ish luminance, pads imagery list so missing slots fall back gracefully
+
+### What changed under the hood
+| Layer            | Before                                  | After                                                       |
+|------------------|-----------------------------------------|-------------------------------------------------------------|
+| Asset format     | Inline SVG wireframe                    | 1600×900 PNG screenshot of real HTML                       |
+| Photo content    | None (colored rectangles)               | Real Unsplash photos: restaurants, doctors, justice, …     |
+| Layout source    | String-formatted SVG in Python          | Django HTML templates per category                          |
+| Brand fidelity   | Palette only                            | Palette + typography pair + accent contrast                |
+| Reproducibility  | Deterministic Python                    | Cached images + headless Chromium screenshot               |
+
+`TemplateAsset` model and `template.assets.first.file.url` template usage are unchanged — the pipeline swap is invisible to the rest of the app.
+
+### Files Created (11)
+- `apps/catalog/preview_imagery.py` — imagery config + cache helper
+- `templates/preview_compositions/_base.html` — shared chrome + brand vars
+- `templates/preview_compositions/restaurant.html`
+- `templates/preview_compositions/medical.html`
+- `templates/preview_compositions/lawyer.html`
+- `templates/preview_compositions/agency.html`
+- `templates/preview_compositions/business.html`
+- `templates/preview_compositions/real-estate.html`
+- `templates/preview_compositions/portfolio.html`
+- `templates/preview_compositions/ecommerce.html`
+- `media/preview_imagery/<category>/*.jpg` — 47 cached stock photos (gitignored)
+
+### Files Modified (1)
+- `apps/catalog/management/commands/generate_previews.py` — full rewrite (HTML + Playwright pipeline)
+
+### Verified (Playwright MCP, port 8096)
+- `/` — Homepage featured grid: all 6 cards now show real-imagery previews (restaurant interior + food, lady justice + practice areas, doctor + service cards, dark agency case studies, corporate hero, portfolio gallery)
+- `/templates/` — Listing grid renders the same PNGs in 12-per-page paginator
+- `/templates/restaurant/gusto-fine-dining/` — Detail page gallery shows the Gusto preview, related templates section shows Sapore preview
+
+### Key Decisions
+- D-029: HTML compositions + Playwright screenshots (replace pure-SVG)
+- D-030: Per-category compositions (not per-template) — keeps template count down, brand differentiation via palette/typography
+- D-031: Cache-first imagery via Unsplash CDN URLs in a swappable config
+- D-032: Three-phase command (ORM → Playwright → ORM) to avoid SynchronousOnlyOperation
+- D-033: PNG output at 1600×900 with 2× device scale factor (~4 MB/file, ~70 MB total)
+
+### Known limitations / next steps
+- Both ecommerce templates currently share the same product photos because compositions are per-category. Brand differentiation is visible via palette/typography but the photos are identical. To fully personalise per template, add an optional `imagery_overrides` dict on `TemplateBrand` and merge it into the context. (Same applies to all other category-pairs.)
+- Cormorant Garamond hero text on dark backgrounds (lawyer, villa) renders thin. Either bump brand-specific font weight or swap to a heavier serif when the brand pairing requires it.
+- File sizes are large (~4 MB each at 2× DPI). For production we should pipe screenshots through PIL JPEG compression or Pillow `optimize=True` PNG to bring per-card download under 500 KB.

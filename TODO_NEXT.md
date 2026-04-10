@@ -51,9 +51,25 @@
 - [x] Asset prefetching to eliminate N+1 queries on listing pages
 - [x] Empty state with search feedback and clear button
 
-## Next — Phase 2b (Interactivity & Accounts)
+## Completed — Phase 2c (Real Preview Assets, 2026-04-10)
+- [x] Curated stock imagery library with cache-first downloader (8 categories × 6 photos)
+- [x] HTML preview compositions per category (8 Django templates with brand-palette injection)
+- [x] Playwright + Chromium screenshot pipeline (1600×900 @ 2× DPI → PNG)
+- [x] Three-phase generate_previews command (avoids ORM/asyncio conflict)
+- [x] All 16 templates re-rendered with real-imagery PNGs
+- [x] Live verification: homepage featured grid, listing page, detail page
+
+## Next — Phase 2d (Preview Polish)
+- [ ] Per-template imagery overrides on `TemplateBrand` so the two templates in each category don't share photos (e.g. fashion vs artisan ecommerce)
+- [ ] Optimize preview PNGs (Pillow `optimize=True` or oxipng/pngquant) — current ~4 MB/file is heavy
+- [ ] Lawyer & villa hero text legibility — bump font weight or pick a heavier serif when palette is dark + Cormorant Garamond
+- [ ] Headless font fallback audit — confirm every brand `typography` value resolves to a real Google Font weight that loads in time
+- [ ] Add `--no-cache-images` flag to force re-downloads when imagery config changes
+- [ ] Add to .gitignore: `media/preview_imagery/` (already user-local cache)
+
+## Next — Phase 3 (Interactivity & Accounts)
 - [ ] Tags seeding and tag filtering on listing page
-- [ ] Template preview system (iframe or server-rendered)
+- [ ] Template preview system (iframe or server-rendered live demo)
 - [ ] Editor app models and basic UI
 - [ ] Projects app: save/load customer customizations
 - [ ] DRF API endpoints for editor save/load
@@ -62,5 +78,4 @@
 - [ ] RTL bundle switching logic for Arabic (detect lang=ar, swap Bootstrap CSS)
 - [ ] Add {% trans %} tags throughout for i18n readiness
 - [ ] Wire Prezzi and Chi Siamo navbar links to real pages
-- [ ] Replace SVG previews with real template screenshots (when actual template HTML exists)
 - [ ] PostgreSQL full-text search upgrade (replace icontains when in production)

@@ -1,203 +1,128 @@
-"""Generate SVG preview images for all published templates.
+"""Generate realistic preview images for all published templates.
 
-Creates branded website-mockup SVGs using each template's brand palette,
-then saves them as TemplateAsset records (asset_type='preview').
+Pipeline:
+  1. Ensure category-appropriate stock imagery is cached on disk.
+  2. Render a per-category HTML composition (templates/preview_compositions/<category>.html)
+     using the template's brand palette + cached imagery.
+  3. Screenshot the rendered HTML at 1600x900 with Playwright (Chromium).
+  4. Save the resulting PNG as a TemplateAsset (asset_type='preview').
 
-Each SVG looks like a browser window showing a website with the brand's
-colors. Two layout variants alternate for visual variety.
+The TemplateAsset pipeline is unchanged: each template still has a single
+preview asset; only the file format has moved from SVG wireframe to PNG
+screenshot of a real homepage mockup.
 """
+from __future__ import annotations
+
+import tempfile
+from pathlib import Path
+
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
+from django.template.loader import render_to_string
 
 from apps.catalog.models import TemplateAsset, WebTemplate
+from apps.catalog.preview_imagery import ensure_cached
 
 
-def _darken(hex_color, factor=0.7):
-    """Darken a hex color by a factor (0 = black, 1 = unchanged)."""
+# Map a template's category slug to the composition template that should
+# render its preview. Categories without a dedicated layout fall back to
+# "agency" which is the most generic / busy layout.
+CATEGORY_TO_COMPOSITION: dict[str, str] = {
+    "restaurant": "restaurant.html",
+    "medical": "medical.html",
+    "lawyer": "lawyer.html",
+    "agency": "agency.html",
+    "business": "business.html",
+    "real-estate": "real-estate.html",
+    "portfolio": "portfolio.html",
+    "ecommerce": "ecommerce.html",
+}
+
+
+# Heading + body Google Font pairings derived from the brand's typography
+# string. Best-effort match — anything we don't recognise falls back to
+# Plus Jakarta Sans + Inter.
+FONT_PAIRINGS: dict[str, tuple[str, str]] = {
+    "playfair display + lato": ("Playfair Display", "Lato"),
+    "libre baskerville + source sans 3": ("Libre Baskerville", "Source Sans 3"),
+    "libre baskerville + nunito sans": ("Libre Baskerville", "Nunito Sans"),
+    "nunito sans + inter": ("Nunito Sans", "Inter"),
+    "cormorant garamond + nunito": ("Cormorant Garamond", "Nunito"),
+    "cormorant garamond + inter": ("Cormorant Garamond", "Inter"),
+    "cormorant garamond + montserrat": ("Cormorant Garamond", "Montserrat"),
+    "dm sans + inter": ("DM Sans", "Inter"),
+    "poppins + inter": ("Poppins", "Inter"),
+    "inter + merriweather": ("Inter", "Merriweather"),
+    "satoshi + inter": ("Manrope", "Inter"),  # Satoshi is paid; Manrope is the closest free swap
+    "space grotesk + inter": ("Space Grotesk", "Inter"),
+    "plus jakarta sans + inter": ("Plus Jakarta Sans", "Inter"),
+    "syne + inter": ("Syne", "Inter"),
+    "archivo + inter": ("Archivo", "Inter"),
+}
+DEFAULT_FONTS = ("Plus Jakarta Sans", "Inter")
+
+
+def _hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     h = hex_color.lstrip("#")
-    r = int(int(h[0:2], 16) * factor)
-    g = int(int(h[2:4], 16) * factor)
-    b = int(int(h[4:6], 16) * factor)
-    return f"#{r:02x}{g:02x}{b:02x}"
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
 
 
-def _alpha(hex_color, opacity):
-    """Convert hex color to rgba string."""
-    h = hex_color.lstrip("#")
-    r = int(h[0:2], 16)
-    g = int(h[2:4], 16)
-    b = int(h[4:6], 16)
-    return f"rgba({r},{g},{b},{opacity})"
+def _darken(hex_color: str, factor: float = 0.65) -> str:
+    r, g, b = _hex_to_rgb(hex_color)
+    return f"#{int(r*factor):02x}{int(g*factor):02x}{int(b*factor):02x}"
 
 
-# ---------------------------------------------------------------------------
-# SVG Layout A — Split Hero (text left, visual placeholder right)
-# ---------------------------------------------------------------------------
-LAYOUT_SPLIT = """\
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
-  <!-- Browser chrome -->
-  <rect width="1200" height="32" rx="8" fill="#e2e8f0"/>
-  <circle cx="22" cy="16" r="6" fill="#f87171"/>
-  <circle cx="42" cy="16" r="6" fill="#fbbf24"/>
-  <circle cx="62" cy="16" r="6" fill="#4ade80"/>
-  <rect x="260" y="7" width="680" height="18" rx="9" fill="#f1f5f9"/>
-
-  <!-- Navbar -->
-  <rect y="32" width="1200" height="48" fill="{primary}"/>
-  <rect x="40" y="46" width="90" height="20" rx="4" fill="{secondary}" opacity="0.9"/>
-  <rect x="860" y="48" width="50" height="16" rx="3" fill="#fff" opacity="0.3"/>
-  <rect x="926" y="48" width="50" height="16" rx="3" fill="#fff" opacity="0.3"/>
-  <rect x="1060" y="42" width="100" height="28" rx="14" fill="{accent}"/>
-
-  <!-- Hero gradient -->
-  <defs>
-    <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="{primary}"/>
-      <stop offset="100%" stop-color="{primary_dark}"/>
-    </linearGradient>
-  </defs>
-  <rect y="80" width="1200" height="280" fill="url(#hg)"/>
-
-  <!-- Hero text (left side) -->
-  <rect x="80" y="130" width="340" height="26" rx="4" fill="#fff" opacity="0.92"/>
-  <rect x="80" y="168" width="280" height="14" rx="3" fill="#fff" opacity="0.45"/>
-  <rect x="80" y="192" width="240" height="14" rx="3" fill="#fff" opacity="0.35"/>
-  <rect x="80" y="232" width="130" height="38" rx="8" fill="{accent}"/>
-  <rect x="228" y="232" width="110" height="38" rx="8" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
-
-  <!-- Hero visual (right side) — device frame -->
-  <rect x="580" y="108" width="540" height="230" rx="12" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-  <rect x="600" y="124" width="500" height="10" rx="5" fill="rgba(255,255,255,0.12)"/>
-  <rect x="600" y="148" width="500" height="172" rx="6" fill="rgba(255,255,255,0.05)"/>
-  <rect x="620" y="164" width="200" height="16" rx="3" fill="rgba(255,255,255,0.15)"/>
-  <rect x="620" y="190" width="160" height="10" rx="3" fill="rgba(255,255,255,0.08)"/>
-  <rect x="620" y="230" width="80" height="26" rx="6" fill="{accent_alpha}"/>
-  <rect x="860" y="164" width="220" height="130" rx="8" fill="rgba(255,255,255,0.08)"/>
-
-  <!-- Content section title -->
-  <rect x="460" y="388" width="280" height="22" rx="4" fill="{primary}" opacity="0.12"/>
-  <rect x="490" y="390" width="220" height="18" rx="3" fill="{primary}" opacity="0.65"/>
-
-  <!-- Three content cards -->
-  <rect x="80" y="430" width="320" height="190" rx="12" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
-  <rect x="80" y="430" width="320" height="90" rx="12" fill="{secondary}" opacity="0.07"/>
-  <rect x="80" y="514" width="320" height="6" fill="#fff"/>
-  <rect x="100" y="536" width="170" height="14" rx="3" fill="{primary}" opacity="0.55"/>
-  <rect x="100" y="560" width="130" height="10" rx="3" fill="#94a3b8" opacity="0.5"/>
-  <rect x="100" y="588" width="70" height="22" rx="6" fill="{secondary}" opacity="0.12"/>
-
-  <rect x="440" y="430" width="320" height="190" rx="12" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
-  <rect x="440" y="430" width="320" height="90" rx="12" fill="{secondary}" opacity="0.07"/>
-  <rect x="440" y="514" width="320" height="6" fill="#fff"/>
-  <rect x="460" y="536" width="170" height="14" rx="3" fill="{primary}" opacity="0.55"/>
-  <rect x="460" y="560" width="130" height="10" rx="3" fill="#94a3b8" opacity="0.5"/>
-  <rect x="460" y="588" width="70" height="22" rx="6" fill="{secondary}" opacity="0.12"/>
-
-  <rect x="800" y="430" width="320" height="190" rx="12" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
-  <rect x="800" y="430" width="320" height="90" rx="12" fill="{secondary}" opacity="0.07"/>
-  <rect x="800" y="514" width="320" height="6" fill="#fff"/>
-  <rect x="820" y="536" width="170" height="14" rx="3" fill="{primary}" opacity="0.55"/>
-  <rect x="820" y="560" width="130" height="10" rx="3" fill="#94a3b8" opacity="0.5"/>
-  <rect x="820" y="588" width="70" height="22" rx="6" fill="{secondary}" opacity="0.12"/>
-
-  <!-- Footer -->
-  <rect y="640" width="1200" height="35" fill="{primary}"/>
-  <rect x="40" y="650" width="80" height="14" rx="3" fill="#fff" opacity="0.25"/>
-  <rect x="1040" y="650" width="120" height="14" rx="3" fill="#fff" opacity="0.15"/>
-</svg>"""
+def _luminance(hex_color: str) -> float:
+    """Relative luminance per WCAG (rough)."""
+    r, g, b = _hex_to_rgb(hex_color)
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255.0
 
 
-# ---------------------------------------------------------------------------
-# SVG Layout B — Centered Hero (full-width, text centered)
-# ---------------------------------------------------------------------------
-LAYOUT_CENTERED = """\
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
-  <!-- Browser chrome -->
-  <rect width="1200" height="32" rx="8" fill="#e2e8f0"/>
-  <circle cx="22" cy="16" r="6" fill="#f87171"/>
-  <circle cx="42" cy="16" r="6" fill="#fbbf24"/>
-  <circle cx="62" cy="16" r="6" fill="#4ade80"/>
-  <rect x="260" y="7" width="680" height="18" rx="9" fill="#f1f5f9"/>
-
-  <!-- Navbar -->
-  <rect y="32" width="1200" height="48" fill="{primary}"/>
-  <rect x="40" y="46" width="90" height="20" rx="4" fill="{secondary}" opacity="0.9"/>
-  <rect x="860" y="48" width="50" height="16" rx="3" fill="#fff" opacity="0.3"/>
-  <rect x="926" y="48" width="50" height="16" rx="3" fill="#fff" opacity="0.3"/>
-  <rect x="1060" y="42" width="100" height="28" rx="14" fill="{accent}"/>
-
-  <!-- Hero gradient -->
-  <defs>
-    <linearGradient id="hg" x1="0" y1="0" x2="0.5" y2="1">
-      <stop offset="0%" stop-color="{primary_dark}"/>
-      <stop offset="100%" stop-color="{primary}"/>
-    </linearGradient>
-  </defs>
-  <rect y="80" width="1200" height="260" fill="url(#hg)"/>
-
-  <!-- Centered hero text -->
-  <rect x="360" y="130" width="480" height="28" rx="4" fill="#fff" opacity="0.92"/>
-  <rect x="400" y="170" width="400" height="14" rx="3" fill="#fff" opacity="0.45"/>
-  <rect x="430" y="194" width="340" height="14" rx="3" fill="#fff" opacity="0.35"/>
-  <rect x="480" y="234" width="120" height="38" rx="8" fill="{accent}"/>
-  <rect x="616" y="234" width="100" height="38" rx="8" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
-
-  <!-- Feature/stats bar -->
-  <rect y="340" width="1200" height="60" fill="{secondary}" opacity="0.06"/>
-  <rect x="120" y="358" width="80" height="24" rx="4" fill="{secondary}" opacity="0.15"/>
-  <rect x="220" y="363" width="100" height="14" rx="3" fill="{primary}" opacity="0.35"/>
-  <rect x="440" y="358" width="80" height="24" rx="4" fill="{secondary}" opacity="0.15"/>
-  <rect x="540" y="363" width="100" height="14" rx="3" fill="{primary}" opacity="0.35"/>
-  <rect x="760" y="358" width="80" height="24" rx="4" fill="{secondary}" opacity="0.15"/>
-  <rect x="860" y="363" width="100" height="14" rx="3" fill="{primary}" opacity="0.35"/>
-
-  <!-- Two-column content -->
-  <rect x="80" y="424" width="520" height="180" rx="12" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
-  <rect x="80" y="424" width="520" height="80" rx="12" fill="{secondary}" opacity="0.06"/>
-  <rect x="80" y="500" width="520" height="4" fill="#fff"/>
-  <rect x="104" y="518" width="240" height="16" rx="3" fill="{primary}" opacity="0.6"/>
-  <rect x="104" y="544" width="460" height="10" rx="3" fill="#94a3b8" opacity="0.4"/>
-  <rect x="104" y="564" width="380" height="10" rx="3" fill="#94a3b8" opacity="0.3"/>
-
-  <rect x="640" y="424" width="480" height="180" rx="12" fill="#fff" stroke="#e2e8f0" stroke-width="1"/>
-  <rect x="640" y="424" width="480" height="80" rx="12" fill="{secondary}" opacity="0.06"/>
-  <rect x="640" y="500" width="480" height="4" fill="#fff"/>
-  <rect x="664" y="518" width="240" height="16" rx="3" fill="{primary}" opacity="0.6"/>
-  <rect x="664" y="544" width="420" height="10" rx="3" fill="#94a3b8" opacity="0.4"/>
-  <rect x="664" y="564" width="340" height="10" rx="3" fill="#94a3b8" opacity="0.3"/>
-
-  <!-- Footer -->
-  <rect y="640" width="1200" height="35" fill="{primary}"/>
-  <rect x="40" y="650" width="80" height="14" rx="3" fill="#fff" opacity="0.25"/>
-  <rect x="1040" y="650" width="120" height="14" rx="3" fill="#fff" opacity="0.15"/>
-</svg>"""
+def _on_color(hex_color: str) -> str:
+    """Return contrasting text color (black or white) for a background."""
+    return "#0f172a" if _luminance(hex_color) > 0.6 else "#ffffff"
 
 
-LAYOUTS = [LAYOUT_SPLIT, LAYOUT_CENTERED]
+def _resolve_fonts(typography: str) -> tuple[str, str]:
+    if not typography:
+        return DEFAULT_FONTS
+    return FONT_PAIRINGS.get(typography.strip().lower(), DEFAULT_FONTS)
 
 
-def _generate_svg(template, index):
-    """Generate an SVG preview for a template using its brand palette."""
+def _build_context(template: WebTemplate, image_uris: list[str]) -> dict:
     brand = template.brand
     palette = brand.palette or {}
     primary = palette.get("primary", "#1B2A4A")
     secondary = palette.get("secondary", "#6366F1")
     accent = palette.get("accent", "#F59E0B")
-    primary_dark = _darken(primary, 0.65)
-    accent_alpha = _alpha(accent, 0.6)
+    heading_font, body_font = _resolve_fonts(brand.typography)
 
-    layout = LAYOUTS[index % 2]
-    return layout.format(
-        primary=primary,
-        primary_dark=primary_dark,
-        secondary=secondary,
-        accent=accent,
-        accent_alpha=accent_alpha,
-    )
+    # Pad the imagery list so {{ imagery.5 }} never blows up if a download
+    # failed: fall back to the wide hero for missing slots.
+    safe_imagery = list(image_uris)
+    while len(safe_imagery) < 6 and safe_imagery:
+        safe_imagery.append(safe_imagery[0])
+
+    return {
+        "template": template,
+        "brand_name": brand.brand_name,
+        "tagline": brand.tagline or "",
+        "hero_subtitle": template.short_description or brand.tagline or "",
+        "primary": primary,
+        "primary_dark": _darken(primary, 0.6),
+        "secondary": secondary,
+        "accent": accent,
+        "on_primary": _on_color(primary),
+        "imagery": safe_imagery,
+        "heading_font": heading_font,
+        "body_font": body_font,
+    }
 
 
 class Command(BaseCommand):
-    help = "Generate SVG preview images for all published templates"
+    help = "Generate realistic PNG preview images via HTML compositions + Playwright screenshots"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -205,51 +130,129 @@ class Command(BaseCommand):
             action="store_true",
             help="Regenerate even if a preview asset already exists",
         )
+        parser.add_argument(
+            "--only",
+            metavar="SLUG",
+            help="Regenerate only the template with this slug",
+        )
 
     def handle(self, *args, **options):
         force = options["force"]
-        templates = (
+        only_slug = options.get("only")
+
+        templates_qs = (
             WebTemplate.objects.filter(status=WebTemplate.Status.PUBLISHED)
             .select_related("category", "brand")
             .order_by("category__order", "order")
         )
+        if only_slug:
+            templates_qs = templates_qs.filter(slug=only_slug)
 
-        if not templates.exists():
+        # Materialise the list NOW. Once we enter sync_playwright() the
+        # event loop owns the thread and the ORM raises SynchronousOnlyOperation.
+        templates = list(templates_qs)
+        if not templates:
             self.stderr.write(self.style.ERROR("No published templates found. Run seed_templates first."))
             return
 
-        created = 0
-        skipped = 0
+        # Pre-warm the imagery cache for every category we are about to render
+        category_slugs_needed = {t.category.slug for t in templates}
+        self.stdout.write(self.style.MIGRATE_HEADING("Caching stock imagery..."))
+        imagery_by_cat: dict[str, list[str]] = {}
+        for cat_slug in sorted(category_slugs_needed):
+            paths = ensure_cached(cat_slug)
+            imagery_by_cat[cat_slug] = [p.resolve().as_uri() for p in paths]
+            self.stdout.write(f"  {cat_slug}: {len(paths)} images")
 
-        for idx, template in enumerate(templates):
+        # Decide up front which templates we will (re)render and which we
+        # will skip. Render the HTML for each survivor while the ORM is
+        # still safe to use.
+        jobs: list[dict] = []  # list of {template, html, filename}
+        skipped = 0
+        for template in templates:
             if not hasattr(template, "brand"):
-                self.stderr.write(f"  Skipping {template.name} — no brand")
+                self.stderr.write(f"  Skip (no brand): {template.name}")
                 skipped += 1
                 continue
-
             existing = template.assets.filter(asset_type=TemplateAsset.AssetType.PREVIEW)
             if existing.exists() and not force:
-                self.stdout.write(f"  Exists:  {template.name}")
+                self.stdout.write(f"  Exists: {template.name}")
                 skipped += 1
                 continue
-
-            if force:
+            if force and existing.exists():
                 existing.delete()
 
-            svg_content = _generate_svg(template, idx)
+            composition_name = CATEGORY_TO_COMPOSITION.get(
+                template.category.slug, "agency.html"
+            )
+            html = render_to_string(
+                f"preview_compositions/{composition_name}",
+                _build_context(template, imagery_by_cat.get(template.category.slug, [])),
+            )
+            jobs.append({
+                "template": template,
+                "html": html,
+                "filename": f"{template.slug}-preview.png",
+            })
+
+        if not jobs:
+            self.stdout.write(self.style.SUCCESS(f"Nothing to do. {skipped} skipped."))
+            return
+
+        # ---- Phase 2: Playwright screenshots (no ORM access inside) ----
+        from playwright.sync_api import sync_playwright  # local import
+
+        self.stdout.write(self.style.MIGRATE_HEADING(f"\nRendering {len(jobs)} previews via Playwright..."))
+        screenshots: list[tuple[str, bytes]] = []  # (filename, png_bytes)
+
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            context = browser.new_context(
+                viewport={"width": 1600, "height": 900},
+                device_scale_factor=2,
+            )
+            page = context.new_page()
+            try:
+                for job in jobs:
+                    with tempfile.NamedTemporaryFile(
+                        mode="w", suffix=".html", delete=False, encoding="utf-8"
+                    ) as tmp:
+                        tmp.write(job["html"])
+                        tmp_path = Path(tmp.name)
+                    try:
+                        page.goto(tmp_path.resolve().as_uri(), wait_until="networkidle")
+                        page.wait_for_timeout(450)  # let webfonts swap
+                        png_bytes = page.screenshot(
+                            type="png",
+                            clip={"x": 0, "y": 0, "width": 1600, "height": 900},
+                        )
+                    finally:
+                        try:
+                            tmp_path.unlink()
+                        except OSError:
+                            pass
+                    screenshots.append((job["filename"], png_bytes))
+                    self.stdout.write(f"  Rendered: {job['template'].name}")
+            finally:
+                context.close()
+                browser.close()
+
+        # ---- Phase 3: Persist TemplateAsset rows ----
+        created = 0
+        for job, (filename, png_bytes) in zip(jobs, screenshots):
+            template = job["template"]
             asset = TemplateAsset(
                 template=template,
                 asset_type=TemplateAsset.AssetType.PREVIEW,
                 alt_text=f"Anteprima del template {template.name}",
                 order=0,
             )
-            filename = f"{template.slug}-preview.svg"
-            asset.file.save(filename, ContentFile(svg_content.encode("utf-8")))
-            # .save() on FileField also saves the model instance
-
+            asset.file.save(filename, ContentFile(png_bytes))
             created += 1
-            self.stdout.write(f"  Created: {template.name} -> {asset.file.name}")
+            self.stdout.write(self.style.SUCCESS(
+                f"  Saved: {template.name} -> {asset.file.name}"
+            ))
 
-        self.stdout.write(
-            self.style.SUCCESS(f"\nDone. {created} previews created, {skipped} skipped.")
-        )
+        self.stdout.write(self.style.SUCCESS(
+            f"\nDone. {created} previews created, {skipped} skipped."
+        ))
