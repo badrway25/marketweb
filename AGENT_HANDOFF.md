@@ -1,12 +1,18 @@
 # Agent Handoff
 
-Last updated: 2026-04-10 — after Template DNA System Phase 1 (Session 7)
+Last updated: 2026-04-10 — after Medical Pilot Fix (Session 8)
 
 ## Current State
 
-**Template DNA System Phase 1 complete.** Templates inside the same category are no longer recolors of each other — each one has a unique "DNA" (archetype + hero/navbar/footer/cards/conversion/density/tone) that drives a bespoke HTML composition. The Medical category is the working pilot with 4 genuinely distinct templates (clinic, family, specialist, wellness).
+**Template DNA System Phase 1 complete + medical pilot fix shipped.** Templates inside the same category are no longer recolors of each other — each one has a unique "DNA" (archetype + hero/navbar/footer/cards/conversion/density/tone) that drives a bespoke HTML composition. The Medical category is the working pilot with **4 genuinely distinct templates (clinic, family, specialist, wellness), all visually validated end-to-end on `/templates/medical/`**.
 
-Branch: `template-dna-system` worktree (not yet merged to master).
+Branch: `medical-pilot-fix` worktree (built on top of `template-dna-system`, neither merged to master yet).
+
+## Session 8 fix — what was wrong and what changed
+
+The visual review caught that `benessere-centro-olistico` (wellness archetype) was rendering with a clinic-shaped preview (same booking widget, same `Cardiologia/Pediatria/Diagnostica/Fisioterapia` cards, same headline `La tua salute, la nostra missione` as Salute), only differing in palette. After end-to-end inspection, the registry, composition resolver, asset table, and `assets.first` were all correct — the bug was a **stale PNG file** generated *before* the DNA/wellness composition existed (when the generator legitimately fell back to the legacy `templates/preview_compositions/medical.html`, which has clinic content hardcoded). On the next `generate_previews` run, the fallback skip prevented the regeneration. Fix: deleted the stale TemplateAsset row + orphan PNG, re-ran `generate_previews --only benessere-centro-olistico`, verified the new wellness PNG and the listing.
+
+**No code or template changes** — the fix was data-only. See SESSION_LOG.md Session 8 for the full timeline. New polish entries added to TODO_NEXT.md to prevent the timing trap from recurring (DNA-aware staleness detection + clean `--force` file removal).
 
 ## What changed in this session
 
@@ -74,6 +80,9 @@ Run with `python manage.py generate_previews [--force] [--only <slug>]`.
 ## For Next Session
 
 **Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md, this file, then `apps/catalog/template_dna.py` (the new source of truth for differentiation)
+
+### Watch out for the Session 8 timing trap
+When you add a DNA entry to a slug that *already* has a generated preview, that preview was rendered through the legacy fallback and is now stale. The `generate_previews` "skip if exists" branch will not regenerate it. Always run `python manage.py generate_previews --force --only <slug>` after creating or modifying a DNA entry for an existing template. The polish list in TODO_NEXT.md tracks the proper safety net (DNA staleness detection in the generator).
 
 ### Immediate next step (highest impact)
 **Replicate the DNA pilot for the Restaurant category.** Same recipe:

@@ -390,3 +390,73 @@ These four are not recolors. They differ in: page background colour family, navb
 
 ### Exact next step
 Replicate the pilot for **Restaurant** (the second highest-priority MVP category). Design 3 archetypes — `fine-dining` (Gusto, current), `trattoria-warm` (Sapore, current, needs new layout), `street-modern` (NEW, e.g. burger/pizza counter) — and add a 4th NEW template if budget allows. Same pattern: register DNA → write `restaurant/<archetype>.html` → maybe add a couple of new imagery keys → regenerate. Use the medical pilot files as the reference scaffold; nothing about the pipeline needs to change.
+
+## Session 8 — Medical Pilot Fix (2026-04-10)
+
+**Agent:** Medical-pilot-fix
+**Goal:** Visual review of the medical pilot found that only 3 of 4 templates were clearly distinct — one duplicate-looking preview was blocking validation. Find the root cause and fix.
+
+### Investigation
+
+End-to-end audit of the 4 medical templates against the DNA registry, composition files, and TemplateAsset rows:
+
+| Slug | DNA archetype | Composition resolved | Asset rows | Preview matches archetype? |
+|------|--------------|----------------------|------------|----------------------------|
+| salute-studio-medico        | clinic     | medical/clinic.html     | 1 | ✅ |
+| benessere-centro-olistico   | wellness   | medical/wellness.html   | 1 | ❌ rendering clinic content |
+| famiglia-pediatria          | family     | medical/family.html     | 1 | ✅ |
+| cardio-studio-specialistico | specialist | medical/specialist.html | 1 | ✅ |
+
+- DNA entries unique and distinct ✓
+- All 4 archetype HTML files exist under `templates/preview_compositions/medical/` ✓
+- `_resolve_composition()` now returns the correct path for every slug ✓
+- Each template has exactly 1 TemplateAsset row, no duplicates, no stale orphans in the DB ✓
+- `template.assets.first` returns the only row that exists ✓
+
+So the registry/code is sound. But the **PNG file on disk** for benessere was rendered with clinic content (same booking widget, same `Cardiologia / Pediatria / Diagnostica / Fisioterapia` cards, same `La tua salute, la nostra missione` headline as Salute), only differing in palette and brand_name.
+
+### Root Cause
+
+**A stale benessere PNG, generated before its DNA/wellness composition existed.**
+
+Reconstructed timeline from file timestamps:
+- 15:47 — first generation pass. At that time, only `clinic` archetype existed; benessere had no DNA entry, so the generator fell back to the legacy `templates/preview_compositions/medical.html` (which has the entire clinic layout — booking card, specialty grid, headline — *hardcoded*). The generated PNG was therefore clinic-shaped under the benessere palette/brand.
+- Between 15:47 and 16:18 — `medical/wellness.html` was created and the wellness DNA entry was added; new templates `famiglia-pediatria` and `cardio-studio-specialistico` were also added.
+- 16:18 — second generation pass without `--force`. The two NEW templates rendered correctly with their archetypes. But benessere already had a TemplateAsset row from the 15:47 pass, so the generator's "skip if exists" branch left the stale PNG in place.
+
+The bug is therefore **not** in the DNA/registry/resolver — it's a per-template `--force` hygiene gap during the initial pilot rollout. The legacy `medical.html` is doing exactly its job (catching templates without DNA), but for benessere it was used for one run too many.
+
+### Fix Applied
+
+1. Deleted the stale TemplateAsset row for benessere AND the orphan PNG file on disk (the in-place delete + Django storage's collision suffix avoidance left a hyphenated filename — cleaned that up too).
+2. Re-ran `python manage.py generate_previews --only benessere-centro-olistico` (no `--force` needed once the row was gone — and no `--force` so the new file lands at the canonical filename, not with a random suffix).
+3. Verified the new PNG: full-bleed villa hero, floating pill nav (`Studio Armonia · Filosofia · Trattamenti · Listino · Diario · Prenota`), centered serif manifesto headline `Equilibrio fra corpo, mente e respiro`, pricelist (Massaggio Mediterraneo €85, Rituale Hammam €140, Riequilibrio Energetico €95, Idroterapia Alpina €110), therapist strip (Sara Conti, Davide Lai, Yara Bonomi). This is the wellness archetype, not the clinic archetype.
+
+### Verification
+
+- DB: each medical template has exactly 1 preview asset, all canonical filenames, no stale orphans on disk
+- Playwright MCP @ `/templates/medical/`: all 4 cards now show clearly distinct preview thumbnails
+- The other 3 medical previews (salute / famiglia / cardio) were left untouched — they were already correct
+
+### Files Created
+- None
+
+### Files Modified
+- None (code/registry/composition were already correct)
+
+### Files Cleaned
+- `media/template_assets/2026/04/benessere-centro-olistico-preview.png` — stale clinic-content PNG, replaced with wellness-archetype PNG of the same name
+
+### Database delta
+- benessere-centro-olistico: TemplateAsset row id=8 deleted; new id created pointing to fresh wellness PNG
+- All other medical assets untouched
+
+### Key Findings (no new decisions)
+- The legacy per-category fallback (`<category>.html`) and the additive DNA system together create a **timing trap**: any template added before its DNA entry will get a fallback render and will then be skipped on subsequent runs. Mitigation: always run `--force` after adding a DNA entry to a previously-generated slug, or include a future safety in `generate_previews` (see TODO_NEXT).
+- File-on-disk + DB row are coupled but not transactional. When deleting a stale asset by hand, you must remove BOTH the row AND the file, otherwise Django storage appends a random suffix to the next save.
+
+### Blockers
+- None.
+
+### Exact next step
+Phase 2f Restaurant pilot — unchanged from Session 7. The medical pilot is now fully validated and ready to ship as the differentiation reference for the next category.

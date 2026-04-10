@@ -70,6 +70,13 @@
 - [x] 2 new medical seed templates (Famiglia — Studio Pediatrico, Cardio — Studio Specialistico)
 - [x] All 4 medical previews regenerated and visually verified
 
+## Completed — Phase 2e.1 (Medical Pilot Fix, 2026-04-10, Session 8)
+- [x] Audited all 4 medical templates end-to-end (DNA → composition path → asset row → file on disk)
+- [x] Confirmed registry is correct and no duplicate/stale TemplateAsset rows in DB
+- [x] Identified stale `benessere-centro-olistico-preview.png` (rendered against legacy `medical.html` before its DNA/wellness composition existed)
+- [x] Cleaned the stale asset row + orphan file, regenerated benessere with the wellness archetype, verified canonical filename
+- [x] Visually verified all 4 medical cards in `/templates/medical/` are now clearly distinct
+
 ## Next — Phase 2f (DNA Rollout to Other Categories)
 - [ ] **Restaurant pilot** — design 3 archetypes (`fine-dining`, `trattoria-warm`, `street-modern`), maybe add a 4th template; same pattern as medical
 - [ ] **Agency pilot** — design 3 archetypes (`bold-grid`, `editorial-quiet`, `case-study-led`)
@@ -85,6 +92,11 @@
 - [ ] Headless font fallback audit — confirm every brand `typography` value resolves to a real Google Font weight that loads in time
 - [ ] Add `--no-cache-images` flag to force re-downloads when imagery config changes
 - [ ] Add to .gitignore: `media/preview_imagery/` (already user-local cache)
+- [ ] **DNA-fallback timing trap safety net** (from Session 8 fix): when a slug newly gains a DNA entry, its old fallback-rendered preview becomes stale silently. Options to consider:
+      (a) `generate_previews --audit` flag that prints any template whose preview was rendered before the current DNA file's mtime, or
+      (b) automatic `--force` whenever the DNA file or composition path on disk is newer than the preview's TemplateAsset, or
+      (c) a `dna_signature` field on TemplateAsset (hash of DNA dict) so the generator knows when to regenerate.
+- [ ] **TemplateAsset cleanup on `--force`**: the generator deletes the row but not the file, so Django's storage appends a random suffix on next save. Either delete the file in the same step or use `storage.delete(asset.file.name)` before `existing.delete()`.
 
 ## Next — Phase 3 (Interactivity & Accounts)
 - [ ] Tags seeding and tag filtering on listing page
