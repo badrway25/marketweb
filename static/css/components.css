@@ -583,28 +583,48 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
-/* Page Hero (smaller, for listing pages) */
+/* Page Hero (smaller, for listing pages)
+   - padding-top clears the fixed navbar (77px) with generous breathing room
+   - min-height keeps the hero feeling intentional even with short copy
+   - relative gives decorative ::after overlays a stacking context */
 .mw-page-hero {
-  padding-top: 7rem; /* accounts for fixed navbar */
-  padding-bottom: var(--mw-space-8);
-  background: linear-gradient(160deg, var(--mw-neutral-900) 0%, var(--mw-primary) 100%);
+  position: relative;
+  padding-top: calc(var(--mw-navbar-height, 77px) + var(--mw-space-10));
+  padding-bottom: var(--mw-space-10);
+  min-height: 22rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 90% 20%, rgba(99, 102, 241, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 10% 100%, rgba(245, 158, 11, 0.10) 0%, transparent 55%),
+    linear-gradient(160deg, var(--mw-neutral-900) 0%, var(--mw-primary) 100%);
   color: var(--mw-neutral-0);
+  overflow: hidden;
+}
+
+.mw-page-hero > .container {
+  position: relative;
+  z-index: 1;
 }
 
 .mw-page-hero h1 {
   color: var(--mw-neutral-0);
-  font-size: var(--mw-text-4xl);
+  font-size: clamp(var(--mw-text-3xl), 3.8vw, var(--mw-text-5xl));
+  line-height: 1.1;
   margin-bottom: var(--mw-space-3);
 }
 
 .mw-page-hero p {
   color: var(--mw-neutral-300);
   font-size: var(--mw-text-lg);
-  max-width: 36rem;
+  line-height: 1.55;
+  max-width: 46rem;
+  margin-bottom: 0;
 }
 
 .mw-page-hero .mw-breadcrumb {
-  margin-bottom: var(--mw-space-4);
+  margin-bottom: var(--mw-space-5);
 }
 
 .mw-breadcrumb {

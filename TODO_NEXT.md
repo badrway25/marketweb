@@ -205,6 +205,29 @@ Moved every cardio-specific literal out of `templates/live_templates/medical/spe
 - [x] **Chrome-authoring contract** formally recorded as **D-047** in DECISIONS.md.
 - [x] **`blog_parent_slug` lifecycle** formally recorded as **D-048** in DECISIONS.md.
 
+## Completed — Phase 2g.2.1 (Preview Composition Copy Lift & Ecommerce DNA Pilot, 2026-04-11, Session 15)
+- [x] Added `hero_meta`, `credit_left`, `credit_right` fields to Cardio + Dermatologia DNA content blocks
+- [x] Lifted cardio literals (`Dr. R. Marani`, `Roma · Parioli`, `SC Cardiologia`) out of `templates/preview_compositions/medical/specialist.html` into DNA field reads — zero literals left
+- [x] Regenerated dermatology preview (previously missing — Session 13 explicitly skipped it) — card now shows dermatology brand/palette/specialty, not a grey placeholder
+- [x] Regenerated cardio preview to verify the composition change is a no-op for Cardio (it is)
+- [x] Redesigned `.mw-page-hero` in `static/css/components.css`: `calc(navbar-height + space-10)` padding-top, 64px navbar clearance, `min-height: 22rem`, vertical-centered flex, dual radial gradient background, wider subhead max-width, clamped responsive h1
+- [x] Clean-deleted and regenerated stale gusto + sapore PNGs (Session 12's claimed regen didn't land in this worktree) — Gusto now fully DARK editorial, Sapore now fully CREAM polaroid
+- [x] Designed 2 new ecommerce archetypes: `fashion-editorial` (Luxe) and `artisan-workshop` (Bottega)
+- [x] Authored `templates/preview_compositions/ecommerce/fashion-editorial.html` — fully DARK charcoal, italic Cormorant Garamond, full-bleed fashion cover, gold editorial tile strip
+- [x] Authored `templates/preview_compositions/ecommerce/artisan-workshop.html` — fully CREAM warm, typographic-led (no hero photo), Libre Baskerville + orange italic, stamped info panel, N°-labeled edition cards
+- [x] DNA entries for both ecommerce templates (using existing `ecommerce` imagery pool — differentiation comes from macro tone + composition, not imagery)
+- [x] Renamed 4 orphan-suffixed files from Session 12 back to canonical names, updated DB rows
+- [x] 37-route regression sweep: all 200 (homepage + 5 category pages + 10 detail pages + 7 cardio inner + 7 derm inner + 6 gusto inner + 1 gusto post)
+- [x] Re-ran cardio-leak audit on all 7 dermatology pages: zero leaks (Session 14's abstraction still holds after the Session 15 preview-composition lift)
+- [x] `python manage.py check` clean
+
+## Next — Phase 2f.2 (Ecommerce DNA Expansion)
+Two archetypes now ship in ecommerce (`fashion-editorial`, `artisan-workshop`). Validate reuse the same way the specialist archetype was validated (Session 13):
+- [ ] Add a second `fashion-editorial` template (suggested: `velvet-monobrand-milano` — Milan monobrand, different palette, different brand name). Just a seed row + DNA entry. Zero new HTML files. Verify card reads as a different product than Luxe at thumbnail size.
+- [ ] Add a second `artisan-workshop` template (suggested: `sartoria-di-quartiere` — Neapolitan tailor, different trade focus). Same recipe — seed + DNA, no HTML. Verify card reads distinctly from Bottega.
+- [ ] Run a Session 13-style leak audit on the second templates: grep rendered ecommerce preview PNGs (via looking at the composition output) for `Maison Luxe`, `La Bottega di Martino`, `Firenze`, `Giulia Maison`, `Santa Croce`, `Montelupo`, etc. — anything that leaked from the first template into the composition needs to go into the DNA content block or be made a generic archetype label per D-047.
+- [ ] If leaks are found, lift them in one pass exactly like Phase 2g.2 did for specialist.
+
 ## Next — Phase 2g.3 (Fine-Dining Copy-Abstraction Lift)
 Apply the same Phase 2g.2 recipe to `templates/live_templates/restaurant/fine-dining/` before the next fine-dining template ships.
 

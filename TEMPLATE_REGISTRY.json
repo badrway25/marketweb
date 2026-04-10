@@ -1,6 +1,6 @@
 {
-  "version": "0.6.1",
-  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, completeness flag and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. Templates with `live_preview: true` ALSO have a content registry entry in apps/catalog/template_content.py and (re-)use a per-archetype skin folder under templates/live_templates/<category>/<archetype>/, making them fully navigable multi-page websites accessible at /templates/<cat>/<slug>/preview/. As of v0.6.1 the `specialist` skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14) — every cardio literal was moved from HTML into the content registry, making the chrome ready for a third specialist template with zero copy polish. The `blog_parent_slug` hard constraint (D-044) is lifted (D-048). A new chrome-authoring contract (D-047) governs all future per-archetype skins.",
+  "version": "0.7.0",
+  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, completeness flag and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. Templates with `live_preview: true` ALSO have a content registry entry in apps/catalog/template_content.py and (re-)use a per-archetype skin folder under templates/live_templates/<category>/<archetype>/, making them fully navigable multi-page websites accessible at /templates/<cat>/<slug>/preview/. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0: Session 15 added the ecommerce DNA pilot (Luxe fashion-editorial + Bottega artisan-workshop), fixed the missing dermatologia preview (zero TemplateAsset from Session 13's skip), rebalanced the mw-page-hero CSS for navbar clearance, regenerated stale gusto/sapore PNGs. The D-047 chrome-authoring contract now also applies to per-archetype preview compositions (not just live-template chrome): Session 15 lifted 3 cardio literals from templates/preview_compositions/medical/specialist.html that Session 14 had missed.",
   "last_updated": "2026-04-11",
   "templates": [
     {
@@ -302,6 +302,13 @@
       "palette": {"primary": "#3E2723", "secondary": "#D7CCC8", "accent": "#FF8F00"},
       "typography": "Libre Baskerville + Nunito Sans",
       "personality": "artigianale, caldo, autentico",
+      "archetype": "artisan-workshop",
+      "hero_style": "warm-photo-frame",
+      "navbar_style": "warm-bar",
+      "density": "medium",
+      "tone": "familiar-warm",
+      "conversion_pattern": "phone-and-whatsapp",
+      "dna_notes": "Session 15: full cream page, typographic-led hero (no photo), rubber-stamped info panel, N°-labeled edition cards. Macro tone differentiation from Luxe — same imagery pool, opposite page color.",
       "price": 69,
       "featured": false,
       "status": "published"
@@ -315,6 +322,13 @@
       "palette": {"primary": "#000000", "secondary": "#F5F5F5", "accent": "#B8860B"},
       "typography": "Cormorant Garamond + Montserrat",
       "personality": "lussuoso, minimale, sofisticato",
+      "archetype": "fashion-editorial",
+      "hero_style": "editorial-serif",
+      "navbar_style": "minimal-serif",
+      "density": "very-airy",
+      "tone": "prestigious",
+      "conversion_pattern": "private-request",
+      "dna_notes": "Session 15: full dark charcoal page, italic Cormorant 108px headline, full-bleed fashion-model cover, gold editorial tile strip. Shares imagery pool with Bottega — differentiated purely by macro tone + typography.",
       "price": 89,
       "featured": false,
       "status": "published"

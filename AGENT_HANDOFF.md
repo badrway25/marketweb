@@ -1,6 +1,57 @@
 # Agent Handoff
 
-Last updated: 2026-04-11 — after Specialist Copy-Abstraction Lift (Session 14)
+Last updated: 2026-04-11 — after Visual Polish & Preview Fixes (Session 15)
+
+## Session 15 — Visual Polish & Preview Fixes (2026-04-11)
+
+**Question asked:** A visual review of the current marketplace UI found four concrete product-quality problems visible directly on cards and category pages. Fix them without expanding scope: (1) Dermatologia card shows a grey placeholder, (2) restaurant category hero is clipped/unbalanced, (3) Gusto+Sapore still too similar at card size, (4) Luxe+Bottega essentially identical at card size.
+
+**Answer:** **All four fixed, verified visually and via 37-route regression.**
+
+### Root causes
+1. **Dermatologia had zero preview TemplateAssets.** Session 13 explicitly skipped preview regeneration when validating archetype reuse ("validation is about the live preview, not the thumbnail"). The marketplace card rendered its `mw-img-placeholder` fallback — a grey `bi-window-desktop` icon.
+2. **Hidden second leak in `templates/preview_compositions/medical/specialist.html`.** Session 14 covered the `live_templates/medical/specialist/*.html` chrome but missed the preview composition. It still hardcoded `Dr. R. Marani`, `Roma · Parioli`, `SC Cardiologia` in the hero meta + credit blocks. Regenerating derm's preview naively would have shown the cardiologist's name on the dermatology card.
+3. **Restaurant category hero too cramped.** `.mw-page-hero` used `padding-top: 7rem` against a 77px fixed navbar — only a 35px gap navbar→breadcrumb. `max-width: 36rem` on the subhead left the right side dead on wide screens. No `min-height` → hero collapsed to ~330px.
+4. **Gusto + Sapore PNGs on disk were stale** — legacy `restaurant.html` renders from before Session 10's fix pass. Session 12 claimed to have regenerated them but the fix did not land in this worktree.
+5. **Luxe + Bottega had no DNA at all.** Both rendered through the single legacy `ecommerce.html` composition that hardcodes every string and pulls from the same pool. The only difference was the brand name in the navbar.
+
+### Fixes applied
+1. **Dermatologia preview.** Moved `Dr. R. Marani / Roma · Parioli / SC Cardiologia` out of `specialist.html` literals into new DNA fields `hero_meta`, `credit_left`, `credit_right` on both Cardio and Dermatologia content blocks. The composition now does `{% for label, value in dna.content.hero_meta %}` and reads `dna.content.credit_left.0/1`. Ran `generate_previews --only dermatologia-elite-roma` — the card now shows "Dr.ssa L. Ricciardi · 18 anni · 2.400+ pazienti · Studio Roma · Via Veneto · Specialità Dermatologia" with the forest-green accent + Bodoni Moda pairing. Regenerated Cardio too to verify the composition change is a no-op for it (confirmed).
+2. **Restaurant hero.** Rewrote `.mw-page-hero` in `static/css/components.css`: `padding-top: calc(var(--mw-navbar-height, 77px) + var(--mw-space-10))` (64px clearance), `padding-bottom: var(--mw-space-10)` (80px), `min-height: 22rem`, vertical-centered flex, subhead `max-width: 46rem`, clamped responsive h1, dual radial gradient background (indigo top-right + amber bottom-left), `overflow: hidden`, `position: relative` + container z-index. Measured after: 64px navbar→breadcrumb gap, 373px hero height.
+3. **Gusto / Sapore.** Clean-delete recipe (remove asset row + canonical file + any orphan suffix, re-run `generate_previews --only <slug>` without `--force`). The Session 10 DNA compositions for `restaurant/fine-dining.html` and `restaurant/trattoria-warm.html` render correctly — they just needed a fresh pass. Gusto = fully DARK charcoal + italic Playfair + full-bleed plate + gold course index. Sapore = fully CREAM + handwritten Caveat + polaroid scrapbook + recipe card. With Brace (yellow brutalist) unchanged, the 3 restaurant cards now occupy three opposite ends of the visual spectrum.
+4. **Luxe / Bottega (new ecommerce DNA pilot).** Added 2 archetypes to `LAYOUT_ARCHETYPES`: `fashion-editorial`, `artisan-workshop`. DNA entries for both (using existing `ecommerce` imagery pool — Session 10's lesson: controlling macro tone is cheaper than URL hunting). Authored two new compositions under `templates/preview_compositions/ecommerce/`:
+   - **fashion-editorial.html** (Luxe) — fully DARK #08070a, gold #B8860B accents, italic Cormorant Garamond 108px "Il nuovo corpo del vestire", fashion-model full-bleed cover L, editorial product strip with gold price labels at bottom.
+   - **artisan-workshop.html** (Bottega) — fully CREAM #f6ecd8 with subtle grain, terracotta accent, huge Libre Baskerville 108px "Pezzi unici cuciti & fatti in bottega", rubber-stamped info panel rotated 0.8deg, 4-up N°-labeled edition cards. NO hero photo — typographic-led.
+   
+   Both compositions use the SAME imagery pool. The visual differentiation comes from macro tone (BLACK vs CREAM), font family (italic serif vs rustic serif), layout structure (photo-led vs typographic-led), and accent color. At thumbnail size, they read as two completely different products.
+
+5. **Orphan file cleanup.** Session 12 left 4 orphan-suffixed files with DB rows pointing to them. Renamed each orphan to its canonical name and updated the DB. Zero orphan files now exist.
+
+### Hard validation
+- **`python manage.py check` — clean.**
+- **37-route regression sweep via Django test client:** homepage + 5 category pages + 10 detail pages + 7 cardio inner + 7 derm inner + 6 gusto inner + 1 gusto post. **All 37 return 200.**
+- **Cardio-leak audit** re-run on all 7 dermatology pages after the preview-composition change: **zero leaks.** Session 14's abstraction still holds.
+- **Visual verification via Chromium (Playwright):** homepage featured grid shows new Gusto, `/templates/restaurant/` shows 3 distinct cards + balanced hero, `/templates/medical/` shows 5 medical cards all with valid previews (derm no longer a placeholder), `/templates/ecommerce/` shows Luxe (dark fashion) and Bottega (cream artisan) as instantly distinguishable products.
+
+### What to do next
+
+**Highest leverage: Phase 2f.2 — Ecommerce DNA expansion.** Two ecommerce archetypes now exist (`fashion-editorial`, `artisan-workshop`) but each hosts exactly one template. Validate reuse the same way the `specialist` archetype was validated in Session 13: add a second template under each archetype with ONLY a seed row + DNA entry, zero new HTML files. Then run a leak audit on the rendered preview to find any literal `Maison Luxe`, `Firenze`, `Santa Croce`, `Giulia Maison`, `Milano · Parigi · Tokyo`, etc. that snuck into the composition authoring pass. Lift them into DNA content fields per the D-047 chrome-authoring contract. The reward is that the two new ecommerce archetypes become fully reusable and the next ecommerce template ships without any copy polish.
+
+**Second priority: Phase 2g.3 — Fine-Dining copy-abstraction lift** on `templates/live_templates/restaurant/fine-dining/` (documented in TODO_NEXT.md). This was already the highest-priority item before Session 15 and is still pending.
+
+### Lessons from Session 15 (read these before the next pilot)
+
+1. **"Validation skipped the thumbnail" is a user-facing bug.** Session 13's reasoning was that archetype reuse is about the live preview, not the marketplace card. But the marketplace card is the FIRST thing a buyer sees. Any future archetype-reuse validation must end with `generate_previews --only <slug>` and a visual check of the card in the listing. Skipping the thumbnail is not "smaller scope" — it leaves a broken product visible to users.
+
+2. **D-047 applies to preview compositions too, not just live-template chrome.** Session 14 lifted `templates/live_templates/medical/specialist/*.html` and celebrated zero leaks. But `templates/preview_compositions/medical/specialist.html` still had 3 cardio literals that would have surfaced on any non-cardio template sharing that archetype. The rule generalizes: **every string in any per-archetype file (live-template chrome OR preview composition) must be a CSS rule, a generic archetype label, a DNA content field, or a loop item.** Apply it to both kinds of files every time.
+
+3. **Macro tone trumps imagery, confirmed at a third pilot.** Luxe and Bottega share the exact same imagery pool yet read as two completely different products at card size because one composition is fully BLACK and the other is fully CREAM. Session 10 established this for Restaurant; Session 15 confirmed it for Ecommerce. **Before hunting for new Unsplash URLs on the next DNA pilot, first decide whether the compositions can carry the difference on macro tone alone.** If they can, it's free. URL hunting is expensive (HTTP 404s, hand-verification, Session 9 mistakes).
+
+4. **Stale-PNG timing trap is still unfixed structurally.** Sessions 8, 10, 12, 15 all hit it independently. The clean-delete recipe works but is operator-dependent. The proper fix from TODO_NEXT Phase 2d — either auto `--force` when DNA mtime > asset mtime, or hash the DNA into a `dna_signature` field on TemplateAsset and compare on every run — is the next DX polish priority. Until then, any DNA edit on an existing slug requires the clean-delete recipe.
+
+5. **`position: fixed` navbar + `padding-top: Xrem` on hero is a hidden coupling.** The previous 7rem worked with a 64px navbar but became cramped once the navbar grew to 77px. Encoded it as `calc(var(--mw-navbar-height, 77px) + var(--mw-space-10))` so the coupling is explicit. Long-term: measure the navbar height via JS on page load and expose as a CSS custom property so the hero always clears it.
+
+---
 
 ## Session 14 — Specialist Copy-Abstraction Lift (2026-04-11)
 

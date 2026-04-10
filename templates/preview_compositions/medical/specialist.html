@@ -166,16 +166,16 @@
       <div class="eyebrow">{{ dna.content.eyebrow }}</div>
       <h1>{{ dna.content.headline|safe }}</h1>
       <div class="meta">
-        <div class="item">Direzione clinica<strong>Dr. R. Marani</strong></div>
-        <div class="item">Esperienza<strong>15 anni</strong></div>
-        <div class="item">Visite/anno<strong>1.200+</strong></div>
+        {% for label, value in dna.content.hero_meta %}
+          <div class="item">{{ label }}<strong>{{ value }}</strong></div>
+        {% endfor %}
       </div>
       <span class="ghost-cta">{{ dna.content.primary_cta }}</span>
     </div>
     <div class="right">
       <div class="credit">
-        <span>Studio<strong>Roma · Parioli</strong></span>
-        <span>Riferimento<strong>SC&nbsp;Cardiologia</strong></span>
+        <span>{{ dna.content.credit_left.0 }}<strong>{{ dna.content.credit_left.1 }}</strong></span>
+        <span>{{ dna.content.credit_right.0 }}<strong>{{ dna.content.credit_right.1 }}</strong></span>
       </div>
     </div>
   </section>

@@ -59,6 +59,9 @@ LAYOUT_ARCHETYPES: dict[str, str] = {
     "fine-dining":    "Editorial tasting-menu venue — serif drama, full-bleed plate, numbered courses, concierge tile.",
     "trattoria-warm": "Family trattoria — handwritten chalkboard daily menu, family portraits, warm hours strip.",
     "street-modern":  "Fast-casual street food — bold display type, tilted product cutout, order-now grid + delivery strip.",
+    # Ecommerce pilot
+    "fashion-editorial": "High-fashion monobrand store — fully dark magazine cover with gold accents and italic serif drama.",
+    "artisan-workshop":  "Handmade bottega — fully warm cream page with typographic hero, rubber-stamped info panel and labeled edition cards.",
 }
 
 HERO_STYLES: dict[str, str] = {
@@ -417,6 +420,55 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         },
     },
 
+    # ─────────────────────────────────────────────────────────────
+    # Ecommerce pilot — 2 distinct archetypes
+    # (fashion-editorial · artisan-workshop)
+    # ─────────────────────────────────────────────────────────────
+
+    # ── E1) FASHION-EDITORIAL — dark Maison magazine cover ──────
+    "luxe-fashion-store": {
+        "archetype":          "fashion-editorial",
+        "hero_style":         "editorial-serif",
+        "navbar_style":       "minimal-serif",
+        "footer_style":       "centered-minimal",
+        "section_order":      ["nav", "editorial-cover", "edition-strip"],
+        "card_style":         "editorial-large",
+        "button_style":       "ghost-gold-serif",
+        "density":            "very-airy",
+        "tone":               "prestigious",
+        "imagery_direction":  "editorial-portrait",
+        "imagery_key":        "ecommerce",
+        "conversion_pattern": "private-request",
+        "font_pairing":       ("Cormorant Garamond", "Montserrat"),
+        "content": {
+            "eyebrow":    "Lookbook · Primavera Estate 2026",
+            "headline":   "Il nuovo corpo del vestire.",
+        },
+    },
+
+    # ── E2) ARTISAN-WORKSHOP — warm cream bottega catalogue ─────
+    "bottega-shop-artigianale": {
+        "archetype":          "artisan-workshop",
+        "hero_style":         "warm-photo-frame",
+        "navbar_style":       "warm-bar",
+        "footer_style":       "hours-warm",
+        "section_order":      ["warm-nav", "typographic-hero", "stamp-panel", "labeled-cards"],
+        "card_style":         "chalkboard-day",
+        "button_style":       "rustic-rounded",
+        "density":            "medium",
+        "tone":               "familiar-warm",
+        "imagery_direction":  "rustic-trattoria",
+        # Same pool as Luxe — differentiation is driven by macro tone + layout,
+        # not imagery (Session 10 lesson: page-level color trumps hero details).
+        "imagery_key":        "ecommerce",
+        "conversion_pattern": "phone-and-whatsapp",
+        "font_pairing":       ("Libre Baskerville", "Nunito Sans"),
+        "content": {
+            "eyebrow":    "Catalogo autunno · edizione 47",
+            "headline":   "Pezzi unici fatti in bottega.",
+        },
+    },
+
     # ── 5) SPECIALIST (derm) — archetype reuse validation ────────
     # Second template on the `specialist` archetype. Proves that a new
     # multi-page template can ship with ZERO new HTML files: same chrome,
@@ -453,6 +505,13 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
                 ("01", "Mappatura nevi digitale", "Videodermatoscopia ad alta risoluzione di tutti i nevi con archiviazione digitale e confronto con l'archivio storico del paziente."),
                 ("02", "Chirurgia dermatologica in day-hospital", "Escissione di lesioni sospette in anestesia locale con esame istologico dedicato e chirurgia plastica ricostruttiva inclusa."),
             ],
+            "hero_meta": [
+                ("Direzione clinica", "Dr.ssa L. Ricciardi"),
+                ("Esperienza", "18 anni"),
+                ("Pazienti/anno", "2.400+"),
+            ],
+            "credit_left":  ("Studio",     "Roma · Via Veneto"),
+            "credit_right": ("Specialità", "Dermatologia"),
             "press": ["JAMA Dermatology", "British Journal of Dermatology", "Vanity Fair Wellness", "Corriere Salute", "Vogue Italia"],
             "nav_links": ["Studio", "Visite", "Pubblicazioni", "Contatti"],
         },
@@ -491,6 +550,13 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
                 ("01", "Visita cardiologica completa", "Anamnesi estesa, ECG, refertazione e piano di follow-up con timeline personalizzata."),
                 ("02", "Secondo parere specialistico",  "Per pazienti con diagnosi complesse o terapie multiple già in corso."),
             ],
+            "hero_meta": [
+                ("Direzione clinica", "Dr. R. Marani"),
+                ("Esperienza", "15 anni"),
+                ("Visite/anno", "1.200+"),
+            ],
+            "credit_left":  ("Studio",      "Roma · Parioli"),
+            "credit_right": ("Riferimento", "SC Cardiologia"),
             "press": ["LANCET", "European Heart Journal", "Corriere Salute", "Sole 24 Ore", "RAI Med"],
             "nav_links": ["Studio", "Visite", "Pubblicazioni", "Contatti"],
         },

@@ -1,0 +1,269 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: fashion-editorial   (ecommerce DNA pilot)
+   FOR     : high-fashion monobrand store, Maison-grade
+   MOOD    : fully DARK ink black + warm gold — magazine cover
+             meets boutique landing page, Cormorant italic
+   HERO    : full-bleed fashion cover LEFT + oversized italic
+             headline RIGHT on charcoal
+   NAVBAR  : minimal black bar, gold-underlined reserve link
+   CARDS   : 3-up editorial product tiles with gold price labels
+============================================================ #}
+{% block extra_css %}
+  /* Luxe is fully dark — ink charcoal page, warm gold accents */
+  body { background: #08070a; color: #f2ecdf; }
+  .pv-frame { background: #08070a; }
+
+  /* === TOP INK-BLACK NAV with gold hairline === */
+  .fe-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 68px;
+    display: flex; align-items: center; padding: 0 54px;
+    border-bottom: 1px solid rgba(212,165,116,0.22);
+    background: rgba(8,7,10,0.72);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .fe-nav .wm {
+    font-family: var(--heading); font-size: 26px; font-style: italic;
+    font-weight: 500; letter-spacing: 0.14em; color: #f2ecdf;
+  }
+  .fe-nav .wm strong {
+    font-style: normal; font-weight: 600; color: var(--accent);
+    font-size: 11px; letter-spacing: 0.32em;
+    text-transform: uppercase; display: block; margin-top: 2px;
+  }
+  .fe-nav .links {
+    display: flex; gap: 30px; margin-left: 72px;
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: rgba(242,236,223,0.65);
+  }
+  .fe-nav .rs {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 28px;
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.24em; text-transform: uppercase;
+  }
+  .fe-nav .rs .basket {
+    color: var(--accent);
+    border: 1px solid rgba(212,165,116,0.55); padding: 10px 20px;
+  }
+  .fe-nav .rs .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; margin-right: 8px; }
+
+  /* === HERO: 60/40 split — fashion cover L · italic drama R === */
+  .fe-hero {
+    position: absolute; top: 68px; left: 0; right: 0; height: 560px;
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: 0;
+  }
+  .fe-cover {
+    position: relative;
+    background: url('{{ imagery.0 }}') center/cover;
+    background-position: center 20%;
+    filter: grayscale(14%) contrast(1.10) brightness(0.82);
+  }
+  .fe-cover:after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(8,7,10,0.12) 0%, rgba(8,7,10,0) 40%, rgba(8,7,10,0.75) 100%),
+      linear-gradient(180deg, rgba(8,7,10,0.35) 0%, rgba(8,7,10,0) 35%);
+  }
+  .fe-cover .caption {
+    position: absolute; left: 46px; bottom: 46px; right: 46px;
+    color: #f2ecdf; display: flex; justify-content: space-between; align-items: flex-end;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(242,236,223,0.75);
+  }
+  .fe-cover .caption strong {
+    display: block; margin-top: 6px; color: var(--accent);
+    font-family: var(--heading); font-style: italic; font-size: 20px;
+    letter-spacing: 0; text-transform: none; font-weight: 500;
+  }
+  .fe-cover .issue {
+    position: absolute; top: 36px; left: 46px;
+    border: 1px solid rgba(242,236,223,0.55); padding: 10px 18px;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: #f2ecdf;
+  }
+
+  /* RIGHT — typographic drama column */
+  .fe-editorial {
+    padding: 96px 58px 0 72px; position: relative;
+    border-left: 1px solid rgba(212,165,116,0.22);
+  }
+  .fe-editorial .eyebrow {
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent);
+  }
+  .fe-editorial .eyebrow:before { content: ''; width: 30px; height: 1px; background: var(--accent); }
+  .fe-editorial h1 {
+    margin-top: 40px;
+    font-family: var(--heading); font-size: 108px; font-weight: 500;
+    font-style: italic; line-height: 0.90; letter-spacing: -0.03em;
+    color: #f2ecdf;
+  }
+  .fe-editorial h1 em {
+    display: block; font-style: normal;
+    font-size: 15px; letter-spacing: 0.30em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-top: 30px;
+    padding-top: 16px; border-top: 1px solid rgba(212,165,116,0.25);
+    max-width: 360px;
+  }
+  .fe-editorial .sub {
+    margin-top: 40px; max-width: 360px;
+    font-family: var(--heading); font-style: italic;
+    font-size: 15px; line-height: 1.55;
+    color: rgba(242,236,223,0.62);
+  }
+  .fe-editorial .cta {
+    margin-top: 46px; display: flex; align-items: center; gap: 28px;
+  }
+  .fe-editorial .cta .gold {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent); padding-bottom: 6px;
+    display: inline-flex; align-items: center; gap: 14px;
+  }
+  .fe-editorial .cta .gold:after { content: '→'; }
+  .fe-editorial .cta .meta {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(242,236,223,0.45);
+  }
+  .fe-editorial .cta .meta strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-style: italic;
+    font-size: 16px; color: var(--accent); text-transform: none;
+    letter-spacing: 0; font-weight: 500;
+  }
+
+  /* === BOTTOM product strip on same dark background === */
+  .fe-strip {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 272px;
+    padding: 30px 54px 24px;
+    border-top: 1px solid rgba(212,165,116,0.22);
+  }
+  .fe-strip .lbl {
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(242,236,223,0.45);
+  }
+  .fe-strip .lbl:after { content: ''; flex: 1; height: 1px; background: rgba(242,236,223,0.12); }
+  .fe-strip .lbl em {
+    font-style: italic; font-family: var(--heading); font-weight: 500;
+    color: var(--accent); font-size: 14px;
+    letter-spacing: 0; text-transform: none;
+  }
+  .fe-grid {
+    margin-top: 20px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px;
+  }
+  .fe-tile {
+    position: relative; height: 148px;
+    background-size: cover; background-position: center;
+    filter: grayscale(10%) contrast(1.06);
+  }
+  .fe-tile:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(8,7,10,0) 40%, rgba(8,7,10,0.82) 100%);
+  }
+  .fe-tile .tag {
+    position: absolute; top: 12px; left: 12px; z-index: 2;
+    font-family: var(--body); font-size: 8px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(212,165,116,0.55); padding: 5px 10px;
+    background: rgba(8,7,10,0.55);
+  }
+  .fe-tile .caption {
+    position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 2;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .fe-tile .caption .name {
+    font-family: var(--heading); font-style: italic; font-size: 15px;
+    font-weight: 500; color: #f2ecdf;
+  }
+  .fe-tile .caption .px {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="fe-nav">
+    <div class="wm">
+      {{ brand_name }}
+      <strong>Milano · Parigi · Tokyo</strong>
+    </div>
+    <div class="links">
+      <span>Donna</span><span>Uomo</span><span>Accessori</span><span>Archivio</span><span>Atelier</span>
+    </div>
+    <div class="rs">
+      <span>Sign in</span>
+      <span class="basket"><span class="dot"></span>Basket · 3</span>
+    </div>
+  </nav>
+
+  <section class="fe-hero">
+    <div class="fe-cover">
+      <span class="issue">Issue 12 · Primavera '26</span>
+      <div class="caption">
+        <span>Styling<strong>Carla Sozzani</strong></span>
+        <span>Cover<strong>La Muse en Velours</strong></span>
+      </div>
+    </div>
+    <div class="fe-editorial">
+      <div class="eyebrow">Lookbook · Primavera Estate 2026</div>
+      <h1>
+        Il nuovo
+        corpo del
+        vestire.
+        <em>— cinquanta capi, novanta gesti di sartoria</em>
+      </h1>
+      <p class="sub">Un'unica collezione, tessuta tra Como e Prato, fotografata al Grand Hôtel Villa d'Este. Drop mensili — solo per chi è in lista d'attesa.</p>
+      <div class="cta">
+        <span class="gold">Accedi al lookbook</span>
+        <div class="meta">Direzione creativa<strong>Giulia Maison</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fe-strip">
+    <div class="lbl">Edizione limitata &nbsp;<em>— quattro pezzi selezionati</em></div>
+    <div class="fe-grid">
+      <div class="fe-tile" style="background-image: url('{{ imagery.5 }}');">
+        <span class="tag">Nuovo</span>
+        <div class="caption">
+          <span class="name">Rack Atelier</span>
+          <span class="px">€ 2.480</span>
+        </div>
+      </div>
+      <div class="fe-tile" style="background-image: url('{{ imagery.4 }}');">
+        <span class="tag">Capsula</span>
+        <div class="caption">
+          <span class="name">Bomber Siena</span>
+          <span class="px">€ 1.290</span>
+        </div>
+      </div>
+      <div class="fe-tile" style="background-image: url('{{ imagery.3 }}');">
+        <span class="tag">Atelier</span>
+        <div class="caption">
+          <span class="name">Pelletteria</span>
+          <span class="px">€ 860</span>
+        </div>
+      </div>
+      <div class="fe-tile" style="background-image: url('{{ imagery.0 }}');">
+        <span class="tag">Archivio</span>
+        <div class="caption">
+          <span class="name">Sessione Vogue</span>
+          <span class="px">€ 1.940</span>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

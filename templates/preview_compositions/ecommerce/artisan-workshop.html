@@ -1,0 +1,340 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: artisan-workshop   (ecommerce DNA pilot)
+   FOR     : single-city handmade store, bottega/workshop
+   MOOD    : fully BRIGHT warm cream + terracotta + inked number
+             stamps — labels, stencils, newsprint — a small Italian
+             store's catalog mailed to friends
+   HERO    : typographic cream hero — no photo hero, large serif
+             headline + stacked label block + rubber-stamped frame
+   NAVBAR  : warm cream bar with circular brand mark, old serif
+   CARDS   : labeled product cards with "pezzo unico", handwritten
+             provenance, artisan's name, sequential edition number
+============================================================ #}
+{% block extra_css %}
+  /* Bottega is fully BRIGHT warm cream — deliberate opposite of Luxe */
+  body { background: #f6ecd8; color: #3b2a18; }
+  .pv-frame {
+    background: #f6ecd8;
+    background-image:
+      radial-gradient(circle at 15% 18%, rgba(255,143,0,0.06) 0%, transparent 28%),
+      radial-gradient(circle at 85% 82%, rgba(62,39,35,0.05) 0%, transparent 30%),
+      repeating-linear-gradient(0deg, rgba(62,39,35,0.025) 0px, rgba(62,39,35,0.025) 1px, transparent 1px, transparent 5px);
+  }
+
+  /* === Top warm cream nav with circular brand mark === */
+  .aw-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 74px;
+    display: flex; align-items: center; padding: 0 56px;
+    border-bottom: 1.5px solid rgba(62,39,35,0.16);
+    z-index: 10;
+  }
+  .aw-nav .crest {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--accent); color: #3b2a18;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-size: 26px; font-weight: 700;
+    transform: rotate(-3deg);
+    box-shadow: 0 2px 0 rgba(62,39,35,0.18);
+  }
+  .aw-nav .wm {
+    margin-left: 18px;
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: #3b2a18; letter-spacing: 0.01em;
+  }
+  .aw-nav .wm small {
+    display: block; font-family: var(--body); font-size: 10px;
+    font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(62,39,35,0.55); margin-top: 2px;
+  }
+  .aw-nav .links {
+    display: flex; gap: 30px; margin-left: 64px;
+    font-family: var(--heading); font-size: 15px; font-weight: 500;
+    color: #3b2a18;
+  }
+  .aw-nav .links span { border-bottom: 1.5px solid transparent; padding-bottom: 3px; }
+  .aw-nav .links span.on { border-color: var(--accent); color: var(--accent); }
+  .aw-nav .rs {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: #3b2a18;
+  }
+  .aw-nav .rs .cesto {
+    background: #3b2a18; color: #f6ecd8;
+    padding: 11px 20px; border-radius: 0;
+    font-family: var(--heading); font-size: 13px; font-weight: 600;
+    letter-spacing: 0.02em;
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1.5px solid #3b2a18;
+    box-shadow: 3px 3px 0 var(--accent);
+  }
+
+  /* === HERO: typographic monolith — no photo === */
+  .aw-hero {
+    position: absolute; top: 74px; left: 0; right: 0; height: 492px;
+    padding: 62px 72px 0;
+    display: grid; grid-template-columns: 1.35fr 1fr; gap: 56px;
+  }
+
+  .aw-text .eyebrow {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .aw-text .eyebrow:before { content: '✦'; color: var(--accent); font-size: 14px; }
+  .aw-text h1 {
+    margin-top: 30px;
+    font-family: var(--heading); font-size: 108px; font-weight: 700;
+    line-height: 0.92; letter-spacing: -0.018em; color: #3b2a18;
+  }
+  .aw-text h1 em {
+    font-style: italic; color: var(--accent); font-weight: 700;
+  }
+  .aw-text h1 .ampers {
+    display: inline-block; transform: translateY(-4px) rotate(-2deg);
+    font-style: italic; color: rgba(62,39,35,0.45);
+    font-weight: 400; font-size: 72px;
+  }
+  .aw-text .sub {
+    margin-top: 34px; max-width: 540px;
+    font-family: var(--body); font-size: 15px; line-height: 1.65;
+    color: #5a4a36;
+  }
+  .aw-text .sub strong {
+    color: var(--accent); font-weight: 700;
+  }
+  .aw-text .row {
+    margin-top: 38px;
+    display: flex; align-items: center; gap: 22px;
+  }
+  .aw-text .btn {
+    background: #3b2a18; color: #f6ecd8;
+    padding: 15px 28px;
+    font-family: var(--heading); font-size: 16px; font-weight: 600;
+    border-radius: 0;
+    display: inline-flex; align-items: center; gap: 12px;
+    box-shadow: 4px 4px 0 var(--accent);
+  }
+  .aw-text .btn:after { content: '→'; color: var(--accent); }
+  .aw-text .whats {
+    font-family: var(--heading); font-size: 15px; font-weight: 600;
+    color: var(--accent); font-style: italic;
+    border-bottom: 1.5px solid var(--accent); padding-bottom: 3px;
+  }
+
+  /* RIGHT — stamp-like info panel */
+  .aw-stamp {
+    position: relative;
+    border: 2.5px solid #3b2a18;
+    padding: 38px 34px;
+    background: #fbf3e0;
+    display: flex; flex-direction: column; gap: 22px;
+    transform: rotate(0.8deg);
+    box-shadow: 8px 8px 0 rgba(255,143,0,0.18);
+  }
+  .aw-stamp:before {
+    content: '01'; position: absolute; top: -22px; left: 24px;
+    background: #f6ecd8;
+    padding: 0 12px;
+    font-family: var(--heading); font-size: 32px; font-weight: 700;
+    color: var(--accent); font-style: italic;
+  }
+  .aw-stamp:after {
+    content: 'LA BOTTEGA'; position: absolute; top: -10px; right: 24px;
+    background: #f6ecd8;
+    padding: 0 12px;
+    font-family: var(--body); font-size: 10px; font-weight: 800;
+    letter-spacing: 0.24em; color: #3b2a18;
+  }
+  .aw-stamp h3 {
+    font-family: var(--heading); font-size: 24px; font-weight: 700;
+    color: #3b2a18; line-height: 1.2;
+  }
+  .aw-stamp h3 em { color: var(--accent); font-style: italic; }
+  .aw-stamp .rule { height: 1.5px; background: #3b2a18; opacity: 0.2; }
+  .aw-stamp .row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(62,39,35,0.55);
+  }
+  .aw-stamp .row strong {
+    font-family: var(--heading); font-size: 16px; font-style: italic;
+    font-weight: 600; color: #3b2a18; letter-spacing: 0;
+    text-transform: none;
+  }
+  .aw-stamp .footer {
+    margin-top: 6px; padding-top: 12px; border-top: 1.5px dashed rgba(62,39,35,0.25);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); text-align: center;
+  }
+
+  /* === LABELED PRODUCT CARDS band (bottom) === */
+  .aw-cards {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 334px;
+    padding: 30px 72px 0;
+    border-top: 2px dashed rgba(62,39,35,0.26);
+    background: #f0e4cd;
+  }
+  .aw-cards .head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 24px;
+  }
+  .aw-cards .head h3 {
+    font-family: var(--heading); font-size: 26px; font-weight: 700;
+    color: #3b2a18;
+  }
+  .aw-cards .head h3 em { color: var(--accent); font-style: italic; }
+  .aw-cards .head .all {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+  .aw-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+  }
+  .aw-card {
+    background: #fdf8ea;
+    border: 1.5px solid #3b2a18;
+    padding: 12px 14px 14px;
+    position: relative;
+  }
+  .aw-card .thumb {
+    height: 118px;
+    background: #d6c6a0 center/cover;
+    position: relative;
+    border: 1px solid rgba(62,39,35,0.25);
+  }
+  .aw-card .thumb .num {
+    position: absolute; top: 6px; left: 6px;
+    background: #f6ecd8;
+    padding: 3px 8px;
+    font-family: var(--heading); font-size: 12px; font-weight: 700;
+    color: #3b2a18; font-style: italic;
+    border: 1px solid rgba(62,39,35,0.4);
+  }
+  .aw-card .thumb .edition {
+    position: absolute; bottom: 6px; right: 6px;
+    background: var(--accent); color: #3b2a18;
+    padding: 2px 7px;
+    font-family: var(--body); font-size: 8px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .aw-card h4 {
+    margin-top: 11px;
+    font-family: var(--heading); font-size: 16px; font-weight: 600;
+    color: #3b2a18; line-height: 1.2;
+  }
+  .aw-card .meta {
+    margin-top: 4px; font-family: var(--body); font-size: 10px;
+    font-weight: 500; color: rgba(62,39,35,0.62);
+    font-style: italic;
+  }
+  .aw-card .price-row {
+    margin-top: 8px; padding-top: 7px; border-top: 1px dashed rgba(62,39,35,0.24);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .aw-card .price {
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    color: #3b2a18;
+  }
+  .aw-card .tag {
+    font-family: var(--body); font-size: 8px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent); padding: 2px 6px;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="aw-nav">
+    <div class="crest">{{ brand_name|first|upper }}</div>
+    <div class="wm">
+      {{ brand_name }}
+      <small>Firenze · dal 1968 · fatto a mano</small>
+    </div>
+    <div class="links">
+      <span class="on">Bottega</span><span>Pelletteria</span><span>Ceramica</span><span>Tessitura</span><span>Su misura</span>
+    </div>
+    <div class="rs">
+      <span>Il mio conto</span>
+      <span class="cesto">Cesto · 2 pezzi</span>
+    </div>
+  </nav>
+
+  <section class="aw-hero">
+    <div class="aw-text">
+      <div class="eyebrow">Catalogo autunno · edizione 47</div>
+      <h1>
+        Pezzi unici<br>
+        cuciti <span class="ampers">&amp;</span><br>
+        <em>fatti in bottega.</em>
+      </h1>
+      <p class="sub">Cuoio conciato al vegetale a Santa Croce sull'Arno, ceramiche tornite a Montelupo, stoffe tessute a Prato. <strong>Ogni pezzo porta la firma dell'artigiano</strong> che l'ha fatto — e un numero progressivo che non si ripete mai.</p>
+      <div class="row">
+        <span class="btn">Visita la bottega</span>
+        <span class="whats">WhatsApp: 055 234 11 90</span>
+      </div>
+    </div>
+
+    <aside class="aw-stamp">
+      <h3>La nostra <em>regola</em>: tre mani, un oggetto.</h3>
+      <div class="rule"></div>
+      <div class="row"><span>Artigiani</span><strong>12 botteghe</strong></div>
+      <div class="row"><span>Materiali</span><strong>100% italiani</strong></div>
+      <div class="row"><span>Edizione</span><strong>Mai sopra 50</strong></div>
+      <div class="row"><span>Spedizione</span><strong>In 48 ore</strong></div>
+      <div class="footer">✦  Scritto a mano, impacchettato in bottega  ✦</div>
+    </aside>
+  </section>
+
+  <section class="aw-cards">
+    <div class="head">
+      <h3>Le ultime <em>arrivate</em> in bottega</h3>
+      <span class="all">Tutti i pezzi unici →</span>
+    </div>
+    <div class="aw-grid">
+      <div class="aw-card">
+        <div class="thumb" style="background-image: url('{{ imagery.4 }}');">
+          <span class="num">N° 042</span>
+          <span class="edition">3 / 8</span>
+        </div>
+        <h4>Giubbotto Terra</h4>
+        <div class="meta">Cuoio vegetale · Santa Croce</div>
+        <div class="price-row"><span class="price">€ 420</span><span class="tag">Pezzo unico</span></div>
+      </div>
+      <div class="aw-card">
+        <div class="thumb" style="background-image: url('{{ imagery.5 }}');">
+          <span class="num">N° 108</span>
+          <span class="edition">1 / 6</span>
+        </div>
+        <h4>Camicia di lino</h4>
+        <div class="meta">Lino grezzo · Prato</div>
+        <div class="price-row"><span class="price">€ 95</span><span class="tag">Fatto a mano</span></div>
+      </div>
+      <div class="aw-card">
+        <div class="thumb" style="background-image: url('{{ imagery.2 }}');">
+          <span class="num">N° 213</span>
+          <span class="edition">7 / 24</span>
+        </div>
+        <h4>Conserve del mercato</h4>
+        <div class="meta">Pomodorini · Chianti</div>
+        <div class="price-row"><span class="price">€ 18</span><span class="tag">Stagione</span></div>
+      </div>
+      <div class="aw-card">
+        <div class="thumb" style="background-image: url('{{ imagery.1 }}');">
+          <span class="num">N° 317</span>
+          <span class="edition">2 / 12</span>
+        </div>
+        <h4>Set da cucina</h4>
+        <div class="meta">Ceramica smaltata · Montelupo</div>
+        <div class="price-row"><span class="price">€ 148</span><span class="tag">Edizione</span></div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
