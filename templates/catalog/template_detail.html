@@ -30,13 +30,15 @@
 
         <!-- Gallery -->
         <div class="mw-detail-gallery mb-5">
-          {% if template.assets.first %}
-            <img src="{{ template.assets.first.file.url }}" alt="{{ template.name }}">
-          {% else %}
-            <div class="mw-img-placeholder mw-aspect-16-9" style="font-size: 3rem;">
-              <i class="bi bi-window-desktop"></i>
-            </div>
-          {% endif %}
+          {% with preview=template.preview_asset %}
+            {% if preview %}
+              <img src="{{ preview.file.url }}" alt="{{ preview.alt_text|default:template.name }}">
+            {% else %}
+              <div class="mw-img-placeholder mw-aspect-16-9" style="font-size: 3rem;">
+                <i class="bi bi-window-desktop"></i>
+              </div>
+            {% endif %}
+          {% endwith %}
         </div>
 
         <!-- Tabs -->

@@ -88,6 +88,21 @@
 - [x] Verified detail pages for all 3 restaurants
 - [x] Regression check on `/templates/medical/` — 4 medical archetypes still intact
 
+## Completed — Phase 2g.0.1 (Template Polish Fixes, 2026-04-10, Session 12)
+- [x] Audited `template.assets.first` usage in card + detail templates — identified as fragile (default-ordered fetch, not filtered by asset_type)
+- [x] Added `WebTemplate.preview_asset` property — prefetch-aware, explicitly filters `asset_type=preview`
+- [x] Added `_preview_only_prefetch()` in selectors to limit prefetch to preview rows only
+- [x] Swapped `_template_card.html` + `template_detail.html` gallery to use `template.preview_asset`
+- [x] Found stale gusto + sapore PNG files on disk (legacy `restaurant.html` render, not DNA archetype composition)
+- [x] Deleted stale TemplateAsset rows + files, re-ran `generate_previews --only <slug>` for both
+- [x] Verified regenerated PNGs: Gusto now fully-dark editorial Playfair, Sapore now fully-bright cream polaroid scrapbook
+- [x] Audited live-template archetype skins for over-narrow max-widths
+- [x] Widened medical/specialist wide sections 1100/1200→1400 (sp-lead, sp-section, sp-history, sp-method-inner, sp-values, sp-posts, sp-treatments, sp-contact, sp-process, sp-form-band-inner, sp-manifesto, sp-hero)
+- [x] Widened restaurant/fine-dining wide sections 1100/1280→1440 (fd-lead, fd-section, fd-manifesto, fd-courses, fd-chef-inner, fd-timeline, fd-method-inner, fd-values, fd-courses-full, fd-wine-inner, fd-rooms, fd-gallery, fd-process, fd-concierge-inner, fd-hours, fd-private-inner, fd-form-band, fd-posts)
+- [x] Fixed the home manifesto double-constraint (`max-width: 36ch; margin: 0 auto` on inner p) — widened to 68ch left-aligned so the drop-cap anchors the frame's left edge
+- [x] Preserved intentional narrow editorial reading column: blog_detail pages stay at 760px
+- [x] 20 routes verified 200 via Django test client, `python manage.py check` passes
+
 ## Completed — Phase 2g (Template Completeness Pilot, 2026-04-10, Session 11)
 - [x] Designed scalable inner-page architecture: content registry + per-archetype skin folder + single dispatcher view
 - [x] `apps/catalog/template_content.py` — content registry pattern with helpers (`has_live_template`, `get_content`, `get_pages`, `find_page`, `find_post`)

@@ -73,6 +73,33 @@ class WebTemplate(TimestampedModel, SlugModel):
     def __str__(self):
         return self.name
 
+    @property
+    def preview_asset(self):
+        """Canonical preview image for this template.
+
+        Explicitly filters `asset_type == preview` — never falls back to
+        "whatever happens to be first in the assets relation". If multiple
+        preview rows exist (defensive — the pipeline enforces one), the
+        lowest-`order` one wins.
+
+        Prefetch-aware: if the caller already called
+        ``prefetch_related('assets')`` we iterate that cache instead of
+        issuing a fresh query. Otherwise falls through to a filtered query.
+        """
+        cache = getattr(self, "_prefetched_objects_cache", None) or {}
+        if "assets" in cache:
+            candidates = [
+                a for a in self.assets.all()
+                if a.asset_type == TemplateAsset.AssetType.PREVIEW
+            ]
+            candidates.sort(key=lambda a: (a.order, a.pk))
+            return candidates[0] if candidates else None
+        return (
+            self.assets.filter(asset_type=TemplateAsset.AssetType.PREVIEW)
+            .order_by("order", "pk")
+            .first()
+        )
+
 
 class TemplateBrand(TimestampedModel):
     """Unique brand identity for a web template (OneToOne)."""

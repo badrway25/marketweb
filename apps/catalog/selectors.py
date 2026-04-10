@@ -1,7 +1,7 @@
-from django.db.models import Count, Q, QuerySet
+from django.db.models import Count, Prefetch, Q, QuerySet
 from django.shortcuts import get_object_or_404
 
-from apps.catalog.models import Category, WebTemplate
+from apps.catalog.models import Category, TemplateAsset, WebTemplate
 
 
 def get_active_categories() -> QuerySet[Category]:
@@ -15,11 +15,23 @@ def get_active_categories_with_counts() -> QuerySet[Category]:
     )
 
 
+def _preview_only_prefetch() -> Prefetch:
+    """Prefetch only the canonical preview assets — smaller payload than
+    prefetching every asset kind, and it drops straight into
+    ``WebTemplate.preview_asset`` (which iterates the prefetched cache)."""
+    return Prefetch(
+        "assets",
+        queryset=TemplateAsset.objects.filter(
+            asset_type=TemplateAsset.AssetType.PREVIEW
+        ).order_by("order", "pk"),
+    )
+
+
 def get_published_templates() -> QuerySet[WebTemplate]:
     return (
         WebTemplate.objects.filter(status=WebTemplate.Status.PUBLISHED)
         .select_related("category", "brand")
-        .prefetch_related("assets")
+        .prefetch_related(_preview_only_prefetch())
     )
 
 

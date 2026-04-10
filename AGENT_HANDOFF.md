@@ -1,19 +1,40 @@
 # Agent Handoff
 
-Last updated: 2026-04-10 — after Template Completeness Pilot Phase (Session 11)
+Last updated: 2026-04-10 — after Template Polish Fixes (Session 12)
 
-## Current State
+## Session 12 — Template Polish Fixes (2026-04-10)
 
-**Two pilot templates now ship as full multi-page websites — not just preview screenshots.** The DNA system (Sessions 7-10) made each template's homepage visually unique. Session 11 added the missing piece: every template can now be a *navigable, complete website product*.
+Two product-quality issues closed before the next pilot:
+
+1. **Over-narrow inner-page layouts.** The live multi-page template skins used max-width 1100/1200/1280 which felt "compressed into the middle" of 1600-1920px displays. Bumped to a two-tier standard: **1400px** for medical/specialist wide sections, **1440px** for restaurant/fine-dining wide sections. The home manifesto had an additional double-constraint bug (`outer 1100px` + `inner p max-width: 36ch; margin: 0 auto`) producing a tiny ~450px centered column — fixed by removing the inner centering and widening to `68ch` left-aligned so the drop-cap anchors the frame's left edge. Blog detail pages stay at 760px intentionally (long-form reading column).
+
+2. **Restaurant listing preview mismatch.** Two layers:
+   - **Outer layer:** `template.assets.first` in the card + detail partials is fragile — default-ordering fetch, not filtered by asset_type. Replaced with a new `WebTemplate.preview_asset` property in `apps/catalog/models.py` that explicitly filters `asset_type == preview`, is prefetch-aware (iterates `_prefetched_objects_cache` when available), and returns `None` when no preview exists. Selector uses `Prefetch('assets', queryset=...filter(asset_type='preview'))` to ship a smaller payload.
+   - **Inner layer (actual cause):** The gusto + sapore PNG files on disk were stale legacy `restaurant.html` renders — both showed the same wood-interior trattoria. Session 10's claimed regeneration never actually landed in this worktree. Fixed by deleting the stale asset rows + files and re-running `generate_previews --only <slug>` (no `--force`, so the canonical filename lands clean without an orphan suffix).
+
+**Branch:** `template-polish-fixes` worktree (built on top of `template-completeness-pilot` → ... → `template-dna-system`, **none merged to master yet**).
+
+**All three restaurant cards now read as three distinct products at thumbnail size** — Brace (yellow brutalist), Sapore (bright cream polaroid), Gusto (dark editorial Playfair). 20 routes verified 200 via Django test client, `python manage.py check` passes.
+
+### Lessons from Session 12
+
+- **`template.assets.first` is a bug magnet.** It returns "whatever's first by default `(order, asset_type)` ordering", which silently picks the wrong file the moment a template gains a second asset. Always filter by `asset_type` explicitly. The `WebTemplate.preview_asset` property encapsulates this rule once so templates never need to remember it.
+- **Page-level max-widths of 1100-1280 are too narrow for 1600+ displays.** 1400-1440 is the new standard for wide content. Editorial narrow reading columns (blog articles) stay at ~720-800 because those are about line length, not frame width. **Never double-constrain** with outer `max-width` + inner `margin: 0 auto + max-width: Xch` on the same element tree — either widen the outer container and use `max-width: <NN>ch` on the text (left-aligned, drop-cap anchored to the frame's left edge), or keep the outer narrow and drop the inner centering. The double constraint creates compositions that look "floating in a void".
+- **DNA-fallback timing trap is still live.** Gusto and Sapore's PNGs were stale despite Session 10's claim. Whatever the root cause (cross-branch drift, unrecorded regen, worktree sync), the fix recipe is the same every time: delete the asset row + canonical file first, then re-run `generate_previews --only <slug>` without `--force`. TODO_NEXT.md Phase 2d item 4 — "auto --force whenever the DNA file or composition path on disk is newer than the preview's TemplateAsset" — would catch this class of bug structurally. Strong candidate for the next DX polish pass.
+
+## Current State (since Session 11, carried through 12)
+
+**Two pilot templates now ship as full multi-page websites — not just preview screenshots.** The DNA system (Sessions 7-10) made each template's homepage visually unique. Session 11 added the missing piece: every template can now be a *navigable, complete website product*. Session 12 then polished the inner-page layout widths and hardened the preview-asset selection against the fragile `template.assets.first` fallback.
 
 - **`cardio-studio-specialistico`** (Medical · specialist archetype): 8 navigable inner pages — Home, Lo Studio, Visite, Medici, Pubblicazioni (list + article detail), Contatti, Richiedi visita
 - **`gusto-fine-dining`** (Restaurant · fine-dining archetype): 7 navigable inner pages — Casa, Filosofia, Menu (otto atti), Atmosfera, Diario (list + article detail), Prenota
-- All 17 routes (8 + 7 + 2 marketplace detail) verified 200 via Django test client
+- All 17 routes (8 + 7 + 2 marketplace detail) verified 200 via Django test client (Session 11), extended to 20 in Session 12
 - The system is **strictly opt-in per template** — every other template in the catalog behaves exactly as before
+- **New in Session 12:** `WebTemplate.preview_asset` property, selector uses `Prefetch` with filtered queryset, layout widths bumped to 1400/1440, home manifesto double-constraint fixed, stale gusto/sapore PNGs regenerated. Three restaurant cards now read as three distinct products at thumbnail size.
 
 The marketplace template detail page now shows "Apri anteprima completa" (linking to the full live site) when content is registered, and falls back to the old "Anteprima Live" placeholder otherwise.
 
-Branch: `template-completeness-pilot` worktree (built on top of `restaurant-template-pilot` → ... → `template-dna-system`, **none merged to master yet**).
+Branch: `template-polish-fixes` worktree (built on top of `template-completeness-pilot` → ... → `template-dna-system`, **none merged to master yet**).
 
 ## Session 11 — Template Completeness Pilot Phase
 

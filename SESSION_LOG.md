@@ -823,3 +823,112 @@ After that, optionally:
 - Wire the editor app to load these page templates as customizable surfaces (Phase 3)
 - Add a "previous / next page" navigation hint at the bottom of each inner page
 - Add per-page meta/OG tags using the page's content
+
+## Session 12 — Template Polish Fixes (2026-04-10)
+
+**Agent:** Template Polish Fixes (worktree: `template-polish-fixes`)
+**Goal:** Close two product-quality regressions before moving on to the next pilot — (1) over-narrow inner-page layouts that make the live multi-page previews feel "compressed into the middle" of wide viewports, (2) restaurant listing showing stale/identical previews for Gusto and Sapore despite distinct DNA compositions.
+
+### Issue 1 — Over-narrow inner-page layouts
+
+**Root cause.** The live-template archetype skins (`templates/live_templates/medical/specialist/` and `templates/live_templates/restaurant/fine-dining/`) used three different max-width tiers — `1100px` for "editorial narrow" text sections, `1200px` for medical default wide sections, and `1280px` for restaurant default wide sections. On a 1600-1920px viewport those values centered the content with 300-500px of dead space on each side, which killed the premium feel. The worst offender was the homepage **manifesto** section: it used a double constraint of outer `max-width: 1100px` + inner `p { max-width: 36ch; margin: 0 auto; }`, producing a ~450px centered text column on a ~1890px screen, with a floating drop-cap that sat inside the narrow centered column instead of anchoring the left edge of the layout.
+
+**Fix.** Bumped the width system to a two-tier standard:
+
+| Tier                 | Was               | Now      | Applies to                                                                    |
+|----------------------|-------------------|----------|-------------------------------------------------------------------------------|
+| Editorial wide (medical specialist) | 1100 / 1200 | **1400** | sp-lead, sp-section, sp-history, sp-method-inner, sp-values, sp-posts, sp-treatments, sp-contact, sp-process, sp-form-band-inner, sp-manifesto |
+| Editorial wide (restaurant fine-dining) | 1100 / 1280 | **1440** | fd-lead, fd-section, fd-hero (home), fd-manifesto (home), fd-courses (home), fd-chef-inner (home), fd-timeline (about), fd-method-inner (about), fd-values (about), fd-courses-full (menu), fd-wine-inner (menu), fd-rooms (gallery), fd-gallery (gallery), fd-process (reservations), fd-concierge-inner (reservations), fd-hours (reservations), fd-private-inner (reservations), fd-form-band (reservations), fd-posts (blog_list) |
+| Editorial narrow — intentional | 1000 → 1200 | 1200 | `.sp-foot-note .inner` in services.html (stays intentionally narrow) |
+| Long-form reading — unchanged | 760 | 760 | `.sp-article` / `.fd-article` blog detail pages (editorial column width preserved) |
+
+Manifesto-specific fix: removed the `margin: 0 auto` + `max-width: 36ch` double constraint on the home manifesto paragraph and replaced with `max-width: 68ch` left-aligned so the drop-cap floats at the natural left edge of the container. Bumped the drop-cap size from 116px to 132px and the paragraph font-size from 26px to 30px (cardio) / 28px to 32px (gusto) to match the wider frame.
+
+Also widened related grids to breathe in the new envelope: sp-history row template `140px 1fr` gap 48 → `180px 1fr` gap 72, sp-method-inner `1fr 1.6fr` gap 64 → `1fr 1.9fr` gap 96, fd-timeline row template and gaps similar, fd-method-inner, fd-private-inner, fd-concierge-inner, sp-form-band-inner, fd-wine-inner all opened up.
+
+**Deliberately kept narrow:**
+- Blog detail pages (`blog_detail.html` for both archetypes) — `max-width: 760px` for comfortable ~60-75ch long-form reading. Single-column article flow with drop-cap lede, body blocks (p/h2/ol/blockquote).
+- Inline text `max-width: <NN>ch` on `.intro`, `.text`, `.lede`, `.sec-intro`, headlines (11-18ch) — these preserve the editorial line-length discipline even as the outer frame widens.
+
+### Issue 2 — Restaurant listing preview mismatch
+
+**Root cause.** A two-layer problem, only the outer layer being the obvious one:
+
+1. **Outer:** `templates/includes/_template_card.html` and `templates/catalog/template_detail.html` both used `template.assets.first` — the default manager's first row by `Meta.ordering = ["order", "asset_type"]`. This is fragile: if a template ever gains a second asset (thumbnail, gallery image, source file) the wrong one can win without any warning.
+2. **Inner (the real reason the user saw identical cards):** the PNG files on disk for `gusto-fine-dining-preview.png` and `sapore-trattoria-pizzeria-preview.png` were **stale legacy `restaurant.html` renders**, not the distinct DNA archetype compositions that Session 10 shipped. Both files showed the same wood-interior trattoria layout (different brand name + headline, identical everything else). The DB rows, filenames, and `generate_previews._resolve_composition()` logic were all correct — the bytes on disk were just wrong. Session 10's regeneration either never landed in this worktree, or got overwritten at some point. This is exactly the DNA-fallback timing trap called out in TODO_NEXT.md Phase 2d item 4.
+
+**Fix applied.**
+
+*Outer layer — robust preview selection:*
+- Added `WebTemplate.preview_asset` property in `apps/catalog/models.py`. Explicitly filters `asset_type == TemplateAsset.AssetType.PREVIEW`. Prefetch-aware: if the caller already prefetched `assets`, iterates `_prefetched_objects_cache` in Python; otherwise issues a single filtered query ordered by `(order, pk)`. Returns `None` when no preview exists.
+- Added a `_preview_only_prefetch()` helper in `apps/catalog/selectors.py` that uses `Prefetch('assets', queryset=TemplateAsset.objects.filter(asset_type='preview').order_by('order','pk'))`. The listing selector (`get_published_templates`) now prefetches only preview rows, which is a smaller payload than prefetching all asset kinds.
+- Updated `templates/includes/_template_card.html` to use `{% with preview=template.preview_asset %}` and `preview.file.url` / `preview.alt_text`.
+- Updated `templates/catalog/template_detail.html` gallery to use the same pattern.
+
+*Inner layer — stale PNGs:*
+- Deleted the two stale TemplateAsset rows + their canonical PNG files via a small Django shell snippet.
+- Re-ran `python manage.py generate_previews --only gusto-fine-dining` and `--only sapore-trattoria-pizzeria`. The generator picked the DNA archetype compositions correctly (`restaurant/fine-dining.html` and `restaurant/trattoria-warm.html`). Files land at the canonical filenames with no orphan suffix because the rows/files were deleted first (the Session 9 clean recipe).
+- Verified each regenerated PNG visually via direct-navigation with `?cb=` cache-bust: Gusto is now the fully-dark charcoal editorial Playfair layout (full-bleed plate right, italic "Una serata in otto atti." left, gold dotted-leader course index). Sapore is now the fully-bright cream polaroid scrapbook (two tilted photos, handwritten Caveat "Da Nonna Rosa" headline, cream washi-tape recipe card). Brace was untouched (yellow brutalist street-modern) — already correct from Session 9.
+
+### Files Modified
+
+*Model / selector:*
+- `apps/catalog/models.py` — added `WebTemplate.preview_asset` property (22 lines)
+- `apps/catalog/selectors.py` — added `_preview_only_prefetch()` helper, swapped `prefetch_related("assets")` to use it
+
+*Templates (layout widths + preview_asset swap):*
+- `templates/includes/_template_card.html` — swap to `template.preview_asset` via `{% with %}`
+- `templates/catalog/template_detail.html` — swap to `template.preview_asset` for gallery
+- `templates/live_templates/medical/specialist/_base.html` — sp-lead, sp-section 1200→1400
+- `templates/live_templates/medical/specialist/home.html` — sp-hero 1280→1440, sp-manifesto 1100→1400 + inner 36ch→68ch (removed margin auto, bumped drop cap)
+- `templates/live_templates/medical/specialist/about.html` — sp-history, sp-method-inner 1100→1400, sp-values 1200→1400 (gaps & inner text widths bumped too)
+- `templates/live_templates/medical/specialist/services.html` — sp-treatments 1100→1400, sp-foot-note inner 1000→1200
+- `templates/live_templates/medical/specialist/team.html` — sp-doctors 1280→1440
+- `templates/live_templates/medical/specialist/blog_list.html` — sp-posts 1100→1400
+- `templates/live_templates/medical/specialist/contact.html` — sp-contact 1200→1400
+- `templates/live_templates/medical/specialist/appointment.html` — sp-process 1200→1400, sp-form-band-inner 1100→1400
+- `templates/live_templates/restaurant/fine-dining/_base.html` — fd-lead, fd-section 1280→1440
+- `templates/live_templates/restaurant/fine-dining/home.html` — fd-manifesto 1100→1440 + inner 36ch→68ch (removed margin auto), fd-courses 1280→1440, fd-chef-inner 1280→1440
+- `templates/live_templates/restaurant/fine-dining/about.html` — fd-timeline 1100→1440, fd-method-inner 1100→1440, fd-values 1280→1440
+- `templates/live_templates/restaurant/fine-dining/menu.html` — fd-courses-full 1100→1400, fd-wine-inner 1100→1400
+- `templates/live_templates/restaurant/fine-dining/gallery.html` — fd-rooms 1100→1400, fd-gallery 1280→1440
+- `templates/live_templates/restaurant/fine-dining/reservations.html` — fd-process 1280→1440, fd-concierge-inner, fd-hours, fd-private-inner, fd-form-band all 1100→1400
+- `templates/live_templates/restaurant/fine-dining/blog_list.html` — fd-posts 1100→1400
+
+### Database delta
+- Deleted stale TemplateAsset rows `id=5` (gusto-fine-dining-preview) and `id=6` (sapore-trattoria-pizzeria-preview) + their canonical PNG files.
+- Re-ran `generate_previews --only gusto-fine-dining` and `--only sapore-trattoria-pizzeria` — created two fresh TemplateAsset rows pointing at the correct canonical filenames, rendered from the correct DNA archetype compositions.
+- Total template / brand / asset counts unchanged (19 templates, 19 brands, 19 preview assets).
+
+### Verified
+
+*Listing card correctness:*
+- `/templates/restaurant/` — three visibly distinct cards at thumbnail size: Brace (yellow brutalist), Sapore (bright cream scrapbook with polaroids), Gusto (fully dark editorial with charcoal + gold). Verified via `browser_evaluate` that each card's `img.src` points at the correct slug's PNG and that the SHA-1 hashes of the three fetched files are all different (5aec..., bf69..., cf3d...).
+- Direct PNG navigation to `/media/.../gusto-fine-dining-preview.png?cb=1` confirms the new Gusto file is the dark Playfair editorial layout (NOT the legacy wood-interior).
+- Direct PNG navigation to `/media/.../sapore-trattoria-pizzeria-preview.png?cb=1` confirms the new Sapore file is the bright cream polaroid scrapbook (NOT the legacy wood-interior).
+- `/templates/medical/` regression check — still shows 4 distinct medical archetype cards.
+
+*Layout width correctness:*
+- Before/after side-by-side of Gusto home page (`/templates/restaurant/gusto-fine-dining/preview/`): the manifesto section now spans the full 1440px frame instead of sitting as a tiny centered column. The drop cap anchors the left edge. Timeline, course index, and chef portrait sections all breathe properly.
+- Gusto filosofia (`/preview/filosofia/`): timeline rows span the wide frame, method block has generous 2-col layout, 4-up values grid uses the full width.
+- Gusto menu (`/preview/menu/`): 8-course list is now wide enough that name + ingredients + wine pairing live together on one row without feeling cramped.
+- Cardio home (`/preview/`): hero 2-col spreads wider, manifesto is a proper wide editorial column.
+- Cardio studio (`/preview/studio/`): timeline + method block both widen correctly.
+- Cardio pubblicazioni (`/preview/pubblicazioni/`): lead post 2-col spans the frame, list rows use the full width.
+- Cardio article detail (`/preview/pubblicazioni/<slug>/`): still intentionally 760px narrow long-form reading column — preserved on purpose.
+
+*Smoke test:*
+- `python manage.py check` → 0 issues.
+- 20 URLs via Django test client → all 200. Covered homepage, browse, both category listings, both pilot detail pages, all 7 Gusto inner pages, all 8 Cardio inner pages + the blog article detail.
+
+### Key Findings (no new D-XXX decisions, but lessons logged)
+
+- **`template.assets.first` is a bug magnet.** It returns "whatever's first by default ordering", which silently picks the wrong file the moment a template has multiple assets. Always filter by `asset_type` explicitly. The `WebTemplate.preview_asset` property encapsulates this rule once so templates never need to remember it.
+- **Page-level max-widths of 1100-1280 are too narrow for 1600+ displays.** 1400-1440 is the new standard for wide content. Editorial narrow reading columns (blog articles) stay at ~720-800px — those are about line length, not frame width. Never double-constrain with outer `max-width` + inner `margin: 0 auto + max-width: Xch` on the same element tree — either widen the outer container and use `max-width: <NN>ch` on the text (left-aligned drop-cap anchored to the frame's left edge), or keep the outer narrow and drop the inner centering. The double constraint creates compositions that look "floating in a void".
+- **The DNA-fallback timing trap is still live.** Gusto and Sapore's PNGs on disk were stale legacy renders, despite Session 10's claim of having regenerated them. Whatever the root cause (cross-branch drift, an unrecorded regen pass, worktree sync weirdness), the fix is the same: delete the asset row + file, re-run `generate_previews --only <slug>` without `--force` so the canonical filename lands clean. TODO_NEXT.md Phase 2d option (b) — "automatic --force whenever the DNA file or composition path on disk is newer than the preview's TemplateAsset" — would catch this class of bug structurally.
+
+### Blockers
+None. Both issues are fully resolved and validated end-to-end.
+
+### Exact next step
+Back to **Phase 2g.1 validation** — add a second template under an existing archetype (e.g. `tartufo-truffle-house` under `fine-dining`, or `dermatologia-elite-roma` under `specialist`) to prove the content-registry abstraction travels. With the wider width system and the `preview_asset` property in place, any new template picks up the improvements for free — no per-archetype CSS tweaks needed.
