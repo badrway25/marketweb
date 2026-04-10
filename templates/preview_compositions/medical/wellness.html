@@ -1,0 +1,188 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: wellness
+   FOR     : holistic centre / spa / osteopathy
+   HERO    : full-bleed photo + manifesto overlay
+   NAVBAR  : floating green-pill, transparent over hero
+   CARDS   : pricelist (name + dotted leader + price)
+   FOOTER  : spa-social
+============================================================ #}
+{% block extra_css %}
+  body { background: #f3efe9; color: #2d2a25; }
+  .pv-frame { background: #f3efe9; }
+
+  /* === FULL BLEED HERO === */
+  .we-hero {
+    position: absolute; top: 0; left: 0; right: 0; height: 540px;
+    background: url('{{ imagery.0 }}') center/cover;
+  }
+  .we-hero:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(28,30,28,0.42) 0%, rgba(28,30,28,0.66) 100%);
+  }
+
+  /* === FLOATING NAV === */
+  .we-nav {
+    position: absolute; top: 26px; left: 50%; transform: translateX(-50%); z-index: 5;
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.12); backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 10px 14px; border-radius: 999px;
+  }
+  .we-nav .logo {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--accent); color: var(--primary);
+    padding: 9px 18px; border-radius: 999px;
+    font-family: var(--heading); font-weight: 600; font-size: 15px;
+  }
+  .we-nav .links {
+    display: flex; gap: 28px; padding: 0 18px; color: #fff;
+    font-family: var(--heading); font-size: 14px; font-weight: 500; letter-spacing: 0.02em;
+  }
+  .we-nav .pill {
+    background: #fff; color: var(--primary);
+    padding: 9px 18px; border-radius: 999px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+  }
+
+  /* === HERO MANIFESTO === */
+  .we-manifesto {
+    position: absolute; left: 50%; top: 178px; transform: translateX(-50%);
+    width: 920px; text-align: center; color: #fff; z-index: 4;
+  }
+  .we-manifesto .eyebrow {
+    display: inline-block; padding: 7px 18px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.06);
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .we-manifesto h1 {
+    margin-top: 28px; font-size: 76px; font-weight: 500; line-height: 1.04;
+    font-family: var(--heading); letter-spacing: -0.01em;
+  }
+  .we-manifesto h1 em { font-style: italic; color: var(--accent); }
+  .we-manifesto p {
+    margin: 24px auto 0; max-width: 660px;
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    color: rgba(255,255,255,0.9);
+  }
+  .we-manifesto .ctas { margin-top: 32px; display: inline-flex; gap: 14px; }
+  .we-manifesto .pill {
+    background: var(--accent); color: var(--primary);
+    padding: 16px 30px; border-radius: 999px;
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+  }
+  .we-manifesto .pill.alt {
+    background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.6);
+  }
+
+  /* === PRICELIST CARD floats over the hero/below split === */
+  .we-pricelist {
+    position: absolute; top: 472px; left: 90px; right: 90px;
+    background: #fffaf3; border-radius: 22px;
+    padding: 30px 40px 26px;
+    box-shadow: 0 30px 70px rgba(28,30,28,0.18);
+    z-index: 6;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px;
+  }
+  .we-pricelist .head {
+    grid-column: 1 / -1;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 1px solid rgba(45,42,37,0.1); padding-bottom: 14px; margin-bottom: 12px;
+  }
+  .we-pricelist .head h2 {
+    font-family: var(--heading); font-size: 28px; color: var(--primary); font-weight: 600;
+  }
+  .we-pricelist .head .sub {
+    font-family: var(--body); font-size: 12px; color: #6b6258;
+    letter-spacing: 0.04em;
+  }
+  .we-pricelist .row {
+    display: flex; align-items: baseline; gap: 12px;
+    padding: 13px 0; border-bottom: 1px dashed rgba(45,42,37,0.13);
+  }
+  .we-pricelist .row .name {
+    font-family: var(--heading); font-size: 18px; font-weight: 600; color: var(--primary);
+  }
+  .we-pricelist .row .desc {
+    font-family: var(--body); font-size: 11px; color: #8a8275; margin-left: 4px;
+    flex: 1; overflow: hidden; white-space: nowrap;
+  }
+  .we-pricelist .row .price {
+    font-family: var(--heading); font-size: 19px; color: var(--accent); font-weight: 700;
+    margin-left: auto;
+  }
+
+  /* === THERAPISTS strip at bottom === */
+  .we-therapists {
+    position: absolute; left: 90px; right: 90px; bottom: 24px;
+    display: flex; align-items: center; gap: 22px;
+  }
+  .we-therapists .label {
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: #8a8275;
+  }
+  .we-therapists .card {
+    flex: 1; display: flex; align-items: center; gap: 14px;
+    background: #fff; border-radius: 18px; padding: 14px 18px;
+    box-shadow: 0 6px 18px rgba(28,30,28,0.06);
+  }
+  .we-therapists .card .av {
+    width: 50px; height: 50px; border-radius: 50%;
+    background-size: cover; background-position: center;
+    border: 2px solid var(--accent);
+  }
+  .we-therapists .card .name { font-family: var(--heading); font-size: 16px; color: var(--primary); font-weight: 600; }
+  .we-therapists .card .role { font-family: var(--body); font-size: 11px; color: #8a8275; margin-top: 2px; }
+{% endblock %}
+
+{% block body %}
+  <div class="we-hero"></div>
+
+  <nav class="we-nav">
+    <div class="logo">{{ brand_name }}</div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <span class="pill">{{ dna.content.primary_cta }}</span>
+  </nav>
+
+  <div class="we-manifesto">
+    <span class="eyebrow">{{ dna.content.eyebrow }}</span>
+    <h1>{{ dna.content.headline|safe }}</h1>
+    <p>{{ dna.content.subhead }}</p>
+    <div class="ctas">
+      <span class="pill">{{ dna.content.primary_cta }}</span>
+      <span class="pill alt">{{ dna.content.secondary_cta }}</span>
+    </div>
+  </div>
+
+  <div class="we-pricelist">
+    <div class="head">
+      <h2>Listino trattamenti</h2>
+      <span class="sub">Aggiornato al {% now "j F Y" %}  ·  {{ dna.content.phone }}</span>
+    </div>
+    {% for name, desc, price in dna.content.treatments %}
+      <div class="row">
+        <span class="name">{{ name }}</span>
+        <span class="desc">{{ desc }}</span>
+        <span class="price">{{ price }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="we-therapists">
+    <div class="label">Operatori &nbsp;&nbsp; · &nbsp;&nbsp; iscritti albo</div>
+    {% for name, role in dna.content.therapists %}
+      <div class="card">
+        <div class="av" style="background-image:url('{{ imagery|at:forloop.counter|default:imagery.1 }}')"></div>
+        <div>
+          <div class="name">{{ name }}</div>
+          <div class="role">{{ role }}</div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

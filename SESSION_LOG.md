@@ -299,3 +299,94 @@ Phase 1 SVG previews (and the unreleased "preview-realism phase 1" 8-layout SVGs
 - Both ecommerce templates currently share the same product photos because compositions are per-category. Brand differentiation is visible via palette/typography but the photos are identical. To fully personalise per template, add an optional `imagery_overrides` dict on `TemplateBrand` and merge it into the context. (Same applies to all other category-pairs.)
 - Cormorant Garamond hero text on dark backgrounds (lawyer, villa) renders thin. Either bump brand-specific font weight or swap to a heavier serif when the brand pairing requires it.
 - File sizes are large (~4 MB each at 2× DPI). For production we should pipe screenshots through PIL JPEG compression or Pillow `optimize=True` PNG to bring per-card download under 500 KB.
+
+## Session 7 — Template DNA System Phase 1 (2026-04-10)
+
+**Agent:** Template DNA System (worktree: template-dna-system)
+**Goal:** End the "two templates in the same category look like recolors of each other" problem. Replace the per-category preview composition with a per-template DNA system, prove it on the Medical category with 4 genuinely distinct archetypes.
+
+### Problem
+After Phase 2c (real preview assets), each category had ONE HTML composition. Two medical templates differed only by palette + Google Font pair, which is not enough to credibly sell them as separate products in a premium marketplace. Sibling templates collapsed into recolors of the same skeleton.
+
+### Solution: Template DNA
+Each template now has a structured "DNA" record (in code, keyed by slug) that drives a unique HTML composition. The DNA captures **layout archetype**, hero/navbar/footer style, section order, card style, button style, density, tone of copy, conversion pattern, font pairing, and per-archetype imagery key — i.e. all the dimensions a buyer would use to perceive a template as its own product.
+
+Templates without a DNA entry fall back to the legacy per-category composition, so the system is strictly additive — adding DNA never breaks existing previews.
+
+### Architecture
+```
+apps/catalog/template_dna.py
+  ├── Vocabulary dicts (LAYOUT_ARCHETYPES, HERO_STYLES, NAVBAR_STYLES, ...)
+  ├── TEMPLATE_DNA: dict[slug, dna] — the registry
+  └── get_dna(slug), has_dna(slug)
+
+apps/catalog/templatetags/preview_extras.py
+  └── `at` filter — safe sequence index lookup so compositions can loop
+      and pull `{{ imagery|at:forloop.counter }}` per card
+
+apps/catalog/preview_imagery.py
+  └── 3 new keys: medical-family, medical-specialist, medical-wellness
+      (each draws from a curated mix of already-cached Unsplash URLs so
+      every archetype gets a distinct photo set)
+
+apps/catalog/management/commands/generate_previews.py
+  ├── _resolve_composition(template, dna): picks
+  │     preview_compositions/<category>/<archetype>.html
+  │     when DNA exists, falls back to legacy <category>.html otherwise
+  ├── pre-warms imagery by *imagery_key* (not just category) so sibling
+  │     templates pull from different pools
+  └── DNA's `font_pairing` overrides brand.typography parsing
+
+templates/preview_compositions/medical/
+  ├── clinic.html      — institutional split-hero + booking widget + 4-up icons
+  ├── family.html      — pastel pill nav + organic-shape portrait + intro trio + hours strip
+  ├── specialist.html  — minimal serif nav + huge editorial headline + drop cap + 01/02 fields + press band
+  └── wellness.html    — full-bleed hero + glass pill nav + dotted-leader pricelist + therapists strip
+```
+
+### What now makes templates within Medical truly different
+| Slug                            | Archetype  | Hero               | Navbar         | Cards            | Conversion       | Tone           |
+|---------------------------------|------------|--------------------|----------------|------------------|------------------|----------------|
+| salute-studio-medico            | clinic     | split-booking      | solid-phone    | icon-grid 4-up   | booking-widget   | institutional  |
+| benessere-centro-olistico       | wellness   | full-bleed         | pill-floating  | pricelist        | calendar-spot    | serene         |
+| famiglia-pediatria (NEW)        | family     | centered-soft      | soft-pastel    | portrait-stack   | phone-and-chat   | warm-family    |
+| cardio-studio-specialistico (NEW) | specialist | editorial-serif    | minimal-serif  | editorial-large  | private-request  | prestigious    |
+
+These four are not recolors. They differ in: page background colour family, navbar shape and position, hero composition (split vs centered vs editorial vs full-bleed), card stride (4-up icon vs 3-up portrait vs 2-up serif vs 2-col pricelist), button shape (rounded vs pill vs ghost-underline), density (medium → very-airy), and copy tone (institutional → warm → prestigious → serene).
+
+### Files Created (8)
+- `apps/catalog/template_dna.py` — DNA registry + vocabulary
+- `apps/catalog/templatetags/__init__.py`
+- `apps/catalog/templatetags/preview_extras.py` — `at` filter
+- `templates/preview_compositions/medical/clinic.html`
+- `templates/preview_compositions/medical/family.html`
+- `templates/preview_compositions/medical/specialist.html`
+- `templates/preview_compositions/medical/wellness.html`
+- (no schema migration — DNA is a Python registry, not a model field)
+
+### Files Modified (3)
+- `apps/catalog/preview_imagery.py` — 3 new imagery keys (medical-family, medical-specialist, medical-wellness)
+- `apps/catalog/management/commands/generate_previews.py` — DNA-aware composition resolver, per-template imagery_key, font_pairing override, archetype label in logs
+- `apps/catalog/management/commands/seed_templates.py` — 2 new medical templates (Famiglia — Studio Pediatrico, Cardio — Studio Specialistico)
+
+### Database delta
+- 16 → 18 published templates (2 new medical entries)
+- 4 medical previews regenerated with new archetypes (clinic, wellness, family, specialist)
+- The legacy `templates/preview_compositions/medical.html` is retained as a safety net for any future medical template that doesn't yet have a DNA entry
+
+### Verified (Playwright MCP, port 8097)
+- `/templates/medical/` — listing now shows 4 templates with visibly different previews (no two look like the same skeleton)
+- Each preview PNG inspected directly: clinic shows navy split-hero with booking card, family shows pastel organic portrait with intro trio, specialist shows editorial bookshelf with drop cap, wellness shows full-bleed spa hero with floating pricelist
+
+### Key Decisions
+- D-034: Per-template DNA registry in code (apps/catalog/template_dna.py), not a model field, so it versions with the HTML compositions it drives
+- D-035: Archetype-keyed composition path (`<category>/<archetype>.html`) so templates of the same category share the base but pick the archetype variant
+- D-036: DNA registry is additive — templates without a DNA entry fall back to the legacy `<category>.html`. Migrating a category is a per-template choice, not a big-bang rewrite
+- D-037: `imagery_key` lives on the DNA (not the brand) so two templates in the same category never share the same photo set
+- D-038: Custom `at` template filter (apps/catalog/templatetags/preview_extras.py) — Django's stock template language can't index a list by a loop variable, and we need that to zip dynamic card content with imagery slots
+
+### Blockers
+- None. Pilot fully working.
+
+### Exact next step
+Replicate the pilot for **Restaurant** (the second highest-priority MVP category). Design 3 archetypes — `fine-dining` (Gusto, current), `trattoria-warm` (Sapore, current, needs new layout), `street-modern` (NEW, e.g. burger/pizza counter) — and add a 4th NEW template if budget allows. Same pattern: register DNA → write `restaurant/<archetype>.html` → maybe add a couple of new imagery keys → regenerate. Use the medical pilot files as the reference scaffold; nothing about the pipeline needs to change.

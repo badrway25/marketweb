@@ -1,94 +1,109 @@
 # Agent Handoff
 
-Last updated: 2026-04-10 — after Real Preview Assets Phase 2 (Session 6)
+Last updated: 2026-04-10 — after Template DNA System Phase 1 (Session 7)
 
 ## Current State
 
-**Real preview assets phase 2 complete.** Each of the 16 templates now has a PNG preview that looks like a real homepage screenshot — actual photographic content (restaurant interiors, doctors, lady justice, modern houses, fashion editorial, etc.) composed into a category-appropriate layout and screenshot via headless Chromium.
+**Template DNA System Phase 1 complete.** Templates inside the same category are no longer recolors of each other — each one has a unique "DNA" (archetype + hero/navbar/footer/cards/conversion/density/tone) that drives a bespoke HTML composition. The Medical category is the working pilot with 4 genuinely distinct templates (clinic, family, specialist, wellness).
 
-Branch: `real-preview-assets` worktree (not yet merged to master).
+Branch: `template-dna-system` worktree (not yet merged to master).
 
 ## What changed in this session
 
-| Layer            | Before                                  | After                                                      |
-|------------------|-----------------------------------------|------------------------------------------------------------|
-| Asset format     | Inline SVG wireframe                    | 1600×900 PNG screenshot of real HTML                      |
-| Photo content    | None (colored rectangles)               | Real Unsplash photos cached locally                        |
-| Layout source    | String-formatted SVG in Python          | Django HTML templates per category (8 layouts)             |
-| Brand fidelity   | Palette only                            | Palette + Google Font pair + accent contrast              |
-| Generator        | Pure Python                             | Three-phase: ORM → Playwright/Chromium → ORM              |
+| Layer            | Before                                              | After                                                                  |
+|------------------|-----------------------------------------------------|------------------------------------------------------------------------|
+| Differentiation  | Per-category composition (palette/font only)        | Per-template DNA → per-template archetype HTML                         |
+| Composition path | `preview_compositions/<category>.html`              | `preview_compositions/<category>/<archetype>.html` (DNA) or fallback   |
+| Imagery          | One photo pool per category                         | Per-template `imagery_key` → distinct pool per archetype               |
+| Medical templates| 2                                                   | 4 (added Famiglia — Studio Pediatrico, Cardio — Studio Specialistico)  |
+| Medical archetypes | 1 (institutional clinic only)                     | 4 (clinic, family, specialist, wellness)                               |
 
-The `TemplateAsset` API and the existing `template.assets.first.file.url` template usage are unchanged — listing/detail templates needed zero edits.
+The DNA system is **strictly additive** — templates without a DNA entry continue to render via the legacy per-category composition. No category is forced to migrate at once.
 
 ## What's Working
 
-| Page                          | URL                                        | Status (port 8096) |
+| Page                          | URL                                        | Status (port 8097) |
 |-------------------------------|--------------------------------------------|--------------------|
-| Homepage featured grid        | `/`                                        | 6 cards × real-imagery PNGs |
-| Template listing (all)        | `/templates/`                              | 16 templates × real PNGs, paginated |
-| Template listing (filtered)   | `/templates/<category_slug>/`              | Same as above, category-filtered |
-| Template detail               | `/templates/<category_slug>/<slug>/`       | Gallery + related templates show real PNGs |
-| Category listing              | `/templates/categories/`                   | Working (no preview imagery on this page) |
+| Homepage featured grid        | `/`                                        | Salute (clinic archetype) appears in featured grid |
+| Template listing (all)        | `/templates/`                              | 18 templates × paginated |
+| Template listing (medical)    | `/templates/medical/`                      | 4 medical templates × 4 visibly different archetypes |
+| Template detail (each medical)| `/templates/medical/<slug>/`               | Gallery shows the new archetype PNG |
 
-## How the new pipeline works
+## How the DNA system works
 
 ```
-apps/catalog/preview_imagery.py
-  ├── IMAGERY_CONFIG: {category_slug: [hero_url, feature_url, *card_urls]}
-  ├── ensure_cached(category_slug) → list[Path]   # download once, cache forever
-  └── _cache_path() / _download() helpers
+apps/catalog/template_dna.py
+  ├── Vocabulary dicts: LAYOUT_ARCHETYPES, HERO_STYLES, NAVBAR_STYLES,
+  │                     FOOTER_STYLES, CARD_STYLES, BUTTON_STYLES,
+  │                     DENSITY_PROFILES, TONES, CONVERSION_PATTERNS,
+  │                     IMAGERY_DIRECTIONS
+  ├── TEMPLATE_DNA: dict[slug, dna]  # the registry
+  └── get_dna(slug), has_dna(slug)
 
-templates/preview_compositions/
-  ├── _base.html          # shared chrome, brand vars, fonts, 1600×900 viewport
-  ├── restaurant.html     # hero photo + menu cards with food
-  ├── medical.html        # split hero + booking card + service cards
-  ├── lawyer.html         # diagonal hero + practice areas + testimonial
-  ├── agency.html         # dark theme + case studies + marquee
-  ├── business.html       # corporate hero + stats bar + services
-  ├── real-estate.html    # hero photo + search bar + property cards
-  ├── portfolio.html      # editorial hero + project tiles
-  └── ecommerce.html      # promo bar + hero + product grid
+apps/catalog/templatetags/preview_extras.py
+  └── `at` filter — `{{ imagery|at:forloop.counter }}` for safe loop indexing
+
+apps/catalog/preview_imagery.py
+  └── New keys: medical-family, medical-specialist, medical-wellness
+      (each draws from a curated mix of already-cached Unsplash URLs)
 
 apps/catalog/management/commands/generate_previews.py
-  Phase A — ORM: select templates, render HTML strings, gather imagery cache
-  Phase B — Playwright: open Chromium, screenshot each HTML temp file
-  Phase C — ORM: persist TemplateAsset rows pointing at the new PNGs
+  ├── _resolve_composition(template, dna)
+  │     → with DNA: preview_compositions/<category>/<archetype>.html
+  │     → without:  preview_compositions/<category>.html
+  ├── Pre-warms imagery by *imagery_key*, not just category slug
+  └── DNA's `font_pairing` overrides brand.typography parsing
+
+templates/preview_compositions/medical/
+  ├── clinic.html      — institutional, split-hero with booking widget, 4-up icons
+  ├── family.html      — pastel pill nav, organic-shape portrait, intro trio + hours strip
+  ├── specialist.html  — minimal serif nav, editorial headline, drop cap, 01/02 fields, press band
+  └── wellness.html    — full-bleed hero, glass pill nav, dotted-leader pricelist, therapists strip
 ```
 
 Run with `python manage.py generate_previews [--force] [--only <slug>]`.
 
-## Database State (unchanged from Phase 2a, only file format flipped)
+## Database State
 
-- 8 categories
-- 16 templates (status=published, 6 featured)
-- 16 brands
-- 16 preview assets — **all PNG now**, no SVG remnants in DB
-- 47 cached source photos in `media/preview_imagery/<category>/`
+- 8 categories (unchanged)
+- **18** templates (was 16; +2 medical: famiglia-pediatria, cardio-studio-specialistico)
+- 18 brands
+- 18 preview assets — 4 medical now use the new per-archetype compositions
+- 47 + 18 cached source photos (3 new pools: medical-family, medical-specialist, medical-wellness)
 
 ## For Next Session
 
-**Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md, this file
+**Read first:** CLAUDE.md, ARCHITECTURE.md, TODO_NEXT.md, this file, then `apps/catalog/template_dna.py` (the new source of truth for differentiation)
 
-### Immediate polish opportunities (Phase 2d)
-1. **Per-template imagery overrides** — Both ecommerce templates currently share the same fashion shots. Add an optional `imagery_overrides` JSONField on `TemplateBrand` and merge it into the context in `_build_context()`. This is the highest-impact next step for visual differentiation.
-2. **PNG optimisation** — Each preview is ~4 MB at 2× DPI. Pipe screenshots through Pillow with `optimize=True` (or convert to JPEG quality 88) to bring listing-page weight under 5 MB total instead of ~50 MB.
-3. **Hero text legibility on dark serif palettes** — Cormorant Garamond at 70px+ on dark navy reads thin (lawyer + villa). Either bump font weight to 800 in those compositions or swap the heading font when palette luminance is below a threshold.
-4. **Add `media/preview_imagery/` to .gitignore** — It's a local cache and shouldn't be committed.
+### Immediate next step (highest impact)
+**Replicate the DNA pilot for the Restaurant category.** Same recipe:
 
-### Phase 3 (Interactivity & Accounts) — unchanged from prior handoff
+1. Open `apps/catalog/template_dna.py` and add 3 entries: gusto-fine-dining → `fine-dining`, sapore-trattoria-pizzeria → `trattoria-warm`, plus 1 NEW template `street-modern` (e.g. burger/pizza counter brand).
+2. Add the new template to `apps/catalog/management/commands/seed_templates.py`.
+3. Create `templates/preview_compositions/restaurant/fine-dining.html`, `restaurant/trattoria-warm.html`, `restaurant/street-modern.html`. Use the medical files as the structural reference — each must have a **completely different** hero, navbar, cards, and footer composition (not just different palettes).
+4. Add 2 new imagery keys in `preview_imagery.py` if you want each restaurant archetype to pull from a distinct food photo pool.
+5. `python manage.py seed_templates && python manage.py generate_previews --force --only <slug>` for each.
+6. Verify with Playwright at `/templates/restaurant/`.
+
+### Phase 2d polish (still pending from previous session)
+1. Optimize PNG file sizes (~4 MB → ~500 KB via Pillow `optimize=True` or oxipng)
+2. Cormorant Garamond on dark backgrounds reads thin (Lex, Villa, Cardio specialist) — consider bumping weight or swapping serif at low luminance
+3. Add `media/preview_imagery/` to .gitignore
+
+### Phase 3 (Interactivity & Accounts) — unchanged
 1. Tag seeding and filtering
 2. User authentication views
 3. Commerce flow
 4. Editor + projects integration
 5. Live demo iframe per template
 
-### Key Files for Preview System
-- `apps/catalog/preview_imagery.py` — imagery config + cache
-- `apps/catalog/management/commands/generate_previews.py` — pipeline command
-- `templates/preview_compositions/_base.html` — shared brand vars, fonts, chrome
-- `templates/preview_compositions/<category>.html` — per-category layout
-- `media/preview_imagery/` — local imagery cache (gitignore candidate)
-- `media/template_assets/<YYYY>/<MM>/*.png` — generated previews (committed via Django FileField)
+### Key Files for the DNA System
+- `apps/catalog/template_dna.py` — DNA registry + vocabulary (the source of truth)
+- `apps/catalog/templatetags/preview_extras.py` — `at` filter for image indexing in loops
+- `apps/catalog/preview_imagery.py` — `IMAGERY_CONFIG` with per-archetype keys
+- `apps/catalog/management/commands/generate_previews.py` — DNA-aware pipeline
+- `templates/preview_compositions/<category>/<archetype>.html` — bespoke per-template HTML
+- `templates/preview_compositions/<category>.html` — legacy fallback for non-DNA templates
 
 ### Constraints (unchanged)
 - Do not redesign architecture or model structure
@@ -102,4 +117,5 @@ Run with `python manage.py generate_previews [--force] [--only <slug>]`.
 - Backend-core owns: models, migrations, admin, services, selectors, management commands
 - Premium-UI owns: templates/, static/, design system, frontend components
 - **Real-preview-assets** owns: `apps/catalog/preview_imagery.py`, `apps/catalog/management/commands/generate_previews.py`, `templates/preview_compositions/`
-- Both sessions update: SESSION_LOG.md, DECISIONS.md, TODO_NEXT.md, AGENT_HANDOFF.md at end
+- **Template-DNA-system** owns: `apps/catalog/template_dna.py`, `apps/catalog/templatetags/preview_extras.py`, `templates/preview_compositions/<category>/<archetype>.html` files
+- All sessions update: SESSION_LOG.md, DECISIONS.md, TODO_NEXT.md, AGENT_HANDOFF.md, TEMPLATE_REGISTRY.json at end

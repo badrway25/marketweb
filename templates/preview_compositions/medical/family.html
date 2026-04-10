@@ -1,0 +1,190 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: family
+   FOR     : pediatric / family practice
+   HERO    : centered-soft (rounded photo card right · text left)
+   NAVBAR  : translucent soft-pastel
+   CARDS   : 3-up portrait stack + intro trio + hours table
+   FOOTER  : compact-2col
+============================================================ #}
+{% block extra_css %}
+  /* warm pastel page background — overrides _base.html white */
+  body { background: #fdf7f1; }
+  .pv-frame { background: #fdf7f1; }
+
+  /* === SOFT PASTEL NAVBAR === */
+  .fam-nav {
+    position: absolute; top: 22px; left: 64px; right: 64px; height: 64px;
+    display: flex; align-items: center; padding: 0 28px;
+    background: rgba(255,255,255,0.78); backdrop-filter: blur(8px);
+    border-radius: 999px; box-shadow: 0 8px 28px rgba(80, 50, 30, 0.07);
+    z-index: 10;
+  }
+  .fam-nav .logo {
+    font-family: var(--heading); font-weight: 700; font-size: 19px;
+    color: var(--primary); display: flex; align-items: center; gap: 12px;
+  }
+  .fam-nav .logo .blob {
+    width: 36px; height: 36px; border-radius: 14px;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: #fff; transform: rotate(-6deg);
+  }
+  .fam-nav .links { display: flex; gap: 30px; margin-left: 44px; font-size: 13px; font-weight: 600; color: #6b5b4a; }
+  .fam-nav .pill {
+    margin-left: auto; background: var(--secondary); color: var(--primary);
+    padding: 12px 22px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fam-nav .ghost {
+    margin-left: 12px; background: transparent; color: var(--primary);
+    border: 1.5px solid rgba(0,0,0,0.12);
+    padding: 11px 20px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  }
+
+  /* === HERO === */
+  .fam-hero { position: absolute; top: 110px; left: 64px; right: 64px; height: 460px; display: flex; align-items: center; gap: 56px; }
+  .fam-hero-text { flex: 1.05; }
+  .fam-hero-text .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--primary); font-size: 12px; font-weight: 700;
+    background: rgba(0,0,0,0.04); padding: 8px 16px; border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .fam-hero-text h1 {
+    margin-top: 22px; font-size: 64px; font-weight: 600; line-height: 1.05;
+    color: var(--primary);
+  }
+  .fam-hero-text h1 em {
+    font-style: italic; color: var(--accent); font-family: var(--heading);
+  }
+  .fam-hero-text p { margin-top: 22px; font-size: 17px; line-height: 1.65; color: #6b5b4a; max-width: 540px; }
+  .fam-hero-actions { margin-top: 28px; display: flex; gap: 12px; align-items: center; }
+  .fam-hero-actions .pill {
+    background: var(--accent); color: #fff; padding: 16px 28px;
+    border-radius: 999px; font-weight: 700; font-size: 14px;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .fam-hero-actions .pill.alt { background: #fff; color: var(--primary); border: 1.5px solid rgba(0,0,0,0.08); }
+
+  .fam-hero-img {
+    width: 460px; height: 440px; position: relative; flex-shrink: 0;
+  }
+  .fam-hero-img .photo {
+    position: absolute; inset: 0; border-radius: 60% 40% 55% 45% / 55% 50% 50% 45%;
+    background: url('{{ imagery.0 }}') center/cover;
+    box-shadow: 0 30px 80px rgba(80, 50, 30, 0.18);
+  }
+  .fam-hero-img .pebble {
+    position: absolute; bottom: -16px; left: -28px;
+    background: #fff; padding: 16px 22px; border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(80,50,30,0.12);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .fam-hero-img .pebble .av {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: url('{{ imagery.2 }}') center/cover;
+    border: 3px solid #fff; box-shadow: 0 0 0 2px var(--accent);
+  }
+  .fam-hero-img .pebble .txt { font-size: 12px; color: #6b5b4a; line-height: 1.35; }
+  .fam-hero-img .pebble .txt strong { display: block; color: var(--primary); font-size: 13px; }
+
+  .fam-hero-img .ribbon {
+    position: absolute; top: 24px; right: -12px;
+    background: var(--secondary); color: var(--primary);
+    padding: 9px 16px; border-radius: 999px; font-size: 11px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    box-shadow: 0 8px 20px rgba(80,50,30,0.12);
+  }
+
+  /* === INTRO TRIO === */
+  .fam-trio { position: absolute; left: 64px; right: 64px; top: 612px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .fam-trio .card {
+    background: #fff; border-radius: 22px; padding: 22px 26px;
+    box-shadow: 0 8px 24px rgba(80,50,30,0.06);
+    display: flex; align-items: center; gap: 18px;
+  }
+  .fam-trio .card .dot {
+    width: 54px; height: 54px; border-radius: 18px;
+    background: linear-gradient(135deg, var(--secondary), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-family: var(--heading); font-weight: 700; font-size: 22px;
+    flex-shrink: 0;
+  }
+  .fam-trio .card h4 { font-size: 16px; color: var(--primary); }
+  .fam-trio .card p { font-size: 12px; color: #8a7a6b; margin-top: 4px; line-height: 1.45; }
+
+  /* === HOURS STRIP at bottom === */
+  .fam-hours {
+    position: absolute; left: 64px; right: 64px; bottom: 26px;
+    background: var(--primary); color: #fff;
+    padding: 18px 30px; border-radius: 22px;
+    display: flex; align-items: center; gap: 30px;
+    box-shadow: 0 12px 36px rgba(80,50,30,0.18);
+  }
+  .fam-hours .label {
+    font-family: var(--heading); font-size: 13px; font-weight: 700; opacity: 0.65;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .fam-hours .row {
+    display: flex; flex-direction: column; gap: 2px;
+    border-left: 1.5px solid rgba(255,255,255,0.18); padding-left: 22px;
+  }
+  .fam-hours .row strong { font-size: 12px; color: var(--secondary); font-weight: 700; }
+  .fam-hours .row span { font-size: 13px; opacity: 0.92; }
+  .fam-hours .right {
+    margin-left: auto; background: var(--accent); color: #fff;
+    padding: 12px 24px; border-radius: 999px; font-weight: 700; font-size: 13px;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="fam-nav">
+    <div class="logo"><span class="blob">{{ brand_name|first }}</span> {{ brand_name }}</div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <span class="pill">{{ dna.content.primary_cta }}</span>
+    <span class="ghost">{{ dna.content.secondary_cta }}</span>
+  </nav>
+
+  <section class="fam-hero">
+    <div class="fam-hero-text">
+      <span class="eyebrow">{{ dna.content.eyebrow }}</span>
+      <h1>{{ dna.content.headline|safe }}</h1>
+      <p>{{ dna.content.subhead }}</p>
+      <div class="fam-hero-actions">
+        <span class="pill">{{ dna.content.primary_cta }}</span>
+        <span class="pill alt">{{ dna.content.secondary_cta }}</span>
+      </div>
+    </div>
+    <div class="fam-hero-img">
+      <div class="photo"></div>
+      <span class="ribbon">Convenzionato SSN</span>
+      <div class="pebble">
+        <div class="av"></div>
+        <div class="txt"><strong>Dr.ssa Rambaldi</strong>oggi disponibile</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="fam-trio">
+    {% for label, blurb in dna.content.intro_trio %}
+      <div class="card">
+        <div class="dot">{{ forloop.counter }}</div>
+        <div>
+          <h4>{{ label }}</h4>
+          <p>{{ blurb }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="fam-hours">
+    <div class="label">Orari di apertura</div>
+    {% for day, hours in dna.content.hours %}
+      <div class="row"><strong>{{ day }}</strong><span>{{ hours }}</span></div>
+    {% endfor %}
+    <span class="right">📞 {{ dna.content.phone }}</span>
+  </div>
+{% endblock %}

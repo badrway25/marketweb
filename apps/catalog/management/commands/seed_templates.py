@@ -215,6 +215,59 @@ SEED_TEMPLATES = [
             "logo_concept": "Foglia e goccia d'acqua in verde salvia, linee organiche e fluide",
         },
     },
+    {
+        "name": "Famiglia — Studio Pediatrico",
+        "slug": "famiglia-pediatria",
+        "category_slug": "medical",
+        "short_description": "Caldo e accogliente per studi pediatrici e medicina di famiglia. Profili medici, orari e contatto WhatsApp diretto.",
+        "description": (
+            "Famiglia è il template per pediatri, medici di famiglia e piccole cliniche di quartiere "
+            "che vogliono trasmettere fiducia e calore umano fin dal primo scroll. Palette pastello, "
+            "layout arioso, fotografie di sguardi vicini.\n\n"
+            "Include: homepage con presentazione dello studio e medici, sezione fasce d'età "
+            "(neonato/bambino/adolescente), profili pediatri con bio breve, orari di apertura "
+            "stile tabella, mappa con indicazioni, modulo WhatsApp diretto, blog consigli ai genitori."
+        ),
+        "price": Decimal("65.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 3,
+        "brand": {
+            "brand_name": "Pediatria Famiglia Plus",
+            "tagline": "Cresciamo insieme ai vostri bambini",
+            "palette": {"primary": "#4A2E2A", "secondary": "#FBD9B5", "accent": "#E97B5C"},
+            "typography": "Quicksand + Nunito",
+            "personality": "caldo, familiare, rassicurante",
+            "logo_concept": "Volpina stilizzata con cuore al posto del muso, palette pastello terracotta",
+        },
+    },
+    {
+        "name": "Cardio — Studio Specialistico",
+        "slug": "cardio-studio-specialistico",
+        "category_slug": "medical",
+        "short_description": "Editoriale e prestigioso per cardiologi e specialisti privati. Layout magazine, drop cap e pubblicazioni.",
+        "description": (
+            "Cardio è il template per specialisti di alto livello che operano in regime privato — "
+            "cardiologi, dermatologi, neurologi — e che vogliono comunicare expertise e discrezione. "
+            "Layout editoriale ispirato alle riviste di medicina, tipografia serif imponente, "
+            "palette sobria con un solo accento.\n\n"
+            "Include: homepage con headline editoriale e ritratto del medico, paragrafo con drop cap, "
+            "sezione visite numerata 01/02, banda pubblicazioni e media, modulo richiesta visita "
+            "privata, pagina CV scientifico, area pazienti riservata."
+        ),
+        "price": Decimal("109.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 4,
+        "brand": {
+            "brand_name": "Studio Marani Cardiologia",
+            "tagline": "Cardiologia clinica e secondi pareri",
+            "palette": {"primary": "#1c1612", "secondary": "#f7f3ee", "accent": "#9c2a2a"},
+            "typography": "Cormorant Garamond + Inter",
+            "personality": "editoriale, prestigioso, sobrio",
+            "logo_concept": "Iniziali M+C in serif maiuscolo con linea sottile sotto, oro su fondo carta",
+        },
+    },
     # ── Avvocato (2) ────────────────────────────────────────────
     {
         "name": "Lex — Studio Legale",

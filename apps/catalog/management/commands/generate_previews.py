@@ -22,11 +22,12 @@ from django.template.loader import render_to_string
 
 from apps.catalog.models import TemplateAsset, WebTemplate
 from apps.catalog.preview_imagery import ensure_cached
+from apps.catalog.template_dna import get_dna
 
 
-# Map a template's category slug to the composition template that should
-# render its preview. Categories without a dedicated layout fall back to
-# "agency" which is the most generic / busy layout.
+# Legacy per-category compositions. Used for any template that does NOT
+# have a DNA entry in `apps.catalog.template_dna.TEMPLATE_DNA`. As more
+# categories migrate to per-template archetypes, these become safety nets.
 CATEGORY_TO_COMPOSITION: dict[str, str] = {
     "restaurant": "restaurant.html",
     "medical": "medical.html",
@@ -37,6 +38,18 @@ CATEGORY_TO_COMPOSITION: dict[str, str] = {
     "portfolio": "portfolio.html",
     "ecommerce": "ecommerce.html",
 }
+
+
+def _resolve_composition(template: WebTemplate, dna: dict | None) -> str:
+    """Pick the HTML composition path for a given template.
+
+    With DNA: ``preview_compositions/<category>/<archetype>.html``
+    Without:  ``preview_compositions/<category>.html`` (legacy fallback)
+    """
+    if dna and "archetype" in dna:
+        return f"preview_compositions/{template.category.slug}/{dna['archetype']}.html"
+    fallback = CATEGORY_TO_COMPOSITION.get(template.category.slug, "agency.html")
+    return f"preview_compositions/{fallback}"
 
 
 # Heading + body Google Font pairings derived from the brand's typography
@@ -91,13 +104,23 @@ def _resolve_fonts(typography: str) -> tuple[str, str]:
     return FONT_PAIRINGS.get(typography.strip().lower(), DEFAULT_FONTS)
 
 
-def _build_context(template: WebTemplate, image_uris: list[str]) -> dict:
+def _build_context(
+    template: WebTemplate,
+    image_uris: list[str],
+    dna: dict | None = None,
+) -> dict:
     brand = template.brand
     palette = brand.palette or {}
     primary = palette.get("primary", "#1B2A4A")
     secondary = palette.get("secondary", "#6366F1")
     accent = palette.get("accent", "#F59E0B")
-    heading_font, body_font = _resolve_fonts(brand.typography)
+
+    # DNA's font_pairing wins over brand.typography string parsing — the
+    # registry is the source of truth for templates that have one.
+    if dna and "font_pairing" in dna:
+        heading_font, body_font = dna["font_pairing"]
+    else:
+        heading_font, body_font = _resolve_fonts(brand.typography)
 
     # Pad the imagery list so {{ imagery.5 }} never blows up if a download
     # failed: fall back to the wide hero for missing slots.
@@ -118,6 +141,8 @@ def _build_context(template: WebTemplate, image_uris: list[str]) -> dict:
         "imagery": safe_imagery,
         "heading_font": heading_font,
         "body_font": body_font,
+        # Per-template DNA — None for legacy templates without an entry.
+        "dna": dna,
     }
 
 
@@ -155,14 +180,22 @@ class Command(BaseCommand):
             self.stderr.write(self.style.ERROR("No published templates found. Run seed_templates first."))
             return
 
-        # Pre-warm the imagery cache for every category we are about to render
-        category_slugs_needed = {t.category.slug for t in templates}
+        # Pre-warm the imagery cache. Each template may pull from a different
+        # imagery key — DNA can override the default `category.slug` lookup so
+        # sibling templates use distinct photo pools (e.g. medical-family vs
+        # medical-specialist).
+        imagery_keys_needed: set[str] = set()
+        for t in templates:
+            dna = get_dna(t.slug)
+            imagery_keys_needed.add(
+                (dna or {}).get("imagery_key", t.category.slug)
+            )
         self.stdout.write(self.style.MIGRATE_HEADING("Caching stock imagery..."))
-        imagery_by_cat: dict[str, list[str]] = {}
-        for cat_slug in sorted(category_slugs_needed):
-            paths = ensure_cached(cat_slug)
-            imagery_by_cat[cat_slug] = [p.resolve().as_uri() for p in paths]
-            self.stdout.write(f"  {cat_slug}: {len(paths)} images")
+        imagery_by_key: dict[str, list[str]] = {}
+        for key in sorted(imagery_keys_needed):
+            paths = ensure_cached(key)
+            imagery_by_key[key] = [p.resolve().as_uri() for p in paths]
+            self.stdout.write(f"  {key}: {len(paths)} images")
 
         # Decide up front which templates we will (re)render and which we
         # will skip. Render the HTML for each survivor while the ORM is
@@ -182,17 +215,23 @@ class Command(BaseCommand):
             if force and existing.exists():
                 existing.delete()
 
-            composition_name = CATEGORY_TO_COMPOSITION.get(
-                template.category.slug, "agency.html"
-            )
+            dna = get_dna(template.slug)
+            composition_path = _resolve_composition(template, dna)
+            imagery_key = (dna or {}).get("imagery_key", template.category.slug)
             html = render_to_string(
-                f"preview_compositions/{composition_name}",
-                _build_context(template, imagery_by_cat.get(template.category.slug, [])),
+                composition_path,
+                _build_context(
+                    template,
+                    imagery_by_key.get(imagery_key, []),
+                    dna=dna,
+                ),
             )
+            archetype_label = (dna or {}).get("archetype", "legacy")
             jobs.append({
                 "template": template,
                 "html": html,
                 "filename": f"{template.slug}-preview.png",
+                "archetype": archetype_label,
             })
 
         if not jobs:
@@ -232,7 +271,9 @@ class Command(BaseCommand):
                         except OSError:
                             pass
                     screenshots.append((job["filename"], png_bytes))
-                    self.stdout.write(f"  Rendered: {job['template'].name}")
+                    self.stdout.write(
+                        f"  Rendered [{job['archetype']}]: {job['template'].name}"
+                    )
             finally:
                 context.close()
                 browser.close()

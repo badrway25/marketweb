@@ -1,0 +1,201 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: specialist
+   FOR     : high-end private specialist
+   HERO    : huge editorial serif headline + portrait
+   NAVBAR  : minimal serif (centered logo · thin rule)
+   CARDS   : 2-up oversized with serif numerals
+   FOOTER  : centered minimal · press logos band
+============================================================ #}
+{% block extra_css %}
+  body { background: #f7f3ee; color: #1c1612; }
+  .pv-frame { background: #f7f3ee; }
+
+  /* === MINIMAL SERIF NAV === */
+  .sp-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 64px; border-bottom: 1px solid rgba(28,22,18,0.08);
+    background: rgba(247,243,238,0.92); backdrop-filter: blur(6px); z-index: 10;
+  }
+  .sp-nav .links { display: flex; gap: 36px; font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #6e5e52; }
+  .sp-nav .logo {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    font-family: var(--heading); font-size: 24px; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--primary); display: flex; align-items: center; gap: 12px;
+  }
+  .sp-nav .logo .crest {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1.5px solid var(--accent); display: flex; align-items: center; justify-content: center;
+    color: var(--accent); font-family: var(--heading); font-weight: 700; font-size: 16px;
+  }
+  .sp-nav .phone {
+    font-family: var(--heading); font-size: 14px; font-weight: 600; color: var(--primary);
+  }
+
+  /* === EDITORIAL HERO === */
+  .sp-hero {
+    position: absolute; top: 64px; left: 0; right: 0; height: 540px;
+    display: grid; grid-template-columns: 1.55fr 1fr; gap: 0;
+  }
+  .sp-hero .left {
+    padding: 64px 56px 0 90px; position: relative;
+  }
+  .sp-hero .eyebrow {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+    display: flex; align-items: center; gap: 16px;
+  }
+  .sp-hero .eyebrow:before { content: ''; width: 36px; height: 1.5px; background: var(--accent); }
+
+  .sp-hero h1 {
+    margin-top: 32px; font-size: 84px; font-weight: 500; line-height: 0.97;
+    letter-spacing: -0.025em; color: var(--primary);
+    font-family: var(--heading);
+  }
+  .sp-hero h1 em {
+    font-style: italic; color: var(--accent); font-weight: 500;
+  }
+
+  .sp-hero .meta {
+    margin-top: 42px; display: flex; gap: 36px; align-items: center;
+  }
+  .sp-hero .meta .item {
+    font-family: var(--body); font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #6e5e52;
+  }
+  .sp-hero .meta .item strong {
+    display: block; font-family: var(--heading); font-size: 18px;
+    color: var(--primary); margin-top: 4px; letter-spacing: 0;
+    font-weight: 600; text-transform: none;
+  }
+
+  .sp-hero .ghost-cta {
+    position: absolute; left: 90px; bottom: 56px;
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--primary); border-bottom: 1.5px solid var(--accent);
+    padding: 4px 0; display: inline-flex; align-items: center; gap: 12px;
+  }
+  .sp-hero .ghost-cta:after { content: '→'; font-family: var(--heading); font-size: 18px; color: var(--accent); }
+
+  .sp-hero .right {
+    position: relative; background: url('{{ imagery.0 }}') center/cover;
+    border-left: 8px solid var(--accent);
+    filter: grayscale(20%) contrast(1.05);
+  }
+  .sp-hero .right:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(28,22,18,0) 60%, rgba(28,22,18,0.45) 100%);
+  }
+  .sp-hero .credit {
+    position: absolute; bottom: 22px; left: 26px; right: 26px;
+    color: #fff; z-index: 2;
+    font-family: var(--body); font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    display: flex; justify-content: space-between;
+  }
+  .sp-hero .credit strong {
+    display: block; font-family: var(--heading); font-size: 18px;
+    text-transform: none; letter-spacing: 0; margin-top: 4px;
+  }
+
+  /* === LOWER BAND : intro + fields + press === */
+  .sp-band {
+    position: absolute; left: 0; right: 0; top: 604px; bottom: 0;
+    background: var(--primary); color: #f7f3ee;
+    padding: 36px 90px 24px;
+    display: grid;
+    grid-template-columns: 1.05fr 1.55fr;
+    gap: 56px;
+  }
+  .sp-band .intro p {
+    font-family: var(--heading); font-size: 17px; line-height: 1.55;
+    color: rgba(247,243,238,0.92); font-weight: 400;
+  }
+  .sp-band .intro p:first-letter {
+    font-family: var(--heading); font-size: 92px; font-weight: 600;
+    float: left; line-height: 0.85; color: var(--accent);
+    padding: 6px 14px 0 0; margin-top: 4px;
+  }
+
+  .sp-band .fields {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-content: start;
+  }
+  .sp-band .field {
+    border-top: 1.5px solid rgba(247,243,238,0.18); padding-top: 14px;
+  }
+  .sp-band .field .num {
+    font-family: var(--heading); font-size: 13px; color: var(--accent); font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .sp-band .field h4 {
+    font-family: var(--heading); font-size: 21px; font-weight: 600; margin-top: 4px;
+  }
+  .sp-band .field p {
+    font-family: var(--body); font-size: 12px; line-height: 1.55;
+    color: rgba(247,243,238,0.7); margin-top: 6px;
+  }
+
+  /* === PRESS strip === */
+  .sp-press {
+    position: absolute; left: 90px; right: 90px; bottom: 14px;
+    border-top: 1px solid rgba(247,243,238,0.18); padding-top: 12px;
+    display: flex; align-items: center; gap: 36px;
+    color: rgba(247,243,238,0.55);
+    font-family: var(--heading); font-size: 14px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .sp-press span:first-child {
+    font-family: var(--body); font-size: 10px;
+    letter-spacing: 0.18em; color: var(--accent); font-weight: 700;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="sp-nav">
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <div class="logo"><span class="crest">{{ brand_name|first }}</span> {{ brand_name }}</div>
+    <div class="phone">{{ dna.content.phone }}</div>
+  </nav>
+
+  <section class="sp-hero">
+    <div class="left">
+      <div class="eyebrow">{{ dna.content.eyebrow }}</div>
+      <h1>{{ dna.content.headline|safe }}</h1>
+      <div class="meta">
+        <div class="item">Direzione clinica<strong>Dr. R. Marani</strong></div>
+        <div class="item">Esperienza<strong>15 anni</strong></div>
+        <div class="item">Visite/anno<strong>1.200+</strong></div>
+      </div>
+      <span class="ghost-cta">{{ dna.content.primary_cta }}</span>
+    </div>
+    <div class="right">
+      <div class="credit">
+        <span>Studio<strong>Roma · Parioli</strong></span>
+        <span>Riferimento<strong>SC&nbsp;Cardiologia</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sp-band">
+    <div class="intro">
+      <p>{{ dna.content.drop_cap }}{{ dna.content.intro_paragraph }}</p>
+    </div>
+    <div class="fields">
+      {% for num, title, blurb in dna.content.fields %}
+        <div class="field">
+          <div class="num">{{ num }} / {{ dna.content.fields|length }}</div>
+          <h4>{{ title }}</h4>
+          <p>{{ blurb }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="sp-press">
+      <span>Press</span>
+      {% for outlet in dna.content.press %}<span>{{ outlet }}</span>{% endfor %}
+    </div>
+  </section>
+{% endblock %}

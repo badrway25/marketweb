@@ -113,3 +113,55 @@ Type scale: 12, 14, 16, 18, 20, 24, 30, 36, 48, 60px (1.25 ratio)
 | Detail Panel       | components.css    | `.mw-detail-panel`             |
 | Testimonials       | pages.css         | `.mw-testimonial`              |
 | Steps              | pages.css         | `.mw-steps`, `.mw-step`        |
+
+## Template DNA System (Session 7 — 2026-04-10)
+
+### Why DNA exists
+A premium marketplace cannot ship two templates in the same category that look like recolors of each other. Each listing needs to be a credible, distinct *product*. Brand differentiation via palette + typography is necessary but not sufficient — buyers also need to perceive a **different layout, different conversion pattern, and different tone of voice** at a glance.
+
+The DNA system encodes those differences as structured per-template metadata that drives bespoke HTML compositions during preview generation.
+
+### DNA dimensions
+Every template registered in `apps/catalog/template_dna.py` defines:
+
+| Field                | What it controls                                                          |
+|----------------------|---------------------------------------------------------------------------|
+| `archetype`          | Which HTML composition file to render. Determines the entire skeleton.    |
+| `hero_style`         | Hero composition: split-booking, centered-soft, editorial-serif, full-bleed-manifesto |
+| `navbar_style`       | Navbar: solid-phone, pill-floating, minimal-serif, soft-pastel            |
+| `footer_style`       | Footer: corporate-4col, compact-2col, centered-minimal, spa-social        |
+| `section_order`      | Ordered list of sections to render                                        |
+| `card_style`         | icon-grid, portrait-stack, editorial-large, pricelist                     |
+| `button_style`       | rounded-solid, pill-soft, ghost-underline, square-bold                    |
+| `density`            | compact, medium, airy, very-airy                                          |
+| `tone`               | institutional, warm-family, prestigious, serene                           |
+| `imagery_direction`  | High-level photo brief (used in copywriting/sourcing)                     |
+| `imagery_key`        | Lookup into `IMAGERY_CONFIG` — distinct photo pool per archetype          |
+| `conversion_pattern` | booking-widget, phone-and-chat, private-request, calendar-spot            |
+| `font_pairing`       | Tuple of (heading, body) Google Fonts — overrides brand.typography        |
+| `content`            | Per-template copy block: eyebrow, headline, CTAs, cards, doctors, ...     |
+
+### Pilot category: Medical (4 archetypes)
+| Archetype  | Use case                              | Hero               | Navbar         | Cards            | Conversion       | Tone           |
+|------------|---------------------------------------|--------------------|----------------|------------------|------------------|----------------|
+| clinic     | Multi-specialty institutional clinic  | split-booking      | solid-phone    | icon-grid 4-up   | booking-widget   | institutional  |
+| family     | Pediatric / family practice           | centered-soft      | soft-pastel    | portrait-stack   | phone-and-chat   | warm-family    |
+| specialist | High-end private specialist           | editorial-serif    | minimal-serif  | editorial-large  | private-request  | prestigious    |
+| wellness   | Holistic / spa / osteopathy           | full-bleed-manifesto | pill-floating | pricelist        | calendar-spot    | serene         |
+
+### How to design a new archetype
+1. **Identify the buyer.** Who is shopping for this and what do they want to see in the first scroll?
+2. **Pick distinct dimensions.** No two archetypes in the same category should share more than ~3 of the dimensions above.
+3. **Sketch the section order.** This is the structural fingerprint — make it different.
+4. **Choose imagery direction.** A photo brief, even if it ends up reusing existing pool URLs at first.
+5. **Write the DNA entry** in `apps/catalog/template_dna.py`.
+6. **Build the composition** at `templates/preview_compositions/<category>/<archetype>.html`. It must fit the 1600×900 viewport (the generator screenshots that exact box).
+7. **Add the imagery key** in `preview_imagery.py` if you want a distinct pool.
+8. **Run** `python manage.py generate_previews --force --only <slug>` and inspect the PNG.
+
+### What NOT to call differentiation
+- Same skeleton, different palette → ✗ this is what DNA exists to prevent
+- Same skeleton, different fonts → ✗ same problem
+- Same skeleton, different photos → ✗ same problem
+- Same hero shape, different navbar colour → ✗ still feels like one product
+- Different section order, different hero composition, different cards, different conversion CTA, different density → ✓ this is a distinct product

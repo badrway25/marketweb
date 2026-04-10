@@ -125,3 +125,28 @@
 **Decision:** Previews render at viewport 1600×900 with `device_scale_factor=2`, output PNG. Resulting files are ~3200×1800 pixels and ~4 MB each.
 **Rationale:** 16:9 matches the 4:3-to-16:9 ratio expected by the existing template card. 2× DPI keeps text crisp on retina displays. PNG preserves the sharp UI lines (buttons, dividers) without JPEG halos.
 **Trade-off:** ~70 MB total media for 16 templates. Acceptable for development; for production we should add an optional `--optimize` step that runs `oxipng`/`pngquant` or pipes through Pillow with `optimize=True`/JPEG conversion.
+
+## D-034: Per-Template DNA Registry in Code, Not in the Database (2026-04-10)
+**Decision:** Each template's design DNA (archetype, hero/navbar/footer style, density, tone, conversion pattern, font pairing, content blocks) lives as a Python dict in `apps/catalog/template_dna.py`, keyed by `WebTemplate.slug` — not as a JSONField on `TemplateBrand`.
+**Rationale:** The DNA drives HTML composition files. It must be reviewed in PRs alongside the layouts it controls, version-locked to its compositions, and editable without a migration. Promoting it to the database is an option later when the vocabulary stabilises and marketing wants admin-side editing — but doing so now would couple "design intent" to "data state", which is harder to reason about.
+**Trade-off:** Marketing cannot edit DNA without a developer. Acceptable for a pre-launch marketplace where every template still has bespoke design work anyway.
+
+## D-035: Archetype-Keyed Composition Path (2026-04-10)
+**Decision:** Composition files for DNA-driven templates live at `templates/preview_compositions/<category>/<archetype>.html` (e.g. `medical/clinic.html`, `medical/family.html`, `medical/wellness.html`, `medical/specialist.html`). The legacy single-file path `<category>.html` remains as a fallback.
+**Rationale:** Grouping by category-then-archetype makes the file tree describe the differentiation: a glance at `templates/preview_compositions/medical/` tells you exactly which archetypes are in production for that category. The fallback path keeps the system additive.
+**Trade-off:** Two files per template (DNA entry + composition file). Worth it: that's exactly the level at which a "premium template" stops being a recolor and becomes a real product.
+
+## D-036: DNA System Is Strictly Additive (2026-04-10)
+**Decision:** Adding a DNA entry never breaks an existing preview. Templates without DNA continue to render via the legacy per-category composition. Migrating a category to per-template archetypes is a slug-by-slug choice.
+**Rationale:** A big-bang rewrite of all 8 categories at once would block delivery for weeks and risk regressing quality on the templates that already work. Per-template migration lets us pilot Medical, prove the model, then move to the next category with zero risk to the others.
+**Trade-off:** Mixed state during the migration window — some categories use DNA, others don't. The catalog UI doesn't care; the only place that knows is `generate_previews._resolve_composition`.
+
+## D-037: `imagery_key` Lives on the DNA, Not on the Brand (2026-04-10)
+**Decision:** Each DNA entry can specify `imagery_key`, which is the lookup into `IMAGERY_CONFIG`. Without it, the generator falls back to `category.slug`.
+**Rationale:** Two templates in the same category should not share the same photo set, otherwise they collapse visually even if their layouts differ. Keying imagery on DNA (not on `TemplateBrand`) keeps the imagery decision adjacent to the layout decision — they are part of the same design choice.
+**Trade-off:** New imagery keys mean new entries in `IMAGERY_CONFIG`. Acceptable; the file is already the swap point per D-031.
+
+## D-038: Custom `at` Template Filter for Image Indexing (2026-04-10)
+**Decision:** `apps/catalog/templatetags/preview_extras.py` registers an `at` filter that takes a sequence and an integer (or string-of-integer, for `forloop.counter`) and returns the element, falling back to `seq[0]` on overflow.
+**Rationale:** Django's stock template language cannot index a list by a loop variable — `{{ imagery|slice:i:i+1 }}` doesn't accept variables. The DNA-driven compositions need to zip a content list (e.g. specialties, doctors) with the imagery list, which requires per-iteration index lookup. A four-line custom filter is the minimal correct solution.
+**Trade-off:** A new templatetag library. Tiny surface, zero risk.

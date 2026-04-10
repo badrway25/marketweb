@@ -57,6 +57,43 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=800&q=80&auto=format&fit=crop",
     ],
+    # Per-archetype medical pools — see apps/catalog/template_dna.py.
+    # All URLs reuse photos already proven to download from Unsplash so
+    # the pilot run is offline-safe after a single warm cache. Two
+    # templates in the same category never share the same image set.
+    "medical-family": [
+        # 0: hero - warm doctor + patient (bright, soft lighting)
+        "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature - friendly clinician
+        "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: portraits + cards
+        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?w=800&q=80&auto=format&fit=crop",
+    ],
+    "medical-specialist": [
+        # 0: hero - low-key portrait (lawyer pool — serious editorial energy)
+        "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature - bookshelf (gravitas backdrop)
+        "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: alternative portraits + clinical
+        "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1591025207163-942350e47db2?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=800&q=80&auto=format&fit=crop",
+    ],
+    "medical-wellness": [
+        # 0: hero - bright airy interior (real-estate pool — closest to spa)
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature - editorial portrait studio (portfolio pool)
+        "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: tactile / quiet imagery
+        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80&auto=format&fit=crop",
+    ],
     "lawyer": [
         # 0: hero - law office / columns
         "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1600&q=80&auto=format&fit=crop",

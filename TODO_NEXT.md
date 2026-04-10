@@ -59,8 +59,27 @@
 - [x] All 16 templates re-rendered with real-imagery PNGs
 - [x] Live verification: homepage featured grid, listing page, detail page
 
-## Next — Phase 2d (Preview Polish)
-- [ ] Per-template imagery overrides on `TemplateBrand` so the two templates in each category don't share photos (e.g. fashion vs artisan ecommerce)
+## Completed — Phase 2e (Template DNA System Phase 1, 2026-04-10)
+- [x] Per-template DNA registry in `apps/catalog/template_dna.py`
+- [x] DNA vocabulary documented (archetype, hero/navbar/footer style, density, tone, conversion, ...)
+- [x] `at` templatetag filter for safe imagery indexing in loops
+- [x] `_resolve_composition()` in generate_previews — DNA-aware, falls back to legacy per-category
+- [x] Per-archetype `imagery_key` so sibling templates pull from different photo pools
+- [x] Pilot category Medical: 4 archetypes (clinic / family / specialist / wellness)
+- [x] 4 distinct medical compositions under `templates/preview_compositions/medical/`
+- [x] 2 new medical seed templates (Famiglia — Studio Pediatrico, Cardio — Studio Specialistico)
+- [x] All 4 medical previews regenerated and visually verified
+
+## Next — Phase 2f (DNA Rollout to Other Categories)
+- [ ] **Restaurant pilot** — design 3 archetypes (`fine-dining`, `trattoria-warm`, `street-modern`), maybe add a 4th template; same pattern as medical
+- [ ] **Agency pilot** — design 3 archetypes (`bold-grid`, `editorial-quiet`, `case-study-led`)
+- [ ] **Lawyer pilot** — design 2 archetypes (`classic-gold`, `modern-transparent`) — already half-way there since Lex and Juris have very different tones
+- [ ] **Real-estate pilot** — design 2 archetypes (`mass-market`, `ultra-luxury-cinematic`)
+- [ ] Once 4+ categories use DNA, decide whether to delete legacy per-category compositions or keep them as scaffolding for "starter" templates
+- [ ] Promote `imagery_key` URLs from "reuse existing" to dedicated photo pools per archetype (currently medical-family/specialist/wellness recycle from medical+lawyer+real-estate to stay offline-safe — find proper Unsplash IDs once)
+- [ ] Add an admin DNA inspector page (read-only) so non-developers can see which archetype each template uses
+
+## Next — Phase 2d (Preview Polish, still pending)
 - [ ] Optimize preview PNGs (Pillow `optimize=True` or oxipng/pngquant) — current ~4 MB/file is heavy
 - [ ] Lawyer & villa hero text legibility — bump font weight or pick a heavier serif when palette is dark + Cormorant Garamond
 - [ ] Headless font fallback audit — confirm every brand `typography` value resolves to a real Google Font weight that loads in time
