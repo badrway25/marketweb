@@ -1,274 +1,246 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
 {# ============================================================
-   ARCHETYPE: trattoria-warm
+   ARCHETYPE: trattoria-warm   (v2 — Session 10 redesign)
    FOR     : family trattoria / pizzeria di quartiere
-   HERO    : framed photo card L · handwritten manifesto R
-   NAVBAR  : warm cream sticky bar with handwritten brand + phone
-   CARDS   : daily-special chalkboard (5 days, handwritten)
-   FOOTER  : warm hours band with WhatsApp pill
+   MOOD    : SUN-BLEACHED cream — no dark bands, no chalkboard
+             on dark wood. A bright daylight neighbourhood spot.
+   HERO    : double-polaroid stack L · giant Caveat handwritten R
+   NAVBAR  : warm cream sticky bar + handwritten brand + phone CTA
+   CARDS   : cream-paper recipe card with washi tape, daily menu
+   FOOTER  : (none — paper card extends to bottom of viewport)
 ============================================================ #}
 {% block extra_css %}
-  body { background: #fdf6e7; color: #3b2118; }
-  .pv-frame { background: #fdf6e7; }
+  /* warm sun-cream page bg — NO dark anywhere */
+  body { background: #fff4da; color: #3a2118; }
+  .pv-frame { background: #fff4da; }
 
-  /* === WARM CREAM NAV === */
-  .tt-nav {
+  /* === WARM NAV — cream + handwritten brand + phone block === */
+  .tw-nav {
     position: absolute; top: 0; left: 0; right: 0; height: 78px;
-    display: flex; align-items: center; padding: 0 64px;
-    background: #fff8e8;
-    border-bottom: 2px dashed rgba(74,44,42,0.18);
+    display: flex; align-items: center; padding: 0 56px;
+    background: #fbe6bf;
+    border-bottom: 2px dashed rgba(58,33,24,0.16);
     z-index: 10;
   }
-  .tt-nav .brand {
-    display: flex; align-items: center; gap: 14px;
+  .tw-nav .brand {
+    display: flex; align-items: center; gap: 16px;
   }
-  .tt-nav .brand .stamp {
-    width: 50px; height: 50px; border-radius: 50%;
-    background: var(--accent); color: #fdf6e7;
+  .tw-nav .brand .stamp {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--accent); color: #fff4da;
     display: flex; align-items: center; justify-content: center;
-    font-family: var(--heading); font-weight: 700; font-size: 28px;
-    transform: rotate(-6deg);
-    box-shadow: 0 4px 0 rgba(74,44,42,0.18);
+    font-family: var(--heading); font-weight: 700; font-size: 30px;
+    transform: rotate(-7deg);
+    box-shadow: 0 4px 0 rgba(58,33,24,0.18);
   }
-  .tt-nav .brand .name {
-    font-family: var(--heading); font-size: 32px; font-weight: 700;
-    color: var(--primary); line-height: 1;
+  .tw-nav .brand .name {
+    font-family: var(--heading); font-size: 34px; font-weight: 700;
+    color: var(--primary); line-height: 0.95;
   }
-  .tt-nav .brand .since {
+  .tw-nav .brand .since {
     margin-top: 2px;
-    font-family: var(--body); font-size: 10px;
-    letter-spacing: 0.18em; text-transform: uppercase; color: #8a6b58;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: #8a5d44;
   }
-  .tt-nav .links {
-    display: flex; gap: 26px; margin-left: 50px;
-    font-family: var(--body); font-size: 13px; font-weight: 600; color: #6b4a3a;
+  .tw-nav .links {
+    display: flex; gap: 22px; margin-left: 44px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    color: #6b3f2c;
   }
-  .tt-nav .phone {
+  .tw-nav .phone {
     margin-left: auto; display: flex; align-items: center; gap: 14px;
   }
-  .tt-nav .phone .num {
-    font-family: var(--heading); font-size: 26px; font-weight: 700;
+  .tw-nav .phone .num {
+    font-family: var(--heading); font-size: 28px; font-weight: 700;
     color: var(--accent); line-height: 1;
   }
-  .tt-nav .phone .lbl {
-    font-family: var(--body); font-size: 9px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase; color: #8a6b58;
+  .tw-nav .phone .lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 800;
+    letter-spacing: 0.18em; text-transform: uppercase; color: #8a5d44;
   }
-  .tt-nav .phone .wapp {
+  .tw-nav .phone .wapp {
     background: #25D366; color: #fff;
-    width: 44px; height: 44px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--heading); font-weight: 800; font-size: 16px;
-    box-shadow: 0 4px 0 rgba(74,44,42,0.18);
-  }
-
-  /* === HERO === */
-  .tt-hero {
-    position: absolute; top: 102px; left: 64px; right: 64px; height: 360px;
-    display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 42px; align-items: stretch;
-  }
-
-  /* Polaroid-style photo card */
-  .tt-photo {
-    position: relative;
-    background: #fff; padding: 14px 14px 36px;
-    border: 1px solid rgba(74,44,42,0.10);
-    box-shadow: 0 18px 38px rgba(74,44,42,0.18);
+    padding: 12px 18px; border-radius: 999px;
+    font-family: var(--body); font-size: 12px; font-weight: 800;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 8px;
+    box-shadow: 0 4px 0 rgba(58,33,24,0.20);
     transform: rotate(-2deg);
   }
-  .tt-photo .img {
-    width: 100%; height: 280px;
-    background: url('{{ imagery.0 }}') center/cover;
-    filter: saturate(1.05) contrast(1.02);
+  .tw-nav .phone .wapp:before { content: '✓'; }
+
+  /* === HERO ZONE: polaroid stack L + handwritten manifesto R === */
+  .tw-hero {
+    position: absolute; top: 102px; left: 0; right: 0; height: 460px;
   }
-  .tt-photo .cap {
-    position: absolute; bottom: 10px; left: 14px; right: 14px;
+
+  /* Two stacked polaroids */
+  .tw-poly { position: absolute; background: #fffaf0; padding: 12px 12px 28px;
+             border: 1px solid rgba(58,33,24,0.10);
+             box-shadow: 0 18px 36px rgba(58,33,24,0.16); }
+  .tw-poly .img { width: 100%; height: 100%; background-size: cover; background-position: center; }
+  .tw-poly .cap {
+    position: absolute; bottom: 6px; left: 12px; right: 12px;
     text-align: center;
-    font-family: var(--heading); font-size: 18px; font-weight: 600;
-    color: #5a3a2a;
+    font-family: var(--heading); font-size: 18px; color: #5a3a2a;
   }
-  .tt-photo .stamp {
-    position: absolute; top: -18px; right: -18px;
-    background: var(--accent); color: #fdf6e7;
-    padding: 8px 16px; border-radius: 999px;
-    font-family: var(--body); font-size: 10px; font-weight: 800;
+  .tw-poly.one {
+    top: 22px; left: 64px; width: 280px; height: 320px;
+    transform: rotate(-4deg);
+  }
+  .tw-poly.one .img { background-image: url('{{ imagery.0 }}'); height: 260px; }
+  .tw-poly.two {
+    top: 90px; left: 320px; width: 260px; height: 290px;
+    transform: rotate(5deg);
+  }
+  .tw-poly.two .img { background-image: url('{{ imagery|at:1 }}'); height: 230px; }
+  .tw-poly .tape {
+    position: absolute; top: -10px; left: 50%; transform: translateX(-50%) rotate(-3deg);
+    width: 70px; height: 18px;
+    background: rgba(255,230,160,0.75);
+    border: 1px dashed rgba(58,33,24,0.10);
+  }
+  .tw-poly .stamp {
+    position: absolute; top: -14px; right: -16px;
+    background: var(--accent); color: #fff4da;
+    padding: 6px 12px; border-radius: 999px;
+    font-family: var(--body); font-size: 9px; font-weight: 800;
     letter-spacing: 0.14em; text-transform: uppercase;
     transform: rotate(8deg);
-    border: 2px solid #fff8e8;
-    box-shadow: 0 4px 0 rgba(74,44,42,0.18);
+    border: 2px solid #fff4da;
+    box-shadow: 0 3px 0 rgba(58,33,24,0.18);
   }
 
-  /* Right column: handwritten manifesto */
-  .tt-text {
-    padding-top: 4px;
+  /* Right manifesto column */
+  .tw-text {
+    position: absolute; top: 14px; left: 640px; right: 64px; bottom: 0;
   }
-  .tt-text .eyebrow {
+  .tw-text .eyebrow {
     display: inline-flex; align-items: center; gap: 10px;
-    font-family: var(--body); font-size: 11px; font-weight: 700;
-    letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
   }
-  .tt-text .eyebrow:before { content: ''; width: 28px; height: 2px; background: var(--accent); }
+  .tw-text .eyebrow:before { content: '☀'; font-size: 16px; }
 
-  .tt-text h1 {
-    margin-top: 18px;
-    font-family: var(--heading); font-size: 88px; font-weight: 700;
-    line-height: 0.92; color: var(--primary);
+  .tw-text h1 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 96px; font-weight: 700;
+    line-height: 0.86; color: var(--primary);
     letter-spacing: -0.01em;
   }
-  .tt-text h1 em {
-    font-style: italic; color: var(--accent);
-  }
-  .tt-text p {
+  .tw-text h1 em { font-style: italic; color: var(--accent); }
+
+  .tw-text p {
     margin-top: 18px;
     font-family: var(--body); font-size: 16px; line-height: 1.6;
-    color: #6b4a3a; max-width: 540px;
+    color: #6b3f2c; max-width: 540px;
   }
-  .tt-text .ctas { margin-top: 24px; display: flex; gap: 14px; align-items: center; }
-  .tt-text .ctas .btn {
-    background: var(--accent); color: #fff8e8;
-    padding: 16px 28px; border-radius: 14px;
-    font-family: var(--body); font-size: 14px; font-weight: 700;
-    letter-spacing: 0.04em;
-    box-shadow: 0 6px 0 rgba(74,44,42,0.22);
+
+  .tw-text .ctas {
+    margin-top: 22px; display: flex; gap: 12px; align-items: center;
+  }
+  .tw-text .ctas .btn {
+    background: var(--accent); color: #fff4da;
+    padding: 16px 26px; border-radius: 14px;
+    font-family: var(--body); font-size: 13px; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    box-shadow: 0 5px 0 rgba(58,33,24,0.22);
     transform: rotate(-1deg);
   }
-  .tt-text .ctas .btn.alt {
-    background: #fff8e8; color: var(--primary);
-    border: 2px solid var(--primary);
-    box-shadow: 0 6px 0 rgba(74,44,42,0.18);
+  .tw-text .ctas .btn.alt {
+    background: #25D366; color: #fff;
     transform: rotate(1deg);
   }
-  .tt-text .review {
-    margin-top: 22px;
+  .tw-text .ctas .meta {
     font-family: var(--heading); font-size: 18px; font-style: italic;
-    color: #6b4a3a; max-width: 540px; line-height: 1.4;
-  }
-  .tt-text .review .auth {
-    display: block; margin-top: 6px;
-    font-family: var(--body); font-style: normal;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--accent);
+    color: #6b3f2c;
   }
 
-  /* === DAILY CHALKBOARD STRIP === */
-  .tt-board {
-    position: absolute; left: 64px; right: 64px; top: 484px;
-    background: #2a1810;
-    border-radius: 16px; padding: 22px 28px 24px;
-    box-shadow: 0 16px 40px rgba(74,44,42,0.30);
-    border: 4px solid #5d3a25;
+  /* === RECIPE CARD : cream-paper daily menu (no dark!) === */
+  .tw-recipe {
+    position: absolute; left: 64px; right: 64px; bottom: 22px;
+    height: 280px;
+    background:
+      linear-gradient(180deg, #fffaf0 0%, #fff5e1 100%);
+    border: 1px solid rgba(58,33,24,0.14);
+    border-radius: 6px;
+    padding: 26px 36px 22px;
+    box-shadow: 0 12px 30px rgba(58,33,24,0.12);
   }
-  .tt-board .head {
+  /* paper-corner washi tape pieces */
+  .tw-recipe:before, .tw-recipe:after {
+    content: ''; position: absolute; top: -10px; width: 90px; height: 22px;
+    background: rgba(255,210,120,0.7);
+    border: 1px dashed rgba(58,33,24,0.12);
+  }
+  .tw-recipe:before { left: 10%; transform: rotate(-3deg); }
+  .tw-recipe:after  { right: 10%; transform: rotate(4deg); }
+
+  .tw-recipe .head {
     display: flex; align-items: baseline; justify-content: space-between;
-    border-bottom: 1.5px dashed rgba(232,213,183,0.30);
-    padding-bottom: 12px; margin-bottom: 14px;
+    border-bottom: 2px dashed rgba(58,33,24,0.18);
+    padding-bottom: 14px; margin-bottom: 14px;
   }
-  .tt-board .head h2 {
-    font-family: var(--heading); font-size: 38px; font-weight: 700;
-    color: #f3e0b3;
+  .tw-recipe .head h2 {
+    font-family: var(--heading); font-size: 48px; font-weight: 700;
+    color: var(--primary); letter-spacing: -0.01em;
   }
-  .tt-board .head .sub {
-    font-family: var(--body); font-size: 11px;
+  .tw-recipe .head h2 em { font-style: italic; color: var(--accent); }
+  .tw-recipe .head .sub {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.16em; text-transform: uppercase; color: #8a5d44;
+    text-align: right; line-height: 1.5;
+  }
+  .tw-recipe .head .sub strong {
+    display: block; font-family: var(--heading); font-style: italic;
+    font-size: 16px; color: var(--accent); letter-spacing: 0;
+    text-transform: none; font-weight: 600; margin-top: 2px;
+  }
+
+  .tw-recipe .row {
+    display: grid; grid-template-columns: 56px 1fr auto;
+    align-items: baseline; gap: 16px;
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(58,33,24,0.12);
+  }
+  .tw-recipe .row:last-child { border-bottom: 0; }
+  .tw-recipe .row .day {
+    font-family: var(--body); font-size: 9px; font-weight: 800;
     letter-spacing: 0.16em; text-transform: uppercase;
-    color: rgba(232,213,183,0.65);
-  }
-  .tt-board .row {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 22px;
-  }
-  .tt-board .day {
-    text-align: left;
-  }
-  .tt-board .day .d {
-    font-family: var(--body); font-size: 9px; font-weight: 800;
-    letter-spacing: 0.20em; text-transform: uppercase; color: var(--secondary);
-    border: 1.5px solid rgba(232,213,183,0.35);
-    padding: 4px 8px; border-radius: 4px;
-    display: inline-block;
-  }
-  .tt-board .day .dish {
-    margin-top: 9px;
-    font-family: var(--heading); font-size: 24px; font-weight: 700;
-    color: #f3e0b3; line-height: 1.05;
-  }
-  .tt-board .day .desc {
-    margin-top: 5px;
-    font-family: var(--heading); font-size: 16px; font-style: italic;
-    color: rgba(232,213,183,0.65); line-height: 1.2;
-  }
-  .tt-board .day .price {
-    margin-top: 8px;
-    font-family: var(--heading); font-size: 22px; font-weight: 700;
     color: var(--accent);
+    border: 1.5px solid rgba(192,57,43,0.40);
+    padding: 4px 8px; border-radius: 4px;
+    text-align: center; line-height: 1;
   }
-
-  /* === FAMILY + HOURS bottom band === */
-  .tt-bottom {
-    position: absolute; left: 64px; right: 64px; bottom: 22px; height: 80px;
-    display: flex; gap: 22px; align-items: stretch;
+  .tw-recipe .row .name {
+    display: flex; align-items: baseline;
   }
-  .tt-family {
-    flex: 1.2; background: #fff8e8; border-radius: 14px;
-    padding: 12px 18px; display: flex; align-items: center; gap: 14px;
-    border: 1px dashed rgba(74,44,42,0.18);
+  .tw-recipe .row .name .dish {
+    font-family: var(--heading); font-size: 30px; font-weight: 700;
+    color: var(--primary); line-height: 1;
   }
-  .tt-family .lbl {
-    font-family: var(--body); font-size: 9px; font-weight: 800;
-    letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
-    border-right: 1.5px dashed rgba(74,44,42,0.18);
-    padding-right: 14px; max-width: 70px; line-height: 1.3;
+  .tw-recipe .row .name .desc {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 18px; color: #8a5d44; margin-left: 14px;
   }
-  .tt-family .who {
-    display: flex; gap: 16px; flex: 1;
+  .tw-recipe .row .name .leader {
+    flex: 1; height: 0; border-bottom: 1.5px dotted rgba(58,33,24,0.20);
+    margin: 0 14px 6px;
   }
-  .tt-family .who .person {
-    display: flex; align-items: center; gap: 8px;
-  }
-  .tt-family .who .person .av {
-    width: 38px; height: 38px; border-radius: 50%;
-    background-size: cover; background-position: center;
-    border: 2px solid var(--accent);
-  }
-  .tt-family .who .person .nm {
-    font-family: var(--heading); font-size: 14px; font-weight: 700;
-    color: var(--primary); line-height: 1.1;
-  }
-  .tt-family .who .person .ro {
-    font-family: var(--body); font-size: 9px; color: #8a6b58;
-    margin-top: 1px;
-  }
-
-  .tt-hours {
-    flex: 0.95; background: var(--primary); color: #fff8e8;
-    border-radius: 14px;
-    padding: 12px 22px; display: flex; align-items: center; gap: 16px;
-  }
-  .tt-hours .lbl {
-    font-family: var(--body); font-size: 9px; font-weight: 800;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--secondary); max-width: 60px; line-height: 1.3;
-  }
-  .tt-hours .col {
-    border-left: 1.5px dashed rgba(232,213,183,0.30); padding-left: 14px;
-    display: flex; flex-direction: column; gap: 1px;
-  }
-  .tt-hours .col strong {
-    font-family: var(--body); font-size: 9px; font-weight: 700;
-    letter-spacing: 0.10em; text-transform: uppercase; color: var(--secondary);
-  }
-  .tt-hours .col span {
-    font-family: var(--heading); font-size: 13px; color: #fff8e8;
+  .tw-recipe .row .price {
+    font-family: var(--heading); font-size: 26px; font-weight: 700;
+    color: var(--accent);
   }
 {% endblock %}
 
 {% block body %}
-  <nav class="tt-nav">
+  <nav class="tw-nav">
     <div class="brand">
       <div class="stamp">{{ brand_name|first }}</div>
       <div>
         <div class="name">{{ brand_name }}</div>
-        <div class="since">Trastevere · dal 1987</div>
+        <div class="since">Trastevere · dal 1987 · cucina romana di famiglia</div>
       </div>
     </div>
     <div class="links">
@@ -276,20 +248,27 @@
     </div>
     <div class="phone">
       <div>
-        <div class="lbl">Prenota</div>
+        <div class="lbl">Prenota oggi</div>
         <div class="num">{{ dna.content.phone }}</div>
       </div>
-      <span class="wapp">w</span>
+      <span class="wapp">WhatsApp Nonna</span>
     </div>
   </nav>
 
-  <section class="tt-hero">
-    <div class="tt-photo">
+  <section class="tw-hero">
+    <div class="tw-poly one">
+      <span class="tape"></span>
       <div class="img"></div>
-      <div class="cap">— Nonna Rosa, in cucina dal 1987 —</div>
-      <span class="stamp">★ 4.8 / 580 recensioni</span>
+      <div class="cap">— pasta del giovedì —</div>
     </div>
-    <div class="tt-text">
+    <div class="tw-poly two">
+      <span class="tape"></span>
+      <span class="stamp">★ tre spicchi</span>
+      <div class="img"></div>
+      <div class="cap">— pizza in forno a legna —</div>
+    </div>
+
+    <div class="tw-text">
       <span class="eyebrow">{{ dna.content.eyebrow }}</span>
       <h1>{{ dna.content.headline|safe }}</h1>
       <p>{{ dna.content.subhead }}</p>
@@ -300,43 +279,21 @@
     </div>
   </section>
 
-  <section class="tt-board">
+  <div class="tw-recipe">
     <div class="head">
-      <h2>Il piatto di oggi, ogni giorno.</h2>
-      <span class="sub">Lavagna settimanale · cambia tutte le settimane</span>
+      <h2>Il piatto <em>del giorno</em></h2>
+      <div class="sub">Cambia tutte le settimane<strong>scritto a mano dalla Nonna</strong></div>
     </div>
-    <div class="row">
-      {% for day, dish, desc, price in dna.content.daily_specials %}
-        <div class="day">
-          <span class="d">{{ day }}</span>
-          <div class="dish">{{ dish }}</div>
-          <div class="desc">{{ desc }}</div>
-          <div class="price">{{ price }}</div>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
-
-  <div class="tt-bottom">
-    <div class="tt-family">
-      <div class="lbl">La famiglia<br>Trezzi</div>
-      <div class="who">
-        {% for nm, ro in dna.content.family %}
-          <div class="person">
-            <div class="av" style="background-image:url('{{ imagery|at:forloop.counter|default:imagery.1 }}')"></div>
-            <div>
-              <div class="nm">{{ nm }}</div>
-              <div class="ro">{{ ro }}</div>
-            </div>
-          </div>
-        {% endfor %}
+    {% for day, dish, desc, price in dna.content.daily_specials %}
+      <div class="row">
+        <span class="day">{{ day }}</span>
+        <span class="name">
+          <span class="dish">{{ dish }}</span>
+          <span class="desc">{{ desc }}</span>
+          <span class="leader"></span>
+        </span>
+        <span class="price">{{ price }}</span>
       </div>
-    </div>
-    <div class="tt-hours">
-      <div class="lbl">Orari di apertura</div>
-      {% for day, hh in dna.content.hours %}
-        <div class="col"><strong>{{ day }}</strong><span>{{ hh }}</span></div>
-      {% endfor %}
-    </div>
+    {% endfor %}
   </div>
 {% endblock %}

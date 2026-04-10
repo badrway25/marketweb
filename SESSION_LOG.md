@@ -579,3 +579,108 @@ All three pools use intentionally distinct heroes so no two restaurants share th
 
 ### Exact next step
 Phase 2f continues with the **Agency** category (3 archetypes: bold-grid, editorial-quiet, case-study-led). Same recipe: design DNA → write 3 archetype HTML files → 3 imagery keys → seed any new templates → regenerate → verify with Playwright.
+
+## Session 10 — Restaurant Pilot Fix Pass (2026-04-10)
+
+**Agent:** Restaurant-template-pilot (worktree: restaurant-template-pilot, second pass)
+**Goal:** Visual review of the Session 9 restaurant pilot found that only 1 of 3 templates (Brace) was clearly distinct. Gusto and Sapore still felt like recolors of each other — same cream paper top, same dark band bottom, same restaurant-interior imagery feel. Diagnose the root cause and fix.
+
+### Investigation
+
+End-to-end audit of the 3 restaurant templates against the DNA registry, composition files, imagery pools, and rendered PNGs:
+
+| Slug | DNA archetype | Composition path | Asset row | Preview matches archetype intent? |
+|------|--------------|-----------------|-----------|-----------------------------------|
+| gusto-fine-dining          | fine-dining     | restaurant/fine-dining.html    | 1 | ⚠ Cream paper, photo right, dark band bottom — too similar to Sapore |
+| sapore-trattoria-pizzeria  | trattoria-warm  | restaurant/trattoria-warm.html | 1 | ⚠ Cream paper, polaroid left, DARK chalkboard bottom — too similar to Gusto |
+| brace-street-food-lab      | street-modern   | restaurant/street-modern.html  | 1 | ✓ Yellow brutalist, completely distinct |
+
+The DNA registry, composition resolver, asset table, and `assets.first` were all correct. The bug was **two-fold and structural**:
+
+1. **Imagery pool overlap.** My Session 9 notes claimed "fully-distinct URL sets" between `restaurant-fine` and `restaurant-trattoria`, but the actual file showed **5 of 6 URLs were shared** between the two pools — only the hero (slot 0) was different. The remaining slots simply rotated the same set: `1565299624946`, `1546069901`, `1540189549336`, `1551782450`, `1577106263724` appeared in both pools. So even though Gusto and Sapore had different compositions, they were rendering the same set of restaurant-interior + plated-dish photos shuffled around.
+2. **Compositions had structurally similar mood.** Both compositions used a **cream paper page background** with a **dark contrast band at the bottom** (Gusto's course list dark band vs Sapore's chalkboard daily-menu dark strip). At thumbnail size, the cream-top + dark-bottom signature dominated and made the two cards read as "same skeleton, different details". The fact that the medical pilot can have 4 templates that look different is because each medical archetype uses a fundamentally different page background (navy gradient · pastel cream · editorial bookshelf brown · spa-photo full-bleed). Restaurant didn't have that.
+
+### Root Cause
+
+**Two structural mistakes baked into Session 9:**
+
+A. **Imagery pools were not actually distinct** — only the hero photo differed; slots 1-5 were 5/6 shared between fine and trattoria. The user-visible result: same food photography across both templates.
+
+B. **Both compositions ended in a dark contrast band** with a cream/warm hero above. At thumbnail scale, that "cream top, dark bottom" signature collapses two genuinely different layouts into one perceived shape. The hero composition differences (split-plate vs polaroid + handwritten) were masked by the bottom-band similarity.
+
+### Fix Applied
+
+#### A. Imagery pools rewritten with truly distinct URL sets
+
+Both pools were emptied and rebuilt with **6 hand-checked Unsplash photos each, zero overlap with each other or with the legacy `restaurant` pool**:
+
+| Pool | New URLs (mood) |
+|------|-----------------|
+| `restaurant-fine` | 1414235077428 (dark restaurant table close-up + wine), 1467003909585 (dark moody plated dish), 1505253758473 (dark Indian curry pan), 1551218808 (chef hands chopping), 1544025162 (ribs board), 1565958011703 (raspberry cake on dark wood) — all DARK / low-key |
+| `restaurant-trattoria` | 1481931098730 (3 sunny pasta plates overhead), 1593504049359 (margherita pizza cheese pull), 1473093295043 (bright pesto bowtie), 1488477181946 (panna cotta jars), 1574071318508 (warm fettuccine pan), 1547573854 (overhead family table) — all BRIGHT / sunny |
+
+Each candidate was downloaded and visually inspected via the Read tool before being committed (one candidate, `1532453288672`, returned a clothing-store photo and was rejected — then replaced with a confirmed dish image). The cached `media/preview_imagery/restaurant-fine/` and `restaurant-trattoria/` directories were cleared so the new URLs would be downloaded fresh.
+
+#### B. fine-dining.html rewritten as "DARK editorial Michelin"
+
+Pivoted from the cream-paper layout to a **fully dark charcoal page** (`background: #0b0907`):
+- **No more cream paper anywhere** — the entire viewport is the same charcoal
+- **No more bottom contrast band** — the menu list sits on the same dark background as the hero, separated by a single hairline gold rule rather than a different colour fill
+- Top: thin centered serif wordmark navbar with hairline gold rule
+- Hero LEFT (text column on charcoal): eyebrow + giant Playfair italic headline + italic subhead + single gold-underlined "RIVERVA LA SERATA" link + concierge name in italic
+- Hero RIGHT (full-bleed plate close-up): the new dark restaurant table photo with dark gradient vignette, "★ Atto V" gold tag, photographer + chef credit in italic gold
+- Lower band (same dark bg, no contrast): rule + "Il menù — autunno '26" header + 5 numbered courses (italic gold numerals + cream dish names + italic descriptions + dotted leader + caps gold wine pairings) + footline with price + concierge email
+
+#### C. trattoria-warm.html rewritten as "BRIGHT cream scrapbook"
+
+Pivoted from the dark-chalkboard layout to a **fully sun-bleached cream page** (`background: #fff4da`):
+- **No dark areas anywhere** — the whole viewport is warm cream/butter
+- **No more dark chalkboard** — replaced with a cream-paper recipe card with washi tape corners
+- **No more dark hours band** — folded into the cream recipe card
+- Top: warm cream nav with brand stamp + giant phone CTA + green WhatsApp pill (rotated)
+- Hero: TWO stacked tilted polaroid photos (-4° and +5°) with hand-captioned dish labels + "tre spicchi" red stamp on the second polaroid + red washi-tape strips
+- Hero RIGHT: huge Caveat handwritten "Da Nonna Rosa" headline with sun ☀ eyebrow, italic subhead, two CTAs (red rotated phone button + green rotated WhatsApp)
+- Cream paper recipe card at the bottom (washi tape corners, dotted dividers): "Il piatto del giorno" + 5 daily specials with day pill + dish name in Caveat + italic description + dotted leader + price in red
+
+### Files Created (0)
+- None. Both new compositions overwrote the existing `restaurant/fine-dining.html` and `restaurant/trattoria-warm.html`.
+
+### Files Modified (3)
+- `apps/catalog/preview_imagery.py` — `restaurant-fine` and `restaurant-trattoria` pools fully replaced with 12 new URLs
+- `templates/preview_compositions/restaurant/fine-dining.html` — full rewrite (cream→dark)
+- `templates/preview_compositions/restaurant/trattoria-warm.html` — full rewrite (dark-band→bright cream)
+
+### Files Cleaned
+- `media/preview_imagery/restaurant-fine/` — entire directory deleted (old cached photos for the rejected URLs)
+- `media/preview_imagery/restaurant-trattoria/` — entire directory deleted
+- `media/template_assets/2026/04/gusto-fine-dining-preview.png` — old cream-paper preview replaced
+- `media/template_assets/2026/04/sapore-trattoria-pizzeria-preview.png` — old dark-chalkboard preview replaced
+
+### Database delta
+- TemplateAsset rows for gusto-fine-dining and sapore-trattoria-pizzeria deleted then re-created (new file paths point to canonical filenames, no orphan suffixes — used the clean delete + regenerate-without-force recipe from Session 9)
+- 19 templates total (unchanged), 3 restaurant DNA entries (unchanged), Brace untouched
+
+### Verified (Playwright MCP, port 8102)
+- Direct PNG view of `gusto-fine-dining-preview.png` (with `?cb=` cache-bust): fully dark charcoal background, full-bleed plated table close-up on the right, italic Playfair headline left, no cream paper anywhere, no contrast band — completely different mood from Session 9 version
+- Direct PNG view of `sapore-trattoria-pizzeria-preview.png` (with `?cb=`): fully bright cream throughout, two tilted polaroid photos of pasta and pizza, handwritten Caveat headline, cream washi-tape recipe card at the bottom, NO dark chalkboard — completely different mood from Session 9 version
+- `/templates/restaurant/` listing with cache-busted images: 3 visibly distinct cards at thumbnail size — Brace yellow brutalist, Sapore sun-cream handwritten, Gusto dark editorial. Three opposite ends of the visual spectrum, not three variations of the same theme.
+- `/templates/restaurant/gusto-fine-dining/` detail page: gallery shows the new dark editorial preview
+- `/templates/restaurant/sapore-trattoria-pizzeria/` detail page: gallery shows the new bright cream preview
+- `/templates/medical/` regression check: 4 medical archetypes still distinct, no medical preview affected
+
+### Browser cache trap (note for future sessions)
+Playwright Chromium aggressively caches the preview PNG files when the URL is exactly the same. After regenerating a preview at the same canonical filename, the browser will serve the OLD bytes from its disk cache when you re-navigate to the listing page. Fix: either close the browser and re-open (does not always clear), or use `browser_evaluate` to mutate `img.src` with a `?cb=<timestamp>` query string to force a re-fetch. Direct navigation to `/media/.../preview.png?v=<n>` also bypasses the cache for that single file.
+
+### Key Findings (no new D-XXX decisions, but lessons logged)
+- **Imagery pool distinctness is non-negotiable for category siblings** — sharing 5 of 6 URLs across "distinct" pools is functionally identical to sharing all 6. Restaurant pools must each have ZERO URL overlap going forward, even if it means hand-checking new Unsplash IDs (which is what Session 10 did).
+- **The bottom-band trap** — at thumbnail size, page-level color regions dominate over hero composition details. Two templates with the same "cream top, dark bottom" macro shape will always read as similar regardless of what's in each section. The fix is to make the WHOLE PAGE one consistent macro tone (Gusto = all dark; Sapore = all cream) so the entire silhouette is different.
+- **Always download and visually inspect Unsplash candidates** before committing to them. HTTP 200 just means the photo exists, not that it's a dish photo. Session 10 caught one clothing-store image (`1532453288672`) before it could ship.
+
+### Blockers
+- None. Restaurant pilot is now fully validated end-to-end. The 3 cards read as 3 different products at thumbnail size, full preview, and detail page.
+
+### Exact next step
+**Phase 2f continues with the Agency category (3 archetypes).** Restaurant is locked in. Apply the Session 10 lessons when designing agency archetypes:
+1. Each agency imagery pool MUST have zero URL overlap with the others — hand-check every photo via the Read tool before committing
+2. Each agency composition must have a completely different page-level macro tone (e.g. bold-grid = dark with bright accent, editorial-quiet = light with serif, case-study-led = colorful blocks)
+3. No two agency compositions should both use a "X-on-top, Y-on-bottom" colour split — make the silhouettes different at thumbnail scale

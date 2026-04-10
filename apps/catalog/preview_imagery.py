@@ -47,30 +47,35 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80&auto=format&fit=crop",
     ],
     # Per-archetype restaurant pools — see apps/catalog/template_dna.py.
-    # Each pool is intentionally distinct from the others so two restaurants
-    # in the catalog never share the same image set. Where possible we
-    # reuse URLs already cached by other categories (offline-safe).
+    # Each pool uses FULLY-DISTINCT URLs from the others — zero overlap with
+    # each other, zero overlap with legacy `restaurant`, zero overlap with
+    # `restaurant-street`. Each photo was hand-checked in Session 10 after the
+    # Session 9 set produced visually similar pools (5 of 6 URLs were shared
+    # between fine and trattoria, only the hero differed).
+    #
+    # restaurant-fine: dark, low-key, plated close-ups, fine-dining mood.
+    # restaurant-trattoria: bright daylight, rustic, sunny, family-table.
     "restaurant-fine": [
-        # 0: hero - chef plating (warm side-light, fine-dining feel)
-        "https://images.unsplash.com/photo-1577106263724-2c8e03bfe9cf?w=1600&q=80&auto=format&fit=crop",
-        # 1: feature - moody dish (low-key)
-        "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=1200&q=80&auto=format&fit=crop",
-        # 2-5: course imagery (gallery + chef portrait reused from portfolio pool)
-        "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80&auto=format&fit=crop",
+        # 0: hero — dark restaurant table close-up with plated dish & wine glass
+        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80&auto=format&fit=crop",
+        # 1: signature plated dish, dark backdrop, dramatic light
+        "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: course imagery — all dark / low-key plated
+        "https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80&auto=format&fit=crop",
     ],
     "restaurant-trattoria": [
-        # 0: hero - warm restaurant interior (existing)
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&q=80&auto=format&fit=crop",
-        # 1: feature - rustic pasta dish
-        "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1200&q=80&auto=format&fit=crop",
-        # 2-5: dish-of-the-day cards (mix of restaurant pool + a warmer business interior)
-        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1577106263724-2c8e03bfe9cf?w=800&q=80&auto=format&fit=crop",
+        # 0: hero — three pasta plates on a white tablecloth, sunny overhead
+        "https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=1600&q=80&auto=format&fit=crop",
+        # 1: dramatic margherita pizza cheese-pull, warm light
+        "https://images.unsplash.com/photo-1593504049359-74330189a345?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: bright rustic dishes — pesto pasta, panna cotta jars, fettuccine pan, family table
+        "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=800&q=80&auto=format&fit=crop",
     ],
     "restaurant-street": [
         # 0: hero - bold burger product shot (NEW)
