@@ -1,0 +1,313 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: corporate-suite   (business DNA — Phase 2g2x)
+   FOR     : board advisory / management consulting / enterprise
+   MOOD    : institutional navy + dove cream, photo-led hero with
+             serif drama headline and boardroom portrait
+   HERO    : 55/45 split — serif headline + meta strip LEFT,
+             full-bleed boardroom photo RIGHT with credit ribbon
+   NAVBAR  : full-bleed solid navy with phone number right
+   CARDS   : 3-up advisory pillar cards with serif numerals
+   FOOTER  : KPI strip over navy band + sectors ribbon bottom
+
+   D-047 chrome-authoring contract:
+   - Zero literal brand strings. Everything flows from dna.content.*
+   - No hardcoded image URLs. All photos via {{ imagery.N }}
+   - No literal sector lists / advisor names / quotes.
+============================================================ #}
+{% block extra_css %}
+  body { background: #eef0f3; color: #0f172a; }
+  .pv-frame { background: #eef0f3; }
+
+  /* === TOP SOLID NAVY NAV === */
+  .cs-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 68px;
+    display: flex; align-items: center; padding: 0 64px;
+    background: var(--primary); color: #eef0f3;
+    z-index: 10;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset;
+  }
+  .cs-nav .wm {
+    font-family: var(--heading); font-weight: 700; font-size: 22px;
+    letter-spacing: 0.01em; display: flex; align-items: center; gap: 14px;
+  }
+  .cs-nav .wm .crest {
+    width: 34px; height: 34px; border: 1.5px solid var(--accent);
+    color: var(--accent); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; font-family: var(--heading);
+  }
+  .cs-nav .links {
+    display: flex; gap: 34px; margin-left: 72px;
+    font-family: var(--body); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(238,240,243,0.72);
+  }
+  .cs-nav .phone {
+    margin-left: auto; display: flex; align-items: center; gap: 18px;
+    font-family: var(--heading); font-size: 15px; font-weight: 600;
+    color: #eef0f3;
+  }
+  .cs-nav .phone .tag {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid rgba(255,255,255,0.18);
+    padding: 6px 12px;
+  }
+
+  /* === HERO: 55/45 split — serif drama L · boardroom photo R === */
+  .cs-hero {
+    position: absolute; top: 68px; left: 0; right: 0; height: 496px;
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 0;
+    background: #eef0f3;
+  }
+  .cs-left {
+    padding: 76px 58px 0 72px; position: relative;
+    background:
+      linear-gradient(180deg, #eef0f3 0%, #f5f6f8 100%);
+  }
+  .cs-left .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--primary);
+  }
+  .cs-left .eyebrow:before {
+    content: ''; width: 36px; height: 1.5px; background: var(--accent);
+  }
+  .cs-left h1 {
+    margin-top: 36px;
+    font-family: var(--heading); font-size: 72px; font-weight: 700;
+    line-height: 1.02; letter-spacing: -0.02em;
+    color: var(--primary); max-width: 660px;
+  }
+  .cs-left h1 em {
+    font-style: italic; color: var(--accent); font-weight: 700;
+  }
+  .cs-left .sub {
+    margin-top: 28px; max-width: 520px;
+    font-family: var(--body); font-size: 15px; line-height: 1.65;
+    color: #475569;
+  }
+  .cs-left .cta-row {
+    margin-top: 36px; display: flex; gap: 22px; align-items: center;
+  }
+  .cs-left .cta-primary {
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--primary);
+    border: 1.5px solid var(--primary); padding: 14px 28px;
+    display: inline-flex; align-items: center; gap: 14px;
+  }
+  .cs-left .cta-primary:after {
+    content: '→'; font-family: var(--heading); font-size: 16px; color: var(--accent);
+  }
+  .cs-left .cta-secondary {
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.06em; color: #64748b;
+    border-bottom: 1px solid #64748b; padding-bottom: 4px;
+  }
+  .cs-left .meta-strip {
+    position: absolute; left: 72px; right: 58px; bottom: 40px;
+    display: flex; gap: 42px; padding-top: 18px;
+    border-top: 1px solid rgba(15,23,42,0.12);
+  }
+  .cs-left .meta-strip .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #64748b;
+  }
+  .cs-left .meta-strip .item strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 15px;
+    color: var(--primary); font-weight: 700; letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .cs-right {
+    position: relative;
+    background: url('{{ imagery.0 }}') center/cover;
+    filter: grayscale(18%) contrast(1.06) brightness(0.92);
+  }
+  .cs-right:before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(
+      215deg,
+      rgba(15,23,42,0.05) 0%,
+      rgba(15,23,42,0) 40%,
+      rgba(15,23,42,0.72) 100%
+    );
+  }
+  .cs-right .credit {
+    position: absolute; left: 32px; right: 32px; bottom: 30px;
+    display: flex; justify-content: space-between;
+    color: #eef0f3; z-index: 2;
+    padding-top: 18px;
+    border-top: 1px solid rgba(238,240,243,0.28);
+  }
+  .cs-right .credit .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(238,240,243,0.7);
+  }
+  .cs-right .credit .item strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-size: 17px;
+    color: #fff; text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+
+  /* === ADVISORY PILLARS + FLOATING KPI STRIP === */
+  .cs-advisory {
+    position: absolute; left: 64px; right: 64px; top: 586px;
+    display: grid; grid-template-columns: 0.45fr repeat(3, 1fr); gap: 24px;
+    align-items: stretch;
+  }
+  .cs-advisory .intro {
+    padding-right: 8px; border-right: 1px solid rgba(15,23,42,0.1);
+  }
+  .cs-advisory .intro .label {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-advisory .intro h3 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: var(--primary); line-height: 1.15; max-width: 230px;
+  }
+  .cs-advisory .pillar {
+    padding: 14px 20px 18px 0;
+    border-top: 1.5px solid var(--primary);
+  }
+  .cs-advisory .pillar .num {
+    font-family: var(--heading); font-size: 13px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .cs-advisory .pillar h4 {
+    margin-top: 8px;
+    font-family: var(--heading); font-size: 19px; font-weight: 700;
+    color: var(--primary);
+  }
+  .cs-advisory .pillar p {
+    margin-top: 10px; font-size: 12px; line-height: 1.58;
+    color: #475569;
+  }
+
+  /* === BOTTOM STRIP — KPI STRIP OVER NAVY + SECTORS RIBBON === */
+  .cs-kpi {
+    position: absolute; left: 0; right: 0; bottom: 44px; height: 86px;
+    background: var(--primary); color: #eef0f3;
+    padding: 0 72px;
+    display: grid; grid-template-columns: 0.9fr repeat(4, 1fr); gap: 0;
+    align-items: center;
+  }
+  .cs-kpi .heading {
+    font-family: var(--heading); font-size: 14px; font-weight: 700;
+    color: #eef0f3; max-width: 220px; line-height: 1.25;
+    padding-right: 26px; border-right: 1px solid rgba(255,255,255,0.14);
+  }
+  .cs-kpi .heading:before {
+    content: ''; display: block; width: 28px; height: 1.5px;
+    background: var(--accent); margin-bottom: 10px;
+  }
+  .cs-kpi .stat {
+    padding: 0 28px; border-right: 1px solid rgba(255,255,255,0.14);
+  }
+  .cs-kpi .stat:last-child { border-right: 0; }
+  .cs-kpi .stat .num {
+    font-family: var(--heading); font-size: 28px; font-weight: 700;
+    color: #eef0f3; line-height: 1;
+  }
+  .cs-kpi .stat .lbl {
+    display: block; margin-top: 6px;
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(238,240,243,0.58);
+  }
+
+  .cs-sectors {
+    position: absolute; left: 72px; right: 72px; bottom: 14px;
+    display: flex; align-items: center; gap: 32px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #64748b;
+  }
+  .cs-sectors .label {
+    color: var(--accent); border-left: 2px solid var(--accent);
+    padding-left: 12px;
+  }
+  .cs-sectors .dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: rgba(15,23,42,0.24); display: inline-block;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="cs-nav">
+    <div class="wm">
+      <span class="crest">{{ brand_name|first }}</span>
+      <span>{{ brand_name }}</span>
+    </div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <div class="phone">
+      <span class="tag">Segreteria advisory</span>
+      <span>{{ dna.content.phone }}</span>
+    </div>
+  </nav>
+
+  <section class="cs-hero">
+    <div class="cs-left">
+      <div class="eyebrow">{{ dna.content.eyebrow }}</div>
+      <h1>{{ dna.content.headline|safe }}</h1>
+      <p class="sub">{{ dna.content.subhead }}</p>
+      <div class="cta-row">
+        <span class="cta-primary">{{ dna.content.primary_cta }}</span>
+        <span class="cta-secondary">{{ dna.content.secondary_cta }}</span>
+      </div>
+      <div class="meta-strip">
+        {% for label, value in dna.content.meta_strip %}
+          <div class="item">{{ label }}<strong>{{ value }}</strong></div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="cs-right">
+      <div class="credit">
+        <div class="item">{{ dna.content.hero_credit_left.0 }}<strong>{{ dna.content.hero_credit_left.1 }}</strong></div>
+        <div class="item">{{ dna.content.hero_credit_right.0 }}<strong>{{ dna.content.hero_credit_right.1 }}</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cs-advisory">
+    <div class="intro">
+      <div class="label">{{ dna.content.pillars_label }}</div>
+      <h3>{{ dna.content.pillars_heading }}</h3>
+    </div>
+    {% for num, title, blurb in dna.content.pillars %}
+      <div class="pillar">
+        <div class="num">{{ num }} / {{ dna.content.pillars|length }}</div>
+        <h4>{{ title }}</h4>
+        <p>{{ blurb }}</p>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section class="cs-kpi">
+    <div class="heading">{{ dna.content.kpi_heading }}</div>
+    {% for num, label in dna.content.kpi_strip %}
+      <div class="stat">
+        <div class="num">{{ num }}</div>
+        <span class="lbl">{{ label }}</span>
+      </div>
+    {% endfor %}
+  </section>
+
+  <div class="cs-sectors">
+    <span class="label">{{ dna.content.sectors_label }}</span>
+    {% for sector in dna.content.sectors %}
+      <span>{{ sector }}</span>
+      {% if not forloop.last %}<span class="dot"></span>{% endif %}
+    {% endfor %}
+  </div>
+{% endblock %}

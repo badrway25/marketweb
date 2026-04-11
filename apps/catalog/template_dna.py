@@ -62,6 +62,9 @@ LAYOUT_ARCHETYPES: dict[str, str] = {
     # Ecommerce pilot
     "fashion-editorial": "High-fashion monobrand store — fully dark magazine cover with gold accents and italic serif drama.",
     "artisan-workshop":  "Handmade bottega — fully warm cream page with typographic hero, rubber-stamped info panel and labeled edition cards.",
+    # Business hardening wave (Phase 2g2x)
+    "corporate-suite":        "Board advisory / consulting suite — institutional navy band, photo-led hero with boardroom portrait, serif headline, advisory pillar cards + KPI strip over industry-sectors ribbon.",
+    "startup-saas-landing":   "Conversion-first landing for SaaS & startups — cosmic gradient page, typographic manifesto hero with NO big photo, product mockup card overlap, feature pills, metric strip, pricing teaser + live ship log.",
 }
 
 HERO_STYLES: dict[str, str] = {
@@ -72,6 +75,8 @@ HERO_STYLES: dict[str, str] = {
     "editorial-plate":       "Full-bleed plate photo right + huge serif manifesto headline left + course index gutter.",
     "warm-photo-frame":      "Photo card left + warm chalkboard headline & daily menu right.",
     "product-cutout":        "Tilted product photo right + giant condensed display headline left + price badge.",
+    "split-executive":           "55/45 split: serif drama headline + meta strip left + full-bleed boardroom photo right with credit ribbon.",
+    "centered-manifesto-product": "Centered typographic manifesto with feature pills + product-mockup dashboard card overlapping the hero bottom. No big hero photo.",
 }
 
 NAVBAR_STYLES: dict[str, str] = {
@@ -82,6 +87,8 @@ NAVBAR_STYLES: dict[str, str] = {
     "serif-centered":  "Centered serif wordmark with hairline rule and small reservation link right.",
     "warm-bar":        "Cream sticky bar with handwritten brand on left and big phone CTA on right.",
     "bold-pill":       "Black pill nav floating top, bright accent ORDER button on the right.",
+    "solid-corporate":     "Full-bleed solid navy bar with left-aligned links and phone number on the right.",
+    "pill-floating-glow":  "Floating rounded pill nav with glowing primary CTA button and launch-date badge.",
 }
 
 FOOTER_STYLES: dict[str, str] = {
@@ -92,6 +99,8 @@ FOOTER_STYLES: dict[str, str] = {
     "concierge-press":  "Concierge tile + press logos band.",
     "hours-warm":       "Hours strip + WhatsApp + map (warm cream).",
     "delivery-strip":   "Delivery partner logos + counter status + order CTA.",
+    "sectors-ribbon":    "KPI strip over navy band + industry-sectors ribbon with uppercase wordmarks.",
+    "shiplog-countdown": "Live ship-log list + next-release countdown chip (startup changelog vibe).",
 }
 
 CARD_STYLES: dict[str, str] = {
@@ -102,6 +111,8 @@ CARD_STYLES: dict[str, str] = {
     "course-index":    "Numbered serif course list with name + paired wine + ingredient line.",
     "chalkboard-day":  "Daily-special chalkboard cards with handwritten dish name + price tag.",
     "product-grid":    "Square product cards with photo + price + Add button.",
+    "pillar-advisory":    "3-up wide advisory pillar cards: serif numeral + title + blurb + hairline.",
+    "feature-glow":       "Feature pills + glowing product mockup card with metric readout.",
 }
 
 BUTTON_STYLES: dict[str, str] = {
@@ -112,6 +123,8 @@ BUTTON_STYLES: dict[str, str] = {
     "ghost-gold-serif":  "Underline serif text in gold accent — concierge style.",
     "rustic-rounded":    "Warm rounded button with red fill and slight tilt.",
     "block-bold":        "Heavy block button, bright accent fill, arrow icon, no radius.",
+    "ghost-institutional": "Outline pill in dove cream over navy — institutional consulting tone.",
+    "glow-pill":           "Solid glowing rounded pill with subtle drop-glow, startup/SaaS conversion button.",
 }
 
 DENSITY_PROFILES: dict[str, str] = {
@@ -129,6 +142,8 @@ TONES: dict[str, str] = {
     "editorial-chef": "Aulic, sensorial, restrained, chef-as-author.",
     "familiar-warm":  "Caloroso, dialettale, di casa, alla mano.",
     "energetic-bold": "Brutale, urbano, scanzonato, no-nonsense.",
+    "advisory-sober": "Istituzionale, cauto, board-room, evidence-led.",
+    "growth-tech":    "Diretto, energico, product-led, orientato alla conversione.",
 }
 
 CONVERSION_PATTERNS: dict[str, str] = {
@@ -139,6 +154,8 @@ CONVERSION_PATTERNS: dict[str, str] = {
     "concierge-reservation":  "Concierge tile + email + 'Riserva la serata' link, no public form.",
     "phone-and-whatsapp":     "Giant phone number + WhatsApp pill, family-style.",
     "order-now-delivery":     "ORDINA ORA primary CTA + delivery partners strip + counter status.",
+    "private-call":           "Ghost CTA 'Fissa una call privata' + direct phone + senior-partner meta row.",
+    "free-trial-glow":        "Glowing primary 'Inizia gratis' CTA + secondary 'Guarda la demo' + pricing teaser card.",
 }
 
 IMAGERY_DIRECTIONS: dict[str, str] = {
@@ -149,6 +166,8 @@ IMAGERY_DIRECTIONS: dict[str, str] = {
     "moody-plated":         "Dark plated dishes, low-key tungsten light, fine-dining mood.",
     "rustic-trattoria":     "Warm wood tables, hands kneading dough, terra-cotta tones.",
     "street-pop-product":   "Bold burger / pizza / fritti cutouts, daylight high-contrast.",
+    "executive-boardroom":  "Boardroom meetings, corporate HQ interiors, executive portraits, industrial facilities.",
+    "product-dashboard":    "Laptop screens with dashboards, product UIs, code editors, open-plan tech offices.",
 }
 
 
@@ -466,6 +485,122 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "content": {
             "eyebrow":    "Catalogo autunno · edizione 47",
             "headline":   "Pezzi unici fatti in bottega.",
+        },
+    },
+
+    # ─────────────────────────────────────────────────────────────
+    # Business hardening wave (Phase 2g2x) — 2 distinct archetypes
+    # (corporate-suite · startup-saas-landing)
+    # ─────────────────────────────────────────────────────────────
+
+    # ── B1) CORPORATE-SUITE — Pragma, board advisory ─────────────
+    "pragma-corporate-suite": {
+        "archetype":          "corporate-suite",
+        "hero_style":         "split-executive",
+        "navbar_style":       "solid-corporate",
+        "footer_style":       "sectors-ribbon",
+        "section_order":      ["nav", "editorial-hero", "advisory-pillars", "kpi-strip", "sectors-ribbon"],
+        "card_style":         "pillar-advisory",
+        "button_style":       "ghost-institutional",
+        "density":            "airy",
+        "tone":               "advisory-sober",
+        "imagery_direction":  "executive-boardroom",
+        "imagery_key":        "business-corporate",
+        "conversion_pattern": "private-call",
+        "font_pairing":       ("Merriweather", "Inter"),
+        "content": {
+            "eyebrow":       "Advisory corporate · Milano · Francoforte · Zurigo",
+            "headline":      'Dove si prendono le decisioni <em>che contano.</em>',
+            "subhead":       "Affianchiamo direzioni generali e board di PMI consolidate nelle scelte strutturali — crescita organica, M&A, governance e trasformazione dei processi.",
+            "primary_cta":   "Fissa una call privata",
+            "secondary_cta": "Scarica la presentazione",
+            "phone":         "+39 02 3611 9900",
+            "nav_links":     ["Chi siamo", "Competenze", "Settori", "Board advisory", "Contatti"],
+            "meta_strip": [
+                ("Headquarters",  "Milano · Porta Nuova"),
+                ("Equipe senior", "14 partner"),
+                ("Mandati attivi", "42 progetti"),
+            ],
+            "hero_credit_left":  ("Direzione",       "Dott. F. Seregni"),
+            "hero_credit_right": ("Anno fondazione", "2004"),
+            "pillars_heading": "Tre competenze, una sola firma",
+            "pillars_label":   "Practice",
+            "pillars": [
+                ("01", "Board advisory",    "Affianchiamo CdA e direzioni generali nelle decisioni di cambio di passo — piani industriali, assetti proprietari, successioni d'impresa."),
+                ("02", "Crescita & M&A",    "Due diligence, valutazione, negoziazione e integrazione post-deal in 10 – 12 settimane, con team dedicati per settore."),
+                ("03", "Governance & ESG",  "Compliance CSRD, reporting integrato, modelli 231, struttura dei comitati e policy di sostenibilità."),
+            ],
+            "kpi_heading": "Venti anni di mandati riservati",
+            "kpi_strip": [
+                ("22",      "anni di attività"),
+                ("180+",    "mandati chiusi"),
+                ("€ 1.4 B", "valore transato"),
+                ("94%",     "ripetizione incarico"),
+            ],
+            "sectors_label": "Settori di intervento",
+            "sectors": ["Industria & manifattura", "Servizi finanziari", "Energia & utilities", "Retail & consumer", "Healthcare & pharma"],
+        },
+    },
+
+    # ── B2) STARTUP-SAAS-LANDING — Elevate, conversion-first ─────
+    "elevate-startup-landing": {
+        "archetype":          "startup-saas-landing",
+        "hero_style":         "centered-manifesto-product",
+        "navbar_style":       "pill-floating-glow",
+        "footer_style":       "shiplog-countdown",
+        "section_order":      ["launch-banner", "pill-nav", "manifesto-hero", "product-mockup", "metric-strip", "pricing-card", "ship-log"],
+        "card_style":         "feature-glow",
+        "button_style":       "glow-pill",
+        "density":            "medium",
+        "tone":               "growth-tech",
+        "imagery_direction":  "product-dashboard",
+        "imagery_key":        "business-startup",
+        "conversion_pattern": "free-trial-glow",
+        "font_pairing":       ("Manrope", "Inter"),
+        "content": {
+            "launch_banner":  "Serie A · Q2 2026 · Chiudiamo i primi 50 posti",
+            "eyebrow":        "Landing conversion-first · GTM kit per SaaS & Startup",
+            "headline":       'Dalla <em>waitlist</em> al primo <em>MRR</em> in quattordici giorni.',
+            "subhead":        "Il kit di landing che trasforma i primi visitatori in utenti paganti — A/B test integrato, pricing table live, checkout Stripe out-of-the-box.",
+            "primary_cta":    "Inizia gratis",
+            "secondary_cta":  "Guarda la demo · 2 min",
+            "phone":          "hello@elevatekit.io",
+            "nav_links":      ["Prodotto", "Funzioni", "Prezzi", "Changelog", "Docs"],
+            "feature_pills":  ["Stripe + Linear", "A/B test integrato", "Edge analytics", "Copy kit italiano"],
+            "product_mockup": {
+                "chrome_label":     "elevate.app / onboarding",
+                "chrome_dots":      ["●", "●", "●"],
+                "metric_primary":   "↑ 38%",
+                "metric_label":     "conversione CTA primaria",
+                "secondary_metric": "+ € 12.4K",
+                "secondary_label":  "MRR ultimi 30 giorni",
+                "badge":            "Live A/B",
+            },
+            "social_proof_label": "Adottato da 240 startup italiane",
+            "social_proof_row":   ["FLUX", "NOVA/", "QUANTA", "HELIX", "RIFT.", "CASP"],
+            "metric_heading": "I numeri del kit in produzione",
+            "metric_strip": [
+                ("3.1 ×",  "conversione landing media"),
+                ("14 gg",  "dal deploy al primo utente pagante"),
+                ("99.98%", "uptime infrastruttura"),
+            ],
+            "pricing_card": {
+                "label":   "Prezzi trasparenti",
+                "plan":    "Plan Launch",
+                "price":   "€ 29",
+                "period":  "/ mese",
+                "note":    "Annullamento a un click · zero setup fee",
+                "cta":     "Attiva il trial di 14 giorni",
+                "perks":   ["Hosting incluso", "CLI deploy", "Supporto prioritario"],
+            },
+            "ship_log_label": "Ship log live",
+            "ship_log_items": [
+                ("Ieri",    "v2.8 · Nuova libreria hero & blocchi testimonial"),
+                ("Martedì", "v2.7 · A/B test integrato con GrowthBook"),
+                ("Lunedì",  "v2.6 · Stripe Checkout one-click"),
+            ],
+            "next_drop_label": "Prossima release",
+            "next_drop_value": "v2.9 · venerdì 18",
         },
     },
 

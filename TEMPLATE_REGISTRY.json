@@ -1,6 +1,6 @@
 {
-  "version": "0.7.0",
-  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, completeness flag and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. Templates with `live_preview: true` ALSO have a content registry entry in apps/catalog/template_content.py and (re-)use a per-archetype skin folder under templates/live_templates/<category>/<archetype>/, making them fully navigable multi-page websites accessible at /templates/<cat>/<slug>/preview/. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0: Session 15 added the ecommerce DNA pilot (Luxe fashion-editorial + Bottega artisan-workshop), fixed the missing dermatologia preview (zero TemplateAsset from Session 13's skip), rebalanced the mw-page-hero CSS for navbar clearance, regenerated stale gusto/sapore PNGs. The D-047 chrome-authoring contract now also applies to per-archetype preview compositions (not just live-template chrome): Session 15 lifted 3 cardio literals from templates/preview_compositions/medical/specialist.html that Session 14 had missed.",
+  "version": "0.7.1",
+  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, completeness flag and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. Templates with `live_preview: true` ALSO have a content registry entry in apps/catalog/template_content.py and (re-)use a per-archetype skin folder under templates/live_templates/<category>/<archetype>/, making them fully navigable multi-page websites accessible at /templates/<cat>/<slug>/preview/. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0: Session 15 added the ecommerce DNA pilot (Luxe fashion-editorial + Bottega artisan-workshop), fixed the missing dermatologia preview (zero TemplateAsset from Session 13's skip), rebalanced the mw-page-hero CSS for navbar clearance, regenerated stale gusto/sapore PNGs. The D-047 chrome-authoring contract now also applies to per-archetype preview compositions (not just live-template chrome): Session 15 lifted 3 cardio literals from templates/preview_compositions/medical/specialist.html that Session 14 had missed. v0.7.1: Session 17 closed the Phase 2g2x.1 business identity-crash case — Pragma gets its own `corporate-suite` archetype and Elevate gets its own `startup-saas-landing` archetype, both authored under D-047 from line one, with disjoint imagery pools (`business-corporate`, `business-startup`). Legacy `business.html` preserved per D-036 but architecturally unused by any published template. See D-050.",
   "last_updated": "2026-04-11",
   "templates": [
     {
@@ -40,7 +40,12 @@
       "personality": "professionale, autorevole, affidabile",
       "price": 89,
       "featured": true,
-      "status": "published"
+      "status": "published",
+      "archetype": "corporate-suite",
+      "imagery_key": "business-corporate",
+      "font_pairing": "Merriweather + Inter",
+      "dna_phase": "2g2x.1",
+      "session_closed": 17
     },
     {
       "slug": "elevate-startup-landing",
@@ -53,7 +58,12 @@
       "personality": "moderno, energico, tech-forward",
       "price": 59,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "archetype": "startup-saas-landing",
+      "imagery_key": "business-startup",
+      "font_pairing": "Manrope + Inter",
+      "dna_phase": "2g2x.1",
+      "session_closed": 17
     },
     {
       "slug": "gusto-fine-dining",

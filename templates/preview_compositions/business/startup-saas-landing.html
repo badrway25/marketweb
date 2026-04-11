@@ -1,0 +1,368 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: startup-saas-landing   (business DNA — Phase 2g2x)
+   FOR     : SaaS / startup conversion-first landing kits
+   MOOD    : cosmic gradient (primary → secondary), neon accent
+             glow, typographic manifesto, NO big photo hero
+   HERO    : centered manifesto with feature pills, product
+             mockup card overlapping the bottom half
+   NAVBAR  : floating pill with glowing CTA + launch banner above
+   CARDS   : metric strip + pricing teaser card + ship log
+   FOOTER  : ship-log list + next-release countdown chip
+
+   D-047 chrome-authoring contract:
+   - Zero literal brand strings. Everything flows from dna.content.*
+   - No hardcoded image URLs. The composition is photo-light on
+     purpose — the few background accents pull from {{ imagery.N }}.
+   - No literal sector names / employee names / client logos.
+============================================================ #}
+{% block extra_css %}
+  /* Deliberate visual opposite of corporate-suite: fully dark cosmic
+     gradient, no photo-led hero, the product mockup card is the focal
+     object and carries the above-the-fold density. */
+  body {
+    background: var(--primary);
+    color: #eef0ff;
+  }
+  .pv-frame {
+    background: radial-gradient(circle at 12% 108%, color-mix(in oklab, var(--secondary) 55%, var(--primary) 45%) 0%, var(--primary) 52%),
+                radial-gradient(circle at 92% -20%, color-mix(in oklab, var(--accent) 32%, var(--primary) 68%) 0%, transparent 55%),
+                var(--primary);
+    background-blend-mode: screen, normal, normal;
+  }
+  .pv-frame:before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(rgba(238,240,255,0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  /* === TOP LAUNCH BANNER === */
+  .sl-banner {
+    position: absolute; top: 0; left: 0; right: 0; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    z-index: 9;
+  }
+  .sl-banner span {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(238,240,255,0.62);
+    display: inline-flex; align-items: center; gap: 14px;
+  }
+  .sl-banner .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.08), 0 0 14px var(--accent);
+    display: inline-block;
+  }
+
+  /* === FLOATING PILL NAV === */
+  .sl-nav {
+    position: absolute; top: 52px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 0;
+    padding: 8px 10px 8px 26px;
+    background: rgba(8,10,24,0.68);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(238,240,255,0.12);
+    border-radius: 999px;
+    z-index: 10;
+  }
+  .sl-nav .wm {
+    font-family: var(--heading); font-weight: 800; font-size: 18px;
+    color: #eef0ff; letter-spacing: -0.02em;
+    padding-right: 26px; margin-right: 26px;
+    border-right: 1px solid rgba(238,240,255,0.14);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sl-nav .wm .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    display: inline-block;
+  }
+  .sl-nav .links {
+    display: flex; gap: 26px;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: rgba(238,240,255,0.68);
+  }
+  .sl-nav .cta {
+    margin-left: 28px;
+    padding: 10px 22px; border-radius: 999px;
+    background: var(--accent); color: var(--primary);
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.03em;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.18), 0 10px 28px -8px var(--accent);
+  }
+
+  /* === CENTERED MANIFESTO HERO === */
+  .sl-hero {
+    position: absolute; top: 132px; left: 0; right: 0; height: 460px;
+    text-align: center; padding: 0 120px;
+  }
+  .sl-hero .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 9px 18px; border-radius: 999px;
+    background: rgba(238,240,255,0.06);
+    border: 1px solid rgba(238,240,255,0.14);
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em;
+    color: rgba(238,240,255,0.72);
+  }
+  .sl-hero .eyebrow:before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 10px var(--accent);
+  }
+  .sl-hero h1 {
+    margin-top: 28px;
+    font-family: var(--heading); font-size: 92px; font-weight: 800;
+    line-height: 0.96; letter-spacing: -0.035em;
+    color: #eef0ff; max-width: 1100px; margin-left: auto; margin-right: auto;
+  }
+  .sl-hero h1 em {
+    font-style: normal; font-weight: 800;
+    background: linear-gradient(95deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 70%, #ffffff 30%) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    padding-right: 4px;
+  }
+  .sl-hero .sub {
+    margin-top: 26px; max-width: 620px; margin-left: auto; margin-right: auto;
+    font-family: var(--body); font-size: 16px; line-height: 1.58;
+    color: rgba(238,240,255,0.66);
+  }
+  .sl-hero .cta-row {
+    margin-top: 34px; display: inline-flex; align-items: center; gap: 22px;
+  }
+  .sl-hero .cta-row .primary {
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+    color: var(--primary);
+    background: var(--accent);
+    padding: 16px 32px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 12px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.25),
+      0 14px 40px -10px var(--accent),
+      0 0 40px -4px var(--accent);
+  }
+  .sl-hero .cta-row .primary:after {
+    content: '→'; font-family: var(--heading); font-size: 17px;
+  }
+  .sl-hero .cta-row .secondary {
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: rgba(238,240,255,0.82);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .sl-hero .cta-row .secondary .play {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid rgba(238,240,255,0.32);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--accent);
+  }
+  .sl-hero .feature-pills {
+    margin-top: 30px; display: inline-flex; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgba(238,240,255,0.56);
+  }
+  .sl-hero .feature-pills span {
+    padding: 7px 14px; border-radius: 999px;
+    background: rgba(238,240,255,0.04);
+    border: 1px solid rgba(238,240,255,0.1);
+  }
+
+  /* === PRODUCT MOCKUP CARD (overlapping hero bottom) === */
+  .sl-mockup {
+    position: absolute; left: 50%; top: 560px;
+    transform: translateX(-50%);
+    width: 940px; height: 220px;
+    background: rgba(8,10,24,0.72);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(238,240,255,0.16);
+    border-radius: 18px;
+    box-shadow:
+      0 40px 100px -20px rgba(0,0,0,0.6),
+      0 0 120px -30px var(--accent) inset;
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    overflow: hidden;
+  }
+  .sl-mockup .chrome {
+    position: absolute; top: 0; left: 0; right: 0; height: 36px;
+    background: rgba(238,240,255,0.04);
+    border-bottom: 1px solid rgba(238,240,255,0.08);
+    display: flex; align-items: center; padding: 0 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    color: rgba(238,240,255,0.52);
+  }
+  .sl-mockup .chrome .dots {
+    display: inline-flex; gap: 6px; margin-right: 18px;
+  }
+  .sl-mockup .chrome .dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(238,240,255,0.16);
+    font-size: 0;
+  }
+  .sl-mockup .chrome .tag {
+    margin-left: auto; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent);
+    padding: 4px 10px; border: 1px solid rgba(212,165,116,0.32);
+    border-radius: 999px;
+  }
+  .sl-mockup .metric {
+    padding: 56px 34px 28px;
+    border-right: 1px solid rgba(238,240,255,0.08);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .sl-mockup .metric:last-child { border-right: 0; }
+  .sl-mockup .metric .label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(238,240,255,0.4);
+  }
+  .sl-mockup .metric .big {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 52px; font-weight: 800;
+    line-height: 1; color: #eef0ff; letter-spacing: -0.03em;
+  }
+  .sl-mockup .metric.alt .big {
+    color: var(--accent);
+  }
+  .sl-mockup .metric .desc {
+    margin-top: 10px; font-family: var(--body); font-size: 12px;
+    color: rgba(238,240,255,0.58);
+  }
+  .sl-mockup .metric.feature {
+    gap: 10px;
+  }
+  .sl-mockup .metric.feature .perk {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    color: rgba(238,240,255,0.7);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sl-mockup .metric.feature .perk:before {
+    content: '→'; color: var(--accent); font-weight: 700;
+  }
+
+  /* === BOTTOM STRIP — SOCIAL PROOF LOGO ROW + SHIP LOG + PRICING CARD === */
+  .sl-bottom {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 94px;
+    padding: 16px 72px 18px;
+    display: grid; grid-template-columns: 1fr auto; gap: 48px;
+    border-top: 1px solid rgba(238,240,255,0.1);
+    background: rgba(0,0,0,0.22);
+  }
+  .sl-proof {
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .sl-proof .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(238,240,255,0.4);
+  }
+  .sl-proof .logos {
+    margin-top: 10px; display: flex; gap: 32px;
+    font-family: var(--heading); font-size: 17px; font-weight: 800;
+    letter-spacing: 0.04em;
+    color: rgba(238,240,255,0.75);
+  }
+  .sl-proof .logos span:nth-child(odd) { color: rgba(238,240,255,0.45); }
+
+  .sl-release {
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 22px; border-radius: 14px;
+    background: rgba(238,240,255,0.05);
+    border: 1px solid rgba(238,240,255,0.12);
+  }
+  .sl-release .label {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(238,240,255,0.5);
+  }
+  .sl-release .val {
+    margin-top: 4px;
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    color: var(--accent);
+  }
+  .sl-release .chip {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--primary); background: var(--accent);
+    padding: 6px 12px; border-radius: 999px;
+  }
+{% endblock %}
+
+{% block body %}
+  <div class="sl-banner">
+    <span><span class="pulse"></span>{{ dna.content.launch_banner }}</span>
+  </div>
+
+  <nav class="sl-nav">
+    <div class="wm"><span class="dot"></span>{{ brand_name }}</div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <span class="cta">{{ dna.content.primary_cta }}</span>
+  </nav>
+
+  <section class="sl-hero">
+    <span class="eyebrow">{{ dna.content.eyebrow }}</span>
+    <h1>{{ dna.content.headline|safe }}</h1>
+    <p class="sub">{{ dna.content.subhead }}</p>
+    <div class="cta-row">
+      <span class="primary">{{ dna.content.primary_cta }}</span>
+      <span class="secondary"><span class="play">▶</span>{{ dna.content.secondary_cta }}</span>
+    </div>
+    <div class="feature-pills">
+      {% for pill in dna.content.feature_pills %}<span>{{ pill }}</span>{% endfor %}
+    </div>
+  </section>
+
+  <div class="sl-mockup">
+    <div class="chrome">
+      <span class="dots">
+        {% for dot in dna.content.product_mockup.chrome_dots %}<span>{{ dot }}</span>{% endfor %}
+      </span>
+      <span>{{ dna.content.product_mockup.chrome_label }}</span>
+      <span class="tag">{{ dna.content.product_mockup.badge }}</span>
+    </div>
+    <div class="metric">
+      <span class="label">{{ dna.content.product_mockup.metric_label }}</span>
+      <div class="big">{{ dna.content.product_mockup.metric_primary }}</div>
+      <span class="desc">{{ dna.content.metric_strip.0.1 }}</span>
+    </div>
+    <div class="metric alt">
+      <span class="label">{{ dna.content.product_mockup.secondary_label }}</span>
+      <div class="big">{{ dna.content.product_mockup.secondary_metric }}</div>
+      <span class="desc">{{ dna.content.metric_strip.1.1 }}</span>
+    </div>
+    <div class="metric feature">
+      <span class="label">{{ dna.content.pricing_card.label }}</span>
+      <div class="big" style="font-size:34px;">{{ dna.content.pricing_card.price }}<span style="font-size:14px;color:rgba(238,240,255,0.5);font-weight:600;">{{ dna.content.pricing_card.period }}</span></div>
+      {% for perk in dna.content.pricing_card.perks %}
+        <span class="perk">{{ perk }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <section class="sl-bottom">
+    <div class="sl-proof">
+      <span class="lbl">{{ dna.content.social_proof_label }}</span>
+      <div class="logos">
+        {% for logo in dna.content.social_proof_row %}<span>{{ logo }}</span>{% endfor %}
+      </div>
+    </div>
+    <div class="sl-release">
+      <div>
+        <div class="label">{{ dna.content.next_drop_label }}</div>
+        <div class="val">{{ dna.content.next_drop_value }}</div>
+      </div>
+      <span class="chip">{{ dna.content.ship_log_label }}</span>
+    </div>
+  </section>
+{% endblock %}

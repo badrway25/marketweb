@@ -159,15 +159,61 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80&auto=format&fit=crop",
     ],
     "business": [
-        # 0: hero - corporate skyline / glass building
+        # LEGACY pool, kept as fallback for any template that might still
+        # resolve through `preview_compositions/business.html`. Phase 2g2x
+        # (Session 17) moved both published business templates onto their
+        # own per-archetype pools — `business-corporate` and
+        # `business-startup` — so this pool is architecturally unused by
+        # the two current published business templates. Do NOT delete: the
+        # legacy composition still exists (D-036 additive rule) and could
+        # be used by a future legacy-only sibling during migration.
         "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&q=80&auto=format&fit=crop",
-        # 1: feature - boardroom meeting
         "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1200&q=80&auto=format&fit=crop",
-        # 2-5: services / clients
         "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1542744094-3a31f272c490?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&q=80&auto=format&fit=crop",
+    ],
+    # Per-archetype business pools — see apps/catalog/template_dna.py.
+    # Phase 2g2x split: Pragma (corporate-suite) and Elevate (startup-saas-landing)
+    # were renderring through the same legacy composition + the same 6-URL pool,
+    # producing identity-crash cards. The pools below are fully distinct —
+    # zero URL overlap with each other and zero overlap with the legacy
+    # `business` pool.
+    #
+    # business-corporate: institutional — boardroom meetings, corporate HQ
+    #     interiors, executive portraits, manufacturing facilities. Dark
+    #     daylight, serious mood. Photo-led composition (the boardroom hero
+    #     carries the whole above-the-fold mood).
+    # business-startup:   product-led — laptop screens with dashboards,
+    #     open-plan tech offices, code editors, bright tech interiors. The
+    #     startup composition is typographic + mockup-card led (no big
+    #     hero photo), so this pool mostly supplies accent tiles and
+    #     background gradients — but the few places it does appear must
+    #     still read as startup/product.
+    "business-corporate": [
+        # 0: hero — boardroom long-table meeting, day-light, serious
+        "https://images.unsplash.com/photo-1542626991-cbc4e32524cc?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — corporate HQ atrium / glass interior
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: advisory portraits + industrial facility + conference detail
+        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1560439514-4e9645039924?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1664575602554-2087b04935a5?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1573497491208-6b1acb260507?w=800&q=80&auto=format&fit=crop",
+    ],
+    "business-startup": [
+        # 0: hero placeholder (unused as big hero — composition is typographic-led)
+        #    but kept as a product-dashboard shot in case the composition
+        #    ever wants a subtle background tile.
+        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — MacBook with dashboard UI
+        "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: product UI / code / open-plan tech office / smartphone app
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1517292987719-0369a794ec0f?w=800&q=80&auto=format&fit=crop",
     ],
     "real-estate": [
         # 0: hero - luxury modern home exterior

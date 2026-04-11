@@ -1,15 +1,24 @@
 # Agent Handoff
 
-Last updated: 2026-04-11 — after **Session 16 Catalog Differentiation Hard Audit**
+Last updated: 2026-04-11 — after **Session 17 Phase 2g2x.1 Business Hardening**
 
-## ⛔ ROADMAP PAUSED — READ BEFORE DOING ANYTHING ELSE
+## ⛔ ROADMAP STILL PAUSED — 4 of 5 CRITICO categories remain
 
-**Per D-049 (Session 16), the roadmap is paused until Phase 2g2x closes.** The Session 16 audit found that 10 of 20 templates have no DNA and render via 5 legacy per-category compositions that hardcode literal brand strings from ONE of the two sibling tenants — so the second sibling renders the wrong brand's copy on its card. Examples:
-- `business.html` hardcodes **"Hanno scelto Pragma"** → Elevate's card shows Pragma's client label
+**Per D-049 (Session 16), the roadmap is paused until Phase 2g2x closes.** Session 17 closed the **business** category (D-050). The remaining 4 identity-crash CRITICO categories are still open:
 - `portfolio.html` hardcodes **"Sono una designer indipendente"** → Pixel (photographer) shows Chiara's designer copy
 - `real-estate.html` hardcodes "600+ immobili · €500K–€1.2M mass-market" → Villa (ultra-luxury) shows mass-market language
 - `lawyer.html` hardcodes "Studio legale dal 1962" → Juris (modern) shows Lex's 60-year heritage
 - `agency.html` hardcodes 6 fake case-study names → both Vertex and Aura show the same clients
+
+## ✅ Session 17 — Business Closed (2026-04-11)
+
+**Business is no longer an identity-crash pair.** Pragma and Elevate are now split into two distinct DNA archetypes:
+- `pragma-corporate-suite` → `corporate-suite` archetype (institutional navy + boardroom photo, Merriweather serif, advisory pillar cards + KPI strip, "Fissa una call privata" ghost CTA, `business-corporate` imagery pool)
+- `elevate-startup-landing` → `startup-saas-landing` archetype (cosmic gradient, Manrope sans, typographic manifesto with NO big photo, glowing product-mockup card, "Inizia gratis" glow pill + "Guarda la demo" secondary, `business-startup` imagery pool)
+
+Both skins were authored under the D-047 chrome-authoring contract from the first line — zero literal brand strings, zero hardcoded image URLs. The bidirectional leak sweep returned zero cross-tenant contamination in both directions. Django test client returned 200 on all 5 business routes. Visual regression at 1440×900 on `/templates/business/` confirms the two cards read as two completely different products at card size.
+
+**The Session 17 recipe is the template for the remaining 4 CRITICO categories.** See SESSION_LOG.md Session 17 for the full differentiation matrix, leak-sweep method, and lessons-for-next-category list. See D-050 for the architectural decision rationale (Option A DNA split vs Option B lifted shared composition — Option A won and should stay the default).
 
 **Additionally**, 4 single-tenant DNA archetype files have 10+ latent D-047 literal leaks each that will detonate on reuse:
 - `ecommerce/fashion-editorial.html` — 12+ Luxe literals
@@ -21,12 +30,14 @@ Last updated: 2026-04-11 — after **Session 16 Catalog Differentiation Hard Aud
 
 ### What the next agent does first
 
-1. Read `SESSION_LOG.md` Session 16 for the full audit findings.
-2. Read `DECISIONS.md` D-049 for the blocking rule.
-3. Read `TODO_NEXT.md` Phase 2g2x for the exact punch list (2g2x.1 through 2g2x.6).
-4. Start with **2g2x.1 — Legacy-comp lift** on ONE category (recommended: **business**, because its `"Hanno scelto Pragma"` leak is the most visible and lifting it proves the recipe fastest). Follow the Session 14 mechanical recipe.
-5. Do NOT start any feature work outside this wave. Not auth, not checkout, not editor, not new templates, not new categories.
-6. Each category lift should end with: (a) the leak grep runs clean on both tenants, (b) the two preview PNGs look like two different products at card size, (c) `python manage.py check` passes, (d) a Chromium walk through `/templates/<category>/` visually confirms differentiation.
+1. Read `SESSION_LOG.md` Session 17 for the business-hardening recipe (the template for the remaining 4 CRITICO categories).
+2. Read `DECISIONS.md` D-049 (blocking rule) and D-050 (Option A DNA split default).
+3. Read `TODO_NEXT.md` Phase 2g2x for the exact punch list (2g2x.1 through 2g2x.6). Business (2g2x.1) is marked `[x]`; the next 4 are open.
+4. Pick **ONE** of the remaining 4 CRITICO categories and run the Session 17 recipe end-to-end:
+   - **Recommended order:** portfolio (smallest leak surface) → real-estate → lawyer → agency (largest leak surface with 6 case-study wordmarks). This front-loads quick wins while the recipe is fresh and back-loads the heaviest lift after the muscle memory is built up.
+   - For each: add 2 archetype entries to `template_dna.py` (vocabulary + 2 DNA content blocks), add 2 imagery pools to `preview_imagery.py` (hand-verify URLs download), author 2 D-047-compliant compositions under `templates/preview_compositions/<category>/`, generate previews via `--only <slug>` (one at a time), run a bidirectional leak sweep, run a Django test-client 5-route sanity check, run a Chromium visual walk at 1440×900.
+5. Do NOT start any feature work outside this wave. Not auth, not checkout, not editor, not new templates, not new categories. Do NOT touch any category other than the one you're currently closing in this session.
+6. Each category close should end with: (a) bidirectional leak sweep clean, (b) `check` + `seed_templates` + `generate_previews` all green, (c) 5/5 routes return 200, (d) Chromium visual walk confirms differentiation at card size, (e) `SESSION_LOG.md` / `DECISIONS.md` / `TODO_NEXT.md` / `AGENT_HANDOFF.md` / `TEMPLATE_REGISTRY.json` / the auto-memory index all updated.
 
 ### Minimum bar for "this wave is done" (exit criteria)
 

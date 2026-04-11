@@ -1,5 +1,84 @@
 # Session Log
 
+## Session 17 — Phase 2g2x.1 Business Hardening (2026-04-11)
+
+**Agent:** Business category DNA split — first implementation wave of Phase 2g2x (catalog hardening, per D-049).
+**Goal:** Close the `business` identity-crash case. Make Pragma and Elevate two clearly distinct products at card size — different imagery, different silhouette, different CTA pattern, different section order, different positioning — without quick-recoloring the legacy composition or touching any other category.
+
+### Strategy chosen — Option A (DNA split, 2 archetypes)
+The Session 16 audit offered two paths: (A) split into 2 distinct archetypes with their own compositions, or (B) lift the legacy composition into a D-047-compliant shared skin with per-tenant DNA content blocks. **Option A was selected** because Pragma (board advisory) and Elevate (SaaS landing) are semantically far apart — they demand entirely different silhouettes, section orders, CTA patterns, and dominant visuals. A forced-shared skin would either erase the differentiation or collapse into a conditional-branching frankenfile that only appears to share structure. Option A is the same recipe that already worked for medical (4 archetypes), restaurant (3), and ecommerce (2).
+
+### What changed
+**Five files modified, two files added, zero files deleted.**
+
+| File | Change |
+|------|--------|
+| `apps/catalog/template_dna.py` | Added 2 archetypes to `LAYOUT_ARCHETYPES` (`corporate-suite`, `startup-saas-landing`). Added 2 hero styles (`split-executive`, `centered-manifesto-product`). Added 2 navbar styles, 2 footer styles, 2 card styles, 2 button styles, 2 tones, 2 conversion patterns, 2 imagery directions. Added **2 DNA entries** — `pragma-corporate-suite` and `elevate-startup-landing` — each with a full content block driving every literal the composition renders. |
+| `apps/catalog/preview_imagery.py` | Added 2 new imagery pools: `business-corporate` (6 executive/boardroom/HQ/manufacturing URLs) and `business-startup` (6 dashboard/laptop/code/open-plan URLs). Zero URL overlap between the two pools and zero overlap with the legacy `business` pool. Legacy `business` pool kept with an inline header comment explaining it is architecturally unused by any published business template but preserved per D-036 (DNA system is additive). |
+| `templates/preview_compositions/business/corporate-suite.html` | **NEW.** Photo-led institutional split hero. Solid navy full-bleed navbar, serif headline left with meta strip, boardroom photo right with credit ribbon, 3-up advisory pillar cards with serif numerals, floating KPI strip over navy band, sectors ribbon at the very bottom. Merriweather + Inter. Every text string flows from `{{ dna.content.* }}` or `{{ brand_name }}`. |
+| `templates/preview_compositions/business/startup-saas-landing.html` | **NEW.** Typographic manifesto on a cosmic primary/secondary gradient with neon accent glow. Thin pulse launch banner at the top, floating pill navbar with glowing CTA, centered 92px manifesto headline with gradient highlight, feature-pills row, glowing product-mockup card overlapping the hero bottom (chrome bar + 3 metrics including price), social-proof wordmark row and live ship-log + next-release chip at the bottom. **Intentionally photo-light** — no big hero photo — so Elevate's card does not lean on imagery for differentiation. Manrope + Inter. Zero literals outside DNA content fields. |
+| `SESSION_LOG.md` · `DECISIONS.md` · `TODO_NEXT.md` · `AGENT_HANDOFF.md` · `TEMPLATE_REGISTRY.json` | Updated to reflect the new business DNA split and the Phase 2g2x progress. |
+
+The legacy `templates/preview_compositions/business.html` and the legacy `business` imagery pool are **intentionally untouched**. Per D-036 (DNA system is strictly additive), they remain in place as the fallback for any future template that might want to render through them. Both currently published business templates now bypass them entirely via DNA resolution.
+
+### Differentiation matrix (final)
+| Axis | Pragma · corporate-suite | Elevate · startup-saas-landing |
+|---|---|---|
+| Macro tone | Cream `#eef0f3` page + solid navy header band | Cosmic primary/secondary gradient + neon accent glow |
+| Hero silhouette | 55/45 split: serif headline + meta strip L · boardroom photo R | Centered typographic manifesto, NO photo, product-mockup card overlap |
+| Dominant visual | Full-bleed boardroom photograph `{{ imagery.0 }}` | Glowing product-mockup card with 3 metric readouts |
+| Typography | Merriweather (serif, institutional) + Inter | Manrope (geometric sans, tech) + Inter |
+| Navbar | Full-bleed solid navy, left-aligned links, phone CTA right | Floating pill, centered, glowing primary CTA button |
+| Primary CTA | `Fissa una call privata` (ghost outline on navy) | `Inizia gratis` (glow pill) + `Guarda la demo · 2 min` secondary |
+| Section order | hero → advisory pillars → KPI strip → sectors ribbon | launch banner → pill-nav → manifesto hero → product mockup → social proof → ship log |
+| Positioning copy | Board advisory / M&A / governance / PMI | Conversion landing / GTM kit for SaaS & startup / waitlist → MRR |
+| Imagery pool | `business-corporate` (6 URLs) | `business-startup` (6 URLs) — fully disjoint set |
+| Density profile | airy | medium |
+| Tone vocabulary | advisory-sober | growth-tech |
+
+### Hard validation
+- **`python manage.py check` — clean.**
+- **`python manage.py seed_templates` — 20 templates, 0 created (idempotent re-run).**
+- **`python manage.py generate_previews` — 18 rendered, 2 skipped.** Pragma and Elevate were generated earlier via `--only` targeted runs. The `business-corporate` pool fetched 6/6 Unsplash URLs; `business-startup` fetched 6/6. No 404s.
+- **Leak sweep — zero cross-tenant contamination in both directions:**
+  - Rendered Elevate HTML contains none of 21 Pragma-token strings tested: `"Hanno scelto Pragma"`, `"Marco Bianchi"`, `"Vectra Industries"`, `"NORDEA"`, `"VECTRA"`, `"FINOVA"`, `"ATLAS"`, `"info@pragmacorp.it"`, `"Parliamone"`, `"Consulenza strategica · B2B"`, `"Servizi di consulenza"`, `"Strategia commerciale"`, `"Trasformazione digitale"`, `"Ottimizzazione processi"`, `"Sostenibilità ESG"`, `"Soluzioni concrete per"`, `"far crescere"`, `"Affianchiamo le PMI italiane"`, `"Richiedi una call"`, `"Clienti soddisfatti"`, `"€45M"`.
+  - Rendered Pragma HTML contains none of 28 Elevate-token strings tested: `"waitlist"`, `"MRR"`, `"quattordici giorni"`, `"Inizia gratis"`, `"Guarda la demo"`, `"Stripe"`, `"A/B test"`, `"Edge analytics"`, `"Copy kit italiano"`, `"elevate.app"`, `"Live A/B"`, `"Adottato da 240 startup italiane"`, `"FLUX"`, `"NOVA"`, `"QUANTA"`, `"HELIX"`, `"RIFT"`, `"CASP"`, `"Plan Launch"`, `"CLI deploy"`, `"Ship log live"`, `"v2.9"`, `"Serie A"`, `"Q2 2026"`, `"GrowthBook"` …
+- **Hardcoded-URL sweep:** neither rendered HTML contains a literal `https://images.unsplash.com/…` URL. Every imagery slot resolves through the `{{ imagery.N }}` context variable, which is populated from cached file:// URIs at render time.
+- **Django test-client route sweep — 5/5 green:**
+  - `/` 200
+  - `/templates/` 200
+  - `/templates/business/` 200
+  - `/templates/business/pragma-corporate-suite/` 200
+  - `/templates/business/elevate-startup-landing/` 200
+- **Preview-asset wiring verified:** `WebTemplate.preview_asset` on both slugs returns the new canonical PNG filename. The business category listing HTML references both preview filenames and both brand names (only their own) — no cross-tenant brand mentions.
+- **Visual regression via Chromium (Playwright)** at 1440×900 on `/templates/business/`: the two cards are unmistakably distinct. Elevate card = dark cosmic gradient + neon-cyan manifesto headline + glowing product mockup. Pragma card = cream/navy institutional split + boardroom photo + serif "Dove si prendono le decisioni che contano". Macro tone, silhouette, dominant visual, and positioning copy all differ.
+
+### Why this closes the business identity-crash case
+The Session 16 verdict was: "Elevate's card renders Pragma's copy". After Session 17:
+1. Neither template resolves through the legacy `business.html` composition anymore — both have DNA entries, so `_resolve_composition` routes them to their archetype-specific files.
+2. The legacy `"Hanno scelto Pragma"` label, client wordmark row, "Marco Bianchi" testimonial, B2B consulting CTAs, and the 4 consulting service cards have **all been removed from Elevate's render path**. They still exist in `business.html` for any future template that explicitly opts into the legacy file, but no published template does.
+3. The two new skins were authored under the D-047 chrome-authoring contract from the first line — every string lives in `dna.content.*` or pulls from `brand_name`. No follow-up "lift pass" will ever be needed for this pair.
+4. The imagery pools are fully disjoint: executive boardroom photos vs startup product/dashboard photos. Additionally the startup composition deliberately avoids a big hero photo, so even at 200×120 card thumbnail size the difference is readable entirely from macro tone + typographic silhouette.
+5. The positioning copy is now genuinely different: Pragma headline reads as advisory gravitas ("Dove si prendono le decisioni che contano"); Elevate reads as growth conversion ("Dalla waitlist al primo MRR in quattordici giorni").
+
+### Lessons (carry forward for Phase 2g2x.1.next — agency/lawyer/real-estate/portfolio)
+1. **Option A (DNA split) is the default for semantically-far siblings.** Only reach for Option B (D-047 lift of shared composition + per-tenant content) when the two tenants are genuinely close. Business, real-estate (ultra-luxury vs mass-market), portfolio (designer vs photographer), and agency (bold vs editorial) are all "far apart" by the same yardstick — they should all follow Option A.
+2. **Author under D-047 from line one.** The specialist chrome needed a 17-leak lift in Session 14 because it was authored before the contract. Both new business skins ship with zero leaks because every string was driven from DNA on the first pass. The marginal cost is negligible (write the DNA field and the HTML reference in the same commit).
+3. **Startup composition pattern: photo-light by design.** The new `startup-saas-landing.html` shows that a dark gradient + product mockup card + typographic manifesto carries the whole above-the-fold mood without any big hero photo. This is a reusable pattern for any future "conversion-first" category that wants to avoid shared-photo pitfalls entirely. Imagery pools become small fallback sets for accent tiles only.
+4. **Preview-only worktrees need to seed + migrate + generate from scratch.** The `mw-business-hardening-v2` worktree had no `db.sqlite3` or `media/` on entry. The three-step warm-up (`migrate` → `seed_categories` → `seed_templates` → `generate_previews`) is the standard path; budget for it when spawning a new worktree.
+5. **Card-size differentiation is confirmed at card size, not just at full-res preview.** The test that matters is a Chromium walk through the category listing page at 1440×900 with the cards in their real grid context. Both renders individually at 1600×900 might look different, but visual regression at listing scale is what buyers actually see.
+
+### What comes next — Phase 2g2x.1 continuation
+Business is closed. The next 4 CRITICO categories remain:
+- [ ] **Agency** — vertex + aura (DNA split suggested: `bold-grid` + `editorial-quiet`)
+- [ ] **Lawyer** — lex + juris (`classic-gold` + `modern-transparent`)
+- [ ] **Real-estate** — casa + villa (`mass-market` + `ultra-luxury-cinematic`)
+- [ ] **Portfolio** — chiara + pixel (`editorial-designer` + `cinematic-photographer`)
+
+Each follows the same Session 17 recipe: 2 archetypes + 2 DNA content blocks + 2 D-047-compliant compositions + 2 disjoint imagery pools. No shortcuts. All MEDIO-severity items (2g2x.3 D-047 lifts on single-tenant archetype files, 2g2x.2 medical imagery pool realignment) also remain open. The wave exit criteria in TODO_NEXT.md Phase 2g2x.6 still gate Phase 3.
+
+---
+
 ## Session 16 — Catalog Differentiation Hard Audit (2026-04-11)
 
 **Agent:** Audit only — no implementation
