@@ -1,6 +1,48 @@
 # Agent Handoff
 
-Last updated: 2026-04-11 — after Visual Polish & Preview Fixes (Session 15)
+Last updated: 2026-04-11 — after **Session 16 Catalog Differentiation Hard Audit**
+
+## ⛔ ROADMAP PAUSED — READ BEFORE DOING ANYTHING ELSE
+
+**Per D-049 (Session 16), the roadmap is paused until Phase 2g2x closes.** The Session 16 audit found that 10 of 20 templates have no DNA and render via 5 legacy per-category compositions that hardcode literal brand strings from ONE of the two sibling tenants — so the second sibling renders the wrong brand's copy on its card. Examples:
+- `business.html` hardcodes **"Hanno scelto Pragma"** → Elevate's card shows Pragma's client label
+- `portfolio.html` hardcodes **"Sono una designer indipendente"** → Pixel (photographer) shows Chiara's designer copy
+- `real-estate.html` hardcodes "600+ immobili · €500K–€1.2M mass-market" → Villa (ultra-luxury) shows mass-market language
+- `lawyer.html` hardcodes "Studio legale dal 1962" → Juris (modern) shows Lex's 60-year heritage
+- `agency.html` hardcodes 6 fake case-study names → both Vertex and Aura show the same clients
+
+**Additionally**, 4 single-tenant DNA archetype files have 10+ latent D-047 literal leaks each that will detonate on reuse:
+- `ecommerce/fashion-editorial.html` — 12+ Luxe literals
+- `ecommerce/artisan-workshop.html` — 10+ Bottega literals
+- `restaurant/trattoria-warm.html` — "Trastevere · dal 1987"
+- `restaurant/fine-dining/*.html` live skin — 5 files leak Gusto (Phase 2g.3 already planned)
+
+**And**, 17 of 20 templates are single-page previews only. The marketplace positions as "complete multipage websites" but delivers landing-page posters for 85% of the catalog.
+
+### What the next agent does first
+
+1. Read `SESSION_LOG.md` Session 16 for the full audit findings.
+2. Read `DECISIONS.md` D-049 for the blocking rule.
+3. Read `TODO_NEXT.md` Phase 2g2x for the exact punch list (2g2x.1 through 2g2x.6).
+4. Start with **2g2x.1 — Legacy-comp lift** on ONE category (recommended: **business**, because its `"Hanno scelto Pragma"` leak is the most visible and lifting it proves the recipe fastest). Follow the Session 14 mechanical recipe.
+5. Do NOT start any feature work outside this wave. Not auth, not checkout, not editor, not new templates, not new categories.
+6. Each category lift should end with: (a) the leak grep runs clean on both tenants, (b) the two preview PNGs look like two different products at card size, (c) `python manage.py check` passes, (d) a Chromium walk through `/templates/<category>/` visually confirms differentiation.
+
+### Minimum bar for "this wave is done" (exit criteria)
+
+See TODO_NEXT.md Phase 2g2x.6. Summary: every sibling pair in every category must look like two different products at card size, no per-archetype file has any literal brand string, and every published template has either inner pages or is demoted to draft.
+
+---
+
+## Session 16 — Catalog Differentiation Hard Audit (2026-04-11)
+
+**Question asked:** Are the catalog's sibling templates credible distinct products, or are they still recolors / identity-crash prototypes? Produce a severe, blocking-or-not verdict before the roadmap continues.
+
+**Answer:** **Catalog not approvable.** See above. Verdict: hardening phase 2g2x is blocking. Read the new Phase 2g2x in TODO_NEXT.md and D-049 in DECISIONS.md. The audit found problems in 7 of 8 categories; only the `restaurant/street-modern` composition is fully clean. 5 categories are CRITICO severity (full identity crash), 3 categories are MEDIO severity (latent D-047 violations and cross-pool imagery leaks).
+
+---
+
+## Session 15 (archived) — Visual Polish & Preview Fixes (2026-04-11)
 
 ## Session 15 — Visual Polish & Preview Fixes (2026-04-11)
 

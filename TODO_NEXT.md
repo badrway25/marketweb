@@ -1,5 +1,64 @@
 # TODO Next
 
+## 🛑 BLOCKING — Phase 2g2x (Catalog Hardening Wave, Session 16 audit)
+
+**The roadmap is paused.** Per D-049, no feature work (auth / checkout / editor / projects / commerce / dashboard / new categories / new templates / new archetypes) starts until this wave closes. See SESSION_LOG.md Session 16 for the audit + MEMORY.md → catalog_differentiation_audit.md for the condensed verdict.
+
+### 2g2x.1 — Lift the 5 non-DNA categories (CRITICO) — identity crash fix
+Each of these 5 legacy compositions hardcodes literal brand strings from ONE tenant, making the second sibling render the wrong brand's copy on its card. Choose per category: (a) split into 2 archetypes with distinct compositions (medical/restaurant pattern), OR (b) lift the existing legacy composition to read from a new DNA content block and add DNA entries for both tenants (cheaper). Option (a) is preferred for categories where the two tenants are semantically far apart; option (b) is acceptable when they're close.
+
+- [ ] **Agency** — `templates/preview_compositions/agency.html` + pools `agency` (used by vertex + aura). 2 archetypes suggested: `bold-grid` (Vertex) + `editorial-quiet` (Aura). Leaks to lift: "Independent design & tech studio · Milano", "Lumen — Renewable energy", "Vega Mobile App", "Atelier Norma", "Helios Bank", "Cinetic", "Polar Studios", "34 case studies · 2018 — 2026", "200+ progetti"
+- [ ] **Business** — `templates/preview_compositions/business.html` + pool `business` (used by pragma + elevate). 2 archetypes suggested: `corporate-b2b` (Pragma) + `startup-saas-landing` (Elevate). Leaks: "Consulenza strategica · B2B", **`"Hanno scelto Pragma"` literal** (most egregious), "Marco Bianchi · CEO Vectra Industries", "NORDEA / VECTRA / FINOVA / ATLAS", review quote
+- [ ] **Lawyer** — `templates/preview_compositions/lawyer.html` + pool `lawyer` (used by lex + juris). 2 archetypes suggested: `classic-gold` (Lex) + `modern-transparent` (Juris) — already outlined in CATEGORY_ROADMAP.md. Leaks: "Studio legale dal 1962 · Roma · Milano", "+39 06 4567 2300" phone, "60 anni di esperienza", M. Bianchi CEO review, 4 practice-area cards (Diritto societario/famiglia/lavoro/penale) as literal copy
+- [ ] **Real-estate** — `templates/preview_compositions/real-estate.html` + pool `real-estate` (used by casa + villa). 2 archetypes suggested: `mass-market` (Casa) + `ultra-luxury-cinematic` (Villa) — already outlined. Leaks: "Oltre 600 immobili selezionati · Lombardia & Piemonte", price box "€500K — €1.2M" (mass-market, wrong for Villa), "+39 02 8765 4321", specific Milano Brera listing
+- [ ] **Portfolio** — `templates/preview_compositions/portfolio.html` + pool `portfolio` (used by chiara + pixel). 2 archetypes suggested: `editorial-designer` (Chiara) + `cinematic-photographer` (Pixel). Leaks: "Selected work · 2018 — 2026", **"Sono una designer indipendente..."** (wrong for Pixel who is a photographer), "Featured · Atlas Magazine", h1 "Ogni progetto una storia"
+
+### 2g2x.2 — Sibling imagery pool split (CRITICO)
+For each of the 5 non-DNA categories, break the single 6-URL pool into two sibling-distinct pools per the Session 10 recipe (hand-check each URL via Read; zero URL overlap between siblings; page-level macro tone should differ where possible). If 2g2x.1 chose option (a) [separate archetypes], this is almost free; if option (b) [shared composition, DNA fields], this is the only way to get visual differentiation.
+
+- [ ] `agency-bold` vs `agency-editorial` — or equivalent per the 2g2x.1 split
+- [ ] `business-corporate` vs `business-startup`
+- [ ] `lawyer-classic` vs `lawyer-modern`
+- [ ] `real-estate-mass` vs `real-estate-luxury`
+- [ ] `portfolio-designer` vs `portfolio-photographer`
+- [ ] **Bonus:** fix the `medical-specialist` pool — currently shares 5/6 URLs with `lawyer` pool so Cardio/Derm hero is a lawyer portrait. Replace with genuine specialist-medical photos (white-coat specialists in clinical settings)
+- [ ] **Bonus:** `medical-family` pool is 100% URL-overlap with base `medical` pool (just reordered). Replace with genuine pediatric/family-practice photos
+
+### 2g2x.3 — D-047 lift on latent single-tenant archetype files (MEDIO)
+These files were authored before D-047 was formalized (or in Session 15 which predated the D-047-applies-to-preview-comps insight) and will detonate on archetype reuse. Fix now, not when reuse is attempted.
+
+- [ ] `templates/preview_compositions/ecommerce/fashion-editorial.html` — 12+ Luxe literals: "Milano · Parigi · Tokyo", "Issue 12 · Primavera '26", "Styling · Carla Sozzani", "Cover · La Muse en Velours", "Un'unica collezione, tessuta tra Como e Prato, fotografata al Grand Hôtel Villa d'Este", "Drop mensili — solo per chi è in lista d'attesa", "Accedi al lookbook", "Direzione creativa · Giulia Maison", "Rack Atelier / Bomber Siena / Pelletteria / Sessione Vogue" product strip, "€ 2.480 / € 1.290 / € 860 / € 1.940" prices, "Nuovo / Capsula / Atelier / Archivio" tags, "Donna/Uomo/Accessori/Archivio/Atelier" nav links
+- [ ] `templates/preview_compositions/ecommerce/artisan-workshop.html` — 10+ Bottega literals: "Firenze · dal 1968 · fatto a mano", "Pelletteria / Ceramica / Tessitura / Su misura" nav links, "Cesto · 2 pezzi", "Cuoio conciato al vegetale a Santa Croce sull'Arno, ceramiche tornite a Montelupo, stoffe tessute a Prato", "Visita la bottega", "WhatsApp: 055 234 11 90", "La nostra regola: tre mani, un oggetto", "12 botteghe / 100% italiani / Mai sopra 50 / In 48 ore", "Scritto a mano, impacchettato in bottega", "Le ultime arrivate in bottega"
+- [ ] `templates/preview_compositions/restaurant/trattoria-warm.html` — "Trastevere · dal 1987 · cucina romana di famiglia" hardcoded
+- [ ] `templates/preview_compositions/restaurant/street-modern.html` — spot-audit for Brace-specific literals (not fully swept in the audit)
+- [ ] `templates/preview_compositions/medical/clinic.html` — spot-audit for salute-studio-medico literals
+- [ ] `templates/preview_compositions/medical/family.html` — "Dr.ssa Rambaldi" hardcoded + any other leaks
+- [ ] `templates/preview_compositions/medical/wellness.html` — spot-audit for Benessere literals
+- [ ] `templates/live_templates/restaurant/fine-dining/*.html` (8 files, 5 leak Gusto strings) — **this is the already-planned Phase 2g.3** — Fioravanti / Brera / Otto atti / Barolo / Selosse / Bresse / Michelin. Recipe = Session 14 lift. **DO THIS BEFORE any second fine-dining template ships.**
+
+### 2g2x.4 — Template completeness decision (CRITICO for product positioning)
+17 of 20 templates are preview-PNG-only. Only cardio, derm, gusto have inner pages. Decide:
+- [ ] **Option A:** Mark preview-only templates as `draft` in the DB and filter them out of listing until their content registry + skin folder are authored. Commit: "a premium marketplace ships complete products only"
+- [ ] **Option B:** Keep them `published` but add a "Anteprima statica" badge on the card + disable the "Apri anteprima completa" CTA. Commit: "we sell product tiers — single-page and multipage"
+- [ ] Whichever option is chosen: document as D-050 in DECISIONS.md and update TEMPLATE_REGISTRY.json with the per-template tier
+
+### 2g2x.5 — Stale-PNG structural fix (MEDIO, recurrent DX bug)
+Sessions 8, 10, 12, 15 all independently hit the DNA-mtime-vs-PNG-mtime timing trap. Pick one and ship:
+- [ ] **Option A (cheapest):** `generate_previews` reads DNA dict + composition path + imagery pool → hashes them → stores as `dna_signature` on TemplateAsset → skips regen when hash matches, force-regens on mismatch. Auto `--force`, no operator recipe needed
+- [ ] **Option B (middleweight):** `generate_previews --audit` prints any template whose preview file mtime is older than DNA file mtime or composition file mtime. Run in CI; fail the build on mismatch
+- [ ] **Option C (proper fix):** introduce a `TemplateAsset.source_fingerprint` column + migration; compute from DNA + composition + imagery pool SHA; treat stale rows as invalid and auto-regen
+
+### 2g2x.6 — Exit criteria for the hardening wave
+The wave closes when ALL of the following are green:
+- [ ] All 5 non-DNA categories have either 2 archetypes each OR a D-047-compliant shared composition with per-tenant DNA content blocks
+- [ ] No two siblings in the same category share more than 2 imagery URLs (zero would be better but Session 10 shows 2 non-hero URLs can overlap if the heroes are fully distinct)
+- [ ] A leak sweep on every per-archetype file (preview comps + live skins) returns zero literal brand strings
+- [ ] Every published template either has inner-page content OR is demoted to `draft` / flagged as preview-only
+- [ ] `python manage.py generate_previews --force` on a clean cache produces canonical PNGs that visually differentiate every sibling at card size
+- [ ] A fresh Chromium walk through every category listing page confirms "no two siblings read as the same product" at 200×120 card size
+
+---
+
 ## Immediate — Phase 1 Foundation
 
 ### Backend-Core Session

@@ -1,5 +1,84 @@
 # Session Log
 
+## Session 16 — Catalog Differentiation Hard Audit (2026-04-11)
+
+**Agent:** Audit only — no implementation
+**Goal:** Determine whether the catalog's sibling templates are credible distinct products, or whether they're still recolors / identity-crash prototypes. Produce a severe, concrete, blocking-or-not verdict before any further roadmap work.
+
+### Method
+1. Read all repo memory files (CLAUDE.md → TEMPLATE_REGISTRY.json)
+2. Inventoried every WebTemplate row across 8 categories (20 templates) and matched each to its DNA state + content registry state + archetype tenancy
+3. Inspected `apps/catalog/template_dna.py`, `apps/catalog/template_content.py`, `apps/catalog/preview_imagery.py`, `apps/catalog/management/commands/seed_templates.py`
+4. Read every `templates/preview_compositions/<category>.html` legacy composition and every `templates/preview_compositions/<category>/<archetype>.html` DNA composition
+5. Walked the `templates/live_templates/` tree (only 2 archetypes authored: `medical/specialist/`, `restaurant/fine-dining/`)
+6. Grepped for literal brand leaks in every composition file (fine-dining, trattoria-warm, street-modern, clinic, family, wellness, specialist, fashion-editorial, artisan-workshop)
+7. Measured imagery-pool URL overlap between sibling pools
+
+### Verdict: **CATALOG NON APPROVABILE — hardening phase bloccante richiesta**
+
+### Severity breakdown
+| Category     | Severity  | Templates                                  | Nature |
+|--------------|-----------|--------------------------------------------|--------|
+| agency       | **CRITICO** | vertex-creative-agency · aura-digital-studio | Sistemico — no DNA, shared `agency.html` con 6 case-study letterali (Lumen, Vega, Atelier Norma, Helios Bank, Cinetic, Polar Studios). Cards are wrong-content, not recolor |
+| business     | **CRITICO** | pragma-corporate-suite · elevate-startup-landing | Sistemico — `business.html` hardcodes `"Hanno scelto Pragma"` label, Marco Bianchi/Vectra testimonial, Nordea/Vectra/Finova/Atlas clients. Elevate renders Pragma's copy |
+| lawyer       | **CRITICO** | lex-studio-legale · juris-avvocato-moderno | Sistemico — `lawyer.html` hardcodes "Studio legale dal 1962", full 4-area practice grid (societario/famiglia/lavoro/penale), M. Bianchi review. Juris renders Lex's heritage |
+| real-estate  | **CRITICO** | casa-agenzia-immobiliare · villa-immobili-lusso | Sistemico — `real-estate.html` hardcodes "600+ immobili", €500K–1.2M price box (mass-market), specific Brera listing. Villa renders mass-market copy |
+| portfolio    | **CRITICO** | chiara-portfolio-creativo · pixel-portfolio-fotografico | Sistemico — `portfolio.html` hardcodes "Sono una designer indipendente", "Featured · Atlas Magazine", h1 "Ogni progetto una storia". Pixel (photographer) renders Chiara's designer copy |
+| medical      | **MEDIO** | cardio-studio-specialistico · dermatologia-elite-roma | Combinato — DNA system works; Sessions 14+15 closed 17 chrome leaks + 3 preview-comp leaks; BUT (a) `medical-specialist` imagery pool shares 5/6 URLs with `lawyer` pool so both render a lawyer-portrait hero, (b) hero photo is identical for both siblings, (c) `medical-family` pool is 100% URL-overlap with base `medical` pool |
+| restaurant   | **MEDIO** (live-only) | gusto (+ latent for sapore/brace) | Live-pages-only — 3 preview compositions are solid, cards read as 3 distinct products. But `live_templates/restaurant/fine-dining/*` has 5 files with Gusto literal leaks (Fioravanti / Brera / Otto atti / Barolo / Selosse / Bresse / Michelin) — Phase 2g.3 already flagged. `trattoria-warm.html` preview comp has "Trastevere · dal 1987 · cucina romana di famiglia" hardcoded |
+| ecommerce    | **MEDIO** (latente) | luxe-fashion-store · bottega-shop-artigianale | Preview-only — single-tenant archetypes work at card size via macro-tone split (Session 15). BUT both compositions have massive D-047 violations: `fashion-editorial.html` has 12+ Luxe literals (Carla Sozzani, Giulia Maison, Issue 12, Rack Atelier, Bomber Siena, Milano·Parigi·Tokyo, Grand Hôtel Villa d'Este, "Accedi al lookbook"); `artisan-workshop.html` has 10+ Bottega literals (Firenze·dal 1968, Santa Croce sull'Arno, Montelupo, Prato, "Ceramica"/"Tessitura" nav, "12 botteghe", "Mai sopra 50"). Will detonate the moment Phase 2f.2 adds a second fashion/artisan template |
+
+### Secondary but cross-cutting
+- **17/20 templates are preview-PNG-only.** Only cardio, derm (via specialist reuse), and gusto have inner pages. The marketplace sells "completed multipage websites" but delivers single-page posters for 85% of the catalog. The user's concern "il prodotto è fatto di template completi multipagina" is not yet met at catalog level — this is a completeness gap, not just a differentiation gap
+- **Stale-PNG timing trap** (recurring class since Sessions 8/10/12/15). No structural fix — TODO_NEXT Phase 2d item 4 still open. Next session that regenerates should plan it
+- **Preview-comp and live-template chrome are authored as if archetypes are single-tenant**, even though D-047 was formalized in Session 14 to prevent exactly this. Session 15 confirmed D-047 applies to preview compositions too, but only patched `medical/specialist.html`. The rule is honored only in the files that were audited post-D-047 (specialist chrome + specialist preview comp). Every other per-archetype file predates D-047 and has never been leak-swept
+
+### Root-cause map (technical)
+| Source of truth              | Issue                                                                                |
+|------------------------------|--------------------------------------------------------------------------------------|
+| `apps/catalog/template_dna.py` | Only 10 of 20 templates have DNA. 10 fall through to legacy per-category composition |
+| `templates/preview_compositions/agency.html` etc (5 files) | Author-as-prototype literals never lifted to DNA content fields |
+| `templates/preview_compositions/ecommerce/fashion-editorial.html` | Authored Session 15 with 12+ literals baked in — violates D-047 |
+| `templates/preview_compositions/ecommerce/artisan-workshop.html` | Same class — 10+ literals |
+| `templates/preview_compositions/restaurant/trattoria-warm.html` | `Trastevere · dal 1987` hardcoded |
+| `templates/preview_compositions/medical/family.html` | `Dr.ssa Rambaldi` hardcoded (latent — single tenant) |
+| `templates/live_templates/restaurant/fine-dining/` (8 files) | 5 files have Gusto brand leaks (Phase 2g.3 already planned) |
+| `apps/catalog/preview_imagery.py` | Sibling pools 100% URL-overlap (agency/business/lawyer/real-estate/portfolio); `medical-specialist` 5/6 from lawyer pool; `medical-family` 100% from `medical` pool |
+| `apps/catalog/template_content.py` | Inner-page content exists for only 3 templates — the live-preview coverage is 15% of the catalog |
+
+### Minimal technical plan (no scope creep)
+1. **Phase 2g2x.1 — Legacy-comp lift to D-047.** For each of the 5 non-DNA categories, either (a) split into 2 archetypes with its own composition + DNA entry, OR (b) lift the existing `<category>.html` to parse `dna.content.*` fields and add minimal DNA entries for each tenant. Option (a) is cleaner and matches the medical/restaurant pattern; option (b) is cheaper but requires both tenants to author DNA content. Either way: **no new HTML file needs to be created for any template — existing 5 legacy comps become 5 DNA-driven comps OR become 10 archetype comps**
+2. **Phase 2g2x.2 — Imagery pool sibling-split.** For each of the 5 legacy categories, replace the single 6-URL pool with two sibling-distinct pools per Session 10 recipe (`<category>-A` + `<category>-B`, hand-checked via Read for visual distinctness, zero URL overlap)
+3. **Phase 2g2x.3 — Lift latent leaks under D-047.** `restaurant/trattoria-warm.html`, `restaurant/street-modern.html`, `medical/family.html`, `medical/clinic.html`, `medical/wellness.html`, `ecommerce/fashion-editorial.html`, `ecommerce/artisan-workshop.html` — grep each for literal brand strings and move them to the DNA `content` block, using Session 14's mechanical recipe
+4. **Phase 2g2x.4 — Medical specialist imagery pool.** Replace the lawyer-pool-derived hero photo in `medical-specialist` with a real medical-specialist-appropriate URL set (2 templates × different photo subsets, OR have them share the pool and macro-tone differentiate via accent). Fix `medical-family` pool overlap with base `medical` pool
+5. **Phase 2g2x.5 — Single-page template demotion.** Templates with no live inner-page content should either (a) be marked as `draft` / unpublished until their inner pages exist, OR (b) receive inner-page content following the cardio/derm/gusto pattern. This is the "completeness gap" fix. Ship decision: keep them `published` but flag them as "preview-only" with a Coming Soon badge, OR hide them from listing until complete
+6. **Phase 2g2x.6 — Stale-PNG structural fix** (TODO_NEXT Phase 2d item 4): add DNA-signature hashing on TemplateAsset so regeneration is automatic
+
+### Categories that MUST be corrected before roadmap resumes
+All 5 non-DNA categories (**CRITICO**): agency, business, lawyer, real-estate, portfolio.
+Latent-leak fixes for restaurant/ecommerce/medical (**MEDIO**) can be done in a second wave but should not be skipped — they will detonate on reuse.
+
+### What NOT to do yet (hard boundaries)
+- No auth / checkout / editor / projects / commerce / dashboard / accounts / cart / stripe work
+- No new categories
+- No new templates to ANY category
+- No new archetypes
+- No broad refactors outside this audit scope
+- No forced merges to main
+
+### Files modified in Session 16
+- `SESSION_LOG.md` — this entry (audit findings)
+- `DECISIONS.md` — D-049 added (audit verdict + blocking rule)
+- `TODO_NEXT.md` — Phase 2g2x inserted as the blocking wave before any roadmap item
+- `AGENT_HANDOFF.md` — Session 16 handoff + "do not resume roadmap" directive
+- `CATEGORY_ROADMAP.md` — severity column added per category, DNA-rollout order updated
+
+### Memory files updated (auto-memory)
+- `catalog_differentiation_audit.md` (new project memory)
+- `MEMORY.md` (pointer added)
+
+---
+
 ## Session 15 — Visual Polish & Preview Fixes (2026-04-11)
 
 **Agent:** Visual polish pass

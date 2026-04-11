@@ -1,17 +1,23 @@
 # Category Roadmap
 
+## 🛑 Session 16 audit severity (2026-04-11) — see D-049, Phase 2g2x is blocking
+
 ## MVP Categories (Phase 1)
 
-| Priority | Category    | Slug         | Description                              | Templates / Archetypes |
-|----------|-------------|--------------|------------------------------------------|-----------------|
-| 1        | Agency      | agency       | Digital/creative agencies                | 2 (no DNA yet)  |
-| 2        | Business    | business     | General business, corporate              | 2 (no DNA yet)  |
-| 3        | **Restaurant** | restaurant | Restaurants, cafés, food delivery       | **3 / 3 ✅ DNA pilot — fine-dining + trattoria-warm + street-modern** |
-| 4        | **Medical** | medical      | Clinics, doctors, health practices       | **5 / 4 ✅ DNA pilot — clinic + family + specialist ×2 + wellness (specialist archetype now hosts cardio + dermatologia-elite-roma, reuse validated)** |
-| 5        | Lawyer      | lawyer       | Law firms, legal practices               | 2 (no DNA yet)  |
-| 6        | Real Estate | real-estate  | Agencies, property listings              | 2 (no DNA yet)  |
-| 7        | Portfolio   | portfolio    | Freelancers, designers, photographers    | 2 (no DNA yet)  |
-| 8        | eCommerce   | ecommerce    | Online stores, product showcases         | 2 (no DNA yet)  |
+| Priority | Category    | Slug         | Description                              | Templates / Archetypes | **Audit severity** |
+|----------|-------------|--------------|------------------------------------------|-----------------|--------------------|
+| 1        | Agency      | agency       | Digital/creative agencies                | 2 (no DNA) — vertex + aura share `agency.html` with 6 fake case-study literals  | **CRITICO** (identity crash) |
+| 2        | Business    | business     | General business, corporate              | 2 (no DNA) — pragma + elevate share `business.html` with hardcoded `"Hanno scelto Pragma"` label + Marco Bianchi testimonial | **CRITICO** (identity crash) |
+| 3        | Restaurant  | restaurant | Restaurants, cafés, food delivery       | 3 / 3 ✅ DNA pilot — fine-dining + trattoria-warm + street-modern, all visually distinct at card | **MEDIO** (latent D-047 leaks in trattoria-warm preview comp + 5 Gusto leak files in fine-dining live skin; Phase 2g.3 absorbed into Phase 2g2x.3) |
+| 4        | Medical     | medical      | Clinics, doctors, health practices       | 5 / 4 ✅ DNA pilot — clinic + family + specialist ×2 + wellness (specialist hosts cardio + dermatologia-elite-roma) | **MEDIO** (cardio+derm share specialist hero imagery which is from lawyer pool 5/6 overlap; `medical-family` pool 100% overlaps with `medical` pool; latent single-tenant leak in `medical/family.html` preview comp) |
+| 5        | Lawyer      | lawyer       | Law firms, legal practices               | 2 (no DNA) — lex + juris share `lawyer.html` hardcoding "Studio legale dal 1962 · Roma · Milano" | **CRITICO** (identity crash — Juris modern template renders Lex's 60-year heritage) |
+| 6        | Real Estate | real-estate  | Agencies, property listings              | 2 (no DNA) — casa + villa share `real-estate.html` with "600+ immobili · €500K–€1.2M" mass-market search box | **CRITICO** (identity crash — Villa ultra-luxury renders mass-market copy) |
+| 7        | Portfolio   | portfolio    | Freelancers, designers, photographers    | 2 (no DNA) — chiara + pixel share `portfolio.html` hardcoding "Sono una designer indipendente" | **CRITICO** (identity crash — Pixel photographer renders Chiara's designer identity) |
+| 8        | eCommerce   | ecommerce    | Online stores, product showcases         | 2 / 2 ✅ DNA pilot — luxe (fashion-editorial) + bottega (artisan-workshop), Session 15 macro-tone split | **MEDIO** (latent — `fashion-editorial.html` has 12+ Luxe literals; `artisan-workshop.html` has 10+ Bottega literals. Will detonate on Phase 2f.2 reuse) |
+
+**Completeness coverage (preview vs full multi-page):**
+- **Full multi-page websites:** 3 of 20 templates (cardio, dermatologia-elite-roma via specialist reuse, gusto)
+- **Preview-PNG-only templates:** 17 of 20. Marketplace positions as "complete multipage websites" but 85% of the catalog ships as single-page posters. See Phase 2g2x.4 for the tiering/demotion decision.
 
 ### DNA migration order (Phase 2f)
 1. ✅ Medical — done (Session 7 — clinic / family / specialist / wellness)
