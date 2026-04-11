@@ -73,38 +73,38 @@
 
 {% block content %}
   <article class="fd-article">
-    <nav class="crumbs">
+    <nav class="crumbs" data-lm="reveal">
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}">Diario</a>
       <span>/</span>
       <span style="color:var(--ink-soft);">{{ post.kicker }}</span>
     </nav>
 
-    <div class="kicker">{{ post.kicker }}</div>
-    <h1>{{ post.title }}</h1>
-    <div class="meta">
+    <div class="kicker" data-lm="reveal">{{ post.kicker }}</div>
+    <h1 data-lm="reveal-lg">{{ post.title }}</h1>
+    <div class="meta" data-lm="reveal">
       <span><strong>{{ post.author }}</strong></span>
       <span>{{ post.date }}</span>
       <span>{{ post.read_min }} min di lettura</span>
     </div>
 
-    <p class="lede">{{ post.lede }}</p>
+    <p class="lede" data-lm="reveal">{{ post.lede }}</p>
 
     <div class="body">
       {% for kind, text in post.body %}
         {% if kind == "p" %}
-          <p>{{ text }}</p>
+          <p data-lm="reveal">{{ text }}</p>
         {% elif kind == "h2" %}
-          <h2>{{ text }}</h2>
+          <h2 data-lm="reveal-lg">{{ text }}</h2>
         {% elif kind == "blockquote" %}
-          <blockquote>{{ text }}</blockquote>
+          <blockquote data-lm="reveal">{{ text }}</blockquote>
         {% endif %}
       {% empty %}
-        <p>Articolo in preparazione editoriale. La pubblicazione integrale sarà disponibile a breve, scritta personalmente dallo chef o dal maître.</p>
-        <p>Questo segnaposto descrive la voce del Diario di Sala: brevi note di lavoro, riflessioni sui produttori, racconti di serate memorabili. Mai più di duemila parole, mai meno di cinquecento.</p>
+        <p data-lm="reveal">Articolo in preparazione editoriale. La pubblicazione integrale sarà disponibile a breve, scritta personalmente dallo chef o dal maître.</p>
+        <p data-lm="reveal">Questo segnaposto descrive la voce del Diario di Sala: brevi note di lavoro, riflessioni sui produttori, racconti di serate memorabili. Mai più di duemila parole, mai meno di cinquecento.</p>
       {% endfor %}
     </div>
 
-    <div class="footer-meta">
+    <div class="footer-meta" data-lm="reveal">
       <span>Osteria Moderna · Il diario di sala</span>
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}">← Tutto il diario</a>
     </div>

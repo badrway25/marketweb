@@ -45,9 +45,19 @@
   }
 
   .fd-hero .plate {
+    position: relative;
+    overflow: hidden;
+  }
+  .fd-hero .plate .plate-img {
+    position: absolute; inset: 0;
     background: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80') center/cover;
     filter: contrast(1.06) saturate(0.95) brightness(0.78);
-    position: relative;
+    transform: scale(1.001);
+    transition: transform 900ms cubic-bezier(0.33, 1.00, 0.68, 1), filter 900ms cubic-bezier(0.33, 1.00, 0.68, 1);
+  }
+  .fd-hero .plate:hover .plate-img {
+    transform: scale(1.035);
+    filter: contrast(1.1) saturate(1.0) brightness(0.83);
   }
   .fd-hero .plate:after {
     content: ''; position: absolute; inset: 0;
@@ -169,11 +179,26 @@
   }
   .fd-chef .portrait {
     aspect-ratio: 4/5;
-    background:
-      linear-gradient(180deg, rgba(11,9,7,0) 60%, rgba(11,9,7,0.5) 100%),
-      url('https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=80') center/cover;
-    filter: grayscale(15%) contrast(1.05) brightness(0.85);
+    position: relative;
+    overflow: hidden;
     border-left: 6px solid var(--secondary);
+    isolation: isolate;
+  }
+  .fd-chef .portrait:before {
+    content: ''; position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(180deg, rgba(11,9,7,0) 60%, rgba(11,9,7,0.5) 100%);
+    pointer-events: none;
+  }
+  .fd-chef .portrait:after {
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background: url('https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=80') center/cover;
+    filter: grayscale(15%) contrast(1.05) brightness(0.85);
+    transform: scale(1.001);
+    transition: transform 900ms cubic-bezier(0.33, 1.00, 0.68, 1), filter 900ms cubic-bezier(0.33, 1.00, 0.68, 1);
+  }
+  .fd-chef .portrait:hover:after {
+    transform: scale(1.045);
+    filter: grayscale(5%) contrast(1.08) brightness(0.92);
   }
   .fd-chef .info .role {
     font-family: var(--body); font-size: 11px; font-weight: 700;
@@ -228,10 +253,10 @@
 {% block content %}
   <section class="fd-hero">
     <div class="text">
-      <div class="eyebrow">{{ page_data.eyebrow }}</div>
-      <h1>{{ page_data.headline|safe }}</h1>
-      <p>{{ page_data.intro }}</p>
-      <div class="actions">
+      <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+      <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+      <p data-lm="reveal">{{ page_data.intro }}</p>
+      <div class="actions" data-lm="reveal">
         <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}" class="gold-link">{{ page_data.primary_cta }}</a>
         <span class="pipe"></span>
         <div class="meta">
@@ -240,7 +265,8 @@
         </div>
       </div>
     </div>
-    <div class="plate">
+    <div class="plate" data-lm="reveal-soft">
+      <div class="plate-img"></div>
       <span class="star-tag">★ Atto V · Cioccolato 80%</span>
       <div class="credit">
         <span>Fotografia<strong>Vincenzo Lauro</strong></span>
@@ -249,32 +275,34 @@
     </div>
   </section>
 
-  <section class="fd-facts">
+  <section class="fd-facts" data-lm-stagger data-lm-stagger-delay="110">
     {% for num, lbl in page_data.facts %}
       <div class="fact">
-        <span class="num">{{ num }}</span>
+        <span class="num" data-lm="counter" data-lm-to="{{ num }}">{{ num }}</span>
         <span class="lbl">{{ lbl }}</span>
       </div>
     {% endfor %}
   </section>
 
   <section class="fd-manifesto">
-    <p>{{ page_data.manifesto_drop_cap }}{{ page_data.manifesto }}</p>
+    <p data-lm="reveal">{{ page_data.manifesto_drop_cap }}{{ page_data.manifesto }}</p>
   </section>
 
   <section class="fd-courses">
-    <div class="lbl">Cinque atti del menù in corso · autunno '26</div>
-    {% for num, name, ingredients, wine in page_data.signature_courses %}
-      <div class="row">
-        <span class="num">{{ num }}.</span>
-        <span class="name">
-          <span>{{ name }}</span>
-          <span class="desc">{{ ingredients }}</span>
-        </span>
-        <span class="wine">{{ wine }}</span>
-      </div>
-    {% endfor %}
-    <div class="footline">
+    <div class="lbl" data-lm="reveal">Cinque atti del menù in corso · autunno '26</div>
+    <div data-lm-stagger>
+      {% for num, name, ingredients, wine in page_data.signature_courses %}
+        <div class="row">
+          <span class="num">{{ num }}.</span>
+          <span class="name">
+            <span>{{ name }}</span>
+            <span class="desc">{{ ingredients }}</span>
+          </span>
+          <span class="wine">{{ wine }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="footline" data-lm="reveal">
       <span><span class="price">€ 180</span>  / persona · vini in abbinamento + €90</span>
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}" class="ghost-btn" style="border-color:var(--secondary);color:var(--secondary);">Otto atti completi →</a>
     </div>
@@ -282,12 +310,12 @@
 
   <section class="fd-chef">
     <div class="fd-chef-inner">
-      <div class="portrait"></div>
+      <div class="portrait" data-lm="reveal-soft"></div>
       <div class="info">
-        <div class="role">{{ page_data.chef.role }}</div>
-        <h3>{{ page_data.chef.name }}</h3>
-        <p>{{ page_data.chef.bio }}</p>
-        <div class="links">
+        <div class="role" data-lm="reveal">{{ page_data.chef.role }}</div>
+        <h3 data-lm="reveal-lg">{{ page_data.chef.name }}</h3>
+        <p data-lm="reveal">{{ page_data.chef.bio }}</p>
+        <div class="links" data-lm="reveal">
           <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'filosofia' %}">La filosofia</a>
           <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}">Il diario</a>
         </div>
@@ -295,7 +323,7 @@
     </div>
   </section>
 
-  <section class="fd-press">
+  <section class="fd-press" data-lm-stagger data-lm-stagger-delay="90">
     <span class="lbl">Pubblicato su</span>
     {% for outlet in page_data.press %}
       <span class="item">{{ outlet }}</span>
@@ -303,8 +331,8 @@
   </section>
 
   <section class="fd-cta">
-    <h2>Quattordici coperti, <em>due servizi a settimana.</em></h2>
-    <div class="actions">
+    <h2 data-lm="reveal-lg">Quattordici coperti, <em>due servizi a settimana.</em></h2>
+    <div class="actions" data-lm="reveal">
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}" class="gold-btn">Riserva la serata</a>
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}" class="ghost-btn">Vedi il menù completo</a>
     </div>

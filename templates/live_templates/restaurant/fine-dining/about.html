@@ -86,12 +86,12 @@
 
 {% block content %}
   <section class="fd-lead">
-    <div class="eyebrow">{{ page_data.eyebrow }}</div>
-    <h1>{{ page_data.headline|safe }}</h1>
-    <p class="intro">{{ page_data.intro }}</p>
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
   </section>
 
-  <section class="fd-timeline">
+  <section class="fd-timeline" data-lm-stagger data-lm-stagger-delay="90">
     {% for year, text in page_data.history %}
       <div class="row">
         <span class="year">{{ year }}</span>
@@ -102,8 +102,8 @@
 
   <section class="fd-method">
     <div class="fd-method-inner">
-      <h2>{{ page_data.method_title }}</h2>
-      <div class="ps">
+      <h2 data-lm="reveal-lg">{{ page_data.method_title }}</h2>
+      <div class="ps" data-lm="reveal">
         {% for p in page_data.method_paragraphs %}
           <p>{{ p }}</p>
         {% endfor %}
@@ -112,9 +112,9 @@
   </section>
 
   <section class="fd-values">
-    <span class="sec-label">Cosa garantiamo</span>
-    <h2 style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro promesse che <em>non cambiano mai</em>.</h2>
-    <div class="grid">
+    <span class="sec-label" data-lm="reveal">Cosa garantiamo</span>
+    <h2 data-lm="reveal-lg" style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro promesse che <em>non cambiano mai</em>.</h2>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
       {% for title, blurb in page_data.values %}
         <div class="v">
           <h4>{{ title }}</h4>
@@ -125,8 +125,8 @@
   </section>
 
   <section class="fd-cta-band">
-    <h3>Vuoi vedere il menù <em>in corso questa settimana?</em></h3>
-    <div class="actions">
+    <h3 data-lm="reveal">Vuoi vedere il menù <em>in corso questa settimana?</em></h3>
+    <div class="actions" data-lm="reveal">
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}">Otto atti dell'autunno '26 →</a>
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}">Riserva la serata →</a>
     </div>

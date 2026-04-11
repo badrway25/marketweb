@@ -1,5 +1,141 @@
 # Session Log
 
+## Session 22 — Motion Pilot Gusto (Phase 2g2x.9) (2026-04-11)
+
+**Agent:** Implementation session. First application of a reusable premium motion language on a live-template archetype. Scoped tightly to `gusto-fine-dining`; nothing else touched.
+**Branch:** `phase-motion-pilot-gusto-v2` (worktree).
+**Scope floor:** no other templates animated, no refactor of the marketplace frontend, no dependencies added, no translations, no tiering changes, no draft reopening, no commerce/auth/editor touched.
+
+### 1 — Strategy: 6 restrained patterns, not 15 loud effects
+
+Gusto is a dark-editorial, cream-on-charcoal-with-gold fine-dining skin. The only motion direction that fits that mood is *cinematic and calm* — slow ease-out, small distances, everything revealing like a page being unveiled. The pilot picks 6 patterns that each have a functional reason, and rejects everything that smells like a theme pack:
+
+1. **Reveal-on-scroll** — fade + soft rise (14px body / 22px headings / fade-only for hero media). Guides eye down the page without asking for attention.
+2. **Stagger** — direct children of `data-lm-stagger` parents get incremental transition-delays (70–110ms unit). Applied to facts, 8 courses, 5 timeline rows, 3 rooms, 6 gallery tiles, 4 values, 4 process steps, compact blog list, wine highlights, press strip.
+3. **Count-up** on home facts (`14`, `8`, `180€`) — only place numbers carry meaning. Non-numeric suffix preserved via regex.
+4. **Cinematic image hover** — `overflow: hidden` wrapper + inner background layer that scales 1.00→1.045 over 900ms on hover, with a gentle brightness/contrast lift. Applied to hero plate, chef portrait, concierge portrait, blog lead image, 6 gallery tiles.
+5. **Gold-link arrow shift** — `→` translates +6px + letter-spacing widens 0.22→0.24em on hover, on every `.gold-btn`/`.gold-link`/`.fd-lead-post .read`/`mp-bar .mp-back`/footer links.
+6. **Nav underline sweep** — `.fd-nav` links get an animated underline scaling from 0 to full width (scaleX origin-left). The current page underline is permanent; hover sweeps the others.
+
+**Rejected:** parallax (CLS risk, heavy on mobile), slider/carousel (too loud for fine dining), bounce/elastic easing (cheap), blur-in (inconsistent), marquee press strip (the initial impulse — replaced with a calm stagger after the "niente slider rumorosi" re-read).
+
+### 2 — Architecture: two reusable static files, zero dependencies
+
+- `static/css/live-motion.css` (NEW, ~7KB) — motion tokens on `:root`, base reveal primitives gated on `body.lm-ready`, stagger rules (children of `[data-lm-stagger]`), image-frame hover utilities, `@media (prefers-reduced-motion: reduce)` collapse + `body.lm-reduced` class collapse (belt + braces).
+- `static/js/live-motion.js` (NEW, ~7.6KB) — dependency-free IIFE that (1) adds `lm-ready` only after DOMContentLoaded, (2) observes reveals with `IntersectionObserver` threshold 0.15 + rootMargin `-80px`, (3) observes stagger parents and assigns per-child `transition-delay` on init, (4) observes counters at threshold 0.4 and animates with `requestAnimationFrame` + `easeOutCubic`, (5) short-circuits to `lm-reduced` on `prefers-reduced-motion: reduce`, (6) fails open on missing `IntersectionObserver`.
+
+Both files are loaded via `{% static %}` in the `_base.html` of the fine-dining skin — one `<link>` in `<head>`, one `<script defer>` before `</body>`. No other skin is touched. This is the shape future archetypes opt into.
+
+**Design tokens (on `:root` of live-motion.css):**
+```
+--lm-dur-fast  = 360ms
+--lm-dur-med   = 560ms
+--lm-dur-slow  = 720ms
+--lm-dur-xslow = 900ms     (image hover zoom)
+--lm-ease      = cubic-bezier(0.22, 0.61, 0.36, 1)  (ease-out, no overshoot)
+--lm-rise      = 14px
+--lm-rise-lg   = 22px
+--lm-stagger   = 70ms
+```
+
+### 3 — No-JS fallback + reduced-motion: load-bearing decisions
+
+- The CSS hidden state (`opacity: 0; transform: translate3d(0, 14px, 0)`) is guarded by `body.lm-ready`. That class is added ONLY by `live-motion.js` on DOMContentLoaded. If JS fails to load, `body` never gets `lm-ready`, the hidden rules never activate, and the page renders in full — no blank hero on a stale CDN. Verified in the browser by removing `lm-ready` at runtime: every reveal target returns to `opacity: 1 / transform: none`.
+- `prefers-reduced-motion: reduce` is respected TWICE: a `@media` query in live-motion.css forces opacity/transform/transition to `!important` defaults for every `[data-lm]` / stagger child / image-hover target, AND the JS adds `body.lm-reduced` on init if the media query matches (which fires the second set of CSS rules that collapse the same properties). Belt + braces — a user with reduced motion gets a plain render even if the `@media` rule is stripped by an overzealous stylesheet. Verified by manually setting `body.lm-reduced` in the browser: opacity/transform/transition all collapse cleanly.
+
+### 4 — Files modified
+
+**New:**
+- `static/css/live-motion.css` — reusable motion language (tokens, reveal primitives, stagger, image-frame hover, marquee placeholder, reduced-motion collapse).
+- `static/js/live-motion.js` — reusable motion runtime (IO reveals, staggers, counters, marquee-duplication helper, reduced-motion guard).
+
+**Modified (fine-dining skin only):**
+- `templates/live_templates/restaurant/fine-dining/_base.html` — link motion CSS, script motion JS, enhance nav underline sweep (scaleX 0→1), gold btn arrow shift + letter-spacing hover, mp-bar back link hover, footer link transitions.
+- `templates/live_templates/restaurant/fine-dining/home.html` — introduce `.plate-img` inner layer inside `.fd-hero .plate` for hover zoom, refactor `.fd-chef .portrait` to wrapper + `:before` overlay + `:after` image layer for the same zoom, attach `data-lm` reveal/stagger/counter attributes across hero, facts, manifesto, signature courses, chef block, press strip, CTA.
+- `templates/live_templates/restaurant/fine-dining/menu.html` — reveals + stagger on 8 courses + wine intro + 4 wine highlights.
+- `templates/live_templates/restaurant/fine-dining/about.html` — reveals + stagger on 5 timeline rows + method + 4 values + CTA.
+- `templates/live_templates/restaurant/fine-dining/gallery.html` — gallery grid refactored to wrapper + inner `.bg` pattern so hover zoom has an `overflow: hidden` container (no CLS), caption lift on hover, stagger on 3 rooms + 6 tiles.
+- `templates/live_templates/restaurant/fine-dining/reservations.html` — concierge portrait inner-layer refactor, reveals + stagger on 4 process steps, simple reveal on hours table (keeping `display: contents` intact, see gotcha below).
+- `templates/live_templates/restaurant/fine-dining/blog_list.html` — lead-post image inner-layer refactor, hover letter-spacing + arrow shift on `.read`, stagger on compact list.
+- `templates/live_templates/restaurant/fine-dining/blog_detail.html` — light reveals on article crumbs, kicker, h1, meta, lede, body paragraphs / headings / blockquotes, footer.
+
+### 5 — Gotchas worth remembering
+
+- **`display: contents` + opacity/transform = nothing renders.** The `.fd-hours .table .row` uses `display: contents` (it's a flattened grid row that spreads its children into the parent grid). An element with `display: contents` has no box, so `opacity: 0` and `transform: translate3d(...)` have no effect — the stagger fails silently. First draft used `data-lm-stagger` on the hours table and the reveal went nowhere. Downgraded to a simple `data-lm="reveal"` on the table wrapper instead (fades the whole table as one block). Note for future motion authors: `display: contents` children cannot be staggered individually — either wrap in a real grid item or stagger one level up.
+- **Stale runserver process.** The first smoke-test runserver somehow kept serving a pre-edit HTML even though the file on disk had the motion attrs (Windows + auto-reloader + rapid file edits seemed to confuse the StatReloader). Killing the server and restarting on a fresh port produced the correct fresh HTML. Lesson: if the browser walk shows "my edits didn't land" and the file-on-disk grep shows they did, just restart runserver before debugging CSS or cache layers. This is the same class of repro as Session 19's "ghost dev-server" gotcha.
+- **Playwright fullPage screenshot captures pre-reveal state for below-the-fold sections.** Because `fullPage: true` extends the viewport synchronously and captures immediately, `IntersectionObserver` doesn't get a chance to fire on sections that were never actually visible during real scrolling. First screenshot showed big empty areas where the hidden reveals were. The fix for screenshot-only validation: `document.querySelectorAll('[data-lm]').forEach(el => el.classList.add('lm-in'))` via `browser_evaluate` before taking the screenshot. Real users are unaffected — they scroll naturally and each section reveals on entry. Flag this if any future QA pass uses fullPage screenshots as the primary visual check.
+- **Preview PNG is unaffected.** The marketplace thumbnail for Gusto is generated from a completely separate file (`templates/preview_compositions/restaurant/fine-dining.html`) and is captured by Playwright as a static PNG. The live-template motion system is scoped to `live_templates/restaurant/fine-dining/*` and loads `live-motion.css` / `live-motion.js` only inside that skin. The preview composition never includes those files, so the PNG generator is not at risk of capturing an empty reveal state. Verified by inspection.
+
+### 6 — Validation results
+
+- `python manage.py check` → 0 issues.
+- Django test-client route smoke test (Session 22 fresh seed + tier sync):
+  ```
+  200 OK  /templates/restaurant/gusto-fine-dining/
+  200 OK  /templates/restaurant/gusto-fine-dining/preview/
+  200 OK  /templates/restaurant/gusto-fine-dining/preview/filosofia/
+  200 OK  /templates/restaurant/gusto-fine-dining/preview/menu/
+  200 OK  /templates/restaurant/gusto-fine-dining/preview/atmosfera/
+  200 OK  /templates/restaurant/gusto-fine-dining/preview/diario/
+  200 OK  /templates/restaurant/gusto-fine-dining/preview/prenota/
+  200 OK  /templates/restaurant/gusto-fine-dining/preview/diario/menu-autunno-26/
+  ```
+  8/8 green. Fresh seed + `sync_template_tiers` produced `3 published_live / 17 draft` — tier distribution unchanged from Session 21 as expected.
+- Live browser walk at 1440×900 (Playwright):
+  - `body.lm-ready = true`, `cssLoaded = true`, `jsLoaded = true` on every visited page.
+  - Home: 18 `[data-lm]` elements, 3 stagger parents, 5 reveals already `.lm-in` at top of viewport (hero eyebrow/h1/intro/actions/plate).
+  - Facts counter mid-animation at t≈600ms: `14→11`, `8→7`, `180€→147€` (suffix preserved by the regex parse). Final state at t≈1400ms: `14`, `8`, `180€`.
+  - Press strip stagger delays: `0 / 90 / 180 / 270 / 360 / 450 ms` (6 children, 90ms unit).
+  - Facts stagger delays: `0 / 110 / 220 ms` (3 facts, 110ms unit).
+  - Menu: 8 courses in a `[data-lm-stagger]` parent, wine highlights in another.
+  - Gallery: 6 tiles with inner `.bg` layers, `transition: transform 0.9s cubic-bezier(0.33, 1, 0.68, 1), filter 0.9s ...` wired correctly; initial transform `matrix(1.001, 0, 0, 1.001, 0, 0)`.
+  - About: 5 timeline rows + 4 values staggered.
+  - Reservations: 4 process steps staggered; hours table falls back to plain reveal (display: contents gotcha); concierge portrait refactored for hover zoom.
+  - Blog list: 4 compact rows staggered; lead post image refactored for hover zoom.
+  - Blog detail: 14 `[data-lm]` elements including 5 body paragraphs.
+- Reduced-motion test (`body.lm-reduced`): every `[data-lm]` target collapses to `opacity: 1 / transform: none / transition: none`. Verified by setting the class manually and reading computed styles.
+- No-JS fallback test (remove `body.lm-ready`): every reveal target returns to `opacity: 1 / transform: none`. Page renders in full without JS.
+- Mobile sanity at 390×844: document scroll-width is 660px — horizontal overflow **pre-existing** from Gusto's desktop-first fixed paddings (`padding: 96px 56px 96px 90px` + `grid-template-columns: 1fr 1.18fr`). Offenders identified: `.fd-hero .text` (426px) and `.fd-chef .info` (320px). Motion pilot introduced **zero new horizontal overflow**: all reveals are Y-axis only, image zooms are clipped by `overflow: hidden` wrappers, hover letter-spacing is contained in flex-between rows. Pre-existing mobile layout gap is documented for a separate responsive pass, out of scope for the motion pilot.
+- D-047 leak sweep: zero new literal brand strings introduced. The only `Osteria Moderna` literal in `blog_detail.html:108` is the pre-existing Gusto leak already documented in `TEMPLATE_REGISTRY.json` `tier_reason` as the "5 Gusto leaks pending Phase 2g.3 lift". Motion pilot is orthogonal to that D-047 lift and does not regress it.
+
+### 7 — Decisions added
+
+- **D-058: Live Motion Language — Reusable CSS + JS module, opted in per skin, no-JS fallback, reduced-motion respected** — see DECISIONS.md.
+
+### 8 — What's reusable vs what's Gusto-specific
+
+**Reusable (the mini motion language):**
+- `static/css/live-motion.css` — tokens + reveal primitives + stagger + image-frame + reduced-motion. Category-agnostic.
+- `static/js/live-motion.js` — runtime. Category-agnostic.
+- The HTML attribute contract: `data-lm="reveal|reveal-lg|reveal-soft"`, `data-lm-stagger [data-lm-stagger-delay="Nms"]`, `data-lm="counter" data-lm-to="NN"`.
+- The `body.lm-ready` gating contract for hidden states.
+- The wrapper + inner-bg layer pattern for image hover zoom (any `.xx .portrait` / `.xx .plate` / `.xx .img` that wants the effect can adopt the same shape).
+
+**Gusto-specific (fine-dining skin CSS extensions):**
+- `.fd-nav` underline sweep — uses the gold `--secondary` token; tone-dependent.
+- `.fd-lead .gold-btn:hover` arrow shift + letter-spacing widening — uses `.gold-btn` selector specific to fine-dining.
+- `.mp-bar .mp-back:hover` letter-spacing widening — uses fine-dining's own marketplace bar styling.
+
+**Author note for future archetypes:** A new archetype adopting the motion pilot should (1) link + script the two static files, (2) add `data-lm` attributes to the content, (3) decide whether to author its own hover enhancements (underline sweep / arrow shift / letter-spacing) using the `--lm-ease` and `--lm-dur-*` tokens for consistency. The tokens on `:root` can be overridden inside the skin's `<style>` block if the mood is different (e.g. a very-muted medical archetype might set `--lm-rise: 10px` for a more subdued cadence).
+
+### 9 — Final state
+
+- All 8 Gusto routes return 200.
+- Manifesto, facts, courses, chef, press, CTA all reveal cleanly as you scroll.
+- Facts counter animates 0→14/0→8/0→180€ with suffix preserved.
+- Gallery tiles zoom gently on hover without CLS (inner `.bg` layer is clipped by `overflow: hidden` wrapper).
+- Gold CTAs and nav links have tactile micro-interactions.
+- Reduced-motion users get a fully visible, animation-free page.
+- No-JS users get a fully visible, animation-free page.
+- Mobile overflow is pre-existing (not introduced by this pilot).
+- Zero new literals, zero new dependencies, zero wide refactor.
+
+**Decision:** MOTION PILOT GUSTO APPROVATO.
+
+### 10 — Handoff notes
+
+See AGENT_HANDOFF.md and TODO_NEXT.md for next-session direction. The motion pilot is ready to be adopted by the other `tier=published_live` templates (cardio + dermatologia specialist skin) and is the expected interaction-quality floor for every new template promoted to `published_live` during Phase 2g3. Future skins opt in with one `<link>` + one `<script>` in their `_base.html` — the pilot is strictly additive; nothing breaks if a skin doesn't opt in.
+
 ## Session 21 — Tier Migration Implementation (Phase 2g2x.8) (2026-04-11)
 
 **Agent:** Implementation session. Closes Phase 2g2x.8 and resolves Phase 2g2x.7 by construction. D-053 / D-054 / D-055 / D-056 were formalized in Session 20 as a documentation delta; Session 21 ships the code that makes them real at the query layer.

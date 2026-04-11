@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family={{ theme.body_font|urlencode }}:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <style>
   :root {
     --primary:   {{ theme.primary }};      /* deep brown */
@@ -40,7 +41,8 @@
     padding: 10px 32px; display: flex; justify-content: space-between; align-items: center;
     border-bottom: 1px solid var(--rule);
   }
-  .mp-bar .mp-back { color: var(--secondary); border-bottom: 1px solid var(--secondary); padding-bottom: 1px; font-weight: 600; }
+  .mp-bar .mp-back { color: var(--secondary); border-bottom: 1px solid var(--secondary); padding-bottom: 1px; font-weight: 600; transition: color 360ms cubic-bezier(0.22,0.61,0.36,1), letter-spacing 360ms cubic-bezier(0.22,0.61,0.36,1); }
+  .mp-bar .mp-back:hover { letter-spacing: 0.18em; }
   .mp-bar .mp-name { color: var(--ink-dim); }
 
   /* ============================================================
@@ -61,8 +63,22 @@
     color: var(--ink-soft);
   }
   .fd-nav .right { justify-content: flex-end; }
+  /* Subtle underline cue on hover — 0 to full-width, from the left edge.
+     `.is-current` keeps its permanent underline so the active page never loses it. */
+  .fd-nav .left a, .fd-nav .right a {
+    position: relative; padding-bottom: 4px;
+    transition: color 360ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .fd-nav .left a:after, .fd-nav .right a:after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+    height: 1px; background: var(--secondary);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 420ms cubic-bezier(0.22,0.61,0.36,1);
+  }
   .fd-nav .left a:hover, .fd-nav .right a:hover { color: var(--secondary); }
-  .fd-nav .left a.is-current, .fd-nav .right a.is-current { color: var(--secondary); border-bottom: 1px solid var(--secondary); padding-bottom: 4px; }
+  .fd-nav .left a:hover:after, .fd-nav .right a:hover:after { transform: scaleX(1); }
+  .fd-nav .left a.is-current, .fd-nav .right a.is-current { color: var(--secondary); }
+  .fd-nav .left a.is-current:after, .fd-nav .right a.is-current:after { transform: scaleX(1); }
   .fd-nav .logo { text-align: center; }
   .fd-nav .logo .name {
     font-family: var(--heading); font-style: italic;
@@ -102,13 +118,21 @@
     color: var(--secondary);
     border-bottom: 1.5px solid var(--secondary); padding-bottom: 4px;
     display: inline-flex; align-items: center; gap: 14px;
+    transition: letter-spacing 360ms cubic-bezier(0.22,0.61,0.36,1);
   }
-  .fd-lead .gold-btn:after { content: '→'; font-family: var(--heading); font-style: italic; font-size: 18px; }
+  .fd-lead .gold-btn:after {
+    content: '→'; font-family: var(--heading); font-style: italic; font-size: 18px;
+    display: inline-block;
+    transition: transform 420ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .fd-lead .gold-btn:hover { letter-spacing: 0.24em; }
+  .fd-lead .gold-btn:hover:after { transform: translateX(6px); }
   .fd-lead .ghost-btn {
     font-family: var(--body); font-size: 12px; font-weight: 600;
     letter-spacing: 0.18em; text-transform: uppercase;
     color: var(--ink-soft); border-bottom: 1px solid var(--rule);
     padding: 4px 0;
+    transition: color 360ms cubic-bezier(0.22,0.61,0.36,1), border-color 360ms cubic-bezier(0.22,0.61,0.36,1);
   }
   .fd-lead .ghost-btn:hover { color: var(--secondary); border-color: var(--secondary); }
 
@@ -161,6 +185,10 @@
     font-size: 11px; color: var(--ink-dim);
     letter-spacing: 0.10em; text-transform: uppercase;
   }
+  .fd-foot .col a {
+    transition: color 360ms cubic-bezier(0.22,0.61,0.36,1), letter-spacing 360ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .fd-foot .bot a { transition: color 360ms cubic-bezier(0.22,0.61,0.36,1); }
   .fd-foot .bot a:hover { color: var(--secondary); }
 
   {% block extra_css %}{% endblock %}
@@ -237,5 +265,6 @@
   </div>
 </footer>
 
+<script src="{% static 'js/live-motion.js' %}" defer></script>
 </body>
 </html>

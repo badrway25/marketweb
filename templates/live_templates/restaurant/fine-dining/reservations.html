@@ -35,11 +35,26 @@
   }
   .fd-concierge .portrait {
     aspect-ratio: 4/5;
-    background:
-      linear-gradient(180deg, rgba(11,9,7,0) 60%, rgba(11,9,7,0.5) 100%),
-      url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=80') center/cover;
+    position: relative;
+    overflow: hidden;
     border-left: 6px solid var(--secondary);
+    isolation: isolate;
+  }
+  .fd-concierge .portrait:before {
+    content: ''; position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(180deg, rgba(11,9,7,0) 60%, rgba(11,9,7,0.5) 100%);
+    pointer-events: none;
+  }
+  .fd-concierge .portrait:after {
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background: url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=80') center/cover;
     filter: grayscale(15%) contrast(1.05) brightness(0.85);
+    transform: scale(1.001);
+    transition: transform 900ms cubic-bezier(0.33, 1.00, 0.68, 1), filter 900ms cubic-bezier(0.33, 1.00, 0.68, 1);
+  }
+  .fd-concierge .portrait:hover:after {
+    transform: scale(1.045);
+    filter: grayscale(5%) contrast(1.08) brightness(0.92);
   }
   .fd-concierge .info .role {
     font-family: var(--body); font-size: 11px; font-weight: 700;
@@ -154,15 +169,15 @@
 
 {% block content %}
   <section class="fd-lead">
-    <div class="eyebrow">{{ page_data.eyebrow }}</div>
-    <h1>{{ page_data.headline|safe }}</h1>
-    <p class="intro">{{ page_data.intro }}</p>
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
   </section>
 
   <section class="fd-process">
-    <span class="sec-label">Come funziona</span>
-    <h2 style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro passaggi, <em>quattro giorni di anticipo</em>.</h2>
-    <div class="grid">
+    <span class="sec-label" data-lm="reveal">Come funziona</span>
+    <h2 data-lm="reveal-lg" style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro passaggi, <em>quattro giorni di anticipo</em>.</h2>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
       {% for num, title, blurb in page_data.process %}
         <div class="step">
           <div class="num">{{ num }}.</div>
@@ -175,12 +190,12 @@
 
   <section class="fd-concierge">
     <div class="fd-concierge-inner">
-      <div class="portrait"></div>
+      <div class="portrait" data-lm="reveal-soft"></div>
       <div class="info">
-        <div class="role">{{ page_data.concierge.role }}</div>
-        <h3>{{ page_data.concierge.name }}</h3>
-        <p>{{ page_data.concierge.bio }}</p>
-        <div class="lines">
+        <div class="role" data-lm="reveal">{{ page_data.concierge.role }}</div>
+        <h3 data-lm="reveal-lg">{{ page_data.concierge.name }}</h3>
+        <p data-lm="reveal">{{ page_data.concierge.bio }}</p>
+        <div class="lines" data-lm="reveal">
           <div>Email<strong>{{ page_data.concierge.email }}</strong></div>
           <div>Telefono<strong>{{ page_data.concierge.phone }}</strong></div>
         </div>
@@ -189,9 +204,9 @@
   </section>
 
   <section class="fd-hours">
-    <span class="sec-label">Servizi della settimana</span>
-    <h2 style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro sere, <em>una sola seduta</em>.</h2>
-    <div class="table">
+    <span class="sec-label" data-lm="reveal">Servizi della settimana</span>
+    <h2 data-lm="reveal-lg" style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro sere, <em>una sola seduta</em>.</h2>
+    <div class="table" data-lm="reveal">
       {% for day, time, note in page_data.hours %}
         <div class="row">
           <span class="day">{{ day }}</span>
@@ -204,16 +219,16 @@
 
   <section class="fd-private">
     <div class="fd-private-inner">
-      <div>
+      <div data-lm="reveal">
         <span class="sec-label">{{ page_data.private_title }}</span>
         <h3 style="margin-top:14px;">Cene private</h3>
       </div>
-      <p>{{ page_data.private_intro }}</p>
+      <p data-lm="reveal">{{ page_data.private_intro }}</p>
     </div>
   </section>
 
   <section class="fd-form-band">
-    <h3>{{ page_data.form_title }}</h3>
+    <h3 data-lm="reveal-lg">{{ page_data.form_title }}</h3>
     <form>
       <div class="field">
         <label>Nome e cognome</label>

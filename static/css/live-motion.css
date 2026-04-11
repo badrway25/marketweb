@@ -1,0 +1,195 @@
+/* ============================================================================
+ * MarketWeb — Live Motion Language (pilot)
+ * ============================================================================
+ *
+ * A small, reusable motion system for live_templates/<category>/<archetype>
+ * skins. Premium by default: small distances, calm easing, no bounce.
+ *
+ * Contract
+ * --------
+ * - Nothing is hidden by CSS until the body receives `.lm-ready`, which is
+ *   added by live-motion.js on DOMContentLoaded. This is the NO-JS FALLBACK:
+ *   if JS never runs, every element stays visible (no blank pages).
+ * - Reveals require `data-lm="reveal"` (or `reveal-soft` / `reveal-lg`).
+ * - `data-lm-stagger` on a parent cascades the reveal on its direct children
+ *   using a 70ms unit. Optional `data-lm-stagger-delay="N"` overrides (ms).
+ * - `data-lm="counter"` + `data-lm-to="NN"` count the number up on intersect.
+ *   A non-numeric suffix in the original innerText is preserved (e.g. "180€").
+ * - `prefers-reduced-motion: reduce` collapses the entire system back to a
+ *   plain, instant render — no transforms, no transitions, no observers.
+ *
+ * Tokens
+ * ------
+ * Durations, distances, and easing live as CSS custom properties on :root
+ * so individual skins can override them per-token (e.g. a more cinematic
+ * archetype can lengthen `--lm-dur-slow` without rewriting the base rules).
+ *
+ * Scope
+ * -----
+ * This file is loaded ONLY inside live-template standalone skins, not on
+ * the marketplace catalog pages. See _base.html of each archetype.
+ * ============================================================================ */
+
+:root {
+  /* Durations — editorial cadence */
+  --lm-dur-fast:   360ms;
+  --lm-dur-med:    560ms;
+  --lm-dur-slow:   720ms;
+  --lm-dur-xslow:  900ms;   /* image hover zoom */
+
+  /* Easing — ease-out, no overshoot */
+  --lm-ease:        cubic-bezier(0.22, 0.61, 0.36, 1);
+  --lm-ease-smooth: cubic-bezier(0.33, 1.00, 0.68, 1);
+
+  /* Reveal distances */
+  --lm-rise:     14px;
+  --lm-rise-lg:  22px;
+
+  /* Stagger unit (fallback; JS sets explicit per-child delay) */
+  --lm-stagger:  70ms;
+}
+
+/* ----------------------------------------------------------------------------
+ * Base reveal primitives
+ * Hidden state is applied only once `.lm-ready` is on <body>, so a JS-off
+ * page still renders everything without waiting for an observer.
+ * -------------------------------------------------------------------------- */
+
+body.lm-ready [data-lm="reveal"],
+body.lm-ready [data-lm="reveal-lg"],
+body.lm-ready [data-lm="reveal-soft"] {
+  opacity: 0;
+  will-change: opacity, transform;
+  transition:
+    opacity   var(--lm-dur-slow)  var(--lm-ease),
+    transform var(--lm-dur-slow)  var(--lm-ease);
+}
+
+body.lm-ready [data-lm="reveal"] {
+  transform: translate3d(0, var(--lm-rise), 0);
+}
+body.lm-ready [data-lm="reveal-lg"] {
+  transform: translate3d(0, var(--lm-rise-lg), 0);
+}
+body.lm-ready [data-lm="reveal-soft"] {
+  /* fade-only — for hero plates, chef portraits: avoids CLS on large media */
+  transform: none;
+}
+
+body.lm-ready [data-lm="reveal"].lm-in,
+body.lm-ready [data-lm="reveal-lg"].lm-in,
+body.lm-ready [data-lm="reveal-soft"].lm-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ----------------------------------------------------------------------------
+ * Stagger — children of [data-lm-stagger] are revealed in cascade
+ * JS assigns a transition-delay on each direct child (ms = index * stagger).
+ * We just set the per-child transition here; the parent itself is usually
+ * NOT animated, only its children.
+ * -------------------------------------------------------------------------- */
+
+body.lm-ready [data-lm-stagger] > * {
+  opacity: 0;
+  transform: translate3d(0, var(--lm-rise), 0);
+  will-change: opacity, transform;
+  transition:
+    opacity   var(--lm-dur-slow)  var(--lm-ease),
+    transform var(--lm-dur-slow)  var(--lm-ease);
+}
+body.lm-ready [data-lm-stagger].lm-in > * {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ----------------------------------------------------------------------------
+ * Image hover (cinematic zoom)
+ * Target a wrapper with class `lm-img-frame`; the inner image element
+ * receives the slow scale + brightness lift. Wrapper must have overflow:hidden
+ * to prevent layout shift outside the frame.
+ * -------------------------------------------------------------------------- */
+
+.lm-img-frame {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.lm-img-frame > .lm-img,
+.lm-img-frame .lm-img {
+  transition:
+    transform  var(--lm-dur-xslow) var(--lm-ease-smooth),
+    filter     var(--lm-dur-xslow) var(--lm-ease-smooth);
+  transform: scale(1.001); /* avoid fractional-pixel snap on first hover */
+  will-change: transform, filter;
+}
+.lm-img-frame:hover > .lm-img,
+.lm-img-frame:hover .lm-img {
+  transform: scale(1.045);
+  filter: brightness(1.04) contrast(1.02);
+}
+
+/* ----------------------------------------------------------------------------
+ * Press marquee — slow editorial drift
+ * Parent: [data-lm="marquee"]. Child should be a single flex row that is
+ * duplicated in the HTML to allow a seamless loop. Mask fades on edges.
+ * -------------------------------------------------------------------------- */
+
+[data-lm="marquee"] {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+[data-lm="marquee"] .lm-marquee-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 48px;
+  white-space: nowrap;
+  animation: lm-marquee 60s linear infinite;
+  will-change: transform;
+}
+@keyframes lm-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* ----------------------------------------------------------------------------
+ * Accessibility — prefers-reduced-motion
+ * Collapse every pattern to a plain render: no transforms, no transitions,
+ * no marquee, no scale on hover. Reveals are fully visible at load. This is
+ * applied via a body class added in JS (so we can also skip the IO observer
+ * itself) AND via the native media query (belt + braces for JS-off reduced
+ * motion users).
+ * -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  body.lm-ready [data-lm],
+  body.lm-ready [data-lm-stagger] > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .lm-img-frame:hover > .lm-img,
+  .lm-img-frame:hover .lm-img {
+    transform: none;
+    filter: none;
+  }
+  [data-lm="marquee"] .lm-marquee-track {
+    animation: none;
+  }
+}
+
+body.lm-reduced [data-lm],
+body.lm-reduced [data-lm-stagger] > * {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+body.lm-reduced .lm-img-frame:hover > .lm-img,
+body.lm-reduced .lm-img-frame:hover .lm-img {
+  transform: none;
+  filter: none;
+}
+body.lm-reduced [data-lm="marquee"] .lm-marquee-track {
+  animation: none;
+}

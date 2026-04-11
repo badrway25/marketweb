@@ -73,6 +73,26 @@ Per D-055, introduced the two-tier model (`published_live` / `draft`) and hid ev
 - [x] Staff preview via `?preview=1` works end-to-end for draft templates (verified by smoke test)
 - [x] Draft template detail URLs return 404 publicly; draft `/preview/` routes return 404 publicly
 
+### 2g2x.9 — Motion Pilot Gusto (interaction-quality floor) — ✅ CLOSED (Session 22, 2026-04-11)
+Per D-058, introduced a reusable live-template motion language on `gusto-fine-dining` as the interaction-quality floor for every `tier=published_live` template. Two dependency-free static files + an HTML attribute contract. Strictly opt-in per skin (one `<link>` + one `<script>` in the archetype's `_base.html`).
+
+- [x] Created `static/css/live-motion.css` — reusable motion tokens + primitives (`--lm-dur-*`, `--lm-ease`, `--lm-rise*`, reveal / reveal-lg / reveal-soft / stagger / image-frame / reduced-motion collapse + `body.lm-reduced` short-circuit).
+- [x] Created `static/js/live-motion.js` — reusable dependency-free runtime (IntersectionObserver reveals, per-child stagger delay assignment, counter animation with suffix preservation, marquee duplication helper, reduced-motion detection).
+- [x] Wired into `templates/live_templates/restaurant/fine-dining/_base.html` via `{% static %}` link + script + nav underline sweep + gold CTA arrow shift + letter-spacing hover + mp-bar hover + footer link transitions.
+- [x] Applied motion attributes across all 7 fine-dining pages (home / menu / about / gallery / reservations / blog_list / blog_detail) — 18 reveal targets on home, 3 stagger parents, 3 counters, 6 image-zoom frames, 8 menu course stagger, 5 timeline rows stagger, 4 values stagger, 6 gallery tile stagger, 4 process-step stagger, compact blog list stagger.
+- [x] Refactored `.fd-hero .plate`, `.fd-chef .portrait`, `.fd-concierge .portrait`, `.fd-lead-post .img`, and `.fd-gallery .img` to the wrapper + inner-bg layer pattern so hover zoom has an `overflow: hidden` container (no CLS).
+- [x] No-JS fallback: hidden CSS state gated on `body.lm-ready`; without the class (JS off), every `[data-lm]` element renders at `opacity: 1 / transform: none`. Verified in browser.
+- [x] Reduced-motion fallback: `@media (prefers-reduced-motion: reduce)` + `body.lm-reduced` double guard. Verified in browser via manual `body.lm-reduced` assignment.
+- [x] Validation: 8/8 Gusto routes 200, live browser walk at 1440×900 confirms reveals / staggers / counter / hovers all wired, mobile sanity at 390×844 confirms motion pilot introduces zero new horizontal overflow (existing 660px overflow is pre-existing Gusto desktop-first layout, out of scope).
+- [x] D-047 leak sweep clean — zero new literals introduced (existing Gusto literal in `blog_detail.html:108` is a Phase 2g.3 leak already tracked).
+- [x] D-058 formalized in DECISIONS.md.
+- [x] SESSION_LOG Session 22 entry.
+
+**Follow-up opt-ins (low priority, not blocking Phase 2g3):**
+- [ ] Cardio live skin (`templates/live_templates/medical/specialist/*`) adopts the motion pilot — same two-file opt-in + attribute tagging pass. Should be a short session because chrome is already D-047 clean.
+- [ ] Dermatologia (same specialist skin folder) benefits for free via the cardio pass — no separate work needed.
+- [ ] BRAND_SYSTEM_GUIDELINES.md gets a new "Motion Language" pointer section citing D-058.
+
 ### 2g2x.6 — Exit criteria for the hardening wave
 The wave closes when ALL of the following are green:
 - [ ] All 5 non-DNA categories have either 2 archetypes each OR a D-047-compliant shared composition with per-tenant DNA content blocks
@@ -103,6 +123,7 @@ A template is eligible to flip from `draft` to `published_live` only when ALL of
 - [ ] **Differentiation sibling test** — on the category's listing page at 200×120 card size, this template reads as a visually distinct product from every other `published_live` sibling. If it fails, either the DNA has under-specified ≥4 of the D-054 dimensions or the skin needs a differentiation polish pass
 - [ ] **Preview PNG regenerated** via `python manage.py generate_previews --only <slug>` (orphan cleanup per Phase 2g2x.5 if triggered) and the canonical filename is `<slug>-preview.png`
 - [ ] **Tier flipped** in `seed_templates.py` and re-seeded (`python manage.py seed_templates`), or the tier update applied via a data migration if the seed command has already run
+- [ ] **Motion pilot adopted** — per D-058, the skin's `_base.html` links `static/css/live-motion.css` + scripts `static/js/live-motion.js`, and the home page at minimum has reveal + stagger + (where applicable) counter + image-hover patterns applied. Hover micro-interactions on CTAs / nav / image frames are encouraged but graduated: the minimum is reveal + stagger on the home page, and counters where numeric facts exist
 - [ ] **Session log entry** documents the flip + validation results + any authoring insights for the next template in the wave
 
 ### 2g3.1 — Restaurant category completion (2 templates remaining: Sapore, Brace)

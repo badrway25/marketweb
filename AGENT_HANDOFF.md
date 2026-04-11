@@ -1,6 +1,40 @@
 # Agent Handoff
 
-Last updated: 2026-04-11 — after **Session 20 Live Preview Policy v2 Formalization (documentation-only, on top of Session 19)**
+Last updated: 2026-04-11 — after **Session 22 Motion Pilot Gusto (Phase 2g2x.9)**
+
+## 🎬 Session 22 — Motion Pilot Gusto: Read This If You're Animating Anything (2026-04-11)
+
+**Session 22 added a small, reusable, dependency-free premium motion system to the first tier=published_live template.** This is the interaction-quality floor for every future `published_live` template. Short read, but load-bearing:
+
+- **D-058 — Live Motion Language.** Two static files — `static/css/live-motion.css` + `static/js/live-motion.js` — exposing a 3-attribute contract (`data-lm="reveal|reveal-lg|reveal-soft|counter"`, `data-lm-stagger`, `data-lm-to`) plus a wrapper+inner-bg image-hover pattern. Strictly opt-in per skin: one `<link>` in `<head>` + one `<script defer>` before `</body>`. No-JS fallback via `body.lm-ready` gate. Reduced-motion via `@media` + `body.lm-reduced` double guard.
+- **Where it shipped:** `templates/live_templates/restaurant/fine-dining/_base.html` links the two files, and all 7 inner pages (home / menu / about / gallery / reservations / blog_list / blog_detail) tag their reveal targets.
+- **Patterns used:** scroll-reveal (fade + rise), staggered children (70–110ms unit), count-up on home facts (suffix preserved), image-zoom on hover (900ms slow scale via inner `.bg` layer inside an `overflow: hidden` wrapper), CTA arrow shift + letter-spacing widening, nav underline sweep.
+- **Rejected:** parallax, sliders, bounce easing, blur-in, loud marquees. See SESSION_LOG Session 22 § 1.
+
+### What's next for the motion pilot (not blocking Phase 2g3, but cheap)
+
+**Opt-in pass for the other two `published_live` templates:**
+- [ ] Cardio (`templates/live_templates/medical/specialist/_base.html`) — link motion CSS + JS, tag reveals on the specialist skin pages. Should be a short session because the chrome is already D-047 clean. Dermatologia-elite-roma shares the same skin so it benefits for free.
+- [ ] BRAND_SYSTEM_GUIDELINES.md gets a new "Motion Language" pointer section citing D-058.
+
+**Phase 2g3 impact:**
+- Every template flipped from `draft` → `published_live` MUST adopt the motion pilot as part of its D-053 acceptance checklist. The checklist in TODO_NEXT.md § 2g3.0 grew a new row: "Motion pilot adopted — reveal + stagger on home page at minimum, counters where numeric facts exist, image-hover where image frames exist." This is the interaction-quality floor; minimum opt-in is cheap (link + script + a handful of attributes).
+
+### Do NOT do (motion pilot scope)
+
+- Do NOT add the motion pilot to the marketplace surface (`base.html`, listing pages, detail page). The system is scoped to standalone live-template skins. The marketplace has its own interaction language.
+- Do NOT apply motion to the preview composition files under `templates/preview_compositions/`. Those files are captured as static PNGs by Playwright and the reveal hidden-state would produce blank screenshots.
+- Do NOT add heavyweight animation libraries (GSAP, AOS, Framer Motion, LocomotiveScroll). The whole point of the pilot is zero dependencies. If a specific archetype needs something the pilot doesn't offer, extend the pilot — don't bypass it.
+- Do NOT break the no-JS fallback. The `body.lm-ready` gate is load-bearing: without it a JS-disabled user sees a blank page.
+- Do NOT skip `prefers-reduced-motion`. Both the `@media` rule AND the `body.lm-reduced` class must continue to collapse motion cleanly.
+- Do NOT apply `data-lm-stagger` to a parent whose direct children use `display: contents` — opacity/transform don't work on box-less elements. Fall back to plain `data-lm="reveal"` on the wrapper. See SESSION_LOG Session 22 § 5 "gotchas".
+- Do NOT bulk-apply `data-lm="reveal"` to every element. The pilot is a judgment-call tool, not a batch-apply one. The Gusto adoption picked ~18 reveal targets on the home page out of ~50+ eligible elements — the unchosen ones stay instant so the cadence has contrast.
+
+### Gotcha: stale runserver
+
+Session 22 hit a Windows + StatReloader edge case where the initial runserver process kept serving pre-edit HTML after rapid template file changes, even though the files on disk had the updates. Killing the process and restarting on a fresh port produced the correct fresh HTML. Same class of repro as Session 19's ghost dev-server. If you ever think "my edits aren't landing" but `grep` of the files confirms they ARE on disk, just restart runserver before blaming template cache or ALLOWED_HOSTS.
+
+---
 
 ## 🛑 Session 20 — Policy Binding: Read This Before Anything Else (2026-04-11)
 

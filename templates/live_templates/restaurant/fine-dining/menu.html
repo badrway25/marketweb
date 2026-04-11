@@ -89,32 +89,34 @@
 
 {% block content %}
   <section class="fd-lead">
-    <div class="eyebrow">{{ page_data.eyebrow }}</div>
-    <h1>{{ page_data.headline|safe }}</h1>
-    <p class="intro">{{ page_data.intro }}</p>
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
   </section>
 
   <section class="fd-courses-full">
-    <div class="lbl">Otto atti · servizio dalle 20:00</div>
-    {% for num, name, ingredients, wine in page_data.courses %}
-      <div class="item">
-        <span class="num">{{ num }}.</span>
-        <div class="body">
-          <div class="name">{{ name }}</div>
-          <p class="ingredients">{{ ingredients }}</p>
+    <div class="lbl" data-lm="reveal">Otto atti · servizio dalle 20:00</div>
+    <div data-lm-stagger data-lm-stagger-delay="80">
+      {% for num, name, ingredients, wine in page_data.courses %}
+        <div class="item">
+          <span class="num">{{ num }}.</span>
+          <div class="body">
+            <div class="name">{{ name }}</div>
+            <p class="ingredients">{{ ingredients }}</p>
+          </div>
+          <span class="wine">In abbinamento<strong>{{ wine }}</strong></span>
         </div>
-        <span class="wine">In abbinamento<strong>{{ wine }}</strong></span>
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
   </section>
 
   <section class="fd-wine">
     <div class="fd-wine-inner">
       <div>
-        <h2>{{ page_data.wine_intro_title }}</h2>
-        <p class="intro">{{ page_data.wine_intro }}</p>
+        <h2 data-lm="reveal-lg">{{ page_data.wine_intro_title }}</h2>
+        <p class="intro" data-lm="reveal">{{ page_data.wine_intro }}</p>
       </div>
-      <div class="highlights">
+      <div class="highlights" data-lm-stagger data-lm-stagger-delay="90">
         {% for label, blurb in page_data.wine_highlights %}
           <div class="h">
             <h4>{{ label }}</h4>
@@ -125,7 +127,7 @@
     </div>
   </section>
 
-  <section class="fd-foot-note">
+  <section class="fd-foot-note" data-lm="reveal">
     {{ page_data.footer }}
   </section>
 {% endblock %}

@@ -33,31 +33,52 @@
     grid-template-rows: 320px 320px 320px;
     gap: 18px;
   }
+  /* Wrapper — holds overlay + caption, clips the zooming inner image */
   .fd-gallery .img {
+    position: relative; overflow: hidden;
+    isolation: isolate;
+  }
+  /* Inner image layer — the bit that scales on hover */
+  .fd-gallery .img .bg {
+    position: absolute; inset: 0;
     background-size: cover; background-position: center;
     filter: contrast(1.05) saturate(0.95) brightness(0.85);
-    position: relative; overflow: hidden;
+    transform: scale(1.001);
+    transition:
+      transform 900ms cubic-bezier(0.33, 1.00, 0.68, 1),
+      filter    900ms cubic-bezier(0.33, 1.00, 0.68, 1);
+    z-index: 0;
   }
-  .fd-gallery .img:hover { filter: contrast(1.1) saturate(1) brightness(0.95); }
+  .fd-gallery .img:hover .bg {
+    transform: scale(1.065);
+    filter: contrast(1.1) saturate(1) brightness(0.95);
+  }
   .fd-gallery .img:after {
     content: ''; position: absolute; inset: 0;
     background: linear-gradient(180deg, rgba(11,9,7,0) 60%, rgba(11,9,7,0.65) 100%);
-    pointer-events: none;
+    pointer-events: none; z-index: 1;
   }
   .fd-gallery .img .cap {
     position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 2;
     color: var(--ink);
     font-family: var(--heading); font-style: italic; font-size: 14px;
     line-height: 1.4;
+    transform: translate3d(0, 6px, 0);
+    opacity: 0.85;
+    transition: transform 520ms cubic-bezier(0.22,0.61,0.36,1), opacity 520ms cubic-bezier(0.22,0.61,0.36,1);
   }
+  .fd-gallery .img:hover .cap { transform: translate3d(0, 0, 0); opacity: 1; }
 
   /* span helpers */
-  .fd-gallery .a { grid-column: span 4; grid-row: span 2; background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80'); }
-  .fd-gallery .b { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=80'); }
-  .fd-gallery .c { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=80'); }
-  .fd-gallery .d { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=900&q=80'); }
-  .fd-gallery .e { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=900&q=80'); }
-  .fd-gallery .f { grid-column: span 2; grid-row: span 1; background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80'); }
+  .fd-gallery .a { grid-column: span 4; grid-row: span 2; }
+  .fd-gallery .b, .fd-gallery .c, .fd-gallery .d,
+  .fd-gallery .e, .fd-gallery .f { grid-column: span 2; grid-row: span 1; }
+  .fd-gallery .a .bg { background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80'); }
+  .fd-gallery .b .bg { background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=80'); }
+  .fd-gallery .c .bg { background-image: url('https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=900&q=80'); }
+  .fd-gallery .d .bg { background-image: url('https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=900&q=80'); }
+  .fd-gallery .e .bg { background-image: url('https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=900&q=80'); }
+  .fd-gallery .f .bg { background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80'); }
 
   .fd-cta-bottom {
     background: var(--bg-2);
@@ -84,12 +105,12 @@
 
 {% block content %}
   <section class="fd-lead">
-    <div class="eyebrow">{{ page_data.eyebrow }}</div>
-    <h1>{{ page_data.headline|safe }}</h1>
-    <p class="intro">{{ page_data.intro }}</p>
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
   </section>
 
-  <section class="fd-rooms">
+  <section class="fd-rooms" data-lm-stagger data-lm-stagger-delay="100">
     {% for title, blurb in page_data.rooms %}
       <div class="room">
         <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
@@ -102,20 +123,20 @@
   </section>
 
   <section class="fd-gallery">
-    <div class="grid">
-      <div class="img a"><div class="cap">{{ page_data.captions.0 }}</div></div>
-      <div class="img b"><div class="cap">{{ page_data.captions.1 }}</div></div>
-      <div class="img c"><div class="cap">{{ page_data.captions.2 }}</div></div>
-      <div class="img d"><div class="cap">{{ page_data.captions.3 }}</div></div>
-      <div class="img e"><div class="cap">{{ page_data.captions.4 }}</div></div>
-      <div class="img f"><div class="cap">{{ page_data.captions.5 }}</div></div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
+      <div class="img a"><div class="bg"></div><div class="cap">{{ page_data.captions.0 }}</div></div>
+      <div class="img b"><div class="bg"></div><div class="cap">{{ page_data.captions.1 }}</div></div>
+      <div class="img c"><div class="bg"></div><div class="cap">{{ page_data.captions.2 }}</div></div>
+      <div class="img d"><div class="bg"></div><div class="cap">{{ page_data.captions.3 }}</div></div>
+      <div class="img e"><div class="bg"></div><div class="cap">{{ page_data.captions.4 }}</div></div>
+      <div class="img f"><div class="bg"></div><div class="cap">{{ page_data.captions.5 }}</div></div>
     </div>
   </section>
 
   <section class="fd-cta-bottom">
-    <h2>«Per fotografare il piatto, qui, lo si guarda con calma da seduti.»</h2>
-    <p>Quattordici coperti per servizio. Solo prenotazione. Solo cena. Mer – Sab.</p>
-    <div class="actions">
+    <h2 data-lm="reveal-lg">«Per fotografare il piatto, qui, lo si guarda con calma da seduti.»</h2>
+    <p data-lm="reveal">Quattordici coperti per servizio. Solo prenotazione. Solo cena. Mer – Sab.</p>
+    <div class="actions" data-lm="reveal">
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}">Riserva la serata →</a>
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}">Vedi il menù →</a>
     </div>
