@@ -1,14 +1,45 @@
 # Agent Handoff
 
-Last updated: 2026-04-11 — after **Session 17 Phase 2g2x.1 Business Hardening**
+Last updated: 2026-04-11 — after **Session 19 Portfolio Triage + Surgical Fix (on top of Session 18)**
 
-## ⛔ ROADMAP STILL PAUSED — 4 of 5 CRITICO categories remain
+## ✅ Session 19 — Portfolio Blocker Cleared (2026-04-11)
 
-**Per D-049 (Session 16), the roadmap is paused until Phase 2g2x closes.** Session 17 closed the **business** category (D-050). The remaining 4 identity-crash CRITICO categories are still open:
-- `portfolio.html` hardcodes **"Sono una designer indipendente"** → Pixel (photographer) shows Chiara's designer copy
+**Session 18 declared portfolio approved, but a manual verification pass found a real layout-overflow bug in Chiara's detail preview.** A strictly-scoped Session 19 triage confirmed the bug was reproducible, surgically fixed it with the minimum possible footprint, and cleared the commit blocker.
+
+### The fix (D-052)
+- `templates/preview_compositions/portfolio/editorial-designer-grid.html`: `.ed-hero` padding tightened (72 72 42 → 52 72 38), `overflow: hidden` added as safety net; `.ed-left h1` dropped from 82 px to 62 px with matching line-height / letter-spacing / margin-top / max-width adjustments; `.ed-left .sub` + `.ed-left .cta-row` margins tightened.
+- `apps/catalog/template_dna.py`: `chiara-portfolio-creativo.content.headline` trimmed from 57 chars to 47 chars. New headline: `'Identità visive, <em>una griglia alla volta</em>.'`. Both key signals preserved (`identità visive` = profession, `una griglia alla volta` = craft metaphor). The trim also creates a deliberate syntactic parallel with Pixel's `'Fermare il tempo, una luce alla volta.'` — both siblings now use the `'…, una X alla volta.'` structure with X being the medium of each profession.
+
+### Validation that held (Session 19 delta)
+- `python manage.py check` — clean
+- `python manage.py generate_previews --only chiara-portfolio-creativo --force` — green
+- Orphan cleanup — all three `_<hash>.png` intermediate files removed, final asset restored to canonical `chiara-portfolio-creativo-preview.png` via shell (media/ now has exactly one PNG per template)
+- Playwright visual walk at 1440×900 on a fresh dev server: portfolio listing, Chiara detail, Pixel detail all clean, zero overlap. Differentiation vs Pixel strengthened (not weakened) via the headline parallel.
+
+### Three operational gotchas surfaced during Session 19
+
+1. **Stale dev-server ghost.** The first browser walk showed legacy "Ogni progetto una storia" content in the Chiara detail page. Root cause: a **stale `runserver --noreload` process (PID 29132)** was still listening on port 8765 from a prior session's worktree and serving a completely different PNG at the same URL as what was physically on disk. **Before any visual walk, kill lingering `runserver` processes on your target port** — or just use a fresh port. Python `urllib.request.urlopen()` + a cache-busting `?v=N` query string is the fastest way to confirm the dev server is serving the same bytes as disk.
+2. **`generate_previews --force` creates orphan files.** Django's `FileSystemStorage.get_available_name()` appends a `_<hash>.png` suffix when the target filename exists, and `generate_previews.py:211-216` deletes the DB row but not the old file. Each `--force` run stacks a new orphan on top of the previous one. This is the Phase 2g2x.5 structural trap with one more concrete repro. For now, manually clean up post-regen and rename back to the canonical filename + update DB via shell. Permanent fix still deferred.
+3. **"Anteprima Live" CTA is a legacy `href="#"` placeholder** for 17 of 20 templates (every template that isn't cardio / dermatologia / gusto). This is NOT a portfolio-scope bug — it's D-045's intentional gating meeting a legacy placeholder label. Do not fix in any per-category hardening session. Tracked as TODO_NEXT.md Phase **2g2x.7** with three remediation options.
+
+## ⛔ ROADMAP STILL PAUSED — 3 of 5 CRITICO categories remain
+
+**Per D-049 (Session 16), the roadmap is paused until Phase 2g2x closes.** Session 17 closed **business** (D-050). Session 18 closed **portfolio** (D-051) + Session 19 cleared its blocker (D-052). The remaining 3 identity-crash CRITICO categories are still open:
 - `real-estate.html` hardcodes "600+ immobili · €500K–€1.2M mass-market" → Villa (ultra-luxury) shows mass-market language
 - `lawyer.html` hardcodes "Studio legale dal 1962" → Juris (modern) shows Lex's 60-year heritage
 - `agency.html` hardcodes 6 fake case-study names → both Vertex and Aura show the same clients
+
+## ✅ Session 18 — Portfolio Closed (2026-04-11)
+
+**Portfolio is no longer an identity-crash pair.** Chiara and Pixel are now split into two distinct DNA archetypes:
+- `chiara-portfolio-creativo` → `editorial-designer-grid` archetype (cream paper `#f3efe5`, Syne + Inter, typographic hero with NO big photo, project index card with numbered ledger, 3-card case-study panel, clients ribbon + studio coordinates split footer, "Richiedi il portfolio completo" ghost sans-rule CTA, `portfolio-designer` imagery pool)
+- `pixel-portfolio-fotografico` → `cinematic-photographer` archetype (near-black `#050505`, Archivo + Inter uppercase tracked, fullbleed dominant photo hero with corner frame marks and series-counter chip, monospaced EXIF credit bar pinned to hero bottom, 4-frame filmstrip gallery of series stills, 4-cell EXIF footer, `[ Apri la serie completa ]` ghost-bracket CTA, `portfolio-photographer` imagery pool)
+
+Both skins were authored under the D-047 chrome-authoring contract from the first line — zero literal brand strings, zero hardcoded image URLs. The bidirectional leak sweep (52 tokens tested) returned zero cross-tenant contamination in both directions. The listing HTML leak sweep for all 9 legacy literals returned zero matches. Django test client returned 200 on all 5 portfolio routes. Visual regression at 1440×900 on `/templates/portfolio/` via Playwright MCP confirms the two cards read as two completely different products AND two completely different professions at card size — Chiara is unambiguously a designer studio (typographic grid, project ledger, clients ribbon with "CASA EDITRICE · FESTIVAL POESIA · FONDAZIONE · VINO D'AUTORE · MUSEO CIVICO · RIVISTA D'ARCHITETTURA") and Pixel is unambiguously a photographer ("FERMARE IL TEMPO, UNA LUCE ALLA VOLTA", EXIF bar with "Pellicola Medio formato 120 · Ottica Fisso 80mm · f/2.8 · Stampa Fine art · tiratura 12", filmstrip with 4 named series: "Le ore rubate / Campi lunghi / Stanze vuote / La città senza persone").
+
+**Key insight reaffirmed for the next 3 categories:** The editorial-designer-grid archetype is **deliberately typographic (no big hero photo)**, so the Chiara card's readability does NOT depend on any single image URL. The hero IS the typography. This is the right pattern whenever the sibling's "visual opposite" has a weak image pool or you want to de-risk against image-download failures. The cinematic-photographer archetype is the opposite — the hero IS the photograph. Choose which side of this dichotomy each sibling lands on *before* authoring the composition.
+
+**The Session 18 recipe (plus Session 17) is now a proven template for the remaining 3 CRITICO categories.** See SESSION_LOG.md Session 18 for the full Chiara-vs-Pixel differentiation matrix, bidirectional leak-sweep method, and the 52-token list for the sweep. See D-051 for the architectural decision rationale.
 
 ## ✅ Session 17 — Business Closed (2026-04-11)
 
@@ -30,14 +61,24 @@ Both skins were authored under the D-047 chrome-authoring contract from the firs
 
 ### What the next agent does first
 
-1. Read `SESSION_LOG.md` Session 17 for the business-hardening recipe (the template for the remaining 4 CRITICO categories).
-2. Read `DECISIONS.md` D-049 (blocking rule) and D-050 (Option A DNA split default).
-3. Read `TODO_NEXT.md` Phase 2g2x for the exact punch list (2g2x.1 through 2g2x.6). Business (2g2x.1) is marked `[x]`; the next 4 are open.
-4. Pick **ONE** of the remaining 4 CRITICO categories and run the Session 17 recipe end-to-end:
-   - **Recommended order:** portfolio (smallest leak surface) → real-estate → lawyer → agency (largest leak surface with 6 case-study wordmarks). This front-loads quick wins while the recipe is fresh and back-loads the heaviest lift after the muscle memory is built up.
+1. Read `SESSION_LOG.md` Sessions 17 and 18 for the hardening recipe (portfolio is the most recent proven template; business is the first). Session 18 adds the "typographic-led vs image-led" dichotomy insight for choosing which sibling gets which side.
+2. Read `DECISIONS.md` D-049 (blocking rule), D-050 (Option A DNA split default), and D-051 (portfolio validation of the default).
+3. Read `TODO_NEXT.md` Phase 2g2x for the exact punch list (2g2x.1 through 2g2x.6). Business AND portfolio (2g2x.1) are marked `[x]`; the next 3 are open.
+4. Pick **ONE** of the remaining 3 CRITICO categories and run the Session 17/18 recipe end-to-end:
+   - **Recommended order:** real-estate (next cleanest "far apart" pair — Casa's mass-market vs Villa's ultra-luxury) → lawyer → agency (largest leak surface with 6 case-study wordmarks). This front-loads the cleanest wins while the recipe is fresh and back-loads the heaviest lift.
    - For each: add 2 archetype entries to `template_dna.py` (vocabulary + 2 DNA content blocks), add 2 imagery pools to `preview_imagery.py` (hand-verify URLs download), author 2 D-047-compliant compositions under `templates/preview_compositions/<category>/`, generate previews via `--only <slug>` (one at a time), run a bidirectional leak sweep, run a Django test-client 5-route sanity check, run a Chromium visual walk at 1440×900.
 5. Do NOT start any feature work outside this wave. Not auth, not checkout, not editor, not new templates, not new categories. Do NOT touch any category other than the one you're currently closing in this session.
 6. Each category close should end with: (a) bidirectional leak sweep clean, (b) `check` + `seed_templates` + `generate_previews` all green, (c) 5/5 routes return 200, (d) Chromium visual walk confirms differentiation at card size, (e) `SESSION_LOG.md` / `DECISIONS.md` / `TODO_NEXT.md` / `AGENT_HANDOFF.md` / `TEMPLATE_REGISTRY.json` / the auto-memory index all updated.
+
+### Gotcha: Django test client + ALLOWED_HOSTS
+Session 18 hit a small trap on the route sweep: `DEBUG=True` with `ALLOWED_HOSTS=[]` does NOT auto-allow `testserver` (only `localhost`/`127.0.0.1`/`::1`), and the Django test client uses `testserver` as the default Host header. If you run a test-client sweep via `manage.py shell`, monkey-patch it in-session:
+
+```python
+from django.conf import settings
+settings.ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1']
+```
+
+Don't edit `settings.py` for this — it's a local-only concern and the monkey-patch is scoped to the shell session. For the Chromium visual walk, the runserver's real Host header is what matters, so `ALLOWED_HOSTS=[]` with `DEBUG=True` is fine at `127.0.0.1:<port>`.
 
 ### Minimum bar for "this wave is done" (exit criteria)
 

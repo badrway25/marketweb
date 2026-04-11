@@ -227,15 +227,67 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80&auto=format&fit=crop",
     ],
     "portfolio": [
-        # 0: hero - editorial photography
+        # LEGACY pool, kept as fallback for any template that might still
+        # resolve through `preview_compositions/portfolio.html`. Phase 2g2x
+        # (Session 18) moved both published portfolio templates onto their
+        # own per-archetype pools — `portfolio-designer` and
+        # `portfolio-photographer` — so this pool is architecturally unused
+        # by the two current published portfolio templates. Do NOT delete:
+        # the legacy composition still exists (D-036 additive rule) and
+        # could be used by a future legacy-only sibling during migration.
         "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80&auto=format&fit=crop",
-        # 1: feature - studio setup
         "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1200&q=80&auto=format&fit=crop",
-        # 2-5: project tiles
         "https://images.unsplash.com/photo-1542744095-291d1f67b221?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=800&q=80&auto=format&fit=crop",
+    ],
+    # Per-archetype portfolio pools — see apps/catalog/template_dna.py.
+    # Phase 2g2x split: Chiara (editorial-designer-grid) and Pixel
+    # (cinematic-photographer) were rendering through the same legacy
+    # composition + the same 6-URL pool, producing an identity-crash pair
+    # (Pixel, a photographer, showed designer-editorial copy and identical
+    # photos to Chiara). The pools below are fully distinct — zero URL
+    # overlap with each other and zero overlap with the legacy `portfolio`
+    # pool.
+    #
+    # portfolio-designer: design-workspace vibe — sketchbooks, paper
+    #     prototypes, studio work-in-progress, systemic design artifacts.
+    #     Chiara's composition is typographic-led (NO big hero photo) so
+    #     this pool mostly supplies small project-index tiles and the
+    #     optional clients ribbon background. A failing URL degrades
+    #     gracefully — the card is still legible without any photo.
+    # portfolio-photographer: cinematic-photostill vibe — moody, low-key
+    #     photographic stills (reportage, still life, portrait). Pixel's
+    #     composition is image-first with a dominant fullbleed hero, so
+    #     URL 0 (hero) is the most important — reuse from restaurant-fine
+    #     which is proven offline-safe. The other 5 slots come from pools
+    #     whose photos already read as cinematic low-key work.
+    "portfolio-designer": [
+        # 0: hero-slot (NOT used as a big hero image — the Chiara composition
+        #    is typographic; this fills small grid tiles if the composition
+        #    ever wants a background accent). Creative workspace feel.
+        "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — laptop/paper case-study vibe
+        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: project-index tiles — creative workspace / design artifacts
+        "https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&q=80&auto=format&fit=crop",
+    ],
+    "portfolio-photographer": [
+        # 0: hero — dark moody still (reused from restaurant-fine, proven
+        #    offline-safe). Dominant fullbleed image in the Pixel composition.
+        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — plated-dish low-key still (reused from restaurant-fine,
+        #    also reads as "cinematic still life")
+        "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: filmstrip series stills — low-key portraits + gravitas
+        "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80&auto=format&fit=crop",
     ],
     "ecommerce": [
         # 0: hero - editorial fashion

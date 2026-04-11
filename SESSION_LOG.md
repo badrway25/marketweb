@@ -1,5 +1,151 @@
 # Session Log
 
+## Session 19 — Phase 2g2x.1 Portfolio Triage + Surgical Fix (2026-04-11)
+
+**Agent:** Portfolio blocker triage + surgical CSS/copy fix.
+**Goal:** Session 18 declared portfolio approved, but a manual verification pass found two real issues worth triaging before commit: (1) the "Anteprima Live" CTA on the detail page did nothing useful for most templates, and (2) the full-size preview of Chiara on `/templates/portfolio/chiara-portfolio-creativo/` appeared to have a visual overlap/rendering glitch. This session executed a severe triage first, then a strictly-scoped fix for the single real blocker.
+
+### Part 1 — Triage outcome
+
+Two findings:
+
+1. **The "Anteprima Live" button is a legacy gating placeholder, not a portfolio-scope bug.** `templates/catalog/template_detail.html:132-136` has an `{% if has_live_preview %} ... {% else %} <a href="#">Anteprima Live</a> {% endif %}` branch. `has_live_preview` resolves via `template_content.has_live_template(slug)` → `slug in TEMPLATE_CONTENT`. `TEMPLATE_CONTENT` only has 3 entries (cardio / dermatologia / gusto), so **17 of 20 templates** hit the `href="#"` placeholder branch, including both Chiara and Pixel. Cardio detail confirmed in browser to show the correct "Apri anteprima completa" → `/preview/` link with `target="_blank"`. D-045 documents this gating as intentional. This is a system-wide UX issue affecting all preview-only templates, **not caused by and not in scope of portfolio hardening**. Deferred to a future micro-phase (see Next micro-step).
+
+2. **Chiara's preview composition HAS a real, reproducible layout overflow bug.** Confirmed by reading the generated PNG directly and by a cache-busted browser walk. Root cause: `editorial-designer-grid.html:92-93` sets `.ed-hero { height: 490px; padding: 72px 72px 42px; }` → 376 px of inner vertical space, but with `.ed-left h1 { font-size: 82px; line-height: 0.97; max-width: 760px; margin-top: 36px; }` the 57-char headline `'Sistemi di <em>identità visiva</em> costruiti una griglia alla volta.'` wraps to 5 lines (~397 px) and the full content stack (eyebrow + h1 + sub + cta-row + margins) needs ~640 px. With `.ed-hero` having no `overflow: hidden`, ~260 px of content bleeds down into `.ed-ledger` and `.ed-ribbon` below. The rendered PNG shows the "RICHIEDI IL PORTFOLIO COMPLETO" CTA, the filter pills (`TUTTO · IDENTITÀ · EDITORIA · ART DIRECTION`), and the ledger intro heading `Progetti selezionati · ventidue case study` all visually colliding. Reproduces after `--force` regeneration → it's a CSS/copy bug, not a stale render.
+
+### Part 2 — Ghost dev-server gotcha (operational)
+
+During the triage's first browser walk the detail page showed "Ogni progetto una storia" — the **legacy** `portfolio.html` content Session 18 claimed to have eliminated. This looked alarming until a process audit showed TWO listeners on port 8765: PID 29132 (`runserver --noreload`, started 11:24 **from a prior session's worktree**) and the current session's new pair. PID 29132 was answering new connections and serving a completely different PNG at the same URL (3.3 MB, legacy content) than what was physically on disk (725 KB, new broken `'Sistemi'` content). Killing 29132 brought Python urllib and the cache-busted browser back into agreement with the filesystem. **New lesson:** before any visual walk, kill any lingering `runserver` processes on your target port. Added to the preview-pipeline gotchas list.
+
+### Part 3 — Stale-PNG trap reproduced (confirmation of Phase 2g2x.5)
+
+Two consecutive `generate_previews --only chiara-portfolio-creativo --force` runs both produced suffixed filenames (`_lEh35gE.png`, `_0NgBTC3.png`, `_TJW36Ho.png`) because Django's `FileSystemStorage.get_available_name()` appends a hash when the target filename already exists on disk. The `--force` path in `generate_previews.py:211-216` deletes the old DB row but **does not delete the file on disk**, so each regen creates a new orphan on top of the previous one. This is the Phase 2g2x.5 `dna_signature` trap — already known, still deferred, now with a concrete repro on top of the existing Session 8/10/12/15 evidence. Session 19 cleaned up its own orphans manually by moving the final asset file back to the canonical filename and updating the DB row.
+
+### Part 4 — Surgical fix applied
+
+Scope: strictly Chiara. Zero other files touched outside the surgical set.
+
+**Files modified (Session 19 delta only):**
+
+| File | Change |
+|------|--------|
+| `templates/preview_compositions/portfolio/editorial-designer-grid.html` | `.ed-hero` padding `72 72 42` → `52 72 38`; added `overflow: hidden` as hard cap against any future content bleed. `.ed-left h1` font-size `82` → `62`, line-height `0.97` → `0.98`, letter-spacing `-0.04em` → `-0.035em`, margin-top `36` → `22`, max-width `760` → `720`. `.ed-left .sub` margin-top `34` → `20`, max-width `520` → `560`, font-size `15` → `14`, line-height `1.7` → `1.6`. `.ed-left .cta-row` margin-top `38` → `22`, gap `28` → `22`. Added a block-leading comment documenting the vertical budget math. |
+| `apps/catalog/template_dna.py` | `chiara-portfolio-creativo` → `content.headline` trimmed from `'Sistemi di <em>identità visiva</em> costruiti una griglia alla volta.'` (57 chars, wrapped to 4-5 lines at 62-82 px display) to `'Identità visive, <em>una griglia alla volta</em>.'` (47 chars, wraps to 2 lines at 62 px display). Both key semantic signals preserved: `identità visive` (Chiara's profession) and `una griglia alla volta` (Chiara's craft metaphor). As a deliberate side effect, the new headline now mirrors Pixel's `'Fermare il tempo, una luce alla volta.'` syntactic rhythm — both siblings use the same `'…, una X alla volta.'` structure with X being the medium of each profession (griglia for designer, luce for photographer), strengthening rather than weakening the differentiation. An inline comment in `template_dna.py` documents the reason for the trim so the rationale survives future edits. |
+
+Why CSS alone wasn't enough: at 62 px h1 + 720 max-width the old 57-char headline still wrapped to 4 lines (h1 height 243 px), and the content stack bottom landed at canvas y 553 — which visually overlapped `.meta-strip` (absolute-positioned at canvas y 495-550 inside the hero). With the trimmed copy, h1 wraps to 2 lines (122 px), stack bottom lands at y 432, and there's a clean 63 px gap to the meta-strip. Pure CSS would have required dropping h1 font-size below ~50 px or restructuring the meta-strip's positioning — either of which would have been a much bigger change to Chiara's DNA than a 10-character copy trim that preserved both signature signals.
+
+### Hard validation (Session 19 delta)
+
+- `python manage.py check` — **clean** (0 silenced)
+- `python manage.py generate_previews --only chiara-portfolio-creativo --force` — green, rendered with `[editorial-designer-grid]` label, new PNG written
+- Orphan cleanup — old suffixed files (`_lEh35gE`, `_0NgBTC3`, `_TJW36Ho`) removed, final asset restored to canonical `chiara-portfolio-creativo-preview.png` filename, DB row updated via shell to point at the canonical name. `media/template_assets/2026/04/` now contains **exactly one Chiara PNG and one Pixel PNG** — no orphans.
+- Playwright Chromium visual walk at 1440×900 on a fresh dev server:
+  - `/templates/portfolio/` listing — two cards unmistakably distinct at card size. Pixel: dark cinematic, fullbleed photo. Chiara: cream paper, typographic hero with `Identità visive, una griglia alla volta.` headline visible. **PASSES.**
+  - `/templates/portfolio/chiara-portfolio-creativo/` detail — preview image is clean. Headline 2 lines, subhead 3 lines, CTA row + meta-strip + project index card + ledger panel + clients ribbon all properly separated. **Zero overlap.** **PASSES.**
+  - `/templates/portfolio/pixel-portfolio-fotografico/` detail — untouched, identical to pre-session state. Dark cinematic hero + EXIF bar + filmstrip + footer. **PASSES.**
+- Direct raw-PNG inspection at `/media/template_assets/2026/04/chiara-portfolio-creativo-preview.png` with cache-bust — final rendering matches the spec.
+
+### Exit state
+
+- **Chiara blocker: closed.** Layout is clean, no overlap, meta-strip properly preserved, identity still typographic-led, differentiation vs Pixel unchanged (actually strengthened via headline parallel).
+- **Pixel: untouched.** Zero edits to `cinematic-photographer.html` or `pixel-portfolio-fotografico` DNA.
+- **Working tree is clean** apart from the deliberate Session 19 delta: `editorial-designer-grid.html` modification, `template_dna.py` headline trim, the canonical PNG file re-emitted at 717 KB, and the updated session/decisions/todo/handoff/registry/memory docs.
+- **Phase 2g2x.1 portfolio category** is now truly ship-ready. Commit unblocked. Per D-049 the full wave commit + PR still waits for the 3 remaining CRITICO categories (real-estate / lawyer / agency) to close, but the portfolio-scope work no longer has a blocker.
+
+### Risks residui / what Session 19 explicitly did NOT touch
+
+- **"Anteprima Live" legacy placeholder** — confirmed systemic, deferred. Needs its own micro-phase: hide the button / swap to a PNG lightbox / label as disabled state. 17 of 20 templates affected.
+- **Phase 2g2x.5 stale-PNG structural fix** — reproduced during this session's regen loop, still deferred. Manual orphan cleanup is a workaround, not a fix.
+- **Ghost `--noreload` dev servers** — new operational lesson logged for the pipeline gotchas memory: always check `netstat` for stale listeners before a visual walk.
+- **3 CRITICO categories** (real-estate, lawyer, agency) — unchanged, still open, still the next micro-step.
+
+### Next micro-step
+
+Commit portfolio hardening now (Session 18 + Session 19 work, one commit) — then pick the next CRITICO category from the remaining 3 per the recommended order (real-estate → lawyer → agency) and run the Session 17/18 recipe end-to-end. Do not batch. Before each visual walk, kill any lingering `runserver` processes on the target port.
+
+---
+
+## Session 18 — Phase 2g2x.1 Portfolio Hardening (2026-04-11)
+
+**Agent:** Portfolio category DNA split — second implementation wave of Phase 2g2x (catalog hardening, per D-049), following the Session 17 business recipe.
+**Goal:** Close the `portfolio` identity-crash case. Make Chiara and Pixel two clearly distinct products at card size — different profession, different imagery, different silhouette, different CTA pattern, different section order — without quick-recoloring the legacy `portfolio.html` composition or touching any other category.
+
+### Technical audit (confirmed the Session 16 findings)
+Neither `chiara-portfolio-creativo` nor `pixel-portfolio-fotografico` had a DNA entry, so both resolved to legacy `templates/preview_compositions/portfolio.html` via `CATEGORY_TO_COMPOSITION["portfolio"]`. The legacy composition hardcodes literal designer-specific copy in eight places, catastrophically wrong for Pixel (who is a photographer):
+
+| File | Line | Literal |
+|------|------|---------|
+| `portfolio.html` | 102 | `Selected work · 2018 — 2026` |
+| `portfolio.html` | 103 | `Ogni progetto<br>una storia.` |
+| `portfolio.html` | 104 | `Sono una designer indipendente che lavora con brand, editori e artisti. Identità visive, art direction, libri e siti su misura — niente di pre-confezionato.` |
+| `portfolio.html` | 107 | `Independent designer · Milano` |
+| `portfolio.html` | 113 | `Featured · Atlas Magazine` |
+| `portfolio.html` | 130 | `Atelier Norma` (project tile) |
+| `portfolio.html` | 133 | `Atlas Issue 14` (project tile) |
+| `portfolio.html` | 136 | `Lumen Studio` (project tile) |
+| `portfolio.html` | 139 | `Polare — Visual Series` (project tile) |
+
+Both templates pulled from the single legacy `portfolio` imagery pool (6 shared URLs) — macro tone + photos identical. The effect was an identity-crash: Pixel (photographer) rendered as a designer with designer-specific copy and identical photos to Chiara.
+
+### Strategy chosen — Option A (DNA split, 2 archetypes) per D-050
+Chiara (indep designer / art direction / editorial / systemic studio) and Pixel (photographer / visual storyteller / cinematic portfolio) are semantically as far apart as Pragma/Elevate were in Session 17 — they demand entirely different silhouettes, dominant visuals, CTA patterns, and macro tones. A forced-shared skin would either erase the profession difference (recolor pair) or collapse into a conditional-branching frankenfile. Option A is the same recipe that already worked for business.
+
+Two new archetypes:
+- **`editorial-designer-grid`** (Chiara) — cream paper page, typographic drama, **NO big hero photo**, numbered project index on the right, ledger of case-study cards, clients ribbon footer. The hero IS the typography. Tone: `editorial-designer`. Conversion: `case-study-request` ("Richiedi il portfolio completo").
+- **`cinematic-photographer`** (Pixel) — fully dark page, **dominant fullbleed photograph** covering ~62% of the canvas, film-strip EXIF credit bar pinned to the hero bottom, filmstrip gallery of series stills, 4-cell EXIF footer. The hero IS the photograph. Tone: `cinematic-authorial`. Conversion: `series-brief` ("[ Apri la serie completa ]").
+
+### Files added / modified (portfolio scope only)
+- `apps/catalog/template_dna.py` — 2 new DNA entries (`chiara-portfolio-creativo`, `pixel-portfolio-fotografico`), 2 new layout archetypes (`editorial-designer-grid`, `cinematic-photographer`), vocabulary extensions across 10 dicts (hero_style × 2, navbar_style × 2, footer_style × 2, card_style × 2, button_style × 2, tone × 2, conversion_pattern × 2, imagery_direction × 2).
+- `apps/catalog/preview_imagery.py` — 2 new pools (`portfolio-designer`, `portfolio-photographer`). Zero URL overlap with each other, zero overlap with legacy `portfolio` pool. Legacy pool relabelled with explanatory comment per D-036 (kept, architecturally unused by any published template).
+- `templates/preview_compositions/portfolio/editorial-designer-grid.html` — NEW. Cream paper chrome with typographic hero left + project index card right, ledger-row panel, clients ribbon + studio coordinates footer. D-047 compliant from the first line — zero literal brand strings, zero hardcoded image URLs.
+- `templates/preview_compositions/portfolio/cinematic-photographer.html` — NEW. Fully dark with fullbleed photo hero, corner frame marks, film-strip EXIF credit bar, filmstrip gallery row, monospaced-style bracketed CTAs. D-047 compliant from the first line.
+- Session docs: `SESSION_LOG.md`, `DECISIONS.md` (+D-051), `TODO_NEXT.md`, `AGENT_HANDOFF.md`, `TEMPLATE_REGISTRY.json` (v0.7.2).
+
+### Differentiation matrix — Chiara vs Pixel
+| Dimension                 | Chiara (editorial-designer-grid) | Pixel (cinematic-photographer) |
+|---------------------------|------------------------------------|-------------------------------|
+| Profession positioning    | Indep designer · art direction · visual identity | Photographer · visual storyteller · still-life |
+| Macro tone                | Cream paper (`#f3efe5`) + coral accent | Near-black (`#050505`) + red accent |
+| Hero silhouette           | Two-column typographic — huge Syne headline LEFT + project index card RIGHT. **NO big hero photo.** | Fullbleed dominant photograph covering 62% of the canvas. **The hero IS the photo.** |
+| Dominant image            | None (hero is typographic). Only small accent tiles. | Full-bleed moody low-key still (cinematic photostill pool). |
+| Section order             | rule-nav → typographic-hero → project-ledger → clients-ribbon | fullbleed-dark-nav → fullbleed-hero → exif-bar → filmstrip-gallery → exif-credits |
+| Navbar                    | Hairline rule + asterisk wordmark + index-letter links + "Nuove commesse" status chip | Transparent dark + circular shutter wordmark + uppercase tracked links + "Disponibile per commissioni" pulse + `[ Richiedi commissione ]` bracket CTA |
+| Primary CTA               | "Richiedi il portfolio completo" — ghost sans-rule, editorial | "[ Apri la serie completa ]" — ghost mono-bracket, technical |
+| Typography pairing        | Syne + Inter (designer-display) | Archivo + Inter (uppercase tracked, technical) |
+| Narrative pattern         | Numbered project ledger + categories filter + clients ribbon | Series counter (06/42) + EXIF bar + filmstrip of 4 series stills + credits cells |
+| Imagery pool              | `portfolio-designer` (design workspace artifacts) | `portfolio-photographer` (cinematic photostills) |
+| Imagery overlap with sib. | 0 URLs | 0 URLs |
+
+### Stale-PNG check
+Worktree started with no `media/` directory and no pre-existing TemplateAssets, so there was nothing to go stale. Session 18 did not hit the timing trap. Phase 2g2x.5 (dna_signature structural fix) still deferred.
+
+### Hard validation
+- **`python manage.py check`** — clean (0 issues silenced)
+- **`python manage.py seed_templates`** — 20/20 templates created idempotently, no errors
+- **`python manage.py generate_previews`** — 20/20 green (2 portfolio templates first via `--only`, then 18 remaining in one pass). New archetype labels logged: `[editorial-designer-grid]` for Chiara and `[cinematic-photographer]` for Pixel.
+- **Bidirectional leak sweep** on rendered HTML of both templates:
+  - **Chiara → Pixel**: grepped 26 Chiara-specific tokens (`Chiara`, `identità visiva`, `sistemi visivi`, `Casa editrice`, `Festival di poesia`, `Fondazione culturale`, `Vino naturale`, `Museo civico`, `Rivista d'architettura`, `art direction`, `editorial`, `designer`, `Studio indipendente`, `Archivio lavori`, `Progetti selezionati`, `Packaging`, `Wayfinding`, `Identità · Editoria` + all 8 legacy literals) — **zero Chiara-brand leaks in Pixel**. The only hits were: (a) a self-referential CSS comment in `cinematic-photographer.html` that names the opposite archetype for documentation ("Deliberate visual opposite of editorial-designer-grid"), and (b) the word "editoriale" inside Pixel's own subhead "commissioni editoriali" — used correctly in the photographer sense of "editorial commissions". Neither is a cross-tenant leak.
+  - **Pixel → Chiara**: grepped 25 Pixel-specific tokens (`Pixel`, `ore rubate`, `Campi lunghi`, `Stanze vuote`, `città senza persone`, `Fotografia documentaria`, `fotograf`, `pellicola`, `obiettivo`, `camera oscura`, `still-life`, `reportage`, `ritratto`, `commissioni editoriali`, `Dodici anni`, `EXIF`, `Spring 2026`, `Fine art`, `Medio formato`, `tiratura`, `fine-art`, `Serie corrente`, `Apri la serie`) — **zero Pixel-brand leaks in Chiara**.
+  - **Legacy literal sweep** on both rendered HTMLs: grepped `Sono una designer`, `Selected work · 2018`, `Atlas Magazine`, `Independent designer`, `Atelier Norma`, `Lumen Studio`, `Polare — Visual`, `Ogni progetto.*storia`, `Atlas Issue` — **zero legacy literals** in either rendered HTML.
+  - **Hardcoded URL sweep** on `templates/preview_compositions/portfolio/` — **zero hardcoded `images.unsplash.com` URLs** in either new composition.
+- **Listing page leak sweep**: dumped `/templates/portfolio/` HTML (13 494 bytes) and grepped for all 9 legacy literals — **zero matches**. Both cards render with their correct brand names ("Pixel — Portfolio Fotografico" · Pixel Photography) and ("Chiara — Portfolio Creativo" · Chiara Studio).
+- **Django test client route sweep**: 5/5 routes return 200 — `/`, `/templates/`, `/templates/portfolio/`, `/templates/portfolio/chiara-portfolio-creativo/`, `/templates/portfolio/pixel-portfolio-fotografico/`.
+- **Chromium visual walk at 1440×900** on `/templates/portfolio/` via Playwright MCP — both cards visible side-by-side, unmistakably distinct at card size. Pixel reads as a dark cinematic card with fullbleed low-key image; Chiara reads as a cream paper card with typographic headline and project index. Full-size preview PNGs (3200×1800) spot-checked and confirmed to match the differentiation matrix above.
+
+**The two cards read as two completely different products, two completely different professions, two completely different narrative patterns. The identity-crash is closed.**
+
+### Risks residui / what's NOT done
+- **3 of 5 CRITICO categories still open:** agency, lawyer, real-estate. Recommended next order per AGENT_HANDOFF: real-estate → lawyer → agency. Same Session 17/18 recipe.
+- **MEDIO items still open** (Phase 2g2x.3): D-047 lift on ecommerce fashion-editorial + artisan-workshop, restaurant trattoria-warm + street-modern, medical clinic/family/wellness preview comps, and the restaurant fine-dining live skin (Phase 2g.3).
+- **Template completeness gap still open** (Phase 2g2x.4): 17 of 20 templates are preview-only. Chiara and Pixel are not exceptions — both remain preview-only (no content registry, no live-template skin folder). Per scope rule "do not introduce live multipage portfolio if not existing", Session 18 did not add inner pages.
+- **Stale-PNG structural fix still deferred** (Phase 2g2x.5). Session 18 did not hit the trap because the worktree started empty.
+- **Worktree not merged.** `phase-2g2x-portfolio-hardening-v2` branch, last commit `b967e99` was Session 17's business hardening fix; Session 18 work is uncommitted. Per D-049 gate, commit + PR after all 5 CRITICO categories close.
+
+### Next micro-step
+Pick ONE of the 3 remaining CRITICO categories. Recommended order: **real-estate** (Villa's ultra-luxury vs Casa's mass-market is the next cleanest "far apart" pair and has the mass-market price-range `€500K–€1.2M` literal that's the most visible leak) → lawyer → agency. Run the Session 17/18 playbook end-to-end in a fresh worktree, apply D-047 from line one, and do NOT skip the Chromium visual walk.
+
+---
+
 ## Session 17 — Phase 2g2x.1 Business Hardening (2026-04-11)
 
 **Agent:** Business category DNA split — first implementation wave of Phase 2g2x (catalog hardening, per D-049).

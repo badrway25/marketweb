@@ -1,0 +1,417 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: editorial-designer-grid   (portfolio DNA — Phase 2g2x)
+   FOR     : independent designers, art directors, editorial studios
+   MOOD    : cream paper page, typographic drama, numbered project
+             ledger — NO big hero photo (the hero IS the typography)
+   HERO    : huge display headline LEFT + numbered project index RIGHT
+             (two-column grid, systemic, editorial)
+   NAVBAR  : hairline rule navbar with uppercase index-letter links
+   CARDS   : indexed case-study ledger rows with hairline dividers
+   FOOTER  : clients ribbon + studio coordinates split
+
+   D-047 chrome-authoring contract:
+   - Zero literal brand strings. Everything flows from dna.content.*
+   - No hardcoded image URLs.
+   - No literal client names, no literal project titles, no literal
+     publication names — everything comes from the content registry.
+============================================================ #}
+{% block extra_css %}
+  /* Deliberate visual opposite of cinematic-photographer: fully cream
+     paper page with NO big hero image. Chiara is a DESIGNER studio —
+     the hero IS the typography and the project ledger. A failing image
+     URL degrades to an empty slot because the card doesn't depend on
+     any photo to read as a designer portfolio. */
+  body { background: #f3efe5; color: #15130f; }
+  .pv-frame {
+    background:
+      radial-gradient(circle at 88% 4%, color-mix(in oklab, var(--accent) 10%, #f3efe5 90%) 0%, transparent 52%),
+      #f3efe5;
+  }
+  .pv-frame:before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(21,19,15,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(21,19,15,0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    pointer-events: none;
+    mask-image: linear-gradient(180deg, transparent 0%, black 20%, black 80%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 20%, black 80%, transparent 100%);
+  }
+
+  /* === TOP HAIRLINE NAVBAR (index rule) === */
+  .ed-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 70px;
+    display: flex; align-items: center; padding: 0 72px;
+    border-bottom: 1px solid rgba(21,19,15,0.14);
+    z-index: 10;
+  }
+  .ed-nav .wm {
+    font-family: var(--heading); font-weight: 800; font-size: 22px;
+    letter-spacing: -0.03em; color: #15130f;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .ed-nav .wm .asterisk {
+    display: inline-block; width: 14px; height: 14px;
+    background: var(--accent);
+    transform: rotate(12deg);
+  }
+  .ed-nav .links {
+    display: flex; gap: 36px; margin-left: 72px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: #6b6557;
+  }
+  .ed-nav .links span {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ed-nav .links span:before {
+    content: ''; width: 18px; height: 1px; background: rgba(21,19,15,0.2);
+  }
+  .ed-nav .status {
+    margin-left: auto; display: flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #15130f;
+    padding: 10px 18px;
+    border: 1px solid rgba(21,19,15,0.2);
+  }
+  .ed-nav .status .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .ed-nav .status .val {
+    color: #6b6557;
+    padding-left: 14px;
+    margin-left: 2px;
+    border-left: 1px solid rgba(21,19,15,0.2);
+  }
+
+  /* === TYPOGRAPHIC HERO (display left + project index right) === */
+  /* Vertical budget: hero 490px − padding-top 52 − padding-bottom 38 = 400px
+     of inner space. Content stack (eyebrow + h1 + sub + cta-row + margins)
+     must fit inside that. The previous 82px h1 + 760px max-width wrapped to
+     5 lines on the current headline copy and bled ~260px into the ledger
+     below. Display is now 62px / max-width 720 (3-line wrap target) and
+     the stack margins are tightened. `overflow: hidden` is a hard cap so
+     that any residual overflow is clipped inside the hero box and can
+     never again collide with .ed-ledger / .ed-ribbon below. */
+  .ed-hero {
+    position: absolute; top: 70px; left: 0; right: 0; height: 490px;
+    display: grid; grid-template-columns: 1.15fr 1fr;
+    padding: 52px 72px 38px;
+    gap: 58px;
+    overflow: hidden;
+  }
+  .ed-left .eyebrow {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: #6b6557;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .ed-left .eyebrow:before {
+    content: ''; width: 40px; height: 1.5px; background: #15130f;
+  }
+  .ed-left h1 {
+    margin-top: 22px;
+    font-family: var(--heading); font-size: 62px; font-weight: 800;
+    line-height: 0.98; letter-spacing: -0.035em;
+    color: #15130f; max-width: 720px;
+  }
+  .ed-left h1 em {
+    font-style: italic; font-weight: 500;
+    color: var(--accent);
+  }
+  .ed-left .sub {
+    margin-top: 20px; max-width: 560px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6;
+    color: #45413a;
+  }
+  .ed-left .cta-row {
+    margin-top: 22px; display: flex; gap: 22px; align-items: center;
+  }
+  .ed-left .cta-primary {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: #15130f;
+    padding: 14px 26px;
+    border: 1px solid #15130f;
+    display: inline-flex; align-items: center; gap: 14px;
+  }
+  .ed-left .cta-primary:after {
+    content: '→'; font-family: var(--heading); font-size: 15px;
+    color: var(--accent);
+  }
+  .ed-left .cta-secondary {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6b6557;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #6b6557;
+  }
+  .ed-left .meta-strip {
+    position: absolute; left: 72px; bottom: 10px; right: 52%;
+    display: flex; gap: 36px; padding-top: 20px;
+    border-top: 1px solid rgba(21,19,15,0.16);
+  }
+  .ed-left .meta-strip .item {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: #6b6557; min-width: 0;
+  }
+  .ed-left .meta-strip .item strong {
+    display: block; margin-top: 7px;
+    font-family: var(--heading); font-size: 13px; font-weight: 700;
+    color: #15130f; letter-spacing: -0.01em; text-transform: none;
+  }
+
+  /* === PROJECT INDEX CARD (RIGHT) === */
+  .ed-right {
+    background: #ffffff;
+    border: 1px solid rgba(21,19,15,0.14);
+    padding: 34px 34px 30px;
+    position: relative;
+    box-shadow: 0 20px 60px -28px rgba(21,19,15,0.22);
+  }
+  .ed-right .label {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .ed-right h3 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 22px; font-weight: 800;
+    line-height: 1.2; letter-spacing: -0.02em;
+    color: #15130f;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid #15130f;
+  }
+  .ed-right .note {
+    margin-top: 12px; font-family: var(--body); font-size: 11px;
+    line-height: 1.55; color: #6b6557; max-width: 440px;
+  }
+  .ed-right .index-list {
+    margin-top: 18px;
+  }
+  .ed-right .row {
+    display: grid; grid-template-columns: 28px 1fr 86px 44px;
+    gap: 14px; align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(21,19,15,0.08);
+  }
+  .ed-right .row:last-child { border-bottom: 0; }
+  .ed-right .row .num {
+    font-family: var(--heading); font-size: 11px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.06em;
+  }
+  .ed-right .row .title {
+    font-family: var(--heading); font-size: 13px; font-weight: 700;
+    color: #15130f; letter-spacing: -0.01em;
+  }
+  .ed-right .row .title .medium {
+    display: block; margin-top: 3px;
+    font-family: var(--body); font-size: 10px; font-weight: 500;
+    color: #6b6557; letter-spacing: 0;
+  }
+  .ed-right .row .cat {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #45413a;
+    text-align: right;
+  }
+  .ed-right .row .yr {
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    color: #9a9385; text-align: right; letter-spacing: 0.04em;
+  }
+
+  /* === BOTTOM STRIP — LEDGER ROW + CLIENTS RIBBON === */
+  .ed-ledger {
+    position: absolute; left: 72px; right: 72px; bottom: 134px;
+    padding-top: 24px;
+    border-top: 1.5px solid #15130f;
+    display: grid; grid-template-columns: 1.1fr 3fr; gap: 48px;
+  }
+  .ed-ledger .intro .label {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .ed-ledger .intro h4 {
+    margin-top: 10px;
+    font-family: var(--heading); font-size: 19px; font-weight: 800;
+    line-height: 1.15; letter-spacing: -0.02em;
+    color: #15130f;
+  }
+  .ed-ledger .intro .filter {
+    margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .ed-ledger .intro .filter span {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 6px 10px; color: #6b6557;
+    border: 1px solid rgba(21,19,15,0.16);
+  }
+  .ed-ledger .intro .filter span.on {
+    background: #15130f; color: #f3efe5; border-color: #15130f;
+  }
+  .ed-ledger .panel {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  .ed-ledger .panel .card {
+    border: 1px solid rgba(21,19,15,0.14);
+    padding: 14px 16px 12px;
+    background: #ffffff;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 96px;
+  }
+  .ed-ledger .panel .card .row1 {
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .ed-ledger .panel .card .row1 .num {
+    font-family: var(--heading); font-size: 10px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.06em;
+  }
+  .ed-ledger .panel .card .row1 .yr {
+    font-family: var(--body); font-size: 9px; font-weight: 600;
+    color: #9a9385; letter-spacing: 0.06em;
+  }
+  .ed-ledger .panel .card .title {
+    margin-top: 8px;
+    font-family: var(--heading); font-size: 12px; font-weight: 700;
+    color: #15130f; line-height: 1.25; letter-spacing: -0.01em;
+  }
+  .ed-ledger .panel .card .cat {
+    margin-top: 6px;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #6b6557;
+  }
+
+  /* === BOTTOM RIBBON — CLIENTS + STUDIO COORDINATES === */
+  .ed-ribbon {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 106px;
+    padding: 22px 72px 16px;
+    border-top: 1px solid rgba(21,19,15,0.18);
+    background: #ecebe3;
+    display: grid; grid-template-columns: 1fr auto; gap: 56px;
+    align-items: center;
+  }
+  .ed-ribbon .clients .lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: #6b6557;
+  }
+  .ed-ribbon .clients .row {
+    margin-top: 10px; display: flex; gap: 28px;
+    font-family: var(--heading); font-size: 13px; font-weight: 800;
+    color: #15130f; letter-spacing: 0.04em;
+  }
+  .ed-ribbon .clients .row span:nth-child(even) { color: #9a9385; }
+  .ed-ribbon .coords {
+    display: flex; gap: 24px; padding-left: 28px;
+    border-left: 1px solid rgba(21,19,15,0.2);
+  }
+  .ed-ribbon .coords .item {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6b6557;
+  }
+  .ed-ribbon .coords .item strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 13px; font-weight: 700;
+    color: #15130f; letter-spacing: -0.01em; text-transform: none;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="ed-nav">
+    <div class="wm">
+      <span class="asterisk"></span>
+      <span>{{ brand_name }}</span>
+    </div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <div class="status">
+      <span class="dot"></span>
+      <span>{{ dna.content.status_label }}</span>
+      <span class="val">{{ dna.content.status_value }}</span>
+    </div>
+  </nav>
+
+  <section class="ed-hero">
+    <div class="ed-left">
+      <div class="eyebrow">{{ dna.content.eyebrow }}</div>
+      <h1>{{ dna.content.headline|safe }}</h1>
+      <p class="sub">{{ dna.content.subhead }}</p>
+      <div class="cta-row">
+        <span class="cta-primary">{{ dna.content.primary_cta }}</span>
+        <span class="cta-secondary">{{ dna.content.secondary_cta }}</span>
+      </div>
+      <div class="meta-strip">
+        {% for label, value in dna.content.meta_strip %}
+          <div class="item">{{ label }}<strong>{{ value }}</strong></div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <aside class="ed-right">
+      <div class="label">{{ dna.content.ledger_label }}</div>
+      <h3>{{ dna.content.ledger_heading }}</h3>
+      <p class="note">{{ dna.content.ledger_note }}</p>
+      <div class="index-list">
+        {% for num, title, cat, yr, medium in dna.content.projects %}
+          {% if forloop.counter0 < 4 %}
+            <div class="row">
+              <span class="num">{{ num }}</span>
+              <span class="title">{{ title }}<span class="medium">{{ medium }}</span></span>
+              <span class="cat">{{ cat }}</span>
+              <span class="yr">{{ yr }}</span>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </aside>
+  </section>
+
+  <section class="ed-ledger">
+    <div class="intro">
+      <div class="label">{{ dna.content.ledger_label }}</div>
+      <h4>{{ dna.content.ledger_heading }}</h4>
+      <div class="filter">
+        {% for cat in dna.content.categories %}
+          <span class="{% if forloop.first %}on{% endif %}">{{ cat }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="panel">
+      {% for num, title, cat, yr, medium in dna.content.projects %}
+        {% if forloop.counter0 >= 3 and forloop.counter0 < 6 %}
+          <div class="card">
+            <div class="row1">
+              <span class="num">{{ num }} / {{ dna.content.projects|length }}</span>
+              <span class="yr">{{ yr }}</span>
+            </div>
+            <div class="title">{{ title }}</div>
+            <div class="cat">{{ cat }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="ed-ribbon">
+    <div class="clients">
+      <span class="lbl">{{ dna.content.clients_label }}</span>
+      <div class="row">
+        {% for client in dna.content.clients %}<span>{{ client }}</span>{% endfor %}
+      </div>
+    </div>
+    <div class="coords">
+      {% for label, value in dna.content.coordinates %}
+        <div class="item">{{ label }}<strong>{{ value }}</strong></div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

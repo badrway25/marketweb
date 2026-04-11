@@ -65,6 +65,9 @@ LAYOUT_ARCHETYPES: dict[str, str] = {
     # Business hardening wave (Phase 2g2x)
     "corporate-suite":        "Board advisory / consulting suite — institutional navy band, photo-led hero with boardroom portrait, serif headline, advisory pillar cards + KPI strip over industry-sectors ribbon.",
     "startup-saas-landing":   "Conversion-first landing for SaaS & startups — cosmic gradient page, typographic manifesto hero with NO big photo, product mockup card overlap, feature pills, metric strip, pricing teaser + live ship log.",
+    # Portfolio hardening wave (Phase 2g2x)
+    "editorial-designer-grid": "Independent designer / art director studio — cream paper page with typographic drama, NO big hero photo, numbered project ledger in a 4-column index and clients/sector ribbon. Systemic, editorial, case-study driven.",
+    "cinematic-photographer":  "Photographer / visual storyteller portfolio — fully dark page with a dominant fullbleed image hero carrying EXIF credit meta, image-first filmstrip gallery, series counter and a minimal ghost CTA. Atmospheric, cinematic, gallery-led.",
 }
 
 HERO_STYLES: dict[str, str] = {
@@ -77,6 +80,8 @@ HERO_STYLES: dict[str, str] = {
     "product-cutout":        "Tilted product photo right + giant condensed display headline left + price badge.",
     "split-executive":           "55/45 split: serif drama headline + meta strip left + full-bleed boardroom photo right with credit ribbon.",
     "centered-manifesto-product": "Centered typographic manifesto with feature pills + product-mockup dashboard card overlapping the hero bottom. No big hero photo.",
+    "typographic-index-ledger":  "Huge display headline over a cream page with a numbered project index on the right — NO big hero photo, project names and numbers are the hero.",
+    "fullbleed-exif":            "Fullbleed dominant photo with a film-style EXIF credit bar along the bottom edge — no text over image except a small series counter and ghost CTA.",
 }
 
 NAVBAR_STYLES: dict[str, str] = {
@@ -89,6 +94,8 @@ NAVBAR_STYLES: dict[str, str] = {
     "bold-pill":       "Black pill nav floating top, bright accent ORDER button on the right.",
     "solid-corporate":     "Full-bleed solid navy bar with left-aligned links and phone number on the right.",
     "pill-floating-glow":  "Floating rounded pill nav with glowing primary CTA button and launch-date badge.",
+    "index-rule":          "Hairline rule navbar — wordmark left + uppercase index-letters navigation + quiet status pill on the right.",
+    "fullbleed-dark":      "Transparent dark navbar with small uppercase wordmark, minimal link row and a tiny quiet ghost CTA on the right.",
 }
 
 FOOTER_STYLES: dict[str, str] = {
@@ -101,6 +108,8 @@ FOOTER_STYLES: dict[str, str] = {
     "delivery-strip":   "Delivery partner logos + counter status + order CTA.",
     "sectors-ribbon":    "KPI strip over navy band + industry-sectors ribbon with uppercase wordmarks.",
     "shiplog-countdown": "Live ship-log list + next-release countdown chip (startup changelog vibe).",
+    "clients-ribbon":    "Hairline rule over a horizontal ribbon of editorial clients/publications + studio coordinates on the right.",
+    "exif-credits":      "Film-style EXIF credit bar: camera body, lens, location, year — monospaced, tiny uppercase, split in 4 cells.",
 }
 
 CARD_STYLES: dict[str, str] = {
@@ -113,6 +122,8 @@ CARD_STYLES: dict[str, str] = {
     "product-grid":    "Square product cards with photo + price + Add button.",
     "pillar-advisory":    "3-up wide advisory pillar cards: serif numeral + title + blurb + hairline.",
     "feature-glow":       "Feature pills + glowing product mockup card with metric readout.",
+    "indexed-case-study": "Numbered row entries in a case-study ledger: index · project name · category · year, with a hover rule between rows.",
+    "filmstrip-series":   "Horizontal filmstrip of series stills with series counter badges and a hairline divider between frames.",
 }
 
 BUTTON_STYLES: dict[str, str] = {
@@ -125,6 +136,8 @@ BUTTON_STYLES: dict[str, str] = {
     "block-bold":        "Heavy block button, bright accent fill, arrow icon, no radius.",
     "ghost-institutional": "Outline pill in dove cream over navy — institutional consulting tone.",
     "glow-pill":           "Solid glowing rounded pill with subtle drop-glow, startup/SaaS conversion button.",
+    "ghost-sans-rule":     "Uppercase sans label with a thin rule underneath, no fill — quiet editorial CTA for designer portfolios.",
+    "ghost-mono-bracket":  "Monospaced uppercase label wrapped in [ square brackets ] — cinematographer CTA, minimal and technical.",
 }
 
 DENSITY_PROFILES: dict[str, str] = {
@@ -144,6 +157,8 @@ TONES: dict[str, str] = {
     "energetic-bold": "Brutale, urbano, scanzonato, no-nonsense.",
     "advisory-sober": "Istituzionale, cauto, board-room, evidence-led.",
     "growth-tech":    "Diretto, energico, product-led, orientato alla conversione.",
+    "editorial-designer":   "Tipografico, sistemico, di studio — voce da direttore artistico, first-person plural, progettuale.",
+    "cinematic-authorial":  "Autoriale, silenziosa, cinematografica — voce da autore di immagini, tempi lenti, ossessione per la luce.",
 }
 
 CONVERSION_PATTERNS: dict[str, str] = {
@@ -156,6 +171,8 @@ CONVERSION_PATTERNS: dict[str, str] = {
     "order-now-delivery":     "ORDINA ORA primary CTA + delivery partners strip + counter status.",
     "private-call":           "Ghost CTA 'Fissa una call privata' + direct phone + senior-partner meta row.",
     "free-trial-glow":        "Glowing primary 'Inizia gratis' CTA + secondary 'Guarda la demo' + pricing teaser card.",
+    "case-study-request":     "Ghost 'Richiedi il portfolio completo' CTA + studio email + open-commission status strip.",
+    "series-brief":           "Ghost 'Apri la serie completa' CTA + quiet 'Disponibile per commissioni' status pulse.",
 }
 
 IMAGERY_DIRECTIONS: dict[str, str] = {
@@ -168,6 +185,8 @@ IMAGERY_DIRECTIONS: dict[str, str] = {
     "street-pop-product":   "Bold burger / pizza / fritti cutouts, daylight high-contrast.",
     "executive-boardroom":  "Boardroom meetings, corporate HQ interiors, executive portraits, industrial facilities.",
     "product-dashboard":    "Laptop screens with dashboards, product UIs, code editors, open-plan tech offices.",
+    "design-workspace":     "Designer desk, sketchbooks, paper prototypes, studio work-in-progress — artifacts over portraits.",
+    "cinematic-photostill":  "Moody, low-key photographic stills — reportage, still life, portrait — as if framed from a film.",
 }
 
 
@@ -601,6 +620,138 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
             ],
             "next_drop_label": "Prossima release",
             "next_drop_value": "v2.9 · venerdì 18",
+        },
+    },
+
+    # ─────────────────────────────────────────────────────────────
+    # Portfolio hardening wave (Phase 2g2x) — 2 distinct archetypes
+    # (editorial-designer-grid · cinematic-photographer)
+    #
+    # Session 16 audit flagged portfolio as CRITICO: both templates
+    # rendered through the legacy `portfolio.html` composition that
+    # hardcoded designer-specific copy ("Sono una designer indipendente",
+    # "Selected work · 2018 — 2026", "Ogni progetto una storia",
+    # "Featured · Atlas Magazine", "Independent designer · Milano"),
+    # so Pixel (photographer) rendered as a designer — identity crash.
+    # Session 18 split the pair into two DNA archetypes. Chiara stays
+    # on a paper-cream typographic ledger (no hero photo — the hero IS
+    # the typography) and Pixel goes to a fully dark fullbleed cinematic
+    # layout where the hero is a single dominant photograph.
+    # ─────────────────────────────────────────────────────────────
+
+    # ── P1) EDITORIAL-DESIGNER-GRID — Chiara, indep designer ────
+    "chiara-portfolio-creativo": {
+        "archetype":          "editorial-designer-grid",
+        "hero_style":         "typographic-index-ledger",
+        "navbar_style":       "index-rule",
+        "footer_style":       "clients-ribbon",
+        "section_order":      ["rule-nav", "typographic-hero", "project-ledger", "clients-ribbon"],
+        "card_style":         "indexed-case-study",
+        "button_style":       "ghost-sans-rule",
+        "density":            "very-airy",
+        "tone":               "editorial-designer",
+        "imagery_direction":  "design-workspace",
+        "imagery_key":        "portfolio-designer",
+        "conversion_pattern": "case-study-request",
+        "font_pairing":       ("Syne", "Inter"),
+        "content": {
+            "eyebrow":       "Studio indipendente · identità, libri e art direction",
+            # Headline trimmed in Session 19 triage: the previous 57-char
+            # phrase ("Sistemi di identità visiva costruiti una griglia alla
+            # volta.") wrapped to 4-5 lines at the editorial-designer-grid
+            # hero h1 size and collided with the left-column meta-strip and
+            # the ledger below. The new 47-char version wraps cleanly to
+            # 2 lines, preserves both signature signals ("identità visive"
+            # + "una griglia alla volta") and reinforces the deliberate
+            # syntactic parallel with Pixel's "Fermare il tempo, una luce
+            # alla volta." — designer (griglia) vs photographer (luce).
+            "headline":      'Identità visive, <em>una griglia alla volta</em>.',
+            "subhead":       "Disegniamo brand culturali, collane editoriali e art direction per istituzioni e case editrici italiane. Ogni progetto parte da una griglia, una voce tipografica e una tavola cromatica su misura — dal marchio alla stampa.",
+            "primary_cta":   "Richiedi il portfolio completo",
+            "secondary_cta": "Scrivici",
+            "contact_email": "studio",
+            "status_label":  "Nuove commesse",
+            "status_value":  "Aperte da settembre",
+            "nav_links":     ["Indice", "Studio", "Approccio", "Archivio", "Contatti"],
+            "meta_strip": [
+                ("Fondato nel",        "2018"),
+                ("Discipline",          "Identità · Editoria · Art direction"),
+                ("Base",                "Studio · su appuntamento"),
+            ],
+            "ledger_label":     "Archivio lavori",
+            "ledger_heading":   "Progetti selezionati · ventidue case study",
+            "ledger_note":      "Una selezione ragionata dell'ultimo anno di studio. L'archivio completo è disponibile su richiesta, in formato PDF stampabile.",
+            "categories":       ["Tutto", "Identità", "Editoria", "Art direction", "Packaging"],
+            "projects": [
+                # (index, title, category, year, medium)
+                ("01", "Casa editrice · collana saggistica",     "Editoria",      "2026", "Collana · 24 titoli"),
+                ("02", "Festival di poesia contemporanea",       "Identità",      "2026", "Identità integrale"),
+                ("03", "Fondazione culturale · rebranding",      "Art direction", "2025", "Ridisegno completo"),
+                ("04", "Vino naturale · etichette d'autore",     "Packaging",     "2025", "Sei cuvée · sei autori"),
+                ("05", "Museo civico · segnaletica permanente",  "Identità",      "2025", "Wayfinding 42 sale"),
+                ("06", "Rivista d'architettura · redesign",      "Editoria",      "2024", "Testata · template · griglia"),
+            ],
+            "clients_label":   "Hanno scelto lo studio",
+            "clients":         ["CASA EDITRICE", "FESTIVAL POESIA", "FONDAZIONE", "VINO D'AUTORE", "MUSEO CIVICO", "RIVISTA D'ARCHITETTURA"],
+            "coordinates_label": "Lo studio",
+            "coordinates": [
+                ("Indirizzo", "su appuntamento"),
+                ("Telefono",  "solo via email"),
+            ],
+        },
+    },
+
+    # ── P2) CINEMATIC-PHOTOGRAPHER — Pixel, visual storyteller ──
+    "pixel-portfolio-fotografico": {
+        "archetype":          "cinematic-photographer",
+        "hero_style":         "fullbleed-exif",
+        "navbar_style":       "fullbleed-dark",
+        "footer_style":       "exif-credits",
+        "section_order":      ["fullbleed-dark-nav", "fullbleed-hero", "series-counter", "filmstrip-gallery", "exif-credits"],
+        "card_style":         "filmstrip-series",
+        "button_style":       "ghost-mono-bracket",
+        "density":            "compact",
+        "tone":               "cinematic-authorial",
+        "imagery_direction":  "cinematic-photostill",
+        "imagery_key":        "portfolio-photographer",
+        "conversion_pattern": "series-brief",
+        "font_pairing":       ("Archivo", "Inter"),
+        "content": {
+            "eyebrow":       "Fotografia documentaria · reportage editoriale e ritratti di scena",
+            "headline":      'Fermare il <em>tempo</em>, una luce alla volta.',
+            "subhead":       "Dodici anni tra commissioni editoriali, ritratti di scena e still-life per brand italiani. Ogni serie è un piccolo film — scritto con l'obiettivo, montato in camera oscura.",
+            "primary_cta":   "Apri la serie completa",
+            "secondary_cta": "Richiedi una commissione",
+            "status_pulse":  "Disponibile per commissioni",
+            "nav_links":     ["Serie", "Commissioni", "Stampe", "Diario", "Contatti"],
+            "series_counter_label": "Serie in evidenza",
+            "series_counter_value": "06 / 42",
+            "series_label":    "Serie corrente",
+            "series_title":    "«Le ore rubate»",
+            "series_note":     "Ritratto di una notte senza luna, girato su pellicola 120mm tra le cinque e le otto del mattino. Venti fotogrammi, un'unica scatola di luce.",
+            "hero_credit_cells": [
+                # Film-strip EXIF bar: (label, value)
+                ("Serie",       "N° 06"),
+                ("Pellicola",    "Medio formato 120"),
+                ("Ottica",       "Fisso 80mm · f/2.8"),
+                ("Stampa",       "Fine art · tiratura 12"),
+            ],
+            "filmstrip_heading": "Ultime serie fotografiche",
+            "filmstrip_label":   "Portfolio",
+            "filmstrip": [
+                # (index, title, discipline, year)
+                ("06", "Le ore rubate",              "Ritratto notturno",     "2026"),
+                ("05", "Campi lunghi",                "Paesaggio · reportage", "2025"),
+                ("04", "Stanze vuote",                "Still-life · interni",  "2025"),
+                ("03", "La città senza persone",      "Reportage urbano",      "2024"),
+            ],
+            "exif_footer_label": "Credit · prossima serie · Spring 2026",
+            "exif_footer_cells": [
+                ("Sede",        "Studio in affitto · prenota"),
+                ("Commissioni", "Aperte · 3 slot"),
+                ("Pubblicato",  "Stampa fine-art · su richiesta"),
+                ("Contatto",    "solo email"),
+            ],
         },
     },
 

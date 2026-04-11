@@ -1,0 +1,397 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: cinematic-photographer   (portfolio DNA — Phase 2g2x)
+   FOR     : photographers, visual storytellers, cinematographers
+   MOOD    : fully dark, image-first, EXIF credit bar, film-strip
+             gallery. The hero is a DOMINANT fullbleed photograph.
+   HERO    : fullbleed photo covering ~62% of the canvas with a
+             monospaced film-strip EXIF credit bar pinned to its
+             bottom edge. Minimal dark nav above, small quiet
+             series-counter chip pinned over the top-left corner.
+   NAVBAR  : transparent dark navbar with small uppercase wordmark
+   CARDS   : filmstrip-series row — 4 horizontal stills under the
+             hero with index, title, discipline, year
+   FOOTER  : EXIF credits split into 4 cells, film-margin style
+
+   D-047 chrome-authoring contract:
+   - Zero literal brand strings. Everything flows from dna.content.*
+   - No hardcoded image URLs. All photos via {{ imagery.N }}.
+   - No literal series titles, camera bodies, years, or publication
+     names — every string comes from the content registry.
+============================================================ #}
+{% block extra_css %}
+  /* Deliberate visual opposite of editorial-designer-grid: fully dark
+     #0a0a0a, image-first dominant fullbleed hero, monospaced credit
+     bar, film-strip gallery below. The hero is the photo — if the
+     photo fails to download, the hero degrades to a solid dark panel
+     with only the typographic credit bar legible. That is still a
+     recognisable photographer card. */
+  body { background: #050505; color: #e9e7e2; }
+  .pv-frame { background: #050505; }
+
+  /* Film-grain overlay — static, pure CSS */
+  .pv-frame:before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(rgba(255,255,255,0.018) 1px, transparent 1.2px);
+    background-size: 3px 3px;
+    pointer-events: none; z-index: 9;
+    mix-blend-mode: overlay;
+  }
+  /* Letterbox frame — subtle top/bottom film margin */
+  .pv-frame:after {
+    content: ''; position: absolute; inset: 0;
+    box-shadow:
+      inset 0 0 0 1px rgba(233,231,226,0.06),
+      inset 0 120px 180px -80px rgba(0,0,0,0.85),
+      inset 0 -140px 220px -100px rgba(0,0,0,0.9);
+    pointer-events: none; z-index: 8;
+  }
+
+  /* === TOP TRANSPARENT DARK NAVBAR === */
+  .cp-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 64px;
+    display: flex; align-items: center; padding: 0 56px;
+    z-index: 20;
+  }
+  .cp-nav .wm {
+    font-family: var(--heading); font-weight: 800; font-size: 16px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: #e9e7e2;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .cp-nav .wm .shutter {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    position: relative;
+  }
+  .cp-nav .wm .shutter:before {
+    content: ''; position: absolute; inset: 3px;
+    border-radius: 50%;
+    border: 1px solid rgba(233,231,226,0.55);
+  }
+  .cp-nav .links {
+    display: flex; gap: 30px; margin-left: 58px;
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: rgba(233,231,226,0.58);
+  }
+  .cp-nav .cta {
+    margin-left: auto; display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #e9e7e2;
+  }
+  .cp-nav .cta .status-pulse {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: rgba(233,231,226,0.7);
+  }
+  .cp-nav .cta .status-pulse .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.08), 0 0 12px var(--accent);
+  }
+  .cp-nav .cta .bracket {
+    color: #e9e7e2;
+    padding: 10px 16px;
+    border: 1px solid rgba(233,231,226,0.28);
+  }
+  .cp-nav .cta .bracket:before { content: '[ '; color: var(--accent); }
+  .cp-nav .cta .bracket:after  { content: ' ]'; color: var(--accent); }
+
+  /* === FULLBLEED DOMINANT HERO PHOTO === */
+  .cp-hero {
+    position: absolute; top: 64px; left: 0; right: 0; height: 546px;
+    background:
+      linear-gradient(180deg, rgba(5,5,5,0.55) 0%, rgba(5,5,5,0) 16%, rgba(5,5,5,0) 60%, rgba(5,5,5,0.88) 100%),
+      url('{{ imagery.0 }}') center / cover no-repeat,
+      #0a0a0a;
+    background-blend-mode: multiply, normal, normal;
+    z-index: 1;
+  }
+  .cp-hero .frame-corners {
+    position: absolute; inset: 24px;
+    border: 1px dashed rgba(233,231,226,0.12);
+    pointer-events: none;
+  }
+  .cp-hero .frame-corners:before,
+  .cp-hero .frame-corners:after {
+    content: ''; position: absolute;
+    width: 26px; height: 26px;
+    border: 1px solid rgba(233,231,226,0.38);
+  }
+  .cp-hero .frame-corners:before {
+    top: -1px; left: -1px;
+    border-right: 0; border-bottom: 0;
+  }
+  .cp-hero .frame-corners:after {
+    bottom: -1px; right: -1px;
+    border-left: 0; border-top: 0;
+  }
+
+  .cp-hero .series-chip {
+    position: absolute; top: 40px; left: 56px;
+    padding: 10px 18px;
+    background: rgba(5,5,5,0.72);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(233,231,226,0.22);
+    display: flex; gap: 18px; align-items: center;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(233,231,226,0.72);
+  }
+  .cp-hero .series-chip .num {
+    font-family: var(--heading); font-weight: 800;
+    color: var(--accent); font-size: 13px; letter-spacing: 0.04em;
+  }
+
+  /* === HERO HEADLINE BLOCK (centered-left) === */
+  .cp-hero .manifesto {
+    position: absolute; left: 56px; right: 56px; bottom: 130px;
+    max-width: 1180px;
+    z-index: 2;
+  }
+  .cp-hero .manifesto .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .cp-hero .manifesto .eyebrow:before {
+    content: ''; width: 38px; height: 1px; background: var(--accent);
+  }
+  .cp-hero .manifesto h1 {
+    margin-top: 22px;
+    font-family: var(--heading); font-size: 92px; font-weight: 800;
+    line-height: 0.96; letter-spacing: -0.035em;
+    color: #e9e7e2;
+    max-width: 1080px;
+    text-transform: uppercase;
+  }
+  .cp-hero .manifesto h1 em {
+    font-style: normal; font-weight: 400;
+    color: rgba(233,231,226,0.68);
+    text-transform: none;
+  }
+  .cp-hero .manifesto .sub {
+    margin-top: 20px; max-width: 540px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6;
+    color: rgba(233,231,226,0.66);
+  }
+  .cp-hero .manifesto .cta-row {
+    margin-top: 24px; display: flex; gap: 22px; align-items: center;
+  }
+  .cp-hero .manifesto .cta-row .primary {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: #e9e7e2;
+    padding: 14px 22px;
+    border: 1px solid rgba(233,231,226,0.45);
+    display: inline-flex; align-items: center; gap: 14px;
+  }
+  .cp-hero .manifesto .cta-row .primary:before { content: '[ '; color: var(--accent); }
+  .cp-hero .manifesto .cta-row .primary:after  { content: ' ]'; color: var(--accent); }
+  .cp-hero .manifesto .cta-row .secondary {
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(233,231,226,0.62);
+    padding-bottom: 3px;
+    border-bottom: 1px solid rgba(233,231,226,0.3);
+  }
+
+  /* === FILM-STRIP EXIF CREDIT BAR (pinned to hero bottom) === */
+  .cp-exif-bar {
+    position: absolute; top: 576px; left: 0; right: 0; height: 34px;
+    background: rgba(5,5,5,0.9);
+    border-top: 1px solid rgba(233,231,226,0.18);
+    border-bottom: 1px solid rgba(233,231,226,0.08);
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    z-index: 3;
+  }
+  .cp-exif-bar .cell {
+    display: flex; align-items: center; gap: 14px;
+    padding: 0 28px;
+    border-right: 1px solid rgba(233,231,226,0.08);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(233,231,226,0.4);
+  }
+  .cp-exif-bar .cell:last-child { border-right: 0; }
+  .cp-exif-bar .cell .val {
+    color: #e9e7e2; font-family: var(--heading); font-weight: 700;
+    letter-spacing: 0.04em; text-transform: none; font-size: 11px;
+  }
+
+  /* === FILMSTRIP GALLERY (below hero) === */
+  .cp-strip {
+    position: absolute; left: 0; right: 0; top: 620px; height: 220px;
+    padding: 22px 56px 0;
+    z-index: 2;
+  }
+  .cp-strip .heading {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(233,231,226,0.16);
+  }
+  .cp-strip .heading .lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .cp-strip .heading h4 {
+    font-family: var(--heading); font-size: 16px; font-weight: 800;
+    color: #e9e7e2; letter-spacing: 0.02em; text-transform: uppercase;
+  }
+  .cp-strip .row {
+    margin-top: 14px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  .cp-strip .frame {
+    height: 138px; position: relative; overflow: hidden;
+    border: 1px solid rgba(233,231,226,0.14);
+  }
+  .cp-strip .frame:nth-child(1) { background: url('{{ imagery.2 }}') center/cover; }
+  .cp-strip .frame:nth-child(2) { background: url('{{ imagery.3 }}') center/cover; }
+  .cp-strip .frame:nth-child(3) { background: url('{{ imagery.4 }}') center/cover; }
+  .cp-strip .frame:nth-child(4) { background: url('{{ imagery.5 }}') center/cover; }
+  .cp-strip .frame:after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(5,5,5,0.05) 0%, rgba(5,5,5,0) 34%, rgba(5,5,5,0.9) 100%),
+      linear-gradient(0deg, rgba(5,5,5,0) 70%, rgba(5,5,5,0.25) 100%);
+  }
+  .cp-strip .frame .meta {
+    position: absolute; left: 14px; right: 14px; bottom: 12px;
+    color: #e9e7e2; z-index: 2;
+  }
+  .cp-strip .frame .meta .num {
+    font-family: var(--heading); font-size: 10px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.14em;
+  }
+  .cp-strip .frame .meta .title {
+    margin-top: 4px;
+    font-family: var(--heading); font-size: 13px; font-weight: 800;
+    letter-spacing: 0.02em; text-transform: uppercase;
+  }
+  .cp-strip .frame .meta .disc {
+    margin-top: 3px;
+    font-family: var(--body); font-size: 9px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(233,231,226,0.62);
+  }
+  .cp-strip .frame .year-corner {
+    position: absolute; top: 10px; right: 10px;
+    padding: 3px 9px;
+    background: rgba(5,5,5,0.72);
+    border: 1px solid rgba(233,231,226,0.22);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.08em;
+    color: rgba(233,231,226,0.74);
+  }
+
+  /* === BOTTOM EXIF FOOTER BAR === */
+  .cp-footer {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 52px;
+    padding: 10px 56px;
+    background: rgba(5,5,5,0.95);
+    border-top: 1px solid rgba(233,231,226,0.2);
+    display: grid; grid-template-columns: auto 1fr; gap: 40px;
+    align-items: center;
+    z-index: 4;
+  }
+  .cp-footer .lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+    padding-right: 28px;
+    border-right: 1px solid rgba(233,231,226,0.18);
+  }
+  .cp-footer .cells {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+  }
+  .cp-footer .cells .cell {
+    padding: 0 22px;
+    border-right: 1px solid rgba(233,231,226,0.08);
+    font-family: var(--body); font-size: 8px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(233,231,226,0.42);
+  }
+  .cp-footer .cells .cell:last-child { border-right: 0; }
+  .cp-footer .cells .cell strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-size: 11px; font-weight: 700;
+    color: #e9e7e2; letter-spacing: 0.02em; text-transform: none;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="cp-nav">
+    <div class="wm">
+      <span class="shutter"></span>
+      <span>{{ brand_name }}</span>
+    </div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <div class="cta">
+      <span class="status-pulse"><span class="dot"></span>{{ dna.content.status_pulse }}</span>
+      <span class="bracket">{{ dna.content.secondary_cta }}</span>
+    </div>
+  </nav>
+
+  <section class="cp-hero">
+    <div class="frame-corners"></div>
+    <div class="series-chip">
+      <span>{{ dna.content.series_counter_label }}</span>
+      <span class="num">{{ dna.content.series_counter_value }}</span>
+    </div>
+
+    <div class="manifesto">
+      <div class="eyebrow">{{ dna.content.eyebrow }}</div>
+      <h1>{{ dna.content.headline|safe }}</h1>
+      <p class="sub">{{ dna.content.subhead }}</p>
+      <div class="cta-row">
+        <span class="primary">{{ dna.content.primary_cta }}</span>
+        <span class="secondary">{{ dna.content.series_label }} · {{ dna.content.series_title }}</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="cp-exif-bar">
+    {% for label, value in dna.content.hero_credit_cells %}
+      <div class="cell">
+        <span>{{ label }}</span>
+        <span class="val">{{ value }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <section class="cp-strip">
+    <div class="heading">
+      <span class="lbl">{{ dna.content.filmstrip_label }}</span>
+      <h4>{{ dna.content.filmstrip_heading }}</h4>
+    </div>
+    <div class="row">
+      {% for num, title, disc, yr in dna.content.filmstrip %}
+        <div class="frame">
+          <span class="year-corner">{{ yr }}</span>
+          <div class="meta">
+            <div class="num">{{ num }} / {{ dna.content.series_counter_value }}</div>
+            <div class="title">{{ title }}</div>
+            <div class="disc">{{ disc }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <footer class="cp-footer">
+    <span class="lbl">{{ dna.content.exif_footer_label }}</span>
+    <div class="cells">
+      {% for label, value in dna.content.exif_footer_cells %}
+        <div class="cell">{{ label }}<strong>{{ value }}</strong></div>
+      {% endfor %}
+    </div>
+  </footer>
+{% endblock %}
