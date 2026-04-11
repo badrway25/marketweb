@@ -1,8 +1,25 @@
-from django.http import Http404
+from django.http import Http404, HttpRequest
 from django.views.generic import DetailView, ListView, TemplateView
 
 from apps.catalog import selectors, template_content
 from apps.catalog.template_dna import get_dna
+
+
+# ── Staff preview gate (D-055) ────────────────────────────────
+#
+# The draft tier is invisible to the public catalog. Staff can still
+# reach a draft template for QA by (a) authenticating as staff AND
+# (b) explicitly opting in via `?preview=1`. Both conditions must
+# hold — a staff member who lands on a draft URL without the query
+# string still sees the public behaviour (404) so accidental drive-by
+# traffic never normalizes the draft surface. Views read this flag
+# once and thread it into every selectors call they make.
+
+def _staff_preview_mode(request: HttpRequest) -> bool:
+    user = getattr(request, "user", None)
+    if user is None or not user.is_authenticated or not user.is_staff:
+        return False
+    return request.GET.get("preview") == "1"
 
 
 class CategoryListView(ListView):
@@ -10,7 +27,9 @@ class CategoryListView(ListView):
     context_object_name = "categories"
 
     def get_queryset(self):
-        return selectors.get_active_categories_with_counts()
+        return selectors.get_active_categories_with_counts(
+            include_drafts=_staff_preview_mode(self.request),
+        )
 
 
 class TemplateListView(ListView):
@@ -21,11 +40,13 @@ class TemplateListView(ListView):
     def get_queryset(self):
         self.search_query = self.request.GET.get("q", "").strip()
         self.sort_by = self.request.GET.get("sort", "recent")
+        self.staff_preview = _staff_preview_mode(self.request)
 
         self.category, qs = selectors.get_listing_templates(
             category_slug=self.kwargs.get("category_slug"),
             search_query=self.search_query or None,
             sort_by=self.sort_by,
+            include_drafts=self.staff_preview,
         )
         return qs
 
@@ -36,6 +57,7 @@ class TemplateListView(ListView):
         ctx["search_query"] = self.search_query
         ctx["current_sort"] = self.sort_by
         ctx["sort_options"] = selectors.SORT_LABELS
+        ctx["staff_preview"] = self.staff_preview
 
         # Query string without 'page' — used for pagination links
         params = self.request.GET.copy()
@@ -53,12 +75,20 @@ class TemplateDetailView(DetailView):
         return selectors.get_template_detail(
             category_slug=self.kwargs["category_slug"],
             template_slug=self.kwargs["slug"],
+            include_drafts=_staff_preview_mode(self.request),
         )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["related_templates"] = selectors.get_related_templates(self.object)
-        ctx["has_live_preview"] = template_content.has_live_template(self.object.slug)
+        ctx["related_templates"] = selectors.get_related_templates(
+            self.object,
+            include_drafts=_staff_preview_mode(self.request),
+        )
+        # D-056 (Session 20): the legacy `has_live_preview` context var is
+        # deleted. A template that reaches this view is published_live by
+        # construction (see tier gate in selectors.get_template_detail),
+        # so the detail page shows the real "Apri anteprima completa" CTA
+        # unconditionally. No ghost `href="#"` fallback.
         return ctx
 
 
@@ -84,6 +114,8 @@ class TemplateDetailView(DetailView):
 # A template needs BOTH a DNA entry AND a content registry entry to be
 # eligible for live preview. Otherwise the view returns 404 — the system
 # stays strictly opt-in per template, exactly like the DNA system itself.
+# D-055 adds a second gate: only `published_live` templates may render here
+# publicly. Staff may preview a draft's live route via `?preview=1`.
 
 class LiveTemplateView(TemplateView):
     """Render one page of a template's live multi-page preview."""
@@ -95,11 +127,18 @@ class LiveTemplateView(TemplateView):
         page_slug     = kwargs.get("page", "home")
         post_slug     = kwargs.get("post_slug")
 
-        # Resolve the template + DNA + content. The view requires BOTH a DNA
-        # entry and a content registry entry — strictly opt-in per template.
-        self.template_obj = selectors.get_template_detail(category_slug, slug)
-        self.dna          = get_dna(slug)
-        self.content      = template_content.get_content(slug)
+        # Tier gate (D-055). Drafts 404 on public access — authors can
+        # still reach them via `?preview=1` when authenticated as staff.
+        include_drafts = _staff_preview_mode(request)
+        self.template_obj = selectors.get_template_detail(
+            category_slug, slug, include_drafts=include_drafts
+        )
+
+        # Resolve DNA + content registry entry. Both must exist — the
+        # system stays strictly opt-in per template, exactly like the
+        # DNA system itself.
+        self.dna     = get_dna(slug)
+        self.content = template_content.get_content(slug)
         if not self.dna or not self.content:
             raise Http404("Template has no live preview yet.")
 

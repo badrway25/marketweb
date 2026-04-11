@@ -190,8 +190,46 @@
 
 .mw-empty-state p {
   color: var(--mw-neutral-500);
-  max-width: 24rem;
+  max-width: 34rem;
   margin-inline: auto;
+}
+
+/* Tier migration (D-055) — curatorial empty state for catalog / category
+   pages whose only siblings are still `draft`. Inherits from .mw-empty-state
+   and adds a subtle card frame so the message feels deliberate rather than
+   like a missing grid. Premium, onesto, sobrio. */
+.mw-catalog-empty {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: var(--mw-space-10) var(--mw-space-6);
+  border: 1px dashed var(--mw-neutral-200);
+  border-radius: var(--mw-radius-2xl);
+  background: var(--mw-neutral-50);
+}
+
+.mw-catalog-empty .mw-overline {
+  display: inline-block;
+  margin-bottom: var(--mw-space-3);
+  color: var(--mw-neutral-500);
+}
+
+.mw-catalog-empty .mw-empty-state-icon {
+  color: var(--mw-neutral-400);
+  margin-bottom: var(--mw-space-4);
+}
+
+.mw-catalog-empty h3 {
+  font-family: var(--mw-font-display);
+  font-weight: var(--mw-weight-semibold);
+  color: var(--mw-neutral-900);
+}
+
+.mw-empty-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mw-space-3);
+  justify-content: center;
+  margin-top: var(--mw-space-5);
 }
 
 

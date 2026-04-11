@@ -295,6 +295,33 @@
   color: var(--mw-neutral-500);
 }
 
+/* Tier migration (D-055): category whose siblings are all `draft` */
+.mw-category-card--soon {
+  opacity: 0.78;
+  background: var(--mw-neutral-50);
+}
+
+.mw-category-card--soon:hover {
+  opacity: 1;
+}
+
+.mw-category-card--soon .mw-category-card-icon {
+  background: var(--mw-neutral-100);
+  color: var(--mw-neutral-500);
+}
+
+.mw-pill-soon {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--mw-radius-full);
+  background: var(--mw-neutral-100);
+  color: var(--mw-neutral-600);
+  font-size: var(--mw-text-xs);
+  font-weight: var(--mw-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 
 /* --- Hero --------------------------------------------------- */
 

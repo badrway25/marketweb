@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 from apps.catalog.models import Category, TemplateBrand, WebTemplate
@@ -578,3 +579,10 @@ class Command(BaseCommand):
         self.stdout.write(
             self.style.SUCCESS(f"\nDone. {created_count} templates created.")
         )
+
+        # D-055: apply tier from the registry so newly-seeded rows (and any
+        # existing rows whose tier the registry just changed) land on the
+        # correct side of the public gate. Keeping the tier source of truth
+        # in TEMPLATE_REGISTRY.json prevents two codepaths drifting apart.
+        self.stdout.write("\nSyncing tiers from TEMPLATE_REGISTRY.json…")
+        call_command("sync_template_tiers")

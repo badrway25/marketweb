@@ -1,0 +1,70 @@
+{% comment %}
+Premium empty state for the catalog listing pages.
+
+Context variables this partial expects from the caller:
+  - mode:          "category_soon" | "search_no_match" | "catalog_empty"
+  - category:      Category instance or None (category_soon / catalog_empty)
+  - search_query:  str or None       (search_no_match)
+
+Per D-055 + D-056 (Session 20), the visible catalog shrinks from 20 to 3
+during the tier migration. Categories whose only siblings are `draft`
+render this partial instead of a broken empty grid. The copy is
+deliberately curatorial ("selezione in preparazione") — never apologetic
+or technical. No ghost CTAs, no fake cards, no `href="#"` links.
+{% endcomment %}
+
+<div class="mw-empty-state mw-catalog-empty">
+  {% if mode == "search_no_match" %}
+    <div class="mw-empty-state-icon">
+      <i class="bi bi-search"></i>
+    </div>
+    <span class="mw-overline">Nessun risultato</span>
+    <h3>Non abbiamo trovato questa ricerca</h3>
+    <p>
+      Prova con una parola più generica o sfoglia la collezione completa —
+      ogni template pubblicato è un prodotto finito, non un'anteprima.
+    </p>
+    <div class="mw-empty-state-actions">
+      <a href="{% if category %}{% url 'catalog:template_list_by_category' category.slug %}{% else %}{% url 'catalog:template_list' %}{% endif %}" class="mw-btn mw-btn-secondary mw-btn-sm">
+        Cancella ricerca
+      </a>
+      <a href="{% url 'catalog:category_list' %}" class="mw-btn mw-btn-ghost mw-btn-sm">
+        Vedi le categorie
+      </a>
+    </div>
+
+  {% elif mode == "category_soon" %}
+    <div class="mw-empty-state-icon">
+      <i class="bi bi-stars"></i>
+    </div>
+    <span class="mw-overline">Selezione in preparazione</span>
+    <h3>
+      {% if category %}{{ category.name }} — in arrivo{% else %}Nuova categoria in arrivo{% endif %}
+    </h3>
+    <p>
+      Stiamo curando personalmente i primi template di questa categoria.
+      Appariranno qui solo quando saranno siti completi, navigabili e
+      fedeli allo standard del marketplace.
+    </p>
+    <div class="mw-empty-state-actions">
+      <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-secondary mw-btn-sm">
+        Esplora i template disponibili
+      </a>
+      <a href="{% url 'catalog:category_list' %}" class="mw-btn mw-btn-ghost mw-btn-sm">
+        Vedi tutte le categorie
+      </a>
+    </div>
+
+  {% else %}{# catalog_empty — global safety net #}
+    <div class="mw-empty-state-icon">
+      <i class="bi bi-gem"></i>
+    </div>
+    <span class="mw-overline">Collezione curata</span>
+    <h3>Il catalogo si sta popolando</h3>
+    <p>
+      Rilasciamo i template solo quando ogni pagina interna è pronta,
+      navigabile e allineata al nostro standard editoriale. Torna tra
+      poco per scoprire le prossime pubblicazioni.
+    </p>
+  {% endif %}
+</div>

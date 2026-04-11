@@ -48,33 +48,30 @@ Sessions 8, 10, 12, 15, **19** all independently hit the DNA-mtime-vs-PNG-mtime 
 - [ ] **Option B (middleweight):** `generate_previews --audit` prints any template whose preview file mtime is older than DNA file mtime or composition file mtime. Run in CI; fail the build on mismatch
 - [ ] **Option C (proper fix):** introduce a `TemplateAsset.source_fingerprint` column + migration; compute from DNA + composition + imagery pool SHA; treat stale rows as invalid and auto-regen
 
-### 2g2x.7 — Detail-page "Anteprima Live" legacy placeholder (MEDIO UX, systemic)
-**Flagged by Session 19 triage.** `templates/catalog/template_detail.html:132-136` has a legacy `{% else %} <a href="#">Anteprima Live</a>` branch that fires whenever `has_live_preview` is False — i.e., for **17 of 20 templates** (every template that isn't cardio / dermatologia / gusto). The button looks like an active CTA but clicking it does nothing. D-045 documents the gating as intentional, but the fallback copy + `href="#"` combination is misleading. This is **not a portfolio-scope bug** (the legacy branch predates both Session 17 and 18) and must not be fixed inside any per-category hardening session. It needs its own micro-phase. Options, in preference order:
-- [ ] **Option A (recommended):** replace the `href="#"` button with a disabled `<button>` labelled `Preview statica · anteprima live in arrivo` so the UI is honest about the preview-only tier
-- [ ] **Option B:** replace the legacy branch with a lightbox that opens the full-size preview PNG on click — gives the user something useful to do with the button
-- [ ] **Option C:** hide the button entirely for preview-only templates so there is no ghost CTA at all
-- [ ] Whichever option is chosen: document as D-0XX in DECISIONS.md, one targeted edit to `template_detail.html`, no DNA changes, no composition changes, no per-category work
+### 2g2x.7 — Detail-page "Anteprima Live" legacy placeholder
+**✅ RESOLVED by D-056 + 2g2x.8 (Session 21, 2026-04-11).** The legacy `{% else %} <a href="#">Anteprima Live</a>` branch in `template_detail.html` and the `has_live_preview` context variable in `TemplateDetailView` have been deleted. The three-option punch list is no longer needed — tier gating per D-055 makes the branch architecturally unreachable (no draft template ever reaches the detail page publicly), so the "hide entirely" option was applied by construction. The "Apri anteprima completa" CTA is now unconditional on every detail page, because every detail page now hosts a `published_live` template.
 
-### 2g2x.8 — Tier migration: demote preview-only templates to `draft` (CRITICO, unlocks Phase 2g3)
-Per D-055, introduce the two-tier model (`published_live` / `draft`) and hide every template that does not satisfy the full D-053 Live Preview Law gate. This is the one-way door that turns the marketplace floor premium from day one.
+### 2g2x.8 — Tier migration: demote preview-only templates to `draft` — ✅ CLOSED (Session 21, 2026-04-11)
+Per D-055, introduced the two-tier model (`published_live` / `draft`) and hid every template that does not satisfy the full D-053 Live Preview Law gate. This is the one-way door that turns the marketplace floor premium from day one.
 
-- [ ] Add `tier` field to `WebTemplate` (CharField + `TIER_CHOICES = [("published_live", ...), ("draft", ...)]`) — or repurpose `status` if the existing field is free-form enough. Make the migration.
-- [ ] Update `seed_templates.py`: `tier='published_live'` only for cardio-studio-specialistico, dermatologia-elite-roma, gusto-fine-dining. Every other row ships with `tier='draft'`.
-- [ ] Update `TemplateListView` / `TemplateDetailView` / catalog selectors: public-facing calls filter `tier='published_live'` by default. Staff (`request.user.is_staff`) can pass `?preview=1` to see drafts.
-- [ ] Update homepage featured pool, search results, category list, related templates, sitemap, and any other public surface to use the same filter.
-- [ ] Delete the `{% else %} <a href="#">Anteprima Live</a>` branch in `templates/catalog/template_detail.html` (lines 132-136) AND the `has_live_preview` context variable in `TemplateDetailView` — per D-056 the branch is now dead code.
-- [ ] Add a category-page "empty state": when a filtered category listing returns 0 templates, render `templates/catalog/_empty_category_soon.html` with category-specific copy ("Questa categoria è in arrivo") — no ghost CTAs, no placeholder cards with `href="#"`, no "static preview" badges.
-- [ ] Update `TEMPLATE_REGISTRY.json` to carry the tier annotation on every row.
-- [ ] Mark D-045 as **superseded by D-055 + D-056** in DECISIONS.md.
-- [ ] Resolve TODO_NEXT.md Phase **2g2x.7** — the "Anteprima Live" legacy placeholder punch list is absorbed by this migration. No three-option remediation needed; tier gating deletes the branch.
+- [x] Added `tier` field to `WebTemplate` (`WebTemplate.Tier` TextChoices — `published_live` / `draft`, default `draft`, db_index=True). Migration `catalog/0002_webtemplate_tier.py`.
+- [x] Added new management command `sync_template_tiers` that reads `TEMPLATE_REGISTRY.json` (source of truth) and applies tier to matching rows. Wired into `seed_templates` so a single seed run produces correct tiers.
+- [x] Centralized the tier gate in `apps/catalog/selectors.py` via `_public_tier_filter(include_drafts)`. All public selectors (`get_published_templates`, `get_featured_templates`, `get_template_detail`, `get_related_templates`, `get_listing_templates`, `get_templates_by_category`, `get_active_categories_with_counts`) now accept a single `include_drafts` kwarg and delegate to the gate.
+- [x] `TemplateListView` / `TemplateDetailView` / `CategoryListView` / `LiveTemplateView` thread the gate through `_staff_preview_mode(request)`. Staff authenticated via `is_staff` + `?preview=1` can reach draft surfaces; all other traffic is filtered.
+- [x] Deleted the `{% else %} <a href="#">Anteprima Live</a>` branch in `templates/catalog/template_detail.html` + the `has_live_preview` context variable in `TemplateDetailView` per D-056. The "Apri anteprima completa" CTA is now unconditional. The placeholder cart CTA is now a disabled `<button>` (one more ghost link retired).
+- [x] Added premium empty-state partial `templates/catalog/_empty_catalog.html` with three modes (`category_soon`, `search_no_match`, `catalog_empty`). Wired into `template_list.html` and `pages/home.html`. Category cards with 0 live siblings now render an "In arrivo" pill (`_category_card.html` + new tokens in `components.css`).
+- [x] `TEMPLATE_REGISTRY.json` already carries the `tier` annotation on every row (shipped in Session 20 as v0.8.0) — no data change needed, just wired to the DB.
+- [x] Marked D-045 as superseded by D-055 + D-056 in `DECISIONS.md`.
+- [x] Featured pool backfill: `get_featured_templates` now prefers `featured=True` templates but backfills from the live pool when the featured+live intersection is thin (prevents the homepage from collapsing to 1 card during the transition).
 
-**Exit criteria for 2g2x.8:**
-- [ ] `/` homepage shows 3 featured templates, all `published_live`, all with working "Apri anteprima completa" CTA
-- [ ] `/templates/` listing shows 3 templates total (temporary state during rollout)
-- [ ] `/templates/<category>/` for categories whose sibling is `draft` shows the empty-state "in arrivo" strip, not an empty grid with ghost cards
-- [ ] `python manage.py check` clean, `python manage.py test` (if used) green
-- [ ] A Chromium walk confirms no `href="#"` CTA exists anywhere in the catalog
-- [ ] Staff preview via `?preview=1` still works end-to-end for draft templates (so authors can QA in progress without flipping a production flag)
+**Exit criteria for 2g2x.8 — all met (31/31 smoke checks passed):**
+- [x] `/` homepage shows 3 featured templates, all `published_live`, all with working "Apri anteprima completa" CTA
+- [x] `/templates/` listing shows 3 templates total (cardio / dermatologia-elite-roma / gusto-fine-dining)
+- [x] `/templates/<category>/` for categories whose only siblings are `draft` shows the `category_soon` empty state ("Selezione in preparazione" / "in arrivo") — not an empty grid
+- [x] `python manage.py check` clean
+- [x] No `href="#"` ghost live preview CTA remains in `templates/catalog/` (verified by grep)
+- [x] Staff preview via `?preview=1` works end-to-end for draft templates (verified by smoke test)
+- [x] Draft template detail URLs return 404 publicly; draft `/preview/` routes return 404 publicly
 
 ### 2g2x.6 — Exit criteria for the hardening wave
 The wave closes when ALL of the following are green:

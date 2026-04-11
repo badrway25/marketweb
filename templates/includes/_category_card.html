@@ -6,7 +6,7 @@ Context variables:
   - category.template_count: annotated count (from selectors) or use category.templates.count
 {% endcomment %}
 
-<a class="mw-category-card" href="{% url 'catalog:template_list_by_category' category.slug %}">
+<a class="mw-category-card{% if category.template_count == 0 %} mw-category-card--soon{% endif %}" href="{% url 'catalog:template_list_by_category' category.slug %}">
   <div class="mw-category-card-icon">
     {% if category.icon %}
       <i class="bi bi-{{ category.icon }}"></i>
@@ -15,9 +15,16 @@ Context variables:
     {% endif %}
   </div>
   <div class="mw-category-card-name">{{ category.name }}</div>
+  {# D-055: categories whose only siblings are `draft` report 0.      #}
+  {# Instead of "0 template" (cheap / demoralising) render a soft     #}
+  {# "in arrivo" pill that stays consistent with the curatorial tone. #}
   <div class="mw-category-card-count">
     {% if category.template_count is not None %}
-      {{ category.template_count }} template
+      {% if category.template_count == 0 %}
+        <span class="mw-pill-soon">In arrivo</span>
+      {% else %}
+        {{ category.template_count }} template
+      {% endif %}
     {% endif %}
   </div>
 </a>

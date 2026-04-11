@@ -89,15 +89,21 @@
   <div class="container">
     <div class="mw-section-header">
       <span class="mw-overline">In Evidenza</span>
-      <h2>I template pi&ugrave; amati</h2>
-      <p>Scopri i design scelti da migliaia di professionisti per lanciare la propria attivit&agrave; online.</p>
+      <h2>Collezione curata</h2>
+      <p>Ogni template pubblicato &egrave; un sito completo e navigabile. Rilasciamo solo ci&ograve; che supera il nostro standard.</p>
     </div>
 
-    <div class="mw-featured-grid">
-      {% for tmpl in featured_templates %}
-        {% include "includes/_template_card.html" with template=tmpl %}
-      {% endfor %}
-    </div>
+    {# D-055: featured pool filters tier=published_live — when empty, #}
+    {# show the curatorial empty state rather than a dead grid.       #}
+    {% if featured_templates %}
+      <div class="mw-featured-grid">
+        {% for tmpl in featured_templates %}
+          {% include "includes/_template_card.html" with template=tmpl %}
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include "catalog/_empty_catalog.html" with mode="catalog_empty" %}
+    {% endif %}
 
     <div class="text-center mt-5">
       <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-secondary mw-btn-lg">

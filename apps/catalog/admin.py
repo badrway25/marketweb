@@ -42,6 +42,7 @@ class WebTemplateAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "category",
+        "tier",
         "status",
         "price",
         "is_free",
@@ -49,10 +50,10 @@ class WebTemplateAdmin(admin.ModelAdmin):
         "order",
         "created_at",
     )
-    list_filter = ("status", "category", "is_free", "featured")
+    list_filter = ("tier", "status", "category", "is_free", "featured")
     search_fields = ("name", "slug", "description")
     prepopulated_fields = {"slug": ("name",)}
-    list_editable = ("status", "featured", "order")
+    list_editable = ("tier", "status", "featured", "order")
     filter_horizontal = ("tags",)
     inlines = [TemplateBrandInline, TemplateAssetInline]
 

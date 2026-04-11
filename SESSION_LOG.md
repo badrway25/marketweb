@@ -1,5 +1,91 @@
 # Session Log
 
+## Session 21 — Tier Migration Implementation (Phase 2g2x.8) (2026-04-11)
+
+**Agent:** Implementation session. Closes Phase 2g2x.8 and resolves Phase 2g2x.7 by construction. D-053 / D-054 / D-055 / D-056 were formalized in Session 20 as a documentation delta; Session 21 ships the code that makes them real at the query layer.
+**Branch:** `phase-2g2x-tier-migration-v2`.
+**Scope floor:** implement D-055 as code, delete the D-056 ghost CTA, add premium empty states, respect every "do not" in the session prompt (no live preview authoring, no new categories/templates, no wide refactor, no `published_static` tier, no opaque workarounds).
+
+### 1 — Strategy: new `tier` field, single central gate, registry-driven sync
+
+The cleanest shape for D-055 was NOT to repurpose the existing `WebTemplate.status` field (which already encodes the orthogonal editorial draft/review/published/archived state used by the admin workflow) but to add a new `WebTemplate.tier` TextChoices column, indexed, default `draft`. See D-057 in DECISIONS.md for the full rationale. `TEMPLATE_REGISTRY.json` stays the human-readable source of truth; a new `sync_template_tiers` management command reads it and applies the tier to matching rows. `seed_templates` calls `sync_template_tiers` at the end, so one command produces a correctly-tiered database.
+
+The public tier gate is centralized in a single helper `apps/catalog/selectors._public_tier_filter(include_drafts)`. Every public selector delegates to it — homepage featured, listing, category, detail, related, search, category counts. Views thread a single `include_drafts` flag built from a single helper `apps.catalog.views._staff_preview_mode(request)` which requires BOTH `is_staff` AND `?preview=1`. Accidental staff traffic still sees the public 404 — the draft surface is never normalized.
+
+### 2 — Files modified
+
+**Code:**
+- `apps/catalog/models.py` — new `WebTemplate.Tier` TextChoices + `tier` CharField (db_index, default=draft, help_text).
+- `apps/catalog/migrations/0002_webtemplate_tier.py` — auto-generated schema migration.
+- `apps/catalog/selectors.py` — rewritten to centralize the tier gate in `_public_tier_filter(include_drafts)`; every public selector takes an `include_drafts` kwarg (default False). `get_featured_templates` now backfills from the live pool when `featured+live < limit` so the homepage doesn't collapse to a single card during the transition. `get_template_detail` raises `Http404` explicitly so drafts 404 regardless of whether the slug exists.
+- `apps/catalog/views.py` — added `_staff_preview_mode(request)` helper. `TemplateListView` / `TemplateDetailView` / `CategoryListView` / `LiveTemplateView` all thread the flag. `has_live_preview` context var deleted per D-056. `LiveTemplateView.setup()` now also tier-gates (draft preview routes 404 publicly).
+- `apps/catalog/admin.py` — `WebTemplateAdmin` surfaces `tier` in `list_display`, `list_filter`, and `list_editable` so operators can flip tier inline.
+- `apps/catalog/management/commands/sync_template_tiers.py` — **new**. Reads `TEMPLATE_REGISTRY.json`, validates tier values against `WebTemplate.Tier`, updates only changed rows, prints a compact diff. `--dry-run` supported. Rejects unknown tier strings to prevent a registry typo from silently downgrading the catalog.
+- `apps/catalog/management/commands/seed_templates.py` — now calls `sync_template_tiers` at the end via `call_command(...)`. Single seed produces correctly-tiered DB.
+
+**Templates:**
+- `templates/catalog/template_detail.html` — deleted the `{% if has_live_preview %}…{% else %} <a href="#">Anteprima Live</a>{% endif %}` block. "Apri anteprima completa" CTA is now unconditional, targets `catalog:live_template_home`, opens in new tab. The placeholder cart CTA is now a proper disabled `<button>` (one more ghost link retired, scope-clean).
+- `templates/catalog/_empty_catalog.html` — **new** partial. Three modes: `category_soon` (category whose siblings are all draft → "Selezione in preparazione" / "In arrivo"), `search_no_match` (0 search results → "Non abbiamo trovato questa ricerca" with "Cancella ricerca" + "Vedi le categorie"), `catalog_empty` (safety-net for a 0-item listing → "Il catalogo si sta popolando"). Premium, curatorial, non-apologetic.
+- `templates/catalog/template_list.html` — wired to the new partial. Previous `{% empty %}` text block deleted. Listing header is inside the `{% if templates %}` branch now (don't count-shame zero results).
+- `templates/pages/home.html` — featured grid wraps in `{% if featured_templates %}`, falls back to `_empty_catalog.html` with mode `catalog_empty`. Section header copy shifted from "I template più amati" to "Collezione curata" — framing the transition as curation, not scarcity.
+- `templates/includes/_category_card.html` — categories with `template_count == 0` render an "In arrivo" pill instead of "0 template" and pick up a `.mw-category-card--soon` modifier class.
+
+**CSS:**
+- `static/css/components.css` — new `.mw-category-card--soon` dim state + `.mw-pill-soon` token.
+- `static/css/pages.css` — new `.mw-catalog-empty` styled container on top of the existing `.mw-empty-state` primitive + `.mw-empty-state-actions` button row.
+
+**Docs:**
+- `DECISIONS.md` — D-045 marked superseded; new D-057 documents the implementation choices (why a new field, why the central filter, why the registry-driven sync, featured backfill behavior, staff preview opt-in shape).
+- `TODO_NEXT.md` — Phase 2g2x.8 closed with an acceptance checklist; Phase 2g2x.7 closed by construction.
+- `SESSION_LOG.md` — this entry.
+- `AGENT_HANDOFF.md` — updated to point the next session at Phase 2g2x.1 CRITICO categories (real-estate / lawyer / agency) as the next blocker, and Phase 2g3 as the post-wave rollout plan. The tier migration unblocks those, but does not close them.
+- `memory/tier_migration_session21.md` — new project memory file with the strategy, the files touched, and the post-session state so next session can apply this without re-deriving it.
+- `memory/MEMORY.md` — one-line index entry added.
+
+### 3 — Final catalog behavior (after tier migration)
+
+- **Homepage** `/` — shows 3 featured live cards (cardio + dermatologia + gusto; the single `featured=True` + live template is gusto, the other two are backfilled from the live pool). Section header: "Collezione curata". CTA "Vedi Tutti i Template". No ghost "Anteprima Live".
+- **Listing** `/templates/` — shows 3 template cards total. Header reads "3 template disponibili". Sort + search work, search against "cardio" returns 1 hit, search against "vertex" (draft slug) returns 0.
+- **Category — live** `/templates/medical/` — shows 2 live medical cards (cardio + dermatologia). Sapore/benessere/famiglia/salute are all draft and correctly hidden.
+- **Category — mixed** `/templates/restaurant/` — shows 1 live restaurant card (gusto). Sapore + brace are draft, hidden.
+- **Category — empty** `/templates/agency/` — renders the `category_soon` empty state with "Selezione in preparazione" eyebrow, "Agency — in arrivo" heading, curatorial body copy, CTAs to the listing + category list. Zero template cards. Zero "Anteprima Live" strings.
+- **Category list page** `/templates/categories/` — 8 category cards; the ones whose siblings are all draft (agency, lawyer, real-estate, portfolio, ecommerce, business) render the "In arrivo" pill and a subtle dim modifier; medical shows "2 template", restaurant shows "1 template".
+- **Detail — live** `/templates/medical/cardio-studio-specialistico/` — HTTP 200. Single "Apri anteprima completa" CTA (primary) + disabled cart CTA (secondary). CTA links to `/templates/medical/cardio-studio-specialistico/preview/`. Zero "Anteprima Live" strings in HTML.
+- **Detail — draft** `/templates/agency/vertex-creative-agency/` — HTTP 404 (public). HTTP 200 when staff + `?preview=1`.
+- **Live preview — live** `/templates/medical/cardio-studio-specialistico/preview/` — HTTP 200 (unchanged from before).
+- **Live preview — draft** `/templates/agency/vertex-creative-agency/preview/` — HTTP 404 (public). HTTP 200 when staff + `?preview=1`.
+
+### 4 — Verifications
+
+`python manage.py check` — clean, 0 issues.
+`python manage.py migrate` — 1 new migration applied (`catalog.0002_webtemplate_tier`).
+`python manage.py seed_categories && python manage.py seed_templates` — 8 categories + 20 templates + auto-sync tiers: **3 published_live / 17 draft**. Live slugs: `cardio-studio-specialistico`, `dermatologia-elite-roma`, `gusto-fine-dining`.
+`python manage.py sync_template_tiers` (re-run) — `0 tier(s) updated. Catalog distribution: 3 published_live / 17 draft.` (idempotent).
+`python -m ruff check apps/catalog/` — "All checks passed!".
+
+**Route smoke test** (ran inline via a throwaway `_smoke_test.py` with `django.test.Client`, deleted after the session): **31/31 checks passed.** Covered tier distribution, homepage, listing, category list, live-sibling category, empty category, live detail, draft detail, live preview, draft preview, empty search, cardio search, draft-slug search, staff `?preview=1` detail reachability, staff-without-preview 404.
+
+### 5 — UX validation
+
+- `grep "Anteprima Live" templates/` → **no matches** (ghost CTA fully retired).
+- `grep 'href="#"' templates/catalog/` → only two matches, both explanatory comments I added (`{# no legacy href="#" fallback... #}` in template_detail.html; the partial docstring in `_empty_catalog.html`). Zero live ghost CTAs.
+- Empty states are premium, sober, curatorial — `"Selezione in preparazione"`, `"Collezione curata"`, `"Il catalogo si sta popolando"`. No "oops, niente qui" copy, no technical error messages, no apology.
+- Category card "In arrivo" pill uses the neutral-100/neutral-600 palette in a small UPPERCASE chip — stays consistent with the rest of the design system at card size.
+- Featured-pool backfill prevents the homepage from collapsing to a single card, so the 20→3 transition doesn't look like a broken page.
+
+### 6 — Memory updates
+
+- `memory/tier_migration_session21.md` — new
+- `memory/MEMORY.md` — one new index entry
+
+### 7 — Decision
+
+**PHASE 2g2x.8 APPROVATA.** All seven exit criteria for Phase 2g2x.8 met. The catalog floor is now enforced at the query layer. The Session 20 policy is implemented where it counts.
+
+**Next micro-step:** Phase 2g2x remains OPEN overall (D-049 still blocks the roadmap) because Phase 2g2x.1 CRITICO for real-estate, lawyer, and agency is still open, and Phase 2g2x.3 leak-lifts are still outstanding. The tier migration unblocks Phase 2g3 (the rollout wave) but does NOT close Phase 2g2x. Next sessions should attack Phase 2g2x.1 real-estate/lawyer/agency DNA splits (Option A per D-050/D-051) in the Session 17/18 shape, then start the Phase 2g3 rollout (fine-dining leak lift → trattoria + brace live skins → family/wellness/clinic live skins → etc.).
+
+---
+
 ## Session 20 — Live Preview Policy v2 Formalization (2026-04-11)
 
 **Agent:** Policy / architecture / documentation session. **No code changes, no HTML authoring, no preview generation.** Working tree stays clean apart from doc edits.

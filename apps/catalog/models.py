@@ -45,6 +45,17 @@ class WebTemplate(TimestampedModel, SlugModel):
         PUBLISHED = "published", "Published"
         ARCHIVED = "archived", "Archived"
 
+    class Tier(models.TextChoices):
+        # Public, shippable: satisfies the full D-053 Live Preview Law.
+        # Visible in every public surface (homepage, listing, category,
+        # detail, search, related). D-055 made this binary — there is no
+        # intermediate `published_static` tier.
+        PUBLISHED_LIVE = "published_live", "Published Live"
+        # Not yet shippable: fails at least one D-053 gate. Hidden from
+        # every public surface. Staff can still reach it via `?preview=1`
+        # per D-055 so authors can QA in progress.
+        DRAFT = "draft", "Draft"
+
     name = models.CharField(max_length=200)
     category = models.ForeignKey(
         Category,
@@ -59,6 +70,20 @@ class WebTemplate(TimestampedModel, SlugModel):
         choices=Status.choices,
         default=Status.DRAFT,
         db_index=True,
+    )
+    # D-055: binding public-tier gate. Default is `draft` so any newly
+    # seeded template is invisible until it passes the D-053 gate and is
+    # explicitly promoted to `published_live`.
+    tier = models.CharField(
+        max_length=20,
+        choices=Tier.choices,
+        default=Tier.DRAFT,
+        db_index=True,
+        help_text=(
+            "Public tier per D-055. `published_live` templates appear in the "
+            "public catalog; `draft` templates are hidden and reachable only "
+            "by staff via the `?preview=1` query string."
+        ),
     )
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     is_free = models.BooleanField(default=False)

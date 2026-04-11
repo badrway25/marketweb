@@ -47,29 +47,34 @@
       </select>
     </form>
 
-    <!-- Listing Header -->
-    <div class="mw-listing-header">
-      <div class="mw-listing-count">
-        {{ paginator.count }} template trovati
-      </div>
-    </div>
-
-    <!-- Template Grid -->
-    <div class="mw-listing-grid">
-
-      {% for tmpl in templates %}
-        {% include "includes/_template_card.html" with template=tmpl %}
-      {% empty %}
-        <div class="col-12 text-center py-5">
-          <i class="bi bi-search" style="font-size: 3rem; opacity: 0.3;"></i>
-          <p class="mt-3 text-muted">Nessun template trovato{% if search_query %} per &laquo;{{ search_query }}&raquo;{% endif %}{% if category %} in {{ category.name }}{% endif %}.</p>
-          {% if search_query %}
-            <a href="{% if category %}{% url 'catalog:template_list_by_category' category.slug %}{% else %}{% url 'catalog:template_list' %}{% endif %}" class="mw-btn mw-btn-secondary mw-btn-sm mt-3">Cancella ricerca</a>
-          {% endif %}
+    {# D-055 (Session 20): visible catalog is gated by tier=published_live. #}
+    {# Category pages whose sibling is `draft` land in the "category_soon"  #}
+    {# empty state; a failed search lands in "search_no_match"; an empty    #}
+    {# global listing lands in the curatorial catch-all. All three are     #}
+    {# authored in templates/catalog/_empty_catalog.html.                   #}
+    {% if templates %}
+      <!-- Listing Header -->
+      <div class="mw-listing-header">
+        <div class="mw-listing-count">
+          {{ paginator.count }} template {% if paginator.count == 1 %}disponibile{% else %}disponibili{% endif %}
         </div>
-      {% endfor %}
+      </div>
 
-    </div>
+      <!-- Template Grid -->
+      <div class="mw-listing-grid">
+        {% for tmpl in templates %}
+          {% include "includes/_template_card.html" with template=tmpl %}
+        {% endfor %}
+      </div>
+    {% else %}
+      {% if search_query %}
+        {% include "catalog/_empty_catalog.html" with mode="search_no_match" category=category search_query=search_query %}
+      {% elif category %}
+        {% include "catalog/_empty_catalog.html" with mode="category_soon" category=category %}
+      {% else %}
+        {% include "catalog/_empty_catalog.html" with mode="catalog_empty" %}
+      {% endif %}
+    {% endif %}
 
     <!-- Pagination -->
     {% if page_obj.has_other_pages %}
