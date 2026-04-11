@@ -1,5 +1,88 @@
 # Session Log
 
+## Session 20 — Live Preview Policy v2 Formalization (2026-04-11)
+
+**Agent:** Policy / architecture / documentation session. **No code changes, no HTML authoring, no preview generation.** Working tree stays clean apart from doc edits.
+**Branch:** `phase-2g2x-live-preview-policy-v2` (branch name reflects scope — policy, not implementation).
+**Goal:** Formalize the user's new non-negotiable product directive into a binding set of decisions, a tier model, a rollout plan, and documentation that every future Claude session can read and apply without ambiguity. The directive: **every published template must have a real live multi-page preview, and the premium differentiation discipline proven in business + portfolio must become law across every category**.
+
+### The directive, in the user's words
+1. Every template marked `published` must have a real, navigable, multi-page live preview
+2. The differentiation discipline introduced for business and portfolio (distinct hero image, distinct silhouette, distinct section order, distinct CTA pattern, distinct macro tone, distinct imagery direction, distinct inner pages) must apply to ALL categories and ALL templates — not as an optional polish but as a hard gate
+3. Shipping preview-only templates under a `published` label is not acceptable
+4. Keeping a `href="#"` "Anteprima Live" ghost CTA is not acceptable
+5. The future roadmap (auth / checkout / editor / commerce / scaling) must wait until this floor is achieved
+
+### Why this session exists separately from implementation
+Session 16 already flagged the preview-only / identity-crash problem in the catalog differentiation audit. Sessions 17 and 18 closed two CRITICO categories (business + portfolio) using the Option A DNA split recipe (D-050 / D-051). Session 19 cleared a portfolio blocker. **But** none of the prior sessions formalized the product directive — the rules were encoded in tactical decisions (D-049 blocks roadmap resume, D-047 governs chrome authoring, D-050 picks Option A) without a single source of truth that reads as "the product's definition of published". That gap meant every new Claude session had to re-derive the directive from scattered evidence. Session 20 writes it down once so no one has to derive it again.
+
+### What Session 20 produced — documentation-only delta
+
+**DECISIONS.md — 4 new formal decisions, each a pillar of the policy:**
+
+1. **D-053 — Live Preview Law.** A template may only be `published_live` when it satisfies the full 9-gate Live Preview contract (DNA entry + content registry + skin folder covering the category baseline + all routes 200 + D-047 leak sweep clean + Chromium visual walk + card-size differentiation test + preview PNG from the per-template composition + working "Apri anteprima completa" CTA). This binds the Session 11 "completeness-ready" concept into a product-level rule and retires the looser "preview-only can still be published" state.
+
+2. **D-054 — Premium Differentiation Law.** Formalized the 10-dimension test every sibling pair must pass: hero image, dominant imagery pool, silhouette, section order, primary CTA (phrasing + interaction pattern), block rhythm, macro tone, imagery direction, typography, inner pages. This turns the Session 17/18 Option A recipe into a global, cross-category standard and gives authors a concrete checklist. Retroactive: any existing pair that fails ≥4 gates is a Phase 2g3 blocker for its category.
+
+3. **D-055 — Template Tier Model.** Binary `published_live` / `draft`. No intermediate `published_static` tier. Option space evaluated in full (A hide / B badge / C 404 / D lightbox); Option A selected because it is the only one that keeps the marketplace floor premium without teaching shoppers a tier vocabulary. Trade-off acknowledged: visible catalog shrinks from 20 to 3 templates on day 1 of the tier migration. Accepted — three real products beats twenty posters.
+
+4. **D-056 — Catalog Honesty.** Delete the legacy `href="#"` "Anteprima Live" branch in `templates/catalog/template_detail.html` lines 132-136 and the `has_live_preview` context var in `TemplateDetailView`. Supersedes Phase 2g2x.7 three-option punch list — once tier gating is in place the branch is dead code. D-045 is marked superseded.
+
+**TODO_NEXT.md — 2 new subphases in the Phase 2g2x wave plus a new Phase 2g3 rollout plan:**
+
+- **Phase 2g2x.8 — Tier migration.** Implementation step that turns D-055 into code. Adds `tier` field (or repurposes `status`), filters listing/detail/homepage/category/search to `tier='published_live'`, seeds cardio/derm/gusto as live and everyone else as draft, deletes the ghost CTA, ships a category-page empty state for "in arrivo" categories. Absorbs the Phase 2g2x.7 remediation entirely.
+- **Phase 2g3 — Live Preview Rollout.** Category-by-category wave to bring all 17 `draft` templates up to `published_live`, ordered cheapest-first: restaurant → medical → business → portfolio → ecommerce → (blocked on 2g2x.1) agency / lawyer / real-estate. Each template passes a 9-point acceptance checklist (DNA / content / skin / routes / leak sweep / visual walk / card-size sibling test / preview regen / tier flip / session log entry). Phase 2g3.7 exit criteria are the Phase 3 unblock gate.
+
+**CATEGORY_ROADMAP.md — baseline live pages per category + rollout order + cumulative milestones:**
+
+- A per-category baseline page-kind table (5 pages + 1 detail where the product is drilldown; 5 pages otherwise). Medical / restaurant / business / agency / lawyer / real-estate / portfolio / ecommerce each get their own row with the minimum set spelled out.
+- Rollout order matching TODO_NEXT Phase 2g3 (restaurant → medical → business → portfolio → ecommerce → agency/lawyer/real-estate).
+- Cumulative `published_live` milestone table showing 3 → 5 → 8 → 10 → 12 → 14 → 20 as each category burst closes.
+- Category-ready test (category is live-complete when every sibling passes D-053, every pair passes D-054, leak sweep clean, Chromium walk clean, no "in arrivo" strip).
+
+**BRAND_SYSTEM_GUIDELINES.md + CONTENT_GUIDELINES.md — standard-reference appendices:**
+
+- BRAND_SYSTEM_GUIDELINES gets a short "Premium Differentiation Law" pointer linking to D-054 with the 10 dimensions listed as a bullet checklist.
+- CONTENT_GUIDELINES gets a short "Inner Pages Law" pointer linking to D-053 + the baseline page table.
+
+Both are short references, not duplicates of the decision text — the source of truth lives in DECISIONS.md.
+
+**TEMPLATE_REGISTRY.json — version bump + tier annotation on every row.**
+
+Version bump 0.7.3 → 0.8.0 (new directive constitutes a minor version bump in registry semantics). Each template entry gets a `tier` key: `published_live` on cardio-studio-specialistico, dermatologia-elite-roma, gusto-fine-dining; `draft` on the other 17. Description block updated to point at D-053 / D-054 / D-055 / D-056. The registry stays a mirror — the source of truth for tier is still `seed_templates.py` after Phase 2g2x.8 migrates it.
+
+**AGENT_HANDOFF.md — new top section describing the policy + the next micro-step.**
+
+The next agent reads: (1) Session 20 formalized the policy, (2) Phase 2g2x is still blocking — 3 CRITICO categories remain (real-estate, lawyer, agency), (3) Phase 2g2x.8 (tier migration) is the first implementation step after Phase 2g2x closes, (4) Phase 2g3 starts after tier migration, (5) the rollout order and per-template checklist are in TODO_NEXT.md and CATEGORY_ROADMAP.md.
+
+**MEMORY.md + `memory/live_preview_policy_session20.md` — auto-memory index entry + file.**
+
+New memory file captures the policy, the tier model, the rollout order, and the exit criteria in a form that survives across conversations.
+
+### What Session 20 explicitly did NOT do
+
+- Did NOT add `tier` field to `WebTemplate` or run a migration — that's Phase 2g2x.8 implementation work
+- Did NOT delete the `href="#"` CTA or modify `template_detail.html` — also Phase 2g2x.8
+- Did NOT author any skin folder for any preview-only template — that's Phase 2g3 work
+- Did NOT start any of the 3 remaining CRITICO Phase 2g2x.1 categories (real-estate / lawyer / agency) — those are the next implementation session, not this one
+- Did NOT merge any branches or commit any work outside the documentation delta on `phase-2g2x-live-preview-policy-v2`
+- Did NOT touch `CLAUDE.md` — the critical rules there already enforce "no lorem ipsum" and "unique brand per template"; the new laws complement rather than replace them
+
+### Policy verdict
+
+**Approved.** The policy is binding going forward. Every future Claude session must read D-053 / D-054 / D-055 / D-056 before starting implementation work on any catalog-facing change, and every future template must pass both the D-053 Live Preview gate and the D-054 Differentiation gate before flipping to `published_live`.
+
+### Recommended next micro-step
+
+1. **Commit this session's doc delta** as a standalone "Session 20 — live preview policy v2 formalization" commit on the current branch. No code changes are involved so the commit is isolated and reviewable.
+2. **Open the Phase 2g2x.8 tier migration session** as the next implementation step. This is the cheapest implementation wave that unblocks everything else — it demotes the 17 preview-only templates to `draft`, hides them from public surfaces, deletes the ghost CTA, and ships the empty-state strip. After 2g2x.8 lands, the visible catalog is 3 real templates, which is the policy-compliant floor.
+3. **Return to Phase 2g2x.1** to close the 3 remaining CRITICO categories (real-estate → lawyer → agency) using the Session 17/18 Option A recipe.
+4. **Start Phase 2g3** category-by-category per the TODO_NEXT Phase 2g3 order.
+
+**Do NOT** skip step 2. Shipping Phase 2g3 on top of a catalog that still has `href="#"` ghost CTAs would violate D-056 and leak the old state into the new rollout. Phase 2g2x.8 is the gate between "the old catalog" and "the policy-compliant catalog".
+
+---
+
 ## Session 19 — Phase 2g2x.1 Portfolio Triage + Surgical Fix (2026-04-11)
 
 **Agent:** Portfolio blocker triage + surgical CSS/copy fix.

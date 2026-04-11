@@ -55,6 +55,27 @@ Sessions 8, 10, 12, 15, **19** all independently hit the DNA-mtime-vs-PNG-mtime 
 - [ ] **Option C:** hide the button entirely for preview-only templates so there is no ghost CTA at all
 - [ ] Whichever option is chosen: document as D-0XX in DECISIONS.md, one targeted edit to `template_detail.html`, no DNA changes, no composition changes, no per-category work
 
+### 2g2x.8 — Tier migration: demote preview-only templates to `draft` (CRITICO, unlocks Phase 2g3)
+Per D-055, introduce the two-tier model (`published_live` / `draft`) and hide every template that does not satisfy the full D-053 Live Preview Law gate. This is the one-way door that turns the marketplace floor premium from day one.
+
+- [ ] Add `tier` field to `WebTemplate` (CharField + `TIER_CHOICES = [("published_live", ...), ("draft", ...)]`) — or repurpose `status` if the existing field is free-form enough. Make the migration.
+- [ ] Update `seed_templates.py`: `tier='published_live'` only for cardio-studio-specialistico, dermatologia-elite-roma, gusto-fine-dining. Every other row ships with `tier='draft'`.
+- [ ] Update `TemplateListView` / `TemplateDetailView` / catalog selectors: public-facing calls filter `tier='published_live'` by default. Staff (`request.user.is_staff`) can pass `?preview=1` to see drafts.
+- [ ] Update homepage featured pool, search results, category list, related templates, sitemap, and any other public surface to use the same filter.
+- [ ] Delete the `{% else %} <a href="#">Anteprima Live</a>` branch in `templates/catalog/template_detail.html` (lines 132-136) AND the `has_live_preview` context variable in `TemplateDetailView` — per D-056 the branch is now dead code.
+- [ ] Add a category-page "empty state": when a filtered category listing returns 0 templates, render `templates/catalog/_empty_category_soon.html` with category-specific copy ("Questa categoria è in arrivo") — no ghost CTAs, no placeholder cards with `href="#"`, no "static preview" badges.
+- [ ] Update `TEMPLATE_REGISTRY.json` to carry the tier annotation on every row.
+- [ ] Mark D-045 as **superseded by D-055 + D-056** in DECISIONS.md.
+- [ ] Resolve TODO_NEXT.md Phase **2g2x.7** — the "Anteprima Live" legacy placeholder punch list is absorbed by this migration. No three-option remediation needed; tier gating deletes the branch.
+
+**Exit criteria for 2g2x.8:**
+- [ ] `/` homepage shows 3 featured templates, all `published_live`, all with working "Apri anteprima completa" CTA
+- [ ] `/templates/` listing shows 3 templates total (temporary state during rollout)
+- [ ] `/templates/<category>/` for categories whose sibling is `draft` shows the empty-state "in arrivo" strip, not an empty grid with ghost cards
+- [ ] `python manage.py check` clean, `python manage.py test` (if used) green
+- [ ] A Chromium walk confirms no `href="#"` CTA exists anywhere in the catalog
+- [ ] Staff preview via `?preview=1` still works end-to-end for draft templates (so authors can QA in progress without flipping a production flag)
+
 ### 2g2x.6 — Exit criteria for the hardening wave
 The wave closes when ALL of the following are green:
 - [ ] All 5 non-DNA categories have either 2 archetypes each OR a D-047-compliant shared composition with per-tenant DNA content blocks
@@ -63,6 +84,94 @@ The wave closes when ALL of the following are green:
 - [ ] Every published template either has inner-page content OR is demoted to `draft` / flagged as preview-only
 - [ ] `python manage.py generate_previews --force` on a clean cache produces canonical PNGs that visually differentiate every sibling at card size
 - [ ] A fresh Chromium walk through every category listing page confirms "no two siblings read as the same product" at 200×120 card size
+- [ ] Tier migration 2g2x.8 is complete, listing/detail/homepage all filter `tier='published_live'`, and the `href="#"` ghost CTA is deleted per D-056
+
+---
+
+## 🔴 Phase 2g3 — Live Preview Rollout (policy session, D-053 / D-054 / D-055)
+
+**Per D-053, every template published to the public catalog must be a real navigable multi-page website.** Today only 3 of 20 templates (cardio / dermatologia-elite-roma / gusto-fine-dining) meet that bar. Phase 2g3 is the wave that brings every remaining template up to `published_live`, one category burst at a time, using the Session 11/14 architecture (content registry + per-archetype skin folder + single dispatcher view + D-047 chrome-authoring contract).
+
+**Gate to enter Phase 2g3:** Phase 2g2x (all subphases, including 2g2x.8 tier migration) is closed. Phase 2g3 does not start otherwise.
+
+### 2g3.0 — Per-template acceptance checklist (applies to every item below)
+A template is eligible to flip from `draft` to `published_live` only when ALL of the following are green. Authors must run this checklist on every single template before flipping the flag — no batch lifts, no "we'll polish the inner pages after launch" exceptions.
+
+- [ ] **DNA entry** complete in `apps/catalog/template_dna.py` with all 10 D-054 dimensions explicitly declared (hero image direction, dominant imagery pool, silhouette, section order, primary CTA phrase + pattern, block rhythm / density, macro tone, imagery direction, font pairing, inner-page notes)
+- [ ] **Content registry block** complete in `apps/catalog/template_content.py` covering every page kind in the category baseline (see 2g3 baseline table below)
+- [ ] **Skin folder** exists at `templates/live_templates/<category>/<archetype>/` — reuse if another sibling already built it, otherwise author under D-047 from line one
+- [ ] **Route sweep** all green — Django test-client returns 200 on marketplace detail + `live_template_home` + every `live_template_page` + at least one `live_template_post` where blog exists
+- [ ] **Leak sweep bidirectional** — grep the rendered HTML of this template against every other template using the same archetype; zero cross-tenant brand names, city names, quotes, proper names, image URLs
+- [ ] **Visual walk** at 1440×900 via Chromium: home + every inner page. Brand chrome (palette / fonts / imagery direction / macro tone) consistent across pages. No page looks like a different template
+- [ ] **Differentiation sibling test** — on the category's listing page at 200×120 card size, this template reads as a visually distinct product from every other `published_live` sibling. If it fails, either the DNA has under-specified ≥4 of the D-054 dimensions or the skin needs a differentiation polish pass
+- [ ] **Preview PNG regenerated** via `python manage.py generate_previews --only <slug>` (orphan cleanup per Phase 2g2x.5 if triggered) and the canonical filename is `<slug>-preview.png`
+- [ ] **Tier flipped** in `seed_templates.py` and re-seeded (`python manage.py seed_templates`), or the tier update applied via a data migration if the seed command has already run
+- [ ] **Session log entry** documents the flip + validation results + any authoring insights for the next template in the wave
+
+### 2g3.1 — Restaurant category completion (2 templates remaining: Sapore, Brace)
+The `trattoria-warm` and `street-modern` archetypes already exist at the preview composition level (and have D-047 latent leaks pending lift per Phase 2g2x.3). Phase 2g3.1 authors the corresponding live skin folders and content blocks. Smallest lift because the DNA + preview composition already exist.
+
+- [ ] Phase 2g2x.3 leak lifts on `templates/preview_compositions/restaurant/trattoria-warm.html` and `street-modern.html` land first (blocker)
+- [ ] Phase 2g.3 leak lift on `templates/live_templates/restaurant/fine-dining/*.html` lands first (blocker — affects gusto, not sapore, but the contract must be enforced before adding a second template)
+- [ ] Create `templates/live_templates/restaurant/trattoria-warm/` skin folder with `_base.html` + `home.html` + `filosofia.html` (about) + `menu.html` + `galleria.html` + `prenota.html` (contact + reservations merged)
+- [ ] Create `templates/live_templates/restaurant/street-modern/` skin folder with `_base.html` + `home.html` + `menu.html` + `ordina.html` (delivery-first) + `dove-siamo.html` (locations) + `contatti.html`
+- [ ] Content registry blocks for `sapore-trattoria-pizzeria` (fictional trattoria brand) and `brace-street-food-lab`
+- [ ] Run 2g3.0 checklist on both; flip both to `published_live`
+
+### 2g3.2 — Medical category completion (3 templates remaining: Salute, Benessere, Famiglia)
+The `clinic`, `wellness`, and `family` archetypes exist at the preview composition level and need new live skin folders. Medium lift — three new skins, but the `specialist` skin (cardio + derm) has already proven the D-047 authoring recipe.
+
+- [ ] Phase 2g2x.3 leak lifts on `templates/preview_compositions/medical/clinic.html`, `family.html`, `wellness.html` land first (blockers)
+- [ ] Create `templates/live_templates/medical/clinic/` skin folder — institutional multi-specialty chrome. Pages: home, studio (about), reparti (departments), medici (team), prenota-visita (booking widget), contatti, pubblicazioni + pubblicazioni/<post>
+- [ ] Create `templates/live_templates/medical/wellness/` skin folder — holistic/spa chrome. Pages: home, filosofia, percorsi (services), team, prenota (calendar spot), contatti, diario + diario/<post>
+- [ ] Create `templates/live_templates/medical/family/` skin folder — pediatric/family chrome. Pages: home, studio, visite (services), equipe (team), orari-e-contatti (contact + hours), lettere-ai-genitori (blog list) + lettere-ai-genitori/<post>
+- [ ] Content registry blocks for `salute-studio-medico`, `benessere-centro-olistico`, `famiglia-pediatria`
+- [ ] Run 2g3.0 checklist on all three; flip each to `published_live`
+
+### 2g3.3 — Business category completion (2 templates: Pragma, Elevate)
+Both templates already have D-047-compliant preview compositions from Session 17 (corporate-suite + startup-saas-landing) but NO live skin folders. Medium lift — two new skin folders authored from scratch under D-047.
+
+- [ ] Create `templates/live_templates/business/corporate-suite/` skin folder — institutional advisory chrome. Pages: home, chi-siamo (about + team combined), servizi (advisory pillars), case-studies (list + detail), contatti
+- [ ] Create `templates/live_templates/business/startup-saas-landing/` skin folder — conversion-first SaaS chrome. Pages: home, prodotto (product tour), prezzi (pricing tiers), demo (lead form + embed), documentazione/<topic>, contatti
+- [ ] Content registry blocks for `pragma-corporate-suite` and `elevate-startup-landing`
+- [ ] Run 2g3.0 checklist on both; flip both to `published_live`
+
+### 2g3.4 — Portfolio category completion (2 templates: Chiara, Pixel)
+Both templates already have D-047-compliant preview compositions from Session 18 (editorial-designer-grid + cinematic-photographer) and the Session 19 triage fix for Chiara is already applied. Medium lift — two new skin folders.
+
+- [ ] Create `templates/live_templates/portfolio/editorial-designer-grid/` skin folder — typographic designer chrome. Pages: home, studio (about), lavoro (project grid), lavoro/<project>, contatti, riflessioni (blog list) + riflessioni/<post>
+- [ ] Create `templates/live_templates/portfolio/cinematic-photographer/` skin folder — cinematic photographer chrome. Pages: home, serie (series index), serie/<series>, biografia, contatti
+- [ ] Content registry blocks for `chiara-portfolio-creativo` and `pixel-portfolio-fotografico`
+- [ ] Run 2g3.0 checklist on both; flip both to `published_live`
+
+### 2g3.5 — Ecommerce category completion (2 templates: Bottega, Luxe)
+Both have D-047-compliant preview compositions from Session 15 (artisan-workshop + fashion-editorial) but Phase 2g2x.3 already flagged both preview comps for latent literal leaks (12+ Luxe literals in fashion-editorial.html, 10+ Bottega literals in artisan-workshop.html). **Phase 2g2x.3 lifts are a hard blocker** for 2g3.5.
+
+- [ ] Phase 2g2x.3 leak lifts on `templates/preview_compositions/ecommerce/fashion-editorial.html` and `artisan-workshop.html` land first (hard blocker)
+- [ ] Create `templates/live_templates/ecommerce/artisan-workshop/` skin folder. Pages: home, bottega (about + story), catalogo (product list), catalogo/<prodotto>, su-misura (custom orders form), contatti
+- [ ] Create `templates/live_templates/ecommerce/fashion-editorial/` skin folder. Pages: home, lookbook (editorial gallery), collezione (product list), collezione/<prodotto>, atelier (about), appuntamento (private viewing form)
+- [ ] Content registry blocks for `bottega-shop-artigianale` and `luxe-fashion-store`
+- [ ] Run 2g3.0 checklist on both; flip both to `published_live`
+
+### 2g3.6 — Agency / Lawyer / Real-estate — requires Phase 2g2x.1 closure first
+These three categories are still CRITICO identity-crash cases in Phase 2g2x.1 and do NOT have DNA archetypes yet. Phase 2g3.6 cannot start until 2g2x.1 is fully closed for all three. Recommended order (lift the cleanest first per AGENT_HANDOFF Session 19 guidance): real-estate → lawyer → agency.
+
+- [ ] Real-estate: Phase 2g2x.1 ships 2 archetypes (`mass-market` for Casa + `ultra-luxury-cinematic` for Villa). Then 2g3.6 authors both skin folders: pages = home, ricerca (search/listings), proprieta/<slug> (property detail), chi-siamo (about), contatti. Villa's detail page gets an "appuntamento privato" concierge CTA instead of a public request form.
+- [ ] Lawyer: Phase 2g2x.1 ships 2 archetypes (`classic-gold` for Lex + `modern-transparent` for Juris). Then 2g3.6 authors both skin folders: pages = home, studio (about), aree (practice areas), avvocati (team), contatti. Lex gets editorial-serif chrome with case-heritage pages. Juris gets modern-clean chrome with transparency/pricing pages.
+- [ ] Agency: Phase 2g2x.1 ships 2 archetypes (`bold-grid` for Vertex + `editorial-quiet` for Aura). Then 2g3.6 authors both skin folders: pages = home, studio (about), servizi, lavori (case studies list), lavori/<case-study>, contatti. Each category's 2g3.0 checklist applies.
+
+### 2g3.7 — Exit criteria for Phase 2g3
+Phase 2g3 closes — and the roadmap unblocks for Phase 3 (auth / checkout / editor / projects / commerce) — when ALL of the following are green:
+- [ ] All 20 templates are tier `published_live`
+- [ ] Every template's 2g3.0 checklist was run and documented (session log entry per template OR per category burst)
+- [ ] `python manage.py check` clean, `python manage.py test` (if used) green
+- [ ] A fresh Chromium walk through every category listing + every detail + at least the home + one inner page per template returns zero visual regressions
+- [ ] A cross-category leak sweep on the full set of per-archetype skin folders returns zero cross-tenant literal brand strings
+- [ ] The homepage featured grid shows at least 8 distinct templates from at least 4 categories (minimum "credible marketplace" floor)
+- [ ] No `href="#"` CTA exists anywhere in the catalog
+- [ ] `TEMPLATE_REGISTRY.json`, `CATEGORY_ROADMAP.md`, `MEMORY.md`, `SESSION_LOG.md`, and `AGENT_HANDOFF.md` all reflect the final state
+
+**Exit gate for Phase 3 (unblock auth / checkout / editor / ...):** Phase 2g3.7 fully green. No exceptions, no partial unblocking. Either the marketplace's 20 templates are all real products or the product features built on top inherit the credibility gap.
 
 ---
 

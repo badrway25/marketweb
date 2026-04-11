@@ -182,3 +182,26 @@ Every template registered in `apps/catalog/template_dna.py` defines:
 - Same skeleton, different photos → ✗ same problem
 - Same hero shape, different navbar colour → ✗ still feels like one product
 - Different section order, different hero composition, different cards, different conversion CTA, different density → ✓ this is a distinct product
+
+## Premium Differentiation Law (Session 20 — D-054)
+
+Binding global standard. Every sibling pair in every category must differ on AT LEAST the following 10 dimensions. Missing ≥4 of these makes the pair a recolor pair and a Phase 2g3 blocker for its category. The source of truth for this rule is `DECISIONS.md` → **D-054 — Premium Differentiation Law**. This section is a pointer; do not duplicate rationale here.
+
+1. **Hero image** — different URL, not a crop/variant of the same source.
+2. **Dominant imagery in the first two sections** — disjoint pools, not reordered.
+3. **Silhouette** — different first-scroll block shape (not just palette on same shape).
+4. **Section order** — different sequence of section kinds.
+5. **Primary CTA** — different phrasing AND different interaction pattern.
+6. **Block rhythm** — different density / section-padding cadence.
+7. **Macro tone** — different page-level mood (cream vs dark, warm vs cool, editorial vs industrial).
+8. **Imagery direction** — different photo brief — declared in DNA `imagery_direction`.
+9. **Typography / font pairing** — different heading + body pairing.
+10. **Inner pages** — the same 10 gates re-apply to about / services / contact / team / blog / gallery / menu / listings / detail pages — a pair that differs only on `home` is not differentiated.
+
+### Authoring workflow enforcement
+
+Every new template DNA entry must document its stance on all 10 dimensions in a comment block before the composition HTML is authored. The category hardening PR description must list the 10 dimensions with the chosen value on each side — reviewers check this like an API contract. When in doubt, fall back to the Option A DNA split pattern (D-050 / D-051) — adding one archetype is cheaper than fighting a recolor pair later.
+
+### Companion law
+
+The Live Preview Law (`DECISIONS.md` → **D-053**) forces every `published_live` template to have a real navigable multi-page preview. D-054 is the design-quality gate; D-053 is the completeness gate. Both must pass for `published_live`. See `CATEGORY_ROADMAP.md` → "Baseline live pages per category" for the minimum page set per category, and `TODO_NEXT.md` Phase 2g3 for the per-template acceptance checklist.

@@ -1,6 +1,69 @@
 # Agent Handoff
 
-Last updated: 2026-04-11 — after **Session 19 Portfolio Triage + Surgical Fix (on top of Session 18)**
+Last updated: 2026-04-11 — after **Session 20 Live Preview Policy v2 Formalization (documentation-only, on top of Session 19)**
+
+## 🛑 Session 20 — Policy Binding: Read This Before Anything Else (2026-04-11)
+
+**Session 20 was documentation-only — no code, no HTML, no previews, no commits of anything except doc deltas.** But it re-defined the product's floor with four formal decisions you MUST read before touching any catalog-facing work:
+
+- **D-053 — Live Preview Law.** A template is `published_live` only when it has DNA + content registry + skin folder + all routes 200 + D-047 leak sweep clean + visual walk + card-size sibling test + preview PNG + working CTA. No exceptions.
+- **D-054 — Premium Differentiation Law.** Every sibling pair must differ on 10 dimensions (hero image / dominant imagery / silhouette / section order / CTA phrasing+pattern / block rhythm / macro tone / imagery direction / typography / inner pages). Applies globally, retroactively, across every category and every template.
+- **D-055 — Template Tier Model.** Two tiers only: `published_live` (public) / `draft` (hidden). No intermediate `published_static`. Today only 3 of 20 templates satisfy `published_live` — the other 17 must be demoted to `draft` in Phase 2g2x.8.
+- **D-056 — Catalog Honesty.** The legacy `href="#"` "Anteprima Live" CTA gets deleted as part of Phase 2g2x.8. D-045 is superseded. Phase 2g2x.7's three-option punch list is absorbed by tier gating.
+
+Read `DECISIONS.md` D-053 → D-056 in full before you start. They are the source of truth. This file is the summary.
+
+### What's next — in order, no skipping
+
+**Step A — Finish Phase 2g2x.1 on 3 CRITICO categories** (still the blocking roadmap gate per D-049):
+- `real-estate.html` identity crash (Casa mass-market vs Villa ultra-luxury) — recommended first, cleanest pair
+- `lawyer.html` identity crash (Lex 1962 heritage vs Juris modern/accessible) — second
+- `agency.html` identity crash (Vertex bold vs Aura minimal — 6 shared fake case studies) — third, heaviest leak surface
+- Use the Session 17 + Session 18 Option A recipe. Author under D-047 from line one. Bidirectional leak sweep + route sweep + Chromium visual walk per category.
+
+**Step B — Phase 2g2x.8 tier migration** (cheapest implementation wave that makes the policy bind):
+- Add `tier` field to `WebTemplate` (or repurpose `status`)
+- Seed cardio / dermatologia-elite-roma / gusto-fine-dining as `published_live`, everyone else as `draft`
+- Filter listing / detail / homepage / category / search to `tier='published_live'`
+- Delete the `href="#"` branch in `templates/catalog/template_detail.html` lines 132-136 and the `has_live_preview` context var
+- Ship a category-page empty state ("in arrivo") for categories that temporarily show zero live templates
+- Add staff `?preview=1` escape hatch for in-progress work
+- Exit criteria in `TODO_NEXT.md` Phase 2g2x.8
+
+After Step B lands, the visible catalog is 3 real, complete, navigable products. That is the policy-compliant floor.
+
+**Step C — Phase 2g3 live-preview rollout** (the long wave that brings the 17 drafts up to `published_live`):
+- Order: restaurant → medical → business → portfolio → ecommerce → agency/lawyer/real-estate (last three blocked until Step A closes)
+- Per-template acceptance checklist in `TODO_NEXT.md` Phase 2g3.0 — run it end-to-end on every single template
+- Baseline live page-kind set per category in `CATEGORY_ROADMAP.md` — every skin must cover the baseline minimum
+- Phase 2g3.7 exit criteria = Phase 3 unblock gate. Auth / checkout / editor / projects / commerce do NOT start before this gate.
+
+### Do NOT do
+
+- Do NOT open auth / checkout / editor / projects / commerce / dashboard — these are gated on Phase 2g3.7 per D-049 + D-053
+- Do NOT add new categories or new templates before the 20 existing ones are all `published_live`
+- Do NOT ship a template with "home page only + inner pages coming later" — D-053 says the inner pages are part of the gate
+- Do NOT introduce a `published_static` tier or any variant — D-055 rejected Options B/C/D explicitly
+- Do NOT preserve the `href="#"` CTA in any form — D-056 deletes it
+- Do NOT treat the Premium Differentiation Law as optional polish — D-054 is a hard gate
+- Do NOT skip the category-page empty state when a category becomes temporarily empty — leaving a ghost grid is worse than showing "in arrivo"
+
+### Doc delta from Session 20
+
+Touched in this session:
+- `DECISIONS.md` — added D-053, D-054, D-055, D-056 (marked D-045 as superseded in the D-056 consequences)
+- `TODO_NEXT.md` — added Phase 2g2x.8 (tier migration) + Phase 2g3 (live preview rollout, 2g3.0–2g3.7)
+- `CATEGORY_ROADMAP.md` — added baseline live pages per category + rollout order + cumulative milestones + category-ready test
+- `BRAND_SYSTEM_GUIDELINES.md` — added Premium Differentiation Law pointer (appendix)
+- `CONTENT_GUIDELINES.md` — added Inner Pages Law pointer (appendix)
+- `TEMPLATE_REGISTRY.json` — v0.7.3 → v0.8.0, `tier` field on every row
+- `SESSION_LOG.md` — Session 20 entry prepended
+- `AGENT_HANDOFF.md` — this section
+- `memory/live_preview_policy_session20.md` + `memory/MEMORY.md` index — new auto-memory entry
+
+Not touched: any code, any HTML, any CSS, any preview PNG, any migration, any view, any seed, any CLAUDE.md.
+
+---
 
 ## ✅ Session 19 — Portfolio Blocker Cleared (2026-04-11)
 

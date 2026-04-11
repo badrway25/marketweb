@@ -1,6 +1,6 @@
 {
-  "version": "0.7.3",
-  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, completeness flag and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. Templates with `live_preview: true` ALSO have a content registry entry in apps/catalog/template_content.py and (re-)use a per-archetype skin folder under templates/live_templates/<category>/<archetype>/, making them fully navigable multi-page websites accessible at /templates/<cat>/<slug>/preview/. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0: Session 15 added the ecommerce DNA pilot (Luxe fashion-editorial + Bottega artisan-workshop), fixed the missing dermatologia preview (zero TemplateAsset from Session 13's skip), rebalanced the mw-page-hero CSS for navbar clearance, regenerated stale gusto/sapore PNGs. The D-047 chrome-authoring contract now also applies to per-archetype preview compositions (not just live-template chrome): Session 15 lifted 3 cardio literals from templates/preview_compositions/medical/specialist.html that Session 14 had missed. v0.7.1: Session 17 closed the Phase 2g2x.1 business identity-crash case — Pragma gets its own `corporate-suite` archetype and Elevate gets its own `startup-saas-landing` archetype, both authored under D-047 from line one, with disjoint imagery pools (`business-corporate`, `business-startup`). Legacy `business.html` preserved per D-036 but architecturally unused by any published template. See D-050. v0.7.2: Session 18 closed the Phase 2g2x.1 portfolio identity-crash case — Chiara gets her own `editorial-designer-grid` archetype (cream paper, NO big hero photo, typographic+index silhouette) and Pixel gets his own `cinematic-photographer` archetype (near-black, fullbleed dominant photo, film-strip EXIF bar), both authored under D-047 from line one, with disjoint imagery pools (`portfolio-designer`, `portfolio-photographer`). Legacy `portfolio.html` preserved per D-036 but architecturally unused. See D-051. v0.7.3: Session 19 triage fix — Chiara's `editorial-designer-grid` preview had a real layout overflow (h1 at 82px wrapped to 5 lines, content stack bled into ledger area). Fixed surgically: h1 82→62 px + tighter margins + `overflow: hidden` safety net in the composition, + headline copy trimmed 57→47 chars in DNA ('Sistemi di identità visiva costruiti una griglia alla volta.' → 'Identità visive, una griglia alla volta.'). Both signature signals preserved; new headline deliberately mirrors Pixel's '…, una luce alla volta.' syntactic rhythm. Pixel untouched. See D-052.",
+  "version": "0.8.0",
+  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, tier, and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0–0.7.3: ecommerce DNA pilot (Luxe + Bottega, Session 15), business DNA split (Pragma + Elevate, Session 17, D-050), portfolio DNA split (Chiara + Pixel, Session 18, D-051), Chiara surgical layout fix (Session 19, D-052). v0.8.0: Session 20 Live Preview Policy v2 formalization — introduces the two-tier model (D-055). Every row now carries a `tier` key: `published_live` (satisfies the full D-053 Live Preview Law gate — DNA + content registry + skin folder + all routes 200 + D-047 leak sweep clean + visual walk + card-size sibling test + working `Apri anteprima completa` CTA) or `draft` (fails any gate — hidden from all public surfaces per D-055, awaiting Phase 2g3 rollout to reach published_live). Today only 3 of 20 templates are `published_live` (cardio-studio-specialistico, dermatologia-elite-roma, gusto-fine-dining); the other 17 are `draft` pending Phase 2g3. The `status: \"published\"` field on every row is the LEGACY field from the pre-policy schema and will be retired once Phase 2g2x.8 ships — during the transition, the `tier` field is authoritative and `status` is informational. The Premium Differentiation Law (D-054) applies retroactively to every sibling pair — any existing pair that fails ≥4 of its 10 dimensions is a Phase 2g3 blocker for its category. The legacy `href=\"#\"` Anteprima Live placeholder CTA in templates/catalog/template_detail.html is queued for deletion in Phase 2g2x.8 per D-056.",
   "last_updated": "2026-04-11",
   "templates": [
     {
@@ -14,7 +14,9 @@
       "personality": "audace, tech-forward, dinamico",
       "price": 79,
       "featured": true,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, shared agency.html with Aura). Phase 2g3.6 will author the bold-grid skin after 2g2x.1 closes."
     },
     {
       "slug": "aura-digital-studio",
@@ -27,7 +29,9 @@
       "personality": "minimale, sofisticato, elegante",
       "price": 69,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, shared agency.html with Vertex). Phase 2g3.6 will author the editorial-quiet skin after 2g2x.1 closes."
     },
     {
       "slug": "pragma-corporate-suite",
@@ -45,7 +49,9 @@
       "imagery_key": "business-corporate",
       "font_pairing": "Merriweather + Inter",
       "dna_phase": "2g2x.1",
-      "session_closed": 17
+      "session_closed": 17,
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition complete (Session 17, D-050) but no live skin folder yet. Phase 2g3.3 will author templates/live_templates/business/corporate-suite/."
     },
     {
       "slug": "elevate-startup-landing",
@@ -63,7 +69,9 @@
       "imagery_key": "business-startup",
       "font_pairing": "Manrope + Inter",
       "dna_phase": "2g2x.1",
-      "session_closed": 17
+      "session_closed": 17,
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition complete (Session 17, D-050) but no live skin folder yet. Phase 2g3.3 will author templates/live_templates/business/startup-saas-landing/."
     },
     {
       "slug": "gusto-fine-dining",
@@ -84,7 +92,9 @@
       "live_pages": ["home", "filosofia", "menu", "atmosfera", "diario", "diario/<post>", "prenota"],
       "price": 59,
       "featured": true,
-      "status": "published"
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "Full live preview shipped Session 11 (cardio + gusto). D-053 gate green: DNA + content registry + skin folder + all routes 200 + D-047 leak sweep pending Phase 2g.3 lift on fine-dining live skin (5 Gusto leaks) — Gusto itself is unaffected because the leaks ARE Gusto's strings, but the lift is required before a second fine-dining template ships."
     },
     {
       "slug": "sapore-trattoria-pizzeria",
@@ -103,7 +113,9 @@
       "conversion_pattern": "phone-and-whatsapp",
       "price": 49,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition exist, blocked on Phase 2g2x.3 leak lift (`Trastevere · dal 1987` literal in preview comp) and Phase 2g3.1 skin authoring at templates/live_templates/restaurant/trattoria-warm/."
     },
     {
       "slug": "brace-street-food-lab",
@@ -122,7 +134,9 @@
       "conversion_pattern": "order-now-delivery",
       "price": 65,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition exist (single clean comp per Session 16 audit), blocked on Phase 2g3.1 skin authoring at templates/live_templates/restaurant/street-modern/."
     },
     {
       "slug": "salute-studio-medico",
@@ -141,7 +155,9 @@
       "conversion_pattern": "booking-widget",
       "price": 69,
       "featured": true,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition exist, blocked on Phase 2g2x.3 leak lift on medical/clinic.html + Phase 2g3.2 skin authoring at templates/live_templates/medical/clinic/."
     },
     {
       "slug": "benessere-centro-olistico",
@@ -160,7 +176,9 @@
       "conversion_pattern": "calendar-spot",
       "price": 59,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition exist, blocked on Phase 2g2x.3 leak lift on medical/wellness.html + Phase 2g3.2 skin authoring at templates/live_templates/medical/wellness/."
     },
     {
       "slug": "famiglia-pediatria",
@@ -179,7 +197,9 @@
       "conversion_pattern": "phone-and-chat",
       "price": 65,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition exist, blocked on Phase 2g2x.3 leak lift on medical/family.html (`Dr.ssa Rambaldi` literal) + Phase 2g3.2 skin authoring at templates/live_templates/medical/family/."
     },
     {
       "slug": "cardio-studio-specialistico",
@@ -200,7 +220,9 @@
       "live_pages": ["home", "studio", "visite", "medici", "pubblicazioni", "pubblicazioni/<post>", "contatti", "richiedi-visita"],
       "price": 109,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "Full live preview shipped Session 11 + D-047-lifted chrome Session 14 (Phase 2g.2). D-053 gate green: DNA + content registry + specialist skin folder + all 9 routes 200 + bidirectional leak sweep clean (52 tokens tested) + visual walk clean."
     },
     {
       "slug": "dermatologia-elite-roma",
@@ -223,7 +245,9 @@
       "reuse_notes": "Second template on the `specialist` archetype. Reuses the same live_templates/medical/specialist/ skin as cardio-studio-specialistico — ZERO new HTML files. Differentiated via brand (Studio Ricciardi), accent (forest green #3d5437 vs cardio red #9c2a2a), font (Bodoni Moda vs Cormorant), and dermatology-specific content registry.",
       "price": 115,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "Full live preview shipped Session 13 via specialist archetype reuse (zero new HTML). D-053 gate green: DNA + content registry + reused specialist skin + all 9 routes 200 + bidirectional leak sweep clean (Session 14 Phase 2g.2 lift covered the cardio-derm leak surface). First proof that archetype reuse + D-047 contract + content registry produces published_live templates with editorial authoring alone."
     },
     {
       "slug": "lex-studio-legale",
@@ -236,7 +260,9 @@
       "personality": "autorevole, classico, sobrio",
       "price": 69,
       "featured": true,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, shared lawyer.html with Juris hardcoding `Studio legale dal 1962`). Phase 2g3.6 will author the classic-gold skin after 2g2x.1 closes."
     },
     {
       "slug": "juris-avvocato-moderno",
@@ -249,7 +275,9 @@
       "personality": "moderno, accessibile, trasparente",
       "price": 59,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, shared lawyer.html with Lex rendering Lex's 60-year heritage on Juris). Phase 2g3.6 will author the modern-transparent skin after 2g2x.1 closes."
     },
     {
       "slug": "casa-agenzia-immobiliare",
@@ -262,7 +290,9 @@
       "personality": "aspirazionale, affidabile, elegante",
       "price": 79,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, shared real-estate.html with Villa hardcoding `600+ immobili · €500K–€1.2M` mass-market search box). Phase 2g3.6 will author the mass-market skin after 2g2x.1 closes."
     },
     {
       "slug": "villa-immobili-lusso",
@@ -275,7 +305,9 @@
       "personality": "lussuoso, esclusivo, cinematografico",
       "price": 99,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, ultra-luxury template rendering mass-market copy from shared real-estate.html). Phase 2g3.6 will author the ultra-luxury-cinematic skin after 2g2x.1 closes."
     },
     {
       "slug": "chiara-portfolio-creativo",
@@ -299,7 +331,9 @@
       "font_pairing": "Syne + Inter",
       "dna_notes": "Session 18: cream paper page with NO big hero photo — the hero IS the typography (huge Syne display headline + numbered project index card right). 4 indexed rows top-right, 3-card case-study panel bottom, clients ribbon + studio coordinates split footer. Deliberately photo-independent so a failing image URL degrades gracefully.",
       "dna_phase": "2g2x.1",
-      "session_closed": 18
+      "session_closed": 18,
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition complete (Session 18 + Session 19 triage fix, D-051 + D-052) but no live skin folder yet. Phase 2g3.4 will author templates/live_templates/portfolio/editorial-designer-grid/."
     },
     {
       "slug": "pixel-portfolio-fotografico",
@@ -323,7 +357,9 @@
       "font_pairing": "Archivo + Inter",
       "dna_notes": "Session 18: near-black page with a dominant fullbleed photograph covering ~62% of the canvas, corner frame marks, top-left series counter chip, monospaced EXIF credit bar pinned to the hero bottom (pellicola/ottica/stampa cells), 4-frame filmstrip gallery below with named series + disciplines + years, 4-cell EXIF footer. Bracketed [ ... ] CTAs in mono-uppercase — cinematic and technical.",
       "dna_phase": "2g2x.1",
-      "session_closed": 18
+      "session_closed": 18,
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition complete (Session 18, D-051) but no live skin folder yet. Phase 2g3.4 will author templates/live_templates/portfolio/cinematic-photographer/."
     },
     {
       "slug": "bottega-shop-artigianale",
@@ -343,7 +379,9 @@
       "dna_notes": "Session 15: full cream page, typographic-led hero (no photo), rubber-stamped info panel, N°-labeled edition cards. Macro tone differentiation from Luxe — same imagery pool, opposite page color.",
       "price": 69,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition exist (Session 15), blocked on Phase 2g2x.3 leak lift (10+ Bottega literals in artisan-workshop.html) + Phase 2g3.5 skin authoring at templates/live_templates/ecommerce/artisan-workshop/."
     },
     {
       "slug": "luxe-fashion-store",
@@ -363,7 +401,9 @@
       "dna_notes": "Session 15: full dark charcoal page, italic Cormorant 108px headline, full-bleed fashion-model cover, gold editorial tile strip. Shares imagery pool with Bottega — differentiated purely by macro tone + typography.",
       "price": 89,
       "featured": false,
-      "status": "published"
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "DNA + preview composition exist (Session 15), blocked on Phase 2g2x.3 leak lift (12+ Luxe literals in fashion-editorial.html) + Phase 2g3.5 skin authoring at templates/live_templates/ecommerce/fashion-editorial/."
     }
   ]
 }

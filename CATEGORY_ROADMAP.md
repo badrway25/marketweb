@@ -125,3 +125,55 @@ The page-kind names referenced in `template_content.py` map to template files. E
 | `reservations`| fine-dining         | Reservation form + concierge           |
 
 Each NEW archetype is free to introduce new page kinds (e.g. an `agency` archetype might add `case_studies`, an `ecommerce` one might add `shop`).
+
+## Baseline live pages per category (Session 20 — D-053)
+
+Per D-053 Live Preview Law, a template may only be `published_live` when its skin folder covers the full category baseline below. These are the **minimum** page kinds — an archetype is free to add more, but not to ship with fewer. Every page kind in the baseline must be backed by real content in `template_content.py` (no stub pages).
+
+| Category       | Baseline page kinds (minimum set)                                                                                          | Detail page kind? | Total pages (min) |
+|----------------|----------------------------------------------------------------------------------------------------------------------------|-------------------|-------------------|
+| Medical        | `home`, `about` (studio), `services` (visite/reparti/percorsi), `team` (medici), `contact` + one of `appointment` / `blog_list`+`blog_detail` | blog_detail where blog exists | 5 pages + 1 detail |
+| Restaurant     | `home`, `about` (filosofia/storia), `menu`, `gallery` (atmosfera), `contact` or `reservations`                              | —                 | 5 pages            |
+| Business       | `home`, `about`, `services` (advisory pillars / product tour), `case_studies` or `pricing`, `contact`                       | case_study_detail for corporate-suite; pricing static for startup-saas-landing | 5 pages + 1 detail (corporate side) |
+| Agency         | `home`, `about` (studio), `services`, `case_studies` (work list), `contact`                                                 | case_study_detail (at least one)    | 5 pages + 1 detail |
+| Lawyer         | `home`, `about` (studio), `practice_areas`, `team` (avvocati), `contact`                                                    | —                 | 5 pages            |
+| Real Estate    | `home`, `listings`, `about` (agenzia), `contact` + one of `neighborhoods` / `sell_with_us`                                  | property_detail (at least one)      | 5 pages + 1 detail |
+| Portfolio      | `home`, `about` (studio/biografia), `work` (projects/series index), `contact` + one of `blog_list`+`blog_detail` / `process`| project_detail or series_detail (at least one) | 5 pages + 1 detail |
+| eCommerce      | `home`, `shop` (catalogo/collezione), `about` (bottega/atelier), `contact` or `appointment`                                 | product_detail (at least one)       | 5 pages + 1 detail |
+
+**Minimum shape:** 5 navigable pages + (for categories where the product IS drilldown) at least one fully-authored detail page. Landing-page-only templates do NOT qualify as `published_live`.
+
+**Navigation rule:** the baseline pages must be reachable from the top-level nav of the live skin `_base.html`. A page that exists in the content registry but isn't linked from the nav counts as hidden and breaks the navigation test.
+
+## Rollout order — Phase 2g3 (Session 20)
+
+Templates flip from `draft` to `published_live` category-by-category, cheapest-first. The order below minimizes new HTML work by reusing DNA + preview compositions that already exist:
+
+1. **Restaurant** (2 templates: Sapore, Brace) — DNA + preview compositions exist, 2 new skin folders. Smallest lift.
+2. **Medical** (3 templates: Salute, Benessere, Famiglia) — DNA + preview compositions exist, 3 new skin folders.
+3. **Business** (2 templates: Pragma, Elevate) — DNA + preview compositions exist (Session 17), 2 new skin folders.
+4. **Portfolio** (2 templates: Chiara, Pixel) — DNA + preview compositions exist (Session 18 + 19 triage), 2 new skin folders.
+5. **Ecommerce** (2 templates: Bottega, Luxe) — DNA + preview compositions exist (Session 15), 2 new skin folders. **Blocked by Phase 2g2x.3 leak lifts** (12+ Luxe + 10+ Bottega latent literals in preview comps).
+6. **Agency / Lawyer / Real-estate** (6 templates) — **blocked by Phase 2g2x.1 closure.** After 2g2x.1 ships 2 archetypes per category, 2g3.6 authors 6 new skin folders. Sub-order: real-estate → lawyer → agency (per AGENT_HANDOFF Session 19 guidance — cleanest pair first, heaviest leak surface last).
+
+**Cumulative `published_live` count milestone:**
+- Today: 3 (cardio, dermatologia-elite-roma, gusto-fine-dining)
+- After 2g3.1 (restaurant): 5
+- After 2g3.2 (medical): 8
+- After 2g3.3 (business): 10
+- After 2g3.4 (portfolio): 12
+- After 2g3.5 (ecommerce): 14
+- After 2g3.6 (agency + lawyer + real-estate): 20
+
+**Phase 3 unblock gate:** Phase 2g3.7 fully green (all 20 templates `published_live`). Phase 3 (auth / checkout / editor / projects / commerce) does not start before this gate.
+
+## Category-ready test (Session 20)
+
+A category is considered **`published_live`-complete** when:
+1. Every sibling template in the category is tier `published_live`
+2. The D-054 10-gate Premium Differentiation Law passes on every sibling pair (bidirectional)
+3. The D-047 bidirectional leak sweep returns zero cross-tenant literals across the live skin folder(s)
+4. A Chromium walk at 1440×900 confirms the category listing reads as N distinct products (not recolor siblings), and clicking each card leads to a complete, navigable website
+5. The category listing page is no longer showing the "in arrivo" empty strip (per D-055 it's empty until N≥1; per this test it's green when N = category's seeded count)
+
+Only categories that pass this test contribute to the Phase 3 unblock gate.
