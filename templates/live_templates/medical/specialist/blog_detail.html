@@ -82,8 +82,8 @@
 {% block content %}
   <article class="sp-article">
     <nav class="crumbs">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}">{{ page.label }}</a>
-      <span>/</span>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page.label }}</a>
+      <span>{{ chrome.blog_crumb_sep }}</span>
       <span>{{ post.kicker }}</span>
     </nav>
 
@@ -92,7 +92,7 @@
     <div class="meta">
       <span><strong>{{ post.author }}</strong></span>
       <span>{{ post.date }}</span>
-      <span>{{ post.read_min }} min di lettura</span>
+      <span>{{ post.read_min }} {{ chrome.blog_read_minutes }}</span>
     </div>
 
     <p class="lede">{{ post.lede }}</p>
@@ -119,7 +119,7 @@
 
     <div class="footer-meta">
       <span>{{ page_data.footer_strap|default:site.logo_word }}</span>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}">← Tutte le {{ page.label|lower }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.blog_back_all_prefix }} {{ page.label|lower }}</a>
     </div>
   </article>
 {% endblock %}

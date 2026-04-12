@@ -191,8 +191,8 @@
       <h1>{{ page_data.headline|safe }}</h1>
       <p class="intro">{{ page_data.intro }}</p>
       <div class="actions">
-        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}" class="gold-btn">{{ page_data.primary_cta }}</a>
-        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}" class="ghost-btn">{{ page_data.secondary_cta }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="gold-btn">{{ page_data.primary_cta }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn">{{ page_data.secondary_cta }}</a>
       </div>
     </div>
     <aside class="right">
@@ -252,9 +252,9 @@
         <h3>{{ page_data.chief.name }}</h3>
         <p>{{ page_data.chief.bio }}</p>
         <div class="links">
-          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}">Tutti i medici</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.home_all_doctors }}</a>
           {% if blog_parent_slug %}
-            <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}">Pubblicazioni</a>
+            <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.home_publications }}</a>
           {% endif %}
         </div>
       </div>
@@ -271,8 +271,8 @@
   <section class="sp-cta">
     <h2>{{ page_data.cta_heading|safe }}</h2>
     <div class="actions">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}" class="gold-btn">{{ page_data.cta_primary_label }}</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}" class="ghost-btn">{{ page_data.cta_secondary_label }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="gold-btn">{{ page_data.cta_primary_label }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn">{{ page_data.cta_secondary_label }}</a>
     </div>
   </section>
 {% endblock %}

@@ -1,6 +1,54 @@
 # Agent Handoff
 
-Last updated: 2026-04-11 — after **Session 22 Motion Pilot Gusto (Phase 2g2x.9)**
+Last updated: 2026-04-11 — after **Session 23 i18n/RTL Pilot Cardio (Phase 2i.1)**
+
+## 🌐 Session 23 — i18n/RTL Pilot Cardio: Read This If You're Touching Localization (2026-04-11)
+
+**Session 23 shipped the first multilingual publishing architecture on a `tier=published_live` template.** Cardio-studio-specialistico now renders in 5 locales (it/en/fr/es/ar) with real RTL for Arabic. This is the reusable recipe for Phase 2i.2 rollout to dermatologia and gusto. Short read, load-bearing:
+
+- **D-059 — i18n/RTL Pilot Architecture.** Locale-keyed content registry (`TEMPLATE_CONTENT[slug][locale] → content tree`) + `CHROME_I18N[locale][key]` dict for the ~30 chrome labels the skin itself renders + `?lang=xx` query-param resolved in `LiveTemplateView.setup()` + RTL-scoped CSS block inside each archetype `_base.html`. **No Django `{% trans %}` / `.po` / `gettext` tooling** was introduced — the pilot's job was to prove the shape with ZERO new build tooling. Phase-later migration to `{% trans %}` for the marketplace chrome itself is trivial because every string is already locale-namespaced.
+- **Where it shipped:** `apps/catalog/template_i18n.py` (new) + `apps/catalog/template_content_cardio_i18n.py` (new, 4 non-IT content trees) + `apps/catalog/template_content.py` (top-level shape changed to `{slug: {locale: tree}}`, derm/gusto wrapped under `{"it": ..._IT}`) + `apps/catalog/views.py` (`LiveTemplateView` threads locale) + all 9 specialist skin files (`_base.html` + home/about/services/team/contact/appointment/blog_list/blog_detail; `team.html` needed zero edits).
+- **Validation:** 51/51 smoke test green (45 cardio routes × 5 locales + 6 regression/negative). Playwright walk at 1440×900 on IT/EN/AR/FR/ES home + AR contact + FR services + ES blog detail confirmed layout integrity. Mobile sanity at 390×844 confirmed zero new horizontal overflow.
+- **Rejected:** Django `{% trans %}` (build-step tooling, splits strings across files), `django-modeltranslation` (wrong shape for structured content), per-locale URL maps (out of pilot scope), machine translation (violates premium positioning).
+
+### What's next for the i18n pilot (Phase 2i.2, in order)
+
+**Step 1 — Dermatologia (cheapest, same skin):**
+- [ ] Create `apps/catalog/template_content_dermatologia_i18n.py` with 4 hand-authored content trees (EN/FR/ES/AR). Use the Session 23 voice guidelines: EN Anglo-American clinical, FR classical French + `vous`, ES peninsular, AR formal MSA + native punctuation (« »).
+- [ ] Update `TEMPLATE_CONTENT["dermatologia-elite-roma"]` in `template_content.py` to import all 5 locale keys.
+- [ ] Run the route sweep + Playwright walk.
+- [ ] Budget: ~1.5h — no new HTML, no new CSS, the specialist skin's RTL block is already in place.
+
+**Step 2 — Gusto (adds a new RTL CSS block for the fine-dining archetype):**
+- [ ] Create `apps/catalog/template_content_gusto_i18n.py` with 4 hand-authored content trees for the 7 gusto pages. **Note the tone differs** — gusto is dark-editorial Michelin fine dining, not medical clinical. EN is "one service per night" not "a tailored consultation". AR needs Arabic restaurant vocabulary, not medical vocabulary.
+- [ ] Author a new `html[dir="rtl"] ...` CSS block inside `templates/live_templates/restaurant/fine-dining/_base.html`. Copy the shape from the specialist `_base.html` RTL block and rename the selectors (`.sp-*` → `.fd-*`). Flip `.fd-nav`, `.fd-hero`, `.fd-chef .portrait`, `.fd-courses`, `.fd-form-band`, etc.
+- [ ] Gusto's `_base.html` has its own set of ad-hoc literal labels (different from specialist). Either extend `CHROME_I18N` with the additional keys or factor a per-archetype extension pattern. Decision deferred to the next session.
+- [ ] Budget: ~3h — new content trees + new RTL CSS + chrome wiring.
+
+### Do NOT do (i18n pilot scope)
+
+- Do NOT introduce Django `{% trans %}` / `.po` / `gettext` tooling. D-059 is explicit about this.
+- Do NOT translate draft templates. Only `tier=published_live` templates are in Phase 2i scope.
+- Do NOT translate the marketplace chrome (homepage, listing, detail, category). That's a Phase 4 decision.
+- Do NOT use machine translation on any locale block. The pilot's quality floor is native editorial voice. A PR that ships auto-translated content should be rejected.
+- Do NOT change URL patterns to add per-locale prefixes (`/en/preview/...`). The pilot uses `?lang=xx` query param and the URL pattern file is untouched. Prefix routing is a Phase 4 decision tied to the marketplace chrome migration.
+- Do NOT translate page slugs. Only labels change per locale. `studio`, `visite`, `medici`, `pubblicazioni`, `contatti`, `richiedi-visita` stay Italian across every locale — avoids per-locale URL maps and works for Arabic (ASCII URLs).
+- Do NOT remove the IT fallback in `pick_localized`. The transitional shape where derm+gusto get English CHROME but Italian CONTENT is load-bearing during Phase 2i.2 rollout — templates without a locale block must still render.
+- Do NOT strip Latin from the Arabic font stack. The font-family override for `--heading` and `--body` keeps `{{ theme.heading_font }}` as a fallback so mixed Latin/Arabic strings (doctor names, press outlets, dates, phone numbers, addresses) stay legible.
+- Do NOT apply negative `letter-spacing` or 0.22em uppercase tracking on Arabic h1-h5 or chrome labels. Arabic glyphs don't want Latin typographic conventions — the `html[dir="rtl"]` block zeroes them explicitly.
+
+### Gotcha: Django template variable identifiers cannot begin with `_`
+
+First draft of `_base.html` used `{% url ... as _base_url %}` inside the language switcher loop. Django's `FilterExpression` rejected it with `TemplateSyntaxError: Variables and attributes may not begin with underscores: '_base_url'`. Renamed to `lang_base_url`. If you see this error in any future work, the fix is always "rename the variable to remove the leading underscore".
+
+### Gotcha: stale runserver (same class as Session 19 + 22)
+
+First browser walk showed zero language pills because the `runserver --noreload` process on port 8765 was still serving the pre-edit HTML from memory. Killed + restarted on port 8766 — correct fresh HTML. Lesson unchanged from prior sessions: if the browser walk shows "my edits aren't landing" but the file-on-disk confirms they ARE, restart runserver on a fresh port before blaming anything else.
+
+---
+
+Previous (still relevant):
+Last updated before Session 23: 2026-04-11 — after **Session 22 Motion Pilot Gusto (Phase 2g2x.9)**
 
 ## 🎬 Session 22 — Motion Pilot Gusto: Read This If You're Animating Anything (2026-04-11)
 

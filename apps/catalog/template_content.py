@@ -19,36 +19,62 @@ Why a Python registry, not a model?
 Conventions
 -----------
 - Top-level keys are `WebTemplate.slug`.
-- Each template entry has:
+- Each template entry is `{locale: <content_block>}`, with `it` as the
+  authoritative source. Templates that are IT-only still carry the
+  `{"it": ...}` wrap so the helper API is uniform.
+- Each content block has:
     - `pages`     : list of {slug, label, kind} dicts that drive the nav
                     bar in the live preview. `kind` selects the inner-page
-                    template file.
+                    template file. `slug` and `kind` are stable across
+                    locales — only `label` changes.
     - `home`      : content block for the homepage
     - `<page-slug>`: content block for any other inner page
     - `posts`     : (optional) list of {slug, title, ...} for the blog
                     listing + detail pages
-- Templates without an entry here have no `live_template` URL space and
-  the marketplace detail page hides the "Anteprima Live" CTA for them.
+- Templates without an entry here have no `live_template` URL space.
+
+i18n pilot (Session 23 — Phase 2i.1)
+------------------------------------
+The cardio-studio-specialistico template is the first live template to
+ship with 5-locale content (it / en / fr / es / ar). Its full locale-keyed
+block lives in `template_content_cardio_i18n.py` and is imported here.
+Dermatologia and Gusto remain IT-only — their dicts are wrapped under
+`{"it": ...}` to keep the helper API uniform. Any template without an
+entry for the requested locale automatically falls back to `it` via
+`template_i18n.pick_localized`.
 
 Adding a new template
 ---------------------
 1. Add the template to `template_dna.py`.
 2. Decide whether it re-uses an existing archetype skin or needs a new one.
-3. Add an entry below with `pages` and one block per page slug.
+3. Add an entry below with `pages` and one block per page slug, wrapped
+   under `{"it": ...}` at minimum.
 4. If new archetype: add `templates/live_templates/<category>/<archetype>/`.
 5. Otherwise: just author the content — existing chrome handles it.
+6. For multilingual rollout, add locale keys next to `it` and author the
+   content per locale. Missing locales fall back to IT at render time.
 """
 from __future__ import annotations
 
 from typing import Any
 
+from apps.catalog import template_i18n
+
 
 # ---------------------------------------------------------------------------
 # CARDIO — Studio Marani Cardiologia (specialist archetype)
 # Editorial, prestigious, very-airy, cream + charcoal + accent red
+#
+# NOTE (Session 23, Phase 2i.1): the full 5-locale content block for cardio
+# lives in `template_content_cardio_i18n.py`. This IT entry is kept inline
+# because it is the authoritative source and benefits from being reviewed
+# alongside Dermatologia + Gusto. The non-IT locale blocks (EN/FR/ES/AR)
+# are isolated in the sister file so the pilot's size growth doesn't
+# double-review this file. The two are zipped together at the bottom
+# registry level.
 # ---------------------------------------------------------------------------
 
-CARDIO_CONTENT: dict[str, Any] = {
+CARDIO_CONTENT_IT: dict[str, Any] = {
     "pages": [
         {"slug": "home",            "label": "Studio",         "kind": "home"},
         {"slug": "studio",          "label": "Lo Studio",      "kind": "about"},
@@ -589,7 +615,7 @@ CARDIO_CONTENT: dict[str, Any] = {
 # Editorial dark · Playfair Display + Lato · charcoal + gold + red
 # ---------------------------------------------------------------------------
 
-GUSTO_CONTENT: dict[str, Any] = {
+GUSTO_CONTENT_IT: dict[str, Any] = {
     "pages": [
         {"slug": "home",      "label": "Casa",       "kind": "home"},
         {"slug": "filosofia", "label": "Filosofia",  "kind": "about"},
@@ -1003,7 +1029,7 @@ GUSTO_CONTENT: dict[str, Any] = {
 # hardcodes `pubblicazioni` as the blog parent page slug.
 # ---------------------------------------------------------------------------
 
-DERMATOLOGIA_CONTENT: dict[str, Any] = {
+DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
     "pages": [
         {"slug": "home",            "label": "Studio",          "kind": "home"},
         {"slug": "studio",          "label": "Lo Studio",       "kind": "about"},
@@ -1565,18 +1591,43 @@ DERMATOLOGIA_CONTENT: dict[str, Any] = {
 
 
 # ---------------------------------------------------------------------------
-# Top-level registry
+# Top-level registry (locale-keyed per Phase 2i.1 — Session 23)
+# ---------------------------------------------------------------------------
+# Each entry is `{locale: content_tree}`. `it` is always authoritative.
+# Cardio ships with 5 locales (it/en/fr/es/ar) — the 4 non-IT blocks live
+# in `template_content_cardio_i18n.py` so this file stays browsable.
+# Dermatologia and Gusto are IT-only for now; they will pick up other
+# locales one by one as Phase 2i.2 rolls the pilot architecture out to
+# the other `tier=published_live` templates.
 # ---------------------------------------------------------------------------
 
-TEMPLATE_CONTENT: dict[str, dict[str, Any]] = {
-    "cardio-studio-specialistico": CARDIO_CONTENT,
-    "dermatologia-elite-roma":     DERMATOLOGIA_CONTENT,
-    "gusto-fine-dining":           GUSTO_CONTENT,
+from apps.catalog.template_content_cardio_i18n import (  # noqa: E402
+    CARDIO_CONTENT_EN,
+    CARDIO_CONTENT_FR,
+    CARDIO_CONTENT_ES,
+    CARDIO_CONTENT_AR,
+)
+
+
+TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
+    "cardio-studio-specialistico": {
+        "it": CARDIO_CONTENT_IT,
+        "en": CARDIO_CONTENT_EN,
+        "fr": CARDIO_CONTENT_FR,
+        "es": CARDIO_CONTENT_ES,
+        "ar": CARDIO_CONTENT_AR,
+    },
+    "dermatologia-elite-roma": {
+        "it": DERMATOLOGIA_CONTENT_IT,
+    },
+    "gusto-fine-dining": {
+        "it": GUSTO_CONTENT_IT,
+    },
 }
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Helpers — all locale-aware. `locale` defaults to the pilot default (it).
 # ---------------------------------------------------------------------------
 
 def has_live_template(slug: str) -> bool:
@@ -1584,28 +1635,40 @@ def has_live_template(slug: str) -> bool:
     return slug in TEMPLATE_CONTENT
 
 
-def get_content(slug: str) -> dict[str, Any] | None:
-    """Return the content registry block for a template, or None."""
-    return TEMPLATE_CONTENT.get(slug)
+def _resolve(slug: str, locale: str | None) -> dict[str, Any] | None:
+    """Return the locale-specific content block for a slug, or None."""
+    entry = TEMPLATE_CONTENT.get(slug)
+    if not entry:
+        return None
+    return template_i18n.pick_localized(entry, locale or template_i18n.DEFAULT_LOCALE)
 
 
-def get_pages(slug: str) -> list[dict[str, str]]:
-    """Return the page navigation list for a template."""
-    block = TEMPLATE_CONTENT.get(slug)
+def get_content(slug: str, locale: str | None = None) -> dict[str, Any] | None:
+    """Return the content block for a template in the requested locale.
+
+    Falls back to IT when the requested locale is missing — every template
+    is guaranteed to have an `it` entry, so a locale miss always renders.
+    """
+    return _resolve(slug, locale)
+
+
+def get_pages(slug: str, locale: str | None = None) -> list[dict[str, str]]:
+    """Return the page navigation list for a template (locale-aware)."""
+    block = _resolve(slug, locale)
     return block["pages"] if block else []
 
 
-def find_page(slug: str, page_slug: str) -> dict[str, str] | None:
+def find_page(slug: str, page_slug: str, locale: str | None = None) -> dict[str, str] | None:
     """Find the page dict for a given page slug, or None if missing."""
-    for page in get_pages(slug):
+    for page in get_pages(slug, locale):
         if page["slug"] == page_slug:
             return page
     return None
 
 
-def find_post(slug: str, post_slug: str) -> dict[str, Any] | None:
-    """Find a single blog/news post by slug."""
-    block = TEMPLATE_CONTENT.get(slug)
+def find_post(slug: str, post_slug: str, locale: str | None = None) -> dict[str, Any] | None:
+    """Find a single blog/news post by slug (locale-aware)."""
+    block = _resolve(slug, locale)
     if not block:
         return None
     for post in block.get("posts", []):

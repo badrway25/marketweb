@@ -124,31 +124,31 @@
           {% with ph=page_data.form_placeholders %}
           <form>
             <div class="field">
-              <label>Nome</label>
+              <label>{{ chrome.form_name }}</label>
               <input type="text" placeholder="{{ ph.first_name }}">
             </div>
             <div class="field">
-              <label>Cognome</label>
+              <label>{{ chrome.form_surname }}</label>
               <input type="text" placeholder="{{ ph.last_name }}">
             </div>
             <div class="field">
-              <label>Email</label>
+              <label>{{ chrome.form_email }}</label>
               <input type="email" placeholder="{{ ph.email }}">
             </div>
             <div class="field">
-              <label>Telefono</label>
+              <label>{{ chrome.form_phone }}</label>
               <input type="tel" placeholder="{{ ph.phone }}">
             </div>
             <div class="field full">
-              <label>Oggetto</label>
+              <label>{{ chrome.form_subject }}</label>
               <input type="text" placeholder="{{ ph.subject }}">
             </div>
             <div class="field full">
-              <label>Messaggio</label>
+              <label>{{ chrome.form_message }}</label>
               <textarea placeholder="{{ ph.message }}"></textarea>
             </div>
             <div class="submit">
-              <button type="button">Invia messaggio</button>
+              <button type="button">{{ chrome.form_submit }}</button>
             </div>
           </form>
           {% endwith %}

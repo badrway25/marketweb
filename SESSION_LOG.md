@@ -1,5 +1,169 @@
 # Session Log
 
+## Session 23 — i18n/RTL Pilot Cardio (Phase 2i.1) (2026-04-11)
+
+**Agent:** Implementation session. First multilingual publishing validation on a `tier=published_live` template. Scoped tightly to `cardio-studio-specialistico` — no other template touched, no marketplace chrome touched, no auth/checkout/editor/projects/commerce touched, no Django gettext machinery introduced.
+**Branch:** `phase-i18n-pilot-cardio-v2` (worktree).
+**Scope floor:** define the multilingual architecture on ONE live template, validate with 5 locales (it/en/fr/es/ar) + real RTL for Arabic, produce a reusable recipe for Phase 2i.2. Non-goals: translate derm, translate gusto, translate drafts, translate the marketplace surface, introduce LocaleMiddleware or .po tooling, change URL patterns, touch the motion pilot.
+
+### 1 — Strategy: locale-keyed content registry + CHROME_I18N dict + `?lang=` param, zero new build tooling
+
+The project already has a Python content registry at `apps/catalog/template_content.py` (D-042) and a visible `tier=published_live` floor of 3 templates (cardio, derm, gusto). Two paths were available for multilingual publishing:
+
+- **Path A — Django `{% trans %}` + `.po` files.** The textbook shape. Rejected because: (1) compiled `.mo` files need `gettext` binaries which are flaky on Windows dev boxes and add a build step; (2) every string splits across two files (`.po` + content dict), doubling the review surface; (3) the pilot's job is to prove a shape with ZERO new build tooling so a reviewer can read and fix any locale in 10 seconds; (4) phase-later migration from Path B to Path A for the marketplace chrome itself is trivial because every string is already namespaced by locale.
+- **Path B — locale-keyed content dict + CHROME_I18N dict + `?lang=` query param.** Selected. One review surface, no tooling, unambiguous IT fallback via `pick_localized`, trivial HTTP-GET testing, additive per template, no URL pattern changes, RTL gated via a single `html[dir="rtl"]`-scoped CSS block inside the archetype `_base.html`.
+
+See DECISIONS.md § D-059 for the full rationale.
+
+### 2 — Architecture: one new module, one new sister file, one view change, 9 template edits
+
+- `apps/catalog/template_i18n.py` — NEW — the pilot's infrastructure module:
+  - `SUPPORTED_LOCALES = ("it", "en", "fr", "es", "ar")`, `DEFAULT_LOCALE = "it"`, `RTL_LOCALES = frozenset({"ar"})`, `LOCALE_LABELS`, `LOCALE_BADGES`.
+  - `CHROME_I18N[locale][key]` — the ~30 chrome labels the specialist skin itself renders (marketplace bar: `mp_back/mp_preview_of/mp_other/mp_language`; footer: `foot_studio/foot_pages/foot_contact/foot_hours/foot_privacy/foot_cookie/foot_legal`; home home-links: `home_all_doctors/home_publications`; contact form: `form_name/form_surname/form_email/form_phone/form_subject/form_message/form_submit`; appointment alt: `apt_alternative_prefix/apt_alternative_link`; blog: `blog_read_full/blog_read_minutes/blog_back_all_prefix/blog_crumb_sep`). All 5 locales authored. Every key backed by IT fallback at render time via `get_chrome(locale)` merging.
+  - Helpers: `resolve_locale(request)` reads `?lang=xx` validated against the allowed list, `is_rtl(locale)`, `html_dir(locale)` → `"rtl"|"ltr"`, `get_chrome(locale)`, `pick_localized(content_by_locale, locale)` (accepts legacy flat shape for safety), `locale_switcher_entries(current_locale)` builds the switcher data.
+
+- `apps/catalog/template_content_cardio_i18n.py` — NEW — 4 full content trees (`CARDIO_CONTENT_EN/FR/ES/AR`), ~1600 lines, one tree per locale. The IT tree remains inline in `template_content.py` as `CARDIO_CONTENT_IT` because it's the authoritative source and benefits from being reviewed next to derm+gusto. Shared portrait URLs live as module-level `_CHIEF_PORTRAIT` etc. constants so the trees stay flat (no shared-reference bugs).
+
+- `apps/catalog/template_content.py` — refactored:
+  - Renamed `CARDIO_CONTENT → CARDIO_CONTENT_IT`, `DERMATOLOGIA_CONTENT → DERMATOLOGIA_CONTENT_IT`, `GUSTO_CONTENT → GUSTO_CONTENT_IT`.
+  - Top-level `TEMPLATE_CONTENT` is now `{slug: {locale: tree}}`. Cardio has 5 locale keys; derm and gusto are wrapped under `{"it": ..._IT}` to keep the API uniform.
+  - `has_live_template/get_content/get_pages/find_page/find_post` helpers gained a `locale` kwarg (default `None` → `DEFAULT_LOCALE`). Resolution delegates to `template_i18n.pick_localized` which falls back to IT when the requested locale is missing — so derm+gusto with `?lang=en` render English chrome + Italian content (clean mixed state documented as the transitional shape for Phase 2i.2).
+
+- `apps/catalog/views.py` — `LiveTemplateView.setup()`:
+  - New line: `self.locale = template_i18n.resolve_locale(request)`.
+  - `template_content.get_content(slug, self.locale)` — threads locale through the registry helpers.
+  - `template_content.find_page/find_post` calls gained the locale kwarg.
+  - `get_context_data()` now exposes: `locale`, `chrome` (= `get_chrome(self.locale)`), `html_dir`, `is_rtl`, `locale_switcher` (= `locale_switcher_entries(self.locale)`), `default_locale`. These are the context vars every specialist skin file now reads.
+
+- `templates/live_templates/medical/specialist/_base.html` — rewritten for i18n:
+  - `<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">` — dynamic.
+  - Conditional Arabic font preload: when `is_rtl`, add a Google Fonts `<link>` for Noto Naskh Arabic (serif) + Noto Kufi Arabic (body), and inside a second `:root {}` block override `--heading` and `--body` CSS vars to put the Arabic fonts first in the stack while preserving the Cormorant/Inter fallback for mixed Latin/Arabic strings.
+  - Marketplace bar: every hardcoded IT string replaced with `{{ chrome.mp_back }}`, `{{ chrome.mp_preview_of }}`, `{{ chrome.mp_other }}`, `{{ chrome.mp_language }}`. Added a `.mp-lang` pill strip that loops `locale_switcher` and generates preview URLs with `?lang={{ entry.code }}` (the IT pill has no param, per the `default_locale` check). Each pill carries `lang/dir` per-pill so the الع pill renders in its own RTL context.
+  - Footer: `{{ chrome.foot_studio/foot_pages/foot_contact/foot_hours/foot_privacy/foot_cookie/foot_legal }}` replace the 7 hardcoded IT headings.
+  - Every internal URL (`mp-back`, `sp-nav left/right`, footer page list) now appends `?lang={{ locale }}` when `locale != default_locale` — uniform fragment `{% if locale != default_locale %}?lang={{ locale }}{% endif %}`.
+  - NEW **RTL-scoped CSS block** at the bottom of the `<style>` tag: `html[dir="rtl"] body` → font-size 17px + line-height 1.8; `html[dir="rtl"] h1–h5` → letter-spacing 0 (Arabic shapes don't want tracking); `html[dir="rtl"] .sp-lead .eyebrow:before { display: none }` + `:after { ...accent-bar... margin-right: 4px }` to flip the accent-bar side; `.sp-lead .gold-btn:after { content: '←' }`; `.sp-nav .right { justify-content: flex-start }` + `.sp-nav .left { justify-content: flex-end }` to swap the nav visual order for reading direction; lower letter-spacing on `.sp-nav .left/.right` / `.sp-foot .top h5` / `.mp-bar` / `.mp-lang *` / `.sp-foot .bot` to 0.04em.
+
+- `templates/live_templates/medical/specialist/home.html` — hardcoded "Tutti i medici" and "Pubblicazioni" in the chief-section link row replaced with `{{ chrome.home_all_doctors }}` / `{{ chrome.home_publications }}`. Every `{% url ... %}` call that points to an inner preview page now appends `?lang={{ locale }}` when `locale != default_locale`. Zero content changes — content comes from the locale-specific `page_data.*` block, which for cardio is one of 5 blocks depending on the locale.
+
+- `templates/live_templates/medical/specialist/about.html` — only URL locale preservation on the final `.sp-cta-band` (2 CTAs). No chrome strings to replace because Session 14 already abstracted every label into `page_data.*`.
+
+- `templates/live_templates/medical/specialist/services.html` — only URL locale preservation on the final `.sp-cta-band`.
+
+- `templates/live_templates/medical/specialist/team.html` — **zero edits**. The Session 14 D-047 lift made this file fully `{{ d.* }}`-driven — nothing to localize at the chrome level.
+
+- `templates/live_templates/medical/specialist/contact.html` — form labels replaced with chrome keys: `{{ chrome.form_name/form_surname/form_email/form_phone/form_subject/form_message/form_submit }}` (6 labels + submit button).
+
+- `templates/live_templates/medical/specialist/appointment.html` — alt-link row: `{{ chrome.apt_alternative_prefix }} <a ...>{{ chrome.apt_alternative_link }}</a>` replaces the "In alternativa: parla con la segreteria" hardcoded string. URL preserves locale.
+
+- `templates/live_templates/medical/specialist/blog_list.html` — the "Leggi l'articolo completo" lead-post read-more link and the `min` shorthand in the meta rows now come from `{{ chrome.blog_read_full }}` / `{{ chrome.blog_read_minutes }}`. Every `{% url 'catalog:live_template_post' ... %}` preserves locale.
+
+- `templates/live_templates/medical/specialist/blog_detail.html` — the crumbs separator is now `{{ chrome.blog_crumb_sep }}`, the "X min di lettura" meta row uses `{{ chrome.blog_read_minutes }}`, the footer-meta back link uses `{{ chrome.blog_back_all_prefix }} {{ page.label|lower }}` so English renders "← All publications", French "← Toutes les publications", Arabic "→ جميع المنشورات".
+
+### 3 — Quality of the 5 languages
+
+Explicitly NOT machine-translated. Each locale was authored to read as if a native speaker in that market wrote the copy for a premium Roma cardiology practice:
+
+- **IT** (authoritative) — existing Session 11/14 content, light polish where a phrase was ambiguous.
+- **EN** — Anglo-American clinical prose, direct and unembellished. "A tailored cardiology, for those who refuse shortcuts." "Six clinical pathways, a single signature." "Every consultation is personally arranged with the physician." Doctor bios read as native-speaker clinical voice: "Specialised in cardiology at the University La Sapienza of Rome, further trained in clinical echocardiography at the Institut de Cardiologie de Montréal. Member of SIC and ESC. Author of over forty peer-reviewed publications, including two chapters of the Italian edition of the Braunwald cardiology textbook."
+- **FR** — classical French medical prose, `vous` register, no anglicisms. "Une cardiologie sur mesure, pour celles et ceux qui refusent les raccourcis." "Six parcours cliniques, une seule signature." Timeline and method paragraphs rewritten to preserve editorial rhythm without word-for-word translation. Inclusive "celles et ceux" kept where the IT original addresses a broader audience.
+- **ES** — Spanish peninsular register, warm yet precise. "Una cardiología a medida, para quien no acepta atajos." Prices in `220 €` format per ES convention. Dates "12 de marzo de 2026".
+- **AR** — Modern Standard Arabic, formal medical register, native punctuation (« »). Headline: `طبّ قلب مُفصَّل خصّيصاً لمن لا يقبل بالاختصارات`. Manifesto opens with a drop-cap-compatible single-letter: `ط` + `بّ القلب ليس خطّ إنتاج...`. Doctor bios fully authored: `متخصص في أمراض القلب من جامعة لا سابينزا في روما، واستكمل تدريبه في معهد أمراض القلب في مونتريال.`. Arabic punctuation and native medical terminology throughout (استجواب سريري, تخطيط كهربية القلب, هولتر, مراقبة كهربية قلبية). Doctor names and press outlets kept in Latin where canonical ("LANCET", "European Heart Journal", "Sole 24 Ore", "RAI Med") because the brand is Roma-based and these are Latin proper nouns. Dates localized ("12 مارس 2026").
+
+Every form field placeholder is localized with region-appropriate name/phone format examples (Mark Smith / mark@email.com / +44 7... for EN; Jean Dupont / +33 6... for FR; Juan García / +34 6... for ES; محمد العلوي / mohammed@email.com / +39... for AR with a deliberately Italian phone prefix because the clinic IS in Roma).
+
+### 4 — RTL implementation details (load-bearing for Arabic quality)
+
+The Arabic locale is where the pilot earns or loses its premium positioning. The RTL block is authored with four specific goals:
+
+1. **Reading direction is visual, not just logical.** `<html dir="rtl">` gives you the basics: CSS `margin-inline-start` flips, flex row direction reverses, `text-align: start` resolves to right. But cosmetic accents (`:before` hairlines, arrow glyphs, underline-left borders) don't flip because they're authored positionally, not logically. The RTL block manually flips these.
+2. **Arabic doesn't want Latin typographic conventions.** Negative letter-spacing on h1 is a premium-editorial choice for Latin serifs — in Arabic it squeezes naskh shapes together and looks cheap. Uppercase + 0.22em tracking on chrome labels is standard for Latin SANS in Italian marketplaces — in Arabic there is no uppercase, and that tracking becomes a 0.04em whisper. Both are forced to 0 / 0.04em inside the RTL block.
+3. **Arabic naskh is physically taller than Latin serif at the same point size.** Without a font-size bump, ascenders and descenders collide with line-height 1.6. The RTL block bumps body font to 17px and line-height to 1.8 — one size step up — which restores visual breathing room without rearchitecting the type scale.
+4. **Font stack must carry Latin as a fallback.** Doctor names, dates, addresses, phone numbers, and press outlets stay Latin across every locale because they're either proper nouns or technical strings. Forcing Noto Naskh Arabic on them would break their rendering. The conditional RTL `:root {}` override puts Noto Naskh first and Cormorant second, so Arabic glyphs get the naskh treatment AND Latin glyphs get the serif treatment in the same paragraph.
+
+The arrow direction convention is: UI chrome arrows (`mp_back`, `mp_other`) are authored natively in each locale's `CHROME_I18N` block, so the Arabic `mp_back` reads `"العودة إلى MarketWeb →"` with the right-pointing arrow because RTL reading goes right-to-left. The decorative `.gold-btn:after` arrow in the hero is flipped from `→` to `←` by the CSS override because it's purely visual and not a natural-language string.
+
+### 5 — Validation results
+
+- `python manage.py check` → 0 issues.
+- `smoke_i18n.py` route sweep (Django test client, 51 checks):
+  ```
+  CARDIO — 5 locales × 9 routes = 45 checks
+  --- locale: it ---  (no ?lang param)
+    OK  200  /templates/medical/cardio-studio-specialistico/
+    OK  200  /templates/medical/cardio-studio-specialistico/preview/
+    OK  200  /templates/medical/cardio-studio-specialistico/preview/studio/
+    OK  200  /templates/medical/cardio-studio-specialistico/preview/visite/
+    OK  200  /templates/medical/cardio-studio-specialistico/preview/medici/
+    OK  200  /templates/medical/cardio-studio-specialistico/preview/contatti/
+    OK  200  /templates/medical/cardio-studio-specialistico/preview/richiedi-visita/
+    OK  200  /templates/medical/cardio-studio-specialistico/preview/pubblicazioni/
+    OK  200  /templates/medical/cardio-studio-specialistico/preview/pubblicazioni/secondo-parere-quando-richiederlo/
+  --- locale: en / fr / es / ar ---  (same 9 routes with ?lang=xx)
+    36× 200 OK
+  REGRESSION & NEGATIVE CHECKS
+    OK  200 (exp 200)  /templates/medical/dermatologia-elite-roma/preview/                  [IT-only, no param]
+    OK  200 (exp 200)  /templates/medical/dermatologia-elite-roma/preview/?lang=en          [EN chrome + IT content fallback]
+    OK  200 (exp 200)  /templates/restaurant/gusto-fine-dining/preview/                    [IT-only, no param]
+    OK  200 (exp 200)  /templates/restaurant/gusto-fine-dining/preview/?lang=ar            [AR chrome + IT content, RTL flips]
+    OK  200 (exp 200)  /templates/medical/cardio-studio-specialistico/preview/?lang=xx     [unknown locale → IT fallback]
+    OK  404 (exp 404)  /templates/agency/vertex-creative-agency/preview/?lang=ar           [draft still 404 public]
+  TOTAL: 51/51
+  ```
+- Live browser walk at 1440×900 (Playwright):
+  - **IT home** — `lang="it" dir="ltr"`, title "Studio Marani Cardiologia — Studio", H1 "Una cardiologia su misura, per chi non accetta scorciatoie.", nav labels `Studio / Lo Studio / Visite / Medici / Pubblicazioni / Contatti / Richiedi visita`, mp-back "← Torna a MarketWeb", footer heads `Lo studio / Pagine / Contatti / Orari`, 5 language pills with IT marked `.is-current`.
+  - **EN home** — `lang="en" dir="ltr"`, title "Studio Marani Cardiologia — Practice", H1 "A tailored cardiology, for those who refuse shortcuts.", intro "Specialist consultations, second opinions, individual prevention programmes. One schedule, one physician, one signature.", nav `Practice / The Practice / Consultations / Team / Publications / Contact / Book a visit`, mp-back "← Back to MarketWeb", footer heads `The practice / Pages / Contact / Hours`, chief role "Clinical director · Cardiologist", primary CTA "Request a private visit", press label "Featured in".
+  - **AR home** — `lang="ar" dir="rtl"` (verified both `document.documentElement.dir === 'rtl'` and the explicit `getAttribute('dir') === 'rtl'`), title "Studio Marani Cardiologia — المركز", H1 `طبّ قلب مُفصَّل خصّيصاً لمن لا يقبل بالاختصارات.` rendered right-aligned, H1 font-family computed to `"Noto Naskh Arabic", "Cormorant Garamond", Georgia, serif` (Arabic font first, Latin fallback preserved), body font-size 17px (bumped), nav labels `المركز / عن المركز / الاستشارات / الأطباء / المنشورات / تواصل / طلب زيارة`, mp-back `"العودة إلى MarketWeb →"` (right-arrow because RTL reading), facts `سنةً من الممارسة السريرية الخاصة` / `استشارة تخصصية في السنة` / `مستشفيات مرجعية في روما`, hero sidebar quote `«طبّ القلب ليس خطّ إنتاج. إنّه حوار طويل، يبنى على الوقت.»` with native Arabic quotation marks. Hero sidebar is visually on the LEFT of the H1 (flipped from LTR right) — layout reads correctly. Full-page screenshot `cardio-ar-home-rtl.png` confirms editorial rhythm intact.
+  - **AR contact** — form labels (`الاسم / اللقب / البريد الإلكتروني / الهاتف / الموضوع / الرسالة`) all right-aligned, address blocks right-aligned, hours sidebar on the LEFT (flipped from LTR right), submit button reads `إرسال الرسالة`. Full-page screenshot `cardio-ar-contact.png` confirms layout integrity.
+  - **FR visite** — `dir="ltr"`, H1 "Six parcours cliniques, une seule signature.", treatments list `Consultation cardiologique complète / Consultation de contrôle / Second avis spécialisé / Échocardiographie transthoracique / Holter cardiaque 24h / Programme de prévention 6 mois`, prices in "220 €" format, footnote heading "Notes administratives".
+  - **ES blog detail** — `dir="ltr"`, article H1 "Cuándo tiene sentido pedir una segunda opinión cardiológica", kicker "Práctica clínica", meta "Dr. Riccardo Marani · 12 de marzo de 2026 · 6 min de lectura", full localized body paragraphs + H2 subheadings + blockquote, back link "← Todas las publicaciones".
+- Mobile sanity at 390×844: IT cardio home scroll-width 835px, AR cardio home scroll-width 882px. Delta ~47px = intentional 17px body font bump for Arabic. **Pilot introduced zero new horizontal overflow.** The 835px baseline is the pre-existing Session 22-class desktop-first gap (specialist chrome uses `padding: 90px` and `grid-template-columns: 1.55fr 1fr`) — documented in the Session 22 handoff as out of scope and still out of scope.
+- Regression: derm `?lang=en` and gusto `?lang=ar` both return 200 and render with localized chrome + IT content fallback. This is the intentional transitional shape for Phase 2i.2 — a template that hasn't had its content translated yet still works and still looks coherent because the chrome is locale-aware even when the content isn't.
+- Marketplace chrome untouched: `/` homepage, `/templates/`, `/templates/medical/`, `/templates/medical/cardio-studio-specialistico/` all still render in Italian exactly as before.
+
+### 6 — Gotchas worth remembering
+
+- **Django template variables cannot begin with underscore.** First draft of `_base.html` used `{% url 'catalog:live_template_home' ... as _base_url %}` inside the language switcher loop. Django's `FilterExpression` rejected it with `TemplateSyntaxError: Variables and attributes may not begin with underscores: '_base_url'`. Renamed to `lang_base_url` and every reference. Lesson: Django's template language has its own identifier rules, not Python's.
+- **Stale dev-server ghost (again).** Same Session 19/22 class. First browser walk showed zero language pills. Root cause: the `runserver --noreload` process on port 8765 was serving the pre-edit `_base.html` from memory. Killed and restarted on port 8766 — correct fresh HTML. Lesson still stands: if the browser walk shows "my edits didn't land" and `grep` confirms they ARE on disk, restart runserver on a fresh port before debugging cache/template layers.
+- **Django test client ALLOWED_HOSTS.** The smoke test script ran Django via `django.setup()` in a bare script (not a test case), so the test client's `testserver` host was rejected by the empty `ALLOWED_HOSTS`. Fix: `settings.ALLOWED_HOSTS = ["testserver", "localhost"]` after `django.setup()`. Not a code path a real deployment would hit — only a smoke-script concern.
+- **Content tree duplication is load-bearing, not a smell.** The cardio content is 5× its original size because every locale carries a complete mirror of the tree, including non-localizable data like phone numbers. This looks wasteful at first glance, but the alternative — a nested `{key: {locale: value}}` shape — would make reviewing any single locale a cross-reference scavenger hunt. Keeping each locale as a flat complete tree makes the review surface "one Python dict per locale" which is the cleanest thing to diff and the cleanest thing to hand to a translator.
+- **Arabic font stack must keep Latin as a fallback.** First iteration set `--heading: 'Noto Naskh Arabic', Georgia, serif;` which broke the rendering of "LANCET" and "European Heart Journal" in the press strip. Fixed: `--heading: 'Noto Naskh Arabic', '{{ theme.heading_font }}', Georgia, serif;` — Noto takes the Arabic glyphs, Cormorant takes the Latin glyphs in the same paragraph, no regression on mixed-script press outlets.
+- **Uppercase letter-spacing on Arabic is wrong.** First RTL draft kept the Latin `letter-spacing: 0.22em` on the eyebrows. The Arabic "العيادة" rendered with visible gaps between every glyph because CSS `letter-spacing` applies to ALL characters, not just uppercase. Lowered to 0.04em inside the `html[dir="rtl"]` block. Lesson: Latin typographic conventions (tracking on uppercase, negative letter-spacing on big serif headlines) don't just apply differently in Arabic — they're wrong. Each has to be explicitly zeroed or near-zeroed.
+
+### 7 — Decisions added
+
+- **D-059: i18n/RTL Pilot Architecture — Locale-Keyed Content Registry, Query-Param Switcher, No Django gettext.** Full rationale + option comparison + consequences in DECISIONS.md.
+
+### 8 — What's reusable vs what's cardio-specific
+
+**Reusable (Phase 2i.2 rollout):**
+- `apps/catalog/template_i18n.py` — entirely. Locale metadata, CHROME_I18N, helpers. Other templates adopt by importing.
+- The `{slug: {locale: tree}}` registry shape + `pick_localized` with IT fallback.
+- `LiveTemplateView.setup` locale threading + `get_context_data` context vars (`locale`, `chrome`, `html_dir`, `is_rtl`, `locale_switcher`, `default_locale`).
+- The `{% if locale != default_locale %}?lang={{ locale }}{% endif %}` href-preservation fragment. Future refactor: hoist into a `{% lang_url ... %}` template tag.
+- The RTL-scoped CSS block shape. A new archetype copies the `html[dir="rtl"] ...` block from `specialist/_base.html` and renames `.sp-*` selectors to its own prefix.
+- The Arabic font stack recipe (Noto Naskh Arabic + Noto Kufi Arabic, Latin fallback preserved inside `:root` override).
+
+**Cardio-specific:**
+- The 4 non-IT content trees in `template_content_cardio_i18n.py`. No shortcut — other templates need hand-authored content in the same shape.
+- The specific RTL CSS selectors (`.sp-lead .eyebrow:before`, `.sp-nav .left/.right`, `.sp-lead .gold-btn:after`) — when gusto adopts the pilot these become `.fd-*` selectors in its own archetype base.
+
+**Next session's cheapest first target:** dermatologia-elite-roma. It shares the specialist skin, so the RTL CSS and chrome integration are already done. The only new work is authoring its 4 non-IT content trees — 1.5h budget. After derm, gusto needs a new `.fd-*` RTL CSS block and its own 4 non-IT trees — 3h budget.
+
+### 9 — Final state
+
+- 51/51 smoke checks green. 5 locales × 9 cardio routes + 6 regression/negative.
+- Cardio renders as a genuinely premium multilingual product in 5 languages, with real RTL for Arabic.
+- Derm + gusto still work and now pick up English/French/Spanish/Arabic chrome automatically (content stays IT until Phase 2i.2).
+- Marketplace chrome untouched.
+- Draft templates still 404 public.
+- Zero new Django middleware, zero new build tooling, zero new dependencies.
+
+**Decision:** I18N/RTL PILOT CARDIO APPROVATO.
+
+### 10 — Handoff notes
+
+See AGENT_HANDOFF.md § Session 23 and TODO_NEXT.md Phase 2i.2 for next-session direction. The pilot architecture is ready to extend to the other `tier=published_live` templates (dermatologia first, gusto second) and is the expected multilingual floor for every future template promoted to `published_live`. Each new template opts in with one content file (its `template_content_<slug>_i18n.py` sister file with 4 locale blocks) + one entry update in `TEMPLATE_CONTENT` — the rest of the infrastructure is shared.
+
 ## Session 22 — Motion Pilot Gusto (Phase 2g2x.9) (2026-04-11)
 
 **Agent:** Implementation session. First application of a reusable premium motion language on a live-template archetype. Scoped tightly to `gusto-fine-dining`; nothing else touched.

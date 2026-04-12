@@ -1,7 +1,7 @@
 from django.http import Http404, HttpRequest
 from django.views.generic import DetailView, ListView, TemplateView
 
-from apps.catalog import selectors, template_content
+from apps.catalog import selectors, template_content, template_i18n
 from apps.catalog.template_dna import get_dna
 
 
@@ -134,16 +134,29 @@ class LiveTemplateView(TemplateView):
             category_slug, slug, include_drafts=include_drafts
         )
 
+        # Locale resolution (Phase 2i.1 — Session 23 i18n pilot).
+        # Reads `?lang=xx` and validates. Falls back to `it` for unknown or
+        # missing params. Every template is guaranteed to have an `it`
+        # content block, so a locale miss always renders cleanly.
+        self.locale = template_i18n.resolve_locale(request)
+
         # Resolve DNA + content registry entry. Both must exist — the
         # system stays strictly opt-in per template, exactly like the
-        # DNA system itself.
+        # DNA system itself. `get_content` takes the resolved locale and
+        # handles the {locale: tree} -> tree unwrap; templates that haven't
+        # been migrated to the locale-keyed shape still work via the
+        # legacy-flat fallback inside `pick_localized`.
         self.dna     = get_dna(slug)
-        self.content = template_content.get_content(slug)
+        self.content = template_content.get_content(slug, self.locale)
         if not self.dna or not self.content:
             raise Http404("Template has no live preview yet.")
 
-        # Find the page entry (drives nav highlighting + template kind)
-        self.page_entry = template_content.find_page(slug, page_slug)
+        # Find the page entry (drives nav highlighting + template kind).
+        # Uses the locale-specific content block — every locale is
+        # required to declare the same `pages` list shape (same slugs +
+        # kinds, localized labels), so the slug lookup works identically
+        # across locales.
+        self.page_entry = template_content.find_page(slug, page_slug, self.locale)
         if not self.page_entry:
             raise Http404(f"Page '{page_slug}' not found for this template.")
 
@@ -152,7 +165,7 @@ class LiveTemplateView(TemplateView):
 
         # Blog/news detail uses a dedicated kind regardless of the parent slug
         if post_slug:
-            self.post = template_content.find_post(slug, post_slug)
+            self.post = template_content.find_post(slug, post_slug, self.locale)
             if not self.post:
                 raise Http404(f"Post '{post_slug}' not found.")
             page_kind = page_kind.replace("_list", "_detail")
@@ -201,4 +214,22 @@ class LiveTemplateView(TemplateView):
             "heading_font": heading_font,
             "body_font":    body_font,
         }
+
+        # i18n/RTL pilot context (Phase 2i.1 — Session 23).
+        # - `locale`: current active language code (e.g. "it", "en", "ar")
+        # - `chrome`: dict of localized labels the specialist skin itself
+        #   renders (marketplace bar, footer headings, form labels, etc.)
+        # - `html_dir`: "rtl" for Arabic, "ltr" otherwise — consumed by
+        #   the <html dir="..."> attribute in _base.html
+        # - `is_rtl`: boolean shortcut for conditional CSS loads
+        # - `locale_switcher`: list of dicts for the language switcher
+        #   (each with code/label/badge/is_current)
+        # - `default_locale`: exposed so templates can suppress the
+        #   `?lang=` query param when building links for the IT default
+        ctx["locale"]          = self.locale
+        ctx["chrome"]          = template_i18n.get_chrome(self.locale)
+        ctx["html_dir"]        = template_i18n.html_dir(self.locale)
+        ctx["is_rtl"]          = template_i18n.is_rtl(self.locale)
+        ctx["locale_switcher"] = template_i18n.locale_switcher_entries(self.locale)
+        ctx["default_locale"]  = template_i18n.DEFAULT_LOCALE
         return ctx

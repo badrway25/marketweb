@@ -1,5 +1,5 @@
 {% load static %}{% spaceless %}<!DOCTYPE html>
-<html lang="it">
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
+{% endif %}
 <style>
   :root {
     --primary:   {{ theme.primary }};
@@ -22,6 +25,15 @@
     --heading: '{{ theme.heading_font }}', Georgia, serif;
     --body:    '{{ theme.body_font }}', system-ui, sans-serif;
   }
+  {% if is_rtl %}
+  :root {
+    /* Arabic font stack: Naskh for serif headings (mirrors Cormorant's editorial
+       tone), Kufi as a calm UI body, with the Latin serif fallback kept so
+       mixed Latin/Arabic strings (dates, proper names) stay legible. */
+    --heading: 'Noto Naskh Arabic', '{{ theme.heading_font }}', Georgia, serif;
+    --body:    'Noto Kufi Arabic', '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  {% endif %}
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
@@ -36,10 +48,34 @@
   .mp-bar {
     background: #0f0e0c; color: #f7f3ee; font-family: var(--body);
     font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
-    padding: 10px 32px; display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 32px; display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    flex-wrap: wrap;
   }
   .mp-bar .mp-back { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; font-weight: 600; }
   .mp-bar .mp-name { color: rgba(247,243,238,0.55); }
+
+  /* Language switcher (pilot 2i.1). Compact inline pills in the mp-bar. */
+  .mp-lang { display: flex; align-items: center; gap: 14px; font-family: var(--body); }
+  .mp-lang .mp-lang-label {
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(247,243,238,0.45); font-weight: 700;
+  }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(247,243,238,0.55);
+    border: 1px solid rgba(247,243,238,0.15);
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover {
+    color: var(--accent); border-color: rgba(247,243,238,0.35);
+  }
+  .mp-lang a.mp-lang-pill.is-current {
+    color: var(--accent); border-color: var(--accent); background: rgba(156,42,42,0.08);
+  }
+  .mp-lang a.mp-lang-pill.ar-pill { letter-spacing: 0; font-size: 11px; }
 
   /* ============================================================
      SITE NAV — minimal serif (centered logo, hairline rule)
@@ -167,6 +203,44 @@
   }
   .sp-foot .bot a:hover { color: var(--accent); }
 
+  /* ============================================================
+     RTL adjustments — scoped by html[dir="rtl"]
+     Flips the accent-border edges, mirrors eyebrow/sec-label
+     indicators, restores reading order in the 3-column nav grid,
+     and keeps Arabic text from being squeezed by Latin letter-
+     spacing conventions that don't apply to Arabic script.
+  ============================================================ */
+  html[dir="rtl"] body {
+    font-size: 17px;  /* Arabic naskh reads better one size up */
+    line-height: 1.8;
+  }
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4,
+  html[dir="rtl"] h5 {
+    letter-spacing: 0;  /* no negative tracking on Arabic shapes */
+  }
+  html[dir="rtl"] .sp-lead .eyebrow,
+  html[dir="rtl"] .sp-section .sec-label {
+    letter-spacing: 0.04em;
+  }
+  html[dir="rtl"] .sp-lead .eyebrow:before { display: none; }
+  html[dir="rtl"] .sp-lead .eyebrow:after {
+    content: ''; width: 32px; height: 1.5px; background: var(--accent);
+    margin-right: 4px;
+  }
+  html[dir="rtl"] .sp-lead .gold-btn:after { content: '←'; }
+  html[dir="rtl"] .sp-nav .left,
+  html[dir="rtl"] .sp-nav .right { letter-spacing: 0.04em; }
+  html[dir="rtl"] .sp-nav .right { justify-content: flex-start; }
+  html[dir="rtl"] .sp-nav .left  { justify-content: flex-end; }
+  html[dir="rtl"] .sp-foot .top h5,
+  html[dir="rtl"] .mp-bar,
+  html[dir="rtl"] .mp-lang .mp-lang-label,
+  html[dir="rtl"] .mp-lang a.mp-lang-pill { letter-spacing: 0.04em; }
+  html[dir="rtl"] .sp-foot .bot { letter-spacing: 0.04em; }
+
   /* Page-specific block can extend with extra css */
   {% block extra_css %}{% endblock %}
 </style>
@@ -174,9 +248,29 @@
 <body>{% endspaceless %}
 
 <div class="mp-bar">
-  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}" class="mp-back">← Torna a MarketWeb</a>
-  <span class="mp-name">Anteprima completa · {{ template.name }}</span>
-  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}" class="mp-back">Altri template medicali →</a>
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}{% if entry.code == 'ar' %} ar-pill{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other }}</a>
 </div>
 
 <nav class="sp-nav">
@@ -184,9 +278,9 @@
     {% for p in pages %}
       {% if forloop.counter <= 3 %}
         {% if p.slug == "home" %}
-          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
         {% else %}
-          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
         {% endif %}
       {% endif %}
     {% endfor %}
@@ -198,7 +292,7 @@
   <div class="right">
     {% for p in pages %}
       {% if forloop.counter > 3 %}
-        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
       {% endif %}
     {% endfor %}
   </div>
@@ -209,28 +303,28 @@
 <footer class="sp-foot">
   <div class="top">
     <div class="brand">
-      <h5>Lo studio</h5>
+      <h5>{{ chrome.foot_studio }}</h5>
       <div class="word">{{ site.logo_word }}</div>
       <p>{{ site.footer_intro }}</p>
     </div>
     <div class="col">
-      <h5>Pagine</h5>
+      <h5>{{ chrome.foot_pages }}</h5>
       {% for p in pages %}
         {% if p.slug == "home" %}
-          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
         {% else %}
-          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
         {% endif %}
       {% endfor %}
     </div>
     <div class="col">
-      <h5>Contatti</h5>
+      <h5>{{ chrome.foot_contact }}</h5>
       <p>{{ site.address }}</p>
       <p>{{ site.phone }}</p>
       <p>{{ site.email }}</p>
     </div>
     <div class="col">
-      <h5>Orari</h5>
+      <h5>{{ chrome.foot_hours }}</h5>
       <p>{{ site.hours_compact }}</p>
       {% for row in site.hours_footer_rows %}
         <p>{{ row }}</p>
@@ -239,7 +333,7 @@
   </div>
   <div class="bot">
     <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
-    <span><a href="#">Privacy</a> &middot; <a href="#">Cookie</a> &middot; <a href="#">Note legali</a></span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
   </div>
 </footer>
 

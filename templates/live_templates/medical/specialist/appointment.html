@@ -167,7 +167,7 @@
         </div>
         <div class="submit-row">
           <button type="button">{{ page_data.submit_label }}</button>
-          <span class="alt">In alternativa: <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}">parla con la segreteria</a></span>
+          <span class="alt">{{ chrome.apt_alternative_prefix }} <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.apt_alternative_link }}</a></span>
         </div>
       </form>
     </div>

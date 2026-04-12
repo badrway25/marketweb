@@ -1,5 +1,47 @@
 # TODO Next
 
+## 🌐 Phase 2i — i18n/RTL Pilot + Rollout
+
+### 2i.1 — i18n/RTL Pilot Cardio (it/en/fr/es/ar) — ✅ CLOSED (Session 23, 2026-04-11)
+Per D-059, cardio-studio-specialistico now ships as the first genuinely multilingual `tier=published_live` template with real RTL for Arabic. Zero Django gettext machinery introduced. The pilot architecture is the reusable recipe for Phase 2i.2 rollout to the other `tier=published_live` templates.
+
+- [x] Created `apps/catalog/template_i18n.py` — `SUPPORTED_LOCALES`, `DEFAULT_LOCALE`, `RTL_LOCALES`, `LOCALE_LABELS`, `LOCALE_BADGES`, `CHROME_I18N` (5 locales × ~30 keys), helpers `resolve_locale/is_rtl/html_dir/get_chrome/pick_localized/locale_switcher_entries`.
+- [x] Created `apps/catalog/template_content_cardio_i18n.py` — 4 full hand-authored content trees (CARDIO_CONTENT_EN/FR/ES/AR), premium native-voice quality per locale, no machine translation.
+- [x] Refactored `apps/catalog/template_content.py` — top-level `TEMPLATE_CONTENT` is now `{slug: {locale: tree}}`. Cardio has 5 locales; derm and gusto wrapped under `{"it": ..._IT}`. Helpers made locale-aware with IT fallback via `template_i18n.pick_localized`.
+- [x] Updated `LiveTemplateView` — reads `?lang=xx`, threads locale through content helpers, exposes `locale/chrome/html_dir/is_rtl/locale_switcher/default_locale` context vars.
+- [x] Rewrote `templates/live_templates/medical/specialist/_base.html` — dynamic `<html lang dir>`, conditional Noto Naskh Arabic + Noto Kufi Arabic font loading, marketplace-bar language switcher pill strip, chrome strings wired, every nav/footer URL preserves `?lang` when non-IT, RTL-scoped CSS block (`html[dir="rtl"] ...` — font-size bump, letter-spacing flatten, eyebrow accent-bar flip, gold-btn arrow flip, nav grid justify-content swap).
+- [x] Chrome strings + URL locale preservation on all specialist pages: `home.html` (+ `home_all_doctors`/`home_publications` link labels), `about.html`, `services.html`, `contact.html` (6 form labels + submit), `appointment.html` (alt link), `blog_list.html` (read-full + min), `blog_detail.html` (crumbs sep, min, back link). `team.html` needed zero edits (already clean from Session 14 lift).
+- [x] Validation: `python manage.py check` clean. 51/51 smoke test green (9 cardio routes × 5 locales = 45, plus 6 regression/negative checks for derm-EN fallback, gusto-AR fallback, unknown locale fallback, and draft 404).
+- [x] Live browser walk at 1440×900 Playwright: IT/EN/FR/ES/AR home rendered, AR contact page verified, FR services rendered, ES blog detail rendered. AR confirmed `dir=rtl`, Noto Naskh loaded, body 17px, layout flips visually correct.
+- [x] Mobile sanity at 390×844: pilot introduces zero new horizontal overflow (IT 835px, AR 882px — delta is the intentional 17px body bump).
+- [x] D-059 formalized in DECISIONS.md.
+- [x] memory/i18n_pilot_cardio_session23.md + MEMORY.md index entry.
+
+**Decision:** I18N/RTL PILOT CARDIO APPROVATO.
+
+### 2i.2 — Extend pilot to the other `published_live` templates (open)
+Per D-059, the other two `tier=published_live` templates pick up multilingual publishing by opting into the pilot architecture. Order (cheapest first):
+
+- [ ] **Dermatologia-elite-roma** (cheapest — same specialist skin, RTL CSS already in place). Work: create `apps/catalog/template_content_dermatologia_i18n.py` with 4 hand-authored content trees (EN/FR/ES/AR). Update `TEMPLATE_CONTENT["dermatologia-elite-roma"]` to import all 5 locale keys. Run the smoke sweep + browser walk. Budget: ~1.5h because no new HTML or CSS needed.
+- [ ] **Gusto-fine-dining** (adds a new archetype RTL block). Work: (a) create `apps/catalog/template_content_gusto_i18n.py` with 4 hand-authored content trees for the 7 gusto pages (home/filosofia/menu/atmosfera/diario/prenota + blog_detail) — remember gusto's tone is dark-editorial Michelin not medical clinical, so the voice differs per locale; (b) author a new `html[dir="rtl"] ...` CSS block inside `templates/live_templates/restaurant/fine-dining/_base.html` flipping `.fd-nav`, `.fd-hero`, `.fd-chef .portrait`, `.fd-courses`, `.fd-form-band`, etc. (same selector-level flip pattern as the specialist block, but with `.fd-*` prefixes); (c) wire chrome strings — gusto uses a different set of ad-hoc literal labels in its `_base.html` (gold-btn, mp-bar, footer), so add a `CHROME_I18N` expansion with the 10–15 additional keys needed or factor a new `GUSTO_CHROME_I18N` block. Budget: ~3h.
+
+**Exit criteria for Phase 2i.2:**
+- [ ] Every `tier=published_live` template has a `{locale: tree}` content block for all 5 locales (it/en/fr/es/ar).
+- [ ] Every archetype `_base.html` has a working `html[dir="rtl"]` CSS block verified by a 1440×900 browser walk on `?lang=ar`.
+- [ ] Route sweep: 5 locales × all routes per template all 200.
+- [ ] No new horizontal overflow compared to the IT baseline on any template at 390×844.
+- [ ] `CHROME_I18N` is the single source of truth for all chrome strings across archetypes — per-archetype extensions live in a dedicated section and never duplicate keys.
+- [ ] Session log + memory entry per template.
+
+### 2i.3 — Marketplace chrome i18n (deferred, Phase 4)
+The marketplace surface (homepage, listing, detail, category, search) remains Italian-only through Phase 2i. When Phase 4 lifts this, the migration is:
+- [ ] Audit every `templates/catalog/*.html` + `templates/pages/*.html` + `templates/includes/*.html` for hardcoded IT strings.
+- [ ] Decide between (a) extending `CHROME_I18N` with a `marketplace` namespace and reading it via a context processor, or (b) finally moving to Django `{% trans %}` + `.po` files for the marketplace-only surface. Either is compatible with the Phase 2i pilot because every live-template string is already locale-namespaced.
+- [ ] Decide on URL scheme — query param `?lang=` (current pilot shape) vs prefix `/<lang>/` (future). Prefix would let marketing link directly to a localized homepage.
+- [ ] Out of scope until Phase 2g3 is closed and the roadmap re-unblocks.
+
+---
+
 ## 🛑 BLOCKING — Phase 2g2x (Catalog Hardening Wave, Session 16 audit)
 
 **The roadmap is paused.** Per D-049, no feature work (auth / checkout / editor / projects / commerce / dashboard / new categories / new templates / new archetypes) starts until this wave closes. See SESSION_LOG.md Session 16 for the audit + MEMORY.md → catalog_differentiation_audit.md for the condensed verdict.

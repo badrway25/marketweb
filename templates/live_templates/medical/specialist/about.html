@@ -122,8 +122,8 @@
   <section class="sp-cta-band">
     <h3>{{ page_data.cta_heading|safe }}</h3>
     <div class="actions">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}">{{ page_data.cta_primary_label }}</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}">{{ page_data.cta_secondary_label }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary_label }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_secondary_label }}</a>
     </div>
   </section>
 {% endblock %}
