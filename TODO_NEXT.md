@@ -42,6 +42,9 @@ The marketplace surface (homepage, listing, detail, category, search) remains It
 
 ---
 
+### 2g2x.11 — Medical Motion Opt-In — ✅ CLOSED (Session 27, 2026-04-12)
+Specialist archetype (`cardio-studio-specialistico` + `dermatologia-elite-roma`) adopts the live motion language with a clinical profile. 4 patterns: reveal-on-scroll (10px rise), stagger (80–100ms), CTA hover refinement, image attention lift (filter, not zoom). 9 files modified, zero Gusto changes. 34/34 routes green. D-061. See SESSION_LOG Session 27.
+
 ### 2g2x.10 — Catalog Stabilization & Fix Consolidation — ✅ CLOSED (Session 25, 2026-04-12)
 All approved fixes from Sessions 17–24 consolidated into branch `phase-catalog-stabilization-v1`. Cherry-picked derm i18n (Session 24). Generated preview PNGs for all 3 published_live templates. 32/32 routes green, zero regressions, zero cross-contamination. The "scattered worktree" problem is resolved. See SESSION_LOG Session 25.
 

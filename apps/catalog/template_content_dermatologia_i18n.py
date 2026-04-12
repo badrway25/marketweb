@@ -225,6 +225,11 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
              "led full-time by a board-certified dermatologist."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "Dermatology clinic · Via Veneto, Rome",
+
         "method_title": "Method",
         "method_paragraphs": [
             "A consultation at Studio Ricciardi always begins with a simple "
@@ -269,6 +274,11 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
             "Every consultation at Studio Ricciardi follows a defined clinical "
             "pathway, with a written duration, price and follow-up plan. "
             "No hidden fees, no verbal estimates.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1612349316228-5b7717e1404e"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "Digital dermoscopy · Studio Ricciardi",
 
         "treatments": [
             ("Full dermatological consultation",
@@ -801,6 +811,11 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
              "\u00e0 temps plein."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "Cabinet dermatologique \u00b7 Via Veneto, Rome",
+
         "method_title": "M\u00e9thode",
         "method_paragraphs": [
             "Une consultation au Studio Ricciardi commence toujours par une "
@@ -847,6 +862,11 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
             "Chaque consultation au Studio Ricciardi suit un parcours clinique "
             "d\u00e9fini, avec une dur\u00e9e, un tarif et un plan de suivi \u00e9crits. "
             "Aucun forfait cach\u00e9, aucun devis oral.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1612349316228-5b7717e1404e"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "Dermatoscopie num\u00e9rique \u00b7 Studio Ricciardi",
 
         "treatments": [
             ("Consultation dermatologique compl\u00e8te",
@@ -1380,6 +1400,11 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
              "a tiempo completo."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "Cl\u00ednica dermatol\u00f3gica \u00b7 Via Veneto, Roma",
+
         "method_title": "M\u00e9todo",
         "method_paragraphs": [
             "Una consulta en el Studio Ricciardi comienza siempre con una "
@@ -1425,6 +1450,11 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
             "Cada consulta en el Studio Ricciardi es un recorrido cl\u00ednico "
             "definido, con duraci\u00f3n, precio y plan de seguimiento por escrito. "
             "Sin forfaits ocultos ni presupuestos verbales.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1612349316228-5b7717e1404e"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "Dermatoscopia digital \u00b7 Studio Ricciardi",
 
         "treatments": [
             ("Consulta dermatol\u00f3gica completa",
@@ -1947,6 +1977,11 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
              "في العيادة."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "عيادة الأمراض الجلدية · فيا فينيتو، روما",
+
         "method_title": "المنهج",
         "method_paragraphs": [
             "تبدأ الاستشارة في Studio Ricciardi دائماً بسؤال بسيط: متى "
@@ -1986,6 +2021,11 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
         "intro":
             "كلّ استشارة في Studio Ricciardi مسار سريري محدّد بمدّة وسعر "
             "وخطّة متابعة مكتوبة. لا رسوم مخفية ولا تقديرات شفهية.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1612349316228-5b7717e1404e"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "التنظير الجلدي الرقمي · ستوديو ريتشاردي",
 
         "treatments": [
             ("استشارة جلدية ش��ملة",

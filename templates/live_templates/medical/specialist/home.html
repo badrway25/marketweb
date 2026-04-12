@@ -121,7 +121,10 @@
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 36px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
   }
-  .sp-facts .fact { display: flex; align-items: baseline; gap: 18px; }
+  .sp-facts .fact {
+    display: flex; align-items: baseline; gap: 18px;
+    padding-top: 18px; border-top: 2px solid var(--accent);
+  }
   .sp-facts .fact .num {
     font-family: var(--heading); font-size: 56px; font-weight: 500;
     color: var(--primary); letter-spacing: -0.02em; line-height: 0.9;
@@ -265,12 +268,12 @@
 {% block content %}
   {% if page_data.hero_variant == "editorial-magazine" %}
   <section class="sp-hero-em">
-    <div class="portrait" style="background-image: url('{{ page_data.chief.portrait }}');"></div>
-    <div class="text">
+    <div class="portrait" data-lm="reveal-soft" style="background-image: url('{{ page_data.chief.portrait }}');"></div>
+    <div class="text" data-lm="reveal">
       <div class="eyebrow">{{ page_data.eyebrow }}</div>
       <h1>{{ page_data.headline|safe }}</h1>
       <p class="intro">{{ page_data.intro }}</p>
-      <div class="stats">
+      <div class="stats" data-lm-stagger data-lm-stagger-delay="100">
         {% for label, value in page_data.hero_sidebar_pulse %}
           <div>{{ label }}<strong>{{ value }}</strong></div>
         {% endfor %}
@@ -283,7 +286,7 @@
   </section>
   {% else %}
   <section class="sp-hero">
-    <div class="left">
+    <div class="left" data-lm="reveal">
       <div class="eyebrow">{{ page_data.eyebrow }}</div>
       <h1>{{ page_data.headline|safe }}</h1>
       <p class="intro">{{ page_data.intro }}</p>
@@ -292,7 +295,7 @@
         <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn">{{ page_data.secondary_cta }}</a>
       </div>
     </div>
-    <aside class="right">
+    <aside class="right" data-lm="reveal">
       <div class="top">
         {{ page_data.hero_sidebar_top_label }}
         <strong>{{ page_data.chief.name }}</strong>
@@ -301,7 +304,7 @@
         <p class="quote">{{ page_data.hero_sidebar_quote }}</p>
         <div class="quote-author">{{ page_data.hero_sidebar_author }}</div>
       </div>
-      <div class="pulse">
+      <div class="pulse" data-lm-stagger data-lm-stagger-delay="100">
         {% for label, value in page_data.hero_sidebar_pulse %}
           <div>{{ label }}<strong>{{ value }}</strong></div>
         {% endfor %}
@@ -310,25 +313,25 @@
   </section>
   {% endif %}
 
-  <section class="sp-facts">
+  <section class="sp-facts" data-lm-stagger data-lm-stagger-delay="100">
     {% for num, lbl in page_data.facts %}
       <div class="fact">
-        <span class="num">{{ num }}</span>
+        <span class="num" data-lm="counter">{{ num }}</span>
         <span class="lbl">{{ lbl }}</span>
       </div>
     {% endfor %}
   </section>
 
   <section class="sp-manifesto">
-    <p>{{ page_data.manifesto_drop_cap }}{{ page_data.manifesto }}</p>
+    <p data-lm="reveal-lg">{{ page_data.manifesto_drop_cap }}{{ page_data.manifesto }}</p>
   </section>
 
   <section class="sp-section dark">
-    <span class="sec-label">{{ page_data.signature_visits_label }}</span>
-    <h2>{{ page_data.signature_visits_heading|safe }}</h2>
-    <p class="sec-intro">{{ page_data.signature_visits_intro }}</p>
+    <span class="sec-label" data-lm="reveal">{{ page_data.signature_visits_label }}</span>
+    <h2 data-lm="reveal">{{ page_data.signature_visits_heading|safe }}</h2>
+    <p class="sec-intro" data-lm="reveal">{{ page_data.signature_visits_intro }}</p>
 
-    <div class="sp-fields">
+    <div class="sp-fields" data-lm-stagger data-lm-stagger-delay="90">
       {% for num, title, blurb in page_data.signature_visits %}
         <div class="field">
           <div class="num">{{ num }} / 04</div>
@@ -340,12 +343,12 @@
   </section>
 
   <section class="sp-section">
-    <span class="sec-label">{{ page_data.chief_label }}</span>
-    <h2>{{ page_data.chief_heading|safe }}</h2>
+    <span class="sec-label" data-lm="reveal">{{ page_data.chief_label }}</span>
+    <h2 data-lm="reveal">{{ page_data.chief_heading|safe }}</h2>
 
     <div class="sp-chief" style="margin-top: 56px;">
-      <div class="portrait" style="background-image: url('{{ page_data.chief.portrait }}');"></div>
-      <div class="info">
+      <div class="portrait" data-lm="reveal-soft" style="background-image: url('{{ page_data.chief.portrait }}');"></div>
+      <div class="info" data-lm="reveal">
         <div class="role">{{ page_data.chief.role }}</div>
         <h3>{{ page_data.chief.name }}</h3>
         <p>{{ page_data.chief.bio }}</p>
@@ -359,7 +362,7 @@
     </div>
   </section>
 
-  <section class="sp-press">
+  <section class="sp-press" data-lm-stagger data-lm-stagger-delay="80">
     <span class="lbl">{{ page_data.press_label }}</span>
     {% for outlet in page_data.press %}
       <span class="item">{{ outlet }}</span>
@@ -368,8 +371,8 @@
 
   {% if page_data.credentials %}
   <section class="sp-credentials">
-    <span class="sec-label">{{ page_data.credentials.label }}</span>
-    <div class="cred-grid">
+    <span class="sec-label" data-lm="reveal">{{ page_data.credentials.label }}</span>
+    <div class="cred-grid" data-lm-stagger data-lm-stagger-delay="90">
       {% for abbr, desc, since in page_data.credentials.items %}
         <div class="cred">
           <span class="abbr">{{ abbr }}</span>
@@ -382,7 +385,7 @@
   {% endif %}
 
   <section class="sp-cta">
-    <h2>{{ page_data.cta_heading|safe }}</h2>
+    <h2 data-lm="reveal-lg">{{ page_data.cta_heading|safe }}</h2>
     <div class="actions">
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="gold-btn">{{ page_data.cta_primary_label }}</a>
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn">{{ page_data.cta_secondary_label }}</a>

@@ -17,6 +17,43 @@
     color: var(--ink); line-height: 1.55; max-width: 74ch; padding-top: 18px;
   }
 
+  /* filosofia image band — editorial cinematic break */
+  .fd-filosofia-img {
+    max-width: 1440px; margin: 0 auto;
+    padding: 0 90px 96px;
+  }
+  .fd-filosofia-img .frame {
+    position: relative; overflow: hidden;
+    aspect-ratio: 21/9;
+    border-left: 6px solid var(--secondary);
+  }
+  .fd-filosofia-img .frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: contrast(1.06) saturate(0.95) brightness(0.78);
+    transition: filter var(--lm-dur-xslow, 900ms) var(--lm-ease-smooth, cubic-bezier(0.33, 1.00, 0.68, 1)),
+                transform var(--lm-dur-xslow, 900ms) var(--lm-ease-smooth, cubic-bezier(0.33, 1.00, 0.68, 1));
+    transform: scale(1.001);
+  }
+  .fd-filosofia-img .frame:hover img {
+    filter: contrast(1.08) saturate(1.0) brightness(0.82);
+    transform: scale(1.035);
+  }
+  .fd-filosofia-img .frame:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(11,9,7,0.6) 0%, rgba(11,9,7,0) 40%),
+                linear-gradient(180deg, rgba(11,9,7,0) 50%, rgba(11,9,7,0.55) 100%);
+    pointer-events: none;
+  }
+  .fd-filosofia-img .cap {
+    position: absolute; bottom: 20px; left: 28px; z-index: 2;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--secondary);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fd-filosofia-img .frame img { transition: none; }
+  }
+
   /* method */
   .fd-method {
     background: var(--bg-2);
@@ -99,6 +136,15 @@
       </div>
     {% endfor %}
   </section>
+
+  {% if page_data.filosofia_image %}
+  <section class="fd-filosofia-img" data-lm="reveal-soft">
+    <div class="frame">
+      <img src="{{ page_data.filosofia_image }}" alt="{{ page_data.filosofia_image_caption }}" loading="lazy">
+      <span class="cap">{{ page_data.filosofia_image_caption }}</span>
+    </div>
+  </section>
+  {% endif %}
 
   <section class="fd-method">
     <div class="fd-method-inner">

@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 {% if is_rtl %}
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
 {% endif %}
@@ -241,6 +242,93 @@
   html[dir="rtl"] .mp-lang a.mp-lang-pill { letter-spacing: 0.04em; }
   html[dir="rtl"] .sp-foot .bot { letter-spacing: 0.04em; }
 
+  /* ============================================================
+     MEDICAL MOTION PROFILE — clinical precision, less theatrical
+     than restaurant. Overrides live-motion.css tokens per the
+     contract ("individual skins can override them per-token").
+  ============================================================ */
+  :root {
+    --lm-rise:     10px;   /* Gusto: 14px — medical is subtler */
+    --lm-rise-lg:  16px;   /* Gusto: 22px — heading entry more contained */
+    --lm-dur-slow: 680ms;  /* Gusto: 720ms — slightly faster, more precise */
+  }
+  /* Image attention lift — portrait filter transition on hover.
+     Clinical, not cinematic: the image "sharpens" under attention
+     instead of zooming (zoom requires wrapper+inner HTML refactor). */
+  .sp-chief .portrait,
+  .sp-doctors .portrait,
+  .sp-lead-post .img,
+  .sp-hero-em .portrait {
+    transition: filter var(--lm-dur-xslow, 900ms) var(--lm-ease-smooth, cubic-bezier(0.33, 1.00, 0.68, 1));
+  }
+  .sp-chief .portrait:hover,
+  .sp-doctors .portrait:hover,
+  .sp-lead-post .img:hover,
+  .sp-hero-em .portrait:hover {
+    filter: grayscale(0%) contrast(1.10) brightness(0.96);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sp-chief .portrait,
+    .sp-doctors .portrait,
+    .sp-lead-post .img,
+    .sp-hero-em .portrait { transition: none; }
+  }
+  /* CTA hover refinement — gold-btn arrow shift + letter-spacing lift.
+     More restrained than Gusto (+4px vs +6px). */
+  .sp-lead .gold-btn:after,
+  .sp-hero .actions .gold-btn:after,
+  .sp-hero-em .actions .gold-btn:after,
+  .sp-cta .actions .gold-btn:after,
+  .sp-lead-post .body .read:after {
+    display: inline-block;
+    transition: transform var(--lm-dur-fast, 360ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+  }
+  .sp-lead .gold-btn:hover:after,
+  .sp-hero .actions .gold-btn:hover:after,
+  .sp-hero-em .actions .gold-btn:hover:after,
+  .sp-cta .actions .gold-btn:hover:after,
+  .sp-lead-post .body .read:hover:after {
+    transform: translateX(4px);
+  }
+  html[dir="rtl"] .sp-lead .gold-btn:hover:after,
+  html[dir="rtl"] .sp-hero .actions .gold-btn:hover:after,
+  html[dir="rtl"] .sp-hero-em .actions .gold-btn:hover:after,
+  html[dir="rtl"] .sp-cta .actions .gold-btn:hover:after,
+  html[dir="rtl"] .sp-lead-post .body .read:hover:after {
+    transform: translateX(-4px);
+  }
+  /* Ghost-btn subtle lift */
+  .sp-lead .ghost-btn,
+  .sp-hero .actions .ghost-btn,
+  .sp-hero-em .actions .ghost-btn {
+    transition: color var(--lm-dur-fast, 360ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+                border-color var(--lm-dur-fast, 360ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+  }
+  .sp-lead .ghost-btn:hover,
+  .sp-hero .actions .ghost-btn:hover,
+  .sp-hero-em .actions .ghost-btn:hover {
+    color: var(--ink); border-color: var(--accent);
+  }
+  /* Submit button hover — subtle accent border lift */
+  .sp-form .submit button,
+  .sp-form-band .submit-row button {
+    transition: opacity var(--lm-dur-fast, 360ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+  }
+  .sp-form .submit button:hover,
+  .sp-form-band .submit-row button:hover { opacity: 0.88; }
+  @media (prefers-reduced-motion: reduce) {
+    .sp-lead .gold-btn:after,
+    .sp-hero .actions .gold-btn:after,
+    .sp-hero-em .actions .gold-btn:after,
+    .sp-cta .actions .gold-btn:after,
+    .sp-lead-post .body .read:after,
+    .sp-lead .ghost-btn,
+    .sp-hero .actions .ghost-btn,
+    .sp-hero-em .actions .ghost-btn,
+    .sp-form .submit button,
+    .sp-form-band .submit-row button { transition: none; }
+  }
+
   /* Page-specific block can extend with extra css */
   {% block extra_css %}{% endblock %}
 </style>
@@ -337,5 +425,6 @@
   </div>
 </footer>
 
+<script src="{% static 'js/live-motion.js' %}" defer></script>
 </body>
 </html>

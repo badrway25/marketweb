@@ -18,6 +18,39 @@
     color: var(--ink); line-height: 1.55; max-width: 70ch; padding-top: 14px;
   }
 
+  /* studio image band — editorial full-width between history and method */
+  .sp-studio-img {
+    max-width: 1400px; margin: 0 auto;
+    padding: 0 90px 80px;
+  }
+  .sp-studio-img .frame {
+    position: relative; overflow: hidden;
+    aspect-ratio: 21/9;
+    border-left: 8px solid var(--accent);
+  }
+  .sp-studio-img .frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(15%) contrast(1.08) brightness(0.92);
+    transition: filter var(--lm-dur-xslow, 900ms) var(--lm-ease-smooth, cubic-bezier(0.33, 1.00, 0.68, 1));
+  }
+  .sp-studio-img .frame:hover img {
+    filter: grayscale(0%) contrast(1.10) brightness(0.96);
+  }
+  .sp-studio-img .frame:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(28,22,18,0) 50%, rgba(28,22,18,0.45) 100%);
+    pointer-events: none;
+  }
+  .sp-studio-img .cap {
+    position: absolute; bottom: 18px; left: 28px; z-index: 2;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: rgba(247,243,238,0.75);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sp-studio-img .frame img { transition: none; }
+  }
+
   /* method block */
   .sp-method {
     background: var(--paper-2);
@@ -86,7 +119,7 @@
     <p class="intro">{{ page_data.intro }}</p>
   </section>
 
-  <section class="sp-history">
+  <section class="sp-history" data-lm-stagger data-lm-stagger-delay="90">
     {% for year, text in page_data.history %}
       <div class="row">
         <span class="year">{{ year }}</span>
@@ -95,8 +128,17 @@
     {% endfor %}
   </section>
 
+  {% if page_data.studio_image %}
+  <section class="sp-studio-img" data-lm="reveal-soft">
+    <div class="frame">
+      <img src="{{ page_data.studio_image }}" alt="{{ page_data.studio_image_caption }}" loading="lazy">
+      <span class="cap">{{ page_data.studio_image_caption }}</span>
+    </div>
+  </section>
+  {% endif %}
+
   <section class="sp-method">
-    <div class="sp-method-inner">
+    <div class="sp-method-inner" data-lm="reveal">
       <h2>{{ page_data.method_title }}</h2>
       <div class="ps">
         {% for p in page_data.method_paragraphs %}
@@ -107,9 +149,9 @@
   </section>
 
   <section class="sp-values">
-    <span class="sec-label">{{ page_data.values_label }}</span>
-    <h2>{{ page_data.values_heading|safe }}</h2>
-    <div class="grid">
+    <span class="sec-label" data-lm="reveal">{{ page_data.values_label }}</span>
+    <h2 data-lm="reveal">{{ page_data.values_heading|safe }}</h2>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="90">
       {% for title, blurb in page_data.values %}
         <div class="v">
           <h4>{{ title }}</h4>
@@ -119,7 +161,7 @@
     </div>
   </section>
 
-  <section class="sp-cta-band">
+  <section class="sp-cta-band" data-lm="reveal">
     <h3>{{ page_data.cta_heading|safe }}</h3>
     <div class="actions">
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary_label }}</a>

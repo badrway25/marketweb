@@ -76,7 +76,7 @@
 
   <section class="sp-doctors">
     {% for d in page_data.doctors %}
-      <div class="doctor">
+      <div class="doctor" data-lm="reveal">
         <div class="portrait"{% if d.portrait %} style="background-image: url('{{ d.portrait }}');"{% endif %}>
           <div class="signature">
             {{ d.portrait_city|default:page_data.portrait_city }}
@@ -86,7 +86,7 @@
         <div class="info">
           <div class="role">{{ d.role }}</div>
           <h3>{{ d.name }}</h3>
-          <div class="tags">
+          <div class="tags" data-lm-stagger data-lm-stagger-delay="60">
             {% for t in d.tags %}<span>{{ t }}</span>{% endfor %}
           </div>
           <p class="bio">{{ d.bio }}</p>

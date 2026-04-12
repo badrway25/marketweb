@@ -204,6 +204,11 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
              "cardiovascular prevention programme."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "Cardiology clinic · Viale Parioli, Rome",
+
         "method_title": "Method",
         "method_paragraphs": [
             "A visit at Studio Marani always begins with the file the patient "
@@ -241,6 +246,11 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
         "intro":
             "Every consultation at Studio Marani is a defined clinical "
             "pathway, with a written duration, price and follow-up plan.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "Cardiac diagnostics · Studio Marani",
 
         "treatments": [
             ("Complete cardiology consultation",
@@ -731,6 +741,11 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
              "programme de prévention cardiovasculaire familiale."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "Cabinet de cardiologie · Viale Parioli, Rome",
+
         "method_title": "Méthode",
         "method_paragraphs": [
             "Une consultation au Studio Marani commence toujours par le "
@@ -769,6 +784,11 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
         "intro":
             "Chaque consultation au Studio Marani est un parcours clinique "
             "défini, avec une durée, un tarif et un plan de suivi écrits.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "Diagnostic cardiaque · Studio Marani",
 
         "treatments": [
             ("Consultation cardiologique complète",
@@ -1270,6 +1290,11 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
              "familiar."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "Consulta de cardiología · Viale Parioli, Roma",
+
         "method_title": "Método",
         "method_paragraphs": [
             "Una consulta en Studio Marani empieza siempre por la carpeta "
@@ -1310,6 +1335,11 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
             "Cada consulta en Studio Marani es un recorrido clínico "
             "definido, con una duración, un precio y un plan de "
             "seguimiento escritos.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "Diagnóstico cardíaco · Studio Marani",
 
         "treatments": [
             ("Consulta cardiológica completa",
@@ -1808,6 +1838,11 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
              "الوقاية القلبية الوعائية العائلي."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "عيادة أمراض القلب · فيالي باريولي، روما",
+
         "method_title": "المنهج",
         "method_paragraphs": [
             "تبدأ الاستشارة في Studio Marani دائماً من الملف الذي "
@@ -1845,6 +1880,11 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
         "intro":
             "كلّ استشارة في Studio Marani هي مسار سريري محدّد، "
             "بمدّة وسعر وخطّة متابعة مكتوبة.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "التشخيص القلبي · ستوديو ماراني",
 
         "treatments": [
             ("استشارة قلبية شاملة",

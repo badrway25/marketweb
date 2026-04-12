@@ -93,7 +93,7 @@
 
   <section class="sp-posts">
     {% with first_post=posts.0 %}
-    <div class="sp-lead-post">
+    <div class="sp-lead-post" data-lm="reveal">
       <div class="img"{% if page_data.lead_image %} style="background-image: url('{{ page_data.lead_image }}');"{% endif %}></div>
       <div class="body">
         <div class="kicker">{{ first_post.kicker }}</div>
@@ -105,7 +105,7 @@
     </div>
     {% endwith %}
 
-    <div class="sp-list">
+    <div class="sp-list" data-lm-stagger data-lm-stagger-delay="80">
       {% for post in posts %}
         {% if not forloop.first %}
           <div class="row">

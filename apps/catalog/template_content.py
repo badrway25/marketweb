@@ -222,6 +222,11 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
              "di prevenzione cardiovascolare familiare."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "Ambulatorio di cardiologia · Viale Parioli, Roma",
+
         "method_title": "Metodo",
         "method_paragraphs": [
             "Una visita allo Studio Marani inizia sempre dalla cartella che il "
@@ -262,6 +267,11 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
         "intro":
             "Ogni visita allo Studio Marani è un percorso clinico definito, "
             "con una durata, un costo e un piano di follow-up scritti.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "Diagnostica strumentale · Studio Marani",
 
         "treatments": [
             ("Visita cardiologica completa",
@@ -736,6 +746,11 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
              "Pubblicazione del libro 'Otto atti', edizioni Giunti, dedicato "
              "alle prime quaranta serate del menù invernale 2023/24."),
         ],
+
+        "filosofia_image":
+            "https://images.unsplash.com/photo-1556910103-1c02745aae4d"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "filosofia_image_caption": "La cucina · Lorenzo Fioravanti al lavoro",
 
         "method_title": "Metodo",
         "method_paragraphs": [
@@ -1213,9 +1228,14 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
              "un ambulatorio firmato da un dermatologo a tempo pieno."),
         ],
 
+        "studio_image":
+            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "studio_image_caption": "Studio dermatologico · Via Veneto, Roma",
+
         "method_title": "Metodo",
         "method_paragraphs": [
-            "Una visita allo Studio Ricciardi inizia sempre da una domanda semplice: "
+            "Una visita allo Studio Ricciardi inizia sempre da una domanda semplice:"
             "quando ha iniziato a notarla? Quella data è il nostro vero punto di "
             "partenza. Le lesioni cutanee non si leggono soltanto in sezione: si "
             "leggono nel tempo, confrontando fotografie, referti e sensazioni del paziente.",
@@ -1257,6 +1277,11 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
             "Ogni visita allo Studio Ricciardi è un percorso clinico definito, "
             "con una durata, un costo e un piano di follow-up scritti. "
             "Nessun forfait nascosto, nessun preventivo a voce.",
+
+        "service_image":
+            "https://images.unsplash.com/photo-1612349316228-5b7717e1404e"
+            "?auto=format&fit=crop&w=1400&q=80",
+        "service_image_caption": "Videodermatoscopia digitale · Studio Ricciardi",
 
         "treatments": [
             ("Visita dermatologica completa",

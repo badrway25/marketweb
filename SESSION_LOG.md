@@ -1,5 +1,63 @@
 # Session Log
 
+## Session 27 — Medical Motion Opt-In (Phase 2g2x.11) (2026-04-12)
+
+**Agent:** Premium UI session. Motion opt-in for the specialist archetype (cardio + dermatologia).
+**Branch:** `phase-motion-optin-medical-v1`.
+**Scope floor:** apply motion language to the 2 medical `published_live` templates with a clinical profile. Non-goals: touch Gusto, touch drafts, extend i18n, new features, refactor frontend.
+
+### 1 — Audit & Strategy
+
+Read all 11 context/memory files + all 9 specialist skin files + live-motion.css/js. Identified insertion points across all pages. Defined a 4-pattern medical motion profile:
+
+1. **Reveal-on-scroll** — fade+rise with `--lm-rise: 10px` (Gusto: 14px)
+2. **Stagger** — cascaded entry with 80–100ms delay (Gusto: 70ms)
+3. **CTA hover refinement** — arrow shift +4px, ghost-btn lift, submit opacity
+4. **Image attention lift** — filter transition on hover (not zoom)
+
+Excluded: counters (too promotional), nav sweep (too restaurant), marquee, image zoom.
+
+### 2 — Implementation
+
+Modified 9 specialist skin files. Zero changes to Gusto, shared motion files, or marketplace.
+
+| File | Changes |
+|------|---------|
+| `_base.html` | +link live-motion.css, +script live-motion.js, +medical token overrides, +CTA/image hover CSS, +reduced-motion guards, +RTL arrow-shift override |
+| `home.html` | +11 data-lm reveals, +4 data-lm-stagger parents (Cardio); +12/+5 (Derm via hero variant) |
+| `about.html` | +stagger on history + values, +reveal on method + CTA band |
+| `services.html` | +stagger on treatments, +reveal on footnote + CTA band |
+| `team.html` | +reveal on each doctor, +stagger on tags |
+| `contact.html` | +stagger on blocks, +reveal on form + sidebar |
+| `appointment.html` | +stagger on process steps, +reveal on form band |
+| `blog_list.html` | +reveal on lead post, +stagger on compact list |
+| `blog_detail.html` | +reveal on lede + h2 headings + blockquotes |
+
+### 3 — Validation Results
+
+- `python manage.py check` → 0 issues
+- **34/34 route smoke tests green:**
+  - 7 cardio IT routes + 4 cardio i18n (EN+AR) = 11
+  - 7 derm IT routes + 4 derm i18n (EN+AR) = 11
+  - 6 gusto IT routes (regression) = 6
+  - 3 detail pages + 2 draft 404 + 1 listing = 6
+- **Cardio home:** 11 data-lm, 4 stagger, lm-ready=true, tokens `10px/16px/680ms`
+- **Derm home:** 12 data-lm, 5 stagger (extra from credentials + editorial-magazine hero)
+- **Cardio AR:** dir=rtl, lang=ar, 11 data-lm — motion works in RTL
+- **Derm AR:** dir=rtl, 17px body, all motion active
+- **Gusto regression:** 20 data-lm, 4 stagger, tokens `14px/720ms` (Gusto originals, NOT medical overrides), 0 medical CSS leaked
+- **Catalog listing:** exactly 3 published_live templates visible
+- **Cross-contamination:** 0 "Ricciardi" in cardio, 0 "Marani" in derm
+- **Console errors:** 0 (only favicon 404)
+
+### 4 — Decision
+
+D-061 formalized in DECISIONS.md.
+
+**MEDICAL MOTION OPT-IN APPROVATO.**
+
+---
+
 ## Session 25 — Catalog Stabilization & Fix Consolidation (Phase 2g2x.10) (2026-04-12)
 
 **Agent:** Consolidation session. No new features, no new categories, no new templates. Pure stabilization pass to unify all approved fixes from Sessions 17–24 into a single baseline branch.

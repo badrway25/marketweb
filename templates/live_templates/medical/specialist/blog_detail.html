@@ -95,20 +95,20 @@
       <span>{{ post.read_min }} {{ chrome.blog_read_minutes }}</span>
     </div>
 
-    <p class="lede">{{ post.lede }}</p>
+    <p class="lede" data-lm="reveal">{{ post.lede }}</p>
 
     <div class="body">
       {% for kind, text in post.body %}
         {% if kind == "p" %}
           <p>{{ text }}</p>
         {% elif kind == "h2" %}
-          <h2>{{ text }}</h2>
+          <h2 data-lm="reveal">{{ text }}</h2>
         {% elif kind == "ol" %}
           <ol>
             {% for li in text %}<li>{{ li }}</li>{% endfor %}
           </ol>
         {% elif kind == "blockquote" %}
-          <blockquote>{{ text }}</blockquote>
+          <blockquote data-lm="reveal">{{ text }}</blockquote>
         {% endif %}
       {% empty %}
         {% for p in page_data.empty_body_fallback_paragraphs %}

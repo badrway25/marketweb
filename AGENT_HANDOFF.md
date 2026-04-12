@@ -1,32 +1,43 @@
 # Agent Handoff
 
-Last updated: 2026-04-12 — after **Session 25 Catalog Stabilization & Fix Consolidation (Phase 2g2x.10)**
+Last updated: 2026-04-12 — after **Session 27 Medical Motion Opt-In (Phase 2g2x.11)**
 
-## Session 25 — Catalog Stabilization: Read This Before Any New Work (2026-04-12)
+## Session 27 — Medical Motion Opt-In: Read This Before Touching Specialist Motion (2026-04-12)
 
-**Session 25 consolidated all approved fixes from Sessions 17–24 into a single baseline branch.** This is the reference starting point for any future session. No new features were introduced.
+**Session 27 applied the live motion language (D-058) to the specialist archetype with a clinical motion profile (D-061).** Both `cardio-studio-specialistico` and `dermatologia-elite-roma` now have scroll reveals, staggered entry, CTA hover refinement, and image attention lift — all more restrained than Gusto's restaurant motion.
 
-### What was consolidated
-- Cherry-picked derm i18n (Session 24) from `phase-i18n-dermatologia-v2` — derm now ships 5 locales like cardio
-- Generated preview PNGs for all 3 published_live templates (cardio, derm, gusto) — these were MISSING, causing "identical gray boxes" on the listing page
+### What was added
+- `live-motion.css` + `live-motion.js` linked in specialist `_base.html`
+- Medical motion profile tokens: `--lm-rise: 10px`, `--lm-rise-lg: 16px`, `--lm-dur-slow: 680ms`
+- 4 pattern categories across all 8 page templates: reveal-on-scroll, stagger, CTA hover, image filter lift
+- RTL-aware arrow shift on gold-btn hover
+- `prefers-reduced-motion` guards on all hover enhancements
 
 ### Current stable state
-- **3 published_live templates:** cardio, dermatologia, gusto — all with preview PNGs, live previews, i18n (cardio+derm 5 locales, gusto IT-only)
-- **17 draft templates:** hidden from public, showing correct empty states per category
-- **32/32 routes green**, zero cross-contamination, zero ghost CTAs
+- **3 published_live templates:** cardio + derm (with motion + i18n 5 locales), gusto (with motion, IT-only)
+- **All 3 have motion active** — the interaction-quality floor from D-058 is fully met
+- **17 draft templates:** hidden from public
+- **34/34 routes green**, zero regressions, zero cross-contamination
+
+### Motion differentiation (important for future work)
+- **Gusto** — `--lm-rise: 14px`, image zoom (scale 1.045x), nav underline sweep, cinematic feel
+- **Medical** — `--lm-rise: 10px`, image filter lift (no zoom), no nav sweep, clinical precision
+- These profiles must remain distinct per D-054 premium differentiation law
+- Future archetypes should define their own token profile
 
 ### What to do next (in priority order)
 1. **Phase 2g2x.1** — lift the 3 remaining CRITICO categories (agency, lawyer, real-estate) with DNA splits. The pattern is proven (Sessions 17–19).
 2. **Phase 2i.2 step 2** — gusto i18n (new `.fd-*` RTL CSS block + 4 content trees). ~3h budget.
-3. **Phase 2g3** — live skin folder authoring for draft templates, cheapest-first order per TODO_NEXT.
-4. **Motion pilot opt-in** for specialist skin (cardio/derm benefit for free).
+3. **Phase 2g3** — live skin folder authoring for draft templates, cheapest-first order per TODO_NEXT. Each new `published_live` template must adopt the motion language as gate 10 of D-053.
 
 ### Do NOT do
+- Do NOT modify Gusto's motion tokens or attributes — they are intentionally different from medical
+- Do NOT add counter animations to medical templates (excluded by D-061 as too promotional)
 - Do NOT re-scatter fixes into new worktrees without consolidating back
 - Do NOT open auth/checkout/editor/projects/commerce (Phase 3 gated by Phase 2g3.7)
 - Do NOT add new categories or templates
 - Do NOT reopen drafts or change tiering policy
-- Preview PNGs are now generated and should be regenerated with `--force` whenever a preview composition changes (the stale-PNG trap from Sessions 8/10/12/15/19 applies)
+- Preview PNGs should be regenerated with `--force` whenever a preview composition changes
 
 ---
 

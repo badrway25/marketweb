@@ -1,5 +1,49 @@
 # Decisions Log
 
+## D-061: Medical Motion Opt-In — Specialist Skin Adopts Live Motion Language with Clinical Profile (2026-04-12, Session 27)
+
+**Decision:** The specialist archetype skin (`templates/live_templates/medical/specialist/`) adopts the live motion language (`static/css/live-motion.css` + `static/js/live-motion.js`) introduced by D-058 on the fine-dining archetype (Gusto). The adoption uses a **medical motion profile** — reduced intensity tokens overriding the shared CSS on the specialist `:root` — and 4 pattern categories applied across all 8 specialist page templates plus `_base.html`.
+
+**Medical motion profile (token overrides in specialist `_base.html`):**
+- `--lm-rise: 10px` (Gusto: 14px) — body reveal rise almost imperceptible
+- `--lm-rise-lg: 16px` (Gusto: 22px) — heading entry more contained
+- `--lm-dur-slow: 680ms` (Gusto: 720ms) — slightly faster, more precise
+- Stagger delay: 80–100ms per child (Gusto: 70ms) — more deliberate cadence
+- Image hover: filter transition only (Gusto: scale 1.045x zoom) — clinical, not cinematic
+
+**4 motion patterns implemented:**
+1. **Reveal-on-scroll** (`data-lm="reveal|reveal-lg|reveal-soft"`) — fade+rise on sections, headings, content blocks, CTA bands, form areas. Smaller rise distance makes the effect nearly invisible but perceptibly premium.
+2. **Staggered reveal** (`data-lm-stagger`) — cascaded entry on facts band, signature visits, values grid, treatments pricelist, process steps, contact blocks, press outlets, credentials (Derm-only), blog list rows, doctor tags. Delay 80–100ms per child for deliberate professional rhythm.
+3. **CTA hover refinement** — gold-btn arrow `→` shifts +4px on hover (Gusto: +6px), ghost-btn border lifts to accent, submit buttons gain subtle opacity transition. RTL-aware: arrow shift inverts for Arabic. All gated by `prefers-reduced-motion`.
+4. **Image attention lift** — portrait and featured-image filter transitions on hover (from `grayscale(15%)` to `grayscale(0%) contrast(1.10)`). More clinical than Gusto's cinematic zoom. Zero HTML restructuring required.
+
+**Patterns deliberately excluded for medical:**
+- Counter animation (too promotional for clinical context — numbers should appear already authoritative)
+- Nav underline sweep (too editorial/restaurant)
+- Marquee (inappropriate for medical)
+- Image zoom (requires wrapper+inner HTML refactor; filter lift achieves equivalent premium feel)
+
+**Differentiation preserved (Cardio vs Derm):**
+The motion profile is shared (same _base.html, same tokens) but the structural variants already in place produce different visual rhythms:
+- Cardio: split-consultive hero → left text reveal + right sidebar reveal; no credentials section
+- Derm: editorial-magazine hero → portrait reveal-soft + text reveal; credentials section with stagger
+The motion does NOT flatten the differentiation; it respects and enhances it.
+
+**Files modified (specialist skin only — zero changes to Gusto, shared motion files, or marketplace):**
+- `_base.html` — link live-motion.css, script live-motion.js, medical token overrides, CTA/image hover CSS, reduced-motion guards, RTL arrow-shift override
+- `home.html` — 11 reveal + 4 stagger attributes (Cardio), 12 reveal + 5 stagger attributes (Derm)
+- `about.html` — stagger on history rows + values grid, reveal on method + CTA band
+- `services.html` — stagger on treatments, reveal on footnote + CTA band
+- `team.html` — reveal on each doctor, stagger on tags
+- `contact.html` — stagger on contact blocks, reveal on form + sidebar
+- `appointment.html` — stagger on process steps, reveal on form band
+- `blog_list.html` — reveal on lead post, stagger on compact list
+- `blog_detail.html` — reveal on lede, h2 headings, blockquotes
+
+**Rationale:** D-058 explicitly stated that cardio and dermatologia "should adopt [the motion language] in a follow-up pass (low effort: link + script + attributes)" and that "a muted Medical skin sets `--lm-rise: 10px` for a more subdued cadence." This session executes exactly that prescription. The medical motion profile is intentionally more restrained than Gusto's restaurant motion because: (a) clinical precision demands nearly invisible movement — the motion guides the reader's eye, not entertains; (b) the specialist skin's existing image filters (grayscale, contrast, gradient overlays) already create a moody editorial feel that zoom animations would fight with; (c) the premium differentiation law (D-054) requires that sibling templates NOT converge on the same interaction feel — Gusto's dramatic cinematic zoom must remain distinct from the specialist's clinical subtlety.
+
+**Consequence:** (a) All 3 `tier=published_live` templates now have the motion language active — the interaction-quality floor is met; (b) the medical motion profile (`--lm-rise: 10px`, filter hover instead of zoom) is the standard for any future medical archetype (clinic, family, wellness) when they reach `published_live` in Phase 2g3; (c) the D-053 acceptance checklist now has 10 gates (previously 9) for every template promoted from `draft` → `published_live`; (d) future non-medical archetypes (business, portfolio, ecommerce) should define their own token profile based on their category tone — the pattern is: override `:root` tokens in the skin's `_base.html`.
+
 ## D-059: i18n/RTL Pilot Architecture — Locale-Keyed Content Registry, Query-Param Switcher, No Django gettext (2026-04-11, Session 23)
 
 **Decision:** Multilingual publishing for `tier=published_live` templates is implemented as a **locale-keyed content registry** + a per-archetype **CHROME_I18N dict** + a **`?lang=xx` query param** resolved in `LiveTemplateView.setup()`, with **no Django `{% trans %}` / `.po` / `gettext` tooling**. The pilot surface is scoped to the live-template preview routes only — the marketplace chrome (homepage, listing, detail, category) stays Italian. The concrete shape shipped on `cardio-studio-specialistico` in Session 23:
