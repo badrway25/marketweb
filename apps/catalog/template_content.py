@@ -38,10 +38,12 @@ i18n pilot (Session 23 — Phase 2i.1)
 The cardio-studio-specialistico template is the first live template to
 ship with 5-locale content (it / en / fr / es / ar). Its full locale-keyed
 block lives in `template_content_cardio_i18n.py` and is imported here.
-Dermatologia and Gusto remain IT-only — their dicts are wrapped under
-`{"it": ...}` to keep the helper API uniform. Any template without an
-entry for the requested locale automatically falls back to `it` via
-`template_i18n.pick_localized`.
+Dermatologia-elite-roma is the second template to ship 5-locale content
+(it/en/fr/es/ar) as of Session 24 (Phase 2i.2). Its non-IT blocks live
+in `template_content_dermatologia_i18n.py`. Gusto remains IT-only — its
+dict is wrapped under `{"it": ...}` to keep the helper API uniform. Any
+template without an entry for the requested locale automatically falls
+back to `it` via `template_i18n.pick_localized`.
 
 Adding a new template
 ---------------------
@@ -1596,9 +1598,9 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
 # Each entry is `{locale: content_tree}`. `it` is always authoritative.
 # Cardio ships with 5 locales (it/en/fr/es/ar) — the 4 non-IT blocks live
 # in `template_content_cardio_i18n.py` so this file stays browsable.
-# Dermatologia and Gusto are IT-only for now; they will pick up other
-# locales one by one as Phase 2i.2 rolls the pilot architecture out to
-# the other `tier=published_live` templates.
+# Dermatologia ships with 5 locales as of Session 24 (Phase 2i.2).
+# Gusto is IT-only for now; it will pick up other locales when Phase 2i.2
+# rolls to the fine-dining archetype (separate RTL CSS work needed).
 # ---------------------------------------------------------------------------
 
 from apps.catalog.template_content_cardio_i18n import (  # noqa: E402
@@ -1606,6 +1608,13 @@ from apps.catalog.template_content_cardio_i18n import (  # noqa: E402
     CARDIO_CONTENT_FR,
     CARDIO_CONTENT_ES,
     CARDIO_CONTENT_AR,
+)
+
+from apps.catalog.template_content_dermatologia_i18n import (  # noqa: E402
+    DERMATOLOGIA_CONTENT_EN,
+    DERMATOLOGIA_CONTENT_FR,
+    DERMATOLOGIA_CONTENT_ES,
+    DERMATOLOGIA_CONTENT_AR,
 )
 
 
@@ -1619,6 +1628,10 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     },
     "dermatologia-elite-roma": {
         "it": DERMATOLOGIA_CONTENT_IT,
+        "en": DERMATOLOGIA_CONTENT_EN,
+        "fr": DERMATOLOGIA_CONTENT_FR,
+        "es": DERMATOLOGIA_CONTENT_ES,
+        "ar": DERMATOLOGIA_CONTENT_AR,
     },
     "gusto-fine-dining": {
         "it": GUSTO_CONTENT_IT,
