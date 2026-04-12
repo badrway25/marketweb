@@ -22,7 +22,7 @@ Per D-059, cardio-studio-specialistico now ships as the first genuinely multilin
 ### 2i.2 — Extend pilot to the other `published_live` templates (open)
 Per D-059, the other two `tier=published_live` templates pick up multilingual publishing by opting into the pilot architecture. Order (cheapest first):
 
-- [ ] **Dermatologia-elite-roma** (cheapest — same specialist skin, RTL CSS already in place). Work: create `apps/catalog/template_content_dermatologia_i18n.py` with 4 hand-authored content trees (EN/FR/ES/AR). Update `TEMPLATE_CONTENT["dermatologia-elite-roma"]` to import all 5 locale keys. Run the smoke sweep + browser walk. Budget: ~1.5h because no new HTML or CSS needed.
+- [x] **Dermatologia-elite-roma** — ✅ **CLOSED (Session 24, cherry-picked into baseline in Session 25)**. 4 hand-authored content trees (EN/FR/ES/AR) in `template_content_dermatologia_i18n.py`. Zero new HTML or CSS. 5/5 derm locale routes 200. Same specialist skin RTL CSS already in place from cardio pilot.
 - [ ] **Gusto-fine-dining** (adds a new archetype RTL block). Work: (a) create `apps/catalog/template_content_gusto_i18n.py` with 4 hand-authored content trees for the 7 gusto pages (home/filosofia/menu/atmosfera/diario/prenota + blog_detail) — remember gusto's tone is dark-editorial Michelin not medical clinical, so the voice differs per locale; (b) author a new `html[dir="rtl"] ...` CSS block inside `templates/live_templates/restaurant/fine-dining/_base.html` flipping `.fd-nav`, `.fd-hero`, `.fd-chef .portrait`, `.fd-courses`, `.fd-form-band`, etc. (same selector-level flip pattern as the specialist block, but with `.fd-*` prefixes); (c) wire chrome strings — gusto uses a different set of ad-hoc literal labels in its `_base.html` (gold-btn, mp-bar, footer), so add a `CHROME_I18N` expansion with the 10–15 additional keys needed or factor a new `GUSTO_CHROME_I18N` block. Budget: ~3h.
 
 **Exit criteria for Phase 2i.2:**
@@ -39,6 +39,11 @@ The marketplace surface (homepage, listing, detail, category, search) remains It
 - [ ] Decide between (a) extending `CHROME_I18N` with a `marketplace` namespace and reading it via a context processor, or (b) finally moving to Django `{% trans %}` + `.po` files for the marketplace-only surface. Either is compatible with the Phase 2i pilot because every live-template string is already locale-namespaced.
 - [ ] Decide on URL scheme — query param `?lang=` (current pilot shape) vs prefix `/<lang>/` (future). Prefix would let marketing link directly to a localized homepage.
 - [ ] Out of scope until Phase 2g3 is closed and the roadmap re-unblocks.
+
+---
+
+### 2g2x.10 — Catalog Stabilization & Fix Consolidation — ✅ CLOSED (Session 25, 2026-04-12)
+All approved fixes from Sessions 17–24 consolidated into branch `phase-catalog-stabilization-v1`. Cherry-picked derm i18n (Session 24). Generated preview PNGs for all 3 published_live templates. 32/32 routes green, zero regressions, zero cross-contamination. The "scattered worktree" problem is resolved. See SESSION_LOG Session 25.
 
 ---
 

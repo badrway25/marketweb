@@ -1,8 +1,38 @@
 # Agent Handoff
 
-Last updated: 2026-04-11 — after **Session 23 i18n/RTL Pilot Cardio (Phase 2i.1)**
+Last updated: 2026-04-12 — after **Session 25 Catalog Stabilization & Fix Consolidation (Phase 2g2x.10)**
 
-## 🌐 Session 23 — i18n/RTL Pilot Cardio: Read This If You're Touching Localization (2026-04-11)
+## Session 25 — Catalog Stabilization: Read This Before Any New Work (2026-04-12)
+
+**Session 25 consolidated all approved fixes from Sessions 17–24 into a single baseline branch.** This is the reference starting point for any future session. No new features were introduced.
+
+### What was consolidated
+- Cherry-picked derm i18n (Session 24) from `phase-i18n-dermatologia-v2` — derm now ships 5 locales like cardio
+- Generated preview PNGs for all 3 published_live templates (cardio, derm, gusto) — these were MISSING, causing "identical gray boxes" on the listing page
+
+### Current stable state
+- **3 published_live templates:** cardio, dermatologia, gusto — all with preview PNGs, live previews, i18n (cardio+derm 5 locales, gusto IT-only)
+- **17 draft templates:** hidden from public, showing correct empty states per category
+- **32/32 routes green**, zero cross-contamination, zero ghost CTAs
+
+### What to do next (in priority order)
+1. **Phase 2g2x.1** — lift the 3 remaining CRITICO categories (agency, lawyer, real-estate) with DNA splits. The pattern is proven (Sessions 17–19).
+2. **Phase 2i.2 step 2** — gusto i18n (new `.fd-*` RTL CSS block + 4 content trees). ~3h budget.
+3. **Phase 2g3** — live skin folder authoring for draft templates, cheapest-first order per TODO_NEXT.
+4. **Motion pilot opt-in** for specialist skin (cardio/derm benefit for free).
+
+### Do NOT do
+- Do NOT re-scatter fixes into new worktrees without consolidating back
+- Do NOT open auth/checkout/editor/projects/commerce (Phase 3 gated by Phase 2g3.7)
+- Do NOT add new categories or templates
+- Do NOT reopen drafts or change tiering policy
+- Preview PNGs are now generated and should be regenerated with `--force` whenever a preview composition changes (the stale-PNG trap from Sessions 8/10/12/15/19 applies)
+
+---
+
+Previous (still relevant):
+
+## Session 23 — i18n/RTL Pilot Cardio: Read This If You're Touching Localization (2026-04-11)
 
 **Session 23 shipped the first multilingual publishing architecture on a `tier=published_live` template.** Cardio-studio-specialistico now renders in 5 locales (it/en/fr/es/ar) with real RTL for Arabic. This is the reusable recipe for Phase 2i.2 rollout to dermatologia and gusto. Short read, load-bearing:
 

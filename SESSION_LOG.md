@@ -1,5 +1,85 @@
 # Session Log
 
+## Session 25 — Catalog Stabilization & Fix Consolidation (Phase 2g2x.10) (2026-04-12)
+
+**Agent:** Consolidation session. No new features, no new categories, no new templates. Pure stabilization pass to unify all approved fixes from Sessions 17–24 into a single baseline branch.
+**Branch:** `phase-catalog-stabilization-v1`.
+**Scope floor:** consolidate approved fixes, generate missing preview PNGs, verify public catalog integrity. Non-goals: new features, new archetypes, new languages beyond consolidation, draft reopening, auth/checkout/editor/projects/commerce.
+
+### 1 — Consolidation Audit
+
+Read all 11 context/memory files + verified codebase state against every approved fix from Sessions 17–24.
+
+**Already present on baseline (no action needed):**
+- A. Tier migration / catalog honesty (Session 21, commit `0a5bcf2`) — ghost CTA removed, draft 404, empty states, 3 published_live
+- B. Business hardening Pragma vs Elevate (Session 17, commit `b967e99`) — DNA + compositions distinct, both correctly draft
+- C. Portfolio hardening Chiara vs Pixel (Sessions 18–19, commit `79c8793`) — DNA + compositions distinct, overflow fix included
+- D. Motion pilot Gusto (Session 22, commit `58f43f4`) — live-motion.css + .js + fine-dining wired
+- E. Cardio i18n/RTL 5 locales (Session 23, commit `bcd5306`) — template_i18n.py + 5 locales functional
+
+**Missing from baseline (consolidated in this session):**
+- F. Dermatologia i18n (Session 24, commit `9043836` on `phase-i18n-dermatologia-v2`) — cherry-picked
+- G. Preview PNGs for all 3 published_live templates — never generated, root cause of "cardio and derm look identical on listing"
+
+### 2 — Consolidation Actions
+
+1. **Cherry-picked derm i18n** — commit `9043836` from `phase-i18n-dermatologia-v2` (Session 24 approved). 2 files: `template_content_dermatologia_i18n.py` (NEW, 4 locale blocks EN/FR/ES/AR) + `template_content.py` (updated imports + 5-locale mapping). Django check clean. All 5 derm locale routes 200.
+
+2. **Generated preview PNGs** — ran `generate_previews --force --only <slug>` for all 3 published_live templates via Playwright Chromium at 1600×900 @2x:
+   - `cardio-studio-specialistico-preview.png` — specialist archetype, red accent, "Studio Marani", LANCET/European Heart Journal press strip
+   - `dermatologia-elite-roma-preview.png` — specialist archetype, green accent, "Studio Ricciardi", JAMA Dermatology/British Journal press strip
+   - `gusto-fine-dining-preview.png` — fine-dining archetype, dark/gold, "Osteria Moderna", chef + course menu
+
+   All 3 are visually distinct at card size despite cardio+derm sharing the specialist archetype. Differentiation comes from: accent color, brand name, headline copy, press outlets, specialty-specific services.
+
+### 3 — Validation Results
+
+- `python manage.py check` → 0 issues
+- Migrations: all applied (catalog 0001 + 0002)
+- `seed_templates` + `sync_template_tiers` → 20 templates, 3 published_live / 17 draft
+- **32/32 route smoke tests green:**
+  - 12 cardio routes (IT + 4 locales + 7 inner pages)
+  - 11 derm routes (IT + EN + AR + 8 inner pages)
+  - 8 gusto routes (IT + 7 inner pages)
+  - 4 draft 404 checks
+- **6/6 empty states correct** for draft-only categories
+- **Zero cross-contamination:** "Ricciardi" never appears in cardio HTML, "Marani" never appears in derm HTML
+- **3/3 preview PNGs generated:** all on disk + in DB, zero orphans, zero placeholders
+- **Ghost Anteprima Live CTA: confirmed absent** from all detail pages
+- **Language switchers present** on both cardio and derm live previews
+
+### 4 — Files Modified
+
+| File | Action | Purpose |
+|------|--------|---------|
+| `apps/catalog/template_content_dermatologia_i18n.py` | NEW (cherry-pick) | 4 non-IT content trees for derm (EN/FR/ES/AR) |
+| `apps/catalog/template_content.py` | MODIFIED (cherry-pick) | Import derm locale blocks + update TEMPLATE_CONTENT mapping |
+
+### 5 — Preview Asset Reconciliation
+
+| Template | PNG File | DB Record | Orphans |
+|----------|----------|-----------|---------|
+| cardio-studio-specialistico | `template_assets/2026/04/cardio-studio-specialistico-preview.png` | ✅ TemplateAsset | 0 |
+| dermatologia-elite-roma | `template_assets/2026/04/dermatologia-elite-roma-preview.png` | ✅ TemplateAsset | 0 |
+| gusto-fine-dining | `template_assets/2026/04/gusto-fine-dining-preview.png` | ✅ TemplateAsset | 0 |
+
+No orphan files. `media/preview_imagery/` contains 12 cached stock photos (6 medical-specialist + 6 restaurant-fine) — these are the source imagery, not orphans.
+
+### 6 — What Remains Out of Scope (by design)
+
+- Phase 2g2x.1: agency, lawyer, real-estate identity crash (all draft, hidden from public)
+- Phase 2g2x.3: D-047 leak lifts on preview compositions
+- Phase 2g3: live skin folder authoring for draft templates
+- Motion pilot opt-in for specialist skin (cardio/derm)
+- Gusto i18n (Phase 2i.2 step 2, new RTL CSS block needed)
+- Preview imagery pool overlap: cardio/derm share `medical-specialist` pool (same 6 photos) — differentiated by content/accent/brand, not by imagery pool. Pool split is tracked in TODO_NEXT 2g2x.2.
+
+### 7 — Decision
+
+**CATALOG STABILIZATION APPROVATA.**
+
+The baseline is now stable: all approved fixes from Sessions 17–24 are present in a single branch, preview PNGs differentiate the 3 published_live templates, and the public catalog shows zero regressions. The "scattered worktree" problem is resolved for all work approved through Session 24.
+
 ## Session 23 — i18n/RTL Pilot Cardio (Phase 2i.1) (2026-04-11)
 
 **Agent:** Implementation session. First multilingual publishing validation on a `tier=published_live` template. Scoped tightly to `cardio-studio-specialistico` — no other template touched, no marketplace chrome touched, no auth/checkout/editor/projects/commerce touched, no Django gettext machinery introduced.
