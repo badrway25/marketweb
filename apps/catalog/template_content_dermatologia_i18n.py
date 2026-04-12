@@ -184,6 +184,32 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
             ],
         },
 
+        "gallery_strip": {
+            "label": "The practice & technology",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "The FotoFinder digital dermoscope"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "The Via Veneto practice"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "Dermoscopic consultation"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "Outpatient surgery room"),
+            ],
+        },
+        "testimonianza": {
+            "quote": "I was looking for a dermatologist who wouldn't rush. Dr Ricciardi spent twenty minutes studying every mole with the dermoscope before saying a single word. It was the most thorough examination of my life.",
+            "author": "Practice patient",
+            "context": "Digital mole mapping · 2025",
+        },
+        "faq": {
+            "label": "Frequently asked questions",
+            "heading": "Answers to <em>the most common questions.</em>",
+            "items": [
+                ("How often should mole mapping be done?", "We recommend an annual check for everyone. For patients with a family history of melanoma or fair skin with many moles, six-monthly checks may be appropriate. Digital mapping allows every mole to be compared with its previous image."),
+                ("Is dermatological surgery painful?", "Excision of suspicious lesions is performed under local anaesthesia. The patient feels only the initial injection. The procedure takes about twenty minutes on average and you go home immediately afterwards."),
+                ("What is the difference between cosmetic and dermatological aesthetics?", "The difference is the physician. In our practice every aesthetic procedure — filler, botulinum toxin, peel — is performed personally by a dermatologist, never delegated."),
+                ("Can I bring reports from another practice?", "Yes, we read them carefully. If you have a previous digital mapping, please bring it: chronological comparison between images taken on different machines is both possible and very useful."),
+                ("How does the dermatological laser work?", "It depends on the indication. Fractional CO2 laser treats scars and keratoses, vascular laser treats superficial vascular lesions. Each protocol includes a free preliminary consultation with the operating dermatologist."),
+            ],
+        },
+
         "cta_heading":
             "A pathway that begins <em>with the first visit.</em>",
         "cta_primary_label":   "Book a first visit",
@@ -766,6 +792,32 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
                 ("SIDeMaST", "Soci\u00e9t\u00e9 italienne de dermatologie m\u00e9dicale, chirurgicale, esth\u00e9tique et des MST \u2014 membre actif", ""),
                 ("EADV", "European Academy of Dermatology and Venereology \u2014 full member", ""),
                 ("IDS", "International Dermoscopy Society \u2014 Advanced Certified Dermoscopist", "depuis 2015"),
+            ],
+        },
+
+        "gallery_strip": {
+            "label": "Le cabinet & les technologies",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "Le dermatoscope num\u00e9rique FotoFinder"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "Le cabinet de Via Veneto"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "Consultation dermatoscopique"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "Salle de chirurgie ambulatoire"),
+            ],
+        },
+        "testimonianza": {
+            "quote": "Je cherchais une dermatologue qui ne soit pas press\u00e9e. La Dottoressa Ricciardi a pass\u00e9 vingt minutes \u00e0 \u00e9tudier chaque grain de beaut\u00e9 au dermatoscope avant de prononcer un seul mot. C\u2019est l\u2019examen le plus minutieux de ma vie.",
+            "author": "Patient du cabinet",
+            "context": "Cartographie num\u00e9rique des n\u00e6vus \u00b7 2025",
+        },
+        "faq": {
+            "label": "Questions fr\u00e9quentes",
+            "heading": "R\u00e9ponses aux questions <em>les plus courantes.</em>",
+            "items": [
+                ("\u00c0 quelle fr\u00e9quence faut-il faire la cartographie des n\u00e6vus ?", "Nous recommandons un contr\u00f4le annuel pour tous. En cas d\u2019ant\u00e9c\u00e9dents familiaux de m\u00e9lanome ou de phototype clair avec de nombreux n\u00e6vus, un contr\u00f4le semestriel peut \u00eatre indiqu\u00e9. La cartographie num\u00e9rique permet de comparer chaque n\u00e6vus avec sa version pr\u00e9c\u00e9dente."),
+                ("La chirurgie dermatologique est-elle douloureuse ?", "L\u2019excision de l\u00e9sions suspectes se fait sous anesth\u00e9sie locale. Le patient ne ressent que la premi\u00e8re piq\u00fbre de l\u2019anesth\u00e9sique. L\u2019intervention dure en moyenne vingt minutes et on rentre chez soi imm\u00e9diatement apr\u00e8s."),
+                ("Quelle diff\u00e9rence entre esth\u00e9tique et dermatologie esth\u00e9tique ?", "La diff\u00e9rence, c\u2019est le m\u00e9decin. Dans notre cabinet, chaque traitement esth\u00e9tique \u2014 filler, toxine botulique, peeling \u2014 est r\u00e9alis\u00e9 personnellement par un dermatologue, jamais d\u00e9l\u00e9gu\u00e9."),
+                ("Puis-je apporter des r\u00e9sultats d\u2019un autre cabinet ?", "Oui, nous les lisons attentivement. Si vous avez une cartographie num\u00e9rique pr\u00e9c\u00e9dente, apportez-la : la comparaison chronologique entre images prises sur des machines diff\u00e9rentes est possible et tr\u00e8s utile."),
+                ("Comment fonctionne le laser dermatologique ?", "Cela d\u00e9pend de l\u2019indication. Le laser CO2 fractionn\u00e9 traite les cicatrices et les k\u00e9ratoses, le laser vasculaire les l\u00e9sions vasculaires superficielles. Chaque protocole inclut une consultation pr\u00e9liminaire gratuite avec la dermatologue op\u00e9ratrice."),
             ],
         },
 
@@ -1358,6 +1410,32 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
             ],
         },
 
+        "gallery_strip": {
+            "label": "La consulta y las tecnolog\u00edas",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "El dermatoscopio digital FotoFinder"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "La consulta de Via Veneto"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "Consulta dermatosc\u00f3pica"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "Sala de cirug\u00eda ambulatoria"),
+            ],
+        },
+        "testimonianza": {
+            "quote": "Buscaba una dermat\u00f3loga que no tuviera prisa. La Dottoressa Ricciardi dedic\u00f3 veinte minutos a estudiar cada lunar con el dermatoscopio antes de decir una sola palabra. Fue la exploraci\u00f3n m\u00e1s minuciosa de mi vida.",
+            "author": "Paciente de la consulta",
+            "context": "Mapeo digital de lunares \u00b7 2025",
+        },
+        "faq": {
+            "label": "Preguntas frecuentes",
+            "heading": "Respuestas a las preguntas <em>m\u00e1s comunes.</em>",
+            "items": [
+                ("\u00bfCada cu\u00e1nto hay que hacer el mapeo de lunares?", "Recomendamos un control anual para todos. En caso de antecedentes familiares de melanoma o fototipo claro con muchos lunares, el control puede ser semestral. El mapeo digital permite comparar cada lunar con su versi\u00f3n anterior."),
+                ("\u00bfLa cirug\u00eda dermatol\u00f3gica es dolorosa?", "La escisi\u00f3n de lesiones sospechosas se realiza bajo anestesia local. El paciente solo siente el primer pinchazo del anest\u00e9sico. La intervenci\u00f3n dura unos veinte minutos de media y se vuelve a casa inmediatamente."),
+                ("\u00bfQu\u00e9 diferencia hay entre est\u00e9tica y dermatolog\u00eda est\u00e9tica?", "La diferencia es el m\u00e9dico. En nuestra consulta todo tratamiento est\u00e9tico \u2014 rellenos, toxina botul\u00ednica, peeling \u2014 lo realiza personalmente un dermat\u00f3logo, nunca se delega."),
+                ("\u00bfPuedo traer informes de otra consulta?", "S\u00ed, los leemos con atenci\u00f3n. Si tiene un mapeo digital previo, tr\u00e1igalo: la comparaci\u00f3n cronol\u00f3gica entre im\u00e1genes tomadas con distintas m\u00e1quinas es posible y muy \u00fatil."),
+                ("\u00bfC\u00f3mo funciona el l\u00e1ser dermatol\u00f3gico?", "Depende de la indicaci\u00f3n. El l\u00e1ser CO2 fraccionado trata cicatrices y queratosis, el l\u00e1ser vascular las lesiones vasculares superficiales. Cada protocolo incluye una consulta preliminar gratuita con la dermat\u00f3loga operadora."),
+            ],
+        },
+
         "cta_heading":
             "Un recorrido que empieza <em>desde la primera visita.</em>",
         "cta_primary_label":   "Reservar una primera visita",
@@ -1937,6 +2015,32 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
                 ("SIDeMaST", "الجمعية الإيطالية لطب الجلد الطبي والجراحي والتجميلي — عضو فاعل", ""),
                 ("EADV", "European Academy of Dermatology and Venereology — full member", ""),
                 ("IDS", "International Dermoscopy Society — Advanced Certified Dermoscopist", "منذ 2015"),
+            ],
+        },
+
+        "gallery_strip": {
+            "label": "العيادة والتقنيات",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "منظار الجلد الرقمي FotoFinder"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "عيادة فيا فينيتو"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "استشارة تنظيرية جلدية"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "غرفة الجراحة النهارية"),
+            ],
+        },
+        "testimonianza": {
+            "quote": "كنتُ أبحث عن طبيبة جلدية لا تستعجل. الدكتورة ريتشاردي أمضت عشرين دقيقة في دراسة كل شامة بمنظار الجلد قبل أن تنطق بكلمة واحدة. كان أدقّ فحص في حياتي.",
+            "author": "مريض في العيادة",
+            "context": "تخريط رقمي للشامات · ٢٠٢٥",
+        },
+        "faq": {
+            "label": "الأسئلة الشائعة",
+            "heading": "إجابات على الأسئلة <em>الأكثر شيوعًا.</em>",
+            "items": [
+                ("كم مرة ينبغي إجراء تخريط الشامات؟", "ننصح بفحص سنوي للجميع. في حال وجود تاريخ عائلي للميلانوما أو نمط ضوئي فاتح مع كثير من الشامات، قد يكون الفحص كل ستة أشهر. يسمح التخريط الرقمي بمقارنة كل شامة بصورتها السابقة."),
+                ("هل الجراحة الجلدية مؤلمة؟", "يتم استئصال الآفات المشبوهة تحت التخدير الموضعي. لا يشعر المريض إلا بوخزة المخدّر الأولى. تستغرق العملية نحو عشرين دقيقة ويعود المريض إلى منزله فورًا."),
+                ("ما الفرق بين التجميل والتجميل الجلدي؟", "الفرق هو الطبيب. في عيادتنا كل إجراء تجميلي — فيلر أو توكسين بوتولينوم أو تقشير — يُجريه طبيب الجلد شخصيًا ولا يُفوَّض أبدًا."),
+                ("هل يمكنني إحضار تقارير من عيادة أخرى؟", "نعم، نقرأها بعناية. إذا كان لديك تخريط رقمي سابق، أحضره: المقارنة الزمنية بين صور مأخوذة بأجهزة مختلفة ممكنة ومفيدة جدًا."),
+                ("كيف يعمل الليزر الجلدي؟", "يعتمد على الاستطباب. ليزر CO2 المجزّأ يعالج الندبات والتقرّنات، والليزر الوعائي يعالج الآفات الوعائية السطحية. كل بروتوكول يتضمن استشارة أولية مجانية مع طبيبة الجلد المعالجة."),
             ],
         },
 

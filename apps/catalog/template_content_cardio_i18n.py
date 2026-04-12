@@ -168,6 +168,33 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
         "chief_label":   "Clinical direction",
         "chief_heading": "One signature <em>on every chart.</em>",
 
+        "tecnologie": {
+            "label": "Technology & equipment",
+            "heading": "State-of-the-art <em>diagnostics</em>, in-house.",
+            "items": [
+                {"icon": "ecg", "title": "12-lead ECG", "desc": "Resting electrocardiogram with immediate reporting and historical comparison."},
+                {"icon": "echo", "title": "Philips EPIQ 7 echocardiography", "desc": "2D and colour-Doppler cardiac ultrasound, reported on the same day."},
+                {"icon": "holter", "title": "Schiller MT-200 Holter", "desc": "24-hour ECG recording with variability and silent arrhythmia analysis."},
+                {"icon": "stress", "title": "Exercise stress test", "desc": "Cycle ergometer test with continuous blood-pressure monitoring."},
+            ],
+        },
+        "testimonianza": {
+            "quote": "For two years I looked for a cardiologist who would actually read my file before examining me. At Studio Marani they spent forty minutes on my records before even touching the stethoscope.",
+            "author": "Practice patient",
+            "context": "Second cardiology opinion · 2025",
+        },
+        "faq": {
+            "label": "Frequently asked questions",
+            "heading": "The questions <em>we hear most often.</em>",
+            "items": [
+                ("How long does a first cardiology visit last?", "A full first visit takes approximately forty-five minutes and includes history, physical examination, 12-lead ECG, reporting and discussion of the follow-up plan."),
+                ("Do I need a GP referral?", "No. As a private specialist practice, no referral letter is required. A summary from your GP is helpful but not mandatory."),
+                ("Can I bring test results from another hospital?", "Absolutely. Second opinions are one of our specialities. Please bring all reports, discharge letters and current prescriptions."),
+                ("Is an echocardiogram painful?", "No, it is completely painless and non-invasive. The probe is placed on the chest with conductive gel. The exam takes about twenty to thirty minutes."),
+                ("How does the prevention programme work?", "The six-month programme includes four scheduled visits, two ECGs, one 24-hour Holter, an integrated assessment with a dietician and sports physician, and a direct line to the practice physician."),
+            ],
+        },
+
         "cta_heading":
             "Every consultation is <em>personally arranged</em> with the physician.",
         "cta_primary_label":   "Request a private visit",
@@ -703,6 +730,33 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
 
         "chief_label":   "Direction clinique",
         "chief_heading": "Une seule signature <em>sur chaque dossier.</em>",
+
+        "tecnologie": {
+            "label": "Technologies & équipements",
+            "heading": "Diagnostic de <em>dernière génération</em>, au cabinet.",
+            "items": [
+                {"icon": "ecg", "title": "ECG à 12 dérivations", "desc": "Électrocardiogramme de repos avec compte rendu immédiat et comparaison historique."},
+                {"icon": "echo", "title": "Échocardiographie Philips EPIQ 7", "desc": "Échographie cardiaque 2D et Doppler couleur de dernière génération, résultat le jour même."},
+                {"icon": "holter", "title": "Holter Schiller MT-200", "desc": "Enregistrement ECG sur 24 heures avec analyse de la variabilité et des arythmies silencieuses."},
+                {"icon": "stress", "title": "Épreuve d'effort", "desc": "Test sur cyclo-ergomètre avec surveillance continue de la pression artérielle."},
+            ],
+        },
+        "testimonianza": {
+            "quote": "J'ai cherché pendant deux ans un cardiologue qui lise vraiment mon dossier avant de m'examiner. Au Studio Marani, ils ont passé quarante minutes sur mes résultats avant même de toucher le stéthoscope.",
+            "author": "Patient du cabinet",
+            "context": "Deuxième avis cardiologique · 2025",
+        },
+        "faq": {
+            "label": "Questions fréquentes",
+            "heading": "Les questions que <em>l'on nous pose le plus souvent.</em>",
+            "items": [
+                ("Combien de temps dure une première consultation ?", "Une première consultation complète dure environ quarante-cinq minutes et comprend l'anamnèse, l'examen clinique, un ECG à 12 dérivations, le compte rendu et la discussion du plan de suivi."),
+                ("Faut-il une ordonnance du médecin traitant ?", "Non. En tant que cabinet spécialisé privé, aucune lettre d'adressage n'est nécessaire. Un courrier du médecin traitant est utile mais non obligatoire."),
+                ("Puis-je apporter des examens d'un autre hôpital ?", "Bien sûr. Le deuxième avis est l'une de nos spécialités. Apportez tous les comptes rendus, lettres de sortie et traitements en cours."),
+                ("L'échocardiogramme est-il douloureux ?", "Non, c'est un examen totalement indolore et non invasif. La sonde est posée sur la poitrine avec un gel conducteur. L'examen dure environ vingt à trente minutes."),
+                ("Comment fonctionne le programme de prévention ?", "Le programme semestriel comprend quatre consultations programmées, deux ECG, un Holter de 24 heures, un bilan intégré avec un diététicien et un médecin du sport, et un canal direct avec le médecin du cabinet."),
+            ],
+        },
 
         "cta_heading":
             "Chaque consultation est <em>convenue personnellement</em> avec le médecin.",
@@ -1251,6 +1305,33 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
 
         "chief_label":   "Dirección clínica",
         "chief_heading": "Una sola firma <em>en cada historia clínica.</em>",
+
+        "tecnologie": {
+            "label": "Tecnología y equipamiento",
+            "heading": "Diagnóstico de <em>última generación</em>, en consulta.",
+            "items": [
+                {"icon": "ecg", "title": "ECG de 12 derivaciones", "desc": "Electrocardiograma en reposo con informe inmediato y comparación histórica."},
+                {"icon": "echo", "title": "Ecocardiografía Philips EPIQ 7", "desc": "Ecografía cardíaca 2D y Doppler color de última generación, informe en el día."},
+                {"icon": "holter", "title": "Holter Schiller MT-200", "desc": "Registro de ECG de 24 horas con análisis de variabilidad y arritmias silentes."},
+                {"icon": "stress", "title": "Prueba de esfuerzo", "desc": "Test en cicloergómetro con monitorización continua de la presión arterial."},
+            ],
+        },
+        "testimonianza": {
+            "quote": "Busqué durante dos años un cardiólogo que leyera de verdad mi historial antes de examinarme. En el Studio Marani dedicaron cuarenta minutos a mis pruebas antes siquiera de coger el estetoscopio.",
+            "author": "Paciente de la consulta",
+            "context": "Segunda opinión cardiológica · 2025",
+        },
+        "faq": {
+            "label": "Preguntas frecuentes",
+            "heading": "Las preguntas que <em>nos hacen con más frecuencia.</em>",
+            "items": [
+                ("¿Cuánto dura una primera visita cardiológica?", "Una primera visita completa dura aproximadamente cuarenta y cinco minutos e incluye anamnesis, exploración física, ECG de 12 derivaciones, informe y discusión del plan de seguimiento."),
+                ("¿Necesito volante del médico de cabecera?", "No. Al tratarse de una consulta especializada privada, no es necesaria la derivación del médico de familia. Un informe del médico de cabecera es útil pero no obligatorio."),
+                ("¿Puedo traer pruebas de otro hospital?", "Por supuesto. La segunda opinión es una de nuestras especialidades. Traiga todos los informes, cartas de alta y tratamientos en curso."),
+                ("¿El ecocardiograma es doloroso?", "No, es una prueba completamente indolora y no invasiva. La sonda se coloca sobre el tórax con un gel conductor. La exploración dura entre veinte y treinta minutos."),
+                ("¿Cómo funciona el programa de prevención?", "El programa semestral incluye cuatro visitas programadas, dos ECG, un Holter de 24 horas, una valoración integrada con dietista y médico del deporte, y una línea directa con el médico de la consulta."),
+            ],
+        },
 
         "cta_heading":
             "Cada consulta se <em>acuerda personalmente</em> con el médico.",
@@ -1803,6 +1884,33 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
 
         "chief_label":   "الإدارة السريرية",
         "chief_heading": "توقيع واحد <em>على كلّ ملف.</em>",
+
+        "tecnologie": {
+            "label": "التقنيات والتجهيزات",
+            "heading": "تشخيص <em>متقدّم</em>، داخل العيادة.",
+            "items": [
+                {"icon": "ecg", "title": "تخطيط قلب كهربائي ١٢ اتجاهًا", "desc": "تخطيط كهربائي أثناء الراحة مع تقرير فوري ومقارنة تاريخية."},
+                {"icon": "echo", "title": "تصوير القلب بالصدى Philips EPIQ 7", "desc": "تصوير قلب ثنائي الأبعاد ودوبلر ملوّن من الجيل الأخير، يُسلَّم التقرير في اليوم ذاته."},
+                {"icon": "holter", "title": "هولتر Schiller MT-200", "desc": "تسجيل تخطيط كهربائي على مدار ٢٤ ساعة مع تحليل التباين واضطرابات النظم الصامتة."},
+                {"icon": "stress", "title": "اختبار الجهد", "desc": "اختبار على جهاز دراجة مع مراقبة مستمرة لضغط الدم."},
+            ],
+        },
+        "testimonianza": {
+            "quote": "بحثتُ لمدة عامَين عن طبيب قلب يقرأ ملفّي فعلاً قبل أن يفحصني. في ستوديو ماراني أمضوا أربعين دقيقة على فحوصاتي قبل أن يلمسوا السمّاعة.",
+            "author": "مريض في العيادة",
+            "context": "رأي ثانٍ في أمراض القلب · ٢٠٢٥",
+        },
+        "faq": {
+            "label": "الأسئلة الشائعة",
+            "heading": "الأسئلة التي <em>تُطرح علينا كثيرًا.</em>",
+            "items": [
+                ("كم تستغرق الزيارة الأولى لطبيب القلب؟", "تستغرق الزيارة الأولى الكاملة نحو خمسٍ وأربعين دقيقة وتشمل السيرة المرضية والفحص السريري وتخطيط القلب الكهربائي ذي الاثنتي عشرة اتجاهًا والتقرير ومناقشة خطة المتابعة."),
+                ("هل أحتاج إلى تحويل من طبيب الأسرة؟", "لا. بوصفنا عيادة متخصصة خاصة، لا يلزم خطاب تحويل. رسالة من طبيب الأسرة مفيدة لكنها غير إلزامية."),
+                ("هل يمكنني إحضار فحوصات من مستشفى آخر؟", "بالتأكيد. الرأي الثاني هو أحد تخصصاتنا. أحضر جميع التقارير وخطابات الخروج والعلاجات الجارية."),
+                ("هل تصوير القلب بالصدى مؤلم؟", "لا، هو فحص غير مؤلم تمامًا وغير جراحي. يُوضع المسبار على الصدر مع جل موصل. يستغرق الفحص نحو عشرين إلى ثلاثين دقيقة."),
+                ("كيف يعمل برنامج الوقاية؟", "يشمل البرنامج نصف السنوي أربع زيارات مجدولة وتخطيطَي قلب كهربائيَّين وهولتر على مدار ٢٤ ساعة وتقييمًا متكاملًا مع اختصاصي تغذية وطبيب رياضي وخطًا مباشرًا مع طبيب العيادة."),
+            ],
+        },
 
         "cta_heading":
             "كلّ استشارة <em>تُنسَّق شخصياً</em> مع الطبيب.",

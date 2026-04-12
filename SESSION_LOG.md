@@ -1,5 +1,74 @@
 # Session Log
 
+## Session 28 — Ultra Premium Live Pass (Phase 2g2x.12) (2026-04-12)
+
+**Agent:** Premium UI session. Ultra-premium feature & interaction pass on the 3 published_live templates.
+**Branch:** `phase-ultra-premium-live-v1`.
+**Scope floor:** enrich cardio, dermatologia, gusto with new sections, interactive components, and visual richness. Non-goals: touch drafts, reopen tiering, new categories/templates, auth/checkout/editor/projects/commerce.
+
+### 1 — Audit & Strategy
+
+Read all 11 context/memory files + all specialist + fine-dining skin files + motion system. Identified per-template enhancement opportunities with a differentiation matrix ensuring each template gets distinct new interactive patterns:
+
+- **Cardio:** technology/equipment grid + patient testimonial + FAQ accordion + sticky CTA bar
+- **Dermatologia:** treatment gallery strip + patient testimonial + FAQ accordion + sticky CTA bar
+- **Gusto:** ingredients/sourcing editorial band + awards section + seasonal highlight card + lightbox gallery + expanded atmosphere strip (3→4 images)
+
+### 2 — New Interactive Components Library
+
+Created `static/css/live-interactions.css` (208 lines) + `static/js/live-interactions.js` (200 lines):
+- **Accordion** — smooth height animation, keyboard accessible, single-open mode, +/- icon transition
+- **Lightbox** — image modal with navigation arrows, keyboard support (Esc/←/→), grouped images, caption display
+- **Sticky CTA bar** — appears after scrolling past hero, IntersectionObserver-driven
+- All components: `prefers-reduced-motion` support, no dependencies, graceful degradation without JS
+
+### 3 — Specialist Skin Enhancements (Cardio + Derm)
+
+Modified `home.html` with 6 new conditional sections + CSS:
+- `sp-tech` — 4-column technology/equipment grid with inline SVG icons (ECG, echo, holter, stress) — Cardio-only via `{% if page_data.tecnologie %}`
+- `sp-gallery-strip` — 4-image treatment gallery with hover reveal captions — Derm-only via `{% if page_data.gallery_strip %}`
+- `sp-testimonial` — editorial patient quote with quotation mark accent — both (different content per template)
+- `sp-faq` — accordion FAQ with 5 items, single-open mode — both (different questions per template)
+- Sticky CTA bar — dark glass bar with brand name + appointment CTA — both
+- Signature visits now have inline SVG dot icons for better visual rhythm
+
+Modified `_base.html`: linked `live-interactions.css` + `live-interactions.js`.
+
+### 4 — Fine-Dining Skin Enhancements (Gusto)
+
+Modified `home.html` with 4 new sections + CSS:
+- `fd-ingredienti` — 2-column editorial band (image + text) about ingredient sourcing
+- `fd-awards` — 4-column awards/recognition grid (Michelin star, Gambero Rosso, Identità Golose, 50 Best)
+- `fd-stagione` — bordered seasonal highlight card with current menu teaser
+- `fd-atmo` — expanded from 3 to 4 images, now with lightbox triggers for all images
+
+Modified `gallery.html`: added lightbox triggers on all 6 gallery images with grouped navigation.
+Modified `reservations.html`: added SVG process icons to the 4-step booking workflow.
+Modified `_base.html`: linked `live-interactions.css` + `live-interactions.js`.
+
+### 5 — Content Registry Updates
+
+Added new content blocks to `template_content.py`:
+- Cardio home: `tecnologie` (4 equipment items), `testimonianza`, `faq` (5 questions)
+- Derm home: `gallery_strip` (4 images), `testimonianza`, `faq` (5 questions)
+- Gusto home: `ingredienti`, `riconoscimenti` (4 awards), `stagione` (seasonal card), expanded `atmosphere_teaser` (3→4 images)
+
+Updated all i18n content files with translated versions:
+- `template_content_cardio_i18n.py`: EN/FR/ES/AR blocks for tecnologie, testimonianza, faq
+- `template_content_dermatologia_i18n.py`: EN/FR/ES/AR blocks for gallery_strip, testimonianza, faq
+
+### 6 — Validation Results
+
+- `python manage.py check` → 0 issues
+- **34/34 route smoke tests green:**
+  - 9 cardio IT + 4 cardio i18n (EN/FR/ES/AR) = 13
+  - 9 derm IT + 4 derm i18n (EN/FR/ES/AR) = 13
+  - 7 gusto IT + 1 blog post = 8
+- **Cross-contamination:** 0 Ricciardi in Cardio, 0 Marani in Derm, 0 medical in Gusto
+- **Gusto motion regression:** 37 data-lm attrs (unchanged), 9 staggers, 3 counters, 0 medical CSS leaked
+- **i18n/RTL verified:** Cardio AR (dir=rtl + tech + FAQ + testimonial), Derm AR (dir=rtl + gallery + FAQ), all new sections render in all 5 locales
+- **Differentiation audit:** 12/12 unique-section checks pass, 0 shared interactive patterns across categories
+
 ## Session 27 — Medical Motion Opt-In (Phase 2g2x.11) (2026-04-12)
 
 **Agent:** Premium UI session. Motion opt-in for the specialist archetype (cardio + dermatologia).

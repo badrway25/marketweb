@@ -187,6 +187,74 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
         "chief_label":   "Direzione clinica",
         "chief_heading": "Una sola firma <em>per ogni cartella.</em>",
 
+        # Technology / equipment section (Cardio-only — Derm uses gallery_strip)
+        "tecnologie": {
+            "label": "Tecnologie & strumentazione",
+            "heading": "Diagnostica di <em>ultimo livello</em>, in studio.",
+            "items": [
+                {
+                    "icon": "ecg",
+                    "title": "ECG a 12 derivazioni",
+                    "desc": "Elettrocardiogramma a riposo con refertazione immediata e confronto storico.",
+                },
+                {
+                    "icon": "echo",
+                    "title": "Ecocardiografia Philips EPIQ 7",
+                    "desc": "Ecografia cardiaca 2D e color-Doppler di ultima generazione, refertata in giornata.",
+                },
+                {
+                    "icon": "holter",
+                    "title": "Holter Schiller MT-200",
+                    "desc": "Registrazione ECG delle 24 ore con analisi di variabilità e aritmie silenti.",
+                },
+                {
+                    "icon": "stress",
+                    "title": "Test ergometrico",
+                    "desc": "Test da sforzo su cicloergometro con monitoraggio continuo della pressione arteriosa.",
+                },
+            ],
+        },
+
+        # Patient testimonial (different voice for Cardio vs Derm)
+        "testimonianza": {
+            "quote":
+                "Ho cercato per due anni un cardiologo che leggesse davvero la mia "
+                "cartella prima di visitarmi. Allo Studio Marani hanno passato "
+                "quaranta minuti sui miei esami prima ancora di toccare lo stetoscopio.",
+            "author": "Paziente dello studio",
+            "context": "Seconda opinione cardiologica · 2025",
+        },
+
+        # FAQ accordion (clinical cardio questions)
+        "faq": {
+            "label": "Domande frequenti",
+            "heading": "Le domande che <em>ci rivolgete più spesso.</em>",
+            "items": [
+                ("Quanto dura una prima visita cardiologica?",
+                 "Una prima visita completa dura circa quarantacinque minuti e include "
+                 "anamnesi, esame obiettivo, ECG a 12 derivazioni, refertazione e "
+                 "discussione del piano di follow-up. Non accettiamo visite di meno "
+                 "di trenta minuti, nemmeno per i controlli."),
+                ("Serve la richiesta del medico di base?",
+                 "No. Essendo uno studio specialistico privato, non è necessaria "
+                 "l'impegnativa del medico curante. È utile, ma non obbligatoria, "
+                 "una lettera del medico di base con la storia clinica recente."),
+                ("Posso portare esami di un altro ospedale?",
+                 "Assolutamente sì. Il secondo parere è una delle nostre specialità. "
+                 "Portateci tutti i referti, le lettere di dimissione e le terapie in "
+                 "corso — li leggeremo insieme, pagina per pagina."),
+                ("L'ecocardiogramma è doloroso?",
+                 "No, è un esame completamente indolore e non invasivo. La sonda "
+                 "viene appoggiata sul torace con un gel conduttore. L'esame dura "
+                 "circa venti-trenta minuti."),
+                ("Come funziona il programma di prevenzione?",
+                 "Il programma semestrale include quattro visite cadenzate, due "
+                 "ECG, un Holter delle 24 ore, una valutazione integrata con "
+                 "dietologo e medico dello sport, e un canale diretto con il "
+                 "medico dello studio per le urgenze."),
+            ],
+        },
+
         # Bottom CTA band
         "cta_heading":
             "Ogni visita è <em>concordata personalmente</em> con il medico.",
@@ -697,22 +765,64 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
         "press": ["GUIDA MICHELIN", "GAMBERO ROSSO", "IDENTITÀ GOLOSE",
                   "CORRIERE LIVING", "VOGUE FOOD"],
 
-        # Atmosphere teaser — 3-image strip on home, links to /atmosfera
+        # Ingredients/sourcing editorial band
+        "ingredienti": {
+            "label": "Materia prima",
+            "heading": "Trentadue produttori, <em>tutti per nome.</em>",
+            "text":
+                "La rete di Osteria Moderna comprende trentadue piccoli produttori — "
+                "pescatori liguri, allevatori piemontesi, ortolani lodigiani — di cui "
+                "Lorenzo conosce personalmente il nome, l'indirizzo e il numero di "
+                "telefono. Nessun intermediario, nessun catalogo, nessuna distribuzione.",
+            "image":
+                "https://images.unsplash.com/photo-1606787366850-de6330128bfc"
+                "?auto=format&fit=crop&w=1000&q=80",
+            "image_caption": "Ingredienti del menù autunno '26 · mercato del mattino",
+        },
+
+        # Atmosphere teaser — expanded to 4 images with lightbox
         "atmosphere_teaser": {
             "label": "L'atmosfera",
             "images": [
                 ("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"
                  "?auto=format&fit=crop&w=600&q=80",
-                 "La sala"),
+                 "La sala principale"),
                 ("https://images.unsplash.com/photo-1556909114-f6e7ad7d3136"
                  "?auto=format&fit=crop&w=600&q=80",
                  "La cucina a vista"),
                 ("https://images.unsplash.com/photo-1559339352-11d035aa65de"
                  "?auto=format&fit=crop&w=600&q=80",
-                 "Il cortile"),
+                 "Il cortile sotto il glicine"),
+                ("https://images.unsplash.com/photo-1414235077428-338989a2e8c0"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "Mise en place del venerdì sera"),
             ],
             "link_label": "Scopri l'atmosfera",
             "link_href":  "atmosfera",
+        },
+
+        # Awards/recognition section
+        "riconoscimenti": {
+            "label": "Riconoscimenti",
+            "items": [
+                ("★", "Stella Michelin", "Dal 2018 — confermata ogni anno"),
+                ("GR", "Gambero Rosso", "Tre Forchette · Premio speciale cucina d'autore 2025"),
+                ("IG", "Identità Golose", "Piatto dell'anno 2024 — Piccione di Bresse"),
+                ("50B", "50 Best Discovery", "Incluso nella selezione 2026 Italia"),
+            ],
+        },
+
+        # Seasonal highlight card
+        "stagione": {
+            "label": "In questo momento",
+            "title": "Menù autunno '26",
+            "subtitle": "Otto atti · dal 6 al 19 ottobre",
+            "text":
+                "Il nuovo menù è in carta da lunedì. Otto piatti, quattro costruzioni "
+                "nuove e quattro variazioni su temi che avevamo lasciato in archivio "
+                "dal 2022. Prenotazione obbligatoria.",
+            "cta_label": "Scopri gli otto atti →",
+            "cta_href":  "menu",
         },
     },
 
@@ -1186,6 +1296,67 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
                 ("SIDeMaST", "Società Italiana di Dermatologia medica, chirurgica, estetica e delle MTS — membro attivo", ""),
                 ("EADV", "European Academy of Dermatology and Venereology — full member", ""),
                 ("IDS", "International Dermoscopy Society — Advanced Certified Dermoscopist", "dal 2015"),
+            ],
+        },
+
+        # Gallery strip (Derm-only — Cardio uses tecnologie grid)
+        "gallery_strip": {
+            "label": "Lo studio & le tecnologie",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "Il dermatoscopio digitale FotoFinder"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "L'ambulatorio di Via Veneto"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "Consulto dermatoscopico"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "Sala chirurgica ambulatoriale"),
+            ],
+        },
+
+        # Patient testimonial (different voice from Cardio — refined, aesthetic)
+        "testimonianza": {
+            "quote":
+                "Cercavo una dermatologa che non avesse fretta. La Dottoressa Ricciardi "
+                "ha passato venti minuti a studiare ogni neo con il dermatoscopio prima di "
+                "dirmi una sola parola. È stata la visita più accurata della mia vita.",
+            "author": "Paziente dello studio",
+            "context": "Mappatura nevi digitale · 2025",
+        },
+
+        # FAQ accordion (dermatology-specific questions)
+        "faq": {
+            "label": "Domande frequenti",
+            "heading": "Risposte alle domande <em>più comuni.</em>",
+            "items": [
+                ("Ogni quanto va fatta la mappatura dei nevi?",
+                 "Raccomandiamo un controllo annuale per tutti. In caso di "
+                 "familiarità per melanoma o di fototipo chiaro con molti nevi, "
+                 "il controllo può essere semestrale. La mappatura digitale "
+                 "permette di confrontare ogni neo con la sua versione precedente."),
+                ("La chirurgia dermatologica è dolorosa?",
+                 "L'escissione di lesioni sospette avviene in anestesia locale. "
+                 "Il paziente sente solo la prima puntura dell'anestetico. "
+                 "L'intervento dura in media venti minuti e si torna a casa "
+                 "subito dopo, con una piccola medicazione."),
+                ("Che differenza c'è tra estetica e dermatologia estetica?",
+                 "La differenza è il medico. Nel nostro studio ogni trattamento "
+                 "estetico — filler, tossina botulinica, peeling — è eseguito "
+                 "personalmente da un dermatologo, mai delegato. Prima di ogni "
+                 "trattamento estetico facciamo una visita dermatologica completa."),
+                ("Posso portare i referti di un altro studio?",
+                 "Sì, li leggiamo con attenzione. Se avete una mappatura digitale "
+                 "precedente, portatela: il confronto cronologico fra immagini "
+                 "prese con macchine diverse è possibile e utilissimo."),
+                ("Come funziona il laser dermatologico?",
+                 "Dipende dall'indicazione. Il laser CO2 frazionato lavora sulle "
+                 "cicatrici e le cheratosi, il laser vascolare sulle lesioni dei "
+                 "vasi superficiali. Ogni protocollo prevede una consulenza "
+                 "preliminare gratuita con la dermatologa operatrice."),
             ],
         },
 

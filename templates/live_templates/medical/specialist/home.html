@@ -252,6 +252,106 @@
     color: var(--accent);
   }
 
+  /* technology / equipment grid (Cardio-only) */
+  .sp-tech {
+    padding: 80px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-tech .tech-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+    margin-top: 36px;
+  }
+  .sp-tech .tech-item {
+    padding: 28px 0; border-top: 2px solid var(--accent);
+  }
+  .sp-tech .tech-item .tech-icon {
+    width: 36px; height: 36px; color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .sp-tech .tech-item h4 {
+    font-family: var(--heading); font-size: 20px; font-weight: 500;
+    color: var(--primary); line-height: 1.2;
+  }
+  .sp-tech .tech-item p {
+    margin-top: 10px; font-family: var(--body); font-size: 13px;
+    line-height: 1.55; color: var(--ink-soft); max-width: 30ch;
+  }
+
+  /* gallery strip (Derm-only) */
+  .sp-gallery-strip {
+    padding: 64px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-gallery-strip .strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+    margin-top: 28px;
+  }
+  .sp-gallery-strip .strip .img {
+    aspect-ratio: 4/3; position: relative; overflow: hidden;
+  }
+  .sp-gallery-strip .strip .img img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(12%) contrast(1.04) brightness(0.88);
+    transition: transform 700ms cubic-bezier(0.33, 1.00, 0.68, 1),
+                filter 700ms ease;
+  }
+  .sp-gallery-strip .strip .img:hover img {
+    filter: grayscale(0%) contrast(1.08) brightness(0.94);
+  }
+  .sp-gallery-strip .strip .img .cap {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 10px 14px;
+    background: linear-gradient(0deg, rgba(28,22,18,0.60) 0%, transparent 100%);
+    font-family: var(--heading); font-style: italic; font-size: 13px;
+    color: var(--paper); opacity: 0;
+    transition: opacity 400ms ease;
+  }
+  .sp-gallery-strip .strip .img:hover .cap { opacity: 1; }
+
+  /* testimonial block */
+  .sp-testimonial {
+    padding: 72px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-testimonial blockquote {
+    font-family: var(--heading); font-style: italic; font-size: 26px;
+    line-height: 1.5; color: var(--ink);
+    max-width: 54ch; position: relative;
+    padding-left: 48px;
+  }
+  .sp-testimonial blockquote:before {
+    content: '\201C'; position: absolute; left: 0; top: -8px;
+    font-size: 72px; color: var(--accent); font-family: var(--heading);
+    line-height: 1;
+  }
+  .sp-testimonial .testi-meta {
+    margin-top: 20px; padding-left: 48px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .sp-testimonial .testi-context {
+    display: block; margin-top: 4px;
+    font-weight: 400; color: var(--ink-soft);
+    text-transform: none; letter-spacing: 0;
+    font-size: 12px;
+  }
+
+  /* FAQ accordion */
+  .sp-faq {
+    padding: 80px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-faq .li-acc-head {
+    font-family: var(--heading); font-size: 20px; font-weight: 500;
+    color: var(--primary);
+  }
+  .sp-faq .li-acc-body-inner {
+    font-family: var(--body); font-size: 15px; line-height: 1.65;
+    color: var(--ink-soft); max-width: 64ch;
+  }
+  .sp-faq .li-acc-item { border-color: var(--rule); }
+
   /* CTA strip */
   .sp-cta {
     text-align: center; padding: 90px 90px;
@@ -262,6 +362,15 @@
   }
   .sp-cta .actions {
     margin-top: 36px; display: flex; gap: 28px; justify-content: center;
+  }
+
+  /* sticky CTA bar styling for specialist */
+  [data-li="sticky-cta"].sp-sticky-cta {
+    background: linear-gradient(180deg, rgba(28,22,18,0.95) 0%, rgba(28,22,18,0.98) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(247,243,238,0.10);
+    color: var(--paper);
   }
 {% endblock %}
 
@@ -326,6 +435,52 @@
     <p data-lm="reveal-lg">{{ page_data.manifesto_drop_cap }}{{ page_data.manifesto }}</p>
   </section>
 
+  {% if page_data.tecnologie %}
+  <section class="sp-tech">
+    <span class="sec-label" data-lm="reveal">{{ page_data.tecnologie.label }}</span>
+    <h2 data-lm="reveal">{{ page_data.tecnologie.heading|safe }}</h2>
+    <div class="tech-grid" data-lm-stagger data-lm-stagger-delay="100">
+      {% for item in page_data.tecnologie.items %}
+        <div class="tech-item">
+          <svg class="tech-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {% if item.icon == "ecg" %}
+              <path d="M3 18h6l3-10 4 20 3-10h6l3-6 2 6h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            {% elif item.icon == "echo" %}
+              <circle cx="18" cy="18" r="14" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M12 18c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="18" cy="18" r="2" fill="currentColor"/>
+            {% elif item.icon == "holter" %}
+              <rect x="10" y="4" width="16" height="28" rx="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14 16h8M14 20h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              <circle cx="18" cy="10" r="2" stroke="currentColor" stroke-width="1.3"/>
+            {% elif item.icon == "stress" %}
+              <circle cx="18" cy="22" r="10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M18 22V14M18 14l-4 4M18 14l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 6h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            {% endif %}
+          </svg>
+          <h4>{{ item.title }}</h4>
+          <p>{{ item.desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page_data.gallery_strip %}
+  <section class="sp-gallery-strip">
+    <span class="sec-label" data-lm="reveal">{{ page_data.gallery_strip.label }}</span>
+    <div class="strip" data-lm-stagger data-lm-stagger-delay="90">
+      {% for url, caption in page_data.gallery_strip.images %}
+        <div class="img">
+          <img src="{{ url }}" alt="{{ caption }}" loading="lazy">
+          <span class="cap">{{ caption }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   <section class="sp-section dark">
     <span class="sec-label" data-lm="reveal">{{ page_data.signature_visits_label }}</span>
     <h2 data-lm="reveal">{{ page_data.signature_visits_heading|safe }}</h2>
@@ -334,7 +489,13 @@
     <div class="sp-fields" data-lm-stagger data-lm-stagger-delay="90">
       {% for num, title, blurb in page_data.signature_visits %}
         <div class="field">
-          <div class="num">{{ num }} / 04</div>
+          <div class="num">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="vertical-align: -1px; margin-right: 6px;">
+              <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/>
+              <circle cx="8" cy="8" r="2.5" fill="currentColor"/>
+            </svg>
+            {{ num }} / 04
+          </div>
           <h4>{{ title }}</h4>
           <p>{{ blurb }}</p>
         </div>
@@ -384,6 +545,36 @@
   </section>
   {% endif %}
 
+  {% if page_data.testimonianza %}
+  <section class="sp-testimonial" data-lm="reveal">
+    <blockquote>{{ page_data.testimonianza.quote }}</blockquote>
+    <div class="testi-meta">
+      {{ page_data.testimonianza.author }}
+      <span class="testi-context">{{ page_data.testimonianza.context }}</span>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page_data.faq %}
+  <section class="sp-faq">
+    <span class="sec-label" data-lm="reveal">{{ page_data.faq.label }}</span>
+    <h2 data-lm="reveal">{{ page_data.faq.heading|safe }}</h2>
+    <div data-li="accordion" data-li-single="true" style="margin-top: 36px;" data-lm="reveal">
+      {% for question, answer in page_data.faq.items %}
+        <div class="li-acc-item{% if forloop.first %} is-open{% endif %}">
+          <div class="li-acc-head">
+            <span>{{ question }}</span>
+            <span class="li-acc-icon"></span>
+          </div>
+          <div class="li-acc-body">
+            <div class="li-acc-body-inner">{{ answer }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   <section class="sp-cta">
     <h2 data-lm="reveal-lg">{{ page_data.cta_heading|safe }}</h2>
     <div class="actions">
@@ -391,4 +582,9 @@
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn">{{ page_data.cta_secondary_label }}</a>
     </div>
   </section>
+
+  <div data-li="sticky-cta" class="sp-sticky-cta" data-li-trigger=".sp-hero, .sp-hero-em">
+    <span class="sticky-label">{{ site.logo_word }}</span>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="gold-btn" style="padding: 10px 28px; font-size: 12px;">{{ page_data.cta_primary_label }}</a>
+  </div>
 {% endblock %}

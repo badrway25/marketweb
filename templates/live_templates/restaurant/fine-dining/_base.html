@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family={{ theme.body_font|urlencode }}:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
 <style>
   :root {
     --primary:   {{ theme.primary }};      /* deep brown */
@@ -266,5 +267,6 @@
 </footer>
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-interactions.js' %}" defer></script>
 </body>
 </html>

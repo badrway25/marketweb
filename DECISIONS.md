@@ -1,5 +1,34 @@
 # Decisions Log
 
+## D-062: Ultra Premium Live Interaction Pass — New Interactive Components and Premium Sections (2026-04-12, Session 28)
+
+**Decision:** The 3 `tier=published_live` templates receive a comprehensive enrichment pass adding new interactive components, premium content sections, and visual richness. A new zero-dependency interaction library (`live-interactions.css` + `live-interactions.js`) is introduced alongside the existing motion system, providing accordion, lightbox, and sticky CTA components.
+
+**New interaction library:**
+- `static/css/live-interactions.css` — Accordion, lightbox overlay, sticky CTA bar styles
+- `static/js/live-interactions.js` — Accordion toggle, lightbox gallery with keyboard navigation, IntersectionObserver-driven sticky CTA
+- All components degrade gracefully without JS and respect `prefers-reduced-motion`
+- Loaded only inside live-template skins (not on marketplace)
+
+**Per-template enrichments (each template gets DIFFERENT interactive patterns):**
+
+| Template | New Sections | Unique Interactions | Section Count |
+|----------|-------------|-------------------|---------------|
+| Cardio | Technology grid (4 SVG icons), testimonial, FAQ accordion (5 Qs) | Sticky CTA bar, accordion FAQ, equipment icons | +3 sections |
+| Derm | Gallery strip (4 images), testimonial, FAQ accordion (5 Qs) | Sticky CTA bar, accordion FAQ, image gallery hover | +3 sections |
+| Gusto | Ingredients band, awards grid, seasonal card, expanded atmosphere (3→4) | Lightbox gallery, awards badges, seasonal highlight | +3 sections |
+
+**Differentiation preserved and strengthened:**
+- Cardio gets data/technology focus (clinical precision)
+- Derm gets visual/gallery focus (boutique aesthetics)
+- Gusto gets editorial/cinematic focus (theatrical hospitality)
+- No shared interactive patterns across categories: medical gets accordion+sticky, restaurant gets lightbox+seasonal
+- Inner pages enhanced: Gusto gallery has lightbox, Gusto reservations has process icons
+
+**i18n impact:** All new content blocks translated into 5 locales (IT/EN/FR/ES/AR) for both medical templates. Gusto remains IT-only per Phase 2i.2 scope. All new sections render correctly in RTL (Arabic).
+
+**Rationale:** D-054 Premium Differentiation Law requires distinct interaction patterns. The ultra-premium pass adds depth and richness without flattening differentiation — each template's new features are motivated by its brand personality and category semantics, not generic "premium template" features.
+
 ## D-061: Medical Motion Opt-In — Specialist Skin Adopts Live Motion Language with Clinical Profile (2026-04-12, Session 27)
 
 **Decision:** The specialist archetype skin (`templates/live_templates/medical/specialist/`) adopts the live motion language (`static/css/live-motion.css` + `static/js/live-motion.js`) introduced by D-058 on the fine-dining archetype (Gusto). The adoption uses a **medical motion profile** — reduced intensity tokens overriding the shared CSS on the specialist `:root` — and 4 pattern categories applied across all 8 specialist page templates plus `_base.html`.
