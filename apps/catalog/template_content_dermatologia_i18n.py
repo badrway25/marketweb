@@ -92,15 +92,16 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
 
     # ─── HOME ──────────────────────────────────────────────────
     "home": {
+        "hero_variant": "editorial-magazine",
         "eyebrow":  "Clinical dermatology · Rome Via Veneto",
         "headline": "The skin is an <em>identity document</em>. We read it in full.",
         "intro":
             "Clinical, surgical and aesthetic dermatology under one roof on "
             "Via Veneto. Digital mole mapping, early skin-cancer detection, "
             "day-surgery excisions and physician-led aesthetic treatments.",
-        "primary_cta":   "Request a private visit",
+        "primary_cta":   "Book a first visit",
         "primary_href":  "richiedi-visita",
-        "secondary_cta": "The practice",
+        "secondary_cta": "Discover the practice",
         "secondary_href":"studio",
 
         "facts": [
@@ -173,10 +174,20 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
         "chief_label":   "Clinical direction",
         "chief_heading": "One archive <em>for every skin.</em>",
 
+        "credentials": {
+            "label": "Accreditations & certifications",
+            "items": [
+                ("FotoFinder", "Certified centre of reference for FotoFinder Systems digital dermoscopy", "since 2012"),
+                ("SIDeMaST", "Italian Society of Medical, Surgical, Aesthetic Dermatology and STDs — active member", ""),
+                ("EADV", "European Academy of Dermatology and Venereology — full member", ""),
+                ("IDS", "International Dermoscopy Society — Advanced Certified Dermoscopist", "since 2015"),
+            ],
+        },
+
         "cta_heading":
-            "Every consultation is <em>personally prepared</em> by the physician.",
-        "cta_primary_label":   "Request a private visit",
-        "cta_secondary_label": "Practice contacts",
+            "A pathway that begins <em>with the first visit.</em>",
+        "cta_primary_label":   "Book a first visit",
+        "cta_secondary_label": "Directions & contact",
     },
 
     # ─── THE PRACTICE (about) ───���─────────────────────────────
@@ -652,6 +663,7 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
 
     # ─── HOME ──────────────────────────────────────────────────
     "home": {
+        "hero_variant": "editorial-magazine",
         "eyebrow":  "Dermatologie clinique \u00b7 Rome Via Veneto",
         "headline": "La peau est une <em>carte d\u2019identit\u00e9</em>. Nous la lisons int\u00e9gralement.",
         "intro":
@@ -660,9 +672,9 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
             "num\u00e9rique des n\u00e6vi, d\u00e9tection pr\u00e9coce des cancers cutan\u00e9s, "
             "chirurgie dermatologique en ambulatoire et m\u00e9decine esth\u00e9tique "
             "ex\u00e9cut\u00e9e par le dermatologue.",
-        "primary_cta":   "Demander une consultation",
+        "primary_cta":   "R\u00e9server une premi\u00e8re visite",
         "primary_href":  "richiedi-visita",
-        "secondary_cta": "Le cabinet",
+        "secondary_cta": "D\u00e9couvrir le cabinet",
         "secondary_href":"studio",
 
         "facts": [
@@ -737,10 +749,20 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
         "chief_label":   "Direction clinique",
         "chief_heading": "Un seul dossier <em>pour chaque peau.</em>",
 
+        "credentials": {
+            "label": "Accr\u00e9ditations et certifications",
+            "items": [
+                ("FotoFinder", "Centre certifi\u00e9 de r\u00e9f\u00e9rence pour la dermoscopie num\u00e9rique FotoFinder Systems", "depuis 2012"),
+                ("SIDeMaST", "Soci\u00e9t\u00e9 italienne de dermatologie m\u00e9dicale, chirurgicale, esth\u00e9tique et des MST \u2014 membre actif", ""),
+                ("EADV", "European Academy of Dermatology and Venereology \u2014 full member", ""),
+                ("IDS", "International Dermoscopy Society \u2014 Advanced Certified Dermoscopist", "depuis 2015"),
+            ],
+        },
+
         "cta_heading":
-            "Chaque consultation est <em>pr\u00e9par\u00e9e personnellement</em> par le m\u00e9decin.",
-        "cta_primary_label":   "Demander une consultation",
-        "cta_secondary_label": "Coordonn\u00e9es du cabinet",
+            "Un parcours qui commence <em>d\u00e8s la premi\u00e8re visite.</em>",
+        "cta_primary_label":   "R\u00e9server une premi\u00e8re visite",
+        "cta_secondary_label": "Acc\u00e8s et coordonn\u00e9es",
     },
 
     # ──��� LE CABINET (about) ─────────���─────────────────────────
@@ -1221,6 +1243,7 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
 
     # ─── HOME ───���──────────────────────────────────────────────
     "home": {
+        "hero_variant": "editorial-magazine",
         "eyebrow":  "Dermatolog\u00eda cl\u00ednica \u00b7 Roma V\u00eda Veneto",
         "headline": "La piel es un <em>documento de identidad</em>. Lo leemos por completo.",
         "intro":
@@ -1228,9 +1251,9 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
             "sola cl\u00ednica privada en V\u00eda Veneto. Mapeo digital de lunares, "
             "detecci\u00f3n precoz de c\u00e1ncer cut\u00e1neo, cirug\u00eda ambulatoria y "
             "medicina est\u00e9tica realizada por el dermat\u00f3logo.",
-        "primary_cta":   "Solicitar consulta privada",
+        "primary_cta":   "Reservar una primera visita",
         "primary_href":  "richiedi-visita",
-        "secondary_cta": "La cl\u00ednica",
+        "secondary_cta": "Descubrir la cl\u00ednica",
         "secondary_href":"studio",
 
         "facts": [
@@ -1305,10 +1328,20 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
         "chief_label":   "Direcci\u00f3n cl\u00ednica",
         "chief_heading": "Un solo archivo <em>para cada piel.</em>",
 
+        "credentials": {
+            "label": "Acreditaciones y certificaciones",
+            "items": [
+                ("FotoFinder", "Centro certificado de referencia en dermoscop\u00eda digital FotoFinder Systems", "desde 2012"),
+                ("SIDeMaST", "Sociedad Italiana de Dermatolog\u00eda m\u00e9dica, quir\u00fargica, est\u00e9tica y ETS \u2014 miembro activo", ""),
+                ("EADV", "European Academy of Dermatology and Venereology \u2014 full member", ""),
+                ("IDS", "International Dermoscopy Society \u2014 Advanced Certified Dermoscopist", "desde 2015"),
+            ],
+        },
+
         "cta_heading":
-            "Cada consulta es <em>preparada personalmente</em> por el m\u00e9dico.",
-        "cta_primary_label":   "Solicitar consulta privada",
-        "cta_secondary_label": "Contacto de la cl\u00ednica",
+            "Un recorrido que empieza <em>desde la primera visita.</em>",
+        "cta_primary_label":   "Reservar una primera visita",
+        "cta_secondary_label": "C\u00f3mo llegar y contacto",
     },
 
     # ─── LA CL\u00cdNICA (about) ──────────────────────────────────
@@ -1787,6 +1820,7 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
 
     # ─── HOME ──────────────────────────────────────────────────
     "home": {
+        "hero_variant": "editorial-magazine",
         "eyebrow":  "طب الجلد السريري · روما فيا فينيتو",
         "headline": "البشرة <em>وثيقة هوية</em>. نقرأها بالكامل.",
         "intro":
@@ -1794,9 +1828,9 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
             "فينيتو. رسم خرائط الشامات الرقمية، الكشف المبكر عن سرطان "
             "الجلد، جراحة يومية واستئصالات، وعلاجات تجميلية يُجريها "
             "طبيب الأمراض الجلدية شخصياً.",
-        "primary_cta":   "اطلب زيارة خاصة",
+        "primary_cta":   "احجز زيارة أولى",
         "primary_href":  "richiedi-visita",
-        "secondary_cta": "عن العيادة",
+        "secondary_cta": "اكتشف العيادة",
         "secondary_href":"studio",
 
         "facts": [
@@ -1866,10 +1900,20 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
         "chief_label":   "الإدارة السريرية",
         "chief_heading": "أرشيف واحد <em>لكلّ بشرة.</em>",
 
+        "credentials": {
+            "label": "الاعتمادات والشهادات",
+            "items": [
+                ("FotoFinder", "مركز معتمد مرجعي للتنظير الجلدي الرقمي FotoFinder Systems", "منذ 2012"),
+                ("SIDeMaST", "الجمعية الإيطالية لطب الجلد الطبي والجراحي والتجميلي — عضو فاعل", ""),
+                ("EADV", "European Academy of Dermatology and Venereology — full member", ""),
+                ("IDS", "International Dermoscopy Society — Advanced Certified Dermoscopist", "منذ 2015"),
+            ],
+        },
+
         "cta_heading":
-            "كلّ استشارة <em>يُعدّها الطبيب شخصياً</em>.",
-        "cta_primary_label":   "اطلب زي��رة خاصة",
-        "cta_secondary_label": "تواصل مع العيادة",
+            "مسار يبدأ <em>من الزيارة الأولى.</em>",
+        "cta_primary_label":   "احجز زيارة أولى",
+        "cta_secondary_label": "الموقع والتواصل",
     },
 
     # ─── عن العيادة (about) ──────���────────────────────────────

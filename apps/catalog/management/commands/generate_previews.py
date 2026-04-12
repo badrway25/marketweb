@@ -43,11 +43,16 @@ CATEGORY_TO_COMPOSITION: dict[str, str] = {
 def _resolve_composition(template: WebTemplate, dna: dict | None) -> str:
     """Pick the HTML composition path for a given template.
 
+    With ``preview_archetype``: use that instead of ``archetype`` — allows
+    two templates sharing a live archetype (e.g. specialist) to render
+    visually distinct preview compositions.
     With DNA: ``preview_compositions/<category>/<archetype>.html``
     Without:  ``preview_compositions/<category>.html`` (legacy fallback)
     """
-    if dna and "archetype" in dna:
-        return f"preview_compositions/{template.category.slug}/{dna['archetype']}.html"
+    if dna:
+        arch = dna.get("preview_archetype") or dna.get("archetype")
+        if arch:
+            return f"preview_compositions/{template.category.slug}/{arch}.html"
     fallback = CATEGORY_TO_COMPOSITION.get(template.category.slug, "agency.html")
     return f"preview_compositions/{fallback}"
 

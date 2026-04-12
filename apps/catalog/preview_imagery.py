@@ -125,6 +125,29 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=800&q=80&auto=format&fit=crop",
     ],
+    # Session 26: per-specialty pools replace shared medical-specialist
+    "medical-cardiology": [
+        # 0: hero - clinical cardiovascular (stethoscope + white coat)
+        "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature - ECG / diagnostic equipment
+        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: cardiology-specific
+        "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&q=80&auto=format&fit=crop",
+    ],
+    "medical-dermatology": [
+        # 0: hero - aesthetic dermatology (clinical-beauty crossover)
+        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature - skin examination / dermatoscopy
+        "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: dermatology-specific
+        "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=80&auto=format&fit=crop",
+    ],
     "medical-wellness": [
         # 0: hero - bright airy interior (real-estate pool — closest to spa)
         "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80&auto=format&fit=crop",

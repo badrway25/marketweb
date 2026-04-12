@@ -240,6 +240,44 @@
     color: var(--ink-soft); letter-spacing: 0.06em;
   }
 
+  /* atmosphere teaser — 3-image strip */
+  .fd-atmo {
+    padding: 80px 90px; max-width: 1440px; margin: 0 auto;
+  }
+  .fd-atmo .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--secondary);
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 36px;
+  }
+  .fd-atmo .lbl:after { content: ''; flex: 1; height: 1px; background: var(--rule-2); }
+  .fd-atmo .strip {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .fd-atmo .strip .img {
+    aspect-ratio: 4/3; position: relative; overflow: hidden;
+  }
+  .fd-atmo .strip .img img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: contrast(1.05) saturate(0.92) brightness(0.82);
+    transition: transform 600ms cubic-bezier(0.33, 1.00, 0.68, 1), filter 600ms ease;
+  }
+  .fd-atmo .strip .img:hover img {
+    transform: scale(1.04);
+    filter: contrast(1.08) saturate(1.0) brightness(0.88);
+  }
+  .fd-atmo .strip .img .cap {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 12px 18px;
+    background: linear-gradient(0deg, rgba(11,9,7,0.65) 0%, transparent 100%);
+    font-family: var(--heading); font-style: italic; font-size: 15px;
+    color: var(--secondary);
+  }
+  .fd-atmo .foot {
+    margin-top: 28px; text-align: right;
+  }
+
   /* CTA strip */
   .fd-cta { padding: 96px 90px; text-align: center; }
   .fd-cta h2 {
@@ -322,6 +360,23 @@
       </div>
     </div>
   </section>
+
+  {% if page_data.atmosphere_teaser %}
+  <section class="fd-atmo">
+    <div class="lbl" data-lm="reveal">{{ page_data.atmosphere_teaser.label }}</div>
+    <div class="strip" data-lm-stagger data-lm-stagger-delay="100">
+      {% for url, caption in page_data.atmosphere_teaser.images %}
+        <div class="img">
+          <img src="{{ url }}" alt="{{ caption }}" loading="lazy">
+          <span class="cap">{{ caption }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="foot" data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.atmosphere_teaser.link_href %}" class="ghost-btn" style="border-color:var(--secondary);color:var(--secondary);">{{ page_data.atmosphere_teaser.link_label }} →</a>
+    </div>
+  </section>
+  {% endif %}
 
   <section class="fd-press" data-lm-stagger data-lm-stagger-delay="90">
     <span class="lbl">Pubblicato su</span>

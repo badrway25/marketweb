@@ -89,6 +89,7 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
     },
 
     "home": {
+        "hero_variant": "split-consultive",
         "eyebrow":  "Clinical cardiology · Rome Parioli",
         "headline": "A <em>tailored cardiology</em>, for those who refuse shortcuts.",
         "intro":
@@ -613,6 +614,7 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
     },
 
     "home": {
+        "hero_variant": "split-consultive",
         "eyebrow":  "Cardiologie clinique · Rome Parioli",
         "headline": "Une cardiologie <em>sur mesure</em>, pour celles et ceux qui refusent les raccourcis.",
         "intro":
@@ -1150,6 +1152,7 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
     },
 
     "home": {
+        "hero_variant": "split-consultive",
         "eyebrow":  "Cardiología clínica · Roma Parioli",
         "headline": "Una cardiología <em>a medida</em>, para quien no acepta atajos.",
         "intro":
@@ -1695,6 +1698,7 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
     },
 
     "home": {
+        "hero_variant": "split-consultive",
         "eyebrow":  "أمراض القلب السريرية · روما باريولي",
         "headline": "طبّ قلب <em>مُفصَّل خصّيصاً</em> لمن لا يقبل بالاختصارات.",
         "intro":

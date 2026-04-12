@@ -108,6 +108,7 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
 
     # ─── HOME ──────────────────────────────────────────────────
     "home": {
+        "hero_variant": "split-consultive",
         "eyebrow":  "Cardiologia clinica · Roma Parioli",
         "headline": "Una cardiologia <em>su misura</em>, per chi non accetta scorciatoie.",
         "intro":
@@ -685,6 +686,24 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
 
         "press": ["GUIDA MICHELIN", "GAMBERO ROSSO", "IDENTITÀ GOLOSE",
                   "CORRIERE LIVING", "VOGUE FOOD"],
+
+        # Atmosphere teaser — 3-image strip on home, links to /atmosfera
+        "atmosphere_teaser": {
+            "label": "L'atmosfera",
+            "images": [
+                ("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "La sala"),
+                ("https://images.unsplash.com/photo-1556909114-f6e7ad7d3136"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "La cucina a vista"),
+                ("https://images.unsplash.com/photo-1559339352-11d035aa65de"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "Il cortile"),
+            ],
+            "link_label": "Scopri l'atmosfera",
+            "link_href":  "atmosfera",
+        },
     },
 
     # ─── FILOSOFIA (about) ─────────────────────────────────────
@@ -1062,15 +1081,16 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
 
     # ─── HOME ──────────────────────────────────────────────────
     "home": {
+        "hero_variant": "editorial-magazine",
         "eyebrow":  "Dermatologia clinica · Roma Veneto",
         "headline": "La pelle è una <em>carta d'identità</em>. La leggiamo per intero.",
         "intro":
             "Dermatologia clinica, chirurgica ed estetica in un unico studio privato a "
             "Via Veneto. Mappa nei digitale, diagnosi precoce dei tumori cutanei, "
             "chirurgia dermatologica in day-hospital e medicina estetica dermatologica.",
-        "primary_cta":   "Richiedi visita privata",
+        "primary_cta":   "Prenota una prima visita",
         "primary_href":  "richiedi-visita",
-        "secondary_cta": "Lo studio",
+        "secondary_cta": "Scopri lo studio",
         "secondary_href":"studio",
 
         "facts": [
@@ -1143,11 +1163,22 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
         "chief_label":   "Direzione clinica",
         "chief_heading": "Un solo archivio <em>per ogni pelle.</em>",
 
+        # Credentials/certifications — unique to Derm (not on Cardio)
+        "credentials": {
+            "label": "Riconoscimenti & certificazioni",
+            "items": [
+                ("FotoFinder", "Centro certificato di riferimento per la dermoscopia digitale FotoFinder Systems", "dal 2012"),
+                ("SIDeMaST", "Società Italiana di Dermatologia medica, chirurgica, estetica e delle MTS — membro attivo", ""),
+                ("EADV", "European Academy of Dermatology and Venereology — full member", ""),
+                ("IDS", "International Dermoscopy Society — Advanced Certified Dermoscopist", "dal 2015"),
+            ],
+        },
+
         # Bottom CTA band
         "cta_heading":
-            "Ogni visita è <em>preparata personalmente</em> dal medico.",
-        "cta_primary_label":   "Richiedi visita privata",
-        "cta_secondary_label": "Contatti dello studio",
+            "Un percorso che inizia <em>dalla prima visita.</em>",
+        "cta_primary_label":   "Prenota una prima visita",
+        "cta_secondary_label": "Contatti e indicazioni",
     },
 
     # ─── LO STUDIO (about) ─────────────────────────────────────

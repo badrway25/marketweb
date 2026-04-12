@@ -66,6 +66,55 @@
     text-transform: none; letter-spacing: 0;
   }
 
+  /* === EDITORIAL-MAGAZINE HERO (hero_variant=editorial-magazine) === */
+  .sp-hero-em {
+    padding: 90px 90px 64px 90px;
+    max-width: 1440px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px;
+    align-items: stretch;
+  }
+  .sp-hero-em .portrait {
+    aspect-ratio: 3/4;
+    background-size: cover; background-position: center;
+    background-repeat: no-repeat;
+    border-right: 8px solid var(--accent);
+    filter: grayscale(15%) contrast(1.08) brightness(0.92);
+    position: relative;
+  }
+  .sp-hero-em .portrait:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(28,22,18,0) 60%, rgba(28,22,18,0.25) 100%);
+  }
+  .sp-hero-em .text .eyebrow {
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-hero-em .text .eyebrow:before { content: ''; width: 36px; height: 1.5px; background: var(--accent); }
+  .sp-hero-em .text h1 {
+    margin-top: 28px; font-size: 78px; font-weight: 500; line-height: 0.98;
+    letter-spacing: -0.022em;
+  }
+  .sp-hero-em .intro {
+    margin-top: 28px; max-width: 48ch;
+    font-family: var(--heading); font-style: italic; font-size: 20px;
+    line-height: 1.5; color: var(--ink-soft);
+  }
+  .sp-hero-em .stats {
+    margin-top: 36px; display: flex; gap: 32px;
+    padding-top: 24px; border-top: 1px solid var(--rule);
+  }
+  .sp-hero-em .stats div {
+    font-family: var(--body); font-size: 9px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .sp-hero-em .stats strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-size: 26px; color: var(--accent);
+    text-transform: none; letter-spacing: 0; font-weight: 500;
+  }
+  .sp-hero-em .actions { margin-top: 36px; display: flex; gap: 28px; align-items: center; }
+
   /* facts band */
   .sp-facts {
     background: var(--paper-2); padding: 48px 90px;
@@ -171,6 +220,35 @@
     color: var(--ink-soft); letter-spacing: 0.04em;
   }
 
+  /* credentials (optional — Derm only) */
+  .sp-credentials {
+    padding: 56px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-credentials .cred-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px;
+    margin-top: 28px;
+  }
+  .sp-credentials .cred {
+    padding: 22px 0; border-top: 2px solid var(--accent);
+  }
+  .sp-credentials .cred .abbr {
+    display: block;
+    font-family: var(--heading); font-size: 20px; font-weight: 600;
+    color: var(--accent); letter-spacing: 0.02em;
+  }
+  .sp-credentials .cred .desc {
+    display: block; margin-top: 8px;
+    font-family: var(--body); font-size: 12px; line-height: 1.55;
+    color: var(--ink-soft); max-width: 28ch;
+  }
+  .sp-credentials .cred .since {
+    display: block; margin-top: 6px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+  }
+
   /* CTA strip */
   .sp-cta {
     text-align: center; padding: 90px 90px;
@@ -185,6 +263,25 @@
 {% endblock %}
 
 {% block content %}
+  {% if page_data.hero_variant == "editorial-magazine" %}
+  <section class="sp-hero-em">
+    <div class="portrait" style="background-image: url('{{ page_data.chief.portrait }}');"></div>
+    <div class="text">
+      <div class="eyebrow">{{ page_data.eyebrow }}</div>
+      <h1>{{ page_data.headline|safe }}</h1>
+      <p class="intro">{{ page_data.intro }}</p>
+      <div class="stats">
+        {% for label, value in page_data.hero_sidebar_pulse %}
+          <div>{{ label }}<strong>{{ value }}</strong></div>
+        {% endfor %}
+      </div>
+      <div class="actions">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="gold-btn">{{ page_data.primary_cta }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn">{{ page_data.secondary_cta }}</a>
+      </div>
+    </div>
+  </section>
+  {% else %}
   <section class="sp-hero">
     <div class="left">
       <div class="eyebrow">{{ page_data.eyebrow }}</div>
@@ -211,6 +308,7 @@
       </div>
     </aside>
   </section>
+  {% endif %}
 
   <section class="sp-facts">
     {% for num, lbl in page_data.facts %}
@@ -267,6 +365,21 @@
       <span class="item">{{ outlet }}</span>
     {% endfor %}
   </section>
+
+  {% if page_data.credentials %}
+  <section class="sp-credentials">
+    <span class="sec-label">{{ page_data.credentials.label }}</span>
+    <div class="cred-grid">
+      {% for abbr, desc, since in page_data.credentials.items %}
+        <div class="cred">
+          <span class="abbr">{{ abbr }}</span>
+          <span class="desc">{{ desc }}</span>
+          {% if since %}<span class="since">{{ since }}</span>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 
   <section class="sp-cta">
     <h2>{{ page_data.cta_heading|safe }}</h2>

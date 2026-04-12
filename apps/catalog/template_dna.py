@@ -761,6 +761,7 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
     # different brand / palette / content / tone / font pairing.
     "dermatologia-elite-roma": {
         "archetype":          "specialist",
+        "preview_archetype":  "specialist-derm",
         "hero_style":         "editorial-serif",
         "navbar_style":       "minimal-serif",
         "footer_style":       "centered-minimal",
@@ -769,8 +770,8 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "button_style":       "ghost-underline",
         "density":            "very-airy",
         "tone":               "prestigious",
-        "imagery_direction":  "editorial-portrait",
-        "imagery_key":        "medical-specialist",
+        "imagery_direction":  "aesthetic-clinical — skin, dermatoscopy, treatment rooms",
+        "imagery_key":        "medical-dermatology",
         "conversion_pattern": "private-request",
         "font_pairing":       ("Bodoni Moda", "Inter"),
         "content": {
@@ -806,6 +807,7 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
     # ── 4) SPECIALIST — editorial high-end ───────────────────────
     "cardio-studio-specialistico": {
         "archetype":          "specialist",
+        "preview_archetype":  "specialist-cardio",
         "hero_style":         "editorial-serif",
         "navbar_style":       "minimal-serif",
         "footer_style":       "centered-minimal",
@@ -814,8 +816,8 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "button_style":       "ghost-underline",
         "density":            "very-airy",
         "tone":               "prestigious",
-        "imagery_direction":  "editorial-portrait",
-        "imagery_key":        "medical-specialist",
+        "imagery_direction":  "clinical-cardiovascular — ECG, stethoscope, consultation",
+        "imagery_key":        "medical-cardiology",
         "conversion_pattern": "private-request",
         "font_pairing":       ("Cormorant Garamond", "Inter"),
         "content": {
