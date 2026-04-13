@@ -133,13 +133,31 @@
 
   function animateCounter(el) {
     var original = (el.getAttribute('data-lm-original') || el.innerText || '').trim();
-    // Parse leading numeric portion + preserve suffix (e.g. "180€" or "1.4k")
-    var match = original.match(/^(-?\d+(?:[.,]\d+)?)(.*)$/);
+    // Parse OPTIONAL leading non-digit prefix + numeric portion + suffix
+    // ("180€", "1.4k", "€ 1.4 B", "+ 38%", "↑ 22"). Prefix and suffix are
+    // preserved verbatim — only the numeric span animates.
+    var match = original.match(/^(\D*?)(-?\d+(?:[.,]\d+)?)(.*)$/);
     if (!match) return;
 
-    var target = parseFloat((el.getAttribute('data-lm-to') || match[1]).replace(',', '.'));
-    var suffix = match[2] || '';
-    var isInt = String(target).indexOf('.') === -1;
+    var prefix = match[1] || '';
+    var suffix = match[3] || '';
+
+    var rawNum = el.getAttribute('data-lm-to') || match[2];
+
+    // Italian thousand-separator heuristic: "1.200" or "12.450" — 1–3 digits
+    // BEFORE a single dot AND exactly 3 digits AFTER it AND no further digits
+    // → treat the dot as a thousand separator, not a decimal point. Otherwise
+    // assume the dot is a decimal point ("1.4 B" stays 1.4). Comma-separators
+    // are always treated as decimals (Italian convention for fractional values).
+    var thousandsMatch = /^(\d{1,3})\.(\d{3})$/.exec(rawNum);
+    var target;
+    if (thousandsMatch) {
+      target = parseInt(thousandsMatch[1] + thousandsMatch[2], 10);
+    } else {
+      target = parseFloat(String(rawNum).replace(',', '.'));
+    }
+
+    var isInt = thousandsMatch ? true : (String(target).indexOf('.') === -1);
     var decimals = isInt ? 0 : (String(target).split('.')[1] || '').length;
 
     if (isNaN(target)) return;
@@ -150,12 +168,24 @@
     var start = performance.now();
     function ease(t) { return 1 - Math.pow(1 - t, 3); } // easeOutCubic
 
+    function formatValue(v) {
+      if (isInt) {
+        var n = Math.round(v);
+        // Restore Italian thousand-separator on integer fragments ≥ 1000.
+        if (thousandsMatch) {
+          return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+        return String(n);
+      }
+      return v.toFixed(decimals);
+    }
+
     function frame(now) {
       var t = Math.min(1, (now - start) / COUNTER_DURATION_MS);
       var value = target * ease(t);
-      el.innerText = (isInt ? Math.round(value) : value.toFixed(decimals)) + suffix;
+      el.innerText = prefix + formatValue(value) + suffix;
       if (t < 1) requestAnimationFrame(frame);
-      else el.innerText = (isInt ? Math.round(target) : target.toFixed(decimals)) + suffix;
+      else el.innerText = prefix + formatValue(target) + suffix;
     }
     requestAnimationFrame(frame);
   }

@@ -165,6 +165,54 @@ CHIARA_CONTENT_IT: dict[str, Any] = {
             "ATELIER VELLUTI & CO.",
         ],
 
+        # Featured projects — visual grid below the typo hero. Lightbox-enabled,
+        # 4 cards with project image, year, discipline. Reads as a designer's
+        # opening reel without breaking the typographic editorial identity.
+        "featured_works": {
+            "label":   "Lavori in catalogo",
+            "heading": "Quattro progetti, <em>quattro discipline.</em>",
+            "intro":
+                "Una selezione del 2024 — 2025 — sistemi tipografici, identità "
+                "istituzionali, segnaletica museale, oggetti editoriali stampati. "
+                "Cliccare per aprire il dossier completo.",
+            "items": [
+                {
+                    "year":       "2025",
+                    "discipline": "Catalogo · Editoria d'arte",
+                    "title":      "Triennale Milano 2025",
+                    "blurb":      "Direzione tipografica e impaginazione del catalogo principale dell'edizione.",
+                    "image":      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1400&q=80&auto=format&fit=crop",
+                    "href":       "lavoro",
+                },
+                {
+                    "year":       "2024 — 2025",
+                    "discipline": "Sistema tipografico · Editoriale",
+                    "title":      "Collana «Carta Bianca» · Adelphi",
+                    "blurb":      "Sistema editoriale per dodici titoli — copertine, tipografia, codice cromatico.",
+                    "image":      "https://images.unsplash.com/photo-1559028012-481c04fa702d?w=1400&q=80&auto=format&fit=crop",
+                    "href":       "lavoro",
+                },
+                {
+                    "year":       "2024",
+                    "discipline": "Segnaletica · Identità museale",
+                    "title":      "Querini Stampalia · Venezia",
+                    "blurb":      "Segnaletica permanente delle sale + sistema di chiamata sale conferenze.",
+                    "image":      "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1400&q=80&auto=format&fit=crop",
+                    "href":       "lavoro",
+                },
+                {
+                    "year":       "2023",
+                    "discipline": "Monografia · Editoria indipendente",
+                    "title":      "Atelier Velluti · Lambrate",
+                    "blurb":      "Monografia di studio — 240 pagine, sistema typografico custom, stampa Antiga.",
+                    "image":      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1400&q=80&auto=format&fit=crop",
+                    "href":       "lavoro",
+                },
+            ],
+            "footer_link":  "Vedi tutti i progetti",
+            "footer_href":  "lavoro",
+        },
+
         # Press / recognitions — 3 honors
         "press_label":   "Riconoscimenti recenti",
         "press_heading": "Premi, mostre e pubblicazioni",

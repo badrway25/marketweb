@@ -169,6 +169,57 @@
     z-index: 2;
   }
 
+  /* CINEMATIC REEL — the photographer's "play reel" between filmstrip and bio.
+     Fullbleed dark frame with a moody hero still as poster, mono caption bar,
+     EXIF-style strip below. Cinematic media moment that reads as authored
+     short-form, never as a YouTube embed. */
+  .cp-reel {
+    padding: 0 56px 96px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .cp-reel-wrap {
+    display: grid; grid-template-columns: 1.6fr 1fr; gap: 56px; align-items: stretch;
+  }
+  .cp-reel-frame {
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--film-4);
+    background: var(--pitch-2);
+  }
+  .cp-reel-meta { display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+  .cp-reel-meta-lbl {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-reel-meta h3 {
+    font-family: var(--heading); font-size: 36px;
+    line-height: 1.04; letter-spacing: 0.012em; text-transform: uppercase;
+    color: var(--film);
+  }
+  .cp-reel-meta p {
+    font-family: var(--body); font-size: 14.5px; line-height: 1.7; color: var(--film-2);
+    max-width: 38ch;
+  }
+  .cp-reel-strip {
+    margin-top: 12px; padding-top: 16px;
+    border-top: 1px dashed var(--film-4);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px;
+  }
+  .cp-reel-strip-cell {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 8px 0; border-bottom: 1px solid var(--film-5);
+  }
+  .cp-reel-strip-cell .k {
+    font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--film-3); font-weight: 700;
+  }
+  .cp-reel-strip-cell .v {
+    font-size: 13px; color: var(--film); font-weight: 600;
+  }
+  @media (max-width: 1100px) {
+    .cp-reel-wrap { grid-template-columns: 1fr; gap: 32px; }
+    .cp-reel-frame { aspect-ratio: 16 / 9; }
+  }
+
   /* ABOUT EXCERPT — dark band with portrait-style typo block */
   .cp-about-excerpt {
     padding: 80px 56px; background: var(--pitch-2); border-top: 1px solid var(--film-4); border-bottom: 1px solid var(--film-4);
@@ -336,6 +387,34 @@
     {% endfor %}
   </div>
 </section>
+
+{% if page_data.reel %}
+<section class="cp-reel">
+  <div class="cp-reel-wrap">
+    <figure class="lm-video cp-reel-frame" data-lm="reveal-soft"
+            data-lm-media="video"
+            data-lm-video-src="{{ page_data.reel.src }}"
+            data-lm-video-poster="{{ page_data.reel.poster }}">
+      <img class="lm-video-poster" src="{{ page_data.reel.poster }}" alt="" loading="lazy">
+      <button type="button" class="lm-video-play" aria-label="{{ page_data.reel.play_label|default:'Riproduci' }}">
+        <span class="lm-video-play-icon"></span>
+        <span class="lm-video-play-label cp-mono">{{ page_data.reel.play_label }}</span>
+      </button>
+      <figcaption class="lm-video-caption cp-mono">{{ page_data.reel.caption }}</figcaption>
+    </figure>
+    <div class="cp-reel-meta" data-lm="reveal">
+      <div class="cp-reel-meta-lbl cp-mono">{{ page_data.reel.label }}</div>
+      <h3>{{ page_data.reel.heading|safe }}</h3>
+      <p>{{ page_data.reel.intro }}</p>
+      <div class="cp-reel-strip cp-mono">
+        {% for k, v in page_data.reel.exif %}
+          <div class="cp-reel-strip-cell"><span class="k">{{ k }}</span><span class="v">{{ v }}</span></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <section class="cp-about-excerpt">
   <div class="wrap">

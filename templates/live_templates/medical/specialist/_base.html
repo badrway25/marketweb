@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-media.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 {% if is_rtl %}
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
@@ -75,11 +76,24 @@
   {% endif %}
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
   img { max-width: 100%; display: block; }
   a { color: inherit; text-decoration: none; }
-  h1,h2,h3,h4,h5 { font-family: var(--heading); font-weight: 500; line-height: 1.08; letter-spacing: -0.018em; color: var(--primary); }
+  h1,h2,h3,h4,h5 {
+    font-family: var(--heading); font-weight: 500; line-height: 1.06; letter-spacing: -0.022em;
+    color: var(--primary);
+    font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
+  }
+  /* Italic editorial accent on serif headings — clinical sobriety, prestigious tone */
+  h1 em, h2 em, h3 em { font-weight: 400; font-style: italic; letter-spacing: -0.012em; }
   em { font-style: italic; color: var(--accent); font-weight: 500; }
+  /* Tabular numerals on the facts strip + signature visit numbers */
+  .sp-facts .fact .num,
+  .sp-visits .field .num,
+  .sp-pat-journey .step .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
 
   /* ============================================================
      MARKETPLACE BAR — minimal "you are in a preview" hint
@@ -550,6 +564,7 @@
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
 <script src="{% static 'js/live-interactions.js' %}" defer></script>
+<script src="{% static 'js/live-media.js' %}" defer></script>
 <script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>

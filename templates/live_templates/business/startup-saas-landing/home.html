@@ -114,6 +114,26 @@
     content: '→'; color: var(--accent); font-weight: 700;
   }
 
+  /* Product video block — cosmic glass frame, sits between mockup and trust */
+  .sl-product-video {
+    position: relative; z-index: 5;
+    padding: 80px 32px 48px;
+    max-width: 1240px; margin: 0 auto;
+  }
+  .sl-product-video .head { margin-bottom: 36px; max-width: 720px; }
+  .sl-product-video .head .sec-label { color: var(--accent); }
+  .sl-product-video .head h2 {
+    margin-top: 14px; font-size: 44px; letter-spacing: -0.03em;
+  }
+  .sl-product-video .head .sec-intro { margin-top: 16px; color: var(--ink-soft); font-size: 17px; }
+  .sl-video-frame {
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--rule);
+    box-shadow: 0 60px 120px -50px rgba(0,0,0,0.55), 0 0 0 1px rgba(56,189,248,0.06);
+    background: #050a18;
+  }
+  .sl-video-frame .lm-video-play-label { color: #fff; }
+
   /* Trust band — wordmarks */
   .sl-trust {
     position: relative; z-index: 5;
@@ -426,22 +446,43 @@
     </div>
     <div class="grid">
       <div class="metric">
-        <span class="label">{{ page_data.mockup.metric_label }}</span>
-        <div class="big">{{ page_data.mockup.metric_primary }}</div>
+        <span class="label sl-mono">{{ page_data.mockup.metric_label }}</span>
+        <div class="big" data-lm="counter">{{ page_data.mockup.metric_primary }}</div>
         <span class="desc">{{ page_data.mockup.metric_desc }}</span>
       </div>
       <div class="metric alt">
-        <span class="label">{{ page_data.mockup.secondary_label }}</span>
-        <div class="big">{{ page_data.mockup.secondary_metric }}</div>
+        <span class="label sl-mono">{{ page_data.mockup.secondary_label }}</span>
+        <div class="big" data-lm="counter">{{ page_data.mockup.secondary_metric }}</div>
         <span class="desc">{{ page_data.mockup.secondary_desc }}</span>
       </div>
       <div class="metric feature">
-        <span class="label">{{ page_data.mockup.feature_label }}</span>
+        <span class="label sl-mono">{{ page_data.mockup.feature_label }}</span>
         {% for perk in page_data.mockup.perks %}<span class="perk">{{ perk }}</span>{% endfor %}
       </div>
     </div>
   </div>
 </div>
+
+{% if page_data.product_video %}
+<section class="sl-section sl-product-video">
+  <div class="head" data-lm="reveal">
+    <span class="sec-label sl-mono">{{ page_data.product_video.label }}</span>
+    <h2>{{ page_data.product_video.heading|safe }}</h2>
+    <p class="sec-intro" style="margin-left:0;text-align:left;max-width:62ch;">{{ page_data.product_video.intro }}</p>
+  </div>
+  <figure class="lm-video sl-video-frame" data-lm="reveal-soft"
+          data-lm-media="video"
+          data-lm-video-src="{{ page_data.product_video.src }}"
+          data-lm-video-poster="{{ page_data.product_video.poster }}">
+    <img class="lm-video-poster" src="{{ page_data.product_video.poster }}" alt="" loading="lazy">
+    <button type="button" class="lm-video-play" aria-label="{{ page_data.product_video.play_label|default:'Riproduci' }}">
+      <span class="lm-video-play-icon"></span>
+      <span class="lm-video-play-label sl-mono">{{ page_data.product_video.play_label }}</span>
+    </button>
+    <figcaption class="lm-video-caption sl-mono">{{ page_data.product_video.caption }}</figcaption>
+  </figure>
+</section>
+{% endif %}
 
 <section class="sl-trust">
   <div class="label">{{ page_data.trust_label }}</div>
@@ -474,7 +515,7 @@
     <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
       {% for num, label in page_data.metric_strip %}
         <div class="stat" data-lm="reveal">
-          <div class="num">{{ num }}</div>
+          <div class="num" data-lm="counter">{{ num }}</div>
           <span class="lbl">{{ label }}</span>
         </div>
       {% endfor %}
@@ -483,7 +524,7 @@
 </section>
 
 <section class="sl-section sl-integrations center">
-  <span class="sec-label">{{ page_data.integrations_label }}</span>
+  <span class="sec-label sl-mono">{{ page_data.integrations_label }}</span>
   <h2>{{ page_data.integrations_heading }}</h2>
   <div class="grid" data-lm-stagger data-lm-stagger-delay="60">
     {% for name, desc in page_data.integrations %}
@@ -492,6 +533,11 @@
         <div class="desc">{{ desc }}</div>
       </div>
     {% endfor %}
+  </div>
+  <div class="lm-logo-marquee" data-lm-media="logo-marquee" aria-hidden="true" style="margin-top:48px;">
+    <div class="lm-logo-marquee-track">
+      {% for name, desc in page_data.integrations %}<span class="lm-logo-marquee-item sl-mono">{{ name }}</span>{% endfor %}
+    </div>
   </div>
 </section>
 
@@ -531,7 +577,7 @@
             <div class="role">{{ f.role }}</div>
           </div>
           <div class="metric">
-            <div class="num">{{ f.metric_primary }}</div>
+            <div class="num" data-lm="counter">{{ f.metric_primary }}</div>
             <div class="lbl">{{ f.metric_label }}</div>
           </div>
         </div>
@@ -556,8 +602,8 @@
   <div class="list" data-lm-stagger data-lm-stagger-delay="70">
     {% for entry in page_data.shiplog %}
       <div class="row">
-        <div class="ver" data-lm="reveal">{{ entry.version }}</div>
-        <div class="date" data-lm="reveal">{{ entry.date }}</div>
+        <div class="ver sl-mono" data-lm="reveal">{{ entry.version }}</div>
+        <div class="date sl-mono" data-lm="reveal">{{ entry.date }}</div>
         <div class="body" data-lm="reveal">
           <h4>{{ entry.title }}</h4>
           <p>{{ entry.desc }}</p>

@@ -1,5 +1,100 @@
 # Session Log
 
+## Session 35 — Live Motion, Media & Typography Premium Pass (2026-04-13)
+
+**Agent:** Premium UI / interaction polish session. Sole target: raise the quality of the 7 `tier=published_live` templates along three axes — motion (counters where credible), media (video + gallery + marquee where genuinely coherent with the archetype), typography (per-template font character). Non-goals: new categories, new templates, draft templates, auth/checkout/editor/projects/commerce, refactors outside scope.
+
+**Branch:** `phase-live-motion-media-pass-v1` (forked from `phase-integration-baseline-v4`).
+
+### 1 — Audit
+Read the 12 context files + memory index. Audited the 6 skin folders (medical/specialist · restaurant/fine-dining · business/corporate-suite · business/startup-saas-landing · portfolio/editorial-designer-grid · portfolio/cinematic-photographer) hosting the 7 published_live templates. Found 4 systemic gaps: (1) **zero counters wired** on Pragma KPI strip + Elevate metric strip + Elevate mockup metrics + Elevate founders despite numeric-heavy layouts; (2) **no video integration anywhere** — the entire catalog had no template demonstrating a real video moment; (3) **no marquee/logo drift** on institutional sectors / SaaS integrations / press wordmarks; (4) **typography under-developed** — every skin loaded only 2 fonts (heading + body), no monospace accent, no italic-axis emphasis, no tabular-nums on metric strips.
+
+### 2 — Strategy
+Ship two new shared primitives + per-template wiring under D-047/D-054 invariants:
+
+| Template | Counters | Lightbox | Video | Marquee | Typography refinement |
+|---|---|---|---|---|---|
+| Cardio (specialist) | preserved (3) | — | NO (clinical) | NO | italic h-em wt 400 + tabular-nums + line-height 1.6→1.55 |
+| Derm (shared specialist) | preserved (3) | preserved | NO (shared) | NO | inherits cardio refinements |
+| Gusto (fine-dining) | preserved (3) | preserved | **YES — signature ambient video** | NO | italic h-em wt 600 + tabular-nums on facts/courses |
+| Pragma (corporate-suite) | **YES — KPI strip × 4** | NO | NO (corporate authority) | **YES — sectors + trust** | italic accent serif + tabular-nums KPI |
+| Elevate (startup-saas-landing) | **YES — metric × 4 + mockup × 3 + founders × 2 = 9** | NO | **YES — product demo video** | **YES — integrations × 12** | **JetBrains Mono** ship-log + metric labels |
+| Chiara (editorial-designer-grid) | NO (typographic identity) | **YES — featured grid** | NO (typographic identity) | NO | italic Syne wt 700 + **JetBrains Mono** indices |
+| Pixel (cinematic-photographer) | NO (would cheapen) | preserved | **YES — cinematic reel block** | NO | h1 letter-spacing 0.005em → 0.018em + push existing **JetBrains Mono** |
+
+Video decisions: **3 templates get video** (the 3 archetypes where motion/cinema is part of the category vocabulary — fine-dining hospitality, growth-tech SaaS, photographer reel). **4 templates do NOT get video** (clinical specialist + corporate authority + typographic editorial — adding video would cheapen each archetype).
+
+### 3 — Implementation
+
+**New shared primitives:**
+- `static/css/live-media.css` — `.lm-video` poster + click-to-play HTML5 native (no autoplay, no iframes, no third-party tracking), `.lm-logo-marquee` slow-drift wordmark scroll, `.lm-num` 3-cell numeric break-out helper. ~250 LOC, prefers-reduced-motion aware, RTL-safe via logical properties, per-skin token overrides via 5 CSS custom properties.
+- `static/js/live-media.js` — lazy video boot on first user click (creates `<video controls preload="metadata" playsinline>` with `<source>`, attaches `is-playing` class, swallows blocked autoplay rejection silently), Esc-to-pause, marquee track JS-duplication for seamless `-50%` keyframe loop, prefers-reduced-motion opt-out (skips marquee duplication). ~110 LOC zero-dep IIFE.
+
+**Counter primitive extension (live-motion.js):**
+- Regex extended from `^(-?\d+(?:[.,]\d+)?)(.*)$` to `^(\D*?)(-?\d+(?:[.,]\d+)?)(.*)$` so leading non-digit prefix (`€ 1.4 B`, `+ 38%`, `↑ 22`) is captured + preserved verbatim during animation.
+- Italian thousand-separator heuristic added: if numeric matches `^(\d{1,3})\.(\d{3})$` (e.g. "1.200") the dot is treated as thousand-separator → animates 0 → 1200 with regex-based `\B(?=(\d{3})+(?!\d))` re-formatting back to "1.200" on each frame. Backwards-compatible with every previously-working counter (verified on cardio/gusto facts).
+
+**Per-template `_base.html` token + font + typography:**
+- `business/corporate-suite/_base.html` — wire live-media; sectors marquee tokens (110s drift, 72px gap, ink-soft color); italic h-em accent at weight 600; tabular-nums on KPI/cases.
+- `business/startup-saas-landing/_base.html` — wire live-media; load JetBrains Mono via Google Fonts; cosmic video frame tokens (cyan-glow play orb ring); growth-tech marquee tokens (70s, snappier); `--mono` CSS token; `.sl-mono` utility selector specificity-shielded against existing `.sl-shiplog .list .ver` (chained 0,0,3,0).
+- `restaurant/fine-dining/_base.html` — wire live-media; cinematic video frame tokens (gold play orb on warm-cream); italic h-em accent at weight 600; tabular-nums on facts + courses.
+- `medical/specialist/_base.html` — wire live-media; italic h-em accent at weight 400 (clinical sobriety); body line-height 1.6→1.55; tabular-nums on facts + signature_visits + percorso. Shared by cardio + derm (D-046 archetype reuse).
+- `portfolio/editorial-designer-grid/_base.html` — wire live-media + live-interactions + load JetBrains Mono; italic Syne accent at weight 700; `--mono` token; `.ed-mono` utility specificity-shielded.
+- `portfolio/cinematic-photographer/_base.html` — wire live-media + live-interactions; cinema video frame tokens (red pulse ring); cinematic marquee tokens (130s, very slow); h1 letter-spacing 0.005em → 0.018em (cinematic measured rhythm); `.cp-mono` utility specificity-shielded.
+
+**Per-template home.html (sections / wiring):**
+- `business/corporate-suite/home.html` — counters on `.cs-kpi-band .stat .num` (4 metrics: 22 / 180+ / € 1.4 B / 94%); sectors marquee block under sectors band; trust wordmarks marquee under trust band.
+- `business/startup-saas-landing/home.html` — counters on mockup `.metric .big` × 3 + `.sl-metric-band .stat .num` × 4 + founders `.metric .num` × 2 = **9 counters total**; new `.sl-product-video` section between mockup and trust strip; integrations marquee below static integrations grid; mono utility on shiplog version + date + integration items + product video caption.
+- `restaurant/fine-dining/home.html` — new `.fd-signature-video` section between chef portrait and atmosphere strip with editorial italic title + 4-cell ambient meta + gold play orb + caption.
+- `portfolio/editorial-designer-grid/home.html` — new `.ed-projects` section between capabilities and clients with asymmetric 4-card grid (1 large + 3 normal) + lightbox group + mono "№ 01" indices + footer link.
+- `portfolio/cinematic-photographer/home.html` — new `.cp-reel` section between filmstrip and about-excerpt with cinematic poster + 6-cell EXIF strip (Format / Durata / Camera / Ottica / Audio / Color grade) + bracket-mono caption.
+
+**Content registries (per-template content blocks):**
+- `apps/catalog/template_content.py` (Gusto IT) — added `home.signature_video` block (label/title/intro/4-cell meta/poster/src/play_label/caption + NOTE comment about CC-licensed src placeholder).
+- `apps/catalog/template_content_elevate.py` — added `home.product_video` block (label/heading/intro/poster/src/play_label/caption + NOTE comment).
+- `apps/catalog/template_content_chiara.py` — added `home.featured_works` block (label/heading/intro/4 items with year/discipline/title/blurb/image/href + footer link).
+- `apps/catalog/template_content_pixel.py` — added `home.reel` block (label/heading/intro/6-cell EXIF/poster/src/play_label/caption + NOTE comment).
+
+### 4 — Video URL strategy (BINDING, recorded for production migration)
+
+The 3 video blocks (Elevate / Gusto / Pixel) ship with a **functional placeholder src** pointing at `https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4` — a CC-licensed Big Buck Bunny test asset on Google's public CDN. It demonstrates the lm-video integration end-to-end (poster + native HTML5 player on click + controls + Esc-to-pause), but the content (animated film) is obviously off-brand. **Each video block is annotated in its content registry with a NOTE comment.** Real customers / production fills `src` with their own brand video URL — the poster + caption typography then carry the brand identity uninterrupted.
+
+If the placeholder URL ever 404s, the lm-video CSS keeps the poster visible behind the `.is-playing` overlay (the `<video>` tag's source-load failure is silent; black frame underneath the play button which fades out via `.is-playing`). Acceptable risk: the moment a user clicks Play and sees a broken video, they understand the placeholder is provisional. The poster + caption typography never break.
+
+### 5 — Validation
+
+- `python manage.py check` — 0 issues.
+- Full DB rebuild + `seed_categories` + `seed_templates` — 8 categories, 20 templates, 7 promoted to `published_live` (auto registry sync).
+- `python smoke_full.py` — **170/170 routes HTTP 200** (no regression vs Session 34 baseline).
+- `python smoke_forms.py` — **27/27 form routes HTTP 200** (no regression vs Session 33).
+- Browser walk via Playwright at 1440×900:
+  - **Pragma** — KPI strip animates `0 / 0 / € 0.0 B / 0%` → `22 / 180+ / € 1.4 B / 94%`; sectors marquee scrolls (track JS-duplicated to 20 items); KPI numerals use Merriweather with `font-variant-numeric: tabular-nums`. Italic h-em accent active on hero "decisioni che contano".
+  - **Elevate** — 9 counter elements all reach final values; `.sl-product-video` renders with code/dashboard poster + white play orb + JetBrains Mono "Tour del prodotto · Demo · 2:14 · 1080p" caption; integrations marquee scrolls; `.sl-shiplog .row .ver.sl-mono` computed font is `"JetBrains Mono", ui-monospace, ...`.
+  - **Gusto** — 3 counters preserved; `.fd-signature-video` renders with kitchen-team poster + gold play orb + 4-cell ambient meta strip + italic-axis "Quattro ore in cucina, due camere fisse." headline.
+  - **Cardio (IT)** — 3 counters animate to "15 / 1.200 / 4" — Italian thousand-separator heuristic correctly preserves "1.200" (was "1.2" before). Italic h-em editorial accent at weight 400.
+  - **Cardio (AR)** — `dir=rtl`, `lang=ar`, body font `"Noto Kufi Arabic", Inter, system-ui, sans-serif` — i18n/RTL not regressed.
+  - **Chiara** — `.ed-projects` renders 4 lightbox-enabled cards in asymmetric grid; mono "№ 01 / 02 / 03 / 04" indices on each frame; italic Syne accent on "quattro discipline." in section heading.
+  - **Pixel** — `.cp-reel` renders moody library poster + white play orb + 6-cell EXIF strip; play label "PLAY · 3:12" + caption "REEL · 1080P · 24 FPS" use JetBrains Mono with letter-spacing 0.06em.
+
+### 6 — D-047 leak sweep clean
+
+All new content keys (signature_video, product_video, featured_works, reel) flow through `page_data.*` content registries — zero literal brand strings introduced into shared HTML. CSS classnames (`.fd-signature-video`, `.sl-product-video`, `.cp-reel`, `.ed-projects`) are archetype-internal naming, not user-visible literals. D-047 chrome-authoring contract preserved across all 6 skin folders.
+
+### 7 — D-054 differentiation preserved 10/10
+
+- **Cardio vs Derm** — both inherit specialist typography refinements; differentiation remains brand-color + hero variant + imagery pool (D-060). Neither gets video, both get italic-axis emphasis at the same weight.
+- **Pragma vs Elevate** — Pragma gets institutional sectors marquee (sober drift, no video, italic accent serif). Elevate gets growth-tech marquee + product video + JetBrains Mono ship-log. Two distinct B2B vocabularies — boardroom-document vs SaaS-product-tour.
+- **Gusto** — only restaurant template, gets the cinematic signature video. Sapore + Brace (drafts) untouched.
+- **Chiara vs Pixel** — Chiara gets a typographic-led featured-projects visual grid (NO video, asymmetric grid, italic Syne accent, mono indices). Pixel gets a cinematic reel video block (YES video, EXIF strip, mono caption, uppercase letter-spacing). The two portfolios diverge further: Chiara reads as a designer studio's project ledger, Pixel as a photographer's authored short-form reel.
+
+### 8 — Decision
+
+**LIVE MOTION MEDIA PASS APPROVATO.** D-068 documented in DECISIONS.md.
+
+The 7 published_live templates now ship with: 16 active counter elements across 4 templates, 3 video blocks (Elevate/Gusto/Pixel) with poster + native HTML5 player + per-skin tokens, 2 marquees (Pragma sectors + trust, Elevate integrations), JetBrains Mono accent on 3 templates, italic-axis h-em emphasis on 4 templates, tabular-nums on every metric strip, refined per-template line-height + letter-spacing. D-047 chrome-authoring contract preserved across all 6 skin folders. D-054 differentiation preserved 10/10. D-058 motion language extended (counter prefix + thousand-sep). D-066 forms primitives untouched. i18n/RTL preserved on the 3 multilingual templates.
+
+---
+
 ## Session 34 — Portfolio Live Rollout (Phase 2g3.4 · 2026-04-13)
 
 **Agent:** Premium UI / portfolio category live rollout. Sole target: bring `chiara-portfolio-creativo` (editorial-designer-grid) and `pixel-portfolio-fotografico` (cinematic-photographer) from `draft` to `published_live` with full multi-page live previews. Non-goals: auth, checkout, editor, projects, commerce, other categories' drafts, marketplace chrome i18n, new templates, new archetypes, refactors outside scope.

@@ -13,6 +13,7 @@
 {% endif %}
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-media.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 <style>
   :root {
@@ -64,14 +65,34 @@
     --lf-submit-radius: 0;
     --lf-submit-underline: 0;
     --on-accent:        var(--bg);
+
+    /* Cinematic video frame — moody dark with gold play orb */
+    --lm-video-radius:     0;
+    --lm-video-overlay:    linear-gradient(180deg, rgba(11,9,7,0.10) 0%, rgba(11,9,7,0.62) 100%);
+    --lm-video-play-bg:    var(--secondary);
+    --lm-video-play-fg:    var(--bg);
+    --lm-video-play-ring:  rgba(212,165,116,0.42);
+    --lm-video-caption-color: rgba(243,231,200,0.86);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.65; }
   img { max-width: 100%; display: block; }
   a { color: inherit; text-decoration: none; }
-  h1,h2,h3,h4,h5 { font-family: var(--heading); font-weight: 500; line-height: 1.04; letter-spacing: -0.022em; color: var(--ink); }
-  em { font-style: italic; color: var(--secondary); font-weight: 500; }
+  h1,h2,h3,h4,h5 {
+    font-family: var(--heading); font-weight: 500; line-height: 1.04; letter-spacing: -0.022em;
+    color: var(--ink);
+    font-feature-settings: "kern" 1, "liga" 1, "onum" 1, "calt" 1;
+  }
+  em { font-style: italic; color: var(--secondary); font-weight: 600; }
+  /* Italic emphasis with gold rule for editorial dish-name moments */
+  h2 em, h3 em { font-weight: 600; }
+  /* Tabular figures on facts strip + course numerals — keeps "180€" / "14" aligned */
+  .fd-facts .fact .num,
+  .fd-courses .course .roman {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
 
   /* ============================================================
      MARKETPLACE BAR
@@ -449,6 +470,7 @@
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
 <script src="{% static 'js/live-interactions.js' %}" defer></script>
+<script src="{% static 'js/live-media.js' %}" defer></script>
 <script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>
