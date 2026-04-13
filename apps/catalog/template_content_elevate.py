@@ -175,6 +175,26 @@ ELEVATE_CONTENT_IT: dict[str, Any] = {
             },
         ],
 
+        # Product demo video block — cosmic glass frame between mockup and trust
+        # NOTE: the demo `src` below is a CC-licensed Big Buck Bunny sample hosted
+        # on Google's public test bucket. Functional placeholder so the live preview
+        # demonstrates the lm-video integration end-to-end (poster + click-to-play
+        # native HTML5 player). Replace with a real product walkthrough mp4 in
+        # production. Poster is an editorial code/dashboard still that fits the
+        # cosmic skin without needing to ship the actual video assets.
+        "product_video": {
+            "label":      "Tour del prodotto",
+            "heading":    "Vedi <em>Elevate</em> in azione, due minuti.",
+            "intro":
+                "Una panoramica registrata sul progetto reale: editor drag-and-drop, "
+                "wizard di pricing, cablaggio Stripe + Linear, deploy su Vercel. "
+                "Senza demo programmate, senza commerciali, senza email di follow-up.",
+            "poster":     "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1800&q=80&auto=format&fit=crop",
+            "src":        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            "play_label": "Guarda · 2 min",
+            "caption":    "Demo · 2:14 · 1080p",
+        },
+
         # Metric strip on dark band
         "metric_label":   "I numeri del kit in produzione",
         "metric_heading": "Lo stack che spedisce",

@@ -1,0 +1,304 @@
+/* ============================================================================
+ * MarketWeb — Live Media (premium video + logo marquee primitives)
+ * ============================================================================
+ *
+ * Adds two primitives that earn premium-grade media moments without dragging
+ * cheap embeds into the live skins:
+ *
+ *   1. .lm-video           — poster-first video block with explicit play
+ *                            interaction. No autoplay, no invasive iframes.
+ *                            Native HTML5 <video> wired lazily on first click.
+ *
+ *   2. .lm-logo-marquee    — sober editorial wordmark drift. Slower than the
+ *                            generic [data-lm="marquee"] pattern, with stronger
+ *                            edge masks and per-skin token overrides. Used for
+ *                            sectors / integrations / trust strips.
+ *
+ * Both are zero-dependency and respect prefers-reduced-motion.
+ * Loaded only inside live-template skins (alongside live-motion + live-interactions).
+ * ============================================================================ */
+
+
+/* ----------------------------------------------------------------------------
+ * 1. VIDEO BLOCK
+ * Markup contract:
+ *   <figure class="lm-video" data-lm-media="video"
+ *           data-lm-video-src="<absolute or relative video url>"
+ *           data-lm-video-poster="<image url>"
+ *           data-lm-video-caption="optional caption">
+ *     <img class="lm-video-poster" src="<image url>" alt="">
+ *     <button type="button" class="lm-video-play" aria-label="Play">
+ *       <span class="lm-video-play-icon"></span>
+ *       <span class="lm-video-play-label">Guarda · 0:32</span>
+ *     </button>
+ *     <figcaption class="lm-video-caption">optional caption</figcaption>
+ *   </figure>
+ *
+ * - The poster <img> is always rendered. If JS never runs the user sees a
+ *   premium photo with an inert play affordance — never a broken embed.
+ * - The play button is keyboard-focusable. Clicking swaps poster for a
+ *   native <video controls preload="metadata"> with the src attached.
+ * - We do NOT autoplay, do NOT loop by default, and do NOT mute. The visitor
+ *   chooses to play. Optional `data-lm-video-loop="true"` + `data-lm-video-muted="true"`
+ *   for ambient hero loops where the skin asks for it.
+ * -------------------------------------------------------------------------- */
+
+.lm-video {
+  position: relative;
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  background: #0a0a0a;
+  isolation: isolate;
+  --lm-video-radius: 0;
+  --lm-video-overlay: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.45) 100%);
+  --lm-video-play-bg: rgba(255,255,255,0.96);
+  --lm-video-play-fg: #0a0a0a;
+  --lm-video-play-ring: rgba(255,255,255,0.18);
+  --lm-video-caption-color: rgba(255,255,255,0.78);
+  border-radius: var(--lm-video-radius);
+}
+
+.lm-video > .lm-video-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1.001);
+  transition: transform 720ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              filter   480ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              opacity  280ms ease;
+}
+
+.lm-video::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--lm-video-overlay);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 320ms ease;
+}
+
+.lm-video:hover > .lm-video-poster {
+  transform: scale(1.025);
+  filter: brightness(1.04);
+}
+
+.lm-video.is-playing::before { opacity: 0; }
+.lm-video.is-playing > .lm-video-poster { opacity: 0; pointer-events: none; }
+
+.lm-video > .lm-video-play {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 18px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 280ms ease;
+}
+
+.lm-video.is-playing > .lm-video-play { opacity: 0; pointer-events: none; }
+
+.lm-video .lm-video-play-icon {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: var(--lm-video-play-bg);
+  color: var(--lm-video-play-fg);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 1px var(--lm-video-play-ring), 0 24px 60px -22px rgba(0,0,0,0.45);
+  transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              box-shadow 320ms ease;
+}
+
+.lm-video .lm-video-play-icon::before {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 13px 0 13px 22px;
+  border-color: transparent transparent transparent currentColor;
+  margin-left: 6px;
+}
+
+.lm-video > .lm-video-play:hover .lm-video-play-icon,
+.lm-video > .lm-video-play:focus-visible .lm-video-play-icon {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px var(--lm-video-play-ring), 0 28px 70px -22px rgba(0,0,0,0.55);
+}
+
+.lm-video .lm-video-play-label {
+  font-family: var(--body, system-ui, sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 12px rgba(0,0,0,0.45);
+}
+
+.lm-video .lm-video-caption {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 22px;
+  z-index: 2;
+  font-family: var(--body, system-ui, sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lm-video-caption-color);
+  pointer-events: none;
+}
+
+.lm-video > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #0a0a0a;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+
+/* ----------------------------------------------------------------------------
+ * 2. LOGO MARQUEE
+ * Premium drift for sectors / integrations / press wordmarks.
+ * Markup contract:
+ *   <div class="lm-logo-marquee" data-lm-media="logo-marquee">
+ *     <div class="lm-logo-marquee-track">
+ *       <span class="lm-logo-marquee-item">…</span>
+ *       …
+ *     </div>
+ *   </div>
+ *
+ * The JS duplicates the track in place so the keyframe -50% creates a seamless
+ * loop. Edge mask fades the strip at both ends. Hover pauses the drift.
+ * -------------------------------------------------------------------------- */
+
+.lm-logo-marquee {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  --lm-marquee-duration: 80s;
+  --lm-marquee-gap: 64px;
+  --lm-marquee-color: var(--ink-soft, rgba(0,0,0,0.55));
+  --lm-marquee-rule: var(--rule, rgba(0,0,0,0.10));
+  --lm-marquee-pad-y: 22px;
+  padding: var(--lm-marquee-pad-y) 0;
+  border-top: 1px solid var(--lm-marquee-rule);
+  border-bottom: 1px solid var(--lm-marquee-rule);
+}
+
+.lm-logo-marquee-track {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lm-marquee-gap);
+  white-space: nowrap;
+  animation: lm-logo-drift var(--lm-marquee-duration) linear infinite;
+  will-change: transform;
+}
+
+.lm-logo-marquee:hover .lm-logo-marquee-track {
+  animation-play-state: paused;
+}
+
+.lm-logo-marquee-item {
+  font-family: var(--body, system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--lm-marquee-color);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0.85;
+  transition: opacity 240ms ease, color 240ms ease;
+}
+.lm-logo-marquee-item::after {
+  content: '·';
+  display: inline-block;
+  margin-left: 14px;
+  color: var(--lm-marquee-color);
+  opacity: 0.4;
+}
+.lm-logo-marquee-item:last-child::after { content: none; }
+.lm-logo-marquee-item:hover {
+  color: var(--accent, var(--secondary, var(--lm-marquee-color)));
+  opacity: 1;
+}
+
+@keyframes lm-logo-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+
+/* ----------------------------------------------------------------------------
+ * 3. ACCENT NUMERIC FRAGMENT
+ * Three-cell number break-out used by counters that ship with a leading
+ * currency / suffix. Lets templates render `€ 1.4 B` as three independent
+ * spans (prefix + number + suffix) so the counter primitive can animate the
+ * middle fragment without losing the typographic composition.
+ *
+ *   <span class="lm-num">
+ *     <span class="lm-num-prefix">€</span>
+ *     <span class="lm-num-value" data-lm="counter" data-lm-to="1.4">1.4</span>
+ *     <span class="lm-num-suffix">B</span>
+ *   </span>
+ * -------------------------------------------------------------------------- */
+
+.lm-num {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: inherit;
+  line-height: 1;
+}
+.lm-num-prefix,
+.lm-num-suffix {
+  font-size: 0.55em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.78;
+}
+.lm-num-prefix { margin-right: -2px; }
+.lm-num-value {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+
+/* ----------------------------------------------------------------------------
+ * Accessibility — prefers-reduced-motion
+ * -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .lm-logo-marquee-track { animation: none; }
+  .lm-video > .lm-video-poster {
+    transition: none;
+    transform: none;
+  }
+  .lm-video .lm-video-play-icon {
+    transition: none;
+  }
+}

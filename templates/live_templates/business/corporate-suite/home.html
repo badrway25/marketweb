@@ -292,7 +292,7 @@
     <div class="heading" data-lm="reveal">{{ page_data.kpi_heading }}</div>
     {% for num, label in page_data.kpi_strip %}
       <div class="stat" data-lm="reveal">
-        <div class="num">{{ num }}</div>
+        <div class="num" data-lm="counter">{{ num }}</div>
         <span class="lbl">{{ label }}</span>
       </div>
     {% endfor %}
@@ -307,12 +307,23 @@
       {% if not forloop.last %}<span class="dot"></span>{% endif %}
     {% endfor %}
   </div>
+  <div class="lm-logo-marquee" data-lm-media="logo-marquee" aria-hidden="true">
+    <div class="lm-logo-marquee-track">
+      {% for sector in page_data.sectors %}<span class="lm-logo-marquee-item">{{ sector }}</span>{% endfor %}
+      {% for sector in page_data.sectors %}<span class="lm-logo-marquee-item">{{ sector }}</span>{% endfor %}
+    </div>
+  </div>
 </section>
 
 <section class="cs-trust">
   <div class="label">{{ page_data.trust_label }}</div>
   <div class="logos">
     {% for logo in page_data.trust_logos %}<span>{{ logo }}</span>{% endfor %}
+  </div>
+  <div class="lm-logo-marquee" data-lm-media="logo-marquee" aria-hidden="true">
+    <div class="lm-logo-marquee-track">
+      {% for logo in page_data.trust_logos %}<span class="lm-logo-marquee-item">{{ logo }}</span>{% endfor %}
+    </div>
   </div>
 </section>
 

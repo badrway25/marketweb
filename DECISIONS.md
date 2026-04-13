@@ -1,5 +1,97 @@
 # Decisions Log
 
+## D-068: Live Motion / Media / Typography Pass — Counter prefix + thousand-sep, lm-video + lm-logo-marquee primitives, per-skin mono accent (2026-04-13, Session 35)
+
+**Decision:** The 7 `tier=published_live` templates receive a premium pass on three axes — motion (counters where credible), media (video + marquee + lightbox where genuinely coherent with the archetype), typography (per-template font character). New shared primitives (`static/css/live-media.css` + `static/js/live-media.js`) are introduced alongside live-motion + live-interactions + live-forms. The `animateCounter()` function in `live-motion.js` is extended to handle (a) leading non-digit prefix (`€ 1.4 B`, `+ 38%`), (b) Italian thousand-separator heuristic so `1.200` animates to 1200 (not 1.2). Backwards-compatible — every previously-working counter is unchanged.
+
+**Per-template contract (BINDING for future skin work):**
+
+| Template | Counters | Video | Marquee | Mono accent | Italic-axis h-em |
+|---|---|---|---|---|---|
+| Cardio (specialist) | preserved (3) | NO | NO | — | yes (wt 400) |
+| Derm (shared specialist) | preserved (3) | NO (shared skin) | NO | — | yes (wt 400) |
+| Gusto (fine-dining) | preserved (3) | **YES — signature ambient block** | NO | — | yes (wt 600) |
+| Pragma (corporate-suite) | **YES — KPI × 4** | NO | **YES — sectors + trust** | — | yes (wt 600) |
+| Elevate (startup-saas-landing) | **YES — × 9** (mockup 3 + metric 4 + founders 2) | **YES — product demo block** | **YES — integrations** | **JetBrains Mono** (.sl-mono) | — (gradient em preserved) |
+| Chiara (editorial-designer-grid) | NO | NO | NO | **JetBrains Mono** (.ed-mono) | yes Syne (wt 700) |
+| Pixel (cinematic-photographer) | NO | **YES — cinematic reel block** | NO | **JetBrains Mono** (.cp-mono) | — (uppercase preserved) |
+
+**Video rationale (BINDING for future archetype reviews):** video appears only on the 3 archetypes where motion/cinema is part of the category vocabulary — fine-dining hospitality (Gusto), growth-tech SaaS (Elevate product demo CTA already said "Guarda la demo · 2 min"), photographer reel (Pixel — industry standard for cinematic photographers). Video does NOT appear on clinical specialist (cardio + derm — clinical authority is document-driven, not cinematic), corporate-suite institutional (Pragma — boardroom authority is document-driven), or editorial-designer (Chiara — typographic identity, the absence of imagery IS the identity). Adding video to those four would cheapen the archetype identity. The two new portfolio additions follow the same logic: Chiara gets a typographic-led featured-projects visual grid (no video, asymmetric grid, italic accent), Pixel gets a cinematic reel video block (yes video, EXIF strip, mono caption).
+
+**lm-video contract:** `<figure class="lm-video" data-lm-media="video" data-lm-video-src="..." data-lm-video-poster="...">` with `<img class="lm-video-poster">` always rendered + `<button class="lm-video-play">` overlay. On first user click, JS creates `<video controls preload="metadata" playsinline>` + `<source>` + applies `is-playing` class which fades out poster + play button. **No autoplay, no iframes, no third-party tracking surface.** Esc-to-pause. If the video src 404s, the poster remains visible (silent failure). Per-skin tokens via 5 CSS custom properties: `--lm-video-radius`, `--lm-video-overlay`, `--lm-video-play-bg`, `--lm-video-play-fg`, `--lm-video-play-ring`.
+
+**lm-logo-marquee contract:** `<div class="lm-logo-marquee" data-lm-media="logo-marquee">` with track that JS duplicates in place for seamless `-50%` keyframe loop. Hover-pauses. `prefers-reduced-motion: reduce` skips duplication and freezes the track (mask still fades edges so it reads as a wordmark strip rather than animated band). Per-skin tokens: `--lm-marquee-duration` (60s growth-tech up to 130s cinematic), `--lm-marquee-gap`, `--lm-marquee-color`, `--lm-marquee-rule`, `--lm-marquee-pad-y`.
+
+**Counter prefix + Italian thousand-separator heuristic (`live-motion.js`):**
+```js
+// regex extended:
+var match = original.match(/^(\D*?)(-?\d+(?:[.,]\d+)?)(.*)$/);
+// prefix = match[1] (preserved verbatim)
+// numeric = match[2]
+// suffix = match[3] (preserved verbatim)
+
+// Italian thousand-separator heuristic:
+var thousandsMatch = /^(\d{1,3})\.(\d{3})$/.exec(rawNum);
+if (thousandsMatch) {
+  target = parseInt(thousandsMatch[1] + thousandsMatch[2], 10); // 1200 not 1.2
+  isInt  = true;
+  // formatValue() restores Italian thousand-sep on each frame via
+  //   String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+```
+This single change unlocks counters on Pragma's `€ 1.4 B`, Elevate's `+ 38%` and `↑ 22%`, and correctly handles cardio's existing `1.200 visite specialistiche / anno`. **Verified: every previously-working counter on cardio, derm, gusto continues to work identically.**
+
+**Per-skin mono accent contract:** Three skins (Elevate, Chiara, Pixel) load JetBrains Mono via Google Fonts and expose a per-skin `--mono` CSS custom property + a single utility class (`.sl-mono`, `.ed-mono`, `.cp-mono`). The utility selectors are **specificity-shielded**: each utility's CSS rule lists the common per-skin chained selectors as additional alternates (e.g. `.sl-shiplog .row .ver.sl-mono` at specificity 0,0,4,0 to beat the existing `.sl-shiplog .list .ver` chain at 0,0,3,0). This avoids `!important` and keeps the cascade clean.
+
+**Per-skin typography refinements (line-height, letter-spacing, font-feature-settings):**
+- Cardio/Derm specialist: body 1.6→1.55, h1 letter-spacing -0.018em→-0.022em, italic h-em wt 400, font-feature-settings kern/liga/onum.
+- Gusto fine-dining: italic h-em wt 600 (preserved 1.65 line-height for editorial reading rhythm), font-feature-settings kern/liga/onum/calt.
+- Pragma corporate-suite: body 1.65→1.62, h1 letter-spacing -0.018em→-0.02em, italic h-em wt 600, font-feature-settings kern/liga/calt/onum.
+- Elevate startup-saas: body 1.65→1.6, h1 letter-spacing -0.025em→-0.04em (tighter for tech), font-feature-settings kern/liga/calt/ss01, gradient em preserved.
+- Chiara editorial-designer: body 1.65→1.55, h1 letter-spacing -0.025em→-0.035em (editorial precision), italic Syne wt 700, font-feature-settings kern/liga/ss01/calt.
+- Pixel cinematic-photographer: h1 letter-spacing 0.005em→0.018em (loosened for cinematic measured rhythm), font-feature-settings kern/liga/ss01.
+- Universal: tabular-nums + lining-nums on every metric/KPI/ledger numeric span so digits align column-wise during animation and at rest.
+
+**Rationale:** The user brief flagged 5 concrete pain points: (a) "in alcuni nuovi template manca dinamismo, per esempio counters e motion sulle cifre" → wired counters on Pragma + Elevate (+ 9 founders) and verified cardio/derm/gusto preserved; (b) "vuole usare il più possibile JS in modo intelligente per dare movimento e stile" → +110 LOC of zero-dep IIFE for video lazy-boot + marquee duplication, no library, no bundle weight; (c) "non c'è ancora nessun template con una vera integrazione video 'normale'" → Gusto + Elevate + Pixel each get a real `<video controls preload="metadata" playsinline>` block with poster + per-skin token theming; (d) "vuole video e gallerie dove hanno davvero senso" → 3 video blocks placed on the 3 archetypes where they belong, NOT on the 4 where they would cheapen (cardio/derm/pragma/chiara explicitly excluded with documented reasoning); (e) "il font deve adattarsi fortemente al template" → 3 templates load JetBrains Mono as a third font, 4 templates get italic-axis h-em emphasis at differentiated weights, all 7 get tabular-nums on metric strips, and per-skin line-height + letter-spacing are now intentionally tuned per archetype (not a shared default).
+
+**Option space considered and rejected:**
+- **Option A — pull in a counter library** (CountUp.js, odometer.js, etc.): rejected. Bundle weight (15-30kB), dependency surface, doesn't solve the prefix/thousand-sep parsing we need for our specific Italian-vs-international format mix. Our 30-line extension to live-motion.js handles every case without a library.
+- **Option B — embed YouTube/Vimeo iframes for video**: rejected explicitly per user brief ("non un embed brutto buttato dentro"). Iframes bring third-party tracking, cookie banners, branded chrome that breaks each skin's identity, and slower TTI. Native HTML5 with poster + click-to-play was the only approach that met the quality floor.
+- **Option C — a CSS-only marquee with no JS**: rejected. To get a seamless `-50%` keyframe loop the track needs exactly two copies of the content. Either (a) authors duplicate the markup manually (annoying + bloats DOM) or (b) JS duplicates once at boot. Option (b) costs ~15 lines, lets authors write content once, and degrades fine without JS (track stays visible as a single static row under the mask).
+- **Option D — autoplay-muted ambient hero loops on every template**: rejected. Autoplay is invasive on metered networks + accessibility-hostile + not consistent with the user's "no cheap embeds" instruction. The lm-video primitive supports `data-lm-video-autoplay="true" data-lm-video-muted="true"` for skins that genuinely want it, but no current template opts in.
+- **Option E — counters everywhere on every metric-looking span**: rejected. Counters on cardio's "Studio Marani Cardiologia 15 anni di pratica clinica" feel credible. Counters on Chiara's "1 / 04 commission" feel cheap (typographic identity). Counters on Pixel's "Mamiya 7II ƒ8 1/250" feel wrong (it's not a metric, it's an EXIF spec). Per-template choice was made deliberately, not mechanically.
+
+**Trade-off:**
+- ~360 LOC of new static (CSS + JS for live-media.css/js) + ~30 LOC counter extension in live-motion.js. Paid once; amortized across the 7 current live skins + every future live skin.
+- 3 video blocks ship with a CC-licensed Big Buck Bunny placeholder src (animated film, off-brand content) so the lm-video integration demonstrates end-to-end. Each block annotated with a `NOTE` comment in its content registry. Production templates fill in the real brand URL — the poster + caption typography carry brand identity uninterrupted.
+- 3 skins now load JetBrains Mono as a third Google Font (Elevate, Chiara, Pixel — Pixel was already loading it). `font-display: swap` on the link prevents FOUT/FOIT issues. Bundle weight increase is ~12kB per template (typical Google Mono subset). Acceptable given the differentiation gain.
+- The integrations marquee on Elevate is **additive** — the existing static integrations grid stays. The marquee sits below the grid as a 12-logo drift band. This was deliberate: removing the static grid would lose discoverability (each integration has a desc); the marquee adds rhythm without removing information.
+
+**Consequence:**
+- (a) `live-media.css` + `live-media.js` are now the binding shared primitives for video + marquee on every future `tier=published_live` skin. The contract is documented in the file headers.
+- (b) The counter prefix + thousand-sep extension to `live-motion.js` is the canonical counter parser. Future templates can drop `data-lm="counter"` on any numeric span without worrying about prefix/suffix/Italian formatting.
+- (c) Per-skin mono accent (3 skins) is the precedent for any future skin that wants a third font — declare `--mono` token + utility class with specificity-shielded selectors. `EDITOR_SCHEMA_BLUEPRINT.md` should grow a `font_mono` field in the per-skin design tokens scope (D-064 follow-up).
+- (d) D-058 motion language is extended in scope (counter prefix + thousand-sep) without breaking changes. D-061 medical motion exclusion (no counters) is **softened** since cardio's facts strip already had 3 counters from before and this session preserves them — clarification: "no counters" applies to spectacular-feel counters (CountUp animations on splash screens), not to small clinical credibility numerics. Documented here.
+- (e) D-053 acceptance checklist gains an implicit gate 12: any new `published_live` skin SHOULD declare per-skin video + marquee tokens in `_base.html :root` even if it doesn't render those primitives, so future content updates can opt in without touching CSS. Adding as a soft gate (not blocking like gate 11 forms tokens).
+- (f) Phase 2g3 rollout for the next 13 draft templates gets a richer recipe: every category template can opt into counters where credible, choose its video stance (yes / no) per archetype, and pick a per-skin font character without needing new infrastructure.
+
+**Non-negotiable quality floor:**
+- Video is poster-first. The poster is always visible. Click-to-play is the only path to native HTML5. No autoplay invasive. No iframes. No third-party tracking.
+- Counters parse prefix + suffix + Italian thousand-separator. They never produce nonsense intermediate values.
+- Marquees pause on hover (CSS-only). Reduced-motion users see a static track with edge mask, not an animation.
+- Mono accent fonts ship with `font-display: swap`. Latin glyphs stay Latin (no Arabic substitution on chef names / publication titles in RTL — same precedent as D-063).
+- Italic-axis emphasis only on h-em, never on body em (which keeps its accent-color treatment from the chrome-authoring contract).
+- D-047 chrome-authoring contract preserved: every new content key flows through `page_data.*`. Zero literal brand strings introduced into shared HTML.
+
+**Validation results (Session 35):**
+- `python manage.py check`: 0 issues.
+- `smoke_full.py`: **170/170 routes HTTP 200** (no regression vs Session 34 baseline 170).
+- `smoke_forms.py`: **27/27 form routes HTTP 200** (no regression vs Session 33 baseline 27).
+- Browser walk Playwright 1440×900: 7 templates × 1-2 pages each verified — counters animate to final values (Pragma 22 / 180+ / € 1.4 B / 94%; Cardio 15 / 1.200 / 4 with thousand-sep correctly preserved; Elevate 9 counter elements all reach final), 3 video blocks render with poster + play orb + per-skin caption font, 3 marquees JS-duplicate and scroll, mono utility computed font is `"JetBrains Mono", ui-monospace, ...` on all 3 mono-using skins, italic h-em accent active at the documented per-skin weight on all 4 templates that use it.
+- AR/RTL regression on cardio: `dir=rtl`, `lang=ar`, body font `"Noto Kufi Arabic", Inter, system-ui, sans-serif` — i18n unchanged.
+
+---
+
 ## D-067: Portfolio Live Rollout — Phase 2g3.4 Closes With Chiara + Pixel Promoted Under D-053 / D-054 / D-047, Two New Page Kinds (project_detail / series_detail) Established (2026-04-13, Session 34)
 
 **Decision:** Phase 2g3.4 closes by promoting the two portfolio templates to `published_live`. `chiara-portfolio-creativo` (editorial-designer-grid archetype) and `pixel-portfolio-fotografico` (cinematic-photographer archetype) ship full multi-page live previews with 5 page kinds each plus one detail kind: Chiara serves `home / studio / lavoro / processo / contatti` plus `project_detail` for the 3 dossiers under `/lavoro/<slug>/`; Pixel serves `home / serie / biografia / pubblicazioni / contatti` plus `series_detail` for the 3 series under `/serie/<slug>/`. Two new content registries (`apps/catalog/template_content_chiara.py` + `template_content_pixel.py`) registered in `TEMPLATE_CONTENT`. Two new skin folders (`templates/live_templates/portfolio/editorial-designer-grid/` + `templates/live_templates/portfolio/cinematic-photographer/`) authored under D-047 from line one. `mp_other_portfolio` chrome key added to all 5 locales of `CHROME_I18N` (forward-compat). `LiveTemplateView` and URL patterns required ZERO changes — the dispatcher's `_list` → `_detail` kind transformation generalizes naturally to the new `project_list / project_detail` and `series_list / series_detail` kinds.

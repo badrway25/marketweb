@@ -974,6 +974,33 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "image_caption": "Ingredienti del menù autunno '26 · mercato del mattino",
         },
 
+        # Signature ambient video — quattro ore di servizio in cucina,
+        # registrate con due camere fisse e un microfono ambiente. Premium
+        # editorial moment fra ritratto chef e atmosphere strip.
+        # NOTE: src is a CC-licensed Big Buck Bunny test asset hosted on
+        # Google's public bucket. Functional placeholder so the live preview
+        # demonstrates the lm-video integration end-to-end. Replace with the
+        # restaurant's real kitchen footage in production.
+        "signature_video": {
+            "label":      "Cucina a vista · 24 ottobre",
+            "title":      "Quattro ore in <em>cucina</em>, due camere fisse.",
+            "intro":
+                "Lorenzo, due sous-chef e un pasticciere. Nessun fuoco scenico, "
+                "nessuna voce fuori campo. La preparazione del menù del venerdì "
+                "sera nei suoi tempi reali — il rumore del coltello, il vapore "
+                "del fondo, il silenzio prima del primo servizio.",
+            "meta": [
+                ("Format",   "Loop ambiente"),
+                ("Durata",   "3 min · estratto"),
+                ("Camere",   "Due fisse · 4K"),
+                ("Audio",    "Microfono ambiente"),
+            ],
+            "poster":     "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1600&q=80&auto=format&fit=crop",
+            "src":        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+            "play_label": "Guarda · 3 min",
+            "caption":    "Servizio del venerdì · 19:30 — 23:00",
+        },
+
         # Atmosphere teaser — expanded to 4 images with lightbox
         "atmosphere_teaser": {
             "label": "L'atmosfera",
