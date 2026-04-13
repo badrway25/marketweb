@@ -134,11 +134,11 @@
   </section>
 
   <section class="fd-cta-bottom">
-    <h2 data-lm="reveal-lg">«Per fotografare il piatto, qui, lo si guarda con calma da seduti.»</h2>
-    <p data-lm="reveal">Quattordici coperti per servizio. Solo prenotazione. Solo cena. Mer – Sab.</p>
+    <h2 data-lm="reveal-lg">{{ page_data.cta_quote }}</h2>
+    <p data-lm="reveal">{{ page_data.cta_desc }}</p>
     <div class="actions" data-lm="reveal">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}">Riserva la serata →</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}">Vedi il menù →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary }} →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_secondary }} →</a>
     </div>
   </section>
 {% endblock %}

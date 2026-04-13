@@ -1,5 +1,43 @@
 # Decisions Log
 
+## D-063: Gusto i18n/RTL Closure — Third Published_live Template Fully Multilingual, Reusable Restaurant Chrome Keys (2026-04-13, Session 29)
+
+**Decision:** The third `tier=published_live` template, `gusto-fine-dining`, now ships in five locales (`it`, `en`, `fr`, `es`, `ar`) with real RTL for Arabic, completing Phase 2i.2. All 3 public templates (cardio / derm / gusto) are fully multilingual. The architecture established by D-059 (Session 23 cardio pilot) was extended to the fine-dining archetype with zero changes to the pilot infrastructure — proving the shape works across a second skin family with a different tone (restaurant hospitality, not medical clinical).
+
+**What shipped:**
+- `apps/catalog/template_content_gusto_i18n.py` — 4 hand-authored content trees (EN/FR/ES/AR), ~1250 lines. Native editorial voice per locale; zero machine translation. Proper names (chef/staff/producers/wines/press) stay Latin across all locales per the Session 23 precedent.
+- `apps/catalog/template_content.py` — GUSTO_CONTENT_IT extended with missing content keys (~30 new keys) for every previously-hardcoded HTML literal; imports + wires the 4 new locale trees; TEMPLATE_CONTENT["gusto-fine-dining"] now carries all 5 locales.
+- `apps/catalog/template_i18n.py` — CHROME_I18N extended with 9 new keys: `mp_other_restaurant`, `foot_restaurant`, `foot_concierge`, `foot_services`, `fd_wine_pairing`, `fd_email_label`, `fd_phone_label`, `blog_read_article`. These are restaurant-category-generic and will be reused by the draft restaurant archetypes (`trattoria-warm` / `street-modern`) when they reach `published_live` in Phase 2g3.1.
+- `templates/live_templates/restaurant/fine-dining/_base.html` — dynamic `<html lang dir>`, conditional Amiri + Noto Kufi Arabic font loading for AR only, mp-bar language switcher pill strip, chrome strings wired, every nav/footer/ctas URL preserves `?lang=` when non-IT, new `html[dir="rtl"] ...`-scoped CSS block with 2 parts: (a) core RTL (font stack swap, 17px body / 1.85 line-height, letter-spacing flatten, nav grid flip, eyebrow bar `:before→:after`, gold-btn arrow `→→←`, mp-bar row-reverse) and (b) page-level section overrides inside `{% if is_rtl %}` for `.fd-hero` / `.fd-chef-inner` / `.fd-concierge-inner` / `.fd-wine-inner` / `.fd-method-inner` / `.fd-private-inner` / `.fd-ingredienti` grid-template-columns flip, drop-cap `float: left→right`, border-left→border-right on portraits, right-align/left-align on numbered columns, etc.
+- All 7 page templates (home / about / menu / gallery / reservations / blog_list / blog_detail) wired to read labels from `page_data.*` + `chrome.*` + `site.*` instead of hardcoded literals. Every URL preserves locale.
+
+**Restaurant chrome keys added (reusable for Sapore + Brace):**
+- `mp_other_restaurant` — "Altri template ristoranti →" / "More restaurant templates →" / ...
+- `foot_restaurant` — "Il ristorante" (footer heading, distinct from `foot_studio` used by medical)
+- `foot_concierge` — "Concierge"
+- `foot_services` — "Servizi" (distinct from `foot_hours` — semantically richer; covers opening-hours block with services description)
+- `fd_wine_pairing` — "In abbinamento" / "Paired with" / "Accord mets-vin" / ... (menu course wine-pairing label)
+- `fd_email_label` — "Email" / "البريد الإلكترونيّ"
+- `fd_phone_label` — "Telefono" / "Phone" / ... (concierge contact labels)
+- `blog_read_article` — "Leggi l'articolo" (shorter variant of existing `blog_read_full`)
+
+**Rationale:** D-059 explicitly anticipated this rollout: "Phase 2i.2 step 2 — Gusto (adds a new archetype RTL block)" and "extend CHROME_I18N with the additional keys needed or factor a per-archetype extension pattern. Decision deferred to the next session." Session 29 chose to extend CHROME_I18N flat with restaurant-scoped keys rather than namespace by archetype — the keys are category-generic (not `fd_*`-specific) and future restaurant archetypes will reuse them. This keeps the per-locale review surface flat: one dict, one language end-to-end per review pass. The `fd_*` prefix on `fd_wine_pairing` / `fd_email_label` / `fd_phone_label` is a deliberate narrower scope because those specific labels are tied to fine-dining chrome layout (menu course wine bar, concierge contact strip). Future restaurant archetypes with different chrome may introduce their own `tr_*` / `sm_*` keys rather than reuse these.
+
+The RTL CSS authoring choice mirrored the specialist (cardio) pilot pattern: one `html[dir="rtl"] ...`-scoped block inside the skin's `_base.html`, split into core + page-level with `{% if is_rtl %}` gating the page-level section so LTR users don't pay the CSS cost. No separate `rtl.css` file introduced. This matches D-058 (Live Motion Language) and D-059 (i18n pilot) — one small gated block, zero new files.
+
+The decision to keep proper names (chef "Lorenzo Fioravanti", maître "Greta Vallesi", producers like Tarbouriech / Brezza / Pacherhof / Pieropan, wines like Champagne Selosse / Barolo Cannubi / Domori, press outlets GUIDA MICHELIN / GAMBERO ROSSO / IDENTITÀ GOLOSE, address "Via San Marco 17", phone "+39 02 3611 9920", email "concierge@osteriamoderna.it") in Latin script across AR is the same stance as D-059 for doctor names and medical press outlets: these are canonical identifiers in world food press / hospitality and transliteration would be ugly + lossy.
+
+**Trade-off:** Same as D-059 — content duplication (each locale carries a full mirror, including non-localizable data like phone numbers). Roughly 5× content size for gusto. Acceptable: content trees are a few KB each, duplication is flat with no cross-references to keep in sync, review surface is one locale per pass.
+
+**Consequence:**
+- (a) Phase 2i.2 closes in full. All 3 `tier=published_live` templates now ship in 5 locales with working RTL.
+- (b) Any future restaurant archetype reaching `published_live` in Phase 2g3.1 (Sapore / Brace) inherits the 7 restaurant-generic CHROME_I18N keys for free. Only new work needed: (i) 4 locale content trees for that template, (ii) a new `html[dir="rtl"] ...` scoped block inside the new skin's `_base.html` with the new archetype's selector prefix (`.tr-*` for trattoria-warm, `.sm-*` for street-modern). Budget per template: ~3h same as Gusto.
+- (c) The Arabic font stack decision (Amiri + Noto Kufi Arabic) is now validated across both specialist and fine-dining skins — it's the reusable default for any future `tier=published_live` template.
+- (d) The decision to put archetype-specific labels (Gusto-brand-specific like `chef_label` / `star_tag` / `courses_label`) in the CONTENT registry rather than CHROME_I18N is the reusable pattern: CHROME_I18N = archetype-agnostic cross-cutting chrome; content registry = brand-specific copy. This keeps `template_i18n.py` from ballooning into a per-template label dump.
+- (e) Motion + interactions (D-058 + D-062) continue to work unchanged — i18n pilot does not touch data-lm / data-li attributes. 25 reveal targets / 5 stagger parents / 3 counters / 4 lightbox triggers all preserved on gusto home in all 5 locales including AR.
+
+**Non-negotiable quality floor reaffirmed:** Native editorial voice per locale. Each tree authored by a human food writer for the target market. Machine-translated content is a Phase 2i.2 rollback trigger.
+
 ## D-062: Ultra Premium Live Interaction Pass — New Interactive Components and Premium Sections (2026-04-12, Session 28)
 
 **Decision:** The 3 `tier=published_live` templates receive a comprehensive enrichment pass adding new interactive components, premium content sections, and visual richness. A new zero-dependency interaction library (`live-interactions.css` + `live-interactions.js`) is introduced alongside the existing motion system, providing accordion, lightbox, and sticky CTA components.

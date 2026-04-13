@@ -415,20 +415,20 @@
       <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
       <p data-lm="reveal">{{ page_data.intro }}</p>
       <div class="actions" data-lm="reveal">
-        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}" class="gold-link">{{ page_data.primary_cta }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="gold-link">{{ page_data.primary_cta }}</a>
         <span class="pipe"></span>
         <div class="meta">
-          Lo chef
+          {{ page_data.chef_label }}
           <strong>{{ page_data.chef.name }}</strong>
         </div>
       </div>
     </div>
     <div class="plate" data-lm="reveal-soft">
       <div class="plate-img"></div>
-      <span class="star-tag">★ Atto V · Cioccolato 80%</span>
+      <span class="star-tag">{{ page_data.star_tag }}</span>
       <div class="credit">
-        <span>Fotografia<strong>Vincenzo Lauro</strong></span>
-        <span>Cucina<strong>{{ page_data.chef.name }}</strong></span>
+        <span>{{ page_data.photo_label }}<strong>Vincenzo Lauro</strong></span>
+        <span>{{ page_data.cuisine_label }}<strong>{{ page_data.chef.name }}</strong></span>
       </div>
     </div>
   </section>
@@ -447,7 +447,7 @@
   </section>
 
   <section class="fd-courses">
-    <div class="lbl" data-lm="reveal">Cinque atti del menù in corso · autunno '26</div>
+    <div class="lbl" data-lm="reveal">{{ page_data.courses_label }}</div>
     <div data-lm-stagger>
       {% for num, name, ingredients, wine in page_data.signature_courses %}
         <div class="row">
@@ -461,8 +461,8 @@
       {% endfor %}
     </div>
     <div class="footline" data-lm="reveal">
-      <span><span class="price">€ 180</span>  / persona · vini in abbinamento + €90</span>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}" class="ghost-btn" style="border-color:var(--secondary);color:var(--secondary);">Otto atti completi →</a>
+      <span>{{ page_data.courses_footline }}</span>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn" style="border-color:var(--secondary);color:var(--secondary);">{{ page_data.courses_full_cta }} →</a>
     </div>
   </section>
 
@@ -488,8 +488,8 @@
         <h3 data-lm="reveal-lg">{{ page_data.chef.name }}</h3>
         <p data-lm="reveal">{{ page_data.chef.bio }}</p>
         <div class="links" data-lm="reveal">
-          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'filosofia' %}">La filosofia</a>
-          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}">Il diario</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'filosofia' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.chef_link_filosofia }}</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.chef_link_diario }}</a>
         </div>
       </div>
     </div>
@@ -507,7 +507,7 @@
       {% endfor %}
     </div>
     <div class="foot" data-lm="reveal">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.atmosphere_teaser.link_href %}" class="ghost-btn" style="border-color:var(--secondary);color:var(--secondary);">{{ page_data.atmosphere_teaser.link_label }} →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.atmosphere_teaser.link_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn" style="border-color:var(--secondary);color:var(--secondary);">{{ page_data.atmosphere_teaser.link_label }} →</a>
     </div>
   </section>
   {% endif %}
@@ -529,7 +529,7 @@
   {% endif %}
 
   <section class="fd-press" data-lm-stagger data-lm-stagger-delay="90">
-    <span class="lbl">Pubblicato su</span>
+    <span class="lbl">{{ page_data.press_label }}</span>
     {% for outlet in page_data.press %}
       <span class="item">{{ outlet }}</span>
     {% endfor %}
@@ -542,16 +542,16 @@
       <h3>{{ page_data.stagione.title }}</h3>
       <span class="sub">{{ page_data.stagione.subtitle }}</span>
       <p>{{ page_data.stagione.text }}</p>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.stagione.cta_href %}" class="cta-link">{{ page_data.stagione.cta_label }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.stagione.cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cta-link">{{ page_data.stagione.cta_label }}</a>
     </div>
   </section>
   {% endif %}
 
   <section class="fd-cta">
-    <h2 data-lm="reveal-lg">Quattordici coperti, <em>due servizi a settimana.</em></h2>
+    <h2 data-lm="reveal-lg">{{ page_data.cta_heading|safe }}</h2>
     <div class="actions" data-lm="reveal">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}" class="gold-btn">Riserva la serata</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}" class="ghost-btn">Vedi il menù completo</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="gold-btn">{{ page_data.cta_primary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn">{{ page_data.cta_secondary }}</a>
     </div>
   </section>
 {% endblock %}

@@ -74,8 +74,8 @@
 {% block content %}
   <article class="fd-article">
     <nav class="crumbs" data-lm="reveal">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}">Diario</a>
-      <span>/</span>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ content.diario.crumb_label }}</a>
+      <span>{{ chrome.blog_crumb_sep }}</span>
       <span style="color:var(--ink-soft);">{{ post.kicker }}</span>
     </nav>
 
@@ -84,7 +84,7 @@
     <div class="meta" data-lm="reveal">
       <span><strong>{{ post.author }}</strong></span>
       <span>{{ post.date }}</span>
-      <span>{{ post.read_min }} min di lettura</span>
+      <span>{{ post.read_min }} {{ content.diario.min_read_label }}</span>
     </div>
 
     <p class="lede" data-lm="reveal">{{ post.lede }}</p>
@@ -99,14 +99,15 @@
           <blockquote data-lm="reveal">{{ text }}</blockquote>
         {% endif %}
       {% empty %}
-        <p data-lm="reveal">Articolo in preparazione editoriale. La pubblicazione integrale sarà disponibile a breve, scritta personalmente dallo chef o dal maître.</p>
-        <p data-lm="reveal">Questo segnaposto descrive la voce del Diario di Sala: brevi note di lavoro, riflessioni sui produttori, racconti di serate memorabili. Mai più di duemila parole, mai meno di cinquecento.</p>
+        {% for para in content.diario.empty_body %}
+          <p data-lm="reveal">{{ para }}</p>
+        {% endfor %}
       {% endfor %}
     </div>
 
     <div class="footer-meta" data-lm="reveal">
-      <span>Osteria Moderna · Il diario di sala</span>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}">← Tutto il diario</a>
+      <span>{{ content.diario.footer_label }}</span>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'diario' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ content.diario.back_link }}</a>
     </div>
   </article>
 {% endblock %}

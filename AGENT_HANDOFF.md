@@ -1,6 +1,63 @@
 # Agent Handoff
 
-Last updated: 2026-04-12 — after **Session 27 Medical Motion Opt-In (Phase 2g2x.11)**
+Last updated: 2026-04-13 — after **Session 29 Gusto i18n/RTL (Phase 2i.2 step 2)**
+
+## Session 29 — Gusto i18n/RTL: Read This Before Touching Multilingual Publishing (2026-04-13)
+
+**Session 29 closed Phase 2i.2 in full.** All 3 `tier=published_live` templates (cardio, dermatologia-elite-roma, gusto-fine-dining) now ship in 5 locales (it/en/fr/es/ar) with real RTL for Arabic. The pilot architecture (D-059) is validated across two archetypes — specialist (medical) and fine-dining (restaurant).
+
+### What was added
+- `apps/catalog/template_content_gusto_i18n.py` — 4 hand-authored content trees (EN/FR/ES/AR) for gusto, ~1250 lines, restaurant-hospitality native voice per locale.
+- 9 new CHROME_I18N keys × 5 locales: `mp_other_restaurant`, `foot_restaurant`, `foot_concierge`, `foot_services`, `fd_wine_pairing`, `fd_email_label`, `fd_phone_label`, `blog_read_article`. These are restaurant-category-generic → reusable by draft Sapore + Brace in Phase 2g3.1.
+- Gusto-specific content keys on `GUSTO_CONTENT_IT` for every previously-hardcoded HTML literal (~30 new keys across home/filosofia/menu/atmosfera/diario/prenota).
+- `html[dir="rtl"]` CSS block inside `fine-dining/_base.html` — core RTL tokens always applied, page-level `.fd-*` flips inside `{% if is_rtl %}` so LTR pays zero CSS cost.
+- Conditional Amiri + Noto Kufi Arabic Google Fonts (only loads for AR).
+- Language switcher pill strip in mp-bar, `?lang=` URL preservation on every nav/footer/CTA link.
+- Reservations form rewritten as a `{% for field in page_data.form_fields %}` loop with conditional rendering by type + index.
+
+### Current stable state
+- **3 published_live templates:** cardio + derm (medical specialist archetype, i18n in 5 locales since Session 23/24) + gusto (fine-dining archetype, i18n in 5 locales since Session 29).
+- **All 3 have motion active** (D-058 + D-061) and ultra-premium sections (D-062).
+- **17 draft templates:** hidden from public, IT-only.
+- **52/52 routes green** in Session 29 smoke test (35 gusto + 10 cardio regression + 5 derm regression + 2 negative).
+
+### The reusable recipe (now proven twice)
+1. Create `template_content_<slug>_i18n.py` with 4 locale trees (EN/FR/ES/AR). Premium editorial voice per locale. No machine translation.
+2. Wire into TEMPLATE_CONTENT registry (4 lines: import + 4 locale keys).
+3. Extend CHROME_I18N with archetype-generic keys if needed (restaurant-generic keys from Session 29 are already done for any future restaurant archetype).
+4. Add all hardcoded HTML labels to the `*_IT` content block as new keys, then mirror in the 4 locale trees.
+5. Wire HTML templates: `{{ chrome.* }}` for cross-archetype chrome, `{{ page_data.* }}` for brand-specific labels, `{{ site.* }}` for site-wide chrome (wordmark, copyright, footer hours).
+6. Add `?lang=` preservation to every URL: `{% url '...' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}`.
+7. Author `html[dir="rtl"] ...` CSS block inside the archetype's `_base.html` with (a) core typography tweaks (Amiri + Noto Kufi Arabic, 17px body / 1.85 line-height, letter-spacing flatten, arrow/bar flips), plus (b) page-level section flips inside `{% if is_rtl %}` for grid flipping + border-side swap + drop-cap float + column alignments.
+
+Budget per template: ~3h (same as Session 29 estimate).
+
+### What to do next (in priority order)
+1. **Phase 2g3** — live skin folder authoring for draft templates, cheapest-first per CATEGORY_ROADMAP.md. Restaurant first (Sapore + Brace) — they'll inherit the 7 restaurant-generic CHROME_I18N keys for free, and the i18n/RTL pattern is proven.
+2. **Phase 2g2x.1 remainder** — lift the 3 CRITICO categories (agency, lawyer, real-estate) with DNA splits. Pattern proven in Sessions 17–19.
+3. **Phase 2i.3 (deferred to Phase 4)** — marketplace chrome i18n. Keep `CHROME_I18N` as the natural migration target if/when the marketplace surface moves to Django `{% trans %}`.
+
+### Do NOT do
+- Do NOT re-author the i18n architecture — the pilot closed in full. D-059 + D-063 are binding.
+- Do NOT introduce Django gettext/.po/middleware. Same as Session 23/24/29.
+- Do NOT translate draft templates. Only `tier=published_live` is in 2i scope.
+- Do NOT translate marketplace chrome (homepage, listing, detail, category, search) — deferred to Phase 4.
+- Do NOT modify cardio or derm i18n content without a documented reason. They're load-bearing regression baselines.
+- Do NOT touch Gusto motion tokens (`--lm-rise: 14px`, image zoom, nav sweep) — they're intentionally different from the medical clinical profile.
+- Do NOT add counter animations to medical templates (D-061 exclusion).
+- Do NOT machine-translate any new locale block. Native editorial voice is the non-negotiable quality floor.
+- Do NOT strip Latin from the Arabic font stack — mixed Latin/Arabic strings (chef names, producer names, wine names, press outlets, phone, email, address) must stay legible.
+- Do NOT apply negative `letter-spacing` or 0.22em uppercase tracking on Arabic headings/chrome labels — the `html[dir="rtl"]` core block explicitly zeroes these.
+- Do NOT open auth/checkout/editor/projects/commerce (Phase 3 gated by Phase 2g3.7).
+- Do NOT add new categories or templates before the 20 existing are all `published_live`.
+
+### Gotchas (Session 29)
+- **Django template `split` filter doesn't exist.** Don't try to split a slash-separated string inside the template — expose the options as a separate list field in the content registry (`occasion_options`).
+- **Windows cp1252 console can't print Unicode ✓/✗.** Use ASCII `OK`/`FAIL` labels in smoke-test scripts.
+- **Arabic drop-caps need manual letter selection.** Can't grab `text[0]` in a template — choose the drop-cap letter at authoring time per locale (e.g. "ق" for the manifesto, "د" for the blog body).
+- **Latin wordmark must stay Latin in RTL.** The restaurant brand name "Osteria Moderna" should render in Playfair, not Amiri — explicit `html[dir="rtl"] .fd-nav .logo .name` override pins the font.
+
+---
 
 ## Session 27 — Medical Motion Opt-In: Read This Before Touching Specialist Motion (2026-04-12)
 

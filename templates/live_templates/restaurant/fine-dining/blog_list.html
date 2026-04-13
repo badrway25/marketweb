@@ -117,10 +117,10 @@
       <div class="img"></div>
       <div class="body">
         <div class="kicker">{{ first_post.kicker }}</div>
-        <h2><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'diario' first_post.slug %}">{{ first_post.title }}</a></h2>
-        <div class="meta">{{ first_post.date }} · {{ first_post.read_min }} min · {{ first_post.author }}</div>
+        <h2><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'diario' first_post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ first_post.title }}</a></h2>
+        <div class="meta">{{ first_post.date }} · {{ first_post.read_min }} {{ page_data.min_label }} · {{ first_post.author }}</div>
         <p class="lede">{{ first_post.lede }}</p>
-        <a class="read" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'diario' first_post.slug %}">Leggi l'articolo</a>
+        <a class="read" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'diario' first_post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.read_article }}</a>
       </div>
     </div>
     {% endwith %}
@@ -131,11 +131,11 @@
           <div class="row">
             <span class="num">{{ forloop.counter|stringformat:"02d" }}.</span>
             <div>
-              <div class="title"><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'diario' post.slug %}">{{ post.title }}</a></div>
+              <div class="title"><a href="{% url 'catalog:live_template_post' template.category.slug template.slug 'diario' post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ post.title }}</a></div>
               <p class="lede">{{ post.lede }}</p>
             </div>
             <div class="meta">
-              {{ post.date }} · {{ post.read_min }} min
+              {{ post.date }} · {{ post.read_min }} {{ page_data.min_label }}
               <strong>{{ post.author }}</strong>
             </div>
           </div>

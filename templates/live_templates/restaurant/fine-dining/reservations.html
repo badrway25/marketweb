@@ -175,8 +175,8 @@
   </section>
 
   <section class="fd-process">
-    <span class="sec-label" data-lm="reveal">Come funziona</span>
-    <h2 data-lm="reveal-lg" style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro passaggi, <em>quattro giorni di anticipo</em>.</h2>
+    <span class="sec-label" data-lm="reveal">{{ page_data.process_label }}</span>
+    <h2 data-lm="reveal-lg" style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">{{ page_data.process_heading|safe }}</h2>
     <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
       {% for num, title, blurb in page_data.process %}
         <div class="step">
@@ -211,16 +211,16 @@
         <h3 data-lm="reveal-lg">{{ page_data.concierge.name }}</h3>
         <p data-lm="reveal">{{ page_data.concierge.bio }}</p>
         <div class="lines" data-lm="reveal">
-          <div>Email<strong>{{ page_data.concierge.email }}</strong></div>
-          <div>Telefono<strong>{{ page_data.concierge.phone }}</strong></div>
+          <div>{{ chrome.fd_email_label }}<strong>{{ page_data.concierge.email }}</strong></div>
+          <div>{{ chrome.fd_phone_label }}<strong>{{ page_data.concierge.phone }}</strong></div>
         </div>
       </div>
     </div>
   </section>
 
   <section class="fd-hours">
-    <span class="sec-label" data-lm="reveal">Servizi della settimana</span>
-    <h2 data-lm="reveal-lg" style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro sere, <em>una sola seduta</em>.</h2>
+    <span class="sec-label" data-lm="reveal">{{ page_data.hours_label }}</span>
+    <h2 data-lm="reveal-lg" style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">{{ page_data.hours_heading|safe }}</h2>
     <div class="table" data-lm="reveal">
       {% for day, time, note in page_data.hours %}
         <div class="row">
@@ -245,49 +245,39 @@
   <section class="fd-form-band">
     <h3 data-lm="reveal-lg">{{ page_data.form_title }}</h3>
     <form>
-      <div class="field">
-        <label>Nome e cognome</label>
-        <input type="text" placeholder="Mario Rossi">
-      </div>
-      <div class="field">
-        <label>Email</label>
-        <input type="email" placeholder="mario@email.it">
-      </div>
-      <div class="field">
-        <label>Telefono</label>
-        <input type="tel" placeholder="+39 333 ...">
-      </div>
-      <div class="field">
-        <label>Numero di ospiti</label>
-        <input type="number" placeholder="2">
-      </div>
-      <div class="field">
-        <label>Data preferita</label>
-        <input type="text" placeholder="ven 16 ottobre">
-      </div>
-      <div class="field">
-        <label>Occasione</label>
-        <select>
-          <option>Cena romantica</option>
-          <option>Compleanno</option>
-          <option>Lavoro</option>
-          <option>Indifferente</option>
-        </select>
-      </div>
-      <div class="field full">
-        <label>Intolleranze o allergie</label>
-        <input type="text" placeholder="Eventuali intolleranze, allergie o richieste particolari">
-      </div>
-      <div class="field full">
-        <label>Note per il concierge</label>
-        <textarea placeholder="Greta legge personalmente ogni richiesta. Bastano poche righe."></textarea>
-      </div>
+      {% for field in page_data.form_fields %}
+        {% if field.2 == "textarea" %}
+          <div class="field full">
+            <label>{{ field.0 }}</label>
+            <textarea placeholder="{{ field.1 }}"></textarea>
+          </div>
+        {% elif field.2 == "select" %}
+          <div class="field">
+            <label>{{ field.0 }}</label>
+            <select>
+              {% for opt in page_data.occasion_options %}
+                <option>{{ opt }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% elif forloop.counter0 == 6 %}
+          <div class="field full">
+            <label>{{ field.0 }}</label>
+            <input type="{{ field.2 }}" placeholder="{{ field.1 }}">
+          </div>
+        {% else %}
+          <div class="field">
+            <label>{{ field.0 }}</label>
+            <input type="{{ field.2 }}" placeholder="{{ field.1 }}">
+          </div>
+        {% endif %}
+      {% endfor %}
       <div class="consent">
         <input type="checkbox">
         <span>{{ page_data.consent }}</span>
       </div>
       <div class="submit">
-        <button type="button">Invia richiesta al concierge</button>
+        <button type="button">{{ page_data.form_submit }}</button>
       </div>
     </form>
   </section>

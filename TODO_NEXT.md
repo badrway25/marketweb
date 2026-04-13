@@ -23,15 +23,17 @@ Per D-059, cardio-studio-specialistico now ships as the first genuinely multilin
 Per D-059, the other two `tier=published_live` templates pick up multilingual publishing by opting into the pilot architecture. Order (cheapest first):
 
 - [x] **Dermatologia-elite-roma** — ✅ **CLOSED (Session 24, cherry-picked into baseline in Session 25)**. 4 hand-authored content trees (EN/FR/ES/AR) in `template_content_dermatologia_i18n.py`. Zero new HTML or CSS. 5/5 derm locale routes 200. Same specialist skin RTL CSS already in place from cardio pilot.
-- [ ] **Gusto-fine-dining** (adds a new archetype RTL block). Work: (a) create `apps/catalog/template_content_gusto_i18n.py` with 4 hand-authored content trees for the 7 gusto pages (home/filosofia/menu/atmosfera/diario/prenota + blog_detail) — remember gusto's tone is dark-editorial Michelin not medical clinical, so the voice differs per locale; (b) author a new `html[dir="rtl"] ...` CSS block inside `templates/live_templates/restaurant/fine-dining/_base.html` flipping `.fd-nav`, `.fd-hero`, `.fd-chef .portrait`, `.fd-courses`, `.fd-form-band`, etc. (same selector-level flip pattern as the specialist block, but with `.fd-*` prefixes); (c) wire chrome strings — gusto uses a different set of ad-hoc literal labels in its `_base.html` (gold-btn, mp-bar, footer), so add a `CHROME_I18N` expansion with the 10–15 additional keys needed or factor a new `GUSTO_CHROME_I18N` block. Budget: ~3h.
+- [x] **Gusto-fine-dining** — ✅ **CLOSED (Session 29, 2026-04-13)**. 4 hand-authored content trees (EN/FR/ES/AR) in `template_content_gusto_i18n.py`, restaurant-hospitality native voice per locale. New `html[dir="rtl"] ...` CSS block authored in `fine-dining/_base.html` with core + page-level split (page-level inside `{% if is_rtl %}` so LTR skips CSS entirely). CHROME_I18N extended with 9 restaurant-generic keys (mp_other_restaurant, foot_restaurant, foot_concierge, foot_services, fd_wine_pairing, fd_email_label, fd_phone_label, blog_read_article — reusable by future restaurant archetypes). 52/52 routes green (35 gusto + 10 cardio regression + 5 derm regression + 2 negative). Motion + interactions preserved. D-063 formalized.
 
-**Exit criteria for Phase 2i.2:**
-- [ ] Every `tier=published_live` template has a `{locale: tree}` content block for all 5 locales (it/en/fr/es/ar).
-- [ ] Every archetype `_base.html` has a working `html[dir="rtl"]` CSS block verified by a 1440×900 browser walk on `?lang=ar`.
-- [ ] Route sweep: 5 locales × all routes per template all 200.
-- [ ] No new horizontal overflow compared to the IT baseline on any template at 390×844.
-- [ ] `CHROME_I18N` is the single source of truth for all chrome strings across archetypes — per-archetype extensions live in a dedicated section and never duplicate keys.
-- [ ] Session log + memory entry per template.
+**Exit criteria for Phase 2i.2 — all met (Session 29 closure):**
+- [x] Every `tier=published_live` template has a `{locale: tree}` content block for all 5 locales (it/en/fr/es/ar) — cardio + derm + gusto all done.
+- [x] Every archetype `_base.html` has a working `html[dir="rtl"]` CSS block verified by a 1440×900 browser walk on `?lang=ar` — specialist (cardio/derm) done Session 23, fine-dining (gusto) done Session 29.
+- [x] Route sweep: 5 locales × all routes per template all 200 — 52/52 green in Session 29 smoke test.
+- [x] No new horizontal overflow compared to the IT baseline on any template at 390×844 — Gusto AR 673px vs IT 701px, AR actually tighter.
+- [x] `CHROME_I18N` is the single source of truth for all chrome strings across archetypes — restaurant-generic extensions sit alongside medical keys in one flat dict per locale.
+- [x] Session log + memory entry per template — Sessions 23 / 24 / 29 all documented.
+
+**Phase 2i.2 CLOSED.** All 3 `tier=published_live` templates ship multilingual with RTL.
 
 ### 2i.3 — Marketplace chrome i18n (deferred, Phase 4)
 The marketplace surface (homepage, listing, detail, category, search) remains Italian-only through Phase 2i. When Phase 4 lifts this, the migration is:

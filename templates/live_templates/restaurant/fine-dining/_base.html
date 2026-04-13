@@ -1,5 +1,5 @@
 {% load static %}{% spaceless %}<!DOCTYPE html>
-<html lang="it">
+<html lang="{{ locale }}" dir="{{ html_dir }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family={{ theme.body_font|urlencode }}:wght@300;400;500;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Noto+Kufi+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet">
+{% endif %}
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
 <style>
@@ -41,10 +44,27 @@
     font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
     padding: 10px 32px; display: flex; justify-content: space-between; align-items: center;
     border-bottom: 1px solid var(--rule);
+    gap: 24px;
   }
-  .mp-bar .mp-back { color: var(--secondary); border-bottom: 1px solid var(--secondary); padding-bottom: 1px; font-weight: 600; transition: color 360ms cubic-bezier(0.22,0.61,0.36,1), letter-spacing 360ms cubic-bezier(0.22,0.61,0.36,1); }
+  .mp-bar .mp-back { color: var(--secondary); border-bottom: 1px solid var(--secondary); padding-bottom: 1px; font-weight: 600; transition: color 360ms cubic-bezier(0.22,0.61,0.36,1), letter-spacing 360ms cubic-bezier(0.22,0.61,0.36,1); white-space: nowrap; }
   .mp-bar .mp-back:hover { letter-spacing: 0.18em; }
   .mp-bar .mp-name { color: var(--ink-dim); }
+  /* Language switcher pill strip — centered between back and other-templates links */
+  .mp-lang { display: flex; gap: 6px; align-items: center; }
+  .mp-lang .pill {
+    display: inline-block;
+    padding: 4px 9px;
+    font-size: 10px; letter-spacing: 0.14em; font-weight: 700;
+    color: var(--ink-dim);
+    border: 1px solid var(--rule);
+    transition: color 240ms cubic-bezier(0.22,0.61,0.36,1), border-color 240ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .mp-lang .pill:hover { color: var(--secondary); border-color: var(--secondary); }
+  .mp-lang .pill.is-current {
+    color: var(--secondary);
+    border-color: var(--secondary);
+    background: rgba(212,165,116,0.08);
+  }
 
   /* ============================================================
      SITE NAV — centered serif wordmark on charcoal · gold rule
@@ -192,15 +212,123 @@
   .fd-foot .bot a { transition: color 360ms cubic-bezier(0.22,0.61,0.36,1); }
   .fd-foot .bot a:hover { color: var(--secondary); }
 
-  {% block extra_css %}{% endblock %}
+  /* ============================================================
+     RTL OVERRIDES — Arabic reading direction + font tweaks
+     Scoped to html[dir="rtl"] so LTR rendering is untouched.
+     Pattern follows the specialist skin (Session 23 cardio pilot).
+  ============================================================ */
+  html[dir="rtl"] body {
+    font-family: 'Noto Kufi Arabic', 'Amiri', '{{ theme.body_font }}', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.85;
+  }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 {
+    font-family: 'Amiri', 'Noto Kufi Arabic', '{{ theme.heading_font }}', Georgia, serif;
+    letter-spacing: 0;
+  }
+  html[dir="rtl"] .fd-nav .logo .name,
+  html[dir="rtl"] .fd-foot .brand .word {
+    /* Latin wordmark stays Latin — keeps "Osteria Moderna" in the intended face. */
+    font-family: '{{ theme.heading_font }}', Georgia, serif;
+  }
+  /* Uppercase tracking doesn't apply to Arabic — flatten to readable spacing. */
+  html[dir="rtl"] .fd-nav .left, html[dir="rtl"] .fd-nav .right,
+  html[dir="rtl"] .fd-nav .logo .star,
+  html[dir="rtl"] .fd-lead .eyebrow, html[dir="rtl"] .fd-lead .gold-btn,
+  html[dir="rtl"] .fd-lead .ghost-btn,
+  html[dir="rtl"] .fd-section .sec-label,
+  html[dir="rtl"] .fd-foot .top h5, html[dir="rtl"] .fd-foot .bot,
+  html[dir="rtl"] .mp-bar, html[dir="rtl"] .mp-lang .pill {
+    letter-spacing: 0.04em;
+  }
+  /* Reverse nav-grid so "left" visually sits on the right and vice versa,
+     but keep the center logo anchored. */
+  html[dir="rtl"] .fd-nav .right { justify-content: flex-start; }
+  html[dir="rtl"] .fd-nav .left { justify-content: flex-end; }
+  /* Nav underline sweep — flip origin so it sweeps with the reading direction. */
+  html[dir="rtl"] .fd-nav .left a:after,
+  html[dir="rtl"] .fd-nav .right a:after {
+    transform-origin: right center;
+  }
+  /* Hero/lead eyebrow accent bar: the ::before becomes an ::after on the right. */
+  html[dir="rtl"] .fd-lead .eyebrow:before { content: none; }
+  html[dir="rtl"] .fd-lead .eyebrow:after {
+    content: ''; width: 36px; height: 1px; background: var(--secondary);
+  }
+  /* Gold-btn arrow flips direction for RTL; shift goes the other way on hover. */
+  html[dir="rtl"] .fd-lead .gold-btn:after { content: '←'; }
+  html[dir="rtl"] .fd-lead .gold-btn:hover:after { transform: translateX(-6px); }
+  /* Mp-bar back arrow already includes a Latin `→` in chrome.mp_back for AR. */
+  html[dir="rtl"] .mp-bar { flex-direction: row-reverse; }
+{% block extra_css %}{% endblock %}
+  {% if is_rtl %}
+  /* ============================================================
+     RTL — page-level overrides for fine-dining sections.
+     Applied inside each page template's .fd-* sections.
+  ============================================================ */
+  html[dir="rtl"] .fd-hero { grid-template-columns: 1.18fr 1fr; }
+  html[dir="rtl"] .fd-hero .text { padding: 96px 90px 96px 56px; }
+  html[dir="rtl"] .fd-hero .plate .star-tag { left: 40px; right: auto; }
+  html[dir="rtl"] .fd-hero .plate .credit { flex-direction: row-reverse; }
+  html[dir="rtl"] .fd-hero .text .gold-link:after { content: '←'; }
+  html[dir="rtl"] .fd-chef .portrait,
+  html[dir="rtl"] .fd-concierge .portrait,
+  html[dir="rtl"] .fd-lead-post .img,
+  html[dir="rtl"] .fd-filosofia-img .frame { border-left: 0; border-right: 6px solid var(--secondary); }
+  html[dir="rtl"] .fd-filosofia-img .cap { left: auto; right: 28px; }
+  html[dir="rtl"] .fd-chef-inner,
+  html[dir="rtl"] .fd-concierge-inner { grid-template-columns: 1.4fr 1fr; }
+  html[dir="rtl"] .fd-wine-inner { grid-template-columns: 1.6fr 1fr; }
+  html[dir="rtl"] .fd-method-inner { grid-template-columns: 1.9fr 1fr; }
+  html[dir="rtl"] .fd-private-inner { grid-template-columns: 1.8fr 1fr; }
+  html[dir="rtl"] .fd-ingredienti { grid-template-columns: 1fr 1.2fr; }
+  /* Drop-cap in manifesto: float right in RTL. */
+  html[dir="rtl"] .fd-manifesto p:first-letter { float: right; padding: 10px 0 0 20px; }
+  html[dir="rtl"] .fd-method .ps p:first-of-type:first-letter { float: right; padding: 10px 0 0 18px; }
+  html[dir="rtl"] .fd-article .lede:first-letter { float: right; padding: 8px 0 0 18px; }
+  /* Courses number column now on the right. */
+  html[dir="rtl"] .fd-courses .row .num,
+  html[dir="rtl"] .fd-courses-full .item .num,
+  html[dir="rtl"] .fd-rooms .room .num { text-align: right; }
+  html[dir="rtl"] .fd-courses-full .item .wine { text-align: left; }
+  html[dir="rtl"] .fd-list .row .meta { text-align: left; }
+  /* Blog article breadcrumb + footer meta flip. */
+  html[dir="rtl"] .fd-article .footer-meta a,
+  html[dir="rtl"] .fd-article .crumbs a { border-bottom-color: var(--secondary); }
+  /* Form band labels stay compact for AR. */
+  html[dir="rtl"] .fd-form-band label { letter-spacing: 0.04em; }
+  /* Awards border: cleaner top line in AR. */
+  html[dir="rtl"] .fd-awards .award { flex-direction: row-reverse; }
+  /* Seasonal card CTA-link carries an arrow; flip its visual anchor. */
+  html[dir="rtl"] .fd-stagione-card .cta-link { display: inline-block; }
+  /* Atmo teaser strip caption alignment. */
+  html[dir="rtl"] .fd-atmo .strip .img .cap { text-align: right; }
+  /* Gallery grid caption stays right-anchored. */
+  html[dir="rtl"] .fd-gallery .img .cap { text-align: right; }
+  /* Chef/concierge left border → right border already handled above. */
+  /* Courses dotted leaders still work in RTL — grid flips automatically. */
+  {% endif %}
 </style>
 </head>
 <body>{% endspaceless %}
 
 <div class="mp-bar">
-  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}" class="mp-back">← Torna a MarketWeb</a>
-  <span class="mp-name">Anteprima completa · {{ template.name }}</span>
-  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}" class="mp-back">Altri template ristoranti →</a>
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <nav class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    {% for entry in locale_switcher %}
+      {% if page.slug == "home" %}
+        <a class="pill {% if entry.is_current %}is-current{% endif %}"
+           href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           {% if entry.code == 'ar' %}lang="ar" dir="rtl"{% endif %}>{{ entry.badge }}</a>
+      {% else %}
+        <a class="pill {% if entry.is_current %}is-current{% endif %}"
+           href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           {% if entry.code == 'ar' %}lang="ar" dir="rtl"{% endif %}>{{ entry.badge }}</a>
+      {% endif %}
+    {% endfor %}
+  </nav>
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_restaurant }}</a>
 </div>
 
 <nav class="fd-nav">
@@ -208,21 +336,21 @@
     {% for p in pages %}
       {% if forloop.counter <= 3 %}
         {% if p.slug == "home" %}
-          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
         {% else %}
-          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
         {% endif %}
       {% endif %}
     {% endfor %}
   </div>
   <div class="logo">
     <div class="name">{{ site.logo_word }}</div>
-    <span class="star">★ Una stella Michelin · est. 2018</span>
+    <span class="star">{{ site.star_line }}</span>
   </div>
   <div class="right">
     {% for p in pages %}
       {% if forloop.counter > 3 %}
-        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
       {% endif %}
     {% endfor %}
   </div>
@@ -233,36 +361,36 @@
 <footer class="fd-foot">
   <div class="top">
     <div class="brand">
-      <h5>Il ristorante</h5>
+      <h5>{{ chrome.foot_restaurant }}</h5>
       <div class="word">{{ site.logo_word }}</div>
       <p>{{ site.footer_intro }}</p>
     </div>
     <div class="col">
-      <h5>Pagine</h5>
+      <h5>{{ chrome.foot_pages }}</h5>
       {% for p in pages %}
         {% if p.slug == "home" %}
-          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
         {% else %}
-          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
         {% endif %}
       {% endfor %}
     </div>
     <div class="col">
-      <h5>Concierge</h5>
+      <h5>{{ chrome.foot_concierge }}</h5>
       <p>{{ site.address }}</p>
       <p>{{ site.phone }}</p>
       <p>{{ site.email }}</p>
     </div>
     <div class="col">
-      <h5>Servizi</h5>
+      <h5>{{ chrome.foot_services }}</h5>
       <p>{{ site.hours_compact }}</p>
-      <p>Mer – Sab · 20:00</p>
-      <p>Dom &amp; Lun · chiuso</p>
+      <p>{{ site.footer_hours_1 }}</p>
+      <p>{{ site.footer_hours_2 }}</p>
     </div>
   </div>
   <div class="bot">
-    <span>© 2026 {{ site.logo_word }} · P. IVA 09456112094</span>
-    <span><a href="#">Privacy</a> &middot; <a href="#">Cookie</a> &middot; <a href="#">Note legali</a></span>
+    <span>{{ site.copyright }}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
   </div>
 </footer>
 

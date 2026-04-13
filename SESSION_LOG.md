@@ -1,5 +1,88 @@
 # Session Log
 
+## Session 29 — Gusto i18n/RTL (Phase 2i.2 step 2) (2026-04-13)
+
+**Agent:** Premium UI i18n session. Close the multilingual gap on the third published_live template.
+**Branch:** `phase-gusto-i18n-rtl-v1`.
+**Scope floor:** extend the i18n/RTL pilot architecture (D-059) to gusto-fine-dining, shipping 5 locales (it/en/fr/es/ar) with real RTL for Arabic. Preserve motion (D-058), ultra-premium interactions (D-062), and zero regression on cardio/derm (D-059/D-061).
+**Non-goals:** Django gettext/.po, middleware, per-locale URLs, translating marketplace chrome, translating drafts, touching auth/checkout/editor/projects/commerce, changing DNA or preview compositions, new categories/templates.
+
+### 1 — Audit
+Read all 8 fine-dining skin files (`_base.html` + 7 pages) end-to-end. Catalogued every hardcoded Italian string: 15 in `_base.html` (mp-bar labels, nav star line, footer headings, footer hours, copyright, privacy/cookie/legal), 13 in `home.html` (chef meta label, star tag, photo/kitchen credits, courses label/footline, chef nav links, press label, CTA block), 5 in `about.html` (values label/heading, CTA), 2 in `menu.html` (courses label, wine-pairing label), 4 in `gallery.html` (CTA quote/desc/links), 12+ in `reservations.html` (process label/heading, concierge labels, hours heading, form labels/placeholders/options/submit), 2 in `blog_list.html` (read link, min label), 5 in `blog_detail.html` (breadcrumb, min label, empty body, footer label, back link). Noted `<html lang="it">` static, no language switcher, no `?lang=` preservation, no RTL CSS block, no Arabic font loader.
+
+### 2 — CHROME_I18N extension
+Added 9 restaurant-generic keys × 5 locales (IT/EN/FR/ES/AR) to `apps/catalog/template_i18n.py`:
+- `mp_other_restaurant`, `foot_restaurant`, `foot_concierge`, `foot_services` — new restaurant footer + mp-bar labels
+- `fd_wine_pairing` — menu course wine-pairing strip
+- `fd_email_label`, `fd_phone_label` — concierge contact chip labels
+- `blog_read_article` — shorter variant of existing `blog_read_full`
+
+Zero breakage of existing keys. Authoritative IT values, then hand-translated per locale. Arabic stays flat: "المطعم", "الاستقبال", "الخدمة", "مقترن مع", "البريد الإلكترونيّ", "الهاتف", "قراءة المقال", "← قوالب مطاعم أخرى".
+
+### 3 — GUSTO_CONTENT_IT key expansion
+Added ~30 missing content keys to `GUSTO_CONTENT_IT` in `apps/catalog/template_content.py` for every previously-hardcoded HTML literal. Organized by page block:
+- `site.*`: star_line, footer_hours_1, footer_hours_2, copyright
+- `home.*`: chef_label, star_tag, photo_label, cuisine_label, courses_label, courses_footline, courses_full_cta, chef_link_filosofia, chef_link_diario, press_label, cta_heading, cta_primary, cta_secondary
+- `filosofia.*`: values_label, values_heading, cta_heading, cta_menu, cta_prenota
+- `menu.*`: courses_label
+- `atmosfera.*`: cta_quote, cta_desc, cta_primary, cta_secondary
+- `diario.*`: read_article, min_label, min_read_label, crumb_label, back_link, footer_label, empty_body
+- `prenota.*`: process_label, process_heading, hours_label, hours_heading, private_heading, form_submit, occasion_options; reshaped form_fields to match HTML's visual order (name/email/phone/guests/date/occasion-select/intolerances-full/note-textarea)
+
+### 4 — Template i18n file authoring
+Created `apps/catalog/template_content_gusto_i18n.py` with 4 full hand-authored content trees:
+
+- **EN** (~310 lines): Anglo-American fine-dining editorial. "An evening in eight acts.", "One service per night", "tasting menu that rewrites itself every two weeks". NYT Magazine-grade blog body for lead post.
+- **FR** (~310 lines): Haute cuisine register, `vous` form, Michelin-guide French. "Une soirée en huit actes.", "dégustation en huit actes", times in `20h00` format, French « » quotation marks.
+- **ES** (~310 lines): Peninsular Spanish, warm but formal. "Una velada en ocho actos.", "menú degustación de ocho actos", prices in "180 €" format, dates as "5 de octubre de 2026".
+- **AR** (~310 lines): Modern Standard Arabic, formal hospitality register. "سهرة في ثمانية فصول.", full RTL authoring, Arabic drop-cap letters chosen per locale ("ق" for the manifesto, "د" for blog body opening). Proper names (chef, staff, producers, wines, press) stay Latin. Address stays Latin because it's a Milan street name. Dates in "5 أكتوبر 2026" (Western numerals retained for consistency with prices). Arrows flipped where they're directional reading cues.
+
+Shared image URL constants (`_INGREDIENTI_IMG`, `_FILOSOFIA_IMG`, `_ATMO_*`) extracted as module-level vars so image URLs aren't duplicated 4×.
+
+### 5 — Wiring into TEMPLATE_CONTENT registry
+Added 4-line import block + 4 locale keys under `gusto-fine-dining` in `TEMPLATE_CONTENT`. `python manage.py check` clean.
+
+### 6 — _base.html i18n/RTL authoring
+Replaced `<html lang="it">` with dynamic `<html lang="{{ locale }}" dir="{{ html_dir }}">`. Added conditional Amiri + Noto Kufi Arabic Google Fonts link (only loads for AR). Replaced hardcoded mp-bar strings with `{{ chrome.mp_back }}` / `{{ chrome.mp_other_restaurant }}`. Added language switcher pill strip in mp-bar with per-pill URL locale rewrite; AR pill carries `lang="ar" dir="rtl"` so الع renders in Arabic font. Every nav link (left + right) and every footer link appends `?lang={{ locale }}` when non-IT. Footer section headings now from chrome; footer hours / star line / copyright now from `site.*`.
+
+Authored the RTL CSS block in two parts:
+- **Core** (outside `{% if is_rtl %}`, always present): body font swap to Noto Kufi Arabic + Amiri, body 17px / line-height 1.85, letter-spacing flatten on uppercase tracking (nav/eyebrow/sec-label/mp-bar/footer-h5/bot), nav-grid justify flip, nav underline sweep origin flip, eyebrow `:before` → `:after` accent bar, gold-btn arrow `→` → `←`, mp-bar `flex-direction: row-reverse`.
+- **Page-level** (inside `{% if is_rtl %}` so LTR skips the CSS entirely): flip `.fd-hero` grid to image-left, swap portrait `border-left` → `border-right` on `.fd-chef / .fd-concierge / .fd-lead-post / .fd-filosofia-img`, invert `grid-template-columns` on all `-inner` wrappers + `.fd-ingredienti`, flip drop-cap floats from `float: left` to `float: right` (with matching padding mirror), right-align course/room numbers, left-align wine/meta columns, right-align gallery + atmo captions, row-reverse awards.
+
+### 7 — Page-template wiring
+- `home.html` — all 13 hardcoded strings moved to `page_data.*`, URLs preserve locale.
+- `about.html` — 5 hardcoded strings moved to `page_data.*`, URLs preserve locale.
+- `menu.html` — courses_label from `page_data`, wine pairing label from `chrome.fd_wine_pairing`.
+- `gallery.html` — 4 hardcoded strings moved to `page_data.*`, URLs preserve locale.
+- `reservations.html` — 6 hardcoded labels moved to `page_data.*`, concierge email/phone labels from `chrome.fd_*_label`, form rewritten as `{% for field in page_data.form_fields %}` loop with conditional rendering by `field.2` (type) and `forloop.counter0 == 6` for full-width intolerances. Occasion options from `page_data.occasion_options` (separate list because Django templates have no `split` filter).
+- `blog_list.html` — read_article + min label from `page_data`, URL locale preservation on post links.
+- `blog_detail.html` — crumb_label / min_read_label / back_link / footer_label / empty_body from `content.diario.*` (accessed via content dict since `page_data` on detail view is per-post, not per-page). URL locale preservation.
+
+### 8 — Validation
+- `python manage.py check` — 0 issues.
+- Migrations + `seed_categories` + `seed_templates` + `sync_template_tiers` — clean. 3 published_live / 17 draft confirmed.
+- `smoke_i18n_gusto.py` — **52/52 green**:
+  - 35 Gusto routes (home + filosofia + menu + atmosfera + diario + prenota + diario/menu-autunno-26 × 5 locales)
+  - 10 Cardio regression routes (home + contatti × 5 locales)
+  - 5 Derm regression routes (home × 5 locales)
+  - 2 negative tests (unknown `?lang=zz` → IT 200, empty `?lang=` → IT 200)
+- Browser walk at 1440×900 via Playwright — all 5 Gusto locales render cleanly on home. Arabic confirmed `dir="rtl"`, `lang="ar"`, Amiri + Noto Kufi Arabic loaded, body 17px, hero grid flipped (image 771px LEFT / text 653px RIGHT), gold-btn `:after content "←"`, hero grid `771.328px 653.672px`.
+- Arabic inner pages: prenota form RTL-aligned with Arabic labels/placeholders + gold submit button "أرسِل ملاحظةً إلى مسؤولة الاستقبال"; menu with RIGHT-aligned dish names + LEFT-aligned Latin wine names (Latin + Arabic mix flows correctly); gallery 6 lightbox triggers preserved + 4 rooms in Arabic; blog detail RTL with Arabic drop-cap.
+- Motion regression on EN home: `body.lm-ready=true`, 25 reveal targets, 5 stagger parents, 3 counters, 4 atmosphere-teaser lightbox triggers, awards + ingredients + seasonal + atmosphere sections all present. Zero data-lm/data-li breakage.
+- Cardio AR regression: renders identically to pre-Session-29 baseline (medical specialist skin untouched by this session).
+- Mobile sanity at 390×844: Gusto AR scroll-width 673px vs IT 701px — AR actually slightly tighter than IT (Arabic composes denser in fixed-width slots). Pre-existing desktop-first Gusto overflow (~660-700px, documented in Session 22) unchanged.
+
+### 9 — Gotchas
+- **Django template `split` filter doesn't exist.** First draft of the reservations form tried to split the occasion placeholder on " / " inside the template. Moved to a separate `occasion_options` list keyed per locale. Clean.
+- **Windows cp1252 console can't print ✓/✗ glyphs.** First smoke-test run crashed on Unicode print. Replaced with `OK`/`FAIL` ASCII labels. Clean.
+- **Arabic drop-caps need manual letter selection.** Can't just grab `text[0]` because Arabic manifest starts with "قائمة" but the visual first-letter should be "ق" (the same character). For blog body opening "دخلت", the drop-cap letter is "د". Authored manually in each locale tree.
+- **Latin wordmark must stay Latin in RTL.** Without `html[dir="rtl"] .fd-nav .logo .name { font-family: '{{ theme.heading_font }}' }` the "Osteria Moderna" wordmark would render in Amiri — wrong brand face. Explicit override.
+
+### 10 — Decision
+**GUSTO I18N/RTL APPROVATO.**
+
+Phase 2i.2 closed in full. All 3 `tier=published_live` templates now ship in 5 locales with working RTL. Architecture proven across two archetypes (specialist + fine-dining), with restaurant-generic chrome keys positioned for reuse by Phase 2g3.1 (Sapore / Brace).
+
 ## Session 28 — Ultra Premium Live Pass (Phase 2g2x.12) (2026-04-12)
 
 **Agent:** Premium UI session. Ultra-premium feature & interaction pass on the 3 published_live templates.

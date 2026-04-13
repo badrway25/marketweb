@@ -714,9 +714,13 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
         "email":        "concierge@osteriamoderna.it",
         "address":      "Via San Marco 17 · 20121 Milano",
         "hours_compact":"Mar – Sab · solo cena",
+        "star_line":    "★ Una stella Michelin · est. 2018",
         "footer_intro":
             "Una stella Michelin dal 2018. Quattordici coperti, due servizi a "
             "settimana, un menù a otto atti che cambia ogni due settimane.",
+        "footer_hours_1": "Mer – Sab · 20:00",
+        "footer_hours_2": "Dom & Lun · chiuso",
+        "copyright": "© 2026 Osteria Moderna · P. IVA 09456112094",
     },
 
     # ─── HOME ──────────────────────────────────────────────────
@@ -730,6 +734,11 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
         "primary_href":  "prenota",
         "secondary_cta": "Lo chef",
         "secondary_href":"filosofia",
+
+        "chef_label":    "Lo chef",
+        "star_tag":      "★ Atto V · Cioccolato 80%",
+        "photo_label":   "Fotografia",
+        "cuisine_label": "Cucina",
 
         "facts": [
             ("14",   "coperti per servizio"),
@@ -762,6 +771,13 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
                 "Stella Michelin nel 2018, mantenuta fino a oggi.",
         },
 
+        "courses_label": "Cinque atti del menù in corso · autunno '26",
+        "courses_footline": "€ 180 / persona · vini in abbinamento + €90",
+        "courses_full_cta": "Otto atti completi",
+        "chef_link_filosofia": "La filosofia",
+        "chef_link_diario": "Il diario",
+
+        "press_label": "Pubblicato su",
         "press": ["GUIDA MICHELIN", "GAMBERO ROSSO", "IDENTITÀ GOLOSE",
                   "CORRIERE LIVING", "VOGUE FOOD"],
 
@@ -811,6 +827,11 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
                 ("50B", "50 Best Discovery", "Incluso nella selezione 2026 Italia"),
             ],
         },
+
+        # CTA section
+        "cta_heading": "Quattordici coperti, <em>due servizi a settimana.</em>",
+        "cta_primary": "Riserva la serata",
+        "cta_secondary": "Vedi il menù completo",
 
         # Seasonal highlight card
         "stagione": {
@@ -880,12 +901,18 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "francamente — è la metà del lavoro che facciamo.",
         ],
 
+        "values_label": "Cosa garantiamo",
+        "values_heading": "Quattro promesse che <em>non cambiano mai</em>.",
         "values": [
             ("Tempo",        "Tre ore e mezza di servizio. Mai più, mai meno."),
             ("Stagione",     "Niente in sala che non sia di stagione locale."),
             ("Trasparenza",  "Conosciamo per nome ogni produttore in carta."),
             ("Discrezione",  "Niente foto del cuoco, niente social: in sala si mangia."),
         ],
+
+        "cta_heading": "Vuoi vedere il menù <em>in corso questa settimana?</em>",
+        "cta_menu": "Otto atti dell'autunno '26",
+        "cta_prenota": "Riserva la serata",
     },
 
     # ─── MENU ──────────────────────────────────────────────────
@@ -896,6 +923,7 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "Il menù cambia integralmente ogni due settimane. Quanto segue è "
             "il programma in vigore dal 6 al 19 ottobre 2026. Due servizi alla "
             "settimana, dal mercoledì al sabato, una sola seduta dalle 20:00.",
+        "courses_label": "Otto atti · servizio dalle 20:00",
 
         "courses": [
             ("I",    "Ostrica & cetriolo",
@@ -978,6 +1006,11 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "Lorenzo Fioravanti durante il servizio.",
             "La sala principale al termine della mise en place.",
         ],
+
+        "cta_quote": "«Per fotografare il piatto, qui, lo si guarda con calma da seduti.»",
+        "cta_desc": "Quattordici coperti per servizio. Solo prenotazione. Solo cena. Mer – Sab.",
+        "cta_primary": "Riserva la serata",
+        "cta_secondary": "Vedi il menù",
     },
 
     # ─── DIARIO (blog list / detail) ───────────────────────────
@@ -988,6 +1021,19 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "Brevi appunti di Lorenzo Fioravanti e Greta Vallesi sui menù in "
             "corso, sui produttori, sulle serate memorabili e su quello che "
             "sta cambiando in cucina di settimana in settimana.",
+        "read_article": "Leggi l'articolo",
+        "min_label": "min",
+        "min_read_label": "min di lettura",
+        "crumb_label": "Diario",
+        "back_link": "← Tutto il diario",
+        "footer_label": "Osteria Moderna · Il diario di sala",
+        "empty_body": [
+            "Articolo in preparazione editoriale. La pubblicazione integrale "
+            "sarà disponibile a breve, scritta personalmente dallo chef o dal maître.",
+            "Questo segnaposto descrive la voce del Diario di Sala: brevi note di "
+            "lavoro, riflessioni sui produttori, racconti di serate memorabili. "
+            "Mai più di duemila parole, mai meno di cinquecento.",
+        ],
     },
 
     "posts": [
@@ -1097,6 +1143,13 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "passano dal concierge personale del ristorante, Greta Vallesi, "
             "che risponde via email entro la giornata.",
 
+        "process_label": "Come funziona",
+        "process_heading": "Quattro passaggi, <em>quattro giorni di anticipo</em>.",
+        "hours_label": "Servizi della settimana",
+        "hours_heading": "Quattro sere, <em>una sola seduta</em>.",
+        "private_heading": "Cene private",
+        "form_submit": "Invia richiesta al concierge",
+
         "process": [
             ("01", "Scrivi a Greta",
              "Bastano poche righe: data preferita, numero di ospiti, eventuali "
@@ -1147,10 +1200,11 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             ("Telefono",           "+39 333 ...",          "tel"),
             ("Numero di ospiti",   "2",                    "number"),
             ("Data preferita",     "ven 16 ottobre",       "text"),
-            ("Intolleranze",       "Eventuali allergie o intolleranze", "text"),
-            ("Occasione",          "Cena romantica / Compleanno / Lavoro / Indifferente", "select"),
-            ("Note per il concierge","Eventuali richieste particolari", "textarea"),
+            ("Occasione",          "",                     "select"),
+            ("Intolleranze o allergie", "Eventuali intolleranze, allergie o richieste particolari", "text"),
+            ("Note per il concierge","Greta legge personalmente ogni richiesta. Bastano poche righe.", "textarea"),
         ],
+        "occasion_options": ["Cena romantica", "Compleanno", "Lavoro", "Indifferente"],
         "consent":
             "Acconsento al trattamento dei dati personali secondo l'informativa "
             "privacy ai sensi del Regolamento UE 679/2016.",
@@ -1826,8 +1880,9 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
 # Cardio ships with 5 locales (it/en/fr/es/ar) — the 4 non-IT blocks live
 # in `template_content_cardio_i18n.py` so this file stays browsable.
 # Dermatologia ships with 5 locales as of Session 24 (Phase 2i.2).
-# Gusto is IT-only for now; it will pick up other locales when Phase 2i.2
-# rolls to the fine-dining archetype (separate RTL CSS work needed).
+# Gusto ships with 5 locales as of Session 29 (Phase 2i.2 step 2) — the 4
+# non-IT blocks live in `template_content_gusto_i18n.py` alongside a new
+# `.fd-*` RTL CSS block in the fine-dining _base.html.
 # ---------------------------------------------------------------------------
 
 from apps.catalog.template_content_cardio_i18n import (  # noqa: E402
@@ -1842,6 +1897,13 @@ from apps.catalog.template_content_dermatologia_i18n import (  # noqa: E402
     DERMATOLOGIA_CONTENT_FR,
     DERMATOLOGIA_CONTENT_ES,
     DERMATOLOGIA_CONTENT_AR,
+)
+
+from apps.catalog.template_content_gusto_i18n import (  # noqa: E402
+    GUSTO_CONTENT_EN,
+    GUSTO_CONTENT_FR,
+    GUSTO_CONTENT_ES,
+    GUSTO_CONTENT_AR,
 )
 
 
@@ -1862,6 +1924,10 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     },
     "gusto-fine-dining": {
         "it": GUSTO_CONTENT_IT,
+        "en": GUSTO_CONTENT_EN,
+        "fr": GUSTO_CONTENT_FR,
+        "es": GUSTO_CONTENT_ES,
+        "ar": GUSTO_CONTENT_AR,
     },
 }
 
