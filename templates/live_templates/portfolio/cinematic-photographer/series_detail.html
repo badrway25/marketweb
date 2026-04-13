@@ -1,0 +1,314 @@
+{% extends "live_templates/portfolio/cinematic-photographer/_base.html" %}
+
+{% block extra_css %}
+  /* COVER HERO — fullbleed cover image with EXIF chip */
+  .cp-cover {
+    position: relative;
+    height: 78vh; min-height: 580px; max-height: 820px;
+    background:
+      linear-gradient(180deg, rgba(5,5,5,0.55) 0%, rgba(5,5,5,0) 22%, rgba(5,5,5,0) 60%, rgba(5,5,5,0.94) 100%),
+      url('{{ post.cover_image }}') center / cover no-repeat,
+      var(--pitch);
+  }
+  .cp-cover .frame-corners {
+    position: absolute; inset: 24px;
+    border: 1px dashed var(--film-5);
+    pointer-events: none;
+  }
+  .cp-cover .frame-corners:before,
+  .cp-cover .frame-corners:after {
+    content: ''; position: absolute; width: 26px; height: 26px;
+    border: 1px solid var(--film-3);
+  }
+  .cp-cover .frame-corners:before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+  .cp-cover .frame-corners:after  { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+  .cp-cover .breadcrumb {
+    position: absolute; top: 32px; left: 56px;
+    padding: 10px 18px;
+    background: rgba(5,5,5,0.72);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--film-4);
+    display: flex; gap: 14px; align-items: center;
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--film-2);
+    z-index: 3;
+  }
+  .cp-cover .breadcrumb a { color: var(--accent); }
+  .cp-cover .breadcrumb .sep { color: var(--film-4); }
+  .cp-cover .meta {
+    position: absolute; left: 56px; right: 56px; bottom: 80px;
+    max-width: 1080px;
+    z-index: 2;
+  }
+  .cp-cover .meta .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-cover .meta .eyebrow:before { content: ''; width: 38px; height: 1px; background: var(--accent); }
+  .cp-cover h1 {
+    margin-top: 22px;
+    font-family: var(--heading); font-size: 76px; font-weight: 800;
+    line-height: 0.96; letter-spacing: -0.025em;
+    color: var(--film); max-width: 1080px;
+    text-transform: uppercase;
+  }
+  .cp-cover .meta .lead {
+    margin-top: 24px; max-width: 64ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.6;
+    color: var(--film-2); font-style: italic;
+  }
+
+  /* EXIF strip — credits in 4-cell mono */
+  .cp-exif-strip {
+    background: rgba(5,5,5,0.94);
+    border-top: 1px solid var(--film-4);
+    border-bottom: 1px solid var(--film-5);
+    display: grid; grid-template-columns: repeat(4, 1fr);
+  }
+  .cp-exif-strip .cell {
+    padding: 16px 28px;
+    border-right: 1px solid var(--film-5);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--film-3);
+  }
+  .cp-exif-strip .cell:last-child { border-right: 0; }
+  .cp-exif-strip .cell .val {
+    color: var(--film); font-family: var(--heading); font-weight: 700;
+    letter-spacing: 0.02em; text-transform: none; font-size: 12px;
+    display: block; margin-top: 6px;
+  }
+
+  /* META STRIP — additional series facts */
+  .cp-meta-strip {
+    padding: 32px 56px;
+    border-bottom: 1px solid var(--film-4);
+    background: var(--pitch);
+    max-width: none;
+  }
+  .cp-meta-strip .row {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+  }
+  .cp-meta-strip .item {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--film-3);
+  }
+  .cp-meta-strip .item strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 14px; color: var(--film);
+    text-transform: none; letter-spacing: 0.005em; font-weight: 700; line-height: 1.4;
+  }
+
+  /* SECTIONS — cinematic essay paragraphs */
+  .cp-essay {
+    padding: 72px 56px; max-width: 1080px; margin: 0 auto;
+  }
+  .cp-essay .section { margin-top: 56px; }
+  .cp-essay .section:first-child { margin-top: 0; }
+  .cp-essay .section .sec-label {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-essay .section h2 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 32px; line-height: 1.12;
+    text-transform: uppercase; letter-spacing: -0.012em; color: var(--film);
+    max-width: 26ch;
+  }
+  .cp-essay .section p {
+    margin-top: 22px; font-family: var(--body); font-size: 17px;
+    line-height: 1.75; color: var(--film-2); max-width: 64ch;
+  }
+
+  /* GALLERY — 6-image grid (asymmetric: 2 large + 4 medium) */
+  .cp-gallery {
+    padding: 64px 56px; max-width: 1400px; margin: 0 auto;
+  }
+  .cp-gallery .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+    padding-bottom: 14px; border-bottom: 1px solid var(--film-4);
+  }
+  .cp-gallery .grid {
+    margin-top: 28px;
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+    grid-auto-rows: 320px; gap: 14px;
+  }
+  .cp-gallery .frame {
+    position: relative; overflow: hidden;
+    border: 1px solid var(--film-4);
+  }
+  .cp-gallery .frame:nth-child(1) { grid-row: span 2; grid-column: 1; }
+  .cp-gallery .frame .bg {
+    position: absolute; inset: 0;
+    background-position: center; background-size: cover;
+    filter: grayscale(15%) contrast(1.04);
+  }
+  .cp-gallery .frame:after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(5,5,5,0.05) 0%, rgba(5,5,5,0) 30%, rgba(5,5,5,0.88) 100%);
+  }
+  .cp-gallery .frame .credit {
+    position: absolute; left: 16px; right: 16px; bottom: 14px;
+    z-index: 2;
+  }
+  .cp-gallery .frame .credit .num {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; color: var(--accent);
+  }
+  .cp-gallery .frame .credit .caption {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 12px; line-height: 1.4;
+    color: var(--film); font-weight: 600;
+  }
+
+  /* EXIF FOOTER for the series — film-margin grid */
+  .cp-series-exif {
+    margin-top: 56px;
+    background: var(--pitch-2);
+    border-top: 1px solid var(--film-4); border-bottom: 1px solid var(--film-4);
+    padding: 32px 56px;
+  }
+  .cp-series-exif .wrap {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: auto repeat(4, 1fr); gap: 24px;
+    align-items: center;
+  }
+  .cp-series-exif .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+    padding-right: 24px; border-right: 1px solid var(--film-4);
+  }
+  .cp-series-exif .cell {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--film-3);
+  }
+  .cp-series-exif .cell strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 12px; color: var(--film);
+    text-transform: none; letter-spacing: 0.02em; font-weight: 700;
+  }
+
+  /* NEXT SERIES LINK */
+  .cp-next-series {
+    padding: 56px 56px 80px; max-width: 1080px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; gap: 24px;
+    border-top: 1px solid var(--film-4); margin-top: 0;
+  }
+  .cp-next-series .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-next-series .title {
+    margin-top: 6px; font-family: var(--heading); font-size: 22px;
+    font-weight: 700; color: var(--film); text-transform: uppercase; letter-spacing: 0.005em;
+  }
+  .cp-next-series .arrow {
+    font-family: var(--mono); font-size: 16px; color: var(--accent);
+    transition: transform .2s ease;
+  }
+  .cp-next-series a:hover .arrow { transform: translateX(8px); }
+
+  @media (max-width: 1100px) {
+    .cp-cover { height: 60vh; min-height: 460px; }
+    .cp-cover .breadcrumb { left: 32px; }
+    .cp-cover .meta { left: 32px; right: 32px; bottom: 56px; }
+    .cp-cover h1 { font-size: 48px; }
+    .cp-exif-strip { grid-template-columns: 1fr 1fr; }
+    .cp-exif-strip .cell { border-right: 0; border-bottom: 1px solid var(--film-5); }
+    .cp-meta-strip .row { grid-template-columns: 1fr 1fr; }
+    .cp-essay { padding: 48px 32px; }
+    .cp-essay .section h2 { font-size: 24px; }
+    .cp-gallery { padding: 48px 32px; }
+    .cp-gallery .grid { grid-template-columns: 1fr 1fr; }
+    .cp-gallery .frame:nth-child(1) { grid-row: auto; grid-column: auto; }
+    .cp-series-exif .wrap { grid-template-columns: 1fr; gap: 18px; }
+    .cp-series-exif .lbl { border-right: 0; border-bottom: 1px solid var(--film-4); padding-bottom: 14px; padding-right: 0; }
+    .cp-next-series { padding: 48px 32px 64px; }
+  }
+  @media (max-width: 720px) {
+    .cp-cover h1 { font-size: 30px; }
+    .cp-meta-strip .row { grid-template-columns: 1fr; }
+    .cp-gallery .grid { grid-template-columns: 1fr; grid-auto-rows: 240px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="cp-cover">
+  <div class="frame-corners"></div>
+  <div class="breadcrumb">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">[ ← {{ page.label }} ]</a>
+    <span class="sep">/</span>
+    <span>{{ post.discipline }}</span>
+  </div>
+  <div class="meta" data-lm="reveal-lg">
+    <div class="eyebrow">{{ post.discipline }} · {{ post.year }}</div>
+    <h1>{{ post.title }}</h1>
+    <p class="lead">{{ post.lead }}</p>
+  </div>
+</section>
+
+<div class="cp-exif-strip">
+  {% for label, value in post.exif_credits %}
+    <div class="cell">
+      <span>{{ label }}</span>
+      <span class="val">{{ value }}</span>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="cp-meta-strip">
+  <div class="row" data-lm-stagger data-lm-stagger-delay="60">
+    <div class="item" data-lm="reveal">Disciplina<strong>{{ post.discipline }}</strong></div>
+    <div class="item" data-lm="reveal">Periodo<strong>{{ post.duration }}</strong></div>
+    <div class="item" data-lm="reveal">Luogo<strong>{{ post.location }}</strong></div>
+    <div class="item" data-lm="reveal">Frame<strong>{{ post.frame_count }}</strong></div>
+  </div>
+</div>
+
+<article class="cp-essay">
+  {% for sec in post.sections %}
+    <div class="section" data-lm="reveal">
+      <div class="sec-label">{{ sec.label }}</div>
+      <h2>{{ sec.heading }}</h2>
+      <p>{{ sec.body }}</p>
+    </div>
+  {% endfor %}
+</article>
+
+<section class="cp-gallery">
+  <div class="lbl">Galleria · {{ post.frame_count }}</div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
+    {% for url, num, caption in post.gallery %}
+      <figure class="frame" data-lm="reveal">
+        <div class="bg" style="background-image: url('{{ url }}');"></div>
+        <figcaption class="credit">
+          <div class="num">{{ num }}</div>
+          <div class="caption">{{ caption }}</div>
+        </figcaption>
+      </figure>
+    {% endfor %}
+  </div>
+</section>
+
+<div class="cp-series-exif">
+  <div class="wrap">
+    <span class="lbl">[ Edizione ]</span>
+    {% for label, value in post.print_meta %}
+      <div class="cell">{{ label }}<strong>{{ value }}</strong></div>
+    {% endfor %}
+  </div>
+</div>
+
+<a class="cp-next-series" href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+  <div>
+    <div class="lbl">{{ post.next_label }}</div>
+    <div class="title">[ → {{ page.label }} ]</div>
+  </div>
+  <span class="arrow">→</span>
+</a>
+{% endblock %}

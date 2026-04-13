@@ -1,0 +1,174 @@
+{% extends "live_templates/portfolio/editorial-designer-grid/_base.html" %}
+
+{% block extra_css %}
+  /* FILTER PILLS */
+  .ed-filter {
+    padding: 0 56px 32px; max-width: 1400px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  .ed-filter .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+    margin-right: 14px;
+  }
+  .ed-filter span.pill {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 8px 14px; color: var(--ink-soft);
+    border: 1px solid var(--rule); transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .ed-filter span.pill.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* INDEX BAND */
+  .ed-index-band {
+    padding: 24px 56px; max-width: 1400px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: 1.5px solid var(--ink); border-bottom: 1px solid var(--rule);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .ed-index-band .intro {
+    color: var(--ink-soft); font-weight: 600; max-width: 56ch;
+    text-transform: none; letter-spacing: 0.02em; font-size: 12px; font-style: italic;
+  }
+
+  /* PROJECT LEDGER — full indexed list (vs hero card preview) */
+  .ed-ledger-full { padding: 0 56px 80px; max-width: 1400px; margin: 0 auto; }
+  .ed-ledger-full .row {
+    display: grid; grid-template-columns: 64px 1.8fr 1fr 1fr 100px 60px;
+    gap: 32px; padding: 32px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+    transition: background .2s ease;
+  }
+  .ed-ledger-full a.row:hover { background: var(--paper-2); }
+  .ed-ledger-full .row .num {
+    font-family: var(--heading); font-size: 18px; font-weight: 800;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .ed-ledger-full .row .title h3 {
+    font-size: 22px; line-height: 1.22; font-weight: 700; letter-spacing: -0.012em;
+  }
+  .ed-ledger-full .row .title .medium {
+    margin-top: 8px; font-family: var(--body); font-size: 13px;
+    color: var(--ink-soft); line-height: 1.55;
+  }
+  .ed-ledger-full .row .meta {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .ed-ledger-full .row .meta strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 14px; color: var(--ink);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+  .ed-ledger-full .row .yr {
+    font-family: var(--heading); font-size: 17px; color: var(--ink); font-weight: 700;
+    text-align: right; letter-spacing: 0;
+  }
+  .ed-ledger-full .row .arrow {
+    font-family: var(--heading); font-size: 22px; color: var(--accent);
+    text-align: right;
+    transition: transform .2s ease;
+  }
+  .ed-ledger-full a.row:hover .arrow { transform: translateX(6px); }
+  .ed-ledger-full .row.preview-only {
+    cursor: default;
+  }
+  .ed-ledger-full .row.preview-only .arrow {
+    color: var(--ink-mute); font-size: 14px;
+  }
+
+  /* CTA BAND BEFORE FOOTER */
+  .ed-cta-list {
+    background: var(--paper-2); padding: 80px 56px; max-width: none;
+    border-top: 1px solid var(--rule);
+  }
+  .ed-cta-list .wrap {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 0.5fr; gap: 64px; align-items: end;
+  }
+  .ed-cta-list .label { color: var(--accent); font-family: var(--body); font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700; }
+  .ed-cta-list h2 { margin-top: 14px; font-size: 40px; max-width: 22ch; line-height: 1.1; letter-spacing: -0.018em; }
+  .ed-cta-list .intro { margin-top: 18px; font-family: var(--body); font-size: 17px; color: var(--ink-2); line-height: 1.65; max-width: 56ch; }
+
+  @media (max-width: 1100px) {
+    .ed-filter, .ed-index-band, .ed-ledger-full { padding-left: 32px; padding-right: 32px; }
+    .ed-ledger-full .row { grid-template-columns: 48px 1fr 80px 28px; gap: 16px; }
+    .ed-ledger-full .row .meta { display: none; }
+    .ed-cta-list .wrap { grid-template-columns: 1fr; gap: 28px; }
+  }
+  @media (max-width: 720px) {
+    .ed-filter, .ed-index-band, .ed-ledger-full { padding-left: 20px; padding-right: 20px; }
+    .ed-ledger-full .row { grid-template-columns: 40px 1fr 24px; gap: 14px; }
+    .ed-ledger-full .row .yr { display: none; }
+    .ed-ledger-full .row .title h3 { font-size: 17px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="ed-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<div class="ed-filter" data-lm="reveal">
+  <span class="lbl">{{ page_data.filter_label }}</span>
+  {% for filter in page_data.filters %}
+    <span class="pill {% if forloop.first %}on{% endif %}">{{ filter }}</span>
+  {% endfor %}
+</div>
+
+<div class="ed-index-band">
+  <span>{{ page_data.ledger_label }}</span>
+  <span class="intro">{{ page_data.ledger_intro }}</span>
+</div>
+
+<section class="ed-ledger-full" data-lm-stagger data-lm-stagger-delay="60">
+  {# Indexed dossiers — openable case studies #}
+  {% for post in posts %}
+    <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug page.slug post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+      <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
+      <div class="title">
+        <h3>{{ post.title }}</h3>
+        <p class="medium">{{ post.lead }}</p>
+      </div>
+      <div class="meta">Disciplina<strong>{{ post.discipline }}</strong></div>
+      <div class="meta">Durata<strong>{{ post.duration }}</strong></div>
+      <span class="yr">{{ post.year }}</span>
+      <span class="arrow">→</span>
+    </a>
+  {% endfor %}
+
+  {# Additional indexed ledger rows from the home registry — preview-only entries (no full dossier yet) #}
+  {% for num, title, cat, yr, medium in content.home.ledger_rows %}
+    {% if forloop.counter > 3 %}
+      <div class="row preview-only" data-lm="reveal">
+        <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
+        <div class="title">
+          <h3>{{ title }}</h3>
+          <p class="medium">{{ medium }}</p>
+        </div>
+        <div class="meta">Disciplina<strong>{{ cat }}</strong></div>
+        <div class="meta">Anno<strong>{{ yr }}</strong></div>
+        <span class="yr">{{ yr }}</span>
+        <span class="arrow">·</span>
+      </div>
+    {% endif %}
+  {% endfor %}
+</section>
+
+<section class="ed-cta-list">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <div class="label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ed-btn-primary">{{ page_data.cta_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -2403,6 +2403,12 @@ from apps.catalog.template_content_gusto_i18n import (  # noqa: E402
 from apps.catalog.template_content_pragma import PRAGMA_CONTENT_IT  # noqa: E402
 from apps.catalog.template_content_elevate import ELEVATE_CONTENT_IT  # noqa: E402
 
+# Phase 2g3.4 — Portfolio live rollout (Session 34). Chiara + Pixel ship
+# IT-only at promotion time; the i18n keys can be added later via the
+# same recipe used for cardio/derm/gusto (Sessions 23/24/29).
+from apps.catalog.template_content_chiara import CHIARA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_pixel import PIXEL_CONTENT_IT  # noqa: E402
+
 
 TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     "cardio-studio-specialistico": {
@@ -2431,6 +2437,12 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     },
     "elevate-startup-landing": {
         "it": ELEVATE_CONTENT_IT,
+    },
+    "chiara-portfolio-creativo": {
+        "it": CHIARA_CONTENT_IT,
+    },
+    "pixel-portfolio-fotografico": {
+        "it": PIXEL_CONTENT_IT,
     },
 }
 

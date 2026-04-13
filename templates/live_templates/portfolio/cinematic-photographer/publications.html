@@ -1,0 +1,243 @@
+{% extends "live_templates/portfolio/cinematic-photographer/_base.html" %}
+
+{% block extra_css %}
+  /* PRESS — magazine cards (numbered) */
+  .cp-press { padding: 32px 56px 80px; max-width: 1400px; margin: 0 auto; }
+  .cp-press .head {
+    display: grid; grid-template-columns: 0.45fr 1fr; gap: 56px;
+    align-items: end; padding-bottom: 32px;
+  }
+  .cp-press .head .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-press .head h2 {
+    font-family: var(--heading); font-size: 36px; line-height: 1.06;
+    text-transform: uppercase; letter-spacing: -0.018em; color: var(--film);
+    margin-top: 14px; max-width: 18ch;
+  }
+  .cp-press .grid {
+    margin-top: 28px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+    border-top: 1px solid var(--film-4);
+  }
+  .cp-press .card {
+    padding: 28px;
+    border-right: 1px solid var(--film-5);
+    border-bottom: 1px solid var(--film-5);
+    display: flex; flex-direction: column;
+  }
+  .cp-press .card:nth-child(2n) { border-right: 0; }
+  .cp-press .card .yr {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-press .card .outlet {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 22px; font-weight: 800;
+    line-height: 1.18; text-transform: uppercase; letter-spacing: 0.005em; color: var(--film);
+  }
+  .cp-press .card .type {
+    margin-top: 8px;
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-press .card .subject {
+    margin-top: 14px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6; color: var(--film-2);
+    flex: 1;
+  }
+  .cp-press .card .format {
+    margin-top: 16px; padding-top: 14px;
+    border-top: 1px solid var(--film-4);
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--film-3);
+  }
+
+  /* EXHIBITIONS — dark band, ledger style */
+  .cp-exhib {
+    background: var(--pitch-2);
+    border-top: 1px solid var(--film-4); border-bottom: 1px solid var(--film-4);
+    padding: 80px 56px;
+  }
+  .cp-exhib .wrap { max-width: 1400px; margin: 0 auto; }
+  .cp-exhib .head {
+    display: grid; grid-template-columns: 0.45fr 1fr; gap: 56px;
+    align-items: end; padding-bottom: 32px; border-bottom: 1px solid var(--film-4);
+  }
+  .cp-exhib .head .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-exhib .head h2 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 36px; line-height: 1.06;
+    text-transform: uppercase; letter-spacing: -0.018em; color: var(--film);
+    max-width: 18ch;
+  }
+  .cp-exhib .ledger { margin-top: 28px; }
+  .cp-exhib .row {
+    display: grid; grid-template-columns: 90px 1.6fr 1.4fr 1fr;
+    gap: 32px; padding: 24px 0;
+    border-bottom: 1px solid var(--film-5);
+    align-items: baseline;
+  }
+  .cp-exhib .row .yr {
+    font-family: var(--heading); font-size: 18px; font-weight: 800;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .cp-exhib .row .event {
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    color: var(--film); line-height: 1.3; letter-spacing: 0.005em; text-transform: uppercase;
+  }
+  .cp-exhib .row .note {
+    font-family: var(--body); font-size: 13px; line-height: 1.55; color: var(--film-2);
+  }
+  .cp-exhib .row .date {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--film-3);
+    text-align: right;
+  }
+
+  /* AWARDS — 6 indexed rows */
+  .cp-awards { padding: 80px 56px; max-width: 1400px; margin: 0 auto; }
+  .cp-awards .head {
+    display: grid; grid-template-columns: 0.45fr 1fr; gap: 56px;
+    align-items: end; padding-bottom: 32px;
+  }
+  .cp-awards .head .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-awards .head h2 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 36px; line-height: 1.06;
+    text-transform: uppercase; letter-spacing: -0.018em; color: var(--film);
+    max-width: 18ch;
+  }
+  .cp-awards .grid {
+    margin-top: 28px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px;
+  }
+  .cp-awards .item {
+    padding-top: 18px;
+    border-top: 1px solid var(--film-4);
+  }
+  .cp-awards .item .yr {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.06em;
+  }
+  .cp-awards .item h3 {
+    margin-top: 10px;
+    font-family: var(--heading); font-size: 18px; font-weight: 800;
+    line-height: 1.22; letter-spacing: 0.005em; text-transform: uppercase; color: var(--film);
+  }
+  .cp-awards .item p {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 13px; line-height: 1.65; color: var(--film-2);
+  }
+
+  /* FINAL CTA */
+  .cp-cta-pub { padding: 80px 56px; }
+  .cp-cta-pub .wrap {
+    max-width: 1400px; margin: 0 auto;
+    border-top: 1px solid var(--film-4); padding-top: 32px;
+    display: grid; grid-template-columns: 1fr 0.55fr; gap: 64px; align-items: end;
+  }
+  .cp-cta-pub h2 {
+    font-family: var(--heading); font-size: 36px; line-height: 1.06;
+    text-transform: uppercase; letter-spacing: -0.012em; max-width: 22ch; color: var(--film);
+  }
+  .cp-cta-pub .intro { margin-top: 18px; max-width: 56ch; font-family: var(--body); font-size: 16px; color: var(--film-2); line-height: 1.65; }
+
+  @media (max-width: 1100px) {
+    .cp-press, .cp-awards, .cp-cta-pub { padding-left: 32px; padding-right: 32px; }
+    .cp-exhib { padding-left: 32px; padding-right: 32px; }
+    .cp-press .head, .cp-exhib .head, .cp-awards .head { grid-template-columns: 1fr; gap: 24px; }
+    .cp-press .grid { grid-template-columns: 1fr; }
+    .cp-press .card { border-right: 0; }
+    .cp-exhib .row { grid-template-columns: 70px 1fr; gap: 16px; }
+    .cp-exhib .row .note, .cp-exhib .row .date { grid-column: 2; text-align: left; }
+    .cp-awards .grid { grid-template-columns: 1fr; }
+    .cp-cta-pub .wrap { grid-template-columns: 1fr; gap: 28px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="cp-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="sub">{{ page_data.subhead }}</p>
+</section>
+
+<section class="cp-press">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="lbl">{{ page_data.press_label }}</div>
+      <h2>{{ page_data.press_heading }}</h2>
+    </div>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="60">
+    {% for item in page_data.press %}
+      <article class="card" data-lm="reveal">
+        <div class="yr">{{ item.year }}</div>
+        <div class="outlet">{{ item.outlet }}</div>
+        <div class="type">{{ item.type }}</div>
+        <p class="subject">{{ item.subject }}</p>
+        <div class="format">{{ item.format }}</div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cp-exhib">
+  <div class="wrap">
+    <div class="head">
+      <div data-lm="reveal-lg">
+        <div class="lbl">{{ page_data.exhibitions_label }}</div>
+        <h2>{{ page_data.exhibitions_heading }}</h2>
+      </div>
+    </div>
+    <div class="ledger" data-lm-stagger data-lm-stagger-delay="60">
+      {% for yr, event, note, date in page_data.exhibitions %}
+        <div class="row" data-lm="reveal">
+          <span class="yr">{{ yr }}</span>
+          <span class="event">{{ event }}</span>
+          <span class="note">{{ note }}</span>
+          <span class="date">{{ date }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="cp-awards">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="lbl">{{ page_data.awards_label }}</div>
+      <h2>{{ page_data.awards_heading }}</h2>
+    </div>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
+    {% for yr, honor, note in page_data.awards %}
+      <article class="item" data-lm="reveal">
+        <div class="yr">{{ yr }}</div>
+        <h3>{{ honor }}</h3>
+        <p>{{ note }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cp-cta-pub">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cp-btn-primary">{{ page_data.cta_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

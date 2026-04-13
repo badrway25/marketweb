@@ -1,0 +1,330 @@
+{% extends "live_templates/portfolio/editorial-designer-grid/_base.html" %}
+
+{% block extra_css %}
+  /* TYPOGRAPHIC HERO — display headline LEFT + project ledger card RIGHT */
+  .ed-hero {
+    padding: 88px 56px 72px; max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.18fr 1fr; gap: 64px;
+    align-items: stretch;
+  }
+  .ed-hero .left .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .ed-hero .left .eyebrow:before {
+    content: ''; width: 40px; height: 1.5px; background: var(--ink);
+  }
+  .ed-hero .left h1 {
+    margin-top: 30px; font-size: 88px; line-height: 0.96;
+    letter-spacing: -0.035em; max-width: 14ch;
+  }
+  .ed-hero .left h1 em { color: var(--accent); }
+  .ed-hero .left .sub {
+    margin-top: 28px; max-width: 56ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--ink-2);
+  }
+  .ed-hero .left .actions {
+    margin-top: 40px; display: flex; flex-wrap: wrap; gap: 22px; align-items: center;
+  }
+
+  /* RIGHT — PROJECT LEDGER CARD (printed-page style, white inset) */
+  .ed-hero-card {
+    background: var(--paper-3);
+    border: 1px solid var(--rule);
+    padding: 36px 36px 32px;
+    box-shadow: 0 24px 60px -32px rgba(21,19,15,0.20);
+    display: flex; flex-direction: column;
+  }
+  .ed-hero-card .label {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .ed-hero-card h3 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 24px; font-weight: 800;
+    line-height: 1.18; letter-spacing: -0.02em;
+    padding-bottom: 14px; border-bottom: 1.5px solid var(--ink);
+  }
+  .ed-hero-card .note {
+    margin-top: 14px; font-family: var(--body); font-size: 13px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .ed-hero-card .index-list { margin-top: 22px; flex: 1; }
+  .ed-hero-card .row {
+    display: grid; grid-template-columns: 32px 1fr 80px;
+    gap: 16px; align-items: baseline;
+    padding: 12px 0; border-bottom: 1px solid var(--rule-soft);
+  }
+  .ed-hero-card .row:last-child { border-bottom: 0; }
+  .ed-hero-card .row .num {
+    font-family: var(--heading); font-size: 12px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .ed-hero-card .row .title {
+    font-family: var(--heading); font-size: 14px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em;
+  }
+  .ed-hero-card .row .title .medium {
+    display: block; margin-top: 3px;
+    font-family: var(--body); font-size: 11px; font-weight: 500;
+    color: var(--ink-soft); letter-spacing: 0;
+  }
+  .ed-hero-card .row .yr {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    color: var(--ink-mute); text-align: right; letter-spacing: 0.04em;
+  }
+  .ed-hero-card .all-link {
+    margin-top: 22px; padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  }
+
+  /* CAPABILITIES STRIP — 4 columns of competence */
+  .ed-capabilities { padding: 96px 56px; max-width: 1400px; margin: 0 auto; }
+  .ed-capabilities .head {
+    display: grid; grid-template-columns: 0.45fr 1fr; gap: 56px;
+    align-items: end; padding-bottom: 56px; border-bottom: 1px solid var(--rule);
+  }
+  .ed-capabilities .head h2 { font-size: 48px; max-width: 14ch; }
+  .ed-capabilities .head .intro { font-family: var(--body); font-size: 17px; color: var(--ink-2); line-height: 1.65; max-width: 56ch; }
+  .ed-capabilities .grid {
+    margin-top: 56px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;
+  }
+  .ed-capabilities .item {
+    border-top: 2px solid var(--ink); padding-top: 20px;
+  }
+  .ed-capabilities .item h3 {
+    font-size: 18px; font-weight: 800; line-height: 1.22; letter-spacing: -0.012em;
+  }
+  .ed-capabilities .item p {
+    margin-top: 14px; font-family: var(--body); font-size: 14px; line-height: 1.7; color: var(--ink-soft);
+  }
+
+  /* CLIENTS RIBBON — text-only wordmarks */
+  .ed-clients { background: var(--paper-2); padding: 48px 56px; border-top: 1px solid var(--rule); }
+  .ed-clients .row {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 0.5fr 1fr; gap: 48px; align-items: center;
+  }
+  .ed-clients .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+    border-left: 2px solid var(--accent); padding-left: 14px;
+  }
+  .ed-clients .logos {
+    display: flex; flex-wrap: wrap; gap: 32px;
+    font-family: var(--heading); font-size: 13px; font-weight: 800;
+    letter-spacing: 0.10em; color: var(--ink); opacity: 0.74;
+  }
+
+  /* PRESS / RECOGNITIONS — 3 cards */
+  .ed-press { padding: 96px 56px; max-width: 1400px; margin: 0 auto; }
+  .ed-press .grid {
+    margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  }
+  .ed-press .card {
+    background: var(--paper-3); border: 1px solid var(--rule);
+    padding: 32px; display: flex; flex-direction: column; min-height: 240px;
+  }
+  .ed-press .card .yr {
+    font-family: var(--heading); font-size: 13px; font-weight: 800;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .ed-press .card h3 {
+    margin-top: 14px; font-size: 24px; line-height: 1.22; letter-spacing: -0.02em;
+  }
+  .ed-press .card .work {
+    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule);
+    font-family: var(--heading); font-size: 14px; font-weight: 700; color: var(--ink);
+    letter-spacing: 0; line-height: 1.4;
+  }
+  .ed-press .card .note {
+    margin-top: 12px; font-family: var(--body); font-size: 13px;
+    line-height: 1.6; color: var(--ink-soft); flex: 1;
+  }
+
+  /* COMMISSIONS — what we accept this year (3-col indexed) */
+  .ed-commissions {
+    background: var(--ink); color: var(--on-dark); padding: 96px 56px;
+  }
+  .ed-commissions .wrap { max-width: 1400px; margin: 0 auto; }
+  .ed-commissions .head {
+    display: grid; grid-template-columns: 0.45fr 1fr; gap: 56px;
+    align-items: end; padding-bottom: 48px;
+    border-bottom: 1px solid rgba(243,239,229,0.18);
+  }
+  .ed-commissions .head .sec-label { color: var(--accent); }
+  .ed-commissions .head h2 {
+    font-size: 48px; max-width: 14ch; color: var(--on-dark);
+  }
+  .ed-commissions .head .intro {
+    font-family: var(--body); font-size: 17px; color: var(--on-dark-2);
+    line-height: 1.65; max-width: 56ch;
+  }
+  .ed-commissions .grid {
+    margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px;
+  }
+  .ed-commissions .item {
+    padding-top: 22px; border-top: 1px solid rgba(243,239,229,0.32);
+  }
+  .ed-commissions .item .num {
+    font-family: var(--heading); font-size: 12px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.06em;
+  }
+  .ed-commissions .item h3 {
+    margin-top: 12px; font-size: 22px; line-height: 1.22; color: var(--on-dark);
+  }
+  .ed-commissions .item p {
+    margin-top: 14px; font-family: var(--body); font-size: 14px;
+    line-height: 1.7; color: var(--on-dark-2);
+  }
+
+  /* FINAL CTA BAND */
+  .ed-cta { padding: 88px 56px; max-width: 1400px; margin: 0 auto; }
+  .ed-cta .wrap {
+    display: grid; grid-template-columns: 1fr 0.55fr; gap: 64px; align-items: end;
+    padding-top: 32px; border-top: 1.5px solid var(--ink);
+  }
+  .ed-cta .label { color: var(--accent); font-family: var(--body); font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700; }
+  .ed-cta h2 { margin-top: 14px; font-size: 48px; line-height: 1.06; max-width: 22ch; }
+  .ed-cta h2 em { color: var(--accent); }
+  .ed-cta .intro { margin-top: 22px; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--ink-2); line-height: 1.65; }
+  .ed-cta .actions { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+
+  @media (max-width: 1100px) {
+    .ed-hero { grid-template-columns: 1fr; gap: 48px; padding: 64px 32px 48px; }
+    .ed-hero .left h1 { font-size: 64px; }
+    .ed-capabilities .head { grid-template-columns: 1fr; gap: 24px; }
+    .ed-capabilities .head h2 { font-size: 40px; max-width: 100%; }
+    .ed-capabilities .grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+    .ed-press .grid { grid-template-columns: 1fr; }
+    .ed-commissions .head { grid-template-columns: 1fr; gap: 24px; }
+    .ed-commissions .grid { grid-template-columns: 1fr; }
+    .ed-cta .wrap { grid-template-columns: 1fr; gap: 28px; }
+  }
+  @media (max-width: 720px) {
+    .ed-hero .left h1 { font-size: 44px; max-width: 100%; }
+    .ed-capabilities .grid { grid-template-columns: 1fr; }
+    .ed-clients .row { grid-template-columns: 1fr; gap: 16px; }
+    .ed-clients .logos { gap: 18px; font-size: 12px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="ed-hero">
+  <div class="left" data-lm="reveal">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="sub">{{ page_data.intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ed-btn-primary">{{ page_data.primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ed-btn-ghost">{{ page_data.secondary_cta }}</a>
+    </div>
+  </div>
+
+  <aside class="ed-hero-card" data-lm="reveal-lg">
+    <div class="label">{{ page_data.ledger_label }}</div>
+    <h3>{{ page_data.ledger_heading }}</h3>
+    <p class="note">{{ page_data.ledger_intro }}</p>
+    <div class="index-list">
+      {% for num, title, cat, yr, medium in page_data.ledger_rows %}
+        {% if forloop.counter0 < 4 %}
+          <div class="row">
+            <span class="num">{{ num }}</span>
+            <span class="title">{{ title }}<span class="medium">{{ cat }} · {{ medium }}</span></span>
+            <span class="yr">{{ yr }}</span>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <a class="all-link" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'lavoro' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+      <span>Tutto l'archivio</span>
+      <span>→ {{ page_data.ledger_rows|length }} progetti</span>
+    </a>
+  </aside>
+</section>
+
+<section class="ed-capabilities">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.capabilities_label }}</div>
+      <h2>{{ page_data.capabilities_heading }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.capabilities_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for title, blurb in page_data.capabilities %}
+      <article class="item" data-lm="reveal">
+        <h3>{{ title }}</h3>
+        <p>{{ blurb }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="ed-clients">
+  <div class="row">
+    <span class="lbl">{{ page_data.clients_label }}</span>
+    <div class="logos">
+      {% for client in page_data.clients %}<span>{{ client }}</span>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="ed-press">
+  <div class="head" style="display:grid; grid-template-columns: 0.45fr 1fr; gap: 56px; align-items: end; padding-bottom: 0;">
+    <div data-lm="reveal-lg">
+      <div class="sec-label" style="font-family: var(--body); font-size: 10px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);">{{ page_data.press_label }}</div>
+      <h2 style="margin-top: 14px; font-size: 44px; max-width: 14ch; line-height: 1.08; letter-spacing: -0.02em;">{{ page_data.press_heading }}</h2>
+    </div>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for honor in page_data.press %}
+      <article class="card" data-lm="reveal">
+        <div class="yr">{{ honor.year }}</div>
+        <h3>{{ honor.honor }}</h3>
+        <div class="work">{{ honor.work }}</div>
+        <p class="note">{{ honor.note }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="ed-commissions">
+  <div class="wrap">
+    <div class="head">
+      <div data-lm="reveal-lg">
+        <div class="sec-label">{{ page_data.commissions_label }}</div>
+        <h2>{{ page_data.commissions_heading }}</h2>
+      </div>
+      <p class="intro" data-lm="reveal">{{ page_data.commissions_intro }}</p>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="90">
+      {% for title, blurb in page_data.commissions %}
+        <article class="item" data-lm="reveal">
+          <div class="num">{{ forloop.counter|stringformat:"02d" }} / {{ page_data.commissions|length|stringformat:"02d" }}</div>
+          <h3>{{ title }}</h3>
+          <p>{{ blurb }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="ed-cta">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <div class="label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div class="actions" data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ed-btn-primary">{{ page_data.cta_primary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ed-btn-ghost">{{ page_data.cta_secondary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

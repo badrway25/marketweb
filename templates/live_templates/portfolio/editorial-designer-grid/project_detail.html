@@ -1,0 +1,232 @@
+{% extends "live_templates/portfolio/editorial-designer-grid/_base.html" %}
+
+{% block extra_css %}
+  .ed-dossier {
+    max-width: 1080px; margin: 0 auto;
+    padding: 64px 40px 80px;
+  }
+  .ed-dossier .breadcrumb {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .ed-dossier .breadcrumb a { color: var(--accent); }
+  .ed-dossier .breadcrumb a:hover { text-decoration: underline; }
+  .ed-dossier .breadcrumb .sep { color: var(--rule); }
+
+  .ed-dossier .eyebrow {
+    margin-top: 28px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .ed-dossier h1 {
+    margin-top: 18px; font-size: 56px; line-height: 1.04; letter-spacing: -0.026em;
+  }
+
+  .ed-dossier .meta-strip {
+    margin-top: 36px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    padding: 22px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .ed-dossier .meta-strip .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .ed-dossier .meta-strip .item strong {
+    display: block; margin-top: 8px;
+    font-family: var(--heading); font-size: 14px; color: var(--ink);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+
+  .ed-dossier .client-code {
+    margin-top: 28px; padding: 18px 24px;
+    background: var(--paper-2); border-left: 3px solid var(--accent);
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink-soft); letter-spacing: 0.02em;
+  }
+
+  .ed-dossier .lead {
+    margin-top: 36px;
+    font-family: var(--heading); font-size: 26px; font-weight: 400;
+    line-height: 1.45; color: var(--ink); font-style: italic; max-width: 56ch;
+  }
+
+  /* SUMMARY BULLETS — what was delivered */
+  .ed-dossier .summary {
+    margin-top: 40px; padding: 28px 32px;
+    border: 1px solid var(--rule);
+  }
+  .ed-dossier .summary .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .ed-dossier .summary ul { margin-top: 14px; list-style: none; }
+  .ed-dossier .summary li {
+    padding: 6px 0 6px 22px; position: relative;
+    font-family: var(--body); font-size: 14px; color: var(--ink-2); line-height: 1.55;
+  }
+  .ed-dossier .summary li:before {
+    content: '—'; position: absolute; left: 0; color: var(--accent); font-weight: 700;
+  }
+
+  /* SECTIONS */
+  .ed-dossier .section { margin-top: 56px; }
+  .ed-dossier .section .sec-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .ed-dossier .section h2 {
+    margin-top: 14px; font-size: 36px; line-height: 1.12; letter-spacing: -0.018em; max-width: 26ch;
+  }
+  .ed-dossier .section p {
+    margin-top: 22px; font-family: var(--body); font-size: 17px;
+    line-height: 1.75; color: var(--ink-2); max-width: 64ch;
+  }
+
+  /* DELIVERABLES BAND — dark band */
+  .ed-dossier .deliverables {
+    margin-top: 64px; padding: 40px;
+    background: var(--ink); color: var(--on-dark);
+  }
+  .ed-dossier .deliverables .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .ed-dossier .deliverables h3 {
+    margin-top: 14px; font-size: 26px; color: var(--on-dark); line-height: 1.18;
+  }
+  .ed-dossier .deliverables ul { margin-top: 22px; list-style: none; }
+  .ed-dossier .deliverables li {
+    padding: 8px 0 8px 22px; position: relative;
+    font-family: var(--body); font-size: 14px; color: var(--on-dark-2); line-height: 1.55;
+    border-bottom: 1px solid rgba(243,239,229,0.18);
+  }
+  .ed-dossier .deliverables li:last-child { border-bottom: 0; }
+  .ed-dossier .deliverables li:before {
+    content: '—'; position: absolute; left: 0; color: var(--accent); font-weight: 700;
+  }
+
+  /* CREDITS BLOCK — colophon style */
+  .ed-dossier .credits {
+    margin-top: 56px; padding-top: 32px;
+    border-top: 1.5px solid var(--ink);
+  }
+  .ed-dossier .credits .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 22px;
+  }
+  .ed-dossier .credits .grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px 48px;
+  }
+  .ed-dossier .credits .item {
+    padding: 14px 0; border-bottom: 1px solid var(--rule-soft);
+    display: grid; grid-template-columns: 0.45fr 1fr; gap: 16px; align-items: baseline;
+  }
+  .ed-dossier .credits .item .key {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .ed-dossier .credits .item .val {
+    font-family: var(--heading); font-size: 14px; color: var(--ink);
+    font-weight: 700; line-height: 1.4;
+  }
+
+  /* NEXT PROJECT LINK */
+  .ed-dossier .next {
+    margin-top: 56px; padding: 32px 0;
+    border-top: 1.5px solid var(--ink);
+    display: flex; justify-content: space-between; align-items: center; gap: 24px;
+  }
+  .ed-dossier .next .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .ed-dossier .next .title {
+    margin-top: 6px; font-family: var(--heading); font-size: 22px;
+    font-weight: 700; color: var(--ink);
+  }
+  .ed-dossier .next .arrow {
+    font-family: var(--heading); font-size: 28px; color: var(--accent);
+    transition: transform .2s ease;
+  }
+  .ed-dossier .next a:hover .arrow { transform: translateX(8px); }
+
+  @media (max-width: 1100px) {
+    .ed-dossier { padding: 48px 24px 64px; }
+    .ed-dossier h1 { font-size: 40px; }
+    .ed-dossier .meta-strip { grid-template-columns: 1fr 1fr; gap: 18px; }
+    .ed-dossier .credits .grid { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+<article class="ed-dossier">
+  <div class="breadcrumb">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">← {{ page.label }}</a>
+    <span class="sep">/</span>
+    <span>{{ post.discipline }}</span>
+  </div>
+
+  <div class="eyebrow">{{ post.discipline }} · {{ post.year }} · {{ post.duration }}</div>
+  <h1>{{ post.title }}</h1>
+
+  <div class="meta-strip" data-lm="reveal">
+    <div class="item">Disciplina<strong>{{ post.discipline }}</strong></div>
+    <div class="item">Anno<strong>{{ post.year }}</strong></div>
+    <div class="item">Durata<strong>{{ post.duration }}</strong></div>
+    <div class="item">Equipe<strong>{{ post.team }}</strong></div>
+  </div>
+
+  <div class="client-code">{{ post.client_code }}</div>
+  <p class="lead">{{ post.lead }}</p>
+
+  {% if post.summary %}
+    <aside class="summary" data-lm="reveal">
+      <div class="lbl">Sintesi del progetto</div>
+      <ul>
+        {% for line in post.summary %}<li>{{ line }}</li>{% endfor %}
+      </ul>
+    </aside>
+  {% endif %}
+
+  {% for sec in post.sections %}
+    <div class="section" data-lm="reveal">
+      <div class="sec-label">{{ sec.label }}</div>
+      <h2>{{ sec.heading }}</h2>
+      <p>{{ sec.body }}</p>
+    </div>
+  {% endfor %}
+
+  {% if post.deliverables %}
+    <div class="deliverables" data-lm="reveal">
+      <div class="lbl">Deliverable consegnati</div>
+      <h3>Cosa abbiamo prodotto</h3>
+      <ul>
+        {% for line in post.deliverables %}<li>{{ line }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if post.credits %}
+    <div class="credits">
+      <div class="lbl">Colophon</div>
+      <div class="grid" data-lm-stagger data-lm-stagger-delay="60">
+        {% for key, val in post.credits %}
+          <div class="item" data-lm="reveal">
+            <span class="key">{{ key }}</span>
+            <span class="val">{{ val }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <a class="next" href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+    <div>
+      <div class="lbl">{{ post.next_label }}</div>
+      <div class="title">{{ page.label }}</div>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+</article>
+{% endblock %}

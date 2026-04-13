@@ -17,6 +17,8 @@ LOCALES = {
     "gusto-fine-dining":           ["it", "en", "fr", "es", "ar"],
     "pragma-corporate-suite":      ["it"],
     "elevate-startup-landing":     ["it"],
+    "chiara-portfolio-creativo":   ["it"],
+    "pixel-portfolio-fotografico": ["it"],
 }
 
 CATEGORY = {
@@ -25,6 +27,8 @@ CATEGORY = {
     "gusto-fine-dining":           "restaurant",
     "pragma-corporate-suite":      "business",
     "elevate-startup-landing":     "business",
+    "chiara-portfolio-creativo":   "portfolio",
+    "pixel-portfolio-fotografico": "portfolio",
 }
 
 @override_settings(ALLOWED_HOSTS=["*"])
@@ -58,11 +62,25 @@ def run():
                 if r.status_code == 200: ok += 1
                 else: failed.append((url+q, r.status_code))
     # Catalog surfaces
-    for path in ["/", "/templates/", "/templates/medical/", "/templates/restaurant/", "/templates/business/"]:
+    for path in ["/", "/templates/", "/templates/medical/", "/templates/restaurant/", "/templates/business/", "/templates/portfolio/"]:
         total += 1
         r = client.get(path)
         if r.status_code == 200: ok += 1
         else: failed.append((path, r.status_code))
+    # Post detail routes (project_detail / series_detail) — Phase 2g3.4 portfolio
+    POST_ROUTES = [
+        ("/templates/portfolio/chiara-portfolio-creativo/preview/lavoro/",
+         ["triennale-milano-catalogo-2025", "adelphi-collana-carta-bianca", "querini-stampalia-segnaletica"]),
+        ("/templates/portfolio/pixel-portfolio-fotografico/preview/serie/",
+         ["porto-vecchio-trieste", "case-di-pietra-puglia", "ritratti-del-po"]),
+    ]
+    for parent, slugs in POST_ROUTES:
+        for s in slugs:
+            url = f"{parent}{s}/"
+            total += 1
+            r = client.get(url)
+            if r.status_code == 200: ok += 1
+            else: failed.append((url, r.status_code))
     print(f"{ok}/{total} routes HTTP 200")
     for u, s in failed: print(f"  FAIL {u} -> {s}")
     return 0 if not failed else 1
