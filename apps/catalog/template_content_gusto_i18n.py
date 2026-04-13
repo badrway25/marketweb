@@ -39,11 +39,11 @@ from typing import Any
 # ---------------------------------------------------------------------------
 
 _INGREDIENTI_IMG = (
-    "https://images.unsplash.com/photo-1606787366850-de6330128bfc"
+    "https://images.unsplash.com/photo-1610348725531-843dff563e2c"
     "?auto=format&fit=crop&w=1000&q=80"
 )
 _FILOSOFIA_IMG = (
-    "https://images.unsplash.com/photo-1556910103-1c02745aae4d"
+    "https://images.unsplash.com/photo-1559329007-40df8a9345d8"
     "?auto=format&fit=crop&w=1400&q=80"
 )
 _ATMO_SALA = (
@@ -51,11 +51,11 @@ _ATMO_SALA = (
     "?auto=format&fit=crop&w=600&q=80"
 )
 _ATMO_CUCINA = (
-    "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136"
+    "https://images.unsplash.com/photo-1581349485608-9469926a8e5e"
     "?auto=format&fit=crop&w=600&q=80"
 )
 _ATMO_CORTILE = (
-    "https://images.unsplash.com/photo-1559339352-11d035aa65de"
+    "https://images.unsplash.com/photo-1559329007-40df8a9345d8"
     "?auto=format&fit=crop&w=600&q=80"
 )
 _ATMO_MISE = (
@@ -214,7 +214,7 @@ GUSTO_CONTENT_EN: dict[str, Any] = {
                 "you'll find them on the menu, line by line.",
             "items": [
                 {"portrait":
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Roberto Tarbouriech",
                  "role": "Oysters & shellfish",
@@ -223,7 +223,7 @@ GUSTO_CONTENT_EN: dict[str, Any] = {
                     "The Spéciales oysters come from the Étang de Thau lagoon. "
                     "Delivery on Monday, served Tuesday evening."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                    "https://images.unsplash.com/photo-1568213816046-0ee1c42bd559"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Brezza family",
                  "role": "Barolo & the Langhe",
@@ -232,7 +232,7 @@ GUSTO_CONTENT_EN: dict[str, Any] = {
                     "Vineyards in Cannubi and Sarmassa, worked without an "
                     "external oenologist. A vertical on our list from 2008 on."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                    "https://images.unsplash.com/photo-1543418219-44e30b057fea"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Aloïs Lageder",
                  "role": "Mountain biodynamics",
@@ -241,7 +241,7 @@ GUSTO_CONTENT_EN: dict[str, Any] = {
                     "White wines delivered directly from the Isarco valley. "
                     "No filtering, no fining."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Gianfranco Pieropan",
                  "role": "Soave Classico",
@@ -840,7 +840,7 @@ GUSTO_CONTENT_FR: dict[str, Any] = {
                 "à retrouver sur la carte, ligne par ligne.",
             "items": [
                 {"portrait":
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Roberto Tarbouriech",
                  "role": "Huîtres & coquillages",
@@ -849,7 +849,7 @@ GUSTO_CONTENT_FR: dict[str, Any] = {
                     "Les huîtres Spéciales viennent de l'Étang de Thau. "
                     "Livraison lundi, servies mardi soir."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                    "https://images.unsplash.com/photo-1568213816046-0ee1c42bd559"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Famille Brezza",
                  "role": "Barolo & Langhe",
@@ -858,7 +858,7 @@ GUSTO_CONTENT_FR: dict[str, Any] = {
                     "Vignes de Cannubi et Sarmassa, travaillées sans œnologue "
                     "extérieur. Une carte verticale depuis 2008."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                    "https://images.unsplash.com/photo-1543418219-44e30b057fea"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Aloïs Lageder",
                  "role": "Biodynamie de montagne",
@@ -867,7 +867,7 @@ GUSTO_CONTENT_FR: dict[str, Any] = {
                     "Vins blancs livrés directement depuis le val d'Isarco. "
                     "Ni filtration, ni collage."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Gianfranco Pieropan",
                  "role": "Soave Classico",
@@ -1487,7 +1487,7 @@ GUSTO_CONTENT_ES: dict[str, Any] = {
                 "los encontrará en carta, línea a línea.",
             "items": [
                 {"portrait":
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Roberto Tarbouriech",
                  "role": "Ostras y mariscos",
@@ -1496,7 +1496,7 @@ GUSTO_CONTENT_ES: dict[str, Any] = {
                     "Las ostras Spéciales llegan de la laguna del Étang de "
                     "Thau. Entrega el lunes, servidas el martes por la noche."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                    "https://images.unsplash.com/photo-1568213816046-0ee1c42bd559"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Familia Brezza",
                  "role": "Barolo y Langhe",
@@ -1505,7 +1505,7 @@ GUSTO_CONTENT_ES: dict[str, Any] = {
                     "Viñedos en Cannubi y Sarmassa, trabajados sin enólogo "
                     "externo. Una carta vertical desde 2008."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                    "https://images.unsplash.com/photo-1543418219-44e30b057fea"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Aloïs Lageder",
                  "role": "Biodinámica de montaña",
@@ -1514,7 +1514,7 @@ GUSTO_CONTENT_ES: dict[str, Any] = {
                     "Vinos blancos que llegan directamente del valle de "
                     "Isarco. Sin filtración, sin clarificación."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Gianfranco Pieropan",
                  "role": "Soave Classico",
@@ -2087,7 +2087,7 @@ GUSTO_CONTENT_AR: dict[str, Any] = {
             "images": [
                 (_ATMO_SALA,    "القاعة الرئيسية"),
                 (_ATMO_CUCINA,  "المطبخ المفتوح"),
-                (_ATMO_CORTILE, "الفناء تحت شجرة الوستريا"),
+                (_ATMO_CORTILE, "القاعة العلويّة"),
                 (_ATMO_MISE,    "التحضير مساء الجمعة"),
             ],
             "link_label": "اكتشف القاعات",
@@ -2128,7 +2128,7 @@ GUSTO_CONTENT_AR: dict[str, Any] = {
                 "أراضيهم وأساليبهم — ستجدونها على القائمة، سطرًا سطرًا.",
             "items": [
                 {"portrait":
-                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Roberto Tarbouriech",
                  "role": "المحار والقشريات",
@@ -2137,7 +2137,7 @@ GUSTO_CONTENT_AR: dict[str, Any] = {
                     "محار Spéciales يأتي من بحيرة Étang de Thau. يُوصَل الإثنين "
                     "ويُقدَّم مساء الثلاثاء."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                    "https://images.unsplash.com/photo-1568213816046-0ee1c42bd559"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "عائلة Brezza",
                  "role": "Barolo وLanghe",
@@ -2146,7 +2146,7 @@ GUSTO_CONTENT_AR: dict[str, Any] = {
                     "كرومات في Cannubi وSarmassa تُستثمر بلا خبير خارجيّ. "
                     "قائمة عموديّة منذ 2008."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                    "https://images.unsplash.com/photo-1543418219-44e30b057fea"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Aloïs Lageder",
                  "role": "زراعة ديناميّة حيوية جبلية",
@@ -2155,7 +2155,7 @@ GUSTO_CONTENT_AR: dict[str, Any] = {
                     "نبيذ أبيض يصل مباشرة من وادي Isarco. بلا ترشيح ولا "
                     "توضيح."},
                 {"portrait":
-                    "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0"
                     "?auto=format&fit=crop&w=800&q=80",
                  "name": "Gianfranco Pieropan",
                  "role": "Soave Classico",
