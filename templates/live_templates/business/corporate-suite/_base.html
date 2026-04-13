@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 <style>
   :root {
     --primary:    {{ theme.primary }};
@@ -28,6 +29,42 @@
     --on-dark-3:  rgba(238,240,243,0.45);
     --heading: '{{ theme.heading_font }}', Georgia, 'Times New Roman', serif;
     --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+
+    /* Premium forms (institutional · boxed paper, emerald focus) */
+    --lf-bg:            var(--paper-3);
+    --lf-bg-autofill:   var(--paper-3);
+    --lf-bg-soft:       var(--paper-2);
+    --lf-bg-icon:       rgba(46,134,105,0.10);
+    --lf-bg-chip:       var(--paper-2);
+    --lf-border:        var(--rule);
+    --lf-border-hover:  #94a3b8;
+    --lf-border-focus:  var(--accent);
+    --lf-ring:          rgba(46,134,105,0.14);
+    --lf-ring-size:     3px;
+    --lf-radius:        0;
+    --lf-pad-y:         14px;
+    --lf-pad-x:         16px;
+    --lf-label-color:   var(--ink-mute);
+    --lf-label-size:    10px;
+    --lf-label-track:   0.22em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  var(--ink-mute);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   #94a3b8;
+    --lf-section-rule:  var(--rule);
+    --lf-section-title-color: var(--primary);
+    --lf-caret:         var(--accent);
+    --lf-listbox-bg:    var(--paper-3);
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  var(--rule);
+    --lf-listbox-hov:   var(--paper-2);
+    --lf-submit-bg:     var(--primary);
+    --lf-submit-bg-hover: var(--ink);
+    --lf-submit-fg:     var(--on-dark);
+    --lf-submit-arrow:  var(--accent);
+    --lf-submit-radius: 0;
+    --lf-submit-underline: 0;
+    --on-accent:        var(--on-dark);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
@@ -324,5 +361,6 @@
 </footer>
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>

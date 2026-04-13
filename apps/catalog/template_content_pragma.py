@@ -718,12 +718,18 @@ PRAGMA_CONTENT_IT: dict[str, Any] = {
             "Le informazioni sensibili sono trattate ai sensi del Reg. UE 679/2016 "
             "e custodite in archivio cifrato a accesso limitato ai partner.",
         "form_fields": [
-            {"name": "name",      "label": "Nome",           "type": "text",     "required": True,  "placeholder": "Es. Federico"},
-            {"name": "surname",   "label": "Cognome",        "type": "text",     "required": True,  "placeholder": "Es. Seregni"},
-            {"name": "company",   "label": "Società",        "type": "text",     "required": True,  "placeholder": "Es. Gruppo Industriale Lombardo"},
-            {"name": "role",      "label": "Ruolo",          "type": "text",     "required": True,  "placeholder": "Es. CFO · CEO · Membro CdA"},
-            {"name": "email",     "label": "Email aziendale","type": "email",    "required": True,  "placeholder": "federico.seregni@gruppo.it"},
-            {"name": "phone",     "label": "Telefono",       "type": "tel",      "required": True,  "placeholder": "+39 ..."},
+            {"name": "name",      "label": "Nome",           "type": "text",     "required": True,  "placeholder": "Es. Federico",
+             "helper": "Solo il nome di battesimo, grazie."},
+            {"name": "surname",   "label": "Cognome",        "type": "text",     "required": True,  "placeholder": "Es. Seregni",
+             "helper": "Come compare nell'organigramma."},
+            {"name": "company",   "label": "Società",        "type": "text",     "required": True,  "placeholder": "Es. Gruppo Industriale Lombardo",
+             "helper": "Denominazione registrata, non nome commerciale."},
+            {"name": "role",      "label": "Ruolo",          "type": "text",     "required": True,  "placeholder": "Es. CFO · CEO · Membro CdA",
+             "helper": "Posizione in CdA o direzione di riferimento."},
+            {"name": "email",     "label": "Email aziendale","type": "email",    "required": True,  "placeholder": "federico.seregni@gruppo.it",
+             "helper": "Non accettiamo domini consumer (Gmail/Outlook/Libero) per questo primo contatto."},
+            {"name": "phone",     "label": "Telefono",       "type": "tel",      "required": True,  "placeholder": "+39 ...",
+             "helper": "Linea diretta del referente, non centralino."},
             {"name": "practice",  "label": "Practice di interesse", "type": "select", "required": True,
              "options": [
                  "Da definire in call",
@@ -733,20 +739,56 @@ PRAGMA_CONTENT_IT: dict[str, Any] = {
                  "Wealth structuring",
                  "Industria & manifattura",
                  "Servizi finanziari",
-             ]},
+             ],
+             "helper": "Scegliere \"Da definire\" se il perimetro copre più practice."},
             {"name": "horizon",   "label": "Orizzonte temporale", "type": "select", "required": True,
              "options": [
                  "Entro un mese",
                  "Entro tre mesi",
                  "Entro sei mesi",
                  "Esplorativo, nessuna urgenza",
-             ]},
+             ],
+             "helper": "Aiuta a calendare il partner giusto sul mandato."},
             {"name": "perimeter", "label": "Breve descrizione del perimetro", "type": "textarea",
              "required": True, "full_width": True,
              "placeholder": "Massimo 600 caratteri. Niente nomi di controparti — verranno "
-                            "discussi solo dopo NDA reciproca."},
+                            "discussi solo dopo NDA reciproca.",
+             "helper": "Quanto basta a capire se il mandato è di nostra competenza. "
+                       "I nomi di controparti si condividono solo dopo NDA reciproca."},
         ],
+
+        "form_sections": [
+            {"num": "01", "title": "Referente",
+             "meta": "La persona che firmerà l'eventuale NDA preliminare.",
+             "fields": ["name", "surname", "email", "phone"]},
+            {"num": "02", "title": "Società",
+             "meta": "Per il conflict-check preliminare.",
+             "fields": ["company", "role"]},
+            {"num": "03", "title": "Perimetro del mandato",
+             "meta": "Nessun dettaglio sensibile qui — il perimetro tecnico si condivide in call dopo NDA reciproca.",
+             "fields": ["practice", "horizon", "perimeter"]},
+            {"num": "04", "title": "Allegati (facoltativi)",
+             "meta": "Company profile, one-pager di governance o NDA standard: possono anticipare la call.",
+             "fields": ["__upload__"]},
+        ],
+
+        "upload_field": {
+            "name":     "briefing_allegato",
+            "label":    "Documenti preliminari",
+            "helper":   "Company profile, one-pager di governance o NDA standard. "
+                        "PDF / DOCX · max 15 MB complessivi. Archivio cifrato con "
+                        "accesso limitato ai partner Pragma.",
+            "accept":   ".pdf,.docx",
+            "multiple": True,
+            "primary":  "Trascina qui i documenti o",
+            "link":     "sfoglia dall'archivio",
+            "meta":     "PDF / DOCX · max 15 MB · archivio cifrato",
+        },
+
         "form_submit_label": "Richiedi la call",
+        "form_submit_note":
+            "Conferma da un managing partner entro 48 ore lavorative. "
+            "Nessun BDR esterno, nessuna automazione di sequence.",
         "form_consent":
             "Acconsento al trattamento dei dati personali ai sensi del "
             "Regolamento UE 679/2016. I dati sono custoditi in archivio "

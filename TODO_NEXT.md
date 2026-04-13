@@ -1,5 +1,13 @@
 # TODO Next
 
+## 🟢 Phase 2k — Premium Forms Polish — ✅ CLOSED (Session 33, 2026-04-13)
+Per D-066, the 5 `tier=published_live` templates now ship with a reusable `.lf-*` forms primitives layer (`static/css/live-forms.css` + `static/js/live-forms.js`), per-skin token overrides across 4 archetypes (specialist / fine-dining / corporate-suite / startup-saas-landing), accessible custom listbox, file upload UI where page copy justifies it, sectioned form markup, reassurance submit bar, mobile 1-column collapse at 880px. Validation: `check` clean, 27/27 form checks, 149/149 full route sweep. See SESSION_LOG Session 33.
+
+**Follow-ups (not blocking):**
+- [ ] Phase 2i.3 enhancement-copy translation pass — cardio/derm/gusto `form_sections` + `upload_field` + per-field `helper` into EN/FR/ES/AR (native voice). `form_submit_note` already translated. Templates render gracefully without these keys so this is a polish pass, not a bug fix.
+- [ ] Specialist legacy mobile chrome collapse — `.sp-nav .right` 3-col grid + `.sp-foot` 4-col grid overflow at 390×844. Pre-existing, not introduced by Session 33, candidate for a separate mobile pass.
+- [ ] Extend `EDITOR_SCHEMA_BLUEPRINT.md` with the new form primitives (`.lf-select`, `.lf-upload`, section grouping, submit-bar) and their per-field metadata shape. The content registry now carries `form_sections`, `upload_field`, per-field `helper`, `form_consent`, `form_submit_note` — these are the editable shapes the future editor will surface.
+
 ## 🌐 Phase 2i — i18n/RTL Pilot + Rollout
 
 ### 2i.1 — i18n/RTL Pilot Cardio (it/en/fr/es/ar) — ✅ CLOSED (Session 23, 2026-04-11)

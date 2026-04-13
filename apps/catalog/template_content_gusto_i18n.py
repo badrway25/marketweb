@@ -674,6 +674,9 @@ GUSTO_CONTENT_EN: dict[str, Any] = {
             ("Note to the concierge","Greta reads every request personally. A few lines are enough.", "textarea"),
         ],
         "occasion_options": ["Romantic dinner", "Birthday", "Business", "No occasion"],
+        "form_submit_note":
+            "Greta replies the same day \u00b7 confirmed with a \u20ac 80 per-person deposit, "
+            "deducted from your final bill.",
         "consent":
             "I consent to the processing of my personal data in accordance "
             "with the privacy notice pursuant to EU Regulation 679/2016.",
@@ -1320,6 +1323,9 @@ GUSTO_CONTENT_FR: dict[str, Any] = {
             ("Note au concierge",   "Greta lit chaque demande personnellement. Quelques lignes suffisent.", "textarea"),
         ],
         "occasion_options": ["Dîner romantique", "Anniversaire", "Professionnel", "Sans occasion"],
+        "form_submit_note":
+            "Greta r\u00e9pond dans la journ\u00e9e \u00b7 confirmation avec un acompte de 80 \u20ac par personne, "
+            "d\u00e9duit de l\u2019addition finale.",
         "consent":
             "Je consens au traitement de mes données personnelles "
             "conformément à la notice de confidentialité, au titre du "
@@ -1966,6 +1972,9 @@ GUSTO_CONTENT_ES: dict[str, Any] = {
             ("Nota al concierge",   "Greta lee cada mensaje personalmente. Bastan unas pocas líneas.", "textarea"),
         ],
         "occasion_options": ["Cena romántica", "Cumpleaños", "Negocios", "Sin ocasión"],
+        "form_submit_note":
+            "Greta responde en el mismo d\u00eda \u00b7 confirmado con un dep\u00f3sito de 80 \u20ac por persona, "
+            "descontado de la cuenta final.",
         "consent":
             "Autorizo el tratamiento de mis datos personales conforme a "
             "la política de privacidad, en virtud del Reglamento UE 679/2016.",
@@ -2575,6 +2584,8 @@ GUSTO_CONTENT_AR: dict[str, Any] = {
             ("ملاحظة إلى الاستقبال",  "تقرأ Greta كلَّ رسالةٍ بنفسها. تكفي بضع عبارات.",    "textarea"),
         ],
         "occasion_options": ["عشاءٌ رومانسيّ", "عيد ميلاد", "عمل", "دون مناسبة"],
+        "form_submit_note":
+            "تردّ Greta في اليوم نفسه · يُؤكَّد الحجز بعربونٍ قدره 80 يورو للشخص، يُخصم من الحساب النهائي.",
         "consent":
             "أوافق على معالجة بياناتي الشخصيّة وفقًا لسياسة الخصوصيّة، "
             "بموجب لائحة الاتحاد الأوروبيّ 679/2016.",

@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 {% if is_rtl %}
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
 {% endif %}
@@ -26,6 +27,42 @@
     --rule-soft: rgba(28,22,18,0.05);
     --heading: '{{ theme.heading_font }}', Georgia, serif;
     --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+
+    /* Premium forms (clinical · paper) — minimal underline, gold accent */
+    --lf-bg:            transparent;
+    --lf-bg-autofill:   var(--paper-2);
+    --lf-bg-soft:       rgba(28,22,18,0.02);
+    --lf-bg-icon:       rgba(156,42,42,0.08);
+    --lf-bg-chip:       rgba(28,22,18,0.04);
+    --lf-border:        rgba(28,22,18,0.18);
+    --lf-border-hover:  var(--ink-soft);
+    --lf-border-focus:  var(--accent);
+    --lf-ring:          rgba(156,42,42,0.12);
+    --lf-ring-size:     3px;
+    --lf-radius:        0;
+    --lf-pad-y:         12px;
+    --lf-pad-x:         0;
+    --lf-label-color:   rgba(110,94,82,0.78);
+    --lf-label-size:    10px;
+    --lf-label-track:   0.22em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  rgba(110,94,82,0.85);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   rgba(110,94,82,0.42);
+    --lf-section-rule:  var(--rule);
+    --lf-section-title-color: var(--primary);
+    --lf-caret:         var(--accent);
+    --lf-listbox-bg:    var(--paper);
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  var(--rule);
+    --lf-listbox-hov:   rgba(156,42,42,0.07);
+    --lf-submit-bg:     var(--primary);
+    --lf-submit-bg-hover: #0f0e0c;
+    --lf-submit-fg:     var(--paper);
+    --lf-submit-arrow:  var(--accent);
+    --lf-submit-radius: 0;
+    --lf-submit-underline: 3px solid var(--accent);
+    --on-accent:        var(--paper);
   }
   {% if is_rtl %}
   :root {
@@ -353,6 +390,68 @@
     .sp-form-band .submit-row button { transition: none; }
   }
 
+  /* ============================================================
+     PREMIUM FORMS — dark-band contextual override
+     When .lf-field/.lf-select/.lf-upload sit on the primary navy
+     band (sp-form-band on the appointment page) the paper tokens
+     flip to on-dark values so contrast + focus state stay premium.
+  ============================================================ */
+  .sp-form-band .lf-label       { color: rgba(247,243,238,0.55); }
+  .sp-form-band .lf-helper      { color: rgba(247,243,238,0.62); }
+  .sp-form-band .lf-control,
+  .sp-form-band .lf-select-trigger,
+  .sp-form-band .lf-select:not(.is-enhanced) > select {
+    color: var(--paper);
+    border-color: rgba(247,243,238,0.18);
+  }
+  .sp-form-band .lf-control::placeholder { color: rgba(247,243,238,0.35); }
+  .sp-form-band .lf-control:hover,
+  .sp-form-band .lf-select-trigger:hover { border-color: rgba(247,243,238,0.45); }
+  .sp-form-band .lf-control:focus,
+  .sp-form-band .lf-select-trigger:focus,
+  .sp-form-band .lf-select.is-open > .lf-select-trigger {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(156,42,42,0.28);
+  }
+  .sp-form-band .lf-section > .lf-section-head { border-top-color: rgba(247,243,238,0.14); }
+  .sp-form-band .lf-section-head .lf-section-num { color: var(--accent); }
+  .sp-form-band .lf-section-head .lf-section-title { color: var(--paper); }
+  .sp-form-band .lf-section-head .lf-section-meta { color: rgba(247,243,238,0.55); }
+  .sp-form-band .lf-listbox-bg,
+  .sp-form-band .lf-select-listbox {
+    background: #1a1612;
+    color: var(--paper);
+    border-color: rgba(247,243,238,0.15);
+  }
+  .sp-form-band .lf-select-listbox li { color: var(--paper); }
+  .sp-form-band .lf-select-listbox li.is-active,
+  .sp-form-band .lf-select-listbox li:hover { background: rgba(247,243,238,0.08); }
+  .sp-form-band .lf-select-listbox li[aria-selected="true"] { color: var(--accent); }
+  .sp-form-band .lf-check { color: rgba(247,243,238,0.62); }
+  .sp-form-band .lf-check-box { border-color: rgba(247,243,238,0.30); background: rgba(247,243,238,0.04); }
+  .sp-form-band .lf-upload-zone { background: rgba(247,243,238,0.03); border-color: rgba(247,243,238,0.24); }
+  .sp-form-band .lf-upload-zone:hover { border-color: rgba(247,243,238,0.45); background: rgba(247,243,238,0.05); }
+  .sp-form-band .lf-upload-zone .lf-upload-icon { background: rgba(156,42,42,0.24); color: var(--paper); }
+  .sp-form-band .lf-upload-zone .lf-upload-primary { color: var(--paper); }
+  .sp-form-band .lf-upload-zone .lf-upload-meta { color: rgba(247,243,238,0.55); }
+  .sp-form-band .lf-upload-chip { background: rgba(247,243,238,0.08); border-color: rgba(247,243,238,0.22); color: var(--paper); }
+  .sp-form-band .lf-upload-chip .size { color: rgba(247,243,238,0.55); }
+  .sp-form-band .lf-submit-bar .lf-submit-primary {
+    background: var(--accent); color: var(--primary);
+    border-bottom: 0;
+  }
+  .sp-form-band .lf-submit-bar .lf-submit-primary:hover { background: #b7354f; color: var(--paper); }
+  .sp-form-band .lf-submit-bar .lf-submit-primary .lf-submit-arrow { color: var(--primary); }
+  .sp-form-band .lf-submit-bar .lf-submit-primary:hover .lf-submit-arrow { color: var(--paper); }
+  .sp-form-band .lf-submit-note { color: rgba(247,243,238,0.55); }
+  .sp-form-band .lf-submit-note svg { stroke: var(--accent); }
+  .sp-form-band .lf-submit-secondary { color: rgba(247,243,238,0.55); }
+  .sp-form-band .lf-submit-secondary a { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* RTL tweaks for custom controls in specialist skin */
+  html[dir="rtl"] .lf-select-trigger .lf-select-caret { margin-inline-start: 0; margin-inline-end: 12px; }
+  html[dir="rtl"] .lf-label { letter-spacing: 0.02em; }
+
   /* Page-specific block can extend with extra css */
   {% block extra_css %}{% endblock %}
 </style>
@@ -451,5 +550,6 @@
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
 <script src="{% static 'js/live-interactions.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>

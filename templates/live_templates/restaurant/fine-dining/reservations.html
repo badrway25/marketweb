@@ -131,39 +131,21 @@
   }
   .fd-form-band form {
     margin-top: 48px;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 32px 36px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px 36px; row-gap: 24px;
   }
-  .fd-form-band .field { display: flex; flex-direction: column; gap: 8px; }
-  .fd-form-band .field.full { grid-column: 1 / -1; }
-  .fd-form-band label {
-    font-family: var(--body); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-dim);
-  }
-  .fd-form-band input, .fd-form-band select, .fd-form-band textarea {
-    background: transparent; border: 0;
-    border-bottom: 1.5px solid var(--rule);
-    padding: 12px 0; font-family: var(--body); font-size: 16px;
-    color: var(--ink); outline: none;
-  }
-  .fd-form-band input::placeholder, .fd-form-band textarea::placeholder { color: var(--ink-dim); }
-  .fd-form-band input:focus, .fd-form-band select:focus, .fd-form-band textarea:focus {
-    border-color: var(--secondary);
-  }
-  .fd-form-band textarea { min-height: 120px; resize: vertical; }
-  .fd-form-band .consent {
-    grid-column: 1 / -1;
-    display: flex; gap: 14px; align-items: flex-start;
-    font-family: var(--body); font-size: 12px; line-height: 1.5; color: var(--ink-soft);
-  }
-  .fd-form-band .submit {
-    grid-column: 1 / -1; padding-top: 16px;
-  }
-  .fd-form-band .submit button {
-    background: var(--secondary); color: var(--bg);
-    padding: 18px 42px; border: 0;
-    font-family: var(--body); font-size: 12px; font-weight: 700;
-    letter-spacing: 0.22em; text-transform: uppercase;
-    cursor: pointer;
+  @media (max-width: 880px) {
+    .fd-form-band { padding: 56px 22px; }
+    .fd-form-band h3 { font-size: 38px; }
+    .fd-form-band form { grid-template-columns: 1fr; gap: 20px; }
+    .fd-process { padding: 18px 22px 56px; }
+    .fd-process .grid { grid-template-columns: 1fr; gap: 22px; }
+    .fd-concierge { padding: 48px 22px; }
+    .fd-concierge-inner { grid-template-columns: 1fr; gap: 32px; }
+    .fd-hours { padding: 56px 22px; }
+    .fd-hours .table { grid-template-columns: 120px 1fr; }
+    .fd-hours .table .note { grid-column: 1 / -1; padding-top: 0; }
+    .fd-private { padding: 56px 22px; }
+    .fd-private-inner { grid-template-columns: 1fr; gap: 24px; }
   }
 {% endblock %}
 
@@ -244,40 +226,87 @@
 
   <section class="fd-form-band">
     <h3 data-lm="reveal-lg">{{ page_data.form_title }}</h3>
-    <form>
-      {% for field in page_data.form_fields %}
-        {% if field.2 == "textarea" %}
-          <div class="field full">
-            <label>{{ field.0 }}</label>
-            <textarea placeholder="{{ field.1 }}"></textarea>
+    <form novalidate>
+      {% if page_data.form_sections %}
+        {# IT path: premium sectioned form with per-field dicts. #}
+        {% for s in page_data.form_sections %}
+          <div class="lf-section">
+            <div class="lf-section-head">
+              <span class="lf-section-num">{{ s.num }} · {{ page_data.form_sections|length }}</span>
+              <span class="lf-section-title">{{ s.title }}</span>
+              {% if s.meta %}<span class="lf-section-meta">{{ s.meta }}</span>{% endif %}
+            </div>
+            {% for fname in s.fields %}
+              {% for f in page_data.form_fields %}{% if f.name == fname %}
+                <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+                  <label class="lf-label" for="fd-pr-{{ f.name }}">{{ f.label }}{% if not f.required %}<span class="lf-opt">{{ chrome.form_optional }}</span>{% endif %}</label>
+                  {% if f.type == "select" %}
+                    <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                      <select id="fd-pr-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                        <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                        {% for opt in page_data.occasion_options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                      </select>
+                    </div>
+                  {% elif f.type == "textarea" %}
+                    <textarea class="lf-control" id="fd-pr-{{ f.name }}" name="{{ f.name }}" rows="5" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}></textarea>
+                  {% else %}
+                    <input class="lf-control" type="{{ f.type }}" id="fd-pr-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}>
+                  {% endif %}
+                  {% if f.helper %}<p class="lf-helper">{{ f.helper }}</p>{% endif %}
+                </div>
+              {% endif %}{% endfor %}
+            {% endfor %}
           </div>
-        {% elif field.2 == "select" %}
-          <div class="field">
-            <label>{{ field.0 }}</label>
-            <select>
-              {% for opt in page_data.occasion_options %}
-                <option>{{ opt }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        {% elif forloop.counter0 == 6 %}
-          <div class="field full">
-            <label>{{ field.0 }}</label>
-            <input type="{{ field.2 }}" placeholder="{{ field.1 }}">
-          </div>
-        {% else %}
-          <div class="field">
-            <label>{{ field.0 }}</label>
-            <input type="{{ field.2 }}" placeholder="{{ field.1 }}">
-          </div>
+        {% endfor %}
+      {% else %}
+        {# Non-IT fallback: tuple-shape form (preserves existing i18n) #}
+        {% for field in page_data.form_fields %}
+          {% if field.2 == "textarea" %}
+            <div class="lf-field lf-full">
+              <label class="lf-label">{{ field.0 }}</label>
+              <textarea class="lf-control" rows="5" placeholder="{{ field.1 }}"></textarea>
+            </div>
+          {% elif field.2 == "select" %}
+            <div class="lf-field">
+              <label class="lf-label">{{ field.0 }}</label>
+              <div class="lf-select" data-lf-label="{{ field.0 }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                <select>
+                  <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                  {% for opt in page_data.occasion_options %}<option>{{ opt }}</option>{% endfor %}
+                </select>
+              </div>
+            </div>
+          {% elif forloop.counter0 == 6 %}
+            <div class="lf-field lf-full">
+              <label class="lf-label">{{ field.0 }}</label>
+              <input class="lf-control" type="{{ field.2 }}" placeholder="{{ field.1 }}">
+            </div>
+          {% else %}
+            <div class="lf-field">
+              <label class="lf-label">{{ field.0 }}</label>
+              <input class="lf-control" type="{{ field.2 }}" placeholder="{{ field.1 }}">
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      <label class="lf-check lf-full" style="grid-column:1/-1;">
+        <input type="checkbox" name="consent" required>
+        <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+        <span class="lf-check-text">{{ page_data.consent }}</span>
+      </label>
+
+      <div class="lf-submit-bar">
+        <button type="submit" class="lf-submit-primary">
+          <span>{{ page_data.form_submit }}</span>
+          <span class="lf-submit-arrow" aria-hidden="true">→</span>
+        </button>
+        {% if page_data.form_submit_note %}
+        <span class="lf-submit-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+          {{ page_data.form_submit_note }}
+        </span>
         {% endif %}
-      {% endfor %}
-      <div class="consent">
-        <input type="checkbox">
-        <span>{{ page_data.consent }}</span>
-      </div>
-      <div class="submit">
-        <button type="button">{{ page_data.form_submit }}</button>
       </div>
     </form>
   </section>

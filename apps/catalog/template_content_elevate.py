@@ -609,22 +609,63 @@ ELEVATE_CONTENT_IT: dict[str, Any] = {
             "Se preferisci uno slot ad hoc, scegli 'Slot personalizzato' e "
             "ti scriviamo per fissarlo. Async-only? Va benissimo, vedi sotto.",
         "form_fields": [
-            {"name": "name",     "label": "Nome",          "type": "text",  "required": True,  "placeholder": "Es. Anna"},
-            {"name": "email",    "label": "Email",         "type": "email", "required": True,  "placeholder": "anna@startup.io"},
-            {"name": "company",  "label": "Startup",       "type": "text",  "required": True,  "placeholder": "Es. Quanta Analytics"},
+            {"name": "name",     "label": "Nome",          "type": "text",  "required": True,  "placeholder": "Es. Anna",
+             "helper": "Così ti salutiamo in demo."},
+            {"name": "email",    "label": "Email",         "type": "email", "required": True,  "placeholder": "anna@startup.io",
+             "helper": "Calendar invite + Loom finiscono qui."},
+            {"name": "company",  "label": "Startup",       "type": "text",  "required": True,  "placeholder": "Es. Quanta Analytics",
+             "helper": "Il nome che usi per commit e fatturazione."},
             {"name": "role",     "label": "Ruolo",         "type": "select","required": True,
-             "options": ["Founder solo", "Co-founder · CEO", "Co-founder · CTO", "Co-founder · altro", "Hire 1-5", "Altro"]},
+             "options": ["Founder solo", "Co-founder · CEO", "Co-founder · CTO", "Co-founder · altro", "Hire 1-5", "Altro"],
+             "helper": "Se sei da solo, \"Founder solo\" è la scelta giusta."},
             {"name": "stage",    "label": "Fase",          "type": "select","required": True,
-             "options": ["Pre-idea / esplorando", "Pre-launch / waitlist", "Post-launch / cercando PMF", "Post-PMF / scaling"]},
+             "options": ["Pre-idea / esplorando", "Pre-launch / waitlist", "Post-launch / cercando PMF", "Post-PMF / scaling"],
+             "helper": "La demo si adatta: pre-launch vede onboarding + waitlist, post-PMF vede tier pricing + A/B."},
             {"name": "slot",     "label": "Slot preferito","type": "select","required": True,
-             "options": ["Prossimo martedì 17:00 CET", "Slot personalizzato (ti scriviamo)", "Async — voglio un Loom registrato"]},
-            {"name": "stack",    "label": "Stack attuale (opzionale)","type": "text", "required": False,
-             "placeholder": "Es. Next.js + Vercel + Stripe"},
+             "options": ["Prossimo martedì 17:00 CET", "Slot personalizzato (ti scriviamo)", "Async — voglio un Loom registrato"],
+             "helper": "Slot async = ricevi subito il Loom di 12 min per email."},
+            {"name": "stack",    "label": "Stack attuale",
+             "type": "text", "required": False,
+             "placeholder": "Es. Next.js + Vercel + Stripe",
+             "helper": "Facoltativo. Ci orientiamo subito sugli integration points giusti."},
             {"name": "context",  "label": "Cosa ti serve sapere?", "type": "textarea",
              "required": False, "full_width": True,
-             "placeholder": "Domande specifiche, blocchi che vuoi vedere in demo, dubbi tecnici... (opzionale)"},
+             "placeholder": "Domande specifiche, blocchi che vuoi vedere in demo, dubbi tecnici... (opzionale)",
+             "helper": "Bastano due righe. Qualunque dubbio tecnico giocato in chiaro."},
         ],
+
+        "form_sections": [
+            {"num": "01", "title": "Chi sei",
+             "meta": "Niente BDR, niente sequence — ti risponde un founding member.",
+             "fields": ["name", "email", "company"]},
+            {"num": "02", "title": "Contesto",
+             "meta": "Per adattare la demo al tuo stage e stack.",
+             "fields": ["role", "stage", "stack"]},
+            {"num": "03", "title": "Preferenze demo",
+             "meta": "Dal vivo ogni martedì alle 17:00 CET, altrimenti async via Loom.",
+             "fields": ["slot", "context"]},
+            {"num": "04", "title": "Materiali (facoltativi)",
+             "meta": "Un Loom tuo, screenshot del prodotto o metrics snapshot "
+                     "ci permettono di arrivare preparati.",
+             "fields": ["__upload__"]},
+        ],
+
+        "upload_field": {
+            "name":     "demo_allegati",
+            "label":    "Materiali di contesto",
+            "helper":   "PDF, PNG, JPG, MP4, MOV · max 3 file, 25 MB complessivi. "
+                        "Utile per chi vuole farci guardare il prodotto o un funnel attuale.",
+            "accept":   ".pdf,.png,.jpg,.jpeg,.mp4,.mov",
+            "multiple": True,
+            "primary":  "Trascina qui deck, screenshot o Loom oppure",
+            "link":     "sfoglia dalla cartella",
+            "meta":     "PDF / PNG / JPG / MP4 · max 25 MB",
+        },
+
         "form_submit_label": "Prenota la demo",
+        "form_submit_note":
+            "Conferma entro un'ora negli orari ufficio (9-19 CET) · niente newsletter, "
+            "niente sequence automatica.",
         "form_consent":
             "Iscrivendoti accetti l'invio del calendar invite e di una mail "
             "di promemoria 24h prima. Niente newsletter, niente sequence "

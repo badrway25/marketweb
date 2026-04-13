@@ -7,6 +7,14 @@
     max-width: 1240px; margin: 0 auto;
     display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px;
   }
+  @media (max-width: 880px) {
+    .sl-demo-wrap { padding: 24px 18px 56px; grid-template-columns: 1fr; gap: 32px; }
+    .sl-form { padding: 26px 20px; border-radius: 16px; }
+    .sl-form h2 { font-size: 24px; }
+    .sl-form form { grid-template-columns: 1fr; gap: 16px; }
+    .sl-side .block { padding: 22px 20px; border-radius: 14px; }
+    .sl-footnote { padding: 0 18px 40px; }
+  }
 
   /* Form column */
   .sl-form {
@@ -27,39 +35,14 @@
     color: var(--ink-mute); line-height: 1.65;
   }
   .sl-form form {
-    margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 18px;
+    margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; row-gap: 18px;
   }
-  .sl-form .field { display: flex; flex-direction: column; gap: 6px; }
-  .sl-form .field.full { grid-column: 1 / -1; }
-  .sl-form .field label {
-    font-family: var(--body); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);
-  }
-  .sl-form .field input,
-  .sl-form .field select,
-  .sl-form .field textarea {
-    font-family: var(--body); font-size: 14px; color: var(--ink);
-    padding: 12px 14px; background: rgba(0,0,0,0.32);
-    border: 1px solid var(--rule); border-radius: 10px;
-    transition: border-color .15s ease;
-  }
-  .sl-form .field input:focus,
-  .sl-form .field select:focus,
-  .sl-form .field textarea:focus {
-    outline: none; border-color: var(--accent);
-  }
-  .sl-form .field textarea { resize: vertical; min-height: 110px; }
-  .sl-form .consent {
+  @media (max-width: 720px) { .sl-form form { grid-template-columns: 1fr; } }
+  .sl-form .sl-consent-box {
     grid-column: 1 / -1;
-    font-family: var(--body); font-size: 12px; line-height: 1.6;
-    color: var(--ink-mute);
     padding: 14px 16px;
     background: var(--surface-2);
     border: 1px solid var(--rule); border-radius: 10px;
-  }
-  .sl-form .submit-row { grid-column: 1 / -1; margin-top: 8px; }
-  .sl-form button[type="submit"] {
-    width: 100%; justify-content: center;
   }
 
   /* Sidebar */
@@ -128,25 +111,98 @@
     <h2>{{ page_data.form_heading }}</h2>
     <p class="intro">{{ page_data.form_intro }}</p>
 
-    <form method="post" action="">
-      {% for f in page_data.form_fields %}
-        <div class="field{% if f.full_width %} full{% endif %}">
-          <label for="f-{{ f.name }}">{{ f.label }}{% if f.required %} *{% endif %}</label>
-          {% if f.type == "textarea" %}
-            <textarea id="f-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}" {% if f.required %}required{% endif %}></textarea>
-          {% elif f.type == "select" %}
-            <select id="f-{{ f.name }}" name="{{ f.name }}" {% if f.required %}required{% endif %}>
-              {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
-            </select>
-          {% else %}
-            <input type="{{ f.type }}" id="f-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}" {% if f.required %}required{% endif %}>
-          {% endif %}
-        </div>
-      {% endfor %}
+    <form method="post" action="" enctype="multipart/form-data" novalidate class="lf-boxed">
+      {% if page_data.form_sections %}
+        {% for s in page_data.form_sections %}
+          <div class="lf-section">
+            <div class="lf-section-head">
+              <span class="lf-section-num">{{ s.num }} · {{ page_data.form_sections|length }}</span>
+              <span class="lf-section-title">{{ s.title }}</span>
+              {% if s.meta %}<span class="lf-section-meta">{{ s.meta }}</span>{% endif %}
+            </div>
+            {% for fname in s.fields %}
+              {% if fname == "__upload__" and page_data.upload_field %}
+                {% with u=page_data.upload_field %}
+                <div class="lf-field lf-full">
+                  <label class="lf-label" for="sl-{{ u.name }}">{{ u.label }}<span class="lf-opt">{{ chrome.form_optional|default:"Facoltativo" }}</span></label>
+                  <div class="lf-upload">
+                    <input type="file" id="sl-{{ u.name }}" name="{{ u.name }}" accept="{{ u.accept }}"{% if u.multiple %} multiple{% endif %}>
+                    <div class="lf-upload-zone" tabindex="0" role="button" aria-label="{{ u.primary }} {{ u.link }}">
+                      <span class="lf-upload-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      </span>
+                      <span class="lf-upload-text">
+                        <span class="lf-upload-primary">{{ u.primary }} <u>{{ u.link }}</u></span>
+                        <span class="lf-upload-meta">{{ u.meta }}</span>
+                      </span>
+                    </div>
+                    <div class="lf-upload-list"></div>
+                  </div>
+                  {% if u.helper %}<p class="lf-helper">{{ u.helper }}</p>{% endif %}
+                </div>
+                {% endwith %}
+              {% else %}
+                {% for f in page_data.form_fields %}{% if f.name == fname %}
+                  <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+                    <label class="lf-label" for="sl-f-{{ f.name }}">{{ f.label }}{% if not f.required %}<span class="lf-opt">{{ chrome.form_optional|default:"Facoltativo" }}</span>{% endif %}</label>
+                    {% if f.type == "textarea" %}
+                      <textarea class="lf-control" id="sl-f-{{ f.name }}" name="{{ f.name }}" rows="4" placeholder="{{ f.placeholder|default:'' }}"{% if f.required %} required{% endif %}></textarea>
+                    {% elif f.type == "select" %}
+                      <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder|default:'Seleziona…' }}">
+                        <select id="sl-f-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                          <option value="" disabled selected>{{ chrome.form_select_placeholder|default:"Seleziona…" }}</option>
+                          {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                        </select>
+                      </div>
+                    {% else %}
+                      <input class="lf-control" type="{{ f.type }}" id="sl-f-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}"{% if f.required %} required{% endif %}>
+                    {% endif %}
+                    {% if f.helper %}<p class="lf-helper">{{ f.helper }}</p>{% endif %}
+                  </div>
+                {% endif %}{% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      {% else %}
+        {% for f in page_data.form_fields %}
+          <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+            <label class="lf-label" for="sl-f-{{ f.name }}">{{ f.label }}{% if f.required %} *{% endif %}</label>
+            {% if f.type == "textarea" %}
+              <textarea class="lf-control" id="sl-f-{{ f.name }}" name="{{ f.name }}" rows="4" placeholder="{{ f.placeholder|default:'' }}"{% if f.required %} required{% endif %}></textarea>
+            {% elif f.type == "select" %}
+              <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder|default:'Seleziona…' }}">
+                <select id="sl-f-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                  <option value="" disabled selected>{{ chrome.form_select_placeholder|default:"Seleziona…" }}</option>
+                  {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                </select>
+              </div>
+            {% else %}
+              <input class="lf-control" type="{{ f.type }}" id="sl-f-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}"{% if f.required %} required{% endif %}>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% endif %}
 
-      <div class="consent">{{ page_data.form_consent }}</div>
-      <div class="submit-row">
-        <button type="submit" class="sl-btn">{{ page_data.form_submit_label }}</button>
+      <div class="sl-consent-box">
+        <label class="lf-check">
+          <input type="checkbox" name="consent" required>
+          <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+          <span class="lf-check-text">{{ page_data.form_consent }}</span>
+        </label>
+      </div>
+
+      <div class="lf-submit-bar">
+        <button type="submit" class="lf-submit-primary">
+          <span>{{ page_data.form_submit_label }}</span>
+          <span class="lf-submit-arrow" aria-hidden="true">→</span>
+        </button>
+        {% if page_data.form_submit_note %}
+        <span class="lf-submit-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+          {{ page_data.form_submit_note }}
+        </span>
+        {% endif %}
       </div>
     </form>
   </div>

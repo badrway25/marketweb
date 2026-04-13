@@ -661,6 +661,8 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
                 "Keep it brief \u2014 the secretary will get back to you "
                 "within 24 working hours.",
         },
+        "form_submit_note":
+            "Reply within 24 working hours \u00b7 confidential clinical archive.",
     },
 
     # ─── APPOINTMENT ──────��───────────────────────────────────
@@ -726,6 +728,10 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
         ],
 
         "submit_label": "Submit request",
+
+        "form_submit_note":
+            "The dermatologist reads every request within 48 working hours. "
+            "Photos and reports are held in the practice's encrypted archive.",
 
         "consent":
             "I consent to the processing of personal data under the privacy "
@@ -1353,6 +1359,8 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
                 "Restez bref \u2014 le secr\u00e9tariat vous recontacte "
                 "sous 24 heures ouvr\u00e9es.",
         },
+        "form_submit_note":
+            "R\u00e9ponse sous 24 heures ouvr\u00e9es \u00b7 archives cliniques confidentielles.",
     },
 
     # ���── APPOINTMENT ────────────���─────────────────────────────
@@ -1419,6 +1427,10 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
         ],
 
         "submit_label": "Envoyer la demande",
+
+        "form_submit_note":
+            "La dermatologue lit chaque demande sous 48 heures ouvr\u00e9es. "
+            "Photos et comptes rendus sont conserv\u00e9s dans l\u2019archive chiffr\u00e9e du cabinet.",
 
         "consent":
             "Je consens au traitement de mes donn\u00e9es personnelles conform\u00e9ment "
@@ -2044,6 +2056,8 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
             "message":
                 "Sea breve \u2014 la secretar\u00eda le contactar\u00e1 en 24 horas h\u00e1biles.",
         },
+        "form_submit_note":
+            "Respuesta en 24 horas h\u00e1biles \u00b7 archivo cl\u00ednico reservado a la doctora.",
     },
 
     # ─── SOLICITAR CITA ──────────���────────────────────────────
@@ -2110,6 +2124,10 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
         ],
 
         "submit_label": "Enviar solicitud",
+
+        "form_submit_note":
+            "La dermat\u00f3loga lee cada solicitud en 48 horas h\u00e1biles. "
+            "Fotos e informes se guardan en el archivo cifrado de la consulta.",
 
         "consent":
             "Consiento el tratamiento de mis datos personales seg\u00fan la "
@@ -2708,6 +2726,8 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
             "message":
                 "كن موجزاً — ستتواصل معك السكرتارية خلال 24 ساعة عمل.",
         },
+        "form_submit_note":
+            "ردّ خلال 24 ساعة عمل · أرشيف سريريّ مخصّص للطبيبة.",
     },
 
     # ──��� طلب موعد (appointment) ──────────────────────────────
@@ -2771,6 +2791,10 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
         ],
 
         "submit_label": "إرسال الطلب",
+
+        "form_submit_note":
+            "تقرأ الطبيبة كل طلب خلال 48 ساعة عمل. "
+            "تُحفظ الصور والتقارير في أرشيف العيادة المشفَّر.",
 
         "consent":
             "أوافق على معالجة بياناتي الشخصية وفقاً لسياسة الخصوصية "

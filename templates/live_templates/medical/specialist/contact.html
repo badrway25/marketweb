@@ -78,29 +78,16 @@
     color: var(--ink-soft);
   }
   .sp-form form { margin-top: 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px; }
-  .sp-form .field { display: flex; flex-direction: column; gap: 6px; }
-  .sp-form .field.full { grid-column: 1 / -1; }
-  .sp-form label {
-    font-family: var(--body); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
-  }
-  .sp-form input, .sp-form select, .sp-form textarea {
-    background: transparent; border: 0; border-bottom: 1.5px solid var(--rule);
-    padding: 10px 0; font-family: var(--body); font-size: 16px;
-    color: var(--ink); outline: none; transition: border-color .15s ease;
-  }
-  .sp-form input:focus, .sp-form select:focus, .sp-form textarea:focus {
-    border-color: var(--accent);
-  }
-  .sp-form textarea { min-height: 120px; resize: vertical; }
-  .sp-form .submit { grid-column: 1 / -1; padding-top: 8px; }
-  .sp-form .submit button {
-    background: var(--primary); color: var(--paper);
-    padding: 18px 36px; border: 0;
-    font-family: var(--body); font-size: 12px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    cursor: pointer;
-    border-bottom: 3px solid var(--accent);
+  @media (max-width: 880px) {
+    .sp-contact { padding: 18px 22px 60px; }
+    .sp-contact .grid { grid-template-columns: 1fr; gap: 40px; }
+    .sp-blocks { grid-template-columns: 1fr; gap: 18px; }
+    .sp-form { margin-top: 40px; padding-top: 32px; }
+    .sp-form h3 { font-size: 30px; }
+    .sp-form form { grid-template-columns: 1fr; gap: 20px; }
+    .sp-side { padding: 26px 22px; }
+    .sp-side .row { grid-template-columns: 88px 1fr; gap: 6px; }
+    .sp-side .row .pm { grid-column: 2; color: var(--ink-soft); }
   }
 {% endblock %}
 
@@ -127,34 +114,56 @@
         <div class="sp-form" data-lm="reveal">
           <h3>{{ page_data.form_title }}</h3>
           <p class="intro">{{ page_data.form_intro }}</p>
-          {% with ph=page_data.form_placeholders %}
-          <form>
-            <div class="field">
-              <label>{{ chrome.form_name }}</label>
-              <input type="text" placeholder="{{ ph.first_name }}">
+          {% with ph=page_data.form_placeholders h=page_data.form_helpers %}
+          <form novalidate>
+            <div class="lf-field">
+              <label class="lf-label" for="sp-ct-first">{{ chrome.form_name }}</label>
+              <input class="lf-control" type="text" id="sp-ct-first" name="first_name" placeholder="{{ ph.first_name }}" autocomplete="given-name">
+              {% if h.first_name %}<p class="lf-helper">{{ h.first_name }}</p>{% endif %}
             </div>
-            <div class="field">
-              <label>{{ chrome.form_surname }}</label>
-              <input type="text" placeholder="{{ ph.last_name }}">
+            <div class="lf-field">
+              <label class="lf-label" for="sp-ct-last">{{ chrome.form_surname }}</label>
+              <input class="lf-control" type="text" id="sp-ct-last" name="last_name" placeholder="{{ ph.last_name }}" autocomplete="family-name">
+              {% if h.last_name %}<p class="lf-helper">{{ h.last_name }}</p>{% endif %}
             </div>
-            <div class="field">
-              <label>{{ chrome.form_email }}</label>
-              <input type="email" placeholder="{{ ph.email }}">
+            <div class="lf-field">
+              <label class="lf-label" for="sp-ct-email">{{ chrome.form_email }}</label>
+              <input class="lf-control" type="email" id="sp-ct-email" name="email" placeholder="{{ ph.email }}" autocomplete="email">
+              {% if h.email %}<p class="lf-helper">{{ h.email }}</p>{% endif %}
             </div>
-            <div class="field">
-              <label>{{ chrome.form_phone }}</label>
-              <input type="tel" placeholder="{{ ph.phone }}">
+            <div class="lf-field">
+              <label class="lf-label" for="sp-ct-phone">{{ chrome.form_phone }}<span class="lf-opt">{{ chrome.form_optional }}</span></label>
+              <input class="lf-control" type="tel" id="sp-ct-phone" name="phone" placeholder="{{ ph.phone }}" autocomplete="tel">
+              {% if h.phone %}<p class="lf-helper">{{ h.phone }}</p>{% endif %}
             </div>
-            <div class="field full">
-              <label>{{ chrome.form_subject }}</label>
-              <input type="text" placeholder="{{ ph.subject }}">
+            <div class="lf-field lf-full">
+              <label class="lf-label" for="sp-ct-subject">{{ chrome.form_subject }}</label>
+              <input class="lf-control" type="text" id="sp-ct-subject" name="subject" placeholder="{{ ph.subject }}">
+              {% if h.subject %}<p class="lf-helper">{{ h.subject }}</p>{% endif %}
             </div>
-            <div class="field full">
-              <label>{{ chrome.form_message }}</label>
-              <textarea placeholder="{{ ph.message }}"></textarea>
+            <div class="lf-field lf-full">
+              <label class="lf-label" for="sp-ct-message">{{ chrome.form_message }}</label>
+              <textarea class="lf-control" id="sp-ct-message" name="message" rows="5" placeholder="{{ ph.message }}"></textarea>
+              {% if h.message %}<p class="lf-helper">{{ h.message }}</p>{% endif %}
             </div>
-            <div class="submit">
-              <button type="button">{{ chrome.form_submit }}</button>
+            {% with consent_text=page_data.form_consent %}
+            <label class="lf-check lf-full" style="grid-column:1/-1;">
+              <input type="checkbox" name="consent" required>
+              <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+              <span class="lf-check-text">{% firstof consent_text page_data.consent %}</span>
+            </label>
+            {% endwith %}
+            <div class="lf-submit-bar">
+              <button type="submit" class="lf-submit-primary">
+                <span>{{ chrome.form_submit }}</span>
+                <span class="lf-submit-arrow" aria-hidden="true">→</span>
+              </button>
+              {% if page_data.form_submit_note %}
+              <span class="lf-submit-note">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+                {{ page_data.form_submit_note }}
+              </span>
+              {% endif %}
             </div>
           </form>
           {% endwith %}

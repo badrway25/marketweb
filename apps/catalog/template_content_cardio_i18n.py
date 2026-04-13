@@ -624,6 +624,8 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
                 "Keep it to a few lines — the front desk will reply the "
                 "same working day.",
         },
+        "form_submit_note":
+            "Reply within the same working day · confidential paper archive.",
     },
 
     "richiedi-visita": {
@@ -684,6 +686,10 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
         ],
 
         "submit_label": "Send request",
+
+        "form_submit_note":
+            "The physician reads every request within 48 working hours. "
+            "Clinical data is held in the practice's paper archive.",
 
         "consent":
             "I consent to the processing of my personal data in accordance "
@@ -1280,6 +1286,8 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
                 "Quelques lignes suffisent — le secrétariat vous "
                 "recontacte dans la journée ouvrée.",
         },
+        "form_submit_note":
+            "Réponse dans la journée ouvrée · archivage papier confidentiel.",
     },
 
     "richiedi-visita": {
@@ -1342,6 +1350,10 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
         ],
 
         "submit_label": "Envoyer la demande",
+
+        "form_submit_note":
+            "Le médecin lit chaque demande sous 48 heures ouvrées. "
+            "Les données cliniques sont conservées en archives papier.",
 
         "consent":
             "J'accepte le traitement de mes données personnelles "
@@ -1944,6 +1956,8 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
                 "Basta con unas líneas — la secretaría le responderá "
                 "dentro del mismo día laborable.",
         },
+        "form_submit_note":
+            "Respuesta dentro del mismo día laborable · archivo clínico en papel reservado.",
     },
 
     "richiedi-visita": {
@@ -2008,6 +2022,10 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
         ],
 
         "submit_label": "Enviar solicitud",
+
+        "form_submit_note":
+            "El médico lee cada solicitud en 48 horas laborables. "
+            "Los datos clínicos se conservan en archivo en papel de la consulta.",
 
         "consent":
             "Acepto el tratamiento de mis datos personales conforme al "
@@ -2582,6 +2600,8 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
                 "تكفي بضعة أسطر — ستعاود السكرتارية الاتصال "
                 "بك خلال يوم العمل نفسه.",
         },
+        "form_submit_note":
+            "ردّ خلال يوم العمل نفسه · أرشيف ورقيّ محفوظ بسريّة.",
     },
 
     "richiedi-visita": {
@@ -2641,6 +2661,10 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
         ],
 
         "submit_label": "إرسال الطلب",
+
+        "form_submit_note":
+            "يقرأ الطبيب كل طلب خلال 48 ساعة عمل. "
+            "تُحفظ البيانات السريرية في أرشيف المركز الورقي.",
 
         "consent":
             "أوافق على معالجة بياناتي الشخصية وفقاً لإشعار الخصوصية "

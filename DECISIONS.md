@@ -1,5 +1,75 @@
 # Decisions Log
 
+## D-066: Premium Forms System — Reusable `.lf-*` Primitives + Per-Skin Tokens + Custom Accessible Listbox + Contextual File Upload (2026-04-13, Session 33)
+
+**Decision:** The forms on the 5 `tier=published_live` templates are rebuilt on top of a shared premium primitives layer (`static/css/live-forms.css` + `static/js/live-forms.js`) that every live-template skin opts into via a small token override block in its `_base.html :root`. The system ships: accessible custom listbox (ARIA combobox + listbox, full keyboard), native-file-input-backed upload with drag + chip + individual remove, custom consent checkbox with SVG check, section-grouped markup, reassurance submit bar, per-skin tone via ~20 CSS custom properties. Native `<select>` / `<input type="checkbox">` / `<input type="file">` remain underneath every enhanced control — form submission and server-side semantics unchanged. The contract is enforced for all future `tier=published_live` skins.
+
+**The 4 skin tones (per-archetype token overrides):**
+- Specialist (clinical · paper + gold): transparent bg, 0 radius, minimal underline, red-gold accent, paper listbox, primary-dark submit with gold underbar. Dark-band override (`.sp-form-band .lf-*`) for the appointment page's navy band flips every token to on-dark values.
+- Fine-dining (hospitality · dark body + gold): transparent on dark, 14px pad-y, secondary-gold focus, dark warm listbox, gold flat submit with bg-dark arrow.
+- Corporate-suite (institutional · paper-3 boxed): 1px border, boxed inputs (`--lf-pad-x: 16px`), emerald focus ring, paper-3 listbox, primary-navy submit with accent arrow.
+- Startup-saas (growth-tech · glass cosmic + cyan glow): `rgba(0,0,0,0.32)` bg, 10px radius, cyan focus ring with glow, dark cosmic listbox, pill-radius accent-cyan submit.
+
+**Contract invariants (all 4 skins):**
+1. Every `<select>` lives inside `.lf-select` (JS upgrades to combobox+listbox on desktop, native on touch). Native `<select>` remains the form source of truth.
+2. Every form control uses `.lf-control` (or is a child of `.lf-select` / `.lf-upload`). Custom focus ring via `--lf-ring` token.
+3. Labels use `.lf-label`; required fields carry no mark, optional fields show a muted `<span class="lf-opt">` with the `chrome.form_optional` label. Per-field helper below control as `.lf-helper` (p).
+4. Consent uses custom `.lf-check` with SVG check animation — no native checkbox.
+5. File upload (where justified by page copy) uses `.lf-upload` with drop zone + meta + chip list + per-chip remove.
+6. Submit bar uses `.lf-submit-bar` with primary `.lf-submit-primary` (arrow glyph that shifts +4px on hover and flips `scaleX(-1)` in RTL), reassurance `.lf-submit-note` (with clock icon), optional `.lf-submit-secondary` link.
+7. Section grouping via `page_data.form_sections` list (each section: `{num, title, meta, fields: [name…]}`). Special sentinel `"__upload__"` picks up `page_data.upload_field`. Templates fall back to flat `form_fields` loop when `form_sections` missing (non-IT locales today).
+8. Progressive enhancement: every control renders fine without JS (native `<select>` styled with custom caret, upload label opens native picker, checkbox is still clickable). `prefers-reduced-motion: reduce` zeroes all transitions.
+9. RTL: `margin-inline-*` + `.lf-select-caret` on trailing edge + submit arrow `scaleX(-1)` swap.
+
+**Chrome i18n extension:** 6 new keys × 5 locales in `CHROME_I18N` (`form_required`, `form_optional`, `form_select_placeholder`, `form_upload_browse_prefix`, `form_upload_browse_link`, `form_upload_remove`). 30 new translation entries total.
+
+**File upload placement (contextual, not sprinkled):**
+- Cardio + Dermatologia appointment: yes — "referti o esami recenti", aligned with the page's own copy "Allega gli esami recenti se vuoi" (intro).
+- Pragma contact: yes — "company profile, one-pager di governance o NDA standard", aligned with "NDA reciproca" language and the institutional mandate flow.
+- Elevate demo: yes — "deck, screenshot o Loom", aligned with the product-led demo flow.
+- Gusto reservations: no — hospitality context doesn't want file uploads for dinner bookings.
+- Medical contact pages: no — non-urgent admin questions don't need attachments.
+
+**Rationale:** The user's brief flagged three concrete pain points: selects looked non-premium (native grey/blue), forms felt unstructured for 8–9 field pages, no attachment affordance where copy clearly implied one. The option space:
+
+- Option A — CSS-only re-skin, keep native `<select>`: cheapest, but browsers vary and the dropdown panel stays un-themed. Rejected — can't reach the premium bar on the dropdown panel itself without replacing the control.
+- Option B — Pull in a select library (Choices.js, SlimSelect, TomSelect): theoretically quick, but brings 30–100kB of deps, pagination/multi-select features we don't need, and a harder-to-theme-per-skin surface. Rejected — scope creep, bundle weight, and we'd still need to style 4 distinct skins on top of the library's CSS.
+- Option C — Chosen: author a tiny zero-dep ARIA combobox (~260 lines of JS, ~490 lines of CSS) matched to our exact token shape. Pays once, reuses across 4 skins, no bundle cost, no upgrade treadmill.
+
+The per-skin token approach (rather than scoped `.specialist-form .lf-*` selectors) keeps the CSS flat and composition-friendly for future skins (Phase 2g3.4+ portfolio/ecommerce/agency/lawyer/real-estate). A new skin declares ~20 `--lf-*` values in its `:root` and inherits the full primitive library.
+
+**Trade-off:**
+- ~750 lines of new static (CSS + JS). Paid once; amortized across the 5 current live skins + every future live skin.
+- Sectioned form markup + per-field helper means the content registry carries more per-form data. Acceptable: matches the D-057 editor-blueprint direction (field-level metadata becomes the foundation for the future customer editor).
+- `form_sections` / `upload_field` / `form_submit_note` / per-field `helper` / `form_consent` are added in IT for all 5 templates and translated for EN/FR/ES/AR ONLY for `form_submit_note` this session. Sections/upload/helper translations are flagged as follow-up — templates fall back gracefully (functional form with premium visuals, just missing the IT-specific enhancement copy). This is a deliberate scope choice: quality parity for existing chrome strings is preserved; adding native-voice translations for 4 locales × 3 multilingual templates × (sections + upload + helpers) in one session would either ship machine-translated copy (forbidden by D-059/D-063) or blow scope. Phase 2i.3 candidate.
+- Native `<select>` still submits — but on touch devices (which we detect via `(hover: none) and (pointer: coarse)`) we deliberately keep the native picker because platform UX is superior. This means touch and desktop expose different visual controls. Trade-off accepted: both are premium in their own idiom.
+
+**Consequence:**
+- (a) The `.lf-*` primitive library becomes the contract for every future `tier=published_live` template's form authoring. New skins declare tokens, inherit everything else.
+- (b) The custom listbox / upload / check / section primitives are now part of the live-template runtime, alongside motion (D-058/D-061) and interactions (D-062/D-064). Authoring cost for new forms drops significantly.
+- (c) The `--lf-section-title-color` token (introduced mid-session when dark-on-dark legibility surfaced on fine-dining + startup-saas) formalizes that section title color is per-skin, not per-primitive.
+- (d) The 5 form pages are visibly more premium: custom listbox, section grouping on the 4 heavier forms, helper text under every field in IT, reassurance next to the submit CTA, sensible file upload on 3 pages.
+- (e) Follow-up work captured: (i) i18n copy parity for the IT-only enhancement fields, (ii) pre-existing specialist legacy mobile chrome (nav grid + footer 4-col) flagged as a candidate mobile polish pass.
+- (f) The D-053 acceptance checklist (10 gates) gains an implicit gate 11: any new `published_live` skin MUST author its `--lf-*` tokens in `_base.html :root`. Adding this as an explicit gate in the Phase 2g3.4+ rollout recipe.
+
+**Non-negotiable quality floor:**
+- Form submissions remain driven by native controls — no JS-only UIs that break without JS.
+- Every listbox must pass full keyboard access (↑↓ Home End Enter Space Esc typeahead).
+- Every control must have `:focus-visible` ring + 3px outline via `--lf-ring`.
+- Every form page must collapse to 1-column at ≤880px.
+- Every form must carry a reassurance `.lf-submit-note` adjacent to the primary CTA.
+- File upload added only where page copy references attachments (intro explicitly mentions them). Never decorative.
+
+**Validation results (Session 33):**
+- `python manage.py check`: 0 issues.
+- Form-specific smoke: 27/27 routes HTTP 200 with all `.lf-*` primitives + `live-forms.css` + `live-forms.js` linked + `.lf-select` present on every select-bearing form.
+- Full regression: 149/149 routes across detail + home + inner pages × 5 templates × locales + marketplace surfaces.
+- Browser walk 1440×900: 4 skins × 1–2 form pages each = 9 form renderings verified (sections, enhanced selects, upload drop zone, consent checkbox, submit bar with note, secondary alternative link).
+- RTL cardio AR: labels + placeholders + submit-note + arrow all correct.
+- Mobile 390×844: form grids collapse to 1-column; pre-existing specialist chrome overflow documented as scope-out.
+
+---
+
 ## D-065: Business Live Rollout — Phase 2g3.3 Closes With Pragma + Elevate Promoted Under D-053 / D-054 / D-047 (2026-04-13, Session 32)
 
 **Decision:** Both business templates (`pragma-corporate-suite`, `elevate-startup-landing`) flip from `tier=draft` to `tier=published_live` after a single-session rollout that delivers (a) full per-template content registry blocks in dedicated files (`apps/catalog/template_content_pragma.py`, `apps/catalog/template_content_elevate.py`), (b) two complete per-archetype skin folders under `templates/live_templates/business/<archetype>/`, (c) full D-047 chrome contract from line one with one new chrome key (`mp_other_business`) added in all 5 locales for forward-compatibility, and (d) tier sync via the existing `sync_template_tiers` command. Pragma ships 6 routes (home/chi-siamo/competenze/case-studies + 3 case-study posts/contatti) and Elevate ships 5 routes (home/prodotto/prezzi/demo/contatti). Both are IT-only at promotion — the locale-keyed shape is in place but the EN/FR/ES/AR trees are deferred to a future Phase 2i pass that will follow the cardio/derm/gusto recipe (D-059, D-063).

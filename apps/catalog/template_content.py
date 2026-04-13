@@ -733,6 +733,19 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
                 "Resta in poche righe — la segreteria ti contatta "
                 "entro la giornata lavorativa.",
         },
+        "form_helpers": {
+            "first_name": "Solo nome di battesimo.",
+            "last_name":  "Come appare sulla tessera sanitaria.",
+            "email":      "Usiamo l'email solo per rispondere: niente newsletter.",
+            "phone":      "Opzionale. Solo se preferisci essere richiamato.",
+            "subject":    "Un titolo breve aiuta a smistare la richiesta.",
+            "message":    "Resta nelle dieci righe — la segreteria risponde entro la giornata lavorativa.",
+        },
+        "form_consent":
+            "Acconsento al trattamento dei dati personali secondo l'informativa privacy "
+            "(Reg. UE 679/2016). I dati restano custoditi dallo studio e non sono comunicati a terzi.",
+        "form_submit_note":
+            "Risposta entro la giornata lavorativa · archiviazione cartacea riservata.",
     },
 
     # ─── RICHIEDI VISITA (appointment) ─────────────────────────
@@ -772,29 +785,76 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
         # fields, selects carry their option list inline. The chrome loops this list
         # directly instead of hand-writing the form.
         "form_fields": [
-            {"label": "Nome e cognome", "placeholder": "Mario Rossi",
-             "type": "text", "full_width": False},
-            {"label": "Email", "placeholder": "mario@email.it",
-             "type": "email", "full_width": False},
-            {"label": "Telefono", "placeholder": "+39 333 ...",
-             "type": "tel", "full_width": False},
-            {"label": "Età", "placeholder": "52",
-             "type": "number", "full_width": False},
-            {"label": "Tipo di visita", "type": "select", "full_width": False,
+            {"name": "name", "label": "Nome e cognome", "placeholder": "Mario Rossi",
+             "type": "text", "required": True, "full_width": False,
+             "helper": "Come sulla tessera sanitaria."},
+            {"name": "email", "label": "Email", "placeholder": "mario@email.it",
+             "type": "email", "required": True, "full_width": False,
+             "helper": "La proposta di appuntamento arriva qui."},
+            {"name": "phone", "label": "Telefono", "placeholder": "+39 333 ...",
+             "type": "tel", "required": True, "full_width": False,
+             "helper": "La segreteria può richiamare per confermare."},
+            {"name": "age", "label": "Età", "placeholder": "52",
+             "type": "number", "required": False, "full_width": False,
+             "helper": "Facoltativa."},
+            {"name": "visit_type", "label": "Tipo di visita", "type": "select",
+             "required": True, "full_width": False,
              "options": ["Prima visita", "Secondo parere",
-                         "Programma prevenzione", "Visita di controllo"]},
-            {"label": "Disponibilità preferite", "type": "select", "full_width": False,
-             "options": ["Mattina", "Pomeriggio", "Indifferente"]},
-            {"label": "Medico curante", "placeholder": "Dr. ...",
-             "type": "text", "full_width": True},
-            {"label": "Breve descrizione del caso",
+                         "Programma prevenzione", "Visita di controllo"],
+             "helper": "Se non sei sicuro, scegli Prima visita."},
+            {"name": "availability", "label": "Disponibilità preferite", "type": "select",
+             "required": True, "full_width": False,
+             "options": ["Mattina", "Pomeriggio", "Indifferente"],
+             "helper": "Serve solo ad allineare le due proposte di orario."},
+            {"name": "referring_doctor", "label": "Medico curante",
+             "placeholder": "Dr. ...",
+             "type": "text", "required": False, "full_width": True,
+             "helper": "Se sei inviato da un collega, indica il suo nome."},
+            {"name": "case_description", "label": "Breve descrizione del caso",
              "placeholder":
                  "Sintomi, esami già eseguiti, diagnosi attuale, terapia in corso. "
                  "Resta nelle dieci righe.",
-             "type": "textarea", "full_width": True},
+             "type": "textarea", "required": True, "full_width": True,
+             "helper": "Le richieste lette dal medico sono quelle compilate con cura — non le frettolose."},
         ],
 
+        # Sections carve the 8-field form into 4 logical groups so the form
+        # reads as a short consultation, not an airline check-in. `fields`
+        # references field `name` values declared in `form_fields` above.
+        "form_sections": [
+            {"num": "01", "title": "Chi sei",
+             "meta": "Queste righe arrivano direttamente in segreteria.",
+             "fields": ["name", "email", "phone", "age"]},
+            {"num": "02", "title": "Di che visita hai bisogno",
+             "meta": "Allinea la richiesta al perimetro dello studio.",
+             "fields": ["visit_type", "availability", "referring_doctor"]},
+            {"num": "03", "title": "Documenti utili (facoltativi)",
+             "meta": "Referti, esami e ECG recenti aiutano il medico a "
+                     "non chiederti di ripetere ciò che hai già fatto.",
+             "fields": ["__upload__"]},
+            {"num": "04", "title": "Descrivi il caso",
+             "meta": "Dieci righe bastano. Il medico legge personalmente.",
+             "fields": ["case_description"]},
+        ],
+
+        # File upload field — premium UI, optional, for lab reports / ECGs.
+        "upload_field": {
+            "name":       "referti",
+            "label":      "Referti o esami recenti",
+            "helper":     "PDF, JPG, PNG · fino a 5 file, massimo 10 MB complessivi. "
+                          "Custoditi nell'archivio cifrato dello studio.",
+            "accept":     ".pdf,.jpg,.jpeg,.png",
+            "multiple":   True,
+            "primary":    "Trascina qui i referti o",
+            "link":       "sfoglia i tuoi documenti",
+            "meta":       "PDF / JPG / PNG · max 10 MB",
+        },
+
         "submit_label": "Invia richiesta",
+
+        "form_submit_note":
+            "Il medico legge ogni richiesta entro 48 ore lavorative. "
+            "I dati clinici restano nell'archivio cartaceo dello studio.",
 
         "consent":
             "Acconsento al trattamento dei dati personali secondo l'informativa "
@@ -1443,16 +1503,54 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "personalmente con lo chef.",
 
         "form_title":  "Scrivi al concierge",
+        # Per-field dicts keyed by name. Kept backward-compatible with the
+        # tuple-loop in fine-dining/reservations.html by carrying `label`,
+        # `placeholder` and `type` under their original positions.
         "form_fields": [
-            ("Nome e cognome",     "Mario Rossi",         "text"),
-            ("Email",              "mario@email.it",       "email"),
-            ("Telefono",           "+39 333 ...",          "tel"),
-            ("Numero di ospiti",   "2",                    "number"),
-            ("Data preferita",     "ven 16 ottobre",       "text"),
-            ("Occasione",          "",                     "select"),
-            ("Intolleranze o allergie", "Eventuali intolleranze, allergie o richieste particolari", "text"),
-            ("Note per il concierge","Greta legge personalmente ogni richiesta. Bastano poche righe.", "textarea"),
+            {"name": "name",         "label": "Nome e cognome",
+             "placeholder": "Mario Rossi", "type": "text", "required": True,
+             "helper": "Greta vi saluta per nome in sala."},
+            {"name": "email",        "label": "Email",
+             "placeholder": "mario@email.it", "type": "email", "required": True,
+             "helper": "La proposta di serata arriva qui."},
+            {"name": "phone",        "label": "Telefono",
+             "placeholder": "+39 333 ...", "type": "tel", "required": False,
+             "helper": "Solo se preferite il contatto vocale."},
+            {"name": "guests",       "label": "Numero di ospiti",
+             "placeholder": "2", "type": "number", "required": True,
+             "helper": "Seduta massima 24 coperti, minima 2."},
+            {"name": "date",         "label": "Data preferita",
+             "placeholder": "ven 16 ottobre", "type": "text", "required": True,
+             "helper": "Aperto mercoledì-sabato. Greta propone la data compatibile più vicina."},
+            {"name": "occasion",     "label": "Occasione",
+             "placeholder": "", "type": "select", "required": True,
+             "helper": "Greta adatta accoglienza, fiori e sequenza del menù."},
+            {"name": "notes_food",   "label": "Intolleranze o allergie",
+             "placeholder": "Eventuali intolleranze, allergie o richieste particolari",
+             "type": "text", "required": False, "full_width": False,
+             "helper": "Lo chef ricalibra il menù la mattina stessa."},
+            {"name": "notes_extra",  "label": "Note per il concierge",
+             "placeholder": "Greta legge personalmente ogni richiesta. Bastano poche righe.",
+             "type": "textarea", "required": False, "full_width": True,
+             "helper": "Anniversario, ospite vegetariano, sorpresa: qualunque dettaglio conta."},
         ],
+
+        "form_sections": [
+            {"num": "01", "title": "Chi prenota",
+             "meta": "Queste righe le legge Greta, una alla volta.",
+             "fields": ["name", "email", "phone"]},
+            {"num": "02", "title": "La serata",
+             "meta": "Serviamo una sola seduta, mercoledì-sabato.",
+             "fields": ["guests", "date", "occasion"]},
+            {"num": "03", "title": "Richieste particolari",
+             "meta": "Bastano poche righe — Greta si muove sul resto.",
+             "fields": ["notes_food", "notes_extra"]},
+        ],
+
+        "form_submit_note":
+            "Greta risponde entro la giornata · conferma con deposito € 80 a persona, "
+            "scalato dal conto finale.",
+
         "occasion_options": ["Cena romantica", "Compleanno", "Lavoro", "Indifferente"],
         "consent":
             "Acconsento al trattamento dei dati personali secondo l'informativa "
@@ -2134,6 +2232,19 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
                 "Resta in poche righe — la segreteria ti contatta "
                 "entro 24 ore lavorative.",
         },
+        "form_helpers": {
+            "first_name": "Solo nome di battesimo.",
+            "last_name":  "Come appare sulla tessera sanitaria.",
+            "email":      "Usiamo l'email solo per rispondere: niente newsletter.",
+            "phone":      "Opzionale. Solo se preferisci essere richiamata.",
+            "subject":    "Un titolo breve aiuta a smistare la richiesta.",
+            "message":    "Resta nelle dieci righe — Bianca risponde entro 24 ore lavorative.",
+        },
+        "form_consent":
+            "Acconsento al trattamento dei dati personali secondo l'informativa privacy "
+            "(Reg. UE 679/2016). I dati restano custoditi dallo studio e non sono comunicati a terzi.",
+        "form_submit_note":
+            "Risposta entro 24 ore lavorative · archivio clinico riservato al medico curante.",
     },
 
     # ─── RICHIEDI VISITA (appointment) ─────────────────────────
@@ -2173,29 +2284,71 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
         "form_band_side_note_small": "↓ Modulo riservato",
 
         "form_fields": [
-            {"label": "Nome e cognome", "placeholder": "Maria Bianchi",
-             "type": "text", "full_width": False},
-            {"label": "Email", "placeholder": "maria@email.it",
-             "type": "email", "full_width": False},
-            {"label": "Telefono", "placeholder": "+39 335 ...",
-             "type": "tel", "full_width": False},
-            {"label": "Età", "placeholder": "38",
-             "type": "number", "full_width": False},
-            {"label": "Tipo di visita", "type": "select", "full_width": False,
+            {"name": "name", "label": "Nome e cognome", "placeholder": "Maria Bianchi",
+             "type": "text", "required": True, "full_width": False,
+             "helper": "Come sulla tessera sanitaria."},
+            {"name": "email", "label": "Email", "placeholder": "maria@email.it",
+             "type": "email", "required": True, "full_width": False,
+             "helper": "La proposta di appuntamento arriva qui."},
+            {"name": "phone", "label": "Telefono", "placeholder": "+39 335 ...",
+             "type": "tel", "required": True, "full_width": False,
+             "helper": "Bianca può richiamare per confermare."},
+            {"name": "age", "label": "Età", "placeholder": "38",
+             "type": "number", "required": False, "full_width": False,
+             "helper": "Facoltativa."},
+            {"name": "visit_type", "label": "Tipo di visita", "type": "select",
+             "required": True, "full_width": False,
              "options": ["Visita dermatologica", "Mappatura nevi",
-                         "Chirurgia dermatologica", "Medicina estetica"]},
-            {"label": "Disponibilità preferite", "type": "select", "full_width": False,
-             "options": ["Mattina", "Pomeriggio", "Indifferente"]},
-            {"label": "Medico curante", "placeholder": "Dr. ...",
-             "type": "text", "full_width": True},
-            {"label": "Breve descrizione del caso",
+                         "Chirurgia dermatologica", "Medicina estetica"],
+             "helper": "Se non sei sicura, scegli Visita dermatologica."},
+            {"name": "availability", "label": "Disponibilità preferite", "type": "select",
+             "required": True, "full_width": False,
+             "options": ["Mattina", "Pomeriggio", "Indifferente"],
+             "helper": "Serve solo ad allineare le due proposte di orario."},
+            {"name": "referring_doctor", "label": "Medico curante", "placeholder": "Dr. ...",
+             "type": "text", "required": False, "full_width": True,
+             "helper": "Se sei inviata da un collega, indica il suo nome."},
+            {"name": "case_description", "label": "Breve descrizione del caso",
              "placeholder":
                  "Motivo della visita, lesioni di interesse, sintomi recenti, "
                  "terapie in corso. Resta nelle dieci righe.",
-             "type": "textarea", "full_width": True},
+             "type": "textarea", "required": True, "full_width": True,
+             "helper": "Le richieste lette dalla dermatologa sono quelle preparate con cura."},
         ],
 
+        "form_sections": [
+            {"num": "01", "title": "Chi sei",
+             "meta": "Queste righe arrivano direttamente a Bianca in segreteria.",
+             "fields": ["name", "email", "phone", "age"]},
+            {"num": "02", "title": "Che tipo di visita",
+             "meta": "Allinea la richiesta al perimetro dello studio.",
+             "fields": ["visit_type", "availability", "referring_doctor"]},
+            {"num": "03", "title": "Fotografie o esami utili (facoltativi)",
+             "meta": "Se hai lesioni sospette, una o due foto ben illuminate "
+                     "aiutano a valutare la priorità in anticipo.",
+             "fields": ["__upload__"]},
+            {"num": "04", "title": "Descrivi il caso",
+             "meta": "Dieci righe bastano. La dermatologa legge personalmente.",
+             "fields": ["case_description"]},
+        ],
+
+        "upload_field": {
+            "name":       "dermatologia_allegati",
+            "label":      "Fotografie e referti",
+            "helper":     "JPG, PNG o PDF · fino a 5 file, massimo 10 MB complessivi. "
+                          "Custoditi nell'archivio digitale cifrato dello studio.",
+            "accept":     ".pdf,.jpg,.jpeg,.png",
+            "multiple":   True,
+            "primary":    "Trascina qui foto e referti oppure",
+            "link":       "sfoglia i tuoi documenti",
+            "meta":       "JPG / PNG / PDF · max 10 MB",
+        },
+
         "submit_label": "Invia richiesta",
+
+        "form_submit_note":
+            "La dermatologa legge ogni richiesta entro 48 ore lavorative. "
+            "Fotografie e referti restano nell'archivio cifrato dello studio.",
 
         "consent":
             "Acconsento al trattamento dei dati personali secondo l'informativa "
