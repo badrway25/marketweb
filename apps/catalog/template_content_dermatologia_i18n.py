@@ -40,19 +40,19 @@ from typing import Any
 # Shared non-localizable assets — repeated verbatim per locale block so
 # each content tree stays flat (no shared refs = no shared-reference bugs).
 _CHIEF_PORTRAIT = (
-    "https://images.unsplash.com/photo-1594824476967-48c8b964273f"
+    "https://images.unsplash.com/photo-1638202993928-7267aad84c31"
     "?auto=format&fit=crop&w=900&q=80"
 )
 _DR_VITALI_PORTRAIT = (
-    "https://images.unsplash.com/photo-1582750433449-648ed127bb54"
+    "https://images.unsplash.com/photo-1612531385446-f7e6d131e1d0"
     "?auto=format&fit=crop&w=900&q=80"
 )
 _DR_MORELLI_PORTRAIT = (
-    "https://images.unsplash.com/photo-1666214280557-f1b5022eb634"
+    "https://images.unsplash.com/photo-1559839734-2b71ea197ec2"
     "?auto=format&fit=crop&w=900&q=80"
 )
 _LEAD_IMAGE = (
-    "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
+    "https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
     "?auto=format&fit=crop&w=900&q=80"
 )
 
@@ -185,12 +185,12 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
         },
 
         "gallery_strip": {
-            "label": "The practice & technology",
+            "label": "Clinical leadership & cosmeceutical line",
             "images": [
-                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "The FotoFinder digital dermoscope"),
-                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "The Via Veneto practice"),
-                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "Dermoscopic consultation"),
-                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "Outpatient surgery room"),
+                ("https://images.unsplash.com/photo-1638202993928-7267aad84c31?auto=format&fit=crop&w=600&q=80",
+                 "Clinical leadership · Studio Ricciardi"),
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80",
+                 "Signature cosmeceutical line"),
             ],
         },
         "testimonianza": {
@@ -270,25 +270,7 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
                  "cta_href": "visite"},
             ],
         },
-        "before_after": {
-            "label":    "Documented results",
-            "heading":  "One treatment, <em>three months later.</em>",
-            "disclaimer":
-                "Images published with the patient's written consent. "
-                "Results are clinically documented, individual, and do not "
-                "constitute a guarantee of identical outcomes.",
-            "pairs": [
-                {"title": "Fractional CO2 laser",
-                 "context": "Post-acne scarring, patient aged 34",
-                 "duration": "3 sessions over 4 months",
-                 "before_image":
-                    "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
-                    "?auto=format&fit=crop&w=1000&q=80",
-                 "after_image":
-                    "https://images.unsplash.com/photo-1559599101-f09722fb4948"
-                    "?auto=format&fit=crop&w=1000&q=80"},
-            ],
-        },
+        "before_after": None,
         "editorial_feed": {
             "label": "From the practice, month by month",
             "items": [
@@ -300,11 +282,11 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
                  "?auto=format&fit=crop&w=800&q=80",
                  "SIDeMaST Forum 2026",
                  "Clinical paper on paediatric photoprotection"),
-                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=800&q=80",
                  "Corriere Salute · February",
                  "Consulting on the medicalized aesthetic pathway"),
-                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=800&q=80",
                  "Practice · January 2026",
                  "Opening of the new surgery room"),
@@ -348,7 +330,7 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
             "?auto=format&fit=crop&w=1400&q=80",
         "studio_image_caption": "Dermatology clinic · Via Veneto, Rome",
 
@@ -892,12 +874,12 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
         },
 
         "gallery_strip": {
-            "label": "Le cabinet & les technologies",
+            "label": "Direction clinique & ligne cosméceutique",
             "images": [
-                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "Le dermatoscope num\u00e9rique FotoFinder"),
-                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "Le cabinet de Via Veneto"),
-                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "Consultation dermatoscopique"),
-                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "Salle de chirurgie ambulatoire"),
+                ("https://images.unsplash.com/photo-1638202993928-7267aad84c31?auto=format&fit=crop&w=600&q=80",
+                 "Direction clinique · Studio Ricciardi"),
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80",
+                 "Ligne cosméceutique signée"),
             ],
         },
         "testimonianza": {
@@ -977,25 +959,7 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
                  "cta_href": "visite"},
             ],
         },
-        "before_after": {
-            "label":    "Résultats documentés",
-            "heading":  "Un traitement, <em>trois mois plus tard.</em>",
-            "disclaimer":
-                "Images publiées avec le consentement écrit de la patiente. "
-                "Les résultats sont cliniquement documentés, individuels et ne "
-                "constituent pas une garantie de résultat identique.",
-            "pairs": [
-                {"title": "Laser CO2 fractionné",
-                 "context": "Cicatrices post-acné, patiente de 34 ans",
-                 "duration": "3 séances en 4 mois",
-                 "before_image":
-                    "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
-                    "?auto=format&fit=crop&w=1000&q=80",
-                 "after_image":
-                    "https://images.unsplash.com/photo-1559599101-f09722fb4948"
-                    "?auto=format&fit=crop&w=1000&q=80"},
-            ],
-        },
+        "before_after": None,
         "editorial_feed": {
             "label": "Depuis le cabinet, mois après mois",
             "items": [
@@ -1007,11 +971,11 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
                  "?auto=format&fit=crop&w=800&q=80",
                  "Forum SIDeMaST 2026",
                  "Communication clinique sur la photoprotection pédiatrique"),
-                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=800&q=80",
                  "Corriere Salute · février",
                  "Conseil sur le parcours esthétique médicalisé"),
-                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=800&q=80",
                  "Cabinet · janvier 2026",
                  "Inauguration de la nouvelle salle de chirurgie"),
@@ -1056,7 +1020,7 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
             "?auto=format&fit=crop&w=1400&q=80",
         "studio_image_caption": "Cabinet dermatologique \u00b7 Via Veneto, Rome",
 
@@ -1603,12 +1567,12 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
         },
 
         "gallery_strip": {
-            "label": "La consulta y las tecnolog\u00edas",
+            "label": "Dirección clínica y línea cosmecéutica",
             "images": [
-                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "El dermatoscopio digital FotoFinder"),
-                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "La consulta de Via Veneto"),
-                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "Consulta dermatosc\u00f3pica"),
-                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "Sala de cirug\u00eda ambulatoria"),
+                ("https://images.unsplash.com/photo-1638202993928-7267aad84c31?auto=format&fit=crop&w=600&q=80",
+                 "Dirección clínica · Studio Ricciardi"),
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80",
+                 "Línea cosmecéutica firmada"),
             ],
         },
         "testimonianza": {
@@ -1688,25 +1652,7 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
                  "cta_href": "visite"},
             ],
         },
-        "before_after": {
-            "label":    "Resultados documentados",
-            "heading":  "Un tratamiento, <em>tres meses después.</em>",
-            "disclaimer":
-                "Imágenes publicadas con el consentimiento escrito de la paciente. "
-                "Los resultados son clínicamente documentados, individuales y no "
-                "constituyen garantía de un resultado idéntico.",
-            "pairs": [
-                {"title": "Láser CO2 fraccionado",
-                 "context": "Cicatrices postacné, paciente de 34 años",
-                 "duration": "3 sesiones en 4 meses",
-                 "before_image":
-                    "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
-                    "?auto=format&fit=crop&w=1000&q=80",
-                 "after_image":
-                    "https://images.unsplash.com/photo-1559599101-f09722fb4948"
-                    "?auto=format&fit=crop&w=1000&q=80"},
-            ],
-        },
+        "before_after": None,
         "editorial_feed": {
             "label": "Desde la consulta, mes a mes",
             "items": [
@@ -1718,11 +1664,11 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
                  "?auto=format&fit=crop&w=800&q=80",
                  "Foro SIDeMaST 2026",
                  "Presentación clínica sobre fotoprotección pediátrica"),
-                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=800&q=80",
                  "Corriere Salute · febrero",
                  "Asesoramiento sobre el recorrido estético medicalizado"),
-                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=800&q=80",
                  "Consulta · enero 2026",
                  "Inauguración de la nueva sala quirúrgica"),
@@ -1767,7 +1713,7 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
             "?auto=format&fit=crop&w=1400&q=80",
         "studio_image_caption": "Cl\u00ednica dermatol\u00f3gica \u00b7 Via Veneto, Roma",
 
@@ -2307,12 +2253,12 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
         },
 
         "gallery_strip": {
-            "label": "العيادة والتقنيات",
+            "label": "الإدارة السريرية وخطّ طبّ التجميل",
             "images": [
-                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "منظار الجلد الرقمي FotoFinder"),
-                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "عيادة فيا فينيتو"),
-                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "استشارة تنظيرية جلدية"),
-                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "غرفة الجراحة النهارية"),
+                ("https://images.unsplash.com/photo-1638202993928-7267aad84c31?auto=format&fit=crop&w=600&q=80",
+                 "الإدارة السريرية · استوديو ريتشاردي"),
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80",
+                 "خطّ طبّ التجميل الموقّع"),
             ],
         },
         "testimonianza": {
@@ -2390,24 +2336,7 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
                  "cta_href": "visite"},
             ],
         },
-        "before_after": {
-            "label":    "نتائج موثَّقة",
-            "heading":  "علاج واحد، <em>بعد ثلاثة أشهر.</em>",
-            "disclaimer":
-                "الصور منشورة بموافقة خطّية من المريضة. النتائج موثَّقة سريرياً "
-                "وفردية ولا تُشكّل ضماناً لنتيجة مماثلة لدى مرضى آخرين.",
-            "pairs": [
-                {"title": "ليزر CO2 المجزّأ",
-                 "context": "ندبات ما بعد حبّ الشباب، مريضة ٣٤ عاماً",
-                 "duration": "٣ جلسات خلال ٤ أشهر",
-                 "before_image":
-                    "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
-                    "?auto=format&fit=crop&w=1000&q=80",
-                 "after_image":
-                    "https://images.unsplash.com/photo-1559599101-f09722fb4948"
-                    "?auto=format&fit=crop&w=1000&q=80"},
-            ],
-        },
+        "before_after": None,
         "editorial_feed": {
             "label": "من العيادة، شهراً بشهر",
             "items": [
@@ -2419,11 +2348,11 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
                  "?auto=format&fit=crop&w=800&q=80",
                  "منتدى SIDeMaST ٢٠٢٦",
                  "ورقة سريرية عن الوقاية الضوئية للأطفال"),
-                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=800&q=80",
                  "Corriere Salute · فبراير",
                  "استشارة حول المسار التجميليّ الطبّيّ"),
-                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=800&q=80",
                  "العيادة · يناير ٢٠٢٦",
                  "افتتاح غرفة الجراحة الجديدة"),
@@ -2463,7 +2392,7 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
             "?auto=format&fit=crop&w=1400&q=80",
         "studio_image_caption": "عيادة الأمراض الجلدية · فيا فينيتو، روما",
 

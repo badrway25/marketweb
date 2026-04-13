@@ -34,7 +34,7 @@ from typing import Any
 # Shared non-localizable helpers — repeated verbatim in every locale block
 # so the content trees stay flat (no shared refs = no shared-reference bugs).
 _CHIEF_PORTRAIT = (
-    "https://images.unsplash.com/photo-1559757148-5c350d0d3c56"
+    "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
     "?auto=format&fit=crop&w=900&q=80"
 )
 _DR_MARANI_PORTRAIT = (
@@ -46,7 +46,7 @@ _DR_SALIERI_PORTRAIT = (
     "?auto=format&fit=crop&w=900&q=80"
 )
 _DR_LOMBARDI_PORTRAIT = (
-    "https://images.unsplash.com/photo-1622253692010-333f2da6031d"
+    "https://images.unsplash.com/photo-1612531385446-f7e6d131e1d0"
     "?auto=format&fit=crop&w=900&q=80"
 )
 _LEAD_IMAGE = (
@@ -266,7 +266,7 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
                 "in Parioli. Independent entrance, private waiting area, on-site "
                 "diagnostic rooms.",
             "map_fallback_image":
-                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "https://images.unsplash.com/photo-1531572753322-ad063cecc140"
                 "?auto=format&fit=crop&w=1200&q=80",
             "details": [
                 ("Address",        "Viale Parioli 142\n00197 Rome"),
@@ -315,7 +315,7 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1"
             "?auto=format&fit=crop&w=1400&q=80",
         "studio_image_caption": "Cardiology clinic · Viale Parioli, Rome",
 
@@ -358,7 +358,7 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
             "pathway, with a written duration, price and follow-up plan.",
 
         "service_image":
-            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe"
             "?auto=format&fit=crop&w=1400&q=80",
         "service_image_caption": "Cardiac diagnostics · Studio Marani",
 
@@ -912,7 +912,7 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
                 "Parioli. Entrée indépendante, salle d'attente réservée, "
                 "plateau technique sur place.",
             "map_fallback_image":
-                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "https://images.unsplash.com/photo-1531572753322-ad063cecc140"
                 "?auto=format&fit=crop&w=1200&q=80",
             "details": [
                 ("Adresse",        "Viale Parioli 142\n00197 Rome"),
@@ -962,7 +962,7 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1"
             "?auto=format&fit=crop&w=1400&q=80",
         "studio_image_caption": "Cabinet de cardiologie · Viale Parioli, Rome",
 
@@ -1006,7 +1006,7 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
             "défini, avec une durée, un tarif et un plan de suivi écrits.",
 
         "service_image":
-            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe"
             "?auto=format&fit=crop&w=1400&q=80",
         "service_image_caption": "Diagnostic cardiaque · Studio Marani",
 
@@ -1570,7 +1570,7 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
                 "Parioli. Acceso independiente, sala de espera reservada y "
                 "diagnóstico en la propia sede.",
             "map_fallback_image":
-                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "https://images.unsplash.com/photo-1531572753322-ad063cecc140"
                 "?auto=format&fit=crop&w=1200&q=80",
             "details": [
                 ("Dirección",     "Viale Parioli 142\n00197 Roma"),
@@ -1621,7 +1621,7 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1"
             "?auto=format&fit=crop&w=1400&q=80",
         "studio_image_caption": "Consulta de cardiología · Viale Parioli, Roma",
 
@@ -1667,7 +1667,7 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
             "seguimiento escritos.",
 
         "service_image":
-            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe"
             "?auto=format&fit=crop&w=1400&q=80",
         "service_image_caption": "Diagnóstico cardíaco · Studio Marani",
 
@@ -2229,7 +2229,7 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
                 "يشغل المركز الطابق النبيل في بناية تاريخية بحيّ Parioli. مدخل "
                 "مستقلّ، صالة انتظار خاصّة، وتشخيص في المكان نفسه.",
             "map_fallback_image":
-                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "https://images.unsplash.com/photo-1531572753322-ad063cecc140"
                 "?auto=format&fit=crop&w=1200&q=80",
             "details": [
                 ("العنوان",    "Viale Parioli 142\n00197 Roma"),
@@ -2276,7 +2276,7 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1"
             "?auto=format&fit=crop&w=1400&q=80",
         "studio_image_caption": "عيادة أمراض القلب · فيالي باريولي، روما",
 
@@ -2319,7 +2319,7 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
             "بمدّة وسعر وخطّة متابعة مكتوبة.",
 
         "service_image":
-            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe"
             "?auto=format&fit=crop&w=1400&q=80",
         "service_image_caption": "التشخيص القلبي · ستوديو ماراني",
 

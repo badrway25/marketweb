@@ -156,7 +156,7 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
                 "Membro della Società Italiana di Cardiologia e dell'European Society of Cardiology. "
                 "Autore di oltre 40 pubblicazioni indicizzate.",
             "portrait":
-                "https://images.unsplash.com/photo-1559757148-5c350d0d3c56"
+                "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
                 "?auto=format&fit=crop&w=900&q=80",
         },
 
@@ -358,7 +358,7 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
                 "pin-l+9c2a2a(12.490,41.920)/12.490,41.920,14,0/"
                 "800x560@2x?access_token=pk.eyJ1IjoibWFya2V0d2ViIiwiYSI6IlExIn0.x",
             "map_fallback_image":
-                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "https://images.unsplash.com/photo-1531572753322-ad063cecc140"
                 "?auto=format&fit=crop&w=1200&q=80",
             "details": [
                 ("Indirizzo",
@@ -409,7 +409,7 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb"
+            "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1"
             "?auto=format&fit=crop&w=1400&q=80",
         "studio_image_caption": "Ambulatorio di cardiologia · Viale Parioli, Roma",
 
@@ -455,7 +455,7 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
             "con una durata, un costo e un piano di follow-up scritti.",
 
         "service_image":
-            "https://images.unsplash.com/photo-1530497610245-94d3c16cda28"
+            "https://images.unsplash.com/photo-1530026186672-2cd00ffc50fe"
             "?auto=format&fit=crop&w=1400&q=80",
         "service_image_caption": "Diagnostica strumentale · Studio Marani",
 
@@ -562,7 +562,7 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
                     "diagnostica strumentale dello studio. Consulente cardiologico "
                     "per due società sportive di Serie B.",
                 "portrait":
-                    "https://images.unsplash.com/photo-1622253692010-333f2da6031d"
+                    "https://images.unsplash.com/photo-1612531385446-f7e6d131e1d0"
                     "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("Pubblicazioni", "#"),
@@ -909,7 +909,7 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
                 "Lorenzo conosce personalmente il nome, l'indirizzo e il numero di "
                 "telefono. Nessun intermediario, nessun catalogo, nessuna distribuzione.",
             "image":
-                "https://images.unsplash.com/photo-1606787366850-de6330128bfc"
+                "https://images.unsplash.com/photo-1610348725531-843dff563e2c"
                 "?auto=format&fit=crop&w=1000&q=80",
             "image_caption": "Ingredienti del menù autunno '26 · mercato del mattino",
         },
@@ -921,12 +921,12 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
                 ("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"
                  "?auto=format&fit=crop&w=600&q=80",
                  "La sala principale"),
-                ("https://images.unsplash.com/photo-1556909114-f6e7ad7d3136"
+                ("https://images.unsplash.com/photo-1581349485608-9469926a8e5e"
                  "?auto=format&fit=crop&w=600&q=80",
                  "La cucina a vista"),
-                ("https://images.unsplash.com/photo-1559339352-11d035aa65de"
+                ("https://images.unsplash.com/photo-1559329007-40df8a9345d8"
                  "?auto=format&fit=crop&w=600&q=80",
-                 "Il cortile sotto il glicine"),
+                 "La sala superiore"),
                 ("https://images.unsplash.com/photo-1414235077428-338989a2e8c0"
                  "?auto=format&fit=crop&w=600&q=80",
                  "Mise en place del venerdì sera"),
@@ -975,7 +975,7 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "items": [
                 {
                     "portrait":
-                        "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                        "https://images.unsplash.com/photo-1552058544-f2b08422138a"
                         "?auto=format&fit=crop&w=800&q=80",
                     "name": "Roberto Tarbouriech",
                     "role": "Ostriche & crostacei",
@@ -986,7 +986,7 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
                 },
                 {
                     "portrait":
-                        "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                        "https://images.unsplash.com/photo-1568213816046-0ee1c42bd559"
                         "?auto=format&fit=crop&w=800&q=80",
                     "name": "Famiglia Brezza",
                     "role": "Barolo & Langhe",
@@ -997,7 +997,7 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
                 },
                 {
                     "portrait":
-                        "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                        "https://images.unsplash.com/photo-1543418219-44e30b057fea"
                         "?auto=format&fit=crop&w=800&q=80",
                     "name": "Aloïs Lageder",
                     "role": "Biodinamica di montagna",
@@ -1008,7 +1008,7 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
                 },
                 {
                     "portrait":
-                        "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0"
                         "?auto=format&fit=crop&w=800&q=80",
                     "name": "Gianfranco Pieropan",
                     "role": "Soave classico",
@@ -1128,7 +1128,7 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
         ],
 
         "filosofia_image":
-            "https://images.unsplash.com/photo-1556910103-1c02745aae4d"
+            "https://images.unsplash.com/photo-1559329007-40df8a9345d8"
             "?auto=format&fit=crop&w=1400&q=80",
         "filosofia_image_caption": "La cucina · Lorenzo Fioravanti al lavoro",
 
@@ -1560,7 +1560,7 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
                 "Berlino. Membro SIDeMaST, EADV e International Dermoscopy Society. "
                 "Autrice di oltre cinquanta pubblicazioni indicizzate.",
             "portrait":
-                "https://images.unsplash.com/photo-1594824476967-48c8b964273f"
+                "https://images.unsplash.com/photo-1638202993928-7267aad84c31"
                 "?auto=format&fit=crop&w=900&q=80",
         },
 
@@ -1604,20 +1604,14 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
 
         # Gallery strip (Derm-only — Cardio uses tecnologie grid)
         "gallery_strip": {
-            "label": "Lo studio & le tecnologie",
+            "label": "Direzione clinica & cosmeceutica",
             "images": [
-                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1"
+                ("https://images.unsplash.com/photo-1638202993928-7267aad84c31"
                  "?auto=format&fit=crop&w=600&q=80",
-                 "Il dermatoscopio digitale FotoFinder"),
-                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+                 "Direzione clinica · Studio Ricciardi"),
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=600&q=80",
-                 "L'ambulatorio di Via Veneto"),
-                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
-                 "?auto=format&fit=crop&w=600&q=80",
-                 "Consulto dermatoscopico"),
-                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634"
-                 "?auto=format&fit=crop&w=600&q=80",
-                 "Sala chirurgica ambulatoriale"),
+                 "Linea cosmeceutica firmata"),
             ],
         },
 
@@ -1735,28 +1729,11 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
             ],
         },
 
-        # Before / After comparison — ethical dermatologic results
-        "before_after": {
-            "label":    "Risultati documentati",
-            "heading":  "Un trattamento, <em>tre mesi dopo.</em>",
-            "disclaimer":
-                "Le immagini pubblicate sono di paziente con consenso scritto. "
-                "I risultati sono clinicamente documentati, individuali e non "
-                "costituiscono una garanzia di esito identico per altri pazienti.",
-            "pairs": [
-                {
-                    "title": "Laser CO2 frazionato",
-                    "context": "Cicatrici post-acne, paziente 34 anni",
-                    "duration": "3 sedute in 4 mesi",
-                    "before_image":
-                        "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
-                        "?auto=format&fit=crop&w=1000&q=80",
-                    "after_image":
-                        "https://images.unsplash.com/photo-1559599101-f09722fb4948"
-                        "?auto=format&fit=crop&w=1000&q=80",
-                },
-            ],
-        },
+        # Before / After comparison — hidden until clinically vetted patient
+        # imagery is licensed (image-coherence pass: previous URLs depicted a
+        # facial cupping treatment and a hairstylist team, neither acceptable
+        # as a documented dermatologic result).
+        "before_after": None,
 
         # Editorial / press feed — quadruple grid, square format
         "editorial_feed": {
@@ -1770,11 +1747,11 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
                  "?auto=format&fit=crop&w=800&q=80",
                  "Forum SIDeMaST 2026",
                  "Presentazione clinica su fotoprotezione pediatrica"),
-                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                ("https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
                  "?auto=format&fit=crop&w=800&q=80",
                  "Corriere Salute · febbraio",
                  "Consulenza sul percorso estetico medicalizzato"),
-                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                ("https://images.unsplash.com/photo-1638202993928-7267aad84c31"
                  "?auto=format&fit=crop&w=800&q=80",
                  "Studio · gennaio 2026",
                  "Inaugurazione della nuova sala di chirurgia"),
@@ -1815,9 +1792,9 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
         ],
 
         "studio_image":
-            "https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+            "https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
             "?auto=format&fit=crop&w=1400&q=80",
-        "studio_image_caption": "Studio dermatologico · Via Veneto, Roma",
+        "studio_image_caption": "Linea cosmeceutica · Studio Ricciardi, Roma",
 
         "method_title": "Metodo",
         "method_paragraphs": [
@@ -1946,7 +1923,7 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
                     "International Dermoscopy Society. Autrice di oltre cinquanta "
                     "pubblicazioni indicizzate, fra cui due capitoli del trattato Bolognia-Italia.",
                 "portrait":
-                    "https://images.unsplash.com/photo-1594824476967-48c8b964273f"
+                    "https://images.unsplash.com/photo-1638202993928-7267aad84c31"
                     "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("PubMed", "#"),
@@ -1963,7 +1940,7 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
                     "sala chirurgica ambulatoriale dello studio. Consulente chirurgico "
                     "per due reparti dermatologici universitari romani.",
                 "portrait":
-                    "https://images.unsplash.com/photo-1582750433449-648ed127bb54"
+                    "https://images.unsplash.com/photo-1612531385446-f7e6d131e1d0"
                     "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("Curriculum", "#"),
@@ -1980,7 +1957,7 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
                     "estetica dermatologica dello Studio Ricciardi. Nessuna delega a "
                     "personale non medico.",
                 "portrait":
-                    "https://images.unsplash.com/photo-1666214280557-f1b5022eb634"
+                    "https://images.unsplash.com/photo-1559839734-2b71ea197ec2"
                     "?auto=format&fit=crop&w=900&q=80",
                 "links": [
                     ("Pubblicazioni", "#"),
@@ -2000,7 +1977,7 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
 
         # Lead post background image (blog_list hero)
         "lead_image":
-            "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
+            "https://images.unsplash.com/photo-1620916566398-39f1143ab7be"
             "?auto=format&fit=crop&w=900&q=80",
 
         # Blog-detail footer strap + fallback body
