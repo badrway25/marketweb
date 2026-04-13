@@ -158,8 +158,8 @@
   </section>
 
   <section class="fd-values">
-    <span class="sec-label" data-lm="reveal">Cosa garantiamo</span>
-    <h2 data-lm="reveal-lg" style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">Quattro promesse che <em>non cambiano mai</em>.</h2>
+    <span class="sec-label" data-lm="reveal">{{ page_data.values_label }}</span>
+    <h2 data-lm="reveal-lg" style="margin-top:14px;font-size:48px;font-weight:500;line-height:1.05;letter-spacing:-0.02em;max-width:18ch;">{{ page_data.values_heading|safe }}</h2>
     <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
       {% for title, blurb in page_data.values %}
         <div class="v">
@@ -171,10 +171,10 @@
   </section>
 
   <section class="fd-cta-band">
-    <h3 data-lm="reveal">Vuoi vedere il menù <em>in corso questa settimana?</em></h3>
+    <h3 data-lm="reveal">{{ page_data.cta_heading|safe }}</h3>
     <div class="actions" data-lm="reveal">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}">Otto atti dell'autunno '26 →</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}">Riserva la serata →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_menu }} →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_prenota }} →</a>
     </div>
   </section>
 {% endblock %}

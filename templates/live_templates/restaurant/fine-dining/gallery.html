@@ -124,21 +124,21 @@
 
   <section class="fd-gallery">
     <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
-      <div class="img a"><div class="bg"></div><div class="cap">{{ page_data.captions.0 }}</div></div>
-      <div class="img b"><div class="bg"></div><div class="cap">{{ page_data.captions.1 }}</div></div>
-      <div class="img c"><div class="bg"></div><div class="cap">{{ page_data.captions.2 }}</div></div>
-      <div class="img d"><div class="bg"></div><div class="cap">{{ page_data.captions.3 }}</div></div>
-      <div class="img e"><div class="bg"></div><div class="cap">{{ page_data.captions.4 }}</div></div>
-      <div class="img f"><div class="bg"></div><div class="cap">{{ page_data.captions.5 }}</div></div>
+      <div class="img a" data-li="lightbox-trigger" data-li-src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80" data-li-caption="{{ page_data.captions.0 }}" data-li-group="gallery"><div class="bg"></div><div class="cap">{{ page_data.captions.0 }}</div></div>
+      <div class="img b" data-li="lightbox-trigger" data-li-src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=80" data-li-caption="{{ page_data.captions.1 }}" data-li-group="gallery"><div class="bg"></div><div class="cap">{{ page_data.captions.1 }}</div></div>
+      <div class="img c" data-li="lightbox-trigger" data-li-src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1400&q=80" data-li-caption="{{ page_data.captions.2 }}" data-li-group="gallery"><div class="bg"></div><div class="cap">{{ page_data.captions.2 }}</div></div>
+      <div class="img d" data-li="lightbox-trigger" data-li-src="https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=1400&q=80" data-li-caption="{{ page_data.captions.3 }}" data-li-group="gallery"><div class="bg"></div><div class="cap">{{ page_data.captions.3 }}</div></div>
+      <div class="img e" data-li="lightbox-trigger" data-li-src="https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=1400&q=80" data-li-caption="{{ page_data.captions.4 }}" data-li-group="gallery"><div class="bg"></div><div class="cap">{{ page_data.captions.4 }}</div></div>
+      <div class="img f" data-li="lightbox-trigger" data-li-src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=80" data-li-caption="{{ page_data.captions.5 }}" data-li-group="gallery"><div class="bg"></div><div class="cap">{{ page_data.captions.5 }}</div></div>
     </div>
   </section>
 
   <section class="fd-cta-bottom">
-    <h2 data-lm="reveal-lg">«Per fotografare il piatto, qui, lo si guarda con calma da seduti.»</h2>
-    <p data-lm="reveal">Quattordici coperti per servizio. Solo prenotazione. Solo cena. Mer – Sab.</p>
+    <h2 data-lm="reveal-lg">{{ page_data.cta_quote }}</h2>
+    <p data-lm="reveal">{{ page_data.cta_desc }}</p>
     <div class="actions" data-lm="reveal">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}">Riserva la serata →</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}">Vedi il menù →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary }} →</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'menu' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_secondary }} →</a>
     </div>
   </section>
 {% endblock %}

@@ -184,10 +184,132 @@ DERMATOLOGIA_CONTENT_EN: dict[str, Any] = {
             ],
         },
 
+        "gallery_strip": {
+            "label": "The practice & technology",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "The FotoFinder digital dermoscope"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "The Via Veneto practice"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "Dermoscopic consultation"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "Outpatient surgery room"),
+            ],
+        },
+        "testimonianza": {
+            "quote": "I was looking for a dermatologist who wouldn't rush. Dr Ricciardi spent twenty minutes studying every mole with the dermoscope before saying a single word. It was the most thorough examination of my life.",
+            "author": "Practice patient",
+            "context": "Digital mole mapping · 2025",
+        },
+        "faq": {
+            "label": "Frequently asked questions",
+            "heading": "Answers to <em>the most common questions.</em>",
+            "items": [
+                ("How often should mole mapping be done?", "We recommend an annual check for everyone. For patients with a family history of melanoma or fair skin with many moles, six-monthly checks may be appropriate. Digital mapping allows every mole to be compared with its previous image."),
+                ("Is dermatological surgery painful?", "Excision of suspicious lesions is performed under local anaesthesia. The patient feels only the initial injection. The procedure takes about twenty minutes on average and you go home immediately afterwards."),
+                ("What is the difference between cosmetic and dermatological aesthetics?", "The difference is the physician. In our practice every aesthetic procedure — filler, botulinum toxin, peel — is performed personally by a dermatologist, never delegated."),
+                ("Can I bring reports from another practice?", "Yes, we read them carefully. If you have a previous digital mapping, please bring it: chronological comparison between images taken on different machines is both possible and very useful."),
+                ("How does the dermatological laser work?", "It depends on the indication. Fractional CO2 laser treats scars and keratoses, vascular laser treats superficial vascular lesions. Each protocol includes a free preliminary consultation with the operating dermatologist."),
+            ],
+        },
+
         "cta_heading":
             "A pathway that begins <em>with the first visit.</em>",
         "cta_primary_label":   "Book a first visit",
         "cta_secondary_label": "Directions & contact",
+
+        "trattamenti_tabs": {
+            "label":   "Areas of practice",
+            "heading": "Three domains, <em>one clinical direction.</em>",
+            "intro":
+                "Every domain follows the same method — preliminary consultation, "
+                "written plan, dermatologist-led execution — and integrates with "
+                "the others in a continuous pathway.",
+            "tabs": [
+                {"id": "clinica", "label": "Clinical",
+                 "eyebrow": "Clinical dermatology",
+                 "heading": "Visits, mapping, monitoring.",
+                 "body":
+                    "The foundation of the practice. Comprehensive first visit, "
+                    "digital nevus mapping with Fotofinder Vexia, dermoscopy "
+                    "and chronological monitoring.",
+                 "items": [
+                    ("First dermatology visit", "45 min · €180"),
+                    ("Digital Fotofinder mapping", "60 min · €320"),
+                    ("Annual review", "30 min · €140"),
+                    ("Paediatric dermatology", "40 min · €170"),
+                 ],
+                 "cta_label": "All clinical visits →",
+                 "cta_href": "visite"},
+                {"id": "chirurgia", "label": "Surgery",
+                 "eyebrow": "Dermatologic surgery",
+                 "heading": "Excisions, CO2 laser, corrections.",
+                 "body":
+                    "Minor ambulatory surgery in a certified theatre. Excision "
+                    "of suspicious lesions with histology and dedicated "
+                    "aesthetic suturing.",
+                 "items": [
+                    ("Nevus excision", "30 min · €420"),
+                    ("Fractional CO2 laser (scars)", "60 min · €520"),
+                    ("Cyst removal", "45 min · €380"),
+                    ("Post-surgical revision", "40 min · €290"),
+                 ],
+                 "cta_label": "Surgical pathways →",
+                 "cta_href": "visite"},
+                {"id": "estetica", "label": "Aesthetic",
+                 "eyebrow": "Aesthetic dermatology",
+                 "heading": "Medical protocols, never estheticians.",
+                 "body":
+                    "Every treatment is performed personally by a dermatologist. "
+                    "Botulinum toxin, fillers, peels and vascular lasers in a "
+                    "conservative, graduated approach.",
+                 "items": [
+                    ("Botulinum toxin, upper face", "20 min · from €380"),
+                    ("Hyaluronic acid filler", "30 min · from €420"),
+                    ("Superficial chemical peel", "40 min · €240"),
+                    ("Vascular laser", "30 min · from €290"),
+                 ],
+                 "cta_label": "Aesthetic protocols →",
+                 "cta_href": "visite"},
+            ],
+        },
+        "before_after": {
+            "label":    "Documented results",
+            "heading":  "One treatment, <em>three months later.</em>",
+            "disclaimer":
+                "Images published with the patient's written consent. "
+                "Results are clinically documented, individual, and do not "
+                "constitute a guarantee of identical outcomes.",
+            "pairs": [
+                {"title": "Fractional CO2 laser",
+                 "context": "Post-acne scarring, patient aged 34",
+                 "duration": "3 sessions over 4 months",
+                 "before_image":
+                    "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                    "?auto=format&fit=crop&w=1000&q=80",
+                 "after_image":
+                    "https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                    "?auto=format&fit=crop&w=1000&q=80"},
+            ],
+        },
+        "editorial_feed": {
+            "label": "From the practice, month by month",
+            "items": [
+                ("https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Vogue Italia · March 2026",
+                 "Interview on skin conditions and menopause"),
+                ("https://images.unsplash.com/photo-1616394584738-fc6e612e71b9"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "SIDeMaST Forum 2026",
+                 "Clinical paper on paediatric photoprotection"),
+                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Corriere Salute · February",
+                 "Consulting on the medicalized aesthetic pathway"),
+                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Practice · January 2026",
+                 "Opening of the new surgery room"),
+            ],
+        },
     },
 
     # ─── THE PRACTICE (about) ───���─────────────────────────────
@@ -769,10 +891,132 @@ DERMATOLOGIA_CONTENT_FR: dict[str, Any] = {
             ],
         },
 
+        "gallery_strip": {
+            "label": "Le cabinet & les technologies",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "Le dermatoscope num\u00e9rique FotoFinder"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "Le cabinet de Via Veneto"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "Consultation dermatoscopique"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "Salle de chirurgie ambulatoire"),
+            ],
+        },
+        "testimonianza": {
+            "quote": "Je cherchais une dermatologue qui ne soit pas press\u00e9e. La Dottoressa Ricciardi a pass\u00e9 vingt minutes \u00e0 \u00e9tudier chaque grain de beaut\u00e9 au dermatoscope avant de prononcer un seul mot. C\u2019est l\u2019examen le plus minutieux de ma vie.",
+            "author": "Patient du cabinet",
+            "context": "Cartographie num\u00e9rique des n\u00e6vus \u00b7 2025",
+        },
+        "faq": {
+            "label": "Questions fr\u00e9quentes",
+            "heading": "R\u00e9ponses aux questions <em>les plus courantes.</em>",
+            "items": [
+                ("\u00c0 quelle fr\u00e9quence faut-il faire la cartographie des n\u00e6vus ?", "Nous recommandons un contr\u00f4le annuel pour tous. En cas d\u2019ant\u00e9c\u00e9dents familiaux de m\u00e9lanome ou de phototype clair avec de nombreux n\u00e6vus, un contr\u00f4le semestriel peut \u00eatre indiqu\u00e9. La cartographie num\u00e9rique permet de comparer chaque n\u00e6vus avec sa version pr\u00e9c\u00e9dente."),
+                ("La chirurgie dermatologique est-elle douloureuse ?", "L\u2019excision de l\u00e9sions suspectes se fait sous anesth\u00e9sie locale. Le patient ne ressent que la premi\u00e8re piq\u00fbre de l\u2019anesth\u00e9sique. L\u2019intervention dure en moyenne vingt minutes et on rentre chez soi imm\u00e9diatement apr\u00e8s."),
+                ("Quelle diff\u00e9rence entre esth\u00e9tique et dermatologie esth\u00e9tique ?", "La diff\u00e9rence, c\u2019est le m\u00e9decin. Dans notre cabinet, chaque traitement esth\u00e9tique \u2014 filler, toxine botulique, peeling \u2014 est r\u00e9alis\u00e9 personnellement par un dermatologue, jamais d\u00e9l\u00e9gu\u00e9."),
+                ("Puis-je apporter des r\u00e9sultats d\u2019un autre cabinet ?", "Oui, nous les lisons attentivement. Si vous avez une cartographie num\u00e9rique pr\u00e9c\u00e9dente, apportez-la : la comparaison chronologique entre images prises sur des machines diff\u00e9rentes est possible et tr\u00e8s utile."),
+                ("Comment fonctionne le laser dermatologique ?", "Cela d\u00e9pend de l\u2019indication. Le laser CO2 fractionn\u00e9 traite les cicatrices et les k\u00e9ratoses, le laser vasculaire les l\u00e9sions vasculaires superficielles. Chaque protocole inclut une consultation pr\u00e9liminaire gratuite avec la dermatologue op\u00e9ratrice."),
+            ],
+        },
+
         "cta_heading":
             "Un parcours qui commence <em>d\u00e8s la premi\u00e8re visite.</em>",
         "cta_primary_label":   "R\u00e9server une premi\u00e8re visite",
         "cta_secondary_label": "Acc\u00e8s et coordonn\u00e9es",
+
+        "trattamenti_tabs": {
+            "label":   "Domaines d'intervention",
+            "heading": "Trois domaines, <em>une seule direction clinique.</em>",
+            "intro":
+                "Chaque domaine suit la même méthode — consultation préliminaire, "
+                "plan écrit, exécution dermatologique — et s'intègre aux autres "
+                "dans un parcours continu.",
+            "tabs": [
+                {"id": "clinica", "label": "Clinique",
+                 "eyebrow": "Dermatologie clinique",
+                 "heading": "Consultations, cartographies, suivi.",
+                 "body":
+                    "La base du cabinet. Première consultation approfondie, "
+                    "cartographie numérique Fotofinder Vexia, dermatoscopie et "
+                    "suivi chronologique.",
+                 "items": [
+                    ("Première consultation dermatologique", "45 min · 180 €"),
+                    ("Cartographie numérique Fotofinder", "60 min · 320 €"),
+                    ("Contrôle annuel", "30 min · 140 €"),
+                    ("Dermatologie pédiatrique", "40 min · 170 €"),
+                 ],
+                 "cta_label": "Toutes les consultations cliniques →",
+                 "cta_href": "visite"},
+                {"id": "chirurgia", "label": "Chirurgie",
+                 "eyebrow": "Chirurgie dermatologique",
+                 "heading": "Exérèses, laser CO2, corrections.",
+                 "body":
+                    "Petite chirurgie ambulatoire en salle certifiée. Exérèse "
+                    "de lésions suspectes avec histologie et suture esthétique "
+                    "dédiée.",
+                 "items": [
+                    ("Exérèse de nævus", "30 min · 420 €"),
+                    ("Laser CO2 fractionné (cicatrices)", "60 min · 520 €"),
+                    ("Ablation de kyste", "45 min · 380 €"),
+                    ("Reprise post-chirurgicale", "40 min · 290 €"),
+                 ],
+                 "cta_label": "Parcours chirurgicaux →",
+                 "cta_href": "visite"},
+                {"id": "estetica", "label": "Esthétique",
+                 "eyebrow": "Dermatologie esthétique",
+                 "heading": "Protocoles médicaux, jamais d'esthéticienne.",
+                 "body":
+                    "Chaque acte est réalisé personnellement par une dermatologue. "
+                    "Toxine botulique, acide hyaluronique, peelings et lasers "
+                    "vasculaires dans une approche conservatrice et graduée.",
+                 "items": [
+                    ("Toxine botulique, tiers supérieur", "20 min · dès 380 €"),
+                    ("Acide hyaluronique", "30 min · dès 420 €"),
+                    ("Peeling chimique superficiel", "40 min · 240 €"),
+                    ("Laser vasculaire", "30 min · dès 290 €"),
+                 ],
+                 "cta_label": "Protocoles esthétiques →",
+                 "cta_href": "visite"},
+            ],
+        },
+        "before_after": {
+            "label":    "Résultats documentés",
+            "heading":  "Un traitement, <em>trois mois plus tard.</em>",
+            "disclaimer":
+                "Images publiées avec le consentement écrit de la patiente. "
+                "Les résultats sont cliniquement documentés, individuels et ne "
+                "constituent pas une garantie de résultat identique.",
+            "pairs": [
+                {"title": "Laser CO2 fractionné",
+                 "context": "Cicatrices post-acné, patiente de 34 ans",
+                 "duration": "3 séances en 4 mois",
+                 "before_image":
+                    "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                    "?auto=format&fit=crop&w=1000&q=80",
+                 "after_image":
+                    "https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                    "?auto=format&fit=crop&w=1000&q=80"},
+            ],
+        },
+        "editorial_feed": {
+            "label": "Depuis le cabinet, mois après mois",
+            "items": [
+                ("https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Vogue Italia · mars 2026",
+                 "Entretien sur les pathologies cutanées et la ménopause"),
+                ("https://images.unsplash.com/photo-1616394584738-fc6e612e71b9"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Forum SIDeMaST 2026",
+                 "Communication clinique sur la photoprotection pédiatrique"),
+                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Corriere Salute · février",
+                 "Conseil sur le parcours esthétique médicalisé"),
+                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Cabinet · janvier 2026",
+                 "Inauguration de la nouvelle salle de chirurgie"),
+            ],
+        },
     },
 
     # ──��� LE CABINET (about) ─────────���─────────────────────────
@@ -1358,10 +1602,132 @@ DERMATOLOGIA_CONTENT_ES: dict[str, Any] = {
             ],
         },
 
+        "gallery_strip": {
+            "label": "La consulta y las tecnolog\u00edas",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "El dermatoscopio digital FotoFinder"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "La consulta de Via Veneto"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "Consulta dermatosc\u00f3pica"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "Sala de cirug\u00eda ambulatoria"),
+            ],
+        },
+        "testimonianza": {
+            "quote": "Buscaba una dermat\u00f3loga que no tuviera prisa. La Dottoressa Ricciardi dedic\u00f3 veinte minutos a estudiar cada lunar con el dermatoscopio antes de decir una sola palabra. Fue la exploraci\u00f3n m\u00e1s minuciosa de mi vida.",
+            "author": "Paciente de la consulta",
+            "context": "Mapeo digital de lunares \u00b7 2025",
+        },
+        "faq": {
+            "label": "Preguntas frecuentes",
+            "heading": "Respuestas a las preguntas <em>m\u00e1s comunes.</em>",
+            "items": [
+                ("\u00bfCada cu\u00e1nto hay que hacer el mapeo de lunares?", "Recomendamos un control anual para todos. En caso de antecedentes familiares de melanoma o fototipo claro con muchos lunares, el control puede ser semestral. El mapeo digital permite comparar cada lunar con su versi\u00f3n anterior."),
+                ("\u00bfLa cirug\u00eda dermatol\u00f3gica es dolorosa?", "La escisi\u00f3n de lesiones sospechosas se realiza bajo anestesia local. El paciente solo siente el primer pinchazo del anest\u00e9sico. La intervenci\u00f3n dura unos veinte minutos de media y se vuelve a casa inmediatamente."),
+                ("\u00bfQu\u00e9 diferencia hay entre est\u00e9tica y dermatolog\u00eda est\u00e9tica?", "La diferencia es el m\u00e9dico. En nuestra consulta todo tratamiento est\u00e9tico \u2014 rellenos, toxina botul\u00ednica, peeling \u2014 lo realiza personalmente un dermat\u00f3logo, nunca se delega."),
+                ("\u00bfPuedo traer informes de otra consulta?", "S\u00ed, los leemos con atenci\u00f3n. Si tiene un mapeo digital previo, tr\u00e1igalo: la comparaci\u00f3n cronol\u00f3gica entre im\u00e1genes tomadas con distintas m\u00e1quinas es posible y muy \u00fatil."),
+                ("\u00bfC\u00f3mo funciona el l\u00e1ser dermatol\u00f3gico?", "Depende de la indicaci\u00f3n. El l\u00e1ser CO2 fraccionado trata cicatrices y queratosis, el l\u00e1ser vascular las lesiones vasculares superficiales. Cada protocolo incluye una consulta preliminar gratuita con la dermat\u00f3loga operadora."),
+            ],
+        },
+
         "cta_heading":
             "Un recorrido que empieza <em>desde la primera visita.</em>",
         "cta_primary_label":   "Reservar una primera visita",
         "cta_secondary_label": "C\u00f3mo llegar y contacto",
+
+        "trattamenti_tabs": {
+            "label":   "Áreas de actuación",
+            "heading": "Tres ámbitos, <em>una sola dirección clínica.</em>",
+            "intro":
+                "Cada ámbito sigue el mismo método — consulta preliminar, plan "
+                "escrito, ejecución dermatológica — y se integra con los demás "
+                "en un recorrido continuo.",
+            "tabs": [
+                {"id": "clinica", "label": "Clínica",
+                 "eyebrow": "Dermatología clínica",
+                 "heading": "Visitas, mapeo, seguimiento.",
+                 "body":
+                    "La base de la consulta. Primera visita exhaustiva, mapeo "
+                    "digital de nevus con Fotofinder Vexia, dermatoscopia y "
+                    "seguimiento cronológico.",
+                 "items": [
+                    ("Primera visita dermatológica", "45 min · 180 €"),
+                    ("Mapeo digital Fotofinder", "60 min · 320 €"),
+                    ("Control anual", "30 min · 140 €"),
+                    ("Dermatología pediátrica", "40 min · 170 €"),
+                 ],
+                 "cta_label": "Todas las visitas clínicas →",
+                 "cta_href": "visite"},
+                {"id": "chirurgia", "label": "Cirugía",
+                 "eyebrow": "Cirugía dermatológica",
+                 "heading": "Exéresis, láser CO2, correcciones.",
+                 "body":
+                    "Cirugía menor ambulatoria en quirófano certificado. "
+                    "Exéresis de lesiones sospechosas con histología y sutura "
+                    "estética dedicada.",
+                 "items": [
+                    ("Exéresis de nevus", "30 min · 420 €"),
+                    ("Láser CO2 fraccionado (cicatrices)", "60 min · 520 €"),
+                    ("Extirpación de quiste", "45 min · 380 €"),
+                    ("Corrección postquirúrgica", "40 min · 290 €"),
+                 ],
+                 "cta_label": "Itinerarios quirúrgicos →",
+                 "cta_href": "visite"},
+                {"id": "estetica", "label": "Estética",
+                 "eyebrow": "Dermatología estética",
+                 "heading": "Protocolos médicos, nunca esteticistas.",
+                 "body":
+                    "Cada tratamiento lo realiza personalmente una dermatóloga. "
+                    "Toxina botulínica, rellenos, peelings y láseres vasculares "
+                    "en un enfoque conservador y gradual.",
+                 "items": [
+                    ("Toxina botulínica, tercio superior", "20 min · desde 380 €"),
+                    ("Ácido hialurónico", "30 min · desde 420 €"),
+                    ("Peeling químico superficial", "40 min · 240 €"),
+                    ("Láser vascular", "30 min · desde 290 €"),
+                 ],
+                 "cta_label": "Protocolos estéticos →",
+                 "cta_href": "visite"},
+            ],
+        },
+        "before_after": {
+            "label":    "Resultados documentados",
+            "heading":  "Un tratamiento, <em>tres meses después.</em>",
+            "disclaimer":
+                "Imágenes publicadas con el consentimiento escrito de la paciente. "
+                "Los resultados son clínicamente documentados, individuales y no "
+                "constituyen garantía de un resultado idéntico.",
+            "pairs": [
+                {"title": "Láser CO2 fraccionado",
+                 "context": "Cicatrices postacné, paciente de 34 años",
+                 "duration": "3 sesiones en 4 meses",
+                 "before_image":
+                    "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                    "?auto=format&fit=crop&w=1000&q=80",
+                 "after_image":
+                    "https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                    "?auto=format&fit=crop&w=1000&q=80"},
+            ],
+        },
+        "editorial_feed": {
+            "label": "Desde la consulta, mes a mes",
+            "items": [
+                ("https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Vogue Italia · marzo 2026",
+                 "Entrevista sobre patologías cutáneas y menopausia"),
+                ("https://images.unsplash.com/photo-1616394584738-fc6e612e71b9"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Foro SIDeMaST 2026",
+                 "Presentación clínica sobre fotoprotección pediátrica"),
+                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Corriere Salute · febrero",
+                 "Asesoramiento sobre el recorrido estético medicalizado"),
+                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Consulta · enero 2026",
+                 "Inauguración de la nueva sala quirúrgica"),
+            ],
+        },
     },
 
     # ─── LA CL\u00cdNICA (about) ──────────────────────────────────
@@ -1940,10 +2306,129 @@ DERMATOLOGIA_CONTENT_AR: dict[str, Any] = {
             ],
         },
 
+        "gallery_strip": {
+            "label": "العيادة والتقنيات",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?auto=format&fit=crop&w=600&q=80", "منظار الجلد الرقمي FotoFinder"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=600&q=80", "عيادة فيا فينيتو"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80", "استشارة تنظيرية جلدية"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634?auto=format&fit=crop&w=600&q=80", "غرفة الجراحة النهارية"),
+            ],
+        },
+        "testimonianza": {
+            "quote": "كنتُ أبحث عن طبيبة جلدية لا تستعجل. الدكتورة ريتشاردي أمضت عشرين دقيقة في دراسة كل شامة بمنظار الجلد قبل أن تنطق بكلمة واحدة. كان أدقّ فحص في حياتي.",
+            "author": "مريض في العيادة",
+            "context": "تخريط رقمي للشامات · ٢٠٢٥",
+        },
+        "faq": {
+            "label": "الأسئلة الشائعة",
+            "heading": "إجابات على الأسئلة <em>الأكثر شيوعًا.</em>",
+            "items": [
+                ("كم مرة ينبغي إجراء تخريط الشامات؟", "ننصح بفحص سنوي للجميع. في حال وجود تاريخ عائلي للميلانوما أو نمط ضوئي فاتح مع كثير من الشامات، قد يكون الفحص كل ستة أشهر. يسمح التخريط الرقمي بمقارنة كل شامة بصورتها السابقة."),
+                ("هل الجراحة الجلدية مؤلمة؟", "يتم استئصال الآفات المشبوهة تحت التخدير الموضعي. لا يشعر المريض إلا بوخزة المخدّر الأولى. تستغرق العملية نحو عشرين دقيقة ويعود المريض إلى منزله فورًا."),
+                ("ما الفرق بين التجميل والتجميل الجلدي؟", "الفرق هو الطبيب. في عيادتنا كل إجراء تجميلي — فيلر أو توكسين بوتولينوم أو تقشير — يُجريه طبيب الجلد شخصيًا ولا يُفوَّض أبدًا."),
+                ("هل يمكنني إحضار تقارير من عيادة أخرى؟", "نعم، نقرأها بعناية. إذا كان لديك تخريط رقمي سابق، أحضره: المقارنة الزمنية بين صور مأخوذة بأجهزة مختلفة ممكنة ومفيدة جدًا."),
+                ("كيف يعمل الليزر الجلدي؟", "يعتمد على الاستطباب. ليزر CO2 المجزّأ يعالج الندبات والتقرّنات، والليزر الوعائي يعالج الآفات الوعائية السطحية. كل بروتوكول يتضمن استشارة أولية مجانية مع طبيبة الجلد المعالجة."),
+            ],
+        },
+
         "cta_heading":
             "مسار يبدأ <em>من الزيارة الأولى.</em>",
         "cta_primary_label":   "احجز زيارة أولى",
         "cta_secondary_label": "الموقع والتواصل",
+
+        "trattamenti_tabs": {
+            "label":   "مجالات العمل",
+            "heading": "ثلاثة مجالات، <em>إدارة سريرية واحدة.</em>",
+            "intro":
+                "يتبّع كلّ مجال الأسلوب نفسه — استشارة تمهيدية، خطّة مكتوبة، "
+                "تنفيذ من طبيبة الجلد — ويتكامل مع المجالات الأخرى في مسار "
+                "متواصل.",
+            "tabs": [
+                {"id": "clinica", "label": "السريري",
+                 "eyebrow": "طبّ الجلد السريري",
+                 "heading": "الزيارات، التخريط، المتابعة.",
+                 "body":
+                    "أساس العيادة. زيارة أولى معمّقة، تخريط رقميّ للشامات "
+                    "بجهاز Fotofinder Vexia، تنظير جلديّ ومتابعة زمنية.",
+                 "items": [
+                    ("الزيارة الأولى", "٤٥ دقيقة · ١٨٠ €"),
+                    ("التخريط الرقميّ Fotofinder", "٦٠ دقيقة · ٣٢٠ €"),
+                    ("الفحص السنويّ", "٣٠ دقيقة · ١٤٠ €"),
+                    ("طبّ الجلد للأطفال", "٤٠ دقيقة · ١٧٠ €"),
+                 ],
+                 "cta_label": "كلّ الزيارات السريرية ←",
+                 "cta_href": "visite"},
+                {"id": "chirurgia", "label": "الجراحي",
+                 "eyebrow": "الجراحة الجلدية",
+                 "heading": "الاستئصال، ليزر CO2، التصحيحات.",
+                 "body":
+                    "جراحة صغرى خارجية في غرفة معتمدة. استئصال الآفات "
+                    "المشبوهة مع فحص نسيجيّ وخياطة تجميلية مخصّصة.",
+                 "items": [
+                    ("استئصال شامة", "٣٠ دقيقة · ٤٢٠ €"),
+                    ("ليزر CO2 المجزّأ للندبات", "٦٠ دقيقة · ٥٢٠ €"),
+                    ("إزالة كيسة", "٤٥ دقيقة · ٣٨٠ €"),
+                    ("تصحيح بعد الجراحة", "٤٠ دقيقة · ٢٩٠ €"),
+                 ],
+                 "cta_label": "المسارات الجراحية ←",
+                 "cta_href": "visite"},
+                {"id": "estetica", "label": "التجميلي",
+                 "eyebrow": "طبّ الجلد التجميليّ",
+                 "heading": "بروتوكولات طبّية، لا أخصّائيّات تجميل.",
+                 "body":
+                    "كلّ إجراء تُنفّذه طبيبة جلد بنفسها. توكسين البوتولينوم "
+                    "وحشوات حمض الهيالورونيك والتقشير والليزر الوعائي ضمن "
+                    "مقاربة تحفّظية ومتدرّجة.",
+                 "items": [
+                    ("توكسين البوتولينوم، الثلث الأعلى", "٢٠ دقيقة · من ٣٨٠ €"),
+                    ("حمض الهيالورونيك", "٣٠ دقيقة · من ٤٢٠ €"),
+                    ("تقشير كيميائيّ سطحيّ", "٤٠ دقيقة · ٢٤٠ €"),
+                    ("الليزر الوعائيّ", "٣٠ دقيقة · من ٢٩٠ €"),
+                 ],
+                 "cta_label": "البروتوكولات التجميلية ←",
+                 "cta_href": "visite"},
+            ],
+        },
+        "before_after": {
+            "label":    "نتائج موثَّقة",
+            "heading":  "علاج واحد، <em>بعد ثلاثة أشهر.</em>",
+            "disclaimer":
+                "الصور منشورة بموافقة خطّية من المريضة. النتائج موثَّقة سريرياً "
+                "وفردية ولا تُشكّل ضماناً لنتيجة مماثلة لدى مرضى آخرين.",
+            "pairs": [
+                {"title": "ليزر CO2 المجزّأ",
+                 "context": "ندبات ما بعد حبّ الشباب، مريضة ٣٤ عاماً",
+                 "duration": "٣ جلسات خلال ٤ أشهر",
+                 "before_image":
+                    "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                    "?auto=format&fit=crop&w=1000&q=80",
+                 "after_image":
+                    "https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                    "?auto=format&fit=crop&w=1000&q=80"},
+            ],
+        },
+        "editorial_feed": {
+            "label": "من العيادة، شهراً بشهر",
+            "items": [
+                ("https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Vogue Italia · مارس ٢٠٢٦",
+                 "مقابلة عن أمراض الجلد وسنّ اليأس"),
+                ("https://images.unsplash.com/photo-1616394584738-fc6e612e71b9"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "منتدى SIDeMaST ٢٠٢٦",
+                 "ورقة سريرية عن الوقاية الضوئية للأطفال"),
+                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Corriere Salute · فبراير",
+                 "استشارة حول المسار التجميليّ الطبّيّ"),
+                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "العيادة · يناير ٢٠٢٦",
+                 "افتتاح غرفة الجراحة الجديدة"),
+            ],
+        },
     },
 
     # ─── عن العيادة (about) ──────���────────────────────────────

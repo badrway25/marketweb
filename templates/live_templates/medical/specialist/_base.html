@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
 {% if is_rtl %}
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
 {% endif %}
@@ -242,6 +243,29 @@
   html[dir="rtl"] .mp-lang a.mp-lang-pill { letter-spacing: 0.04em; }
   html[dir="rtl"] .sp-foot .bot { letter-spacing: 0.04em; }
 
+  /* RTL support for the new premium components added in Session 30 */
+  html[dir="rtl"] .li-anchor-nav a,
+  html[dir="rtl"] .li-tab-btn,
+  html[dir="rtl"] .sp-journey .step .num,
+  html[dir="rtl"] .sp-trust .item h5,
+  html[dir="rtl"] .sp-location .details .d-lbl,
+  html[dir="rtl"] .sp-location .location-cta,
+  html[dir="rtl"] .sp-tabs .panel-body .cta,
+  html[dir="rtl"] .sp-feed .tile-meta,
+  html[dir="rtl"] .sp-compare .pair .meta .sub,
+  html[dir="rtl"] .sp-compare .pair .meta .chip { letter-spacing: 0.04em; }
+  html[dir="rtl"] .sp-location .map { border-left: none; border-right: 8px solid var(--accent); }
+  html[dir="rtl"] .sp-compare .pair .cmp-box { border-left: none; border-right: 6px solid var(--accent); }
+  html[dir="rtl"] .sp-location .location-cta:after { content: '←'; }
+  html[dir="rtl"] .sp-tabs .panel-body .cta:after { content: '←'; }
+  html[dir="rtl"] .li-tab-btn { margin-right: 0; margin-left: 36px; padding: 18px 0 18px 28px; }
+  html[dir="rtl"] .li-tab-btn::after { right: 0; left: 28px; transform-origin: right center; }
+  /* In RTL the compare slider keeps left→right drag semantics (handle moves
+     with cursor X position regardless of locale direction). Only labels flip
+     so "Prima/Before" stays on the unrevealed side. */
+  html[dir="rtl"] .li-cmp-label.before { left: auto; right: 18px; }
+  html[dir="rtl"] .li-cmp-label.after  { right: auto; left: 18px; }
+
   /* ============================================================
      MEDICAL MOTION PROFILE — clinical precision, less theatrical
      than restaurant. Overrides live-motion.css tokens per the
@@ -426,5 +450,6 @@
 </footer>
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-interactions.js' %}" defer></script>
 </body>
 </html>

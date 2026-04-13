@@ -168,10 +168,120 @@ CARDIO_CONTENT_EN: dict[str, Any] = {
         "chief_label":   "Clinical direction",
         "chief_heading": "One signature <em>on every chart.</em>",
 
+        "tecnologie": {
+            "label": "Technology & equipment",
+            "heading": "State-of-the-art <em>diagnostics</em>, in-house.",
+            "items": [
+                {"icon": "ecg", "title": "12-lead ECG", "desc": "Resting electrocardiogram with immediate reporting and historical comparison."},
+                {"icon": "echo", "title": "Philips EPIQ 7 echocardiography", "desc": "2D and colour-Doppler cardiac ultrasound, reported on the same day."},
+                {"icon": "holter", "title": "Schiller MT-200 Holter", "desc": "24-hour ECG recording with variability and silent arrhythmia analysis."},
+                {"icon": "stress", "title": "Exercise stress test", "desc": "Cycle ergometer test with continuous blood-pressure monitoring."},
+            ],
+        },
+        "testimonianza": {
+            "quote": "For two years I looked for a cardiologist who would actually read my file before examining me. At Studio Marani they spent forty minutes on my records before even touching the stethoscope.",
+            "author": "Practice patient",
+            "context": "Second cardiology opinion · 2025",
+        },
+        "faq": {
+            "label": "Frequently asked questions",
+            "heading": "The questions <em>we hear most often.</em>",
+            "items": [
+                ("How long does a first cardiology visit last?", "A full first visit takes approximately forty-five minutes and includes history, physical examination, 12-lead ECG, reporting and discussion of the follow-up plan."),
+                ("Do I need a GP referral?", "No. As a private specialist practice, no referral letter is required. A summary from your GP is helpful but not mandatory."),
+                ("Can I bring test results from another hospital?", "Absolutely. Second opinions are one of our specialities. Please bring all reports, discharge letters and current prescriptions."),
+                ("Is an echocardiogram painful?", "No, it is completely painless and non-invasive. The probe is placed on the chest with conductive gel. The exam takes about twenty to thirty minutes."),
+                ("How does the prevention programme work?", "The six-month programme includes four scheduled visits, two ECGs, one 24-hour Holter, an integrated assessment with a dietician and sports physician, and a direct line to the practice physician."),
+            ],
+        },
+
         "cta_heading":
             "Every consultation is <em>personally arranged</em> with the physician.",
         "cta_primary_label":   "Request a private visit",
         "cta_secondary_label": "Practice contacts",
+
+        "anchor_nav": [
+            ("metodo",     "Method"),
+            ("visite",     "Consultations"),
+            ("percorso",   "Patient journey"),
+            ("tecnologie", "Technology"),
+            ("medico",     "Clinical lead"),
+            ("studio",     "Practice & contact"),
+        ],
+        "percorso": {
+            "label":   "Patient journey",
+            "heading": "What to expect from <em>your first visit.</em>",
+            "intro":
+                "A cardiology consultation at Studio Marani follows the same "
+                "five-step protocol every time — forty-five minutes, unhurried, "
+                "no shortcuts.",
+            "steps": [
+                {"num": "01", "icon": "clipboard",
+                 "title": "Arrival & welcome",
+                 "desc": "The front desk collects documents, previous records "
+                         "and hands over the intake sheet. Average wait: 4 min.",
+                 "duration": "5 min"},
+                {"num": "02", "icon": "book",
+                 "title": "Detailed history",
+                 "desc": "The physician reads the file, asks about family history, "
+                         "current therapy and lifestyle. Personal notes, not a form.",
+                 "duration": "15 min"},
+                {"num": "03", "icon": "heart",
+                 "title": "Examination + ECG",
+                 "desc": "Auscultation, bilateral blood pressure, 12-lead ECG "
+                         "with immediate report.",
+                 "duration": "15 min"},
+                {"num": "04", "icon": "chart",
+                 "title": "Targeted diagnostics",
+                 "desc": "If indicated, in-practice echocardiography or "
+                         "scheduling of Holter / stress test. No routine tests.",
+                 "duration": "Variable"},
+                {"num": "05", "icon": "document",
+                 "title": "Written clinical plan",
+                 "desc": "Signed report on recycled paper, follow-up timeline, "
+                         "direct physician channel for questions.",
+                 "duration": "10 min"},
+            ],
+        },
+        "insurance": {
+            "label": "Guarantees & transparency",
+            "items": [
+                ("19%", "Tax-deductible as a healthcare expense",
+                 "Invoice issued same-day with complete tracking."),
+                ("48h", "Report turnaround",
+                 "Holter and echocardiogram delivered within 48 business hours."),
+                ("4", "Referral hospitals",
+                 "Consultation network with Policlinico Umberto I, Gemelli, "
+                 "San Raffaele, Santo Spirito."),
+                ("10 yrs", "Tracked clinical archive",
+                 "Patient files accessible for ten years; copies on request "
+                 "at any time."),
+            ],
+        },
+        "location": {
+            "label":   "The practice",
+            "heading": "Viale Parioli 142, <em>Rome.</em>",
+            "intro":
+                "The practice occupies the piano nobile of a historic building "
+                "in Parioli. Independent entrance, private waiting area, on-site "
+                "diagnostic rooms.",
+            "map_fallback_image":
+                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "?auto=format&fit=crop&w=1200&q=80",
+            "details": [
+                ("Address",        "Viale Parioli 142\n00197 Rome"),
+                ("Underground",    "Line A, Flaminio station\n8 minutes on foot"),
+                ("Parking",        "Reserved car park in Via Panama\n50 metres away"),
+                ("Accessibility",  "Wheelchair access\nDirect lift to the floor"),
+            ],
+            "hours_short": [
+                ("Mon – Fri",  "9:00 – 19:00"),
+                ("Saturday",   "On call only"),
+                ("Sunday",     "Closed"),
+            ],
+            "cta_label": "Get directions",
+            "cta_href":  "contatti",
+        },
     },
 
     "studio": {
@@ -704,10 +814,120 @@ CARDIO_CONTENT_FR: dict[str, Any] = {
         "chief_label":   "Direction clinique",
         "chief_heading": "Une seule signature <em>sur chaque dossier.</em>",
 
+        "tecnologie": {
+            "label": "Technologies & équipements",
+            "heading": "Diagnostic de <em>dernière génération</em>, au cabinet.",
+            "items": [
+                {"icon": "ecg", "title": "ECG à 12 dérivations", "desc": "Électrocardiogramme de repos avec compte rendu immédiat et comparaison historique."},
+                {"icon": "echo", "title": "Échocardiographie Philips EPIQ 7", "desc": "Échographie cardiaque 2D et Doppler couleur de dernière génération, résultat le jour même."},
+                {"icon": "holter", "title": "Holter Schiller MT-200", "desc": "Enregistrement ECG sur 24 heures avec analyse de la variabilité et des arythmies silencieuses."},
+                {"icon": "stress", "title": "Épreuve d'effort", "desc": "Test sur cyclo-ergomètre avec surveillance continue de la pression artérielle."},
+            ],
+        },
+        "testimonianza": {
+            "quote": "J'ai cherché pendant deux ans un cardiologue qui lise vraiment mon dossier avant de m'examiner. Au Studio Marani, ils ont passé quarante minutes sur mes résultats avant même de toucher le stéthoscope.",
+            "author": "Patient du cabinet",
+            "context": "Deuxième avis cardiologique · 2025",
+        },
+        "faq": {
+            "label": "Questions fréquentes",
+            "heading": "Les questions que <em>l'on nous pose le plus souvent.</em>",
+            "items": [
+                ("Combien de temps dure une première consultation ?", "Une première consultation complète dure environ quarante-cinq minutes et comprend l'anamnèse, l'examen clinique, un ECG à 12 dérivations, le compte rendu et la discussion du plan de suivi."),
+                ("Faut-il une ordonnance du médecin traitant ?", "Non. En tant que cabinet spécialisé privé, aucune lettre d'adressage n'est nécessaire. Un courrier du médecin traitant est utile mais non obligatoire."),
+                ("Puis-je apporter des examens d'un autre hôpital ?", "Bien sûr. Le deuxième avis est l'une de nos spécialités. Apportez tous les comptes rendus, lettres de sortie et traitements en cours."),
+                ("L'échocardiogramme est-il douloureux ?", "Non, c'est un examen totalement indolore et non invasif. La sonde est posée sur la poitrine avec un gel conducteur. L'examen dure environ vingt à trente minutes."),
+                ("Comment fonctionne le programme de prévention ?", "Le programme semestriel comprend quatre consultations programmées, deux ECG, un Holter de 24 heures, un bilan intégré avec un diététicien et un médecin du sport, et un canal direct avec le médecin du cabinet."),
+            ],
+        },
+
         "cta_heading":
             "Chaque consultation est <em>convenue personnellement</em> avec le médecin.",
         "cta_primary_label":   "Demander une consultation privée",
         "cta_secondary_label": "Contacter le cabinet",
+
+        "anchor_nav": [
+            ("metodo",     "Méthode"),
+            ("visite",     "Consultations"),
+            ("percorso",   "Parcours patient"),
+            ("tecnologie", "Plateau technique"),
+            ("medico",     "Direction clinique"),
+            ("studio",     "Cabinet & contact"),
+        ],
+        "percorso": {
+            "label":   "Parcours du patient",
+            "heading": "Ce à quoi s'attendre lors de <em>la première consultation.</em>",
+            "intro":
+                "Une consultation cardiologique au Studio Marani suit toujours "
+                "le même protocole en cinq étapes — quarante-cinq minutes, "
+                "sans hâte ni raccourci.",
+            "steps": [
+                {"num": "01", "icon": "clipboard",
+                 "title": "Accueil",
+                 "desc": "Le secrétariat recueille les documents et le dossier "
+                         "antérieur, remet la fiche d'anamnèse. Attente moyenne : 4 min.",
+                 "duration": "5 min"},
+                {"num": "02", "icon": "book",
+                 "title": "Anamnèse approfondie",
+                 "desc": "Lecture du dossier, antécédents familiaux, traitements "
+                         "en cours, hygiène de vie. Notes personnelles du médecin.",
+                 "duration": "15 min"},
+                {"num": "03", "icon": "heart",
+                 "title": "Examen + ECG",
+                 "desc": "Auscultation, tension artérielle sur les deux bras, "
+                         "ECG à 12 dérivations avec compte-rendu immédiat.",
+                 "duration": "15 min"},
+                {"num": "04", "icon": "chart",
+                 "title": "Diagnostic ciblé",
+                 "desc": "Si indiqué, échocardiographie sur place ou planification "
+                         "d'un Holter / test d'effort. Jamais d'examens de routine.",
+                 "duration": "Variable"},
+                {"num": "05", "icon": "document",
+                 "title": "Plan clinique écrit",
+                 "desc": "Compte-rendu signé sur papier recyclé, calendrier de suivi, "
+                         "ligne directe du médecin pour les questions.",
+                 "duration": "10 min"},
+            ],
+        },
+        "insurance": {
+            "label": "Garanties & transparence",
+            "items": [
+                ("19%", "Déductible en frais de santé",
+                 "Facture émise le jour même avec traçabilité complète."),
+                ("48h", "Délai de compte-rendu",
+                 "Holter et échocardiographie remis sous 48 heures ouvrées."),
+                ("4", "Hôpitaux de référence",
+                 "Réseau de concertation avec Policlinico Umberto I, Gemelli, "
+                 "San Raffaele, Santo Spirito."),
+                ("10 ans", "Archive clinique tracée",
+                 "Dossier accessible au patient pendant dix ans, copie sur "
+                 "demande à tout moment."),
+            ],
+        },
+        "location": {
+            "label":   "Le cabinet",
+            "heading": "Viale Parioli 142, <em>Rome.</em>",
+            "intro":
+                "Le cabinet occupe l'étage noble d'un immeuble historique des "
+                "Parioli. Entrée indépendante, salle d'attente réservée, "
+                "plateau technique sur place.",
+            "map_fallback_image":
+                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "?auto=format&fit=crop&w=1200&q=80",
+            "details": [
+                ("Adresse",        "Viale Parioli 142\n00197 Rome"),
+                ("Métro",          "Ligne A, station Flaminio\n8 minutes à pied"),
+                ("Stationnement",  "Parking conventionné Via Panama\nà 50 mètres"),
+                ("Accessibilité",  "Accès fauteuil roulant\nAscenseur à l'étage"),
+            ],
+            "hours_short": [
+                ("Lun – Ven", "9h00 – 19h00"),
+                ("Samedi",    "Astreinte uniquement"),
+                ("Dimanche",  "Fermé"),
+            ],
+            "cta_label": "Obtenir l'itinéraire",
+            "cta_href":  "contatti",
+        },
     },
 
     "studio": {
@@ -1252,10 +1472,120 @@ CARDIO_CONTENT_ES: dict[str, Any] = {
         "chief_label":   "Dirección clínica",
         "chief_heading": "Una sola firma <em>en cada historia clínica.</em>",
 
+        "tecnologie": {
+            "label": "Tecnología y equipamiento",
+            "heading": "Diagnóstico de <em>última generación</em>, en consulta.",
+            "items": [
+                {"icon": "ecg", "title": "ECG de 12 derivaciones", "desc": "Electrocardiograma en reposo con informe inmediato y comparación histórica."},
+                {"icon": "echo", "title": "Ecocardiografía Philips EPIQ 7", "desc": "Ecografía cardíaca 2D y Doppler color de última generación, informe en el día."},
+                {"icon": "holter", "title": "Holter Schiller MT-200", "desc": "Registro de ECG de 24 horas con análisis de variabilidad y arritmias silentes."},
+                {"icon": "stress", "title": "Prueba de esfuerzo", "desc": "Test en cicloergómetro con monitorización continua de la presión arterial."},
+            ],
+        },
+        "testimonianza": {
+            "quote": "Busqué durante dos años un cardiólogo que leyera de verdad mi historial antes de examinarme. En el Studio Marani dedicaron cuarenta minutos a mis pruebas antes siquiera de coger el estetoscopio.",
+            "author": "Paciente de la consulta",
+            "context": "Segunda opinión cardiológica · 2025",
+        },
+        "faq": {
+            "label": "Preguntas frecuentes",
+            "heading": "Las preguntas que <em>nos hacen con más frecuencia.</em>",
+            "items": [
+                ("¿Cuánto dura una primera visita cardiológica?", "Una primera visita completa dura aproximadamente cuarenta y cinco minutos e incluye anamnesis, exploración física, ECG de 12 derivaciones, informe y discusión del plan de seguimiento."),
+                ("¿Necesito volante del médico de cabecera?", "No. Al tratarse de una consulta especializada privada, no es necesaria la derivación del médico de familia. Un informe del médico de cabecera es útil pero no obligatorio."),
+                ("¿Puedo traer pruebas de otro hospital?", "Por supuesto. La segunda opinión es una de nuestras especialidades. Traiga todos los informes, cartas de alta y tratamientos en curso."),
+                ("¿El ecocardiograma es doloroso?", "No, es una prueba completamente indolora y no invasiva. La sonda se coloca sobre el tórax con un gel conductor. La exploración dura entre veinte y treinta minutos."),
+                ("¿Cómo funciona el programa de prevención?", "El programa semestral incluye cuatro visitas programadas, dos ECG, un Holter de 24 horas, una valoración integrada con dietista y médico del deporte, y una línea directa con el médico de la consulta."),
+            ],
+        },
+
         "cta_heading":
             "Cada consulta se <em>acuerda personalmente</em> con el médico.",
         "cta_primary_label":   "Solicitar consulta privada",
         "cta_secondary_label": "Contactar con la consulta",
+
+        "anchor_nav": [
+            ("metodo",     "Método"),
+            ("visite",     "Consultas"),
+            ("percorso",   "Recorrido del paciente"),
+            ("tecnologie", "Tecnología"),
+            ("medico",     "Dirección clínica"),
+            ("studio",     "Sede & contacto"),
+        ],
+        "percorso": {
+            "label":   "Recorrido del paciente",
+            "heading": "Qué esperar de <em>la primera visita.</em>",
+            "intro":
+                "Una consulta cardiológica en Studio Marani sigue siempre el "
+                "mismo protocolo en cinco pasos — cuarenta y cinco minutos, "
+                "sin prisas y sin atajos.",
+            "steps": [
+                {"num": "01", "icon": "clipboard",
+                 "title": "Recepción",
+                 "desc": "La secretaría recoge los documentos, el historial previo "
+                         "y entrega la ficha de anamnesis. Espera media: 4 min.",
+                 "duration": "5 min"},
+                {"num": "02", "icon": "book",
+                 "title": "Anamnesis profunda",
+                 "desc": "Lectura del historial, antecedentes familiares, terapias "
+                         "en curso y hábitos de vida. Anotación personal del médico.",
+                 "duration": "15 min"},
+                {"num": "03", "icon": "heart",
+                 "title": "Exploración + ECG",
+                 "desc": "Auscultación, presión en ambos brazos, ECG de 12 "
+                         "derivaciones con informe inmediato.",
+                 "duration": "15 min"},
+                {"num": "04", "icon": "chart",
+                 "title": "Diagnóstico dirigido",
+                 "desc": "Si procede, ecocardiografía en consulta o programación "
+                         "de Holter / ergometría. Nunca pruebas de rutina.",
+                 "duration": "Variable"},
+                {"num": "05", "icon": "document",
+                 "title": "Plan clínico escrito",
+                 "desc": "Informe firmado en papel reciclado, calendario de "
+                         "seguimiento, canal directo del médico para dudas.",
+                 "duration": "10 min"},
+            ],
+        },
+        "insurance": {
+            "label": "Garantías & transparencia",
+            "items": [
+                ("19%", "Deducible como gasto sanitario",
+                 "Factura emitida en el día con trazabilidad completa."),
+                ("48h", "Tiempos de informe",
+                 "Holter y ecocardiografía entregados en 48 horas laborables."),
+                ("4", "Hospitales de referencia",
+                 "Red de consulta con Policlinico Umberto I, Gemelli, "
+                 "San Raffaele, Santo Spirito."),
+                ("10 años", "Archivo clínico trazado",
+                 "Historial accesible diez años, copia a petición en "
+                 "cualquier momento."),
+            ],
+        },
+        "location": {
+            "label":   "La consulta",
+            "heading": "Viale Parioli 142, <em>Roma.</em>",
+            "intro":
+                "La consulta ocupa el piso noble de un edificio histórico de "
+                "Parioli. Acceso independiente, sala de espera reservada y "
+                "diagnóstico en la propia sede.",
+            "map_fallback_image":
+                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "?auto=format&fit=crop&w=1200&q=80",
+            "details": [
+                ("Dirección",     "Viale Parioli 142\n00197 Roma"),
+                ("Metro",         "Línea A, estación Flaminio\n8 minutos a pie"),
+                ("Aparcamiento",  "Parking concertado en Via Panama\na 50 metros"),
+                ("Accesibilidad", "Acceso en silla de ruedas\nAscensor hasta la planta"),
+            ],
+            "hours_short": [
+                ("Lun – Vie", "9:00 – 19:00"),
+                ("Sábado",    "Solo urgencias"),
+                ("Domingo",   "Cerrado"),
+            ],
+            "cta_label": "Cómo llegar",
+            "cta_href":  "contatti",
+        },
     },
 
     "studio": {
@@ -1804,10 +2134,117 @@ CARDIO_CONTENT_AR: dict[str, Any] = {
         "chief_label":   "الإدارة السريرية",
         "chief_heading": "توقيع واحد <em>على كلّ ملف.</em>",
 
+        "tecnologie": {
+            "label": "التقنيات والتجهيزات",
+            "heading": "تشخيص <em>متقدّم</em>، داخل العيادة.",
+            "items": [
+                {"icon": "ecg", "title": "تخطيط قلب كهربائي ١٢ اتجاهًا", "desc": "تخطيط كهربائي أثناء الراحة مع تقرير فوري ومقارنة تاريخية."},
+                {"icon": "echo", "title": "تصوير القلب بالصدى Philips EPIQ 7", "desc": "تصوير قلب ثنائي الأبعاد ودوبلر ملوّن من الجيل الأخير، يُسلَّم التقرير في اليوم ذاته."},
+                {"icon": "holter", "title": "هولتر Schiller MT-200", "desc": "تسجيل تخطيط كهربائي على مدار ٢٤ ساعة مع تحليل التباين واضطرابات النظم الصامتة."},
+                {"icon": "stress", "title": "اختبار الجهد", "desc": "اختبار على جهاز دراجة مع مراقبة مستمرة لضغط الدم."},
+            ],
+        },
+        "testimonianza": {
+            "quote": "بحثتُ لمدة عامَين عن طبيب قلب يقرأ ملفّي فعلاً قبل أن يفحصني. في ستوديو ماراني أمضوا أربعين دقيقة على فحوصاتي قبل أن يلمسوا السمّاعة.",
+            "author": "مريض في العيادة",
+            "context": "رأي ثانٍ في أمراض القلب · ٢٠٢٥",
+        },
+        "faq": {
+            "label": "الأسئلة الشائعة",
+            "heading": "الأسئلة التي <em>تُطرح علينا كثيرًا.</em>",
+            "items": [
+                ("كم تستغرق الزيارة الأولى لطبيب القلب؟", "تستغرق الزيارة الأولى الكاملة نحو خمسٍ وأربعين دقيقة وتشمل السيرة المرضية والفحص السريري وتخطيط القلب الكهربائي ذي الاثنتي عشرة اتجاهًا والتقرير ومناقشة خطة المتابعة."),
+                ("هل أحتاج إلى تحويل من طبيب الأسرة؟", "لا. بوصفنا عيادة متخصصة خاصة، لا يلزم خطاب تحويل. رسالة من طبيب الأسرة مفيدة لكنها غير إلزامية."),
+                ("هل يمكنني إحضار فحوصات من مستشفى آخر؟", "بالتأكيد. الرأي الثاني هو أحد تخصصاتنا. أحضر جميع التقارير وخطابات الخروج والعلاجات الجارية."),
+                ("هل تصوير القلب بالصدى مؤلم؟", "لا، هو فحص غير مؤلم تمامًا وغير جراحي. يُوضع المسبار على الصدر مع جل موصل. يستغرق الفحص نحو عشرين إلى ثلاثين دقيقة."),
+                ("كيف يعمل برنامج الوقاية؟", "يشمل البرنامج نصف السنوي أربع زيارات مجدولة وتخطيطَي قلب كهربائيَّين وهولتر على مدار ٢٤ ساعة وتقييمًا متكاملًا مع اختصاصي تغذية وطبيب رياضي وخطًا مباشرًا مع طبيب العيادة."),
+            ],
+        },
+
         "cta_heading":
             "كلّ استشارة <em>تُنسَّق شخصياً</em> مع الطبيب.",
         "cta_primary_label":   "اطلب زيارة خاصة",
         "cta_secondary_label": "تواصل مع المركز",
+
+        "anchor_nav": [
+            ("metodo",     "المنهج"),
+            ("visite",     "الاستشارات"),
+            ("percorso",   "مسار المريض"),
+            ("tecnologie", "التقنيات"),
+            ("medico",     "الإدارة السريرية"),
+            ("studio",     "المركز والتواصل"),
+        ],
+        "percorso": {
+            "label":   "مسار المريض",
+            "heading": "ماذا تتوقّع من <em>الزيارة الأولى.</em>",
+            "intro":
+                "تتّبع الاستشارة القلبية في Studio Marani البروتوكول نفسه في كلّ "
+                "مرّة: خمس مراحل في خمس وأربعين دقيقة — بلا عجلة ولا اختصارات.",
+            "steps": [
+                {"num": "01", "icon": "clipboard",
+                 "title": "الاستقبال",
+                 "desc": "تستلم السكرتارية الوثائق والملفّ السابق وتسلّم بطاقة "
+                         "السوابق المرضية. متوسّط الانتظار: أربع دقائق.",
+                 "duration": "٥ دقائق"},
+                {"num": "02", "icon": "book",
+                 "title": "السوابق المعمّقة",
+                 "desc": "قراءة الملفّ، التاريخ العائلي، العلاجات الجارية ونمط "
+                         "الحياة. ملاحظات شخصية من الطبيب، لا استمارة جاهزة.",
+                 "duration": "١٥ دقيقة"},
+                {"num": "03", "icon": "heart",
+                 "title": "الفحص + تخطيط القلب",
+                 "desc": "الإصغاء، قياس الضغط على الذراعين، تخطيط قلب بـ ١٢ مجساً "
+                         "مع تقرير فوريّ.",
+                 "duration": "١٥ دقيقة"},
+                {"num": "04", "icon": "chart",
+                 "title": "تشخيص موجَّه",
+                 "desc": "إذا لزم الأمر: تصوير صدى القلب في المركز، أو جدولة "
+                         "هولتر / اختبار جهد. لا فحوص روتينية.",
+                 "duration": "متغيّر"},
+                {"num": "05", "icon": "document",
+                 "title": "خطّة سريرية مكتوبة",
+                 "desc": "تقرير موقَّع على ورق معاد تدويره، جدول المتابعة، "
+                         "خطّ مباشر مع الطبيب للأسئلة اللاحقة.",
+                 "duration": "١٠ دقائق"},
+            ],
+        },
+        "insurance": {
+            "label": "الضمانات والشفافية",
+            "items": [
+                ("١٩٪", "خصم ضريبيّ كنفقة صحية",
+                 "فاتورة تُصدر في اليوم نفسه مع تتبّع كامل."),
+                ("٤٨ ساعة", "مدّة تسليم التقارير",
+                 "الهولتر وتخطيط صدى القلب يُسلَّمان خلال ٤٨ ساعة عمل."),
+                ("٤", "مستشفيات مرجعية",
+                 "شبكة استشارة مع Policlinico Umberto I وGemelli "
+                 "وSan Raffaele وSanto Spirito."),
+                ("١٠ سنوات", "أرشيف سريريّ موثَّق",
+                 "الملفّ متاح للمريض عشر سنوات، ونسخة منه تُطلب في أيّ وقت."),
+            ],
+        },
+        "location": {
+            "label":   "المركز",
+            "heading": "Viale Parioli 142، <em>روما.</em>",
+            "intro":
+                "يشغل المركز الطابق النبيل في بناية تاريخية بحيّ Parioli. مدخل "
+                "مستقلّ، صالة انتظار خاصّة، وتشخيص في المكان نفسه.",
+            "map_fallback_image":
+                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "?auto=format&fit=crop&w=1200&q=80",
+            "details": [
+                ("العنوان",    "Viale Parioli 142\n00197 Roma"),
+                ("المترو",     "الخط A، محطّة Flaminio\nعلى مسافة ٨ دقائق سيراً"),
+                ("ركن السيّارة", "ركن محجوز في Via Panama\nعلى مسافة ٥٠ متراً"),
+                ("إمكانية الوصول", "مدخل مهيّأ للكراسي المتحرّكة\nمصعد مباشر إلى الطابق"),
+            ],
+            "hours_short": [
+                ("الإثنين – الجمعة", "٩:٠٠ – ١٩:٠٠"),
+                ("السبت",           "استعداد فقط"),
+                ("الأحد",           "مغلق"),
+            ],
+            "cta_label": "احصل على الاتّجاهات",
+            "cta_href":  "contatti",
+        },
     },
 
     "studio": {

@@ -95,7 +95,7 @@
   </section>
 
   <section class="fd-courses-full">
-    <div class="lbl" data-lm="reveal">Otto atti · servizio dalle 20:00</div>
+    <div class="lbl" data-lm="reveal">{{ page_data.courses_label }}</div>
     <div data-lm-stagger data-lm-stagger-delay="80">
       {% for num, name, ingredients, wine in page_data.courses %}
         <div class="item">
@@ -104,7 +104,7 @@
             <div class="name">{{ name }}</div>
             <p class="ingredients">{{ ingredients }}</p>
           </div>
-          <span class="wine">In abbinamento<strong>{{ wine }}</strong></span>
+          <span class="wine">{{ chrome.fd_wine_pairing }}<strong>{{ wine }}</strong></span>
         </div>
       {% endfor %}
     </div>

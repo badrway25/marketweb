@@ -252,6 +252,106 @@
     color: var(--accent);
   }
 
+  /* technology / equipment grid (Cardio-only) */
+  .sp-tech {
+    padding: 80px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-tech .tech-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+    margin-top: 36px;
+  }
+  .sp-tech .tech-item {
+    padding: 28px 0; border-top: 2px solid var(--accent);
+  }
+  .sp-tech .tech-item .tech-icon {
+    width: 36px; height: 36px; color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .sp-tech .tech-item h4 {
+    font-family: var(--heading); font-size: 20px; font-weight: 500;
+    color: var(--primary); line-height: 1.2;
+  }
+  .sp-tech .tech-item p {
+    margin-top: 10px; font-family: var(--body); font-size: 13px;
+    line-height: 1.55; color: var(--ink-soft); max-width: 30ch;
+  }
+
+  /* gallery strip (Derm-only) */
+  .sp-gallery-strip {
+    padding: 64px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-gallery-strip .strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+    margin-top: 28px;
+  }
+  .sp-gallery-strip .strip .img {
+    aspect-ratio: 4/3; position: relative; overflow: hidden;
+  }
+  .sp-gallery-strip .strip .img img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(12%) contrast(1.04) brightness(0.88);
+    transition: transform 700ms cubic-bezier(0.33, 1.00, 0.68, 1),
+                filter 700ms ease;
+  }
+  .sp-gallery-strip .strip .img:hover img {
+    filter: grayscale(0%) contrast(1.08) brightness(0.94);
+  }
+  .sp-gallery-strip .strip .img .cap {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 10px 14px;
+    background: linear-gradient(0deg, rgba(28,22,18,0.60) 0%, transparent 100%);
+    font-family: var(--heading); font-style: italic; font-size: 13px;
+    color: var(--paper); opacity: 0;
+    transition: opacity 400ms ease;
+  }
+  .sp-gallery-strip .strip .img:hover .cap { opacity: 1; }
+
+  /* testimonial block */
+  .sp-testimonial {
+    padding: 72px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-testimonial blockquote {
+    font-family: var(--heading); font-style: italic; font-size: 26px;
+    line-height: 1.5; color: var(--ink);
+    max-width: 54ch; position: relative;
+    padding-left: 48px;
+  }
+  .sp-testimonial blockquote:before {
+    content: '\201C'; position: absolute; left: 0; top: -8px;
+    font-size: 72px; color: var(--accent); font-family: var(--heading);
+    line-height: 1;
+  }
+  .sp-testimonial .testi-meta {
+    margin-top: 20px; padding-left: 48px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .sp-testimonial .testi-context {
+    display: block; margin-top: 4px;
+    font-weight: 400; color: var(--ink-soft);
+    text-transform: none; letter-spacing: 0;
+    font-size: 12px;
+  }
+
+  /* FAQ accordion */
+  .sp-faq {
+    padding: 80px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-faq .li-acc-head {
+    font-family: var(--heading); font-size: 20px; font-weight: 500;
+    color: var(--primary);
+  }
+  .sp-faq .li-acc-body-inner {
+    font-family: var(--body); font-size: 15px; line-height: 1.65;
+    color: var(--ink-soft); max-width: 64ch;
+  }
+  .sp-faq .li-acc-item { border-color: var(--rule); }
+
   /* CTA strip */
   .sp-cta {
     text-align: center; padding: 90px 90px;
@@ -262,6 +362,351 @@
   }
   .sp-cta .actions {
     margin-top: 36px; display: flex; gap: 28px; justify-content: center;
+  }
+
+  /* sticky CTA bar styling for specialist */
+  [data-li="sticky-cta"].sp-sticky-cta {
+    background: linear-gradient(180deg, rgba(28,22,18,0.95) 0%, rgba(28,22,18,0.98) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(247,243,238,0.10);
+    color: var(--paper);
+  }
+
+  /* anchor nav (dense home scaffold) */
+  .sp-anchor-wrap {
+    max-width: 1440px; margin: 0 auto; padding: 0 90px;
+    background: var(--paper);
+  }
+  .sp-anchor-wrap .li-anchor-nav {
+    border-color: var(--rule);
+  }
+  .sp-anchor-wrap .li-anchor-nav a {
+    color: var(--ink-soft);
+  }
+
+  /* patient journey / timeline */
+  .sp-journey {
+    padding: 96px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-journey .intro {
+    margin-top: 22px; max-width: 64ch;
+    font-family: var(--heading); font-style: italic; font-size: 20px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .sp-journey .steps {
+    margin-top: 64px;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  .sp-journey .steps:before {
+    content: '';
+    position: absolute; left: 0; right: 0; top: 32px;
+    height: 1px; background: var(--rule);
+  }
+  .sp-journey .step {
+    padding: 0 18px 0 0;
+    position: relative;
+  }
+  .sp-journey .step .dot {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 2;
+    margin-bottom: 22px;
+  }
+  .sp-journey .step .dot svg { width: 28px; height: 28px; }
+  .sp-journey .step .num {
+    font-family: var(--heading); font-size: 13px;
+    color: var(--accent); font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .sp-journey .step h4 {
+    margin-top: 6px;
+    font-family: var(--heading); font-size: 22px; font-weight: 500;
+    color: var(--primary); line-height: 1.2;
+  }
+  .sp-journey .step p {
+    margin-top: 10px; font-family: var(--body); font-size: 13px;
+    line-height: 1.55; color: var(--ink-soft);
+    max-width: 30ch;
+  }
+  .sp-journey .step .duration {
+    display: inline-block; margin-top: 12px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+    padding-top: 10px; border-top: 1.5px solid var(--rule);
+    width: 100%;
+  }
+
+  /* insurance / trust strip */
+  .sp-trust {
+    padding: 64px 90px;
+    background: var(--paper-2);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .sp-trust-inner {
+    max-width: 1440px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 48px;
+  }
+  .sp-trust .item {
+    padding-top: 22px; border-top: 2px solid var(--accent);
+  }
+  .sp-trust .item .fig {
+    font-family: var(--heading); font-size: 44px; font-weight: 500;
+    color: var(--primary); line-height: 1.0; letter-spacing: -0.02em;
+  }
+  .sp-trust .item h5 {
+    margin-top: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .sp-trust .item p {
+    margin-top: 8px;
+    font-family: var(--body); font-size: 13px; line-height: 1.55;
+    color: var(--ink-soft); max-width: 28ch;
+  }
+
+  /* location + map block */
+  .sp-location {
+    padding: 96px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: 64px;
+    align-items: start;
+  }
+  .sp-location .map {
+    aspect-ratio: 4/3;
+    background-size: cover; background-position: center;
+    background-color: var(--paper-2);
+    border-left: 8px solid var(--accent);
+    position: relative;
+    overflow: hidden;
+  }
+  .sp-location .map:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(28,22,18,0) 70%, rgba(28,22,18,0.35) 100%);
+  }
+  .sp-location .map .pin {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 6px rgba(156, 42, 42, 0.18),
+                0 2px 10px rgba(0,0,0,0.25);
+    z-index: 2;
+  }
+  .sp-location .info h2 {
+    font-family: var(--heading); font-size: 48px; font-weight: 500;
+    line-height: 1.05; letter-spacing: -0.022em;
+  }
+  .sp-location .info .intro {
+    margin-top: 20px;
+    font-family: var(--heading); font-style: italic; font-size: 18px;
+    line-height: 1.55; color: var(--ink-soft); max-width: 48ch;
+  }
+  .sp-location .details {
+    margin-top: 36px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 28px 48px;
+    padding-top: 24px; border-top: 1px solid var(--rule);
+  }
+  .sp-location .details .d-lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .sp-location .details .d-val {
+    margin-top: 8px; font-family: var(--body); font-size: 13px;
+    line-height: 1.55; color: var(--ink);
+    white-space: pre-line;
+  }
+  .sp-location .hours {
+    margin-top: 32px; padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+  }
+  .sp-location .hours .h-row {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em; color: var(--ink-soft);
+  }
+  .sp-location .hours .h-row strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 15px;
+    font-weight: 500; color: var(--primary);
+    letter-spacing: 0;
+  }
+  .sp-location .location-cta {
+    margin-top: 32px;
+    display: inline-block;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+
+  /* treatment tabs (Derm-only) */
+  .sp-tabs {
+    padding: 96px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-tabs .intro {
+    margin-top: 22px; max-width: 62ch;
+    font-family: var(--heading); font-style: italic; font-size: 19px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .sp-tabs .tabs-wrap { margin-top: 48px; }
+  .sp-tabs .li-tabs-nav { border-color: var(--rule); }
+  .sp-tabs .li-tab-btn {
+    color: var(--ink-soft);
+    font-size: 12px; letter-spacing: 0.22em; padding: 18px 0;
+  }
+  .sp-tabs .li-tab-btn::after { background: var(--accent); right: 0; left: 0; }
+  .sp-tabs .li-tab-btn.is-active { color: var(--accent); }
+  .sp-tabs .li-tab-panel .eyebrow {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-tabs .li-tab-panel h3 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 44px; font-weight: 500;
+    line-height: 1.1; letter-spacing: -0.018em;
+  }
+  .sp-tabs .panel-grid {
+    margin-top: 32px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+    align-items: start;
+  }
+  .sp-tabs .panel-body p {
+    font-family: var(--heading); font-style: italic; font-size: 18px;
+    line-height: 1.55; color: var(--ink-soft); max-width: 48ch;
+  }
+  .sp-tabs .panel-body .cta {
+    margin-top: 28px; display: inline-block;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+  .sp-tabs .panel-items { display: flex; flex-direction: column; gap: 0; }
+  .sp-tabs .panel-items .item {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px dashed var(--rule);
+    font-family: var(--heading);
+  }
+  .sp-tabs .panel-items .item .name {
+    font-size: 17px; font-weight: 500; color: var(--ink);
+  }
+  .sp-tabs .panel-items .item .meta {
+    font-size: 13px; font-style: italic; color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+
+  /* before / after compare (Derm-only) */
+  .sp-compare {
+    padding: 96px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-compare .ethics {
+    max-width: 58ch;
+    margin-top: 20px;
+    font-family: var(--body); font-size: 12px;
+    line-height: 1.65; color: var(--ink-soft);
+    padding: 16px 22px; border-left: 3px solid var(--accent);
+    background: var(--paper-2);
+  }
+  .sp-compare .pair {
+    margin-top: 48px;
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 56px;
+    align-items: center;
+  }
+  .sp-compare .pair .cmp-box {
+    aspect-ratio: 4/3;
+    border-left: 6px solid var(--accent);
+    filter: contrast(1.02);
+  }
+  .sp-compare .pair .meta .sub {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sp-compare .pair .meta h4 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 32px; font-weight: 500;
+    line-height: 1.15; letter-spacing: -0.015em;
+  }
+  .sp-compare .pair .meta p {
+    margin-top: 14px;
+    font-family: var(--heading); font-style: italic; font-size: 17px;
+    line-height: 1.55; color: var(--ink-soft); max-width: 34ch;
+  }
+  .sp-compare .pair .meta .chips {
+    margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .sp-compare .pair .meta .chip {
+    display: inline-block;
+    padding: 6px 12px; border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+
+  /* editorial feed (Derm-only) */
+  .sp-feed {
+    padding: 80px 90px; max-width: 1440px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sp-feed .grid {
+    margin-top: 36px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  }
+  .sp-feed .tile {
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--paper-2);
+  }
+  .sp-feed .tile img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(10%) contrast(1.03);
+    transition: transform 700ms cubic-bezier(0.33, 1.00, 0.68, 1),
+                filter 700ms ease;
+  }
+  .sp-feed .tile:hover img {
+    transform: scale(1.04);
+    filter: grayscale(0%) contrast(1.06);
+  }
+  .sp-feed .tile .tile-cap {
+    position: absolute; inset: auto 0 0 0;
+    padding: 14px 16px;
+    background: linear-gradient(0deg, rgba(28,22,18,0.78) 0%, transparent 100%);
+    color: var(--paper);
+  }
+  .sp-feed .tile .tile-meta {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .sp-feed .tile .tile-title {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-style: italic; font-size: 13px;
+    line-height: 1.4; color: var(--paper);
+  }
+
+  /* Mobile: collapse grids */
+  @media (max-width: 960px) {
+    .sp-journey .steps { grid-template-columns: 1fr; gap: 36px; }
+    .sp-journey .steps:before { display: none; }
+    .sp-trust-inner { grid-template-columns: repeat(2, 1fr); }
+    .sp-location { grid-template-columns: 1fr; padding: 64px 36px; }
+    .sp-tabs .panel-grid { grid-template-columns: 1fr; gap: 36px; }
+    .sp-compare .pair { grid-template-columns: 1fr; gap: 36px; }
+    .sp-feed .grid { grid-template-columns: repeat(2, 1fr); }
   }
 {% endblock %}
 
@@ -322,11 +767,67 @@
     {% endfor %}
   </section>
 
-  <section class="sp-manifesto">
+  {% if page_data.anchor_nav %}
+  <div class="sp-anchor-wrap">
+    <nav class="li-anchor-nav" aria-label="Sezioni pagina">
+      {% for anchor_id, anchor_label in page_data.anchor_nav %}
+        <a href="#{{ anchor_id }}">{{ anchor_label }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+  {% endif %}
+
+  <section class="sp-manifesto" id="metodo">
     <p data-lm="reveal-lg">{{ page_data.manifesto_drop_cap }}{{ page_data.manifesto }}</p>
   </section>
 
-  <section class="sp-section dark">
+  {% if page_data.tecnologie %}
+  <section class="sp-tech" id="tecnologie">
+    <span class="sec-label" data-lm="reveal">{{ page_data.tecnologie.label }}</span>
+    <h2 data-lm="reveal">{{ page_data.tecnologie.heading|safe }}</h2>
+    <div class="tech-grid" data-lm-stagger data-lm-stagger-delay="100">
+      {% for item in page_data.tecnologie.items %}
+        <div class="tech-item">
+          <svg class="tech-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {% if item.icon == "ecg" %}
+              <path d="M3 18h6l3-10 4 20 3-10h6l3-6 2 6h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            {% elif item.icon == "echo" %}
+              <circle cx="18" cy="18" r="14" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M12 18c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="18" cy="18" r="2" fill="currentColor"/>
+            {% elif item.icon == "holter" %}
+              <rect x="10" y="4" width="16" height="28" rx="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14 16h8M14 20h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              <circle cx="18" cy="10" r="2" stroke="currentColor" stroke-width="1.3"/>
+            {% elif item.icon == "stress" %}
+              <circle cx="18" cy="22" r="10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M18 22V14M18 14l-4 4M18 14l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 6h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            {% endif %}
+          </svg>
+          <h4>{{ item.title }}</h4>
+          <p>{{ item.desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page_data.gallery_strip %}
+  <section class="sp-gallery-strip">
+    <span class="sec-label" data-lm="reveal">{{ page_data.gallery_strip.label }}</span>
+    <div class="strip" data-lm-stagger data-lm-stagger-delay="90">
+      {% for url, caption in page_data.gallery_strip.images %}
+        <div class="img">
+          <img src="{{ url }}" alt="{{ caption }}" loading="lazy">
+          <span class="cap">{{ caption }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="sp-section dark" id="visite">
     <span class="sec-label" data-lm="reveal">{{ page_data.signature_visits_label }}</span>
     <h2 data-lm="reveal">{{ page_data.signature_visits_heading|safe }}</h2>
     <p class="sec-intro" data-lm="reveal">{{ page_data.signature_visits_intro }}</p>
@@ -334,7 +835,13 @@
     <div class="sp-fields" data-lm-stagger data-lm-stagger-delay="90">
       {% for num, title, blurb in page_data.signature_visits %}
         <div class="field">
-          <div class="num">{{ num }} / 04</div>
+          <div class="num">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="vertical-align: -1px; margin-right: 6px;">
+              <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/>
+              <circle cx="8" cy="8" r="2.5" fill="currentColor"/>
+            </svg>
+            {{ num }} / 04
+          </div>
           <h4>{{ title }}</h4>
           <p>{{ blurb }}</p>
         </div>
@@ -342,7 +849,7 @@
     </div>
   </section>
 
-  <section class="sp-section">
+  <section class="sp-section" id="medico">
     <span class="sec-label" data-lm="reveal">{{ page_data.chief_label }}</span>
     <h2 data-lm="reveal">{{ page_data.chief_heading|safe }}</h2>
 
@@ -384,6 +891,187 @@
   </section>
   {% endif %}
 
+  {% if page_data.testimonianza %}
+  <section class="sp-testimonial" data-lm="reveal">
+    <blockquote>{{ page_data.testimonianza.quote }}</blockquote>
+    <div class="testi-meta">
+      {{ page_data.testimonianza.author }}
+      <span class="testi-context">{{ page_data.testimonianza.context }}</span>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page_data.faq %}
+  <section class="sp-faq">
+    <span class="sec-label" data-lm="reveal">{{ page_data.faq.label }}</span>
+    <h2 data-lm="reveal">{{ page_data.faq.heading|safe }}</h2>
+    <div data-li="accordion" data-li-single="true" style="margin-top: 36px;" data-lm="reveal">
+      {% for question, answer in page_data.faq.items %}
+        <div class="li-acc-item{% if forloop.first %} is-open{% endif %}">
+          <div class="li-acc-head">
+            <span>{{ question }}</span>
+            <span class="li-acc-icon"></span>
+          </div>
+          <div class="li-acc-body">
+            <div class="li-acc-body-inner">{{ answer }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page_data.trattamenti_tabs %}
+  <section class="sp-tabs">
+    <span class="sec-label" data-lm="reveal">{{ page_data.trattamenti_tabs.label }}</span>
+    <h2 data-lm="reveal">{{ page_data.trattamenti_tabs.heading|safe }}</h2>
+    <p class="intro" data-lm="reveal">{{ page_data.trattamenti_tabs.intro }}</p>
+    <div class="tabs-wrap" data-li="tabs" data-lm="reveal">
+      <div class="li-tabs-nav" role="tablist">
+        {% for t in page_data.trattamenti_tabs.tabs %}
+          <button type="button" class="li-tab-btn{% if forloop.first %} is-active{% endif %}" data-li-target="{{ t.id }}">{{ t.label }}</button>
+        {% endfor %}
+      </div>
+      {% for t in page_data.trattamenti_tabs.tabs %}
+        <div class="li-tab-panel{% if forloop.first %} is-active{% endif %}" data-li-id="{{ t.id }}" role="tabpanel">
+          <div class="eyebrow">{{ t.eyebrow }}</div>
+          <h3>{{ t.heading }}</h3>
+          <div class="panel-grid">
+            <div class="panel-body">
+              <p>{{ t.body }}</p>
+              <a class="cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug t.cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ t.cta_label }}</a>
+            </div>
+            <div class="panel-items">
+              {% for name, meta in t.items %}
+                <div class="item"><span class="name">{{ name }}</span><span class="meta">{{ meta }}</span></div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page_data.before_after %}
+  <section class="sp-compare">
+    <span class="sec-label" data-lm="reveal">{{ page_data.before_after.label }}</span>
+    <h2 data-lm="reveal">{{ page_data.before_after.heading|safe }}</h2>
+    <p class="ethics" data-lm="reveal">{{ page_data.before_after.disclaimer }}</p>
+    {% for p in page_data.before_after.pairs %}
+      <div class="pair" data-lm="reveal">
+        <div class="cmp-box" data-li="compare" tabindex="0" aria-label="Before and after comparison">
+          <div class="li-cmp-before" style="background-image: url('{{ p.before_image }}');"></div>
+          <div class="li-cmp-after" style="background-image: url('{{ p.after_image }}');"></div>
+          <span class="li-cmp-label before">Prima</span>
+          <span class="li-cmp-label after">Dopo</span>
+        </div>
+        <div class="meta">
+          <span class="sub">{{ p.title }}</span>
+          <h4>{{ p.context }}</h4>
+          <p>{{ p.duration }}, dermatologia estetica integrata.</p>
+          <div class="chips">
+            <span class="chip">Consenso scritto</span>
+            <span class="chip">Follow-up clinico</span>
+            <span class="chip">Nessun ritocco</span>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if page_data.editorial_feed %}
+  <section class="sp-feed">
+    <span class="sec-label" data-lm="reveal">{{ page_data.editorial_feed.label }}</span>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="90">
+      {% for url, meta, title in page_data.editorial_feed.items %}
+        <div class="tile" data-li="lightbox-trigger" data-li-src="{{ url }}" data-li-caption="{{ title }}" data-li-group="feed">
+          <img src="{{ url }}" alt="{{ title }}" loading="lazy">
+          <div class="tile-cap">
+            <span class="tile-meta">{{ meta }}</span>
+            <span class="tile-title">{{ title }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page_data.percorso %}
+  <section class="sp-journey" id="percorso">
+    <span class="sec-label" data-lm="reveal">{{ page_data.percorso.label }}</span>
+    <h2 data-lm="reveal">{{ page_data.percorso.heading|safe }}</h2>
+    <p class="intro" data-lm="reveal">{{ page_data.percorso.intro }}</p>
+    <div class="steps" data-lm-stagger data-lm-stagger-delay="110">
+      {% for s in page_data.percorso.steps %}
+        <div class="step">
+          <div class="dot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              {% if s.icon == "clipboard" %}
+                <rect x="5" y="4" width="14" height="17" rx="1.5"/><path d="M9 4v2h6V4"/><path d="M9 12h6M9 16h4"/>
+              {% elif s.icon == "book" %}
+                <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5z"/><path d="M4 5v16"/>
+              {% elif s.icon == "heart" %}
+                <path d="M20.8 9.6c0 4-8.8 9.4-8.8 9.4S3.2 13.6 3.2 9.6a4.8 4.8 0 0 1 8.8-2.7 4.8 4.8 0 0 1 8.8 2.7z"/>
+              {% elif s.icon == "chart" %}
+                <path d="M4 20V4M4 20h16"/><path d="M7 16l3-5 4 3 5-8"/>
+              {% elif s.icon == "document" %}
+                <path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h4"/>
+              {% endif %}
+            </svg>
+          </div>
+          <div class="num">{{ s.num }} / 05</div>
+          <h4>{{ s.title }}</h4>
+          <p>{{ s.desc }}</p>
+          <span class="duration">{{ s.duration }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page_data.insurance %}
+  <section class="sp-trust">
+    <div class="sp-trust-inner" data-lm-stagger data-lm-stagger-delay="100">
+      {% for fig, title, desc in page_data.insurance.items %}
+        <div class="item">
+          <div class="fig">{{ fig }}</div>
+          <h5>{{ title }}</h5>
+          <p>{{ desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page_data.location %}
+  <section class="sp-location" id="studio">
+    <div class="map" data-lm="reveal-soft" style="background-image: url('{{ page_data.location.map_fallback_image }}');">
+      <span class="pin"></span>
+    </div>
+    <div class="info" data-lm="reveal">
+      <span class="sec-label">{{ page_data.location.label }}</span>
+      <h2>{{ page_data.location.heading|safe }}</h2>
+      <p class="intro">{{ page_data.location.intro }}</p>
+      <div class="details">
+        {% for d_lbl, d_val in page_data.location.details %}
+          <div>
+            <span class="d-lbl">{{ d_lbl }}</span>
+            <div class="d-val">{{ d_val }}</div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="hours">
+        {% for day, hours in page_data.location.hours_short %}
+          <div class="h-row">{{ day }}<strong>{{ hours }}</strong></div>
+        {% endfor %}
+      </div>
+      <a class="location-cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.location.cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.location.cta_label }} →</a>
+    </div>
+  </section>
+  {% endif %}
+
   <section class="sp-cta">
     <h2 data-lm="reveal-lg">{{ page_data.cta_heading|safe }}</h2>
     <div class="actions">
@@ -391,4 +1079,9 @@
       <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost-btn">{{ page_data.cta_secondary_label }}</a>
     </div>
   </section>
+
+  <div data-li="sticky-cta" class="sp-sticky-cta" data-li-trigger=".sp-hero, .sp-hero-em">
+    <span class="sticky-label">{{ site.logo_word }}</span>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'richiedi-visita' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="gold-btn" style="padding: 10px 28px; font-size: 12px;">{{ page_data.cta_primary_label }}</a>
+  </div>
 {% endblock %}

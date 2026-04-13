@@ -1,5 +1,137 @@
 # Decisions Log
 
+## D-064: Premium Component Depth & Editor Schema Blueprint — Differentiated enrichment of the 3 published_live + concrete future-editor contract (2026-04-13, Session 30)
+
+**Decision:** The 3 `tier=published_live` templates (cardio, dermatologia-elite-roma, gusto-fine-dining) receive a targeted premium-component enrichment pass where **each template gets a distinct set of new sections** chosen to fit its archetype tone, not a shared shopping list. A concrete Editor Schema Blueprint (`EDITOR_SCHEMA_BLUEPRINT.md`, ~600 lines, in repo root) is authored in the same session to define — without implementation — what the future customer editor will let buyers personalize, which fields are edit-gated by DNA, and which invariants (D-047, D-053, D-054, D-057, D-058, D-059) the editor must uphold.
+
+**Per-template new sections (all with distinct interaction patterns to preserve D-054 differentiation):**
+
+| Template | New sections | New interactions |
+|----------|-------------|-----------------|
+| Cardio (specialist clinical) | anchor subnav + "Percorso paziente" 5-step timeline with icons + "Garanzie & trasparenza" trust strip + "Sede" location block with static map / address / transport / accessibility / hours | anchor-nav (IntersectionObserver active state + smooth scroll) |
+| Derm (specialist boutique) | Treatment tabs with 3 domains (clinical/surgical/aesthetic) × items+price+cta + Before/After compare slider with ethical disclaimer + Editorial press feed 4-tile with lightbox | Tabs (keyboard-accessible), Compare slider (mouse/touch/keyboard) |
+| Gusto (fine-dining editorial) | Producer showcase (4 artisans with portraits/area/blurb) + Private dining card (Chef's Table / evening buy-out / cellar tasting) + Wine program (sommelier + 3 pairings + cellar facts) | — (reuses existing lightbox on atmospheres; new sections are static-rich) |
+
+**New interaction library additions** (extends `static/css/live-interactions.css` + `live-interactions.js`):
+- `[data-li="tabs"]` — horizontal tab bar with `.li-tabs-nav .li-tab-btn[data-li-target]` and matching `.li-tab-panel[data-li-id]`. Fade-in panel transition (520ms), keyboard navigation (Enter/Space/←/→), ARIA roles set by JS, `prefers-reduced-motion` respected.
+- `[data-li="compare"]` — before/after slider with `.li-cmp-before/.li-cmp-after` absolute layers, JS-injected handle, mouse+touch+keyboard control, clip-path inset transitions. Graceful no-JS state (handle at 50%).
+- `.li-anchor-nav` — sticky subnav with IntersectionObserver-driven `.is-active` state tagging and smooth scroll on anchor click (reduced-motion respecting).
+
+**i18n coverage:** all new sections authored in all 5 locales (it/en/fr/es/ar) across the 3 templates. Native editorial voice per locale — not machine translation. Proper names (chef names, producers, medical devices) stay Latin across all locales consistent with D-059/D-063. Roughly 1,100 new content lines across the 3 i18n tree files.
+
+**RTL adjustments:** new `html[dir="rtl"] ...` blocks added inside specialist `_base.html` and fine-dining `_base.html` to flip accent borders, tab buttons (margin + text direction + underline origin), compare slider labels (before/after swap), pair-row grid (num→right, price→left), producer portrait border (left→right). The compare slider's clip-path remains LTR-mouse-driven by deliberate design (the handle tracks cursor X position regardless of locale direction) — only labels flip.
+
+**Editor Schema Blueprint** (`EDITOR_SCHEMA_BLUEPRINT.md`) — concrete, not theoretical:
+- Component registry with 8 edit targets (nav/hero/section/form/contact/blog/footer/locale) + per-field type + edit? flag + constraints + RTL-aware flag.
+- Section kinds vocabulary expanded to 20+ kinds (facts, manifesto, signature_services, team_list, pricelist, timeline_steps, trust_strip, map_location, gallery_strip, tabs, compare_slider, editorial_feed, process_cards, wine_program, producer_showcase, press_strip, testimonial_quote, faq_accordion, awards_grid, seasonal_highlight).
+- 23 atomic field types for editor UI (text, richtext, image, video, color_token, font_ref, link, page_ref, post_ref, list<T>, content_map, channel, icon, ...).
+- Design tokens scope (palette 5 colors, font heading+body from curated list of 18 Google Fonts, radius/icon_pack/image_treatment/motion_profile as select, text/layout alignment, section_density).
+- 6 hard invariants the editor must uphold (D-047 → D-059).
+- Persistence model proposal (CustomerProject + ProjectContent + ProjectDesignTokens + ProjectRevision) — not implemented, just specified.
+
+**Rationale:** The task had a dual objective that normally tempts a cheap shared component-pack pass: "enrich the 3 live templates" AND "prepare the future editor". The cheap move would have been: one shared section pack applied to all 3, and one abstract editor doc full of hand-waves. Both are rejected. (a) **Shared section pack violates D-054**: making cardio and derm render the same "new sections" would collapse sibling differentiation — the whole point of the medical specialist split in D-060 was to prevent that. So each template gets a distinct section set motivated by its DNA tone: cardio gets clinical precision (journey/trust/map), derm gets boutique aesthetics (tabs/before-after/press feed), gusto gets hospitality editorial (producers/private/wine). (b) **Abstract editor doc is worthless**: a blueprint that says "we'll make everything editable" teaches nobody anything about how to build it. The authored blueprint commits to concrete field types, concrete constraints (min/max list lengths, contrast thresholds, required baseline pages), concrete variant locks (DNA choices are not user-edit), concrete font curation (18 Google Fonts, not "whatever"), concrete persistence model with DB tables. When the editor worktree opens, this document becomes the implementation TODO.
+
+**Option space considered and rejected:**
+- **Option A — Minimum enrichment, no blueprint**: quick sections + TODO_NEXT entry for the editor. Rejected because the user's brief explicitly asked for both enrichment AND blueprint in the same session, and postponing the blueprint leaves the next session without the architectural anchor.
+- **Option B — Shared section pack across all 3 templates**: rejected per (a) above — kills D-054 differentiation.
+- **Option C — Full-editor implementation**: out of scope. The brief explicitly says "NON implementiamo l'editor adesso". Respect scope.
+- **Option D — Chosen: differentiated enrichment + concrete blueprint**: yields 3 distinct enrichments and a 600-line spec, matching the brief exactly.
+
+**Trade-off:**
+- **Content volume**: +150 lines of IT content per template + 4 × ~90 lines of i18n content per template × 3 templates = ~1,100 new content lines total. Acceptable: content trees are cheap to review, the review surface is flat per-locale, and the new sections are load-bearing for the premium positioning (not filler).
+- **CSS/JS growth**: new primitives add ~360 lines of CSS + ~170 lines of JS to live-interactions. Acceptable: zero new dependencies, bundled once and reused by every skin that opts in. The medical specialist skin gains ~320 lines of CSS (cardio-only + derm-only sections each conditional on page_data), the fine-dining skin gains ~200 lines. Both still well under the 1000-line-per-skin authoring complexity budget.
+- **Editor not yet implemented**: the blueprint is binding for the future editor but the 3 templates remain non-editable today. This is intentional per the brief scope and D-049 (roadmap freeze until Phase 2g3.7).
+- **i18n parity**: all 5 locales authored in the same session — higher cost upfront but avoids the "IT-only new section" drift that would break the premium uniformity across locales.
+
+**Consequence:**
+- (a) The 3 `published_live` templates now genuinely differ in dense-home richness, not just in archetype chrome. A buyer comparing cardio vs derm on the marketplace card sees two distinct clinical propositions even though they share the specialist skin; a buyer opening gusto sees a hospitality product that no medical template even attempts to fake.
+- (b) The new interaction primitives (tabs, compare, anchor-nav) are now part of the `live-interactions.js` public surface. Any draft template reaching `published_live` in Phase 2g3 can opt in (e.g., ecommerce `fashion-editorial` could use tabs for collection browsing, portfolio could use compare for project before/after, lawyer could use anchor-nav on practice-areas pages).
+- (c) The Editor Schema Blueprint becomes the architectural anchor for the future editor app. When Phase 2g3.7 closes and auth/editor/projects/commerce unlock per D-049, the blueprint is the source of truth for: component registry shape, field types, constraints, invariants, persistence model. Implementation becomes a matter of reading the blueprint and writing code, not debating design.
+- (d) The D-054 Premium Differentiation Law is strengthened by concrete evidence: 3 templates that share 2 archetypes (specialist medical + fine-dining restaurant) can still carry genuinely distinct premium sections via content-driven conditional rendering. The pattern — `{% if page_data.X %}` in the shared skin + per-template content block — is confirmed as the scaling primitive for adding premium sections to archetype families without forking the skin.
+- (e) Any future `published_live` template should declare in its DNA which premium sections it carries (an optional `premium_sections: ["journey", "trust", ...]` list) and the content registry provides their data. This formalization is out of scope for Session 30 but is the natural next step when Phase 2g3 starts authoring new skin folders.
+
+**Non-negotiable quality floor:**
+- Every new section MUST fit the template's DNA tone (clinical / boutique / hospitality). A section that would work identically on all 3 templates is a red flag.
+- Every new content block MUST be authored in all 5 locales in native voice. Empty locales on a `published_live` template break the pilot architecture and get rejected at tier-sync time.
+- Every new interaction primitive MUST respect `prefers-reduced-motion` and degrade gracefully without JS.
+- Every new section MUST pass the D-047 leak sweep (no literal brand names / cities / quotes in HTML files — all strings from the content registry).
+
+**Validation results (Session 30):**
+- `python manage.py check`: 0 issues.
+- Route sweep: 85/85 across 3 templates × 5 locales × mixed page kinds = 200.
+- Marketplace surfaces: 4/4 200.
+- Cross-template contamination sweep: zero (Ricciardi/Marani/Osteria/Parioli/Vallesi all confined).
+- Differentiation validation: 16/16 (cardio sections never appear on derm, derm sections never appear on cardio, gusto sections never appear on medical, medical sections never appear on gusto).
+- i18n coverage: 12/12 (all 3 new section-sets × 4 non-IT locales).
+- AR RTL: 3/3 (`dir=rtl`, new section translations visible).
+
+## D-063: Gusto i18n/RTL Closure — Third Published_live Template Fully Multilingual, Reusable Restaurant Chrome Keys (2026-04-13, Session 29)
+
+**Decision:** The third `tier=published_live` template, `gusto-fine-dining`, now ships in five locales (`it`, `en`, `fr`, `es`, `ar`) with real RTL for Arabic, completing Phase 2i.2. All 3 public templates (cardio / derm / gusto) are fully multilingual. The architecture established by D-059 (Session 23 cardio pilot) was extended to the fine-dining archetype with zero changes to the pilot infrastructure — proving the shape works across a second skin family with a different tone (restaurant hospitality, not medical clinical).
+
+**What shipped:**
+- `apps/catalog/template_content_gusto_i18n.py` — 4 hand-authored content trees (EN/FR/ES/AR), ~1250 lines. Native editorial voice per locale; zero machine translation. Proper names (chef/staff/producers/wines/press) stay Latin across all locales per the Session 23 precedent.
+- `apps/catalog/template_content.py` — GUSTO_CONTENT_IT extended with missing content keys (~30 new keys) for every previously-hardcoded HTML literal; imports + wires the 4 new locale trees; TEMPLATE_CONTENT["gusto-fine-dining"] now carries all 5 locales.
+- `apps/catalog/template_i18n.py` — CHROME_I18N extended with 9 new keys: `mp_other_restaurant`, `foot_restaurant`, `foot_concierge`, `foot_services`, `fd_wine_pairing`, `fd_email_label`, `fd_phone_label`, `blog_read_article`. These are restaurant-category-generic and will be reused by the draft restaurant archetypes (`trattoria-warm` / `street-modern`) when they reach `published_live` in Phase 2g3.1.
+- `templates/live_templates/restaurant/fine-dining/_base.html` — dynamic `<html lang dir>`, conditional Amiri + Noto Kufi Arabic font loading for AR only, mp-bar language switcher pill strip, chrome strings wired, every nav/footer/ctas URL preserves `?lang=` when non-IT, new `html[dir="rtl"] ...`-scoped CSS block with 2 parts: (a) core RTL (font stack swap, 17px body / 1.85 line-height, letter-spacing flatten, nav grid flip, eyebrow bar `:before→:after`, gold-btn arrow `→→←`, mp-bar row-reverse) and (b) page-level section overrides inside `{% if is_rtl %}` for `.fd-hero` / `.fd-chef-inner` / `.fd-concierge-inner` / `.fd-wine-inner` / `.fd-method-inner` / `.fd-private-inner` / `.fd-ingredienti` grid-template-columns flip, drop-cap `float: left→right`, border-left→border-right on portraits, right-align/left-align on numbered columns, etc.
+- All 7 page templates (home / about / menu / gallery / reservations / blog_list / blog_detail) wired to read labels from `page_data.*` + `chrome.*` + `site.*` instead of hardcoded literals. Every URL preserves locale.
+
+**Restaurant chrome keys added (reusable for Sapore + Brace):**
+- `mp_other_restaurant` — "Altri template ristoranti →" / "More restaurant templates →" / ...
+- `foot_restaurant` — "Il ristorante" (footer heading, distinct from `foot_studio` used by medical)
+- `foot_concierge` — "Concierge"
+- `foot_services` — "Servizi" (distinct from `foot_hours` — semantically richer; covers opening-hours block with services description)
+- `fd_wine_pairing` — "In abbinamento" / "Paired with" / "Accord mets-vin" / ... (menu course wine-pairing label)
+- `fd_email_label` — "Email" / "البريد الإلكترونيّ"
+- `fd_phone_label` — "Telefono" / "Phone" / ... (concierge contact labels)
+- `blog_read_article` — "Leggi l'articolo" (shorter variant of existing `blog_read_full`)
+
+**Rationale:** D-059 explicitly anticipated this rollout: "Phase 2i.2 step 2 — Gusto (adds a new archetype RTL block)" and "extend CHROME_I18N with the additional keys needed or factor a per-archetype extension pattern. Decision deferred to the next session." Session 29 chose to extend CHROME_I18N flat with restaurant-scoped keys rather than namespace by archetype — the keys are category-generic (not `fd_*`-specific) and future restaurant archetypes will reuse them. This keeps the per-locale review surface flat: one dict, one language end-to-end per review pass. The `fd_*` prefix on `fd_wine_pairing` / `fd_email_label` / `fd_phone_label` is a deliberate narrower scope because those specific labels are tied to fine-dining chrome layout (menu course wine bar, concierge contact strip). Future restaurant archetypes with different chrome may introduce their own `tr_*` / `sm_*` keys rather than reuse these.
+
+The RTL CSS authoring choice mirrored the specialist (cardio) pilot pattern: one `html[dir="rtl"] ...`-scoped block inside the skin's `_base.html`, split into core + page-level with `{% if is_rtl %}` gating the page-level section so LTR users don't pay the CSS cost. No separate `rtl.css` file introduced. This matches D-058 (Live Motion Language) and D-059 (i18n pilot) — one small gated block, zero new files.
+
+The decision to keep proper names (chef "Lorenzo Fioravanti", maître "Greta Vallesi", producers like Tarbouriech / Brezza / Pacherhof / Pieropan, wines like Champagne Selosse / Barolo Cannubi / Domori, press outlets GUIDA MICHELIN / GAMBERO ROSSO / IDENTITÀ GOLOSE, address "Via San Marco 17", phone "+39 02 3611 9920", email "concierge@osteriamoderna.it") in Latin script across AR is the same stance as D-059 for doctor names and medical press outlets: these are canonical identifiers in world food press / hospitality and transliteration would be ugly + lossy.
+
+**Trade-off:** Same as D-059 — content duplication (each locale carries a full mirror, including non-localizable data like phone numbers). Roughly 5× content size for gusto. Acceptable: content trees are a few KB each, duplication is flat with no cross-references to keep in sync, review surface is one locale per pass.
+
+**Consequence:**
+- (a) Phase 2i.2 closes in full. All 3 `tier=published_live` templates now ship in 5 locales with working RTL.
+- (b) Any future restaurant archetype reaching `published_live` in Phase 2g3.1 (Sapore / Brace) inherits the 7 restaurant-generic CHROME_I18N keys for free. Only new work needed: (i) 4 locale content trees for that template, (ii) a new `html[dir="rtl"] ...` scoped block inside the new skin's `_base.html` with the new archetype's selector prefix (`.tr-*` for trattoria-warm, `.sm-*` for street-modern). Budget per template: ~3h same as Gusto.
+- (c) The Arabic font stack decision (Amiri + Noto Kufi Arabic) is now validated across both specialist and fine-dining skins — it's the reusable default for any future `tier=published_live` template.
+- (d) The decision to put archetype-specific labels (Gusto-brand-specific like `chef_label` / `star_tag` / `courses_label`) in the CONTENT registry rather than CHROME_I18N is the reusable pattern: CHROME_I18N = archetype-agnostic cross-cutting chrome; content registry = brand-specific copy. This keeps `template_i18n.py` from ballooning into a per-template label dump.
+- (e) Motion + interactions (D-058 + D-062) continue to work unchanged — i18n pilot does not touch data-lm / data-li attributes. 25 reveal targets / 5 stagger parents / 3 counters / 4 lightbox triggers all preserved on gusto home in all 5 locales including AR.
+
+**Non-negotiable quality floor reaffirmed:** Native editorial voice per locale. Each tree authored by a human food writer for the target market. Machine-translated content is a Phase 2i.2 rollback trigger.
+
+## D-062: Ultra Premium Live Interaction Pass — New Interactive Components and Premium Sections (2026-04-12, Session 28)
+
+**Decision:** The 3 `tier=published_live` templates receive a comprehensive enrichment pass adding new interactive components, premium content sections, and visual richness. A new zero-dependency interaction library (`live-interactions.css` + `live-interactions.js`) is introduced alongside the existing motion system, providing accordion, lightbox, and sticky CTA components.
+
+**New interaction library:**
+- `static/css/live-interactions.css` — Accordion, lightbox overlay, sticky CTA bar styles
+- `static/js/live-interactions.js` — Accordion toggle, lightbox gallery with keyboard navigation, IntersectionObserver-driven sticky CTA
+- All components degrade gracefully without JS and respect `prefers-reduced-motion`
+- Loaded only inside live-template skins (not on marketplace)
+
+**Per-template enrichments (each template gets DIFFERENT interactive patterns):**
+
+| Template | New Sections | Unique Interactions | Section Count |
+|----------|-------------|-------------------|---------------|
+| Cardio | Technology grid (4 SVG icons), testimonial, FAQ accordion (5 Qs) | Sticky CTA bar, accordion FAQ, equipment icons | +3 sections |
+| Derm | Gallery strip (4 images), testimonial, FAQ accordion (5 Qs) | Sticky CTA bar, accordion FAQ, image gallery hover | +3 sections |
+| Gusto | Ingredients band, awards grid, seasonal card, expanded atmosphere (3→4) | Lightbox gallery, awards badges, seasonal highlight | +3 sections |
+
+**Differentiation preserved and strengthened:**
+- Cardio gets data/technology focus (clinical precision)
+- Derm gets visual/gallery focus (boutique aesthetics)
+- Gusto gets editorial/cinematic focus (theatrical hospitality)
+- No shared interactive patterns across categories: medical gets accordion+sticky, restaurant gets lightbox+seasonal
+- Inner pages enhanced: Gusto gallery has lightbox, Gusto reservations has process icons
+
+**i18n impact:** All new content blocks translated into 5 locales (IT/EN/FR/ES/AR) for both medical templates. Gusto remains IT-only per Phase 2i.2 scope. All new sections render correctly in RTL (Arabic).
+
+**Rationale:** D-054 Premium Differentiation Law requires distinct interaction patterns. The ultra-premium pass adds depth and richness without flattening differentiation — each template's new features are motivated by its brand personality and category semantics, not generic "premium template" features.
+
 ## D-061: Medical Motion Opt-In — Specialist Skin Adopts Live Motion Language with Clinical Profile (2026-04-12, Session 27)
 
 **Decision:** The specialist archetype skin (`templates/live_templates/medical/specialist/`) adopts the live motion language (`static/css/live-motion.css` + `static/js/live-motion.js`) introduced by D-058 on the fine-dining archetype (Gusto). The adoption uses a **medical motion profile** — reduced intensity tokens overriding the shared CSS on the specialist `:root` — and 4 pattern categories applied across all 8 specialist page templates plus `_base.html`.

@@ -187,11 +187,197 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
         "chief_label":   "Direzione clinica",
         "chief_heading": "Una sola firma <em>per ogni cartella.</em>",
 
+        # Technology / equipment section (Cardio-only — Derm uses gallery_strip)
+        "tecnologie": {
+            "label": "Tecnologie & strumentazione",
+            "heading": "Diagnostica di <em>ultimo livello</em>, in studio.",
+            "items": [
+                {
+                    "icon": "ecg",
+                    "title": "ECG a 12 derivazioni",
+                    "desc": "Elettrocardiogramma a riposo con refertazione immediata e confronto storico.",
+                },
+                {
+                    "icon": "echo",
+                    "title": "Ecocardiografia Philips EPIQ 7",
+                    "desc": "Ecografia cardiaca 2D e color-Doppler di ultima generazione, refertata in giornata.",
+                },
+                {
+                    "icon": "holter",
+                    "title": "Holter Schiller MT-200",
+                    "desc": "Registrazione ECG delle 24 ore con analisi di variabilità e aritmie silenti.",
+                },
+                {
+                    "icon": "stress",
+                    "title": "Test ergometrico",
+                    "desc": "Test da sforzo su cicloergometro con monitoraggio continuo della pressione arteriosa.",
+                },
+            ],
+        },
+
+        # Patient testimonial (different voice for Cardio vs Derm)
+        "testimonianza": {
+            "quote":
+                "Ho cercato per due anni un cardiologo che leggesse davvero la mia "
+                "cartella prima di visitarmi. Allo Studio Marani hanno passato "
+                "quaranta minuti sui miei esami prima ancora di toccare lo stetoscopio.",
+            "author": "Paziente dello studio",
+            "context": "Seconda opinione cardiologica · 2025",
+        },
+
+        # FAQ accordion (clinical cardio questions)
+        "faq": {
+            "label": "Domande frequenti",
+            "heading": "Le domande che <em>ci rivolgete più spesso.</em>",
+            "items": [
+                ("Quanto dura una prima visita cardiologica?",
+                 "Una prima visita completa dura circa quarantacinque minuti e include "
+                 "anamnesi, esame obiettivo, ECG a 12 derivazioni, refertazione e "
+                 "discussione del piano di follow-up. Non accettiamo visite di meno "
+                 "di trenta minuti, nemmeno per i controlli."),
+                ("Serve la richiesta del medico di base?",
+                 "No. Essendo uno studio specialistico privato, non è necessaria "
+                 "l'impegnativa del medico curante. È utile, ma non obbligatoria, "
+                 "una lettera del medico di base con la storia clinica recente."),
+                ("Posso portare esami di un altro ospedale?",
+                 "Assolutamente sì. Il secondo parere è una delle nostre specialità. "
+                 "Portateci tutti i referti, le lettere di dimissione e le terapie in "
+                 "corso — li leggeremo insieme, pagina per pagina."),
+                ("L'ecocardiogramma è doloroso?",
+                 "No, è un esame completamente indolore e non invasivo. La sonda "
+                 "viene appoggiata sul torace con un gel conduttore. L'esame dura "
+                 "circa venti-trenta minuti."),
+                ("Come funziona il programma di prevenzione?",
+                 "Il programma semestrale include quattro visite cadenzate, due "
+                 "ECG, un Holter delle 24 ore, una valutazione integrata con "
+                 "dietologo e medico dello sport, e un canale diretto con il "
+                 "medico dello studio per le urgenze."),
+            ],
+        },
+
         # Bottom CTA band
         "cta_heading":
             "Ogni visita è <em>concordata personalmente</em> con il medico.",
         "cta_primary_label":   "Richiedi visita privata",
         "cta_secondary_label": "Contatti dello studio",
+
+        # Anchor subnav (dense home scaffold)
+        "anchor_nav": [
+            ("metodo",        "Metodo"),
+            ("visite",        "Visite"),
+            ("percorso",      "Percorso paziente"),
+            ("tecnologie",    "Tecnologie"),
+            ("medico",        "Direzione clinica"),
+            ("studio",        "Sede & contatti"),
+        ],
+
+        # Patient journey / timeline (clinical reassurance)
+        "percorso": {
+            "label":   "Percorso paziente",
+            "heading": "Cosa aspettarsi dalla <em>prima visita.</em>",
+            "intro":
+                "Una visita cardiologica allo Studio Marani segue sempre lo "
+                "stesso protocollo: cinque tappe in quarantacinque minuti, "
+                "senza fretta e senza scorciatoie.",
+            "steps": [
+                {
+                    "num": "01",
+                    "icon": "clipboard",
+                    "title": "Arrivo & accoglienza",
+                    "desc": "La segreteria raccoglie i documenti, la cartella "
+                            "precedente e consegna la scheda anamnestica. "
+                            "Tempo medio in sala d'attesa: 4 minuti.",
+                    "duration": "5 min",
+                },
+                {
+                    "num": "02",
+                    "icon": "book",
+                    "title": "Anamnesi approfondita",
+                    "desc": "Lettura della cartella, storia familiare, "
+                            "terapie in corso e stile di vita. Annotazione "
+                            "personale del medico, non un questionario.",
+                    "duration": "15 min",
+                },
+                {
+                    "num": "03",
+                    "icon": "heart",
+                    "title": "Esame obiettivo + ECG",
+                    "desc": "Auscultazione, misurazione pressoria su entrambi "
+                            "gli arti, elettrocardiogramma a 12 derivazioni "
+                            "con refertazione immediata.",
+                    "duration": "15 min",
+                },
+                {
+                    "num": "04",
+                    "icon": "chart",
+                    "title": "Diagnostica mirata",
+                    "desc": "Se indicato, ecocardiografia in studio o "
+                            "programmazione di Holter / test ergometrico. "
+                            "Mai esami di routine inutili.",
+                    "duration": "Variabile",
+                },
+                {
+                    "num": "05",
+                    "icon": "document",
+                    "title": "Piano clinico scritto",
+                    "desc": "Refertazione firmata in carta riciclata, timeline "
+                            "dei controlli, canale diretto del medico per "
+                            "domande successive.",
+                    "duration": "10 min",
+                },
+            ],
+        },
+
+        # Insurance / trust strip — detraibilità, convenzioni, refertazione
+        "insurance": {
+            "label": "Garanzie & trasparenza",
+            "items": [
+                ("19%", "Detraibilità come spesa sanitaria",
+                 "Fattura emessa in giornata con tracciabilità completa."),
+                ("48h", "Tempi di refertazione",
+                 "Holter ed ecocardiogramma consegnati entro 48 ore lavorative."),
+                ("4", "Ospedali di riferimento",
+                 "Rete di consulto con Policlinico Umberto I, Gemelli, "
+                 "San Raffaele, Santo Spirito."),
+                ("10 anni", "Archivio clinico tracciato",
+                 "Cartella accessibile al paziente per dieci anni, copia "
+                 "richiedibile in qualsiasi momento."),
+            ],
+        },
+
+        # Location / sede — address, transport, accessibility
+        "location": {
+            "label":   "Sede dello studio",
+            "heading": "Viale Parioli 142, <em>Roma.</em>",
+            "intro":
+                "Lo studio occupa il piano nobile di un edificio storico "
+                "dei Parioli. Ingresso indipendente, sala d'attesa riservata "
+                "e ambulatorio con diagnostica in loco.",
+            "map_image":
+                "https://api.mapbox.com/styles/v1/mapbox/light-v11/static/"
+                "pin-l+9c2a2a(12.490,41.920)/12.490,41.920,14,0/"
+                "800x560@2x?access_token=pk.eyJ1IjoibWFya2V0d2ViIiwiYSI6IlExIn0.x",
+            "map_fallback_image":
+                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "?auto=format&fit=crop&w=1200&q=80",
+            "details": [
+                ("Indirizzo",
+                 "Viale Parioli 142\n00197 Roma"),
+                ("Metropolitana",
+                 "Linea A fermata Flaminio\n8 minuti a piedi"),
+                ("Parcheggio",
+                 "Parcheggio riservato convenzionato\nin Via Panama, 50 metri"),
+                ("Accessibilità",
+                 "Ingresso accessibile a sedie a rotelle\nAscensore diretto al piano"),
+            ],
+            "hours_short": [
+                ("Lun – Ven", "9:00 – 19:00"),
+                ("Sabato",    "Solo reperibilità"),
+                ("Domenica",  "Chiuso"),
+            ],
+            "cta_label": "Ottieni indicazioni stradali",
+            "cta_href":  "contatti",
+        },
     },
 
     # ─── LO STUDIO (about) ─────────────────────────────────────
@@ -646,9 +832,13 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
         "email":        "concierge@osteriamoderna.it",
         "address":      "Via San Marco 17 · 20121 Milano",
         "hours_compact":"Mar – Sab · solo cena",
+        "star_line":    "★ Una stella Michelin · est. 2018",
         "footer_intro":
             "Una stella Michelin dal 2018. Quattordici coperti, due servizi a "
             "settimana, un menù a otto atti che cambia ogni due settimane.",
+        "footer_hours_1": "Mer – Sab · 20:00",
+        "footer_hours_2": "Dom & Lun · chiuso",
+        "copyright": "© 2026 Osteria Moderna · P. IVA 09456112094",
     },
 
     # ─── HOME ──────────────────────────────────────────────────
@@ -662,6 +852,11 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
         "primary_href":  "prenota",
         "secondary_cta": "Lo chef",
         "secondary_href":"filosofia",
+
+        "chef_label":    "Lo chef",
+        "star_tag":      "★ Atto V · Cioccolato 80%",
+        "photo_label":   "Fotografia",
+        "cuisine_label": "Cucina",
 
         "facts": [
             ("14",   "coperti per servizio"),
@@ -694,25 +889,210 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
                 "Stella Michelin nel 2018, mantenuta fino a oggi.",
         },
 
+        "courses_label": "Cinque atti del menù in corso · autunno '26",
+        "courses_footline": "€ 180 / persona · vini in abbinamento + €90",
+        "courses_full_cta": "Otto atti completi",
+        "chef_link_filosofia": "La filosofia",
+        "chef_link_diario": "Il diario",
+
+        "press_label": "Pubblicato su",
         "press": ["GUIDA MICHELIN", "GAMBERO ROSSO", "IDENTITÀ GOLOSE",
                   "CORRIERE LIVING", "VOGUE FOOD"],
 
-        # Atmosphere teaser — 3-image strip on home, links to /atmosfera
+        # Ingredients/sourcing editorial band
+        "ingredienti": {
+            "label": "Materia prima",
+            "heading": "Trentadue produttori, <em>tutti per nome.</em>",
+            "text":
+                "La rete di Osteria Moderna comprende trentadue piccoli produttori — "
+                "pescatori liguri, allevatori piemontesi, ortolani lodigiani — di cui "
+                "Lorenzo conosce personalmente il nome, l'indirizzo e il numero di "
+                "telefono. Nessun intermediario, nessun catalogo, nessuna distribuzione.",
+            "image":
+                "https://images.unsplash.com/photo-1606787366850-de6330128bfc"
+                "?auto=format&fit=crop&w=1000&q=80",
+            "image_caption": "Ingredienti del menù autunno '26 · mercato del mattino",
+        },
+
+        # Atmosphere teaser — expanded to 4 images with lightbox
         "atmosphere_teaser": {
             "label": "L'atmosfera",
             "images": [
                 ("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"
                  "?auto=format&fit=crop&w=600&q=80",
-                 "La sala"),
+                 "La sala principale"),
                 ("https://images.unsplash.com/photo-1556909114-f6e7ad7d3136"
                  "?auto=format&fit=crop&w=600&q=80",
                  "La cucina a vista"),
                 ("https://images.unsplash.com/photo-1559339352-11d035aa65de"
                  "?auto=format&fit=crop&w=600&q=80",
-                 "Il cortile"),
+                 "Il cortile sotto il glicine"),
+                ("https://images.unsplash.com/photo-1414235077428-338989a2e8c0"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "Mise en place del venerdì sera"),
             ],
             "link_label": "Scopri l'atmosfera",
             "link_href":  "atmosfera",
+        },
+
+        # Awards/recognition section
+        "riconoscimenti": {
+            "label": "Riconoscimenti",
+            "items": [
+                ("★", "Stella Michelin", "Dal 2018 — confermata ogni anno"),
+                ("GR", "Gambero Rosso", "Tre Forchette · Premio speciale cucina d'autore 2025"),
+                ("IG", "Identità Golose", "Piatto dell'anno 2024 — Piccione di Bresse"),
+                ("50B", "50 Best Discovery", "Incluso nella selezione 2026 Italia"),
+            ],
+        },
+
+        # CTA section
+        "cta_heading": "Quattordici coperti, <em>due servizi a settimana.</em>",
+        "cta_primary": "Riserva la serata",
+        "cta_secondary": "Vedi il menù completo",
+
+        # Seasonal highlight card
+        "stagione": {
+            "label": "In questo momento",
+            "title": "Menù autunno '26",
+            "subtitle": "Otto atti · dal 6 al 19 ottobre",
+            "text":
+                "Il nuovo menù è in carta da lunedì. Otto piatti, quattro costruzioni "
+                "nuove e quattro variazioni su temi che avevamo lasciato in archivio "
+                "dal 2022. Prenotazione obbligatoria.",
+            "cta_label": "Scopri gli otto atti →",
+            "cta_href":  "menu",
+        },
+
+        # Producer showcase — 4 artisans portraits (editorial, not cheap)
+        "produttori": {
+            "label":   "Dai produttori",
+            "heading": "Quattro mani, <em>una tavola sola.</em>",
+            "intro":
+                "Ogni mattina una parte della sala entra dalla porta della cucina. "
+                "I volti sono questi. Le loro terre, i loro metodi — li trovate "
+                "in carta, riga per riga.",
+            "items": [
+                {
+                    "portrait":
+                        "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                        "?auto=format&fit=crop&w=800&q=80",
+                    "name": "Roberto Tarbouriech",
+                    "role": "Ostriche & crostacei",
+                    "area": "Sète · Étang de Thau",
+                    "blurb":
+                        "Le ostriche Spéciales vengono dalla laguna dell'Étang de "
+                        "Thau. Consegna lunedì, servite martedì sera.",
+                },
+                {
+                    "portrait":
+                        "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                        "?auto=format&fit=crop&w=800&q=80",
+                    "name": "Famiglia Brezza",
+                    "role": "Barolo & Langhe",
+                    "area": "Barolo · Piemonte",
+                    "blurb":
+                        "Vigne di Cannubi e Sarmassa, lavorate senza enologo esterno. "
+                        "Una carta verticale dal 2008 in poi.",
+                },
+                {
+                    "portrait":
+                        "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                        "?auto=format&fit=crop&w=800&q=80",
+                    "name": "Aloïs Lageder",
+                    "role": "Biodinamica di montagna",
+                    "area": "Pacherhof · Alto Adige",
+                    "blurb":
+                        "Vini bianchi che arrivano a noi in via diretta dalla "
+                        "val d'Isarco. Niente filtro, niente chiarifica.",
+                },
+                {
+                    "portrait":
+                        "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                        "?auto=format&fit=crop&w=800&q=80",
+                    "name": "Gianfranco Pieropan",
+                    "role": "Soave classico",
+                    "area": "Soave · Veneto",
+                    "blurb":
+                        "Calvarino e La Rocca, Soave Classico in purezza. "
+                        "Accompagnano il secondo atto da sempre.",
+                },
+            ],
+        },
+
+        # Private dining / Chef's Table — exclusive experience block
+        "private_dining": {
+            "label":   "Eventi privati",
+            "heading": "Chef's Table & <em>privatizzazioni.</em>",
+            "intro":
+                "Per dodici coperti in sala privata o per la sera intera "
+                "— ventotto coperti, un solo menù, cucina a vista.",
+            "experiences": [
+                {
+                    "icon": "fork",
+                    "title": "Chef's Table",
+                    "meta":  "12 coperti · da €190 / persona",
+                    "desc":
+                        "Tavolo unico affacciato sulla cucina. Menù di "
+                        "otto atti in versione narrata direttamente "
+                        "dallo chef. Disponibile il martedì.",
+                },
+                {
+                    "icon": "door",
+                    "title": "Privatizzazione serale",
+                    "meta":  "28 coperti · da €5.800 / serata",
+                    "desc":
+                        "Intero ristorante, menù dedicato, fiori, maître "
+                        "d'hôtel personale. Minimo due settimane di "
+                        "anticipo, decliniamo il venerdì.",
+                },
+                {
+                    "icon": "wine",
+                    "title": "Degustazione di carta",
+                    "meta":  "6 coperti · solo giovedì",
+                    "desc":
+                        "Una serata al mese con il sommelier su sei "
+                        "bottiglie scelte tra i produttori in carta. "
+                        "Solo su lista d'attesa, da prenotare.",
+                },
+            ],
+            "cta_label": "Scrivi al concierge",
+            "cta_href":  "prenota",
+        },
+
+        # Wine program — pairings, sommelier signature
+        "wine_program": {
+            "label":   "La cantina",
+            "heading": "Quattrocento etichette, <em>tre abbinamenti notturni.</em>",
+            "intro":
+                "La carta segue il menù: ogni atto ha il suo abbinamento "
+                "e due alternative — classica, contemporanea, non alcolica.",
+            "sommelier": {
+                "name": "Greta Vallesi",
+                "role": "Maître & sommelier",
+                "bio":
+                    "Quindici anni tra Borgogna, Langhe e Champagne. "
+                    "La carta è curata da lei, l'abbinamento è sempre "
+                    "proposto al tavolo, mai imposto.",
+            },
+            "pairings": [
+                ("01", "Pairing classico",
+                 "Champagne en blanc, Soave Classico, Barolo riserva, Moscato.",
+                 "+ €110"),
+                ("02", "Pairing contemporaneo",
+                 "Col Fondo veneto, Erbaluce lungo, Ribolla anfora, "
+                 "Timorasso in verticale.",
+                 "+ €130"),
+                ("03", "Pairing zero-alcol",
+                 "Kombucha artigianale, tè freddi in infusione lenta, "
+                 "succo d'uva fermentato naturalmente.",
+                 "+ €60"),
+            ],
+            "cellar_facts": [
+                ("420", "etichette in carta"),
+                ("18", "regioni vitivinicole"),
+                ("2005", "verticale più antica (Brunello)"),
+            ],
         },
     },
 
@@ -770,12 +1150,18 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "francamente — è la metà del lavoro che facciamo.",
         ],
 
+        "values_label": "Cosa garantiamo",
+        "values_heading": "Quattro promesse che <em>non cambiano mai</em>.",
         "values": [
             ("Tempo",        "Tre ore e mezza di servizio. Mai più, mai meno."),
             ("Stagione",     "Niente in sala che non sia di stagione locale."),
             ("Trasparenza",  "Conosciamo per nome ogni produttore in carta."),
             ("Discrezione",  "Niente foto del cuoco, niente social: in sala si mangia."),
         ],
+
+        "cta_heading": "Vuoi vedere il menù <em>in corso questa settimana?</em>",
+        "cta_menu": "Otto atti dell'autunno '26",
+        "cta_prenota": "Riserva la serata",
     },
 
     # ─── MENU ──────────────────────────────────────────────────
@@ -786,6 +1172,7 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "Il menù cambia integralmente ogni due settimane. Quanto segue è "
             "il programma in vigore dal 6 al 19 ottobre 2026. Due servizi alla "
             "settimana, dal mercoledì al sabato, una sola seduta dalle 20:00.",
+        "courses_label": "Otto atti · servizio dalle 20:00",
 
         "courses": [
             ("I",    "Ostrica & cetriolo",
@@ -868,6 +1255,11 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "Lorenzo Fioravanti durante il servizio.",
             "La sala principale al termine della mise en place.",
         ],
+
+        "cta_quote": "«Per fotografare il piatto, qui, lo si guarda con calma da seduti.»",
+        "cta_desc": "Quattordici coperti per servizio. Solo prenotazione. Solo cena. Mer – Sab.",
+        "cta_primary": "Riserva la serata",
+        "cta_secondary": "Vedi il menù",
     },
 
     # ─── DIARIO (blog list / detail) ───────────────────────────
@@ -878,6 +1270,19 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "Brevi appunti di Lorenzo Fioravanti e Greta Vallesi sui menù in "
             "corso, sui produttori, sulle serate memorabili e su quello che "
             "sta cambiando in cucina di settimana in settimana.",
+        "read_article": "Leggi l'articolo",
+        "min_label": "min",
+        "min_read_label": "min di lettura",
+        "crumb_label": "Diario",
+        "back_link": "← Tutto il diario",
+        "footer_label": "Osteria Moderna · Il diario di sala",
+        "empty_body": [
+            "Articolo in preparazione editoriale. La pubblicazione integrale "
+            "sarà disponibile a breve, scritta personalmente dallo chef o dal maître.",
+            "Questo segnaposto descrive la voce del Diario di Sala: brevi note di "
+            "lavoro, riflessioni sui produttori, racconti di serate memorabili. "
+            "Mai più di duemila parole, mai meno di cinquecento.",
+        ],
     },
 
     "posts": [
@@ -987,6 +1392,13 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "passano dal concierge personale del ristorante, Greta Vallesi, "
             "che risponde via email entro la giornata.",
 
+        "process_label": "Come funziona",
+        "process_heading": "Quattro passaggi, <em>quattro giorni di anticipo</em>.",
+        "hours_label": "Servizi della settimana",
+        "hours_heading": "Quattro sere, <em>una sola seduta</em>.",
+        "private_heading": "Cene private",
+        "form_submit": "Invia richiesta al concierge",
+
         "process": [
             ("01", "Scrivi a Greta",
              "Bastano poche righe: data preferita, numero di ospiti, eventuali "
@@ -1037,10 +1449,11 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             ("Telefono",           "+39 333 ...",          "tel"),
             ("Numero di ospiti",   "2",                    "number"),
             ("Data preferita",     "ven 16 ottobre",       "text"),
-            ("Intolleranze",       "Eventuali allergie o intolleranze", "text"),
-            ("Occasione",          "Cena romantica / Compleanno / Lavoro / Indifferente", "select"),
-            ("Note per il concierge","Eventuali richieste particolari", "textarea"),
+            ("Occasione",          "",                     "select"),
+            ("Intolleranze o allergie", "Eventuali intolleranze, allergie o richieste particolari", "text"),
+            ("Note per il concierge","Greta legge personalmente ogni richiesta. Bastano poche righe.", "textarea"),
         ],
+        "occasion_options": ["Cena romantica", "Compleanno", "Lavoro", "Indifferente"],
         "consent":
             "Acconsento al trattamento dei dati personali secondo l'informativa "
             "privacy ai sensi del Regolamento UE 679/2016.",
@@ -1189,11 +1602,184 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
             ],
         },
 
+        # Gallery strip (Derm-only — Cardio uses tecnologie grid)
+        "gallery_strip": {
+            "label": "Lo studio & le tecnologie",
+            "images": [
+                ("https://images.unsplash.com/photo-1631815587646-b85a1bb027e1"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "Il dermatoscopio digitale FotoFinder"),
+                ("https://images.unsplash.com/photo-1629909613654-28e377c37b09"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "L'ambulatorio di Via Veneto"),
+                ("https://images.unsplash.com/photo-1612349317150-e413f6a5b16d"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "Consulto dermatoscopico"),
+                ("https://images.unsplash.com/photo-1666214280557-f1b5022eb634"
+                 "?auto=format&fit=crop&w=600&q=80",
+                 "Sala chirurgica ambulatoriale"),
+            ],
+        },
+
+        # Patient testimonial (different voice from Cardio — refined, aesthetic)
+        "testimonianza": {
+            "quote":
+                "Cercavo una dermatologa che non avesse fretta. La Dottoressa Ricciardi "
+                "ha passato venti minuti a studiare ogni neo con il dermatoscopio prima di "
+                "dirmi una sola parola. È stata la visita più accurata della mia vita.",
+            "author": "Paziente dello studio",
+            "context": "Mappatura nevi digitale · 2025",
+        },
+
+        # FAQ accordion (dermatology-specific questions)
+        "faq": {
+            "label": "Domande frequenti",
+            "heading": "Risposte alle domande <em>più comuni.</em>",
+            "items": [
+                ("Ogni quanto va fatta la mappatura dei nevi?",
+                 "Raccomandiamo un controllo annuale per tutti. In caso di "
+                 "familiarità per melanoma o di fototipo chiaro con molti nevi, "
+                 "il controllo può essere semestrale. La mappatura digitale "
+                 "permette di confrontare ogni neo con la sua versione precedente."),
+                ("La chirurgia dermatologica è dolorosa?",
+                 "L'escissione di lesioni sospette avviene in anestesia locale. "
+                 "Il paziente sente solo la prima puntura dell'anestetico. "
+                 "L'intervento dura in media venti minuti e si torna a casa "
+                 "subito dopo, con una piccola medicazione."),
+                ("Che differenza c'è tra estetica e dermatologia estetica?",
+                 "La differenza è il medico. Nel nostro studio ogni trattamento "
+                 "estetico — filler, tossina botulinica, peeling — è eseguito "
+                 "personalmente da un dermatologo, mai delegato. Prima di ogni "
+                 "trattamento estetico facciamo una visita dermatologica completa."),
+                ("Posso portare i referti di un altro studio?",
+                 "Sì, li leggiamo con attenzione. Se avete una mappatura digitale "
+                 "precedente, portatela: il confronto cronologico fra immagini "
+                 "prese con macchine diverse è possibile e utilissimo."),
+                ("Come funziona il laser dermatologico?",
+                 "Dipende dall'indicazione. Il laser CO2 frazionato lavora sulle "
+                 "cicatrici e le cheratosi, il laser vascolare sulle lesioni dei "
+                 "vasi superficiali. Ogni protocollo prevede una consulenza "
+                 "preliminare gratuita con la dermatologa operatrice."),
+            ],
+        },
+
         # Bottom CTA band
         "cta_heading":
             "Un percorso che inizia <em>dalla prima visita.</em>",
         "cta_primary_label":   "Prenota una prima visita",
         "cta_secondary_label": "Contatti e indicazioni",
+
+        # Treatment tabs — three clinical domains (boutique derm depth)
+        "trattamenti_tabs": {
+            "label":   "Aree di intervento",
+            "heading": "Tre ambiti, <em>una sola direzione clinica.</em>",
+            "intro":
+                "Ogni ambito segue lo stesso metodo — consulenza preliminare, "
+                "piano scritto, esecuzione dermatologica — e si integra con "
+                "gli altri in un percorso continuo.",
+            "tabs": [
+                {
+                    "id":       "clinica",
+                    "label":    "Clinica",
+                    "eyebrow":  "Dermatologia clinica",
+                    "heading":  "Visite, mappature, monitoraggio.",
+                    "body":
+                        "La base dello studio. Prima visita approfondita, "
+                        "mappatura digitale dei nevi con Fotofinder Vexia, "
+                        "dermatoscopia e monitoraggio cronologico.",
+                    "items": [
+                        ("Prima visita dermatologica", "45 min · € 180"),
+                        ("Mappatura digitale Fotofinder", "60 min · € 320"),
+                        ("Controllo annuale", "30 min · € 140"),
+                        ("Dermatologia pediatrica", "40 min · € 170"),
+                    ],
+                    "cta_label": "Tutte le visite cliniche →",
+                    "cta_href":  "visite",
+                },
+                {
+                    "id":       "chirurgia",
+                    "label":    "Chirurgia",
+                    "eyebrow":  "Chirurgia dermatologica",
+                    "heading":  "Escissioni, laser CO2, correzioni.",
+                    "body":
+                        "Piccola chirurgia ambulatoriale in sala operatoria "
+                        "certificata. Escissione di lesioni sospette con "
+                        "esame istologico e sutura estetica dedicata.",
+                    "items": [
+                        ("Escissione di nevo", "30 min · € 420"),
+                        ("Laser CO2 frazionato cicatrici", "60 min · € 520"),
+                        ("Asportazione di cisti", "45 min · € 380"),
+                        ("Correzione post-chirurgica", "40 min · € 290"),
+                    ],
+                    "cta_label": "Percorsi chirurgici →",
+                    "cta_href":  "visite",
+                },
+                {
+                    "id":       "estetica",
+                    "label":    "Estetica",
+                    "eyebrow":  "Dermatologia estetica",
+                    "heading":  "Protocolli medici, mai estetisti.",
+                    "body":
+                        "Ogni trattamento è eseguito personalmente da una "
+                        "dermatologa. Botulino, filler, peeling e laser "
+                        "vascolari in un approccio conservativo e graduale.",
+                    "items": [
+                        ("Tossina botulinica terzo superiore", "20 min · da € 380"),
+                        ("Filler acido ialuronico", "30 min · da € 420"),
+                        ("Peeling chimico superficiale", "40 min · € 240"),
+                        ("Laser vascolare", "30 min · da € 290"),
+                    ],
+                    "cta_label": "Protocolli estetici →",
+                    "cta_href":  "visite",
+                },
+            ],
+        },
+
+        # Before / After comparison — ethical dermatologic results
+        "before_after": {
+            "label":    "Risultati documentati",
+            "heading":  "Un trattamento, <em>tre mesi dopo.</em>",
+            "disclaimer":
+                "Le immagini pubblicate sono di paziente con consenso scritto. "
+                "I risultati sono clinicamente documentati, individuali e non "
+                "costituiscono una garanzia di esito identico per altri pazienti.",
+            "pairs": [
+                {
+                    "title": "Laser CO2 frazionato",
+                    "context": "Cicatrici post-acne, paziente 34 anni",
+                    "duration": "3 sedute in 4 mesi",
+                    "before_image":
+                        "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                        "?auto=format&fit=crop&w=1000&q=80",
+                    "after_image":
+                        "https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                        "?auto=format&fit=crop&w=1000&q=80",
+                },
+            ],
+        },
+
+        # Editorial / press feed — quadruple grid, square format
+        "editorial_feed": {
+            "label": "Dallo studio, nei mesi",
+            "items": [
+                ("https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Vogue Italia · marzo 2026",
+                 "Intervista su patologie cutanee e menopausa"),
+                ("https://images.unsplash.com/photo-1616394584738-fc6e612e71b9"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Forum SIDeMaST 2026",
+                 "Presentazione clinica su fotoprotezione pediatrica"),
+                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Corriere Salute · febbraio",
+                 "Consulenza sul percorso estetico medicalizzato"),
+                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Studio · gennaio 2026",
+                 "Inaugurazione della nuova sala di chirurgia"),
+            ],
+        },
     },
 
     # ─── LO STUDIO (about) ─────────────────────────────────────
@@ -1655,8 +2241,9 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
 # Cardio ships with 5 locales (it/en/fr/es/ar) — the 4 non-IT blocks live
 # in `template_content_cardio_i18n.py` so this file stays browsable.
 # Dermatologia ships with 5 locales as of Session 24 (Phase 2i.2).
-# Gusto is IT-only for now; it will pick up other locales when Phase 2i.2
-# rolls to the fine-dining archetype (separate RTL CSS work needed).
+# Gusto ships with 5 locales as of Session 29 (Phase 2i.2 step 2) — the 4
+# non-IT blocks live in `template_content_gusto_i18n.py` alongside a new
+# `.fd-*` RTL CSS block in the fine-dining _base.html.
 # ---------------------------------------------------------------------------
 
 from apps.catalog.template_content_cardio_i18n import (  # noqa: E402
@@ -1671,6 +2258,13 @@ from apps.catalog.template_content_dermatologia_i18n import (  # noqa: E402
     DERMATOLOGIA_CONTENT_FR,
     DERMATOLOGIA_CONTENT_ES,
     DERMATOLOGIA_CONTENT_AR,
+)
+
+from apps.catalog.template_content_gusto_i18n import (  # noqa: E402
+    GUSTO_CONTENT_EN,
+    GUSTO_CONTENT_FR,
+    GUSTO_CONTENT_ES,
+    GUSTO_CONTENT_AR,
 )
 
 
@@ -1691,6 +2285,10 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     },
     "gusto-fine-dining": {
         "it": GUSTO_CONTENT_IT,
+        "en": GUSTO_CONTENT_EN,
+        "fr": GUSTO_CONTENT_FR,
+        "es": GUSTO_CONTENT_ES,
+        "ar": GUSTO_CONTENT_AR,
     },
 }
 

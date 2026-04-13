@@ -1,7 +1,7 @@
 {
-  "version": "0.8.0",
-  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, tier, and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0–0.7.3: ecommerce DNA pilot (Luxe + Bottega, Session 15), business DNA split (Pragma + Elevate, Session 17, D-050), portfolio DNA split (Chiara + Pixel, Session 18, D-051), Chiara surgical layout fix (Session 19, D-052). v0.8.0: Session 20 Live Preview Policy v2 formalization — introduces the two-tier model (D-055). Every row now carries a `tier` key: `published_live` (satisfies the full D-053 Live Preview Law gate — DNA + content registry + skin folder + all routes 200 + D-047 leak sweep clean + visual walk + card-size sibling test + working `Apri anteprima completa` CTA) or `draft` (fails any gate — hidden from all public surfaces per D-055, awaiting Phase 2g3 rollout to reach published_live). Today only 3 of 20 templates are `published_live` (cardio-studio-specialistico, dermatologia-elite-roma, gusto-fine-dining); the other 17 are `draft` pending Phase 2g3. The `status: \"published\"` field on every row is the LEGACY field from the pre-policy schema and will be retired once Phase 2g2x.8 ships — during the transition, the `tier` field is authoritative and `status` is informational. The Premium Differentiation Law (D-054) applies retroactively to every sibling pair — any existing pair that fails ≥4 of its 10 dimensions is a Phase 2g3 blocker for its category. The legacy `href=\"#\"` Anteprima Live placeholder CTA in templates/catalog/template_detail.html is queued for deletion in Phase 2g2x.8 per D-056.",
-  "last_updated": "2026-04-11",
+  "version": "0.9.0",
+  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, tier, and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0–0.7.3: ecommerce DNA pilot (Luxe + Bottega, Session 15), business DNA split (Pragma + Elevate, Session 17, D-050), portfolio DNA split (Chiara + Pixel, Session 18, D-051), Chiara surgical layout fix (Session 19, D-052). v0.8.0: Session 20 Live Preview Policy v2 formalization — introduces the two-tier model (D-055). v0.9.0: Session 29 Gusto i18n/RTL closure — all 3 `published_live` templates now carry 5 locales (it/en/fr/es/ar) with working RTL for Arabic per D-063. Gusto's tier_reason is updated to reflect the i18n closure. Every row still carries a `tier` key: `published_live` or `draft`. Today 3 of 20 templates are `published_live` (cardio, dermatologia-elite-roma, gusto-fine-dining); the other 17 are `draft` pending Phase 2g3. The Premium Differentiation Law (D-054) applies retroactively. New optional `locales` field on published_live rows documents multilingual coverage.",
+  "last_updated": "2026-04-13",
   "templates": [
     {
       "slug": "vertex-creative-agency",
@@ -90,11 +90,13 @@
       "conversion_pattern": "concierge-reservation",
       "live_preview": true,
       "live_pages": ["home", "filosofia", "menu", "atmosfera", "diario", "diario/<post>", "prenota"],
+      "locales": ["it", "en", "fr", "es", "ar"],
+      "rtl": true,
       "price": 59,
       "featured": true,
       "status": "published",
       "tier": "published_live",
-      "tier_reason": "Full live preview shipped Session 11 (cardio + gusto). D-053 gate green: DNA + content registry + skin folder + all routes 200 + D-047 leak sweep pending Phase 2g.3 lift on fine-dining live skin (5 Gusto leaks) — Gusto itself is unaffected because the leaks ARE Gusto's strings, but the lift is required before a second fine-dining template ships."
+      "tier_reason": "Full live preview shipped Session 11 (cardio + gusto). i18n/RTL closed Session 29 (D-063) — 5 locales (it/en/fr/es/ar) with real RTL for Arabic, new html[dir=\"rtl\"] .fd-* CSS block in fine-dining _base.html, Amiri + Noto Kufi Arabic fonts conditional on AR. Motion (D-058) + ultra-premium interactions (D-062) preserved. 52/52 routes green. D-053 gate fully met."
     },
     {
       "slug": "sapore-trattoria-pizzeria",
@@ -218,11 +220,13 @@
       "conversion_pattern": "private-request",
       "live_preview": true,
       "live_pages": ["home", "studio", "visite", "medici", "pubblicazioni", "pubblicazioni/<post>", "contatti", "richiedi-visita"],
+      "locales": ["it", "en", "fr", "es", "ar"],
+      "rtl": true,
       "price": 109,
       "featured": false,
       "status": "published",
       "tier": "published_live",
-      "tier_reason": "Full live preview shipped Session 11 + D-047-lifted chrome Session 14 (Phase 2g.2). D-053 gate green: DNA + content registry + specialist skin folder + all 9 routes 200 + bidirectional leak sweep clean (52 tokens tested) + visual walk clean."
+      "tier_reason": "Full live preview shipped Session 11 + D-047-lifted chrome Session 14 (Phase 2g.2) + i18n/RTL pilot Session 23 (D-059). 5 locales with real RTL for Arabic. D-053 gate green."
     },
     {
       "slug": "dermatologia-elite-roma",
@@ -241,13 +245,15 @@
       "conversion_pattern": "private-request",
       "live_preview": true,
       "live_pages": ["home", "studio", "visite", "medici", "pubblicazioni", "pubblicazioni/<post>", "contatti", "richiedi-visita"],
+      "locales": ["it", "en", "fr", "es", "ar"],
+      "rtl": true,
       "archetype_reuse": true,
       "reuse_notes": "Second template on the `specialist` archetype. Reuses the same live_templates/medical/specialist/ skin as cardio-studio-specialistico — ZERO new HTML files. Differentiated via brand (Studio Ricciardi), accent (forest green #3d5437 vs cardio red #9c2a2a), font (Bodoni Moda vs Cormorant), and dermatology-specific content registry.",
       "price": 115,
       "featured": false,
       "status": "published",
       "tier": "published_live",
-      "tier_reason": "Full live preview shipped Session 13 via specialist archetype reuse (zero new HTML). D-053 gate green: DNA + content registry + reused specialist skin + all 9 routes 200 + bidirectional leak sweep clean (Session 14 Phase 2g.2 lift covered the cardio-derm leak surface). First proof that archetype reuse + D-047 contract + content registry produces published_live templates with editorial authoring alone."
+      "tier_reason": "Full live preview shipped Session 13 via specialist archetype reuse (zero new HTML). i18n/RTL closed Session 24 — 5 locales on the reused specialist skin. D-053 gate green."
     },
     {
       "slug": "lex-studio-legale",
