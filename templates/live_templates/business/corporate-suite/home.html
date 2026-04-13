@@ -42,13 +42,12 @@
     text-transform: none; letter-spacing: 0; font-weight: 700;
   }
   .cs-hero .right {
-    background-color: #0f172a;
+    background-color: var(--paper-2);
     background-image:
-      linear-gradient(225deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0) 40%, rgba(15,23,42,0.55) 100%),
+      linear-gradient(180deg, rgba(15,23,42,0) 52%, rgba(15,23,42,0.66) 100%),
       url('{{ page_data.hero_image }}');
     background-size: cover; background-position: center;
-    background-blend-mode: multiply;
-    filter: grayscale(15%) contrast(1.05);
+    filter: grayscale(15%) contrast(1.04) brightness(0.97);
     position: relative;
   }
   .cs-hero .right .credit {
