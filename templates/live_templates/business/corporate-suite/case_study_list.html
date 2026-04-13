@@ -1,0 +1,97 @@
+{% extends "live_templates/business/corporate-suite/_base.html" %}
+
+{% block extra_css %}
+  .cs-cases-list { padding: 48px 72px 100px; max-width: 1400px; margin: 0 auto; }
+  .cs-cases-list .intro-band {
+    padding: 32px 0 48px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-cases-list .list { display: flex; flex-direction: column; }
+  .cs-cases-list .row {
+    display: grid; grid-template-columns: 64px 1.6fr 0.8fr 0.6fr 80px;
+    gap: 32px; padding: 32px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: center;
+    transition: background .2s ease;
+  }
+  .cs-cases-list .row:first-child { border-top: 1px solid var(--primary); }
+  .cs-cases-list .row:hover { background: var(--paper-2); }
+  .cs-cases-list .row .num {
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.02em;
+  }
+  .cs-cases-list .row .title h3 {
+    font-size: 24px; line-height: 1.2; font-weight: 600;
+  }
+  .cs-cases-list .row .title .lead {
+    margin-top: 10px; font-family: var(--body); font-size: 14px;
+    color: var(--ink-soft); line-height: 1.6; max-width: 52ch;
+  }
+  .cs-cases-list .row .meta {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .cs-cases-list .row .meta strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-size: 15px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+  .cs-cases-list .row .arrow {
+    font-family: var(--heading); font-size: 22px; color: var(--accent);
+    text-align: right;
+    transition: transform .2s ease;
+  }
+  .cs-cases-list .row:hover .arrow { transform: translateX(6px); }
+
+  /* Final CTA */
+  .cs-cta-list {
+    background: var(--paper-2); padding: 80px 72px; max-width: none;
+    border-top: 1px solid var(--rule);
+  }
+  .cs-cta-list .wrap {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 0.5fr; gap: 64px; align-items: center;
+  }
+  .cs-cta-list h2 { font-size: 40px; max-width: 22ch; line-height: 1.1; }
+  .cs-cta-list em { color: var(--accent); }
+  .cs-cta-list .intro { margin-top: 16px; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; max-width: 56ch; }
+{% endblock %}
+
+{% block content %}
+<section class="cs-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="cs-cases-list">
+  <div class="intro-band">{{ page_data.cases_label }}</div>
+  <div class="list" data-lm-stagger data-lm-stagger-delay="90">
+    {% for post in posts %}
+      <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug page.slug post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
+        <div class="title">
+          <h3>{{ post.title }}</h3>
+          <p class="lead">{{ post.lead }}</p>
+        </div>
+        <div class="meta">Practice<strong>{{ post.category }}</strong></div>
+        <div class="meta">Timeline<strong>{{ post.year }} · {{ post.duration }}</strong></div>
+        <span class="arrow">→</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-cta-list">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-primary">{{ page_data.cta_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

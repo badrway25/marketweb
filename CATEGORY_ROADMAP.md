@@ -15,9 +15,9 @@
 | 7        | Portfolio   | portfolio    | Freelancers, designers, photographers    | 2 (no DNA) — chiara + pixel share `portfolio.html` hardcoding "Sono una designer indipendente" | **CRITICO** (identity crash — Pixel photographer renders Chiara's designer identity) |
 | 8        | eCommerce   | ecommerce    | Online stores, product showcases         | 2 / 2 ✅ DNA pilot — luxe (fashion-editorial) + bottega (artisan-workshop), Session 15 macro-tone split | **MEDIO** (latent — `fashion-editorial.html` has 12+ Luxe literals; `artisan-workshop.html` has 10+ Bottega literals. Will detonate on Phase 2f.2 reuse) |
 
-**Completeness coverage (preview vs full multi-page):**
-- **Full multi-page websites:** 3 of 20 templates (cardio, dermatologia-elite-roma via specialist reuse, gusto)
-- **Preview-PNG-only templates:** 17 of 20. Marketplace positions as "complete multipage websites" but 85% of the catalog ships as single-page posters. See Phase 2g2x.4 for the tiering/demotion decision.
+**Completeness coverage (preview vs full multi-page) — updated Session 32:**
+- **Full multi-page websites:** **5 of 20 templates** (cardio, dermatologia-elite-roma via specialist reuse, gusto-fine-dining, **pragma-corporate-suite, elevate-startup-landing**)
+- **Preview-PNG-only templates:** 15 of 20. Marketplace shows the 5 live templates only; the other 15 are `tier=draft` and hidden from the public catalog per D-055/D-057.
 
 ### DNA migration order (Phase 2f)
 1. ✅ Medical — done (Session 7 — clinic / family / specialist / wellness)
@@ -157,10 +157,9 @@ Templates flip from `draft` to `published_live` category-by-category, cheapest-f
 6. **Agency / Lawyer / Real-estate** (6 templates) — **blocked by Phase 2g2x.1 closure.** After 2g2x.1 ships 2 archetypes per category, 2g3.6 authors 6 new skin folders. Sub-order: real-estate → lawyer → agency (per AGENT_HANDOFF Session 19 guidance — cleanest pair first, heaviest leak surface last).
 
 **Cumulative `published_live` count milestone:**
-- Today: 3 (cardio, dermatologia-elite-roma, gusto-fine-dining)
-- After 2g3.1 (restaurant): 5
-- After 2g3.2 (medical): 8
-- After 2g3.3 (business): 10
+- Today: **5** (cardio, dermatologia-elite-roma, gusto-fine-dining, **pragma-corporate-suite**, **elevate-startup-landing**) — Phase 2g3.3 closed Session 32
+- After 2g3.1 (restaurant): 7
+- After 2g3.2 (medical): 10
 - After 2g3.4 (portfolio): 12
 - After 2g3.5 (ecommerce): 14
 - After 2g3.6 (agency + lawyer + real-estate): 20

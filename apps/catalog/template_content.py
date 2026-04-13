@@ -2244,6 +2244,12 @@ from apps.catalog.template_content_gusto_i18n import (  # noqa: E402
     GUSTO_CONTENT_AR,
 )
 
+# Phase 2g3.3 — Business live rollout (Session 32). Pragma + Elevate
+# ship IT-only at promotion time; the i18n keys can be added later via
+# the same recipe used for cardio/derm/gusto (Sessions 23/24/29).
+from apps.catalog.template_content_pragma import PRAGMA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_elevate import ELEVATE_CONTENT_IT  # noqa: E402
+
 
 TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     "cardio-studio-specialistico": {
@@ -2266,6 +2272,12 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": GUSTO_CONTENT_FR,
         "es": GUSTO_CONTENT_ES,
         "ar": GUSTO_CONTENT_AR,
+    },
+    "pragma-corporate-suite": {
+        "it": PRAGMA_CONTENT_IT,
+    },
+    "elevate-startup-landing": {
+        "it": ELEVATE_CONTENT_IT,
     },
 }
 

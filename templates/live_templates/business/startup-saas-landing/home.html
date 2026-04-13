@@ -1,0 +1,580 @@
+{% extends "live_templates/business/startup-saas-landing/_base.html" %}
+
+{% block extra_css %}
+  /* Hero — manifesto centered, no big photo */
+  .sl-hero {
+    position: relative; z-index: 5;
+    padding: 56px 32px 48px; max-width: 1100px; margin: 0 auto;
+    text-align: center;
+  }
+  .sl-hero .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 9px 18px; border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.10em; color: var(--ink-mute);
+  }
+  .sl-hero .eyebrow:before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 10px var(--accent);
+  }
+  .sl-hero h1 {
+    margin-top: 28px; font-size: 96px; line-height: 0.96;
+    letter-spacing: -0.038em;
+  }
+  .sl-hero .sub {
+    margin-top: 28px; max-width: 64ch; margin-left: auto; margin-right: auto;
+    font-family: var(--body); font-size: 18px; line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .sl-hero .actions {
+    margin-top: 36px; display: inline-flex; align-items: center; gap: 22px;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .sl-hero .feature-pills {
+    margin-top: 36px; display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em; color: var(--ink-faint);
+  }
+  .sl-hero .feature-pills span {
+    padding: 7px 14px; border-radius: 999px;
+    background: var(--surface-2); border: 1px solid var(--rule);
+  }
+
+  /* Product mockup card — overlapping the hero bottom */
+  .sl-mockup-wrap {
+    position: relative; z-index: 5;
+    padding: 32px 32px 0; max-width: 1100px; margin: 0 auto;
+  }
+  .sl-mockup {
+    background: var(--surface);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--rule);
+    border-radius: 18px;
+    box-shadow:
+      0 40px 100px -20px rgba(0,0,0,0.6),
+      0 0 120px -30px var(--accent) inset;
+    overflow: hidden;
+  }
+  .sl-mockup .chrome {
+    height: 40px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; padding: 0 20px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    color: var(--ink-faint);
+  }
+  .sl-mockup .chrome .dots {
+    display: inline-flex; gap: 6px; margin-right: 18px;
+  }
+  .sl-mockup .chrome .dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--rule); font-size: 0;
+  }
+  .sl-mockup .chrome .tag {
+    margin-left: auto; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent);
+    padding: 4px 10px; border: 1px solid var(--accent);
+    border-radius: 999px;
+  }
+  .sl-mockup .grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+  }
+  .sl-mockup .metric {
+    padding: 36px 32px;
+    border-right: 1px solid var(--rule);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .sl-mockup .metric:last-child { border-right: 0; }
+  .sl-mockup .metric .label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .sl-mockup .metric .big {
+    font-family: var(--heading); font-size: 56px; font-weight: 800;
+    line-height: 1; color: var(--ink); letter-spacing: -0.035em;
+  }
+  .sl-mockup .metric.alt .big { color: var(--accent); }
+  .sl-mockup .metric.feature .big { font-size: 36px; }
+  .sl-mockup .metric .desc {
+    font-family: var(--body); font-size: 13px; color: var(--ink-mute);
+  }
+  .sl-mockup .metric.feature {
+    gap: 12px;
+  }
+  .sl-mockup .metric.feature .perk {
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: var(--ink-soft);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sl-mockup .metric.feature .perk:before {
+    content: '→'; color: var(--accent); font-weight: 700;
+  }
+
+  /* Trust band — wordmarks */
+  .sl-trust {
+    position: relative; z-index: 5;
+    padding: 64px 32px;
+    max-width: 1240px; margin: 0 auto;
+    text-align: center;
+  }
+  .sl-trust .label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .sl-trust .logos {
+    margin-top: 22px;
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 40px;
+    font-family: var(--heading); font-size: 17px; font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+  }
+  .sl-trust .logos span:nth-child(odd) { color: var(--ink-faint); }
+
+  /* Features grid — 6 cards in 3x2 */
+  .sl-features { padding-top: 64px; padding-bottom: 64px; }
+  .sl-features .grid {
+    margin-top: 56px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .sl-features .card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 28px;
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .sl-features .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .sl-features .card .icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 12px;
+    background: rgba(34,211,238,0.12); color: var(--accent);
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    border: 1px solid var(--rule);
+  }
+  .sl-features .card h3 {
+    margin-top: 18px; font-size: 20px; line-height: 1.18;
+  }
+  .sl-features .card p {
+    margin-top: 12px; font-family: var(--body); font-size: 14px;
+    line-height: 1.65; color: var(--ink-mute);
+  }
+
+  /* Metric strip — dark band */
+  .sl-metric-band {
+    position: relative; z-index: 5;
+    padding: 64px 32px;
+    background: rgba(0,0,0,0.35);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .sl-metric-band .wrap {
+    max-width: 1240px; margin: 0 auto;
+  }
+  .sl-metric-band .head {
+    text-align: center; padding-bottom: 32px;
+  }
+  .sl-metric-band .head .lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .sl-metric-band .head h3 {
+    margin-top: 12px; font-size: 26px;
+  }
+  .sl-metric-band .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  .sl-metric-band .stat {
+    text-align: center; padding: 24px 12px;
+    border: 1px solid var(--rule); border-radius: 14px;
+    background: var(--surface);
+  }
+  .sl-metric-band .stat .num {
+    font-family: var(--heading); font-size: 44px; font-weight: 800;
+    color: var(--accent); letter-spacing: -0.025em; line-height: 1;
+  }
+  .sl-metric-band .stat .lbl {
+    display: block; margin-top: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.10em; color: var(--ink-mute);
+  }
+
+  /* Integrations row */
+  .sl-integrations { padding-top: 80px; padding-bottom: 80px; text-align: center; }
+  .sl-integrations .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .sl-integrations .item {
+    padding: 22px 16px; border: 1px solid var(--rule);
+    border-radius: 12px; background: var(--surface-2);
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .sl-integrations .item:hover {
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+  .sl-integrations .item .name {
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    color: var(--ink);
+  }
+  .sl-integrations .item .desc {
+    margin-top: 6px; font-family: var(--body); font-size: 11px;
+    color: var(--ink-faint); letter-spacing: 0.04em;
+  }
+
+  /* Pricing teaser — 3 cards with highlight */
+  .sl-pricing-teaser { padding-bottom: 80px; }
+  .sl-pricing-teaser .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .sl-pricing-teaser .tier {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 18px; padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .sl-pricing-teaser .tier.highlight {
+    border-color: var(--accent);
+    box-shadow: 0 0 60px -16px var(--accent);
+  }
+  .sl-pricing-teaser .tier .name {
+    font-family: var(--heading); font-size: 22px; font-weight: 800;
+  }
+  .sl-pricing-teaser .tier.highlight .name { color: var(--accent); }
+  .sl-pricing-teaser .tier .tag {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; color: var(--ink-mute);
+  }
+  .sl-pricing-teaser .tier .price {
+    font-family: var(--heading); font-size: 48px; font-weight: 800;
+    color: var(--ink); letter-spacing: -0.035em; line-height: 1;
+  }
+  .sl-pricing-teaser .tier .price .period {
+    font-size: 14px; font-weight: 600; color: var(--ink-mute);
+    letter-spacing: 0;
+  }
+  .sl-pricing-teaser .tier ul {
+    list-style: none; display: flex; flex-direction: column; gap: 8px;
+    padding-top: 12px; border-top: 1px solid var(--rule);
+  }
+  .sl-pricing-teaser .tier ul li {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .sl-pricing-teaser .tier ul li:before {
+    content: '✓'; color: var(--accent); font-weight: 700;
+  }
+  .sl-pricing-teaser .center-cta {
+    margin-top: 36px; text-align: center;
+  }
+
+  /* Founders / proof block */
+  .sl-founders { padding-bottom: 80px; }
+  .sl-founders .grid {
+    margin-top: 56px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .sl-founders .quote {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 18px; padding: 32px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .sl-founders .quote blockquote {
+    font-family: var(--heading); font-size: 22px; font-weight: 500;
+    line-height: 1.45; color: var(--ink); font-style: italic;
+  }
+  .sl-founders .quote .author {
+    display: grid; grid-template-columns: 1fr auto; gap: 16px;
+    padding-top: 24px; border-top: 1px solid var(--rule);
+    align-items: center;
+  }
+  .sl-founders .quote .author .who .name {
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    color: var(--ink);
+  }
+  .sl-founders .quote .author .who .role {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--accent);
+  }
+  .sl-founders .quote .author .metric {
+    text-align: right;
+  }
+  .sl-founders .quote .author .metric .num {
+    font-family: var(--heading); font-size: 24px; font-weight: 800;
+    color: var(--accent); letter-spacing: -0.02em;
+  }
+  .sl-founders .quote .author .metric .lbl {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  /* Ship log — vertical timeline */
+  .sl-shiplog {
+    padding-bottom: 80px;
+  }
+  .sl-shiplog .head {
+    display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end;
+    padding-bottom: 32px; border-bottom: 1px solid var(--rule);
+  }
+  .sl-shiplog .head .release {
+    text-align: right;
+  }
+  .sl-shiplog .head .release .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .sl-shiplog .head .release .val {
+    margin-top: 6px;
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    color: var(--accent);
+  }
+  .sl-shiplog .head .release .chip {
+    margin-top: 12px; display: inline-block;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--primary); background: var(--accent);
+    padding: 6px 12px; border-radius: 999px;
+  }
+  .sl-shiplog .list {
+    margin-top: 32px;
+    display: grid; grid-template-columns: 100px 100px 1fr;
+    gap: 0 32px;
+  }
+  .sl-shiplog .list .row {
+    display: contents;
+  }
+  .sl-shiplog .list .ver,
+  .sl-shiplog .list .date,
+  .sl-shiplog .list .body {
+    padding: 22px 0; border-top: 1px solid var(--rule);
+  }
+  .sl-shiplog .list .ver {
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    color: var(--accent); letter-spacing: -0.01em;
+  }
+  .sl-shiplog .list .date {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .sl-shiplog .list .body h4 {
+    font-size: 17px; font-weight: 700;
+  }
+  .sl-shiplog .list .body p {
+    margin-top: 8px; font-family: var(--body); font-size: 14px;
+    color: var(--ink-mute); line-height: 1.6;
+  }
+
+  /* Final CTA — glow ring */
+  .sl-cta {
+    position: relative; z-index: 5;
+    padding: 96px 32px;
+    max-width: 1100px; margin: 0 auto;
+    text-align: center;
+  }
+  .sl-cta .ring {
+    padding: 64px 48px;
+    border-radius: 28px;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    box-shadow:
+      0 0 80px -10px var(--accent),
+      0 0 160px -30px var(--accent) inset;
+  }
+  .sl-cta h2 {
+    font-size: 56px; line-height: 1.05; max-width: 22ch; margin: 0 auto;
+  }
+  .sl-cta .intro {
+    margin-top: 22px; max-width: 56ch; margin-left: auto; margin-right: auto;
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .sl-cta .actions {
+    margin-top: 36px; display: inline-flex; gap: 22px; align-items: center;
+    flex-wrap: wrap; justify-content: center;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="sl-hero">
+  <span class="eyebrow">{{ page_data.eyebrow }}</span>
+  <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+  <p class="sub" data-lm="reveal">{{ page_data.intro }}</p>
+  <div class="actions" data-lm="reveal">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sl-btn">{{ page_data.primary_cta }}</a>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sl-link"><span class="play">▶</span>{{ page_data.secondary_cta }}</a>
+  </div>
+  <div class="feature-pills">
+    {% for pill in page_data.feature_pills %}<span>{{ pill }}</span>{% endfor %}
+  </div>
+</section>
+
+<div class="sl-mockup-wrap">
+  <div class="sl-mockup" data-lm="reveal-lg">
+    <div class="chrome">
+      <span class="dots">{% for d in page_data.mockup.chrome_dots %}<span>{{ d }}</span>{% endfor %}</span>
+      <span>{{ page_data.mockup.chrome_label }}</span>
+      <span class="tag">{{ page_data.mockup.badge }}</span>
+    </div>
+    <div class="grid">
+      <div class="metric">
+        <span class="label">{{ page_data.mockup.metric_label }}</span>
+        <div class="big">{{ page_data.mockup.metric_primary }}</div>
+        <span class="desc">{{ page_data.mockup.metric_desc }}</span>
+      </div>
+      <div class="metric alt">
+        <span class="label">{{ page_data.mockup.secondary_label }}</span>
+        <div class="big">{{ page_data.mockup.secondary_metric }}</div>
+        <span class="desc">{{ page_data.mockup.secondary_desc }}</span>
+      </div>
+      <div class="metric feature">
+        <span class="label">{{ page_data.mockup.feature_label }}</span>
+        {% for perk in page_data.mockup.perks %}<span class="perk">{{ perk }}</span>{% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="sl-trust">
+  <div class="label">{{ page_data.trust_label }}</div>
+  <div class="logos">
+    {% for logo in page_data.trust_logos %}<span>{{ logo }}</span>{% endfor %}
+  </div>
+</section>
+
+<section class="sl-section sl-features center">
+  <span class="sec-label">{{ page_data.features_label }}</span>
+  <h2>{{ page_data.features_heading|safe }}</h2>
+  <p class="sec-intro">{{ page_data.features_intro }}</p>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
+    {% for f in page_data.features %}
+      <article class="card" data-lm="reveal">
+        <span class="icon">{{ f.icon }}</span>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.desc }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sl-metric-band">
+  <div class="wrap">
+    <div class="head">
+      <div class="lbl">{{ page_data.metric_label }}</div>
+      <h3>{{ page_data.metric_heading }}</h3>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+      {% for num, label in page_data.metric_strip %}
+        <div class="stat" data-lm="reveal">
+          <div class="num">{{ num }}</div>
+          <span class="lbl">{{ label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sl-section sl-integrations center">
+  <span class="sec-label">{{ page_data.integrations_label }}</span>
+  <h2>{{ page_data.integrations_heading }}</h2>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="60">
+    {% for name, desc in page_data.integrations %}
+      <div class="item" data-lm="reveal">
+        <div class="name">{{ name }}</div>
+        <div class="desc">{{ desc }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sl-section sl-pricing-teaser center">
+  <span class="sec-label">{{ page_data.pricing_teaser_label }}</span>
+  <h2>{{ page_data.pricing_teaser_heading }}</h2>
+  <p class="sec-intro">{{ page_data.pricing_teaser_intro }}</p>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for tier in page_data.pricing_teaser %}
+      <article class="tier{% if tier.highlight %} highlight{% endif %}" data-lm="reveal">
+        <div>
+          <div class="name">{{ tier.name }}</div>
+          <div class="tag">{{ tier.tag }}</div>
+        </div>
+        <div class="price">{{ tier.price }}<span class="period">{{ tier.period }}</span></div>
+        <ul>
+          {% for perk in tier.perks %}<li>{{ perk }}</li>{% endfor %}
+        </ul>
+      </article>
+    {% endfor %}
+  </div>
+  <div class="center-cta">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.pricing_teaser_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sl-btn secondary">{{ page_data.pricing_teaser_cta }}</a>
+  </div>
+</section>
+
+<section class="sl-section sl-founders center">
+  <span class="sec-label">{{ page_data.founders_label }}</span>
+  <h2>{{ page_data.founders_heading|safe }}</h2>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for f in page_data.founders %}
+      <article class="quote" data-lm="reveal">
+        <blockquote>«{{ f.quote }}»</blockquote>
+        <div class="author">
+          <div class="who">
+            <div class="name">{{ f.name }}</div>
+            <div class="role">{{ f.role }}</div>
+          </div>
+          <div class="metric">
+            <div class="num">{{ f.metric_primary }}</div>
+            <div class="lbl">{{ f.metric_label }}</div>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sl-section sl-shiplog">
+  <span class="sec-label">{{ page_data.shiplog_label }}</span>
+  <div class="head">
+    <div>
+      <h2>{{ page_data.shiplog_heading }}</h2>
+      <p class="sec-intro" style="margin-left:0;text-align:left;">{{ page_data.shiplog_intro }}</p>
+    </div>
+    <div class="release">
+      <div class="lbl">{{ page_data.shiplog_release_label }}</div>
+      <div class="val">{{ page_data.shiplog_release_value }}</div>
+      <span class="chip">{{ page_data.shiplog_release_chip }}</span>
+    </div>
+  </div>
+  <div class="list" data-lm-stagger data-lm-stagger-delay="70">
+    {% for entry in page_data.shiplog %}
+      <div class="row">
+        <div class="ver" data-lm="reveal">{{ entry.version }}</div>
+        <div class="date" data-lm="reveal">{{ entry.date }}</div>
+        <div class="body" data-lm="reveal">
+          <h4>{{ entry.title }}</h4>
+          <p>{{ entry.desc }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sl-cta">
+  <div class="ring" data-lm="reveal-lg">
+    <h2>{{ page_data.cta_heading }}</h2>
+    <p class="intro">{{ page_data.cta_intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sl-btn">{{ page_data.cta_primary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sl-btn secondary">{{ page_data.cta_secondary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

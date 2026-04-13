@@ -1,0 +1,427 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:wght@400;500;600;700;800&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<style>
+  :root {
+    --primary:    {{ theme.primary }};
+    --primary-2:  #1a1f3a;
+    --secondary:  {{ theme.secondary }};
+    --accent:     {{ theme.accent }};
+    --accent-glow: color-mix(in oklab, {{ theme.accent }} 70%, #ffffff 30%);
+    --ink:        #eef0ff;
+    --ink-soft:   rgba(238,240,255,0.78);
+    --ink-mute:   rgba(238,240,255,0.56);
+    --ink-faint:  rgba(238,240,255,0.36);
+    --rule:       rgba(238,240,255,0.12);
+    --rule-soft:  rgba(238,240,255,0.06);
+    --surface:    rgba(8,10,24,0.68);
+    --surface-2:  rgba(255,255,255,0.04);
+    --heading: '{{ theme.heading_font }}', system-ui, sans-serif;
+    --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.65;
+    background: var(--primary);
+    background-image:
+      radial-gradient(circle at 12% 108%, color-mix(in oklab, var(--secondary) 55%, var(--primary) 45%) 0%, transparent 52%),
+      radial-gradient(circle at 92% -20%, color-mix(in oklab, var(--accent) 32%, var(--primary) 68%) 0%, transparent 55%);
+    min-height: 100vh;
+    position: relative;
+  }
+  body:before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: radial-gradient(rgba(238,240,255,0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--heading); font-weight: 800; line-height: 1.04;
+    letter-spacing: -0.025em; color: var(--ink);
+  }
+  em {
+    font-style: normal; font-weight: 800;
+    background: linear-gradient(95deg, var(--accent) 0%, var(--accent-glow) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+
+  /* Marketplace bar */
+  .mp-bar {
+    background: rgba(0,0,0,0.55); color: var(--ink); font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+    position: relative; z-index: 8;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .mp-bar .mp-back { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; font-weight: 600; }
+  .mp-bar .mp-name { color: var(--ink-mute); }
+  .mp-lang { display: flex; align-items: center; gap: 14px; }
+  .mp-lang .mp-lang-label { font-size: 10px; letter-spacing: 0.22em; color: var(--ink-faint); font-weight: 700; }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; color: var(--ink-mute);
+    border: 1px solid var(--rule);
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover { color: var(--accent); border-color: rgba(238,240,255,0.32); }
+  .mp-lang a.mp-lang-pill.is-current { color: var(--accent); border-color: var(--accent); }
+
+  /* ============================================================
+     LAUNCH BANNER — pulse strip above pill nav
+  ============================================================ */
+  .sl-banner {
+    position: relative; z-index: 7;
+    padding: 12px 32px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--rule);
+    text-align: center;
+  }
+  .sl-banner .inner {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .sl-banner .inner .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.08), 0 0 14px var(--accent);
+    display: inline-block;
+  }
+  .sl-banner .inner .label {
+    color: var(--accent); font-weight: 700; letter-spacing: 0.18em;
+  }
+  .sl-banner .inner a {
+    color: var(--ink); border-bottom: 1px solid var(--rule);
+    padding-bottom: 1px; transition: border-color .15s ease;
+  }
+  .sl-banner .inner a:hover { border-color: var(--accent); }
+
+  /* ============================================================
+     FLOATING PILL NAV — centered, glow CTA on right
+  ============================================================ */
+  .sl-nav-wrap {
+    position: relative; z-index: 6;
+    padding: 32px 32px 0; display: flex; justify-content: center;
+  }
+  .sl-nav {
+    display: inline-flex; align-items: center; gap: 0;
+    padding: 8px 10px 8px 28px;
+    background: var(--surface);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+  }
+  .sl-nav .wm {
+    font-family: var(--heading); font-weight: 800; font-size: 18px;
+    color: var(--ink); letter-spacing: -0.02em;
+    padding-right: 28px; margin-right: 28px;
+    border-right: 1px solid var(--rule);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sl-nav .wm .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    display: inline-block;
+  }
+  .sl-nav .links {
+    display: flex; gap: 26px;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: var(--ink-mute);
+  }
+  .sl-nav .links a {
+    transition: color .15s ease;
+    padding: 4px 0;
+  }
+  .sl-nav .links a:hover { color: var(--ink); }
+  .sl-nav .links a.is-current { color: var(--accent); }
+  .sl-nav .cta {
+    margin-left: 28px;
+    padding: 10px 22px; border-radius: 999px;
+    background: var(--accent); color: var(--primary);
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.03em;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.18), 0 10px 28px -8px var(--accent);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .sl-nav .cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.28), 0 14px 36px -8px var(--accent);
+  }
+
+  /* ============================================================
+     PAGE LEAD — manifesto eyebrow + huge headline + intro
+  ============================================================ */
+  .sl-lead {
+    position: relative; z-index: 5;
+    padding: 80px 32px 64px; max-width: 1100px; margin: 0 auto;
+    text-align: center;
+  }
+  .sl-lead .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 9px 18px; border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.10em; color: var(--ink-mute);
+  }
+  .sl-lead .eyebrow:before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 10px var(--accent);
+  }
+  .sl-lead h1 {
+    margin-top: 28px; font-size: 80px; line-height: 0.98;
+    letter-spacing: -0.035em;
+  }
+  .sl-lead .intro {
+    margin-top: 28px; max-width: 64ch; margin-left: auto; margin-right: auto;
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .sl-lead .actions {
+    margin-top: 36px; display: inline-flex; align-items: center; gap: 22px;
+    flex-wrap: wrap; justify-content: center;
+  }
+
+  /* ============================================================
+     BUTTONS — glow pill + ghost link
+  ============================================================ */
+  .sl-btn {
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+    color: var(--primary); background: var(--accent);
+    padding: 16px 32px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 12px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.25),
+      0 14px 40px -10px var(--accent),
+      0 0 40px -4px var(--accent);
+    transition: transform .2s ease, box-shadow .2s ease;
+    border: none; cursor: pointer;
+  }
+  .sl-btn:after { content: '→'; font-family: var(--heading); font-size: 17px; }
+  .sl-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.3),
+      0 18px 50px -10px var(--accent),
+      0 0 60px -4px var(--accent);
+  }
+  .sl-btn.secondary {
+    background: transparent; color: var(--ink-soft);
+    box-shadow: none;
+    border: 1px solid var(--rule);
+  }
+  .sl-btn.secondary:hover {
+    border-color: var(--accent); color: var(--ink);
+  }
+  .sl-link {
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink-soft);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .sl-link .play {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid var(--ink-faint);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--accent);
+  }
+  .sl-link:hover { color: var(--ink); }
+
+  /* ============================================================
+     SECTION HELPERS
+  ============================================================ */
+  .sl-section { position: relative; z-index: 5; padding: 96px 32px; max-width: 1240px; margin: 0 auto; }
+  .sl-section .sec-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px; border-radius: 999px;
+    background: var(--surface-2); border: 1px solid var(--rule);
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.10em; color: var(--accent);
+  }
+  .sl-section .sec-label:before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .sl-section h2 {
+    margin-top: 18px; font-size: 52px; line-height: 1.04;
+    letter-spacing: -0.025em; max-width: 22ch;
+  }
+  .sl-section.center { text-align: center; }
+  .sl-section.center h2 { margin-left: auto; margin-right: auto; }
+  .sl-section .sec-intro {
+    margin-top: 22px; max-width: 64ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .sl-section.center .sec-intro { margin-left: auto; margin-right: auto; }
+
+  /* ============================================================
+     FOOTER — ship-log column + social channels
+  ============================================================ */
+  .sl-foot {
+    position: relative; z-index: 5;
+    margin-top: 64px;
+    background: rgba(0,0,0,0.42);
+    border-top: 1px solid var(--rule);
+    padding: 64px 32px 32px;
+    backdrop-filter: blur(10px);
+  }
+  .sl-foot .top {
+    max-width: 1240px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 48px; border-bottom: 1px solid var(--rule);
+  }
+  .sl-foot .top h5 {
+    color: var(--accent); font-family: var(--body);
+    font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 18px;
+  }
+  .sl-foot .brand .word {
+    font-family: var(--heading); font-size: 26px; font-weight: 800;
+    color: var(--ink); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sl-foot .brand .word .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 10px var(--accent);
+  }
+  .sl-foot .brand p { color: var(--ink-mute); max-width: 36ch; line-height: 1.6; }
+  .sl-foot .col p, .sl-foot .col a { color: var(--ink-mute); display: block; padding: 4px 0; }
+  .sl-foot .col a:hover { color: var(--accent); }
+  .sl-foot .bot {
+    max-width: 1240px; margin: 0 auto; padding-top: 28px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 11px; color: var(--ink-faint);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .sl-foot .bot a:hover { color: var(--accent); }
+
+  /* ============================================================
+     STARTUP MOTION PROFILE — energetic, snappier
+  ============================================================ */
+  :root {
+    --lm-rise:     16px;
+    --lm-rise-lg:  24px;
+    --lm-dur-slow: 620ms;
+  }
+  .sl-btn, .sl-nav .cta {
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sl-btn, .sl-nav .cta { transition: none; }
+    .sl-btn:hover, .sl-nav .cta:hover { transform: none; }
+  }
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
+</div>
+
+{% block banner %}{% if page.slug == "home" and page_data.banner_text %}
+<div class="sl-banner">
+  <span class="inner">
+    <span class="pulse"></span>
+    <span class="label">{{ page_data.banner_label }}</span>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.banner_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.banner_text }}</a>
+  </span>
+</div>
+{% endif %}{% endblock %}
+
+<div class="sl-nav-wrap">
+  <nav class="sl-nav">
+    <a class="wm" href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+      <span class="dot"></span>{{ site.logo_word }}
+    </a>
+    <div class="links">
+      {% for p in pages %}
+        {% if p.slug != "home" %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <a class="cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'demo' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ site.tag|default:"Inizia gratis" }}</a>
+  </nav>
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="sl-foot">
+  <div class="top">
+    <div class="brand">
+      <h5>{{ site.foot_studio }}</h5>
+      <div class="word"><span class="dot"></span>{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_contact }}</h5>
+      <p>{{ site.email }}</p>
+      <p>{{ site.address }}</p>
+      <p>{{ site.hours_compact }}</p>
+      {% for row in site.hours_footer_rows %}<p>{{ row }}</p>{% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_offices }}</h5>
+      {% for row in site.shiplog_footer_rows %}<p>{{ row }}</p>{% endfor %}
+    </div>
+  </div>
+  <div class="bot">
+    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+</body>
+</html>

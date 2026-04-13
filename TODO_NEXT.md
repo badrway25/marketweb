@@ -206,13 +206,14 @@ The `clinic`, `wellness`, and `family` archetypes exist at the preview compositi
 - [ ] Content registry blocks for `salute-studio-medico`, `benessere-centro-olistico`, `famiglia-pediatria`
 - [ ] Run 2g3.0 checklist on all three; flip each to `published_live`
 
-### 2g3.3 — Business category completion (2 templates: Pragma, Elevate)
-Both templates already have D-047-compliant preview compositions from Session 17 (corporate-suite + startup-saas-landing) but NO live skin folders. Medium lift — two new skin folders authored from scratch under D-047.
+### 2g3.3 — Business category completion (2 templates: Pragma, Elevate) — **CLOSED in Session 32**
+Both templates already had D-047-compliant preview compositions from Session 17 (corporate-suite + startup-saas-landing). Session 32 authored both live skin folders + content registry blocks from scratch under D-047 in a single session.
 
-- [ ] Create `templates/live_templates/business/corporate-suite/` skin folder — institutional advisory chrome. Pages: home, chi-siamo (about + team combined), servizi (advisory pillars), case-studies (list + detail), contatti
-- [ ] Create `templates/live_templates/business/startup-saas-landing/` skin folder — conversion-first SaaS chrome. Pages: home, prodotto (product tour), prezzi (pricing tiers), demo (lead form + embed), documentazione/<topic>, contatti
-- [ ] Content registry blocks for `pragma-corporate-suite` and `elevate-startup-landing`
-- [ ] Run 2g3.0 checklist on both; flip both to `published_live`
+- [x] Created `templates/live_templates/business/corporate-suite/` skin folder — institutional advisory chrome. Pages: home, chi-siamo (about + team + history + values + 3 offices coords), competenze (6 advisory practices + 4-step process), case-studies (list + 3 case-study posts on `case_study_detail`), contatti (9-field private call form + 3 office sidebar)
+- [x] Created `templates/live_templates/business/startup-saas-landing/` skin folder — conversion-first SaaS chrome. Pages: home, prodotto (6 modules + 12 integrations + 8-row stack), prezzi (3-tier pricing + 4-row comparison + 6-item FAQ accordion), demo (8-field demo lead form + async loom block + trust strip), contatti (4 channels + 3 founder cards with direct emails + async-first office)
+- [x] Content registry blocks for `pragma-corporate-suite` (`apps/catalog/template_content_pragma.py`, ~590 lines) and `elevate-startup-landing` (`apps/catalog/template_content_elevate.py`, ~620 lines)
+- [x] Added `mp_other_business` chrome key to `CHROME_I18N` in all 5 locales (forward-compat for future business i18n)
+- [x] Ran 2g3.0 checklist on both; flipped both to `published_live`. Validation: 54/54 routes green, D-047 leak sweep clean (0 cross-tenant literals), D-054 10/10 differentiated, preview PNGs regenerated, business category card now shows `2 live template(s)`. **D-065 documents the closure.**
 
 ### 2g3.4 — Portfolio category completion (2 templates: Chiara, Pixel)
 Both templates already have D-047-compliant preview compositions from Session 18 (editorial-designer-grid + cinematic-photographer) and the Session 19 triage fix for Chiara is already applied. Medium lift — two new skin folders.

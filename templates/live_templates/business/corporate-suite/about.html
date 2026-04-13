@@ -1,0 +1,204 @@
+{% extends "live_templates/business/corporate-suite/_base.html" %}
+
+{% block extra_css %}
+  /* Studio history — vertical timeline */
+  .cs-history { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  .cs-history .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
+  .cs-history .head h2 { font-size: 48px; max-width: 14ch; }
+  .cs-history .timeline { margin-top: 56px; display: grid; grid-template-columns: 160px 1fr; gap: 0 48px; }
+  .cs-history .timeline .step {
+    display: contents;
+  }
+  .cs-history .timeline .year-cell {
+    padding: 32px 0; border-top: 1px solid var(--rule);
+    font-family: var(--heading); font-size: 28px; font-weight: 700;
+    color: var(--accent); letter-spacing: -0.01em;
+  }
+  .cs-history .timeline .body-cell {
+    padding: 32px 0 32px 32px;
+    border-top: 1px solid var(--rule); border-left: 1px solid var(--rule);
+    position: relative;
+  }
+  .cs-history .timeline .body-cell:before {
+    content: ''; position: absolute; left: -7px; top: 38px;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .cs-history .timeline .body-cell h3 {
+    font-size: 22px; font-weight: 700;
+  }
+  .cs-history .timeline .body-cell p {
+    margin-top: 14px; font-family: var(--body); font-size: 15px;
+    color: var(--ink-soft); line-height: 1.7; max-width: 64ch;
+  }
+
+  /* Values — 4 numbered principles */
+  .cs-values { background: var(--paper-2); padding: 100px 72px; max-width: none; }
+  .cs-values .wrap { max-width: 1400px; margin: 0 auto; }
+  .cs-values .head { padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
+  .cs-values .head h2 { font-size: 52px; max-width: 18ch; }
+  .cs-values .head em { color: var(--accent); }
+  .cs-values .head .intro { margin-top: 24px; max-width: 64ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; }
+  .cs-values .grid { margin-top: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+  .cs-values .item { padding-top: 28px; border-top: 2px solid var(--primary); }
+  .cs-values .item .num {
+    font-family: var(--heading); font-size: 14px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .cs-values .item h3 { margin-top: 14px; font-size: 24px; line-height: 1.2; }
+  .cs-values .item p { margin-top: 18px; font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
+
+  /* Team — full grid 6 portraits + meta */
+  .cs-team { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  .cs-team .head { padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
+  .cs-team .head h2 { font-size: 48px; max-width: 22ch; }
+  .cs-team .head .intro { margin-top: 22px; max-width: 64ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; }
+  .cs-team .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+  .cs-team .card {
+    border-top: 1px solid var(--primary);
+    padding-top: 24px;
+  }
+  .cs-team .card .role {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-team .card h3 {
+    margin-top: 12px; font-size: 22px; line-height: 1.2;
+    color: var(--primary);
+  }
+  .cs-team .card .office {
+    margin-top: 8px; font-family: var(--body); font-size: 11px;
+    font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .cs-team .card p {
+    margin-top: 18px; font-family: var(--body); font-size: 14px;
+    line-height: 1.7; color: var(--ink-soft);
+  }
+
+  /* Coordinates band — 3 offices */
+  .cs-coords {
+    background: var(--primary); color: var(--on-dark);
+    padding: 80px 72px; max-width: none;
+  }
+  .cs-coords .wrap { max-width: 1400px; margin: 0 auto; }
+  .cs-coords .label {
+    color: var(--accent);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase;
+  }
+  .cs-coords .grid {
+    margin-top: 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px;
+    border-top: 1px solid rgba(255,255,255,0.18); padding-top: 32px;
+  }
+  .cs-coords .item .city {
+    font-family: var(--heading); font-size: 28px; color: var(--on-dark);
+    font-weight: 700;
+  }
+  .cs-coords .item .addr {
+    margin-top: 12px; font-family: var(--body); font-size: 14px;
+    color: var(--on-dark-2); line-height: 1.6;
+  }
+
+  /* Page-level CTA */
+  .cs-cta-band {
+    padding: 100px 72px; max-width: 1400px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 0.6fr; gap: 80px; align-items: end;
+  }
+  .cs-cta-band h2 { font-size: 44px; line-height: 1.06; max-width: 18ch; }
+  .cs-cta-band em { color: var(--accent); }
+  .cs-cta-band .intro { margin-top: 18px; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; }
+{% endblock %}
+
+{% block content %}
+<section class="cs-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="cs-history">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.history_label }}</div>
+      <h2>{{ page_data.history_heading }}</h2>
+    </div>
+    <p style="font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; max-width: 56ch;" data-lm="reveal">
+      Cinque date che hanno definito Pragma. Dietro ognuna di queste pietre miliari c'è una scelta strutturale — di indipendenza, di geografia, di pratica — che ancora oggi orienta come accettiamo i mandati.
+    </p>
+  </div>
+  <div class="timeline" data-lm-stagger data-lm-stagger-delay="100">
+    {% for year, title, body in page_data.history %}
+      <div class="step">
+        <div class="year-cell" data-lm="reveal">{{ year }}</div>
+        <div class="body-cell" data-lm="reveal">
+          <h3>{{ title }}</h3>
+          <p>{{ body }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-values">
+  <div class="wrap">
+    <div class="head">
+      <div class="sec-label">{{ page_data.values_label }}</div>
+      <h2>{{ page_data.values_heading|safe }}</h2>
+      <p class="intro">{{ page_data.values_intro }}</p>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+      {% for num, title, body in page_data.values %}
+        <article class="item" data-lm="reveal">
+          <div class="num">{{ num }}</div>
+          <h3>{{ title }}</h3>
+          <p>{{ body }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="cs-team">
+  <div class="head">
+    <div class="sec-label">{{ page_data.team_label }}</div>
+    <h2>{{ page_data.team_heading }}</h2>
+    <p class="intro">{{ page_data.team_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
+    {% for partner in page_data.team %}
+      <article class="card" data-lm="reveal">
+        <div class="role">{{ partner.role }}</div>
+        <h3>{{ partner.name }}</h3>
+        <div class="office">{{ partner.office }}</div>
+        <p>{{ partner.bio }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-coords">
+  <div class="wrap">
+    <div class="label">{{ page_data.coordinates_label }}</div>
+    <div class="grid">
+      {% for city, addr in page_data.coordinates %}
+        <div class="item">
+          <div class="city">{{ city }}</div>
+          <div class="addr">{{ addr }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="cs-cta-band">
+  <div data-lm="reveal-lg">
+    <h2>{{ page_data.cta_heading }}</h2>
+    <p class="intro">{{ page_data.cta_intro }}</p>
+  </div>
+  <div data-lm="reveal">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-primary">{{ page_data.cta_primary }}</a>
+  </div>
+</section>
+{% endblock %}

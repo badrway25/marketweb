@@ -1,0 +1,191 @@
+{% extends "live_templates/business/corporate-suite/_base.html" %}
+
+{% block extra_css %}
+  .cs-contact-wrap {
+    padding: 64px 72px 100px; max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 72px;
+  }
+
+  /* Form column */
+  .cs-form .form-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-form h2 {
+    margin-top: 14px; font-size: 36px; line-height: 1.15; max-width: 22ch;
+  }
+  .cs-form .intro {
+    margin-top: 18px; font-family: var(--body); font-size: 15px;
+    line-height: 1.7; color: var(--ink-soft); max-width: 60ch;
+  }
+  .cs-form form {
+    margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px 24px;
+  }
+  .cs-form .field { display: flex; flex-direction: column; gap: 6px; }
+  .cs-form .field.full { grid-column: 1 / -1; }
+  .cs-form .field label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .cs-form .field input,
+  .cs-form .field select,
+  .cs-form .field textarea {
+    font-family: var(--body); font-size: 15px; color: var(--ink);
+    padding: 14px 16px; background: var(--paper-3);
+    border: 1px solid var(--rule); border-radius: 0;
+    transition: border-color .15s ease;
+  }
+  .cs-form .field input:focus,
+  .cs-form .field select:focus,
+  .cs-form .field textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .cs-form .field textarea { resize: vertical; min-height: 140px; }
+  .cs-form .consent {
+    grid-column: 1 / -1;
+    font-family: var(--body); font-size: 12px; line-height: 1.6;
+    color: var(--ink-mute);
+    padding: 16px 20px; background: var(--paper-2);
+    border-left: 3px solid var(--accent);
+  }
+  .cs-form .submit-row {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 24px; margin-top: 8px;
+  }
+  .cs-form button[type="submit"] {
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--on-dark); background: var(--primary);
+    border: 1.5px solid var(--primary); padding: 16px 32px;
+    cursor: pointer; transition: background .2s ease;
+    display: inline-flex; align-items: center; gap: 14px;
+  }
+  .cs-form button[type="submit"]:hover { background: var(--ink); }
+  .cs-form button[type="submit"]:after { content: '→'; color: var(--accent); }
+
+  /* Sidebar — offices, channels, footnote */
+  .cs-side .block {
+    padding: 32px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .cs-side .block:first-child { border-top: 2px solid var(--primary); }
+  .cs-side .block .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-side .block h3 {
+    margin-top: 12px; font-size: 22px; font-weight: 700;
+  }
+  .cs-side .office {
+    padding: 18px 0;
+  }
+  .cs-side .office:not(:last-child) {
+    border-bottom: 1px dashed var(--rule);
+  }
+  .cs-side .office .city {
+    font-family: var(--heading); font-size: 22px; font-weight: 700; color: var(--primary);
+  }
+  .cs-side .office .tag {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-side .office .meta {
+    margin-top: 14px; font-family: var(--body); font-size: 13px;
+    color: var(--ink-soft); line-height: 1.6;
+  }
+  .cs-side .office .meta .row {
+    display: flex; gap: 8px; padding: 3px 0;
+  }
+  .cs-side .office .meta .row strong { color: var(--ink); font-weight: 600; min-width: 70px; display: inline-block; }
+  .cs-side .channels { display: flex; flex-direction: column; }
+  .cs-side .channel {
+    padding: 14px 0;
+    display: grid; grid-template-columns: 1.4fr 1fr;
+    gap: 16px; font-family: var(--body); font-size: 13px;
+  }
+  .cs-side .channel:not(:last-child) { border-bottom: 1px dashed var(--rule); }
+  .cs-side .channel .ch-name { font-weight: 700; color: var(--primary); }
+  .cs-side .channel .ch-val { color: var(--ink-soft); }
+  .cs-side .channel .ch-meta {
+    grid-column: 1 / -1; font-size: 11px;
+    color: var(--ink-mute); letter-spacing: 0.04em;
+  }
+  .cs-side .footnote {
+    font-family: var(--body); font-size: 12px; line-height: 1.7;
+    color: var(--ink-mute); font-style: italic;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="cs-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<div class="cs-contact-wrap">
+  <div class="cs-form">
+    <div class="form-label">{{ page_data.form_label }}</div>
+    <h2>{{ page_data.form_heading }}</h2>
+    <p class="intro">{{ page_data.form_intro }}</p>
+
+    <form method="post" action="">
+      {% for f in page_data.form_fields %}
+        <div class="field{% if f.full_width %} full{% endif %}">
+          <label for="f-{{ f.name }}">{{ f.label }}{% if f.required %} *{% endif %}</label>
+          {% if f.type == "textarea" %}
+            <textarea id="f-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}" {% if f.required %}required{% endif %}></textarea>
+          {% elif f.type == "select" %}
+            <select id="f-{{ f.name }}" name="{{ f.name }}" {% if f.required %}required{% endif %}>
+              {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+            </select>
+          {% else %}
+            <input type="{{ f.type }}" id="f-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}" {% if f.required %}required{% endif %}>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="consent">{{ page_data.form_consent }}</div>
+      <div class="submit-row">
+        <button type="submit">{{ page_data.form_submit_label }}</button>
+      </div>
+    </form>
+  </div>
+
+  <aside class="cs-side">
+    <div class="block">
+      <div class="lbl">{{ page_data.offices_label }}</div>
+      {% for office in page_data.offices %}
+        <div class="office">
+          <div class="city">{{ office.city }}</div>
+          <div class="tag">{{ office.tag }}</div>
+          <div class="meta">
+            <div class="row"><strong>Indirizzo</strong>{{ office.address }}</div>
+            <div class="row"><strong>Zona</strong>{{ office.area }}</div>
+            <div class="row"><strong>Telefono</strong>{{ office.phone }}</div>
+            <div class="row"><strong>Email</strong>{{ office.email }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="block">
+      <div class="lbl">{{ page_data.channels_label }}</div>
+      <div class="channels">
+        {% for name, value, meta in page_data.channels %}
+          <div class="channel">
+            <span class="ch-name">{{ name }}</span>
+            <span class="ch-val">{{ value }}</span>
+            <span class="ch-meta">{{ meta }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="block">
+      <p class="footnote">{{ page_data.footnote }}</p>
+    </div>
+  </aside>
+</div>
+{% endblock %}

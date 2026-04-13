@@ -1,0 +1,182 @@
+{% extends "live_templates/business/startup-saas-landing/_base.html" %}
+
+{% block extra_css %}
+  /* Demo page — split layout: form L · async block + trust strip R */
+  .sl-demo-wrap {
+    padding: 32px 32px 80px;
+    max-width: 1240px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px;
+  }
+
+  /* Form column */
+  .sl-form {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 22px;
+    padding: 36px;
+  }
+  .sl-form .form-label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+  }
+  .sl-form h2 {
+    margin-top: 12px; font-size: 30px; line-height: 1.18;
+  }
+  .sl-form .intro {
+    margin-top: 14px; font-family: var(--body); font-size: 14px;
+    color: var(--ink-mute); line-height: 1.65;
+  }
+  .sl-form form {
+    margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 18px;
+  }
+  .sl-form .field { display: flex; flex-direction: column; gap: 6px; }
+  .sl-form .field.full { grid-column: 1 / -1; }
+  .sl-form .field label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .sl-form .field input,
+  .sl-form .field select,
+  .sl-form .field textarea {
+    font-family: var(--body); font-size: 14px; color: var(--ink);
+    padding: 12px 14px; background: rgba(0,0,0,0.32);
+    border: 1px solid var(--rule); border-radius: 10px;
+    transition: border-color .15s ease;
+  }
+  .sl-form .field input:focus,
+  .sl-form .field select:focus,
+  .sl-form .field textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .sl-form .field textarea { resize: vertical; min-height: 110px; }
+  .sl-form .consent {
+    grid-column: 1 / -1;
+    font-family: var(--body); font-size: 12px; line-height: 1.6;
+    color: var(--ink-mute);
+    padding: 14px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--rule); border-radius: 10px;
+  }
+  .sl-form .submit-row { grid-column: 1 / -1; margin-top: 8px; }
+  .sl-form button[type="submit"] {
+    width: 100%; justify-content: center;
+  }
+
+  /* Sidebar */
+  .sl-side .block {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 18px; padding: 32px;
+    margin-bottom: 24px;
+  }
+  .sl-side .block .lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+  }
+  .sl-side .block h3 {
+    margin-top: 12px; font-size: 22px; line-height: 1.2;
+  }
+  .sl-side .block p {
+    margin-top: 14px; font-family: var(--body); font-size: 14px;
+    color: var(--ink-mute); line-height: 1.6;
+  }
+  .sl-side .block .async-cta { margin-top: 20px; }
+
+  .sl-side .trust-list {
+    margin-top: 18px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .sl-side .trust-list .row {
+    padding: 16px 0;
+  }
+  .sl-side .trust-list .row:not(:last-child) {
+    border-bottom: 1px solid var(--rule);
+  }
+  .sl-side .trust-list .row .num {
+    font-family: var(--heading); font-size: 12px; font-weight: 800;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .sl-side .trust-list .row h4 {
+    margin-top: 4px; font-size: 16px; font-weight: 700;
+  }
+  .sl-side .trust-list .row p {
+    margin-top: 8px; font-family: var(--body); font-size: 13px;
+    color: var(--ink-mute); line-height: 1.6;
+  }
+
+  .sl-footnote {
+    max-width: 1240px; margin: 0 auto; padding: 0 32px 56px;
+  }
+  .sl-footnote .note {
+    padding: 18px 22px; background: var(--surface-2);
+    border: 1px solid var(--rule); border-radius: 12px;
+    font-family: var(--body); font-size: 13px; line-height: 1.65;
+    color: var(--ink-mute); font-style: italic;
+    text-align: center;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="sl-lead">
+  <span class="eyebrow">{{ page_data.eyebrow }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<div class="sl-demo-wrap">
+  <div class="sl-form" data-lm="reveal-lg">
+    <div class="form-label">{{ page_data.form_label }}</div>
+    <h2>{{ page_data.form_heading }}</h2>
+    <p class="intro">{{ page_data.form_intro }}</p>
+
+    <form method="post" action="">
+      {% for f in page_data.form_fields %}
+        <div class="field{% if f.full_width %} full{% endif %}">
+          <label for="f-{{ f.name }}">{{ f.label }}{% if f.required %} *{% endif %}</label>
+          {% if f.type == "textarea" %}
+            <textarea id="f-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}" {% if f.required %}required{% endif %}></textarea>
+          {% elif f.type == "select" %}
+            <select id="f-{{ f.name }}" name="{{ f.name }}" {% if f.required %}required{% endif %}>
+              {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+            </select>
+          {% else %}
+            <input type="{{ f.type }}" id="f-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}" {% if f.required %}required{% endif %}>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="consent">{{ page_data.form_consent }}</div>
+      <div class="submit-row">
+        <button type="submit" class="sl-btn">{{ page_data.form_submit_label }}</button>
+      </div>
+    </form>
+  </div>
+
+  <aside class="sl-side">
+    <div class="block" data-lm="reveal">
+      <div class="lbl">{{ page_data.async_label }}</div>
+      <h3>{{ page_data.async_heading }}</h3>
+      <p>{{ page_data.async_intro }}</p>
+      <div class="async-cta">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.async_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sl-btn secondary">{{ page_data.async_cta }}</a>
+      </div>
+    </div>
+
+    <div class="block" data-lm="reveal">
+      <div class="lbl">{{ page_data.trust_label }}</div>
+      <div class="trust-list">
+        {% for num, title, desc in page_data.trust_items %}
+          <div class="row">
+            <div class="num">{{ num }} / {{ page_data.trust_items|length }}</div>
+            <h4>{{ title }}</h4>
+            <p>{{ desc }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div class="sl-footnote">
+  <div class="note">{{ page_data.footnote }}</div>
+</div>
+{% endblock %}

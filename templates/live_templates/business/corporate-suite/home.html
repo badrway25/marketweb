@@ -1,0 +1,374 @@
+{% extends "live_templates/business/corporate-suite/_base.html" %}
+
+{% block extra_css %}
+  /* Hero — 55/45 split: serif drama LEFT + boardroom photo RIGHT */
+  .cs-hero {
+    display: grid; grid-template-columns: 1.3fr 1fr; min-height: 580px;
+    background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+  }
+  .cs-hero .left {
+    padding: 100px 56px 64px 72px; position: relative;
+    display: flex; flex-direction: column; justify-content: flex-start;
+  }
+  .cs-hero .left .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--primary);
+  }
+  .cs-hero .left .eyebrow:before {
+    content: ''; width: 40px; height: 1.5px; background: var(--accent);
+  }
+  .cs-hero .left h1 {
+    margin-top: 36px; font-size: 76px; line-height: 1.0;
+    letter-spacing: -0.025em; max-width: 14ch;
+  }
+  .cs-hero .left .sub {
+    margin-top: 28px; max-width: 52ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .cs-hero .left .actions { margin-top: 40px; display: flex; gap: 22px; align-items: center; }
+  .cs-hero .left .meta-strip {
+    margin-top: 56px; display: flex; gap: 42px; padding-top: 22px;
+    border-top: 1px solid var(--rule);
+  }
+  .cs-hero .left .meta-strip .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .cs-hero .left .meta-strip .item strong {
+    display: block; margin-top: 8px;
+    font-family: var(--heading); font-size: 17px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+  .cs-hero .right {
+    background-color: #0f172a;
+    background-image:
+      linear-gradient(225deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0) 40%, rgba(15,23,42,0.55) 100%),
+      url('{{ page_data.hero_image }}');
+    background-size: cover; background-position: center;
+    background-blend-mode: multiply;
+    filter: grayscale(15%) contrast(1.05);
+    position: relative;
+  }
+  .cs-hero .right .credit {
+    position: absolute; left: 36px; right: 36px; bottom: 36px;
+    display: flex; justify-content: space-between;
+    color: var(--on-dark); padding-top: 22px;
+    border-top: 1px solid rgba(238,240,243,0.32);
+  }
+  .cs-hero .right .credit .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--on-dark-2);
+  }
+  .cs-hero .right .credit .item strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 17px; color: var(--on-dark);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+
+  /* Pillars — three numbered serif advisory practices */
+  .cs-pillars { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  .cs-pillars .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
+  .cs-pillars .head h2 { font-size: 52px; max-width: 14ch; }
+  .cs-pillars .head .intro { font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--ink-soft); max-width: 56ch; }
+  .cs-pillars .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+  .cs-pillars .pillar {
+    padding: 28px 0 0 0; border-top: 2px solid var(--primary);
+  }
+  .cs-pillars .pillar .num {
+    font-family: var(--heading); font-size: 14px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .cs-pillars .pillar h3 {
+    margin-top: 14px; font-size: 28px; line-height: 1.18;
+  }
+  .cs-pillars .pillar p {
+    margin-top: 18px; font-family: var(--body); font-size: 15px;
+    line-height: 1.7; color: var(--ink-soft);
+  }
+
+  /* KPI strip — dark navy band */
+  .cs-kpi-band {
+    background: var(--primary); color: var(--on-dark);
+    padding: 72px 72px;
+  }
+  .cs-kpi-band .row {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 0.9fr repeat(4, 1fr);
+    align-items: center; gap: 0;
+  }
+  .cs-kpi-band .heading {
+    font-family: var(--heading); font-size: 26px; font-weight: 700;
+    color: var(--on-dark); max-width: 14ch; line-height: 1.18;
+    padding-right: 32px; border-right: 1px solid rgba(255,255,255,0.18);
+  }
+  .cs-kpi-band .heading:before {
+    content: ''; display: block; width: 36px; height: 1.5px;
+    background: var(--accent); margin-bottom: 16px;
+  }
+  .cs-kpi-band .stat {
+    padding: 0 32px; border-right: 1px solid rgba(255,255,255,0.18);
+  }
+  .cs-kpi-band .stat:last-child { border-right: 0; }
+  .cs-kpi-band .stat .num {
+    font-family: var(--heading); font-size: 44px; font-weight: 700;
+    color: var(--on-dark); line-height: 1.0; letter-spacing: -0.018em;
+  }
+  .cs-kpi-band .stat .lbl {
+    display: block; margin-top: 10px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--on-dark-3);
+  }
+
+  /* Sectors ribbon */
+  .cs-sectors {
+    background: var(--paper-2); border-top: 1px solid var(--rule);
+    padding: 36px 72px; max-width: none;
+  }
+  .cs-sectors .row {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 32px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .cs-sectors .label {
+    color: var(--accent); border-left: 2px solid var(--accent);
+    padding-left: 14px;
+  }
+  .cs-sectors .dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: rgba(15,23,42,0.24); display: inline-block;
+  }
+
+  /* Trust band — clients ribbon */
+  .cs-trust { padding: 72px 72px; max-width: 1400px; margin: 0 auto; }
+  .cs-trust .label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute);
+    text-align: center;
+  }
+  .cs-trust .logos {
+    margin-top: 24px; display: flex; justify-content: center;
+    flex-wrap: wrap; gap: 56px;
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    letter-spacing: 0.12em; color: var(--ink); opacity: 0.62;
+  }
+
+  /* Leadership — 3 portraits in airy cards */
+  .cs-leadership { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  .cs-leadership .head .label { color: var(--accent); }
+  .cs-leadership .head h2 { margin-top: 14px; font-size: 48px; max-width: 22ch; }
+  .cs-leadership .head .intro { margin-top: 20px; max-width: 64ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; }
+  .cs-leadership .grid { margin-top: 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+  .cs-leadership .card {
+    background: var(--paper-3); border: 1px solid var(--rule);
+    padding: 36px 32px; display: flex; flex-direction: column;
+  }
+  .cs-leadership .card .role {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-leadership .card h3 {
+    margin-top: 14px; font-size: 26px; line-height: 1.18;
+    color: var(--primary);
+  }
+  .cs-leadership .card p {
+    margin-top: 18px; font-family: var(--body); font-size: 14px;
+    line-height: 1.7; color: var(--ink-soft); flex: 1;
+  }
+  .cs-leadership .card .creds {
+    margin-top: 22px; padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    list-style: none;
+  }
+  .cs-leadership .card .creds li {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--ink-mute);
+    padding: 4px 0;
+  }
+  .cs-leadership .card .creds li:before {
+    content: '· '; color: var(--accent); font-weight: 700;
+  }
+
+  /* Cases preview — 3 case study strips */
+  .cs-cases-preview { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  .cs-cases-preview .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--rule); }
+  .cs-cases-preview .head h2 { font-size: 48px; max-width: 14ch; }
+  .cs-cases-preview .head .intro { font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; max-width: 56ch; }
+  .cs-cases-preview .list { margin-top: 32px; display: flex; flex-direction: column; }
+  .cs-cases-preview .row {
+    display: grid; grid-template-columns: 80px 1.4fr 1fr 1fr 80px;
+    gap: 24px; padding: 28px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: center;
+    transition: background .2s ease;
+  }
+  .cs-cases-preview .row:hover { background: var(--paper-2); }
+  .cs-cases-preview .row .num {
+    font-family: var(--heading); font-size: 14px; color: var(--accent);
+    letter-spacing: 0.04em; font-weight: 700;
+  }
+  .cs-cases-preview .row .title {
+    font-family: var(--heading); font-size: 22px; font-weight: 600;
+    color: var(--primary); line-height: 1.25;
+  }
+  .cs-cases-preview .row .meta {
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .cs-cases-preview .row .arrow {
+    font-family: var(--heading); font-size: 22px; color: var(--accent);
+    text-align: right;
+    transition: transform .2s ease;
+  }
+  .cs-cases-preview .row:hover .arrow { transform: translateX(6px); }
+
+  /* Final CTA band */
+  .cs-cta { background: var(--primary); color: var(--on-dark); padding: 100px 72px; }
+  .cs-cta .wrap {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 0.6fr; gap: 80px; align-items: end;
+  }
+  .cs-cta .label { color: var(--accent); font-family: var(--body); font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700; }
+  .cs-cta h2 { margin-top: 14px; font-size: 56px; line-height: 1.06; max-width: 22ch; color: var(--on-dark); }
+  .cs-cta h2 em { color: var(--accent); }
+  .cs-cta .intro { margin-top: 22px; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--on-dark-2); line-height: 1.65; }
+  .cs-cta .actions { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+  .cs-cta .actions .cs-btn-primary { color: var(--on-dark); border-color: var(--accent); }
+  .cs-cta .actions .cs-btn-primary:hover { background: var(--accent); color: var(--primary); }
+  .cs-cta .actions .cs-btn-primary:hover:after { color: var(--primary); }
+  .cs-cta .actions .cs-btn-ghost { color: var(--on-dark-2); border-color: var(--on-dark-3); }
+  .cs-cta .actions .cs-btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+{% endblock %}
+
+{% block content %}
+<section class="cs-hero">
+  <div class="left" data-lm="reveal">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="sub">{{ page_data.intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-primary">{{ page_data.primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-ghost">{{ page_data.secondary_cta }}</a>
+    </div>
+    <div class="meta-strip" data-lm-stagger>
+      {% for label, value in page_data.hero_meta_strip %}
+        <div class="item" data-lm="reveal">{{ label }}<strong>{{ value }}</strong></div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="right">
+    <div class="credit">
+      <div class="item">{{ page_data.hero_image_credit_left.0 }}<strong>{{ page_data.hero_image_credit_left.1 }}</strong></div>
+      <div class="item">{{ page_data.hero_image_credit_right.0 }}<strong>{{ page_data.hero_image_credit_right.1 }}</strong></div>
+    </div>
+  </div>
+</section>
+
+<section class="cs-pillars">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.pillars_label }}</div>
+      <h2>{{ page_data.pillars_heading }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.pillars_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for num, title, blurb in page_data.pillars %}
+      <article class="pillar" data-lm="reveal">
+        <div class="num">{{ num }} / {{ page_data.pillars|length }}</div>
+        <h3>{{ title }}</h3>
+        <p>{{ blurb }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-kpi-band">
+  <div class="row" data-lm-stagger>
+    <div class="heading" data-lm="reveal">{{ page_data.kpi_heading }}</div>
+    {% for num, label in page_data.kpi_strip %}
+      <div class="stat" data-lm="reveal">
+        <div class="num">{{ num }}</div>
+        <span class="lbl">{{ label }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-sectors">
+  <div class="row">
+    <span class="label">{{ page_data.sectors_label }}</span>
+    {% for sector in page_data.sectors %}
+      <span>{{ sector }}</span>
+      {% if not forloop.last %}<span class="dot"></span>{% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-trust">
+  <div class="label">{{ page_data.trust_label }}</div>
+  <div class="logos">
+    {% for logo in page_data.trust_logos %}<span>{{ logo }}</span>{% endfor %}
+  </div>
+</section>
+
+<section class="cs-leadership">
+  <div class="head">
+    <div class="sec-label">{{ page_data.leadership_label }}</div>
+    <h2>{{ page_data.leadership_heading }}</h2>
+    <p class="intro">{{ page_data.leadership_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for partner in page_data.leadership %}
+      <article class="card" data-lm="reveal">
+        <div class="role">{{ partner.role }}</div>
+        <h3>{{ partner.name }}</h3>
+        <p>{{ partner.bio }}</p>
+        <ul class="creds">
+          {% for cred in partner.credentials %}<li>{{ cred }}</li>{% endfor %}
+        </ul>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-cases-preview">
+  <div class="head">
+    <div>
+      <div class="sec-label">{{ page_data.cases_label }}</div>
+      <h2>{{ page_data.cases_heading }}</h2>
+    </div>
+    <p class="intro">{{ page_data.cases_intro }}</p>
+  </div>
+  <div class="list" data-lm-stagger data-lm-stagger-delay="80">
+    {% for post in posts %}
+      <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'case-studies' post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
+        <span class="title">{{ post.title }}</span>
+        <span class="meta">{{ post.category }}</span>
+        <span class="meta">{{ post.year }} · {{ post.duration }}</span>
+        <span class="arrow">→</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-cta">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <div class="label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div class="actions" data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-primary">{{ page_data.cta_primary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-ghost">{{ page_data.cta_secondary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

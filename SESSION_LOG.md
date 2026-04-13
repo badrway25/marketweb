@@ -1,5 +1,120 @@
 # Session Log
 
+## Session 32 — Business Live Rollout (Phase 2g3.3 — Pragma + Elevate published_live) (2026-04-13)
+
+**Agent:** Premium UI + content authoring + integration session. Single objective: bring the two existing business templates (Pragma, Elevate) up to `published_live`, completing the second category-burst rollout after medical and restaurant.
+**Branch:** `phase-business-live-rollout-v1` (forked from `phase-integration-baseline-v1`).
+**Scope floor:** only Pragma + Elevate. Non-goals: new templates, other categories' drafts, auth/checkout/editor/projects/commerce, business i18n locales beyond IT, motion-language refactor, marketplace chrome translation.
+
+### 1 — Audit & Strategy
+
+Read all 12 context files. Existing state: both business templates already had **D-047-compliant DNA + preview compositions from Session 17 (D-050)** but NO live skin folder and NO content registry block. The DNA pair was already 10/10 differentiated by design — Pragma corporate-suite (boardroom-led, serif, advisory pillars, KPI strip, sectors band, private-call CTA) vs Elevate startup-saas-landing (cosmic gradient, manifesto, product-mockup card, glow-pill CTA, ship log, free-trial). Imagery pools `business-corporate` and `business-startup` already disjoint with zero URL overlap (Session 17). Strategy: respect the DNA contract verbatim, write content + skin folder per archetype, no DNA changes.
+
+Page kinds chosen (each baseline-D-053 satisfied):
+
+- **Pragma**: `home`, `about` (chi-siamo · history+values+team+coords), `services` (competenze · 6 practices + 4-step process), `case_study_list` (case-studies · 3 mandate posts), `case_study_detail` (per-mandate — problem/approach/result + KPI band), `contact` (contatti · multi-step form + 3 offices)
+- **Elevate**: `home` (manifesto + mockup + 6 features + integrations + 3-tier pricing teaser + ship log + glow CTA), `product` (prodotto · 6 modules + 12 integrations + stack), `pricing` (prezzi · 3 tiers + comparison + FAQ accordion), `demo` (demo · lead form + async loom block + trust strip), `contact` (contatti · 4 channels + 3 founders with direct emails + async-first office)
+
+### 2 — Authoring decisions
+
+**Content extracted to per-template files** to keep `template_content.py` browsable:
+- `apps/catalog/template_content_pragma.py` — `PRAGMA_CONTENT_IT`, ~590 lines. Editorial register: formal Italian Lei, McKinsey/Bonelli vocabulary, Milano-Frankfurt-Zürich tri-office presence, 22-year history, 14 partners, €1.4B transacted, 94% repeat rate, sectors industria-finanza-energia-retail-healthcare. 3 fully-authored case study posts (manifatturiero bresciano · piano industriale, carve-out consumer Italia-DACH, CSRD utility quotata) with problem/approach/result + 4-KPI band each.
+- `apps/catalog/template_content_elevate.py` — `ELEVATE_CONTENT_IT`, ~620 lines. Voice: tu register, growth-tech vocabulary (waitlist/MRR/A/B/ship log/deploy/trial), Talent Garden Milano async-first, 3 founders with direct emails (Camillini/Lavia/Adami), 240+ Italian startups adopted, 6 product modules, 12 integrations (Stripe/Linear/Slack/Vercel/Netlify/Cloudflare/PostHog/GrowthBook/Loops/Resend/Cal.com/Plain), 3-tier pricing (Launch €29 / Scale €79 / Studio €199), full FAQ + comparison block + ship-log timeline.
+
+**Both files include a 10-gate D-054 differentiation comment block at the top** (mirror docs) so any reviewer can verify cross-template divergence without rereading both registries.
+
+### 3 — Skin folder authoring (D-047 from line one)
+
+Both `_base.html` files written under D-047 contract: zero literal brand strings, every visible label flows from `chrome.*` (cross-archetype), `site.*` (per-template chrome), `page_data.*` (per-page content), or template loops. Per-template footer headings live on `site.foot_*` because `chrome.foot_*` carries medical-specific labels and the business notion of "studio" / "sezioni" / "sedi" is template-specific.
+
+`templates/live_templates/business/corporate-suite/`:
+- `_base.html` — full-bleed solid navy navbar with crest + phone CTA; cream/dove paper body; 4-col dark navy footer with offices column; corporate motion profile (`--lm-rise: 12px`, slower easing, restrained CTA arrow translate +4px)
+- `home.html` — 55/45 split serif hero with boardroom photo, advisory pillars, KPI strip on dark navy band, sectors ribbon, trust-band wordmarks, 3 leadership cards, 5-row case-studies preview, dark CTA closer with glow
+- `about.html` — vertical 5-step history timeline, 4-card values grid (paper-2 background), 6-card team grid, 3-office coords on dark navy
+- `services.html` — 6-card 2-up advisory practice grid with scope checklists + meta strip, 4-step process on dark navy band
+- `case_study_list.html` — numbered indexed list of 3 mandates with hover lift + arrow shift
+- `case_study_detail.html` — 880px column read with 4-cell meta strip, client-code box, italic lead, problem/approach/result sections, 4-KPI dark band, team & timeline footer, back-to-list link
+- `contact.html` — 1.4fr/1fr split: 9-field form with consent box + uppercase submit · 3-office sidebar with 4-row meta each + 3 channels + footnote
+
+`templates/live_templates/business/startup-saas-landing/`:
+- `_base.html` — pulse launch banner above the nav, floating glass pill nav with brand dot + glow CTA, dark cosmic gradient body with subtle radial dots, glass footer with shiplog column; startup motion profile (`--lm-rise: 16px`, snappier 620ms, glow-pill `translateY(-1/2px)` hover)
+- `home.html` — 80px centered manifesto, glass product-mockup card with 3-cell metric grid + perks, 8-wordmark trust strip, 6-card features grid (3x2), 4-stat metric band in dark inset, 8-cell integrations grid, 3-tier pricing teaser with highlight ring, 2 founder quote cards with metric chips, 5-row ship-log timeline with release chip, glow-ring final CTA
+- `product.html` — 6-module 2-up grid with highlights checklist, 12-cell integrations full grid with category cells, 8-row stack table on dark inset
+- `pricing.html` — billing toggle pill, 3-tier highlight-ring pricing grid with annual price secondary, 4-row transparency comparison block, 6-item FAQ with `<details>` accordion (first open), final glow CTA
+- `demo.html` — 1.4fr/1fr split: 8-field demo lead form (slot select / async option / context textarea) · async loom block + 3-step trust strip
+- `contact.html` — 4 channel cards (email/slack/demo/office hours), 3 founder cards with direct emails + role tags, 2-card office grid (sede/schedule), centered footnote
+
+### 4 — Routing wiring
+
+`LiveTemplateView` resolves `live_templates/<category>/<archetype>/<page-kind>.html` from DNA `archetype` + content `page.kind`. The page kinds I introduced (`product`, `pricing`, `demo`, `case_study_list`, `case_study_detail`) are file names; the existing `_list` → `_detail` substitution in the view (used for blog) works for case studies because the kind suffix matches. Zero changes to `views.py` / `urls.py` / `selectors.py` required.
+
+Added one entry to `CHROME_I18N` per locale: `mp_other_business` (5 locales — IT/EN/FR/ES/AR — even though business is IT-only at promotion, the chrome key benefits from being 5-locale-ready when business i18n is later authored).
+
+### 5 — Tier flip + sync
+
+Updated `TEMPLATE_REGISTRY.json`: Pragma + Elevate flipped from `tier: draft` → `tier: published_live`, added `live_pages`, `locales: ["it"]`, `rtl: false`, `session_closed: 32`, `live_preview: true`. Ran `migrate` (fresh worktree DB) → `seed_categories` → `seed_templates` (auto-runs `sync_template_tiers` per Session 21 pattern) — `5 tier(s) updated. Catalog distribution: 5 published_live / 15 draft.`
+
+### 6 — Validation
+
+`python manage.py check` clean. Comprehensive smoke sweep with overridden ALLOWED_HOSTS:
+
+- **54/54 routes green** (51 200s + 3 expected 404s):
+  - Marketplace listing + 8 category listings (200)
+  - 5 marketplace detail pages for the 5 published_live templates (200)
+  - Pragma 8 routes (5 pages + 3 case study details — all 200)
+  - Elevate 5 routes (200)
+  - Cardio i18n × 5 locales home + 6 inner pages (200)
+  - Derm 5 inner routes (200)
+  - Gusto i18n × 5 locales + 3 inner pages (200)
+  - Sapore draft 404, invalid Pragma slug 404, draft medical detail 404
+- **D-047 bidirectional leak sweep**: rendered ~132K chars of Pragma HTML and ~163K of Elevate HTML. Pragma rendered with Elevate literals leaked: `[]`. Elevate rendered with Pragma literals leaked: `[]`. Each renders its own brand strings correctly.
+- **Listing visibility**: `/templates/business/` shows both Pragma + Elevate, no "in arrivo" empty state, business category card now shows `2 live template(s)` (was `0`). Full `/templates/` listing shows all 5 published_live.
+- **Preview PNG regeneration**: ran `generate_previews --only pragma-corporate-suite --force` and same for Elevate. Both PNGs saved.
+- **Footer chrome contract**: caught one D-047 violation in initial pass (literal "Privacy / Cookie / Note legali" in footer). Fixed to use `{{ chrome.foot_privacy }}` / `chrome.foot_cookie` / `chrome.foot_legal` like the medical specialist skin.
+- **Hero image**: caught one hardcoded `https://images.unsplash.com/...` URL in the Pragma `home.html` (initial draft). Moved to `page_data.hero_image` per D-047.
+
+### 7 — Differentiation 10-gate (D-054) — recorded
+
+| # | Dimension                  | Pragma corporate-suite                         | Elevate startup-saas-landing                       |
+|---|----------------------------|------------------------------------------------|----------------------------------------------------|
+| 1 | Hero image                 | Boardroom photo (business-corporate[0])        | NO big photo — typographic-only manifesto          |
+| 2 | First-2 imagery            | Boardroom + corporate atrium                   | Product-UI dashboard (mockup card)                 |
+| 3 | Silhouette                 | 55/45 serif headline L + photo R               | Centered manifesto + floating glass mockup card    |
+| 4 | Section order              | hero→pillars→KPI→sectors→trust→leadership→cases→CTA | banner→manifesto→mockup→trust→features→metrics→integrations→pricing→founders→shiplog→CTA |
+| 5 | Primary CTA                | "Fissa una call privata" + boardroom form     | "Inizia gratis 14 giorni" + glow pill + trial     |
+| 6 | Block rhythm               | airy editorial chapters (96px paddings)        | medium-density glow cards + dark sections          |
+| 7 | Macro tone                 | cream paper + navy + emerald accent            | dark cosmic gradient + cyan glow                   |
+| 8 | Imagery direction          | executive-boardroom (people in glass rooms)    | product-dashboard (UI screens, code, dev tools)    |
+| 9 | Typography                 | Merriweather + Inter (transitional serif)      | Manrope + Inter (geometric sans)                   |
+| 10| Inner pages                | case studies + practice areas + 3-office presence | pricing + ship log + demo lead + integration grid |
+
+10/10 differs. **No recolor pair.**
+
+### 8 — Memory / docs updated
+
+- `MEMORY.md` — new entry pointer to `business_live_rollout_session32.md`
+- `memory/business_live_rollout_session32.md` — Session 32 summary memory
+- `SESSION_LOG.md` — this entry
+- `DECISIONS.md` — new D-065 (Business Live Rollout — recipe locked in for 2 archetypes per category)
+- `TODO_NEXT.md` — Phase 2g3.3 closed, next gate is 2g3.4 portfolio (Chiara + Pixel)
+- `CATEGORY_ROADMAP.md` — completeness table updated to 5/20 published_live, business row marked complete
+- `TEMPLATE_REGISTRY.json` — Pragma + Elevate `tier: published_live` with full `live_pages`/`locales`/`tier_reason`
+
+### 9 — Decision
+
+**BUSINESS LIVE ROLLOUT APPROVATO.** All D-053 gates green for both Pragma and Elevate. D-054 10/10. D-047 leak sweep clean. Catalog now shows 5 published_live across 3 categories (business 2 + medical 2 + restaurant 1). Cumulative milestone for `published_live` count is now **5 (out of the Session 20 target of 20)**, matching the TODO_NEXT post-2g3.3 prediction exactly.
+
+### 10 — Gotchas captured for the next 2g3.4–2g3.6 rollouts
+
+- **D-047 in skin authoring is enforced manually by re-reading the chrome before publishing.** I caught two violations during validation (hardcoded image URL in Pragma hero + literal Privacy/Cookie/Legali in both footers). Both small, both caught during the leak sweep + listing checks. **For 2g3.4 onward, do the leak sweep BEFORE flipping the tier**, not after — flipping then fixing risks shipping a broken brand contract for one minute.
+- **`mp_other_<category>` chrome key needs to be added per category** (we now have `_medical`, `_restaurant`, `_business` — next will be `_portfolio`, `_ecommerce`, `_agency`, `_lawyer`, `_real-estate`). Cheap to add (5 entries × 5 locales) and the marketplace bar references it. Don't forget on a new category.
+- **Per-template footer headings should live on `site.foot_*`**, not `chrome.foot_*`, when the category's notion of "the studio" / "the menu" / "the office" differs per archetype. Reserve `chrome.foot_*` for cross-archetype shared chrome (medical specialist + medical clinic + medical wellness can share `foot_studio`; corporate-suite and startup-saas-landing cannot).
+- **Page kind name = template filename.** No view changes are needed if the kind name maps directly onto a `.html` file in the per-archetype skin folder. I introduced `product`, `pricing`, `demo`, `case_study_list`, `case_study_detail` — all worked first-try because the view's only special-case is the `_list` → `_detail` rewrite.
+- **Fresh worktree DB needs `migrate` + `seed_categories` + `seed_templates`** (in that order) before `sync_template_tiers` will work. The `seed_templates` command auto-runs the tier sync at the end (Session 21 pattern), so the order is `migrate` → `seed_categories` → `seed_templates` and the tier flip is one command, not two.
+- **Django test client needs `override_settings(ALLOWED_HOSTS=['*'])`** in this project. The default DEBUG=True doesn't include `testserver` in ALLOWED_HOSTS (which is empty `[]`). Add the override at the top of every smoke script.
+
+---
+
 ## Session 30 — Premium Component Depth & Editor Schema Blueprint (2026-04-13)
 
 **Agent:** Premium UI + Architecture session. Dual-scope: (a) enrich the 3 `published_live` templates with differentiated premium sections, (b) author a concrete Editor Schema Blueprint for future customer personalization.
