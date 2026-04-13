@@ -1,0 +1,384 @@
+{% extends "live_templates/portfolio/cinematic-photographer/_base.html" %}
+
+{% block extra_css %}
+  /* FULLBLEED CINEMATIC HERO — dominant photo with EXIF strip */
+  .cp-hero-wrap { background: var(--pitch); position: relative; }
+  .cp-hero {
+    position: relative;
+    height: 78vh; min-height: 580px; max-height: 820px;
+    background:
+      linear-gradient(180deg, rgba(5,5,5,0.55) 0%, rgba(5,5,5,0) 22%, rgba(5,5,5,0) 58%, rgba(5,5,5,0.92) 100%),
+      url('{{ page_data.hero_image }}') center / cover no-repeat,
+      var(--pitch);
+  }
+  .cp-hero .frame-corners {
+    position: absolute; inset: 24px;
+    border: 1px dashed var(--film-5);
+    pointer-events: none;
+  }
+  .cp-hero .frame-corners:before,
+  .cp-hero .frame-corners:after {
+    content: ''; position: absolute;
+    width: 26px; height: 26px;
+    border: 1px solid var(--film-3);
+  }
+  .cp-hero .frame-corners:before {
+    top: -1px; left: -1px;
+    border-right: 0; border-bottom: 0;
+  }
+  .cp-hero .frame-corners:after {
+    bottom: -1px; right: -1px;
+    border-left: 0; border-top: 0;
+  }
+  .cp-hero .series-chip {
+    position: absolute; top: 32px; left: 56px;
+    padding: 10px 18px;
+    background: rgba(5,5,5,0.72);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--film-4);
+    display: flex; gap: 18px; align-items: center;
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--film-2);
+    z-index: 3;
+  }
+  .cp-hero .series-chip .num {
+    font-family: var(--heading); font-weight: 800;
+    color: var(--accent); font-size: 13px; letter-spacing: 0.04em;
+  }
+  .cp-hero .manifesto {
+    position: absolute; left: 56px; right: 56px; bottom: 80px;
+    max-width: 1180px;
+    z-index: 2;
+  }
+  .cp-hero .manifesto .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-hero .manifesto .eyebrow:before { content: ''; width: 38px; height: 1px; background: var(--accent); }
+  .cp-hero .manifesto h1 {
+    margin-top: 22px;
+    font-family: var(--heading); font-size: 84px; font-weight: 800;
+    line-height: 0.96; letter-spacing: -0.030em;
+    color: var(--film); max-width: 1080px;
+    text-transform: uppercase;
+  }
+  .cp-hero .manifesto h1 em {
+    font-style: normal; font-weight: 400; color: var(--film-2);
+    text-transform: none;
+  }
+  .cp-hero .manifesto .sub {
+    margin-top: 24px; max-width: 64ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.6;
+    color: var(--film-2);
+  }
+  .cp-hero .manifesto .actions {
+    margin-top: 30px; display: flex; gap: 24px; align-items: center;
+  }
+
+  /* EXIF CREDIT BAR (under hero) */
+  .cp-exif-bar {
+    background: rgba(5,5,5,0.94);
+    border-top: 1px solid var(--film-4);
+    border-bottom: 1px solid var(--film-5);
+    display: grid; grid-template-columns: repeat(4, 1fr);
+  }
+  .cp-exif-bar .cell {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 28px;
+    border-right: 1px solid var(--film-5);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--film-3);
+  }
+  .cp-exif-bar .cell:last-child { border-right: 0; }
+  .cp-exif-bar .cell .val {
+    color: var(--film); font-family: var(--heading); font-weight: 700;
+    letter-spacing: 0.02em; text-transform: none; font-size: 12px;
+  }
+
+  /* FILMSTRIP — 4 series cards in horizontal row */
+  .cp-strip { padding: 64px 56px; max-width: 1400px; margin: 0 auto; }
+  .cp-strip .heading {
+    display: flex; justify-content: space-between; align-items: end;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--film-4);
+  }
+  .cp-strip .heading .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-strip .heading h4 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 28px; font-weight: 800;
+    color: var(--film); letter-spacing: -0.012em; text-transform: uppercase;
+  }
+  .cp-strip .heading .intro {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6;
+    color: var(--film-2); max-width: 56ch;
+  }
+  .cp-strip .row {
+    margin-top: 28px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  .cp-strip a.frame {
+    height: 280px; position: relative; overflow: hidden;
+    border: 1px solid var(--film-4);
+    transition: border-color .25s ease, transform .35s ease;
+  }
+  .cp-strip a.frame:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .cp-strip .frame .bg {
+    position: absolute; inset: 0;
+    background-position: center; background-size: cover;
+    transition: transform .55s ease, filter .35s ease;
+    filter: grayscale(20%) contrast(1.04) brightness(0.9);
+  }
+  .cp-strip a.frame:hover .bg { transform: scale(1.04); filter: grayscale(0%) contrast(1.06) brightness(0.92); }
+  .cp-strip .frame:after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(5,5,5,0.05) 0%, rgba(5,5,5,0) 30%, rgba(5,5,5,0.92) 100%);
+  }
+  .cp-strip .frame .meta {
+    position: absolute; left: 18px; right: 18px; bottom: 16px;
+    color: var(--film); z-index: 2;
+  }
+  .cp-strip .frame .meta .num {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.14em;
+  }
+  .cp-strip .frame .meta .title {
+    margin-top: 6px;
+    font-family: var(--heading); font-size: 16px; font-weight: 800;
+    letter-spacing: 0.02em; text-transform: uppercase;
+  }
+  .cp-strip .frame .meta .disc {
+    margin-top: 4px;
+    font-family: var(--mono); font-size: 9px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--film-2);
+  }
+  .cp-strip .frame .year-corner {
+    position: absolute; top: 12px; right: 12px;
+    padding: 4px 10px;
+    background: rgba(5,5,5,0.72);
+    border: 1px solid var(--film-4);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.08em; color: var(--film-2);
+    z-index: 2;
+  }
+
+  /* ABOUT EXCERPT — dark band with portrait-style typo block */
+  .cp-about-excerpt {
+    padding: 80px 56px; background: var(--pitch-2); border-top: 1px solid var(--film-4); border-bottom: 1px solid var(--film-4);
+  }
+  .cp-about-excerpt .wrap {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 0.7fr 1fr; gap: 64px;
+    align-items: start;
+  }
+  .cp-about-excerpt .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-about-excerpt h3 {
+    margin-top: 14px; font-family: var(--heading); font-size: 56px;
+    line-height: 0.98; color: var(--film); letter-spacing: -0.025em; text-transform: uppercase;
+  }
+  .cp-about-excerpt p {
+    font-family: var(--body); font-size: 17px; line-height: 1.7;
+    color: var(--film-2); max-width: 60ch;
+  }
+  .cp-about-excerpt .more {
+    margin-top: 28px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+    border-bottom: 1px solid var(--accent); padding-bottom: 4px;
+    display: inline-block;
+  }
+
+  /* PUBLICATIONS STRIP — 3 selected with EXIF-cell grid */
+  .cp-publications { padding: 80px 56px; max-width: 1400px; margin: 0 auto; }
+  .cp-publications .heading {
+    padding-bottom: 22px; border-bottom: 1px solid var(--film-4);
+  }
+  .cp-publications .heading .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-publications .heading h4 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 28px; font-weight: 800;
+    color: var(--film); letter-spacing: -0.012em; text-transform: uppercase;
+  }
+  .cp-publications .row {
+    margin-top: 28px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    border-top: 1px solid var(--film-4);
+  }
+  .cp-publications .item {
+    padding: 32px 28px;
+    border-right: 1px solid var(--film-4);
+    border-bottom: 1px solid var(--film-4);
+  }
+  .cp-publications .item:last-child { border-right: 0; }
+  .cp-publications .item .yr {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-publications .item h5 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 18px; font-weight: 800;
+    line-height: 1.18; letter-spacing: 0.005em; text-transform: uppercase;
+    color: var(--film);
+  }
+  .cp-publications .item p {
+    margin-top: 14px;
+    font-family: var(--body); font-size: 13px; line-height: 1.65;
+    color: var(--film-2);
+  }
+
+  /* FINAL CTA — bracket cinematic */
+  .cp-cta { padding: 96px 56px; }
+  .cp-cta .wrap {
+    max-width: 1400px; margin: 0 auto;
+    border-top: 1px solid var(--film-4); padding-top: 32px;
+    display: grid; grid-template-columns: 1fr 0.55fr; gap: 64px; align-items: end;
+  }
+  .cp-cta .label { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); }
+  .cp-cta h2 {
+    margin-top: 14px; font-family: var(--heading); font-size: 48px;
+    line-height: 1.06; max-width: 22ch; color: var(--film);
+    text-transform: uppercase; letter-spacing: -0.018em;
+  }
+  .cp-cta .intro { margin-top: 22px; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--film-2); line-height: 1.65; }
+  .cp-cta .actions { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+
+  @media (max-width: 1100px) {
+    .cp-hero { height: 64vh; min-height: 480px; }
+    .cp-hero .manifesto { left: 32px; right: 32px; bottom: 64px; }
+    .cp-hero .manifesto h1 { font-size: 56px; }
+    .cp-hero .series-chip { left: 32px; }
+    .cp-exif-bar { grid-template-columns: 1fr 1fr; }
+    .cp-exif-bar .cell { border-right: 0; border-bottom: 1px solid var(--film-5); }
+    .cp-strip .row { grid-template-columns: repeat(2, 1fr); }
+    .cp-about-excerpt .wrap { grid-template-columns: 1fr; gap: 32px; }
+    .cp-about-excerpt h3 { font-size: 40px; }
+    .cp-publications .row { grid-template-columns: 1fr; }
+    .cp-publications .item { border-right: 0; }
+    .cp-cta .wrap { grid-template-columns: 1fr; gap: 28px; }
+    .cp-cta h2 { font-size: 36px; }
+  }
+  @media (max-width: 720px) {
+    .cp-hero .manifesto h1 { font-size: 36px; }
+    .cp-strip .row { grid-template-columns: 1fr; }
+    .cp-strip a.frame { height: 240px; }
+    .cp-about-excerpt h3 { font-size: 28px; }
+  }
+{% endblock %}
+
+{% block content %}
+<div class="cp-hero-wrap">
+  <section class="cp-hero">
+    <div class="frame-corners"></div>
+    <div class="series-chip">
+      <span>{{ page_data.series_counter_label }}</span>
+      <span class="num">{{ page_data.series_counter_value }}</span>
+    </div>
+    <div class="manifesto" data-lm="reveal-lg">
+      <div class="eyebrow">{{ page_data.eyebrow }}</div>
+      <h1>{{ page_data.headline|safe }}</h1>
+      <p class="sub">{{ page_data.subhead }}</p>
+      <div class="actions">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cp-btn-primary">{{ page_data.primary_cta }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cp-btn-ghost">{{ page_data.secondary_cta }}</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="cp-exif-bar">
+    {% for label, value in page_data.hero_credit_cells %}
+      <div class="cell">
+        <span>{{ label }}</span>
+        <span class="val">{{ value }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<section class="cp-strip">
+  <div class="heading">
+    <div data-lm="reveal-lg">
+      <div class="lbl">{{ page_data.filmstrip_label }}</div>
+      <h4>{{ page_data.filmstrip_heading }}</h4>
+      <p class="intro">{{ page_data.filmstrip_intro }}</p>
+    </div>
+  </div>
+  <div class="row" data-lm-stagger data-lm-stagger-delay="100">
+    {% for num, title, disc, yr, slug in page_data.filmstrip %}
+      <a class="frame" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'serie' slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        {# Cycle through posts cover_image; fallback to hero for any extra entries #}
+        {% with idx=forloop.counter0 %}
+          {% if idx == 0 %}<div class="bg" style="background-image: url('{{ page_data.hero_image }}');"></div>
+          {% elif idx == 1 %}<div class="bg" style="background-image: url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1200&q=80&auto=format&fit=crop');"></div>
+          {% elif idx == 2 %}<div class="bg" style="background-image: url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200&q=80&auto=format&fit=crop');"></div>
+          {% else %}<div class="bg" style="background-image: url('https://images.unsplash.com/photo-1545239351-1141bd82e8a6?w=1200&q=80&auto=format&fit=crop');"></div>
+          {% endif %}
+        {% endwith %}
+        <span class="year-corner">{{ yr }}</span>
+        <div class="meta">
+          <div class="num">{{ num }} / {{ page_data.series_counter_value|cut:"/ " }}</div>
+          <div class="title">{{ title }}</div>
+          <div class="disc">{{ disc }}</div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cp-about-excerpt">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <div class="lbl">{{ page_data.about_label }}</div>
+      <h3>{{ page_data.about_heading }}</h3>
+    </div>
+    <div data-lm="reveal">
+      <p>{{ page_data.about_excerpt }}</p>
+      <a class="more" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.about_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.about_cta }} →</a>
+    </div>
+  </div>
+</section>
+
+<section class="cp-publications">
+  <div class="heading">
+    <div data-lm="reveal-lg">
+      <div class="lbl">{{ page_data.publications_label }}</div>
+      <h4>{{ page_data.publications_heading }}</h4>
+    </div>
+  </div>
+  <div class="row" data-lm-stagger data-lm-stagger-delay="80">
+    {% for outlet, subject, date in page_data.publications %}
+      <article class="item" data-lm="reveal">
+        <div class="yr">{{ date }}</div>
+        <h5>{{ outlet }}</h5>
+        <p>{{ subject }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cp-cta">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <div class="label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div class="actions" data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cp-btn-primary">{{ page_data.cta_primary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cp-btn-ghost">{{ page_data.cta_secondary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

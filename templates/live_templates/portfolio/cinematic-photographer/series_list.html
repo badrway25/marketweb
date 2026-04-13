@@ -1,0 +1,182 @@
+{% extends "live_templates/portfolio/cinematic-photographer/_base.html" %}
+
+{% block extra_css %}
+  /* Filter pills (mono dark) */
+  .cp-filter {
+    padding: 0 56px 32px; max-width: 1400px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  .cp-filter .lbl {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+    margin-right: 14px;
+  }
+  .cp-filter span.pill {
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 8px 14px; color: var(--film-3);
+    border: 1px solid var(--film-4);
+  }
+  .cp-filter span.pill.on { background: var(--film); color: var(--pitch); border-color: var(--film); }
+
+  /* Index band */
+  .cp-index-band {
+    padding: 22px 56px; max-width: 1400px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-top: 1px solid var(--film-4); border-bottom: 1px solid var(--film-5);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cp-index-band .intro {
+    color: var(--film-2); font-weight: 600; max-width: 56ch;
+    text-transform: none; letter-spacing: 0.02em; font-size: 12px; font-style: italic;
+    font-family: var(--body);
+  }
+
+  /* Series gallery — large cinematic cards 2-col */
+  .cp-series-gallery { padding: 32px 56px 80px; max-width: 1400px; margin: 0 auto; }
+  .cp-series-gallery .grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .cp-series-gallery a.serie {
+    display: block; position: relative;
+    background: var(--pitch-2);
+    border: 1px solid var(--film-4);
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    transition: border-color .25s ease, transform .35s ease;
+  }
+  .cp-series-gallery a.serie:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .cp-series-gallery .serie .bg {
+    position: absolute; inset: 0;
+    background-position: center; background-size: cover;
+    transition: transform .55s ease, filter .35s ease;
+    filter: grayscale(15%) contrast(1.04) brightness(0.92);
+  }
+  .cp-series-gallery a.serie:hover .bg { transform: scale(1.05); filter: grayscale(0%) contrast(1.06) brightness(0.96); }
+  .cp-series-gallery .serie:after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(5,5,5,0.10) 0%, rgba(5,5,5,0) 30%, rgba(5,5,5,0.94) 100%);
+  }
+  .cp-series-gallery .serie .top-corner {
+    position: absolute; top: 18px; left: 18px;
+    padding: 6px 12px;
+    background: rgba(5,5,5,0.72);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--film-4);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+    z-index: 2;
+  }
+  .cp-series-gallery .serie .year-corner {
+    position: absolute; top: 18px; right: 18px;
+    padding: 6px 12px;
+    background: rgba(5,5,5,0.72);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--film-4);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.10em; color: var(--film-2);
+    z-index: 2;
+  }
+  .cp-series-gallery .serie .meta {
+    position: absolute; left: 28px; right: 28px; bottom: 24px;
+    z-index: 2;
+  }
+  .cp-series-gallery .serie .meta h3 {
+    font-family: var(--heading); font-size: 28px; font-weight: 800;
+    letter-spacing: -0.018em; text-transform: uppercase; color: var(--film);
+    line-height: 1.05;
+  }
+  .cp-series-gallery .serie .meta .lead {
+    margin-top: 12px; max-width: 48ch;
+    font-family: var(--body); font-size: 13px; line-height: 1.6; color: var(--film-2);
+  }
+  .cp-series-gallery .serie .meta .row {
+    margin-top: 16px;
+    display: flex; gap: 18px; align-items: center;
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--film-3);
+  }
+  .cp-series-gallery .serie .meta .row .arrow {
+    margin-left: auto; color: var(--accent); font-size: 14px;
+    font-family: var(--heading);
+  }
+
+  /* Final CTA */
+  .cp-cta-list { padding: 80px 56px; }
+  .cp-cta-list .wrap {
+    max-width: 1400px; margin: 0 auto;
+    border-top: 1px solid var(--film-4); padding-top: 32px;
+    display: grid; grid-template-columns: 1fr 0.5fr; gap: 64px; align-items: end;
+  }
+  .cp-cta-list .label { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); }
+  .cp-cta-list h2 { margin-top: 14px; font-family: var(--heading); font-size: 36px; line-height: 1.06; max-width: 22ch; text-transform: uppercase; letter-spacing: -0.012em; }
+  .cp-cta-list .intro { margin-top: 18px; font-family: var(--body); font-size: 16px; color: var(--film-2); line-height: 1.65; max-width: 56ch; }
+
+  @media (max-width: 1100px) {
+    .cp-filter, .cp-index-band, .cp-series-gallery, .cp-cta-list { padding-left: 32px; padding-right: 32px; }
+    .cp-series-gallery .grid { grid-template-columns: 1fr; }
+    .cp-series-gallery a.serie { aspect-ratio: 5/4; }
+    .cp-series-gallery .serie .meta h3 { font-size: 22px; }
+    .cp-cta-list .wrap { grid-template-columns: 1fr; gap: 28px; }
+  }
+  @media (max-width: 720px) {
+    .cp-filter, .cp-index-band, .cp-series-gallery, .cp-cta-list { padding-left: 20px; padding-right: 20px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="cp-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="sub">{{ page_data.subhead }}</p>
+</section>
+
+<div class="cp-filter" data-lm="reveal">
+  <span class="lbl">{{ page_data.filter_label }}</span>
+  {% for filter in page_data.filters %}
+    <span class="pill {% if forloop.first %}on{% endif %}">{{ filter }}</span>
+  {% endfor %}
+</div>
+
+<div class="cp-index-band">
+  <span>{{ page_data.index_label }}</span>
+  <span class="intro">{{ page_data.index_intro }}</span>
+</div>
+
+<section class="cp-series-gallery">
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for post in posts %}
+      <a class="serie" href="{% url 'catalog:live_template_post' template.category.slug template.slug page.slug post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <div class="bg" style="background-image: url('{{ post.cover_image }}');"></div>
+        <span class="top-corner">{{ post.discipline }}</span>
+        <span class="year-corner">{{ post.year }}</span>
+        <div class="meta">
+          <h3>{{ post.title }}</h3>
+          <p class="lead">{{ post.lead }}</p>
+          <div class="row">
+            <span>{{ post.frame_count }}</span>
+            <span>·</span>
+            <span>{{ post.duration }}</span>
+            <span class="arrow">[ apri serie ] →</span>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cp-cta-list">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <div class="label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cp-btn-primary">{{ page_data.cta_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

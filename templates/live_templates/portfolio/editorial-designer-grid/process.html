@@ -1,0 +1,184 @@
+{% extends "live_templates/portfolio/editorial-designer-grid/_base.html" %}
+
+{% block extra_css %}
+  /* PROCESS — 5-step indexed sequence with deliverable cells */
+  .ed-process { padding: 32px 56px 96px; max-width: 1400px; margin: 0 auto; }
+  .ed-process .head {
+    display: grid; grid-template-columns: 0.45fr 1fr; gap: 56px;
+    align-items: end; padding-bottom: 32px;
+  }
+  .ed-process .head .sec-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .ed-process .head h2 { font-size: 44px; max-width: 18ch; margin-top: 14px; letter-spacing: -0.022em; }
+  .ed-process .steps {
+    margin-top: 32px; display: flex; flex-direction: column;
+  }
+  .ed-process .step {
+    display: grid; grid-template-columns: 64px 1.6fr 1fr 0.7fr;
+    gap: 32px; padding: 36px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: start;
+  }
+  .ed-process .step:first-child { border-top: 1.5px solid var(--ink); }
+  .ed-process .step .num {
+    font-family: var(--heading); font-size: 26px; font-weight: 800;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .ed-process .step .stage h3 {
+    font-size: 26px; line-height: 1.18; letter-spacing: -0.018em;
+  }
+  .ed-process .step .stage p {
+    margin-top: 14px; font-family: var(--body); font-size: 15px;
+    line-height: 1.7; color: var(--ink-2); max-width: 56ch;
+  }
+  .ed-process .step .duration,
+  .ed-process .step .deliverable {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+    padding-top: 2px;
+  }
+  .ed-process .step .duration strong,
+  .ed-process .step .deliverable strong {
+    display: block; margin-top: 8px;
+    font-family: var(--heading); font-size: 14px; color: var(--ink);
+    text-transform: none; letter-spacing: 0; font-weight: 700; line-height: 1.4;
+  }
+
+  /* CAPABILITIES — 5 detailed cards (vs 4 short blurbs on home) */
+  .ed-cap-full { padding: 96px 56px; max-width: 1400px; margin: 0 auto; background: var(--paper-2); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); max-width: none; }
+  .ed-cap-full .wrap { max-width: 1400px; margin: 0 auto; }
+  .ed-cap-full .head {
+    display: grid; grid-template-columns: 0.45fr 1fr; gap: 56px;
+    align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--rule);
+  }
+  .ed-cap-full .head .sec-label { font-family: var(--body); font-size: 10px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); }
+  .ed-cap-full .head h2 { font-size: 44px; max-width: 16ch; margin-top: 14px; letter-spacing: -0.022em; }
+  .ed-cap-full .head .intro { font-family: var(--body); font-size: 16px; color: var(--ink-2); line-height: 1.65; max-width: 56ch; }
+  .ed-cap-full .grid {
+    margin-top: 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  }
+  .ed-cap-full .card {
+    background: var(--paper-3); border: 1px solid var(--rule); padding: 32px;
+  }
+  .ed-cap-full .card .num {
+    font-family: var(--heading); font-size: 12px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .ed-cap-full .card h3 {
+    margin-top: 12px; font-size: 24px; line-height: 1.18; letter-spacing: -0.018em;
+  }
+  .ed-cap-full .card .blurb {
+    margin-top: 16px; font-family: var(--body); font-size: 14px;
+    line-height: 1.7; color: var(--ink-2);
+  }
+  .ed-cap-full .card .scope {
+    margin-top: 22px; padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    list-style: none;
+  }
+  .ed-cap-full .card .scope li {
+    padding: 6px 0 6px 22px; position: relative;
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft); line-height: 1.55;
+  }
+  .ed-cap-full .card .scope li:before {
+    content: '—'; position: absolute; left: 0; color: var(--accent); font-weight: 700;
+  }
+  .ed-cap-full .card .duration {
+    margin-top: 18px; padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .ed-cap-full .card .duration strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 14px; color: var(--ink);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+
+  /* FINAL CTA */
+  .ed-cta-process { padding: 88px 56px; max-width: 1400px; margin: 0 auto; }
+  .ed-cta-process .wrap {
+    display: grid; grid-template-columns: 1fr 0.55fr; gap: 64px; align-items: end;
+    padding-top: 32px; border-top: 1.5px solid var(--ink);
+  }
+  .ed-cta-process h2 { font-size: 44px; line-height: 1.06; max-width: 18ch; letter-spacing: -0.022em; }
+  .ed-cta-process .intro { margin-top: 18px; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--ink-2); line-height: 1.65; }
+
+  @media (max-width: 1100px) {
+    .ed-process .head { grid-template-columns: 1fr; gap: 24px; }
+    .ed-process .step { grid-template-columns: 40px 1fr; gap: 16px; }
+    .ed-process .step .duration, .ed-process .step .deliverable { grid-column: 2; }
+    .ed-cap-full .head { grid-template-columns: 1fr; gap: 24px; }
+    .ed-cap-full .grid { grid-template-columns: 1fr; }
+    .ed-cta-process .wrap { grid-template-columns: 1fr; gap: 28px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="ed-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="ed-process">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.process_label }}</div>
+      <h2>{{ page_data.process_heading }}</h2>
+    </div>
+  </div>
+  <div class="steps" data-lm-stagger data-lm-stagger-delay="80">
+    {% for num, title, body, dur_label, dur_value in page_data.process %}
+      <article class="step" data-lm="reveal">
+        <span class="num">{{ num }}</span>
+        <div class="stage">
+          <h3>{{ title }}</h3>
+          <p>{{ body }}</p>
+        </div>
+        <div class="duration">{{ dur_label }}<strong>{{ dur_value }}</strong></div>
+        <div class="deliverable">Sequenza<strong>Step {{ forloop.counter }} di {{ page_data.process|length }}</strong></div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="ed-cap-full">
+  <div class="wrap">
+    <div class="head">
+      <div data-lm="reveal-lg">
+        <div class="sec-label">{{ page_data.capabilities_label }}</div>
+        <h2>{{ page_data.capabilities_heading }}</h2>
+      </div>
+      <p class="intro" data-lm="reveal">{{ page_data.capabilities_intro }}</p>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+      {% for cap in page_data.capabilities_full %}
+        <article class="card" data-lm="reveal">
+          <div class="num">{{ cap.num }} / {{ page_data.capabilities_full|length|stringformat:"02d" }}</div>
+          <h3>{{ cap.title }}</h3>
+          <p class="blurb">{{ cap.blurb }}</p>
+          <ul class="scope">
+            {% for line in cap.scope %}<li>{{ line }}</li>{% endfor %}
+          </ul>
+          <div class="duration">Durata indicativa<strong>{{ cap.duration }}</strong></div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="ed-cta-process">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ed-btn-primary">{{ page_data.cta_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

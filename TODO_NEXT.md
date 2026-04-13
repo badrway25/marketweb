@@ -223,13 +223,14 @@ Both templates already had D-047-compliant preview compositions from Session 17 
 - [x] Added `mp_other_business` chrome key to `CHROME_I18N` in all 5 locales (forward-compat for future business i18n)
 - [x] Ran 2g3.0 checklist on both; flipped both to `published_live`. Validation: 54/54 routes green, D-047 leak sweep clean (0 cross-tenant literals), D-054 10/10 differentiated, preview PNGs regenerated, business category card now shows `2 live template(s)`. **D-065 documents the closure.**
 
-### 2g3.4 — Portfolio category completion (2 templates: Chiara, Pixel)
-Both templates already have D-047-compliant preview compositions from Session 18 (editorial-designer-grid + cinematic-photographer) and the Session 19 triage fix for Chiara is already applied. Medium lift — two new skin folders.
+### 2g3.4 — Portfolio category completion (2 templates: Chiara, Pixel) — **CLOSED in Session 34**
+Both templates had D-047-compliant preview compositions from Session 18 (editorial-designer-grid + cinematic-photographer) and the Session 19 triage fix for Chiara was already applied. Session 34 authored both live skin folders + content registry blocks from scratch under D-047 in a single session.
 
-- [ ] Create `templates/live_templates/portfolio/editorial-designer-grid/` skin folder — typographic designer chrome. Pages: home, studio (about), lavoro (project grid), lavoro/<project>, contatti, riflessioni (blog list) + riflessioni/<post>
-- [ ] Create `templates/live_templates/portfolio/cinematic-photographer/` skin folder — cinematic photographer chrome. Pages: home, serie (series index), serie/<series>, biografia, contatti
-- [ ] Content registry blocks for `chiara-portfolio-creativo` and `pixel-portfolio-fotografico`
-- [ ] Run 2g3.0 checklist on both; flip both to `published_live`
+- [x] Created `templates/live_templates/portfolio/editorial-designer-grid/` skin folder — typographic designer chrome. Pages: home, studio (about), lavoro (project_list + project_detail under `/lavoro/<slug>/`), processo (process), contatti (contact)
+- [x] Created `templates/live_templates/portfolio/cinematic-photographer/` skin folder — cinematic photographer chrome. Pages: home, serie (series_list + series_detail under `/serie/<slug>/`), biografia (about), pubblicazioni (publications), contatti (contact)
+- [x] Content registry blocks for `chiara-portfolio-creativo` (`apps/catalog/template_content_chiara.py`, ~880 LOC) and `pixel-portfolio-fotografico` (`apps/catalog/template_content_pixel.py`, ~720 LOC)
+- [x] Added `mp_other_portfolio` chrome key to `CHROME_I18N` in all 5 locales (forward-compat for future portfolio i18n)
+- [x] Ran 2g3.0 checklist on both; flipped both to `published_live`. Validation: 170/170 routes green (was 149 before, +21 new portfolio routes), D-047 leak sweep clean (2 latent leaks lifted in same session — `kit_footer_rows` + `print_meta`), D-054 10/10 differentiated, preview PNGs regenerated, portfolio category card now shows 2 live template(s). **D-067 documents the closure.**
 
 ### 2g3.5 — Ecommerce category completion (2 templates: Bottega, Luxe)
 Both have D-047-compliant preview compositions from Session 15 (artisan-workshop + fashion-editorial) but Phase 2g2x.3 already flagged both preview comps for latent literal leaks (12+ Luxe literals in fashion-editorial.html, 10+ Bottega literals in artisan-workshop.html). **Phase 2g2x.3 lifts are a hard blocker** for 2g3.5.

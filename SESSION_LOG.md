@@ -1,5 +1,93 @@
 # Session Log
 
+## Session 34 — Portfolio Live Rollout (Phase 2g3.4 · 2026-04-13)
+
+**Agent:** Premium UI / portfolio category live rollout. Sole target: bring `chiara-portfolio-creativo` (editorial-designer-grid) and `pixel-portfolio-fotografico` (cinematic-photographer) from `draft` to `published_live` with full multi-page live previews. Non-goals: auth, checkout, editor, projects, commerce, other categories' drafts, marketplace chrome i18n, new templates, new archetypes, refactors outside scope.
+
+**Branch:** `phase-portfolio-live-rollout-v1` (forked from `phase-integration-baseline-v3`).
+
+### 1 — Audit
+Read the 12 context files. Confirmed Chiara + Pixel each had: (a) complete DNA entry in `apps/catalog/template_dna.py` with all 10 D-054 dimensions filled; (b) D-047-compliant preview composition under `templates/preview_compositions/portfolio/`; (c) hand-authored disjoint imagery pool (`portfolio-designer` + `portfolio-photographer`); (d) zero leak in `template_list.html`. The two open gates were content registry (no entries in `TEMPLATE_CONTENT`) and skin folders (no `templates/live_templates/portfolio/` directory). Recipe locked-in from Session 32 (Pragma + Elevate business rollout) — same `{slug: {locale: tree}}` content shape, per-archetype skin folder, `LiveTemplateView` dispatcher (no view changes needed).
+
+### 2 — Strategy
+**5 page kinds + 1 detail kind per template**, all distinct from medical/restaurant/business kinds so the dispatcher resolves the correct skin file:
+
+- **Chiara** (editorial-designer-grid): `home / studio (about) / lavoro (project_list → project_detail) / processo (process) / contatti (contact)`. AD voice, sistemic/typographic, design-led, structured.
+- **Pixel** (cinematic-photographer): `home / serie (series_list → series_detail) / biografia (about) / pubblicazioni (publications) / contatti (contact)`. Author-photographer voice, image-led, cinematic, atmospheric.
+
+**Differentiation matrix (D-054 · 10/10 dimensions disjoint):**
+
+| Dim | Chiara | Pixel |
+|---|---|---|
+| 1 Hero image | NO photo · typo+ledger | Fullbleed dominant photo |
+| 2 First-2 imagery | sketchbook + paste-up close-ups | moody hero + filmstrip stills |
+| 3 Silhouette | hairline-rule nav + 2-col typo hero | floating dark nav + fullbleed cover |
+| 4 Section order | hero → ledger → ribbon → capabilities → commissions → cta | hero → exif → filmstrip → bio → publications → cta |
+| 5 Primary CTA | "Richiedi il portfolio completo" + ghost sans-rule | "Apri la serie completa" + bracket-mono `[ … ]` |
+| 6 Block rhythm | very-airy editorial chapters (96px paddings) | compact image-dense (64px paddings) |
+| 7 Macro tone | cream paper #f3efe5 + ink #15130f | near-black #050505 + warm grey #e9e7e2 |
+| 8 Imagery direction | studio work-in-progress (designer pool) | cinematic photostill (photographer pool) |
+| 9 Typography | Syne (display) + Inter — designer's bookshelf | Archivo (geometric) + Inter + JetBrains Mono — author voice |
+| 10 Inner pages | project ledger + design notes + capabilities | series index + EXIF strip + exhibitions + bio |
+
+### 3 — Implementation
+
+**New content registries (~880 + ~720 = ~1600 LOC of hand-authored Italian copy, no lorem ipsum):**
+
+- `apps/catalog/template_content_chiara.py` — `CHIARA_CONTENT_IT` covering 5 pages + 3 project-detail dossiers (Triennale Milano catalogo 2025 / Adelphi collana «Carta Bianca» / Querini Stampalia segnaletica). Founder bio (Chiara Velluti — Isia Urbino + Pentagram NY + Sonnoli + Politecnico docenza). Team of 6. 4 studio principles. Press ledger 8 honors. 5 capabilities with scope + duration. Premium contact form sectioned in 4 groups + file upload + consent.
+- `apps/catalog/template_content_pixel.py` — `PIXEL_CONTENT_IT` covering 5 pages + 3 series dossiers (Porto Vecchio Trieste / Le case di pietra Salento / Ritratti del Po). Author bio (Lorenzo Bianchi — Trieste 1986, Sarajevo 2009, Mamiya 7II + Kodak Portra 400). 4-system camera kit. Exhibitions/publications timeline 12 events. 6 awards. 8 magazine cards on `/pubblicazioni`. Series detail = cover hero + 4-cell EXIF strip + 4 meta cells + essay + 6-image asymmetric gallery + per-series print metadata + next-link. Commission inquiry form 4-section.
+
+**New skin folders (~3700 LOC of HTML+CSS):**
+
+- `templates/live_templates/portfolio/editorial-designer-grid/` — `_base.html` (cream paper · ink · accent rule · hairline nav with index-letter labels · clients ribbon footer · `.lf-*` form tokens for editorial paper) + `home.html` (typo hero + project ledger card + capabilities · 4-col + clients ribbon + press cards + commissions dark band + cta) + `about.html` (founder portrait + 6-person team grid + 4 principles + 8-row press ledger dark band + cta) + `project_list.html` (filter pills + indexed dossier rows + preview-only ledger entries + cta) + `project_detail.html` (breadcrumb + meta strip + client code + serif italic lead + summary box + 3 essay sections + dark deliverables band + colophon credits 2-col + next-link) + `process.html` (5-step indexed sequence + 5 capability cards 2-col + cta) + `contact.html` (4-section form + studio-card sidebar + channels + footnote).
+
+- `templates/live_templates/portfolio/cinematic-photographer/` — `_base.html` (near-black · warm grey · accent pulse · floating dark sticky nav · EXIF-cell footer with kit row) + `home.html` (78vh fullbleed cinematic hero + EXIF 4-cell strip + 4-frame filmstrip + about excerpt dark band + 3-cell publications grid + final cta) + `series_list.html` (filter pills + 2-col 4:3 cinematic cards with EXIF chips + cta) + `series_detail.html` (78vh cover hero + 4-cell EXIF strip + meta strip + 3-section essay + asymmetric 6-image gallery + per-series print-meta dark band + next-link) + `about.html` (long-form statement essay + 4-system kit cards + 12-row exhibitions/publications timeline + cta) + `publications.html` (8 press magazine cards 2-col + 6-row exhibitions ledger dark band + 6 awards 2-col + cta) + `contact.html` (4-section form on dark + EXIF-style studio card sidebar + channels + footnote).
+
+**Wiring:**
+- Registered both content modules in `apps/catalog/template_content.py` `TEMPLATE_CONTENT` dict.
+- Added `mp_other_portfolio` chrome key to all 5 locales of `CHROME_I18N` in `apps/catalog/template_i18n.py` (forward-compat for future portfolio i18n).
+- Flipped `tier: "draft"` → `tier: "published_live"` for both rows in `TEMPLATE_REGISTRY.json` with full `tier_reason` annotation.
+- `LiveTemplateView` and URL patterns required ZERO changes — the dispatcher already handles `<category>/<archetype>/<page-kind>.html` resolution and the post-detail kind transformation (`_list` → `_detail`). The portfolio rollout is pure content + skin authoring.
+
+### 4 — D-047 leak sweep + lift
+
+Initial sweep against the rendered portfolio skin found 2 latent leaks in `cinematic-photographer/`:
+1. `_base.html:393-396` — kit footer rows hardcoded ("Mamiya 7II · Sony α7R V", "Kodak Portra 400", "Stampa · Druckwerkstatt Berlino") would have crashed when a second photographer template adopts the archetype.
+2. `series_detail.html:304` — print-edition cells hardcoded ("Druckwerkstatt Berlino", "Hahnemühle Photo Rag", "Galleria Carla Sozzani · Milano") same bidirectional leak.
+
+Both lifted in the same session by adding `site.kit_footer_rows` (3-item list per tenant) and `post.print_meta` (4-pair list per series) to the content registry. Skin templates now read these fields exclusively. Re-sweep returned ZERO matches across both portfolio skin folders. D-047 contract preserved.
+
+### 5 — Validation
+
+- `python manage.py check` — clean.
+- `python manage.py migrate` + `seed_categories` + `seed_templates` (full DB rebuild on fresh worktree) — successful, 8 categories + 20 templates created, 7 promoted to `published_live` (5 from previous sessions + chiara + pixel) by automatic registry sync at end of `seed_templates`.
+- `python smoke_full.py` — extended with chiara + pixel slugs in `LOCALES` + `CATEGORY` dicts and a new `POST_ROUTES` block for the 6 detail dossiers. Result: **170/170 routes HTTP 200** (was 149 before portfolio addition; +21 = chiara detail + chiara preview + 5 chiara inner pages + pixel detail + pixel preview + 5 pixel inner pages + 6 dossiers + portfolio category surface).
+- `python manage.py generate_previews --only chiara-portfolio-creativo --force` + same for pixel — both PNG regenerated cleanly (canonical filenames `chiara-portfolio-creativo-preview.png` + `pixel-portfolio-fotografico-preview.png`, asset rows replaced).
+- HTML marker check via Django shell with `ALLOWED_HOSTS=['*']` override — Chiara home shows "Forme che durano" headline + "Triennale Milano" ledger entry + "Chiara Velluti Studio" wordmark + "Richiedi il portfolio" CTA + `live-motion.css` + `live-forms.css` + `class="ed-nav"` / `ed-hero` / `ed-foot`. Pixel home shows "OSSERVARE COSA RESTA" headline + "Lorenzo Bianchi" + "Mamiya 7II" + "Galleria Carla Sozzani" + `cp-hero` / `cp-strip` / `cp-foot` / `class="cp-nav"` + "Apri la serie". Project_detail (Triennale Milano dossier) shows "Direzione tipografica" + "Grafiche Antiga" + "412 pp" + "Colophon" + `class="ed-dossier"`. Series_detail (Porto Vecchio) shows "Porto Vecchio" + "Mamiya 7II" + "Hahnemühle" + `cp-cover` / `cp-essay` / `cp-gallery` / `cp-series-exif`.
+- Listing `/templates/portfolio/` — both chiara + pixel rendered. Lawyer listing (all draft) — premium empty state ("In arrivo / preparazione") still rendering correctly with no leak of draft templates. Homepage `/` — chiara appears in featured grid (featured=True), pixel appears in featured backfill (featured=False). Featured-pool backfill from D-057 working as designed.
+
+### 6 — Catalog state after Session 34
+
+| Category | Live | Draft |
+|---|---|---|
+| business | 2 | 0 |
+| medical | 2 | 3 |
+| restaurant | 1 | 2 |
+| **portfolio** | **2** | **0** |
+| agency | 0 | 2 |
+| ecommerce | 0 | 2 |
+| lawyer | 0 | 2 |
+| real-estate | 0 | 2 |
+| **TOTAL** | **7** | **13** |
+
+Catalog floor moved from 5/20 (Session 32) to **7/20 published_live**. Portfolio is the third category (after Business and Medical) where 100% of siblings are live. Phase 2g3.4 closes; Phase 2g3 progress is now restaurant 1/3 + medical 2/5 + ecommerce 0/2 + agency 0/2 + lawyer 0/2 + real-estate 0/2 = 13 templates remaining across 6 categories before 2g3.7 unlocks Phase 3.
+
+### 7 — Decision
+
+**PORTFOLIO LIVE ROLLOUT APPROVATO.** D-067 documented in DECISIONS.md.
+
+---
+
 ## Session 33 — Premium Forms & Inputs Polish (2026-04-13)
 
 **Agent:** Premium UI / interaction polish session. Sole target: the form pages on the 5 `tier=published_live` templates. Non-goals: auth, checkout, editor, projects, commerce, drafts, new categories, new archetypes, marketplace chrome.

@@ -346,8 +346,8 @@
       "dna_notes": "Session 18: cream paper page with NO big hero photo — the hero IS the typography (huge Syne display headline + numbered project index card right). 4 indexed rows top-right, 3-card case-study panel bottom, clients ribbon + studio coordinates split footer. Deliberately photo-independent so a failing image URL degrades gracefully.",
       "dna_phase": "2g2x.1",
       "session_closed": 18,
-      "tier": "draft",
-      "tier_reason": "DNA + preview composition complete (Session 18 + Session 19 triage fix, D-051 + D-052) but no live skin folder yet. Phase 2g3.4 will author templates/live_templates/portfolio/editorial-designer-grid/."
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.4 closed in Session 34 (Portfolio live rollout) — full editorial-designer-grid skin folder + content registry + 5 page routes (home/studio/lavoro/processo/contatti) + project_detail dossier route, all 200. D-053 gate green. D-054 10/10 vs Pixel (cream paper + ghost-rule + typographic ledger vs near-black + bracket-mono + fullbleed-cover). i18n shape ready (IT-only at promotion)."
     },
     {
       "slug": "pixel-portfolio-fotografico",
@@ -372,8 +372,8 @@
       "dna_notes": "Session 18: near-black page with a dominant fullbleed photograph covering ~62% of the canvas, corner frame marks, top-left series counter chip, monospaced EXIF credit bar pinned to the hero bottom (pellicola/ottica/stampa cells), 4-frame filmstrip gallery below with named series + disciplines + years, 4-cell EXIF footer. Bracketed [ ... ] CTAs in mono-uppercase — cinematic and technical.",
       "dna_phase": "2g2x.1",
       "session_closed": 18,
-      "tier": "draft",
-      "tier_reason": "DNA + preview composition complete (Session 18, D-051) but no live skin folder yet. Phase 2g3.4 will author templates/live_templates/portfolio/cinematic-photographer/."
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.4 closed in Session 34 (Portfolio live rollout) — full cinematic-photographer skin folder + content registry + 5 page routes (home/serie/biografia/pubblicazioni/contatti) + series_detail page (cover hero + EXIF strip + essay + 6-image gallery), all 200. D-053 gate green. D-054 10/10 vs Chiara (near-black + bracket-mono + fullbleed-cover vs cream paper + ghost-rule + typographic ledger). i18n shape ready (IT-only at promotion)."
     },
     {
       "slug": "bottega-shop-artigianale",

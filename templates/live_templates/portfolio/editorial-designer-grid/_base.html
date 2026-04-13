@@ -1,0 +1,422 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
+<style>
+  :root {
+    --primary:     {{ theme.primary }};
+    --secondary:   {{ theme.secondary }};
+    --accent:      {{ theme.accent }};
+    --paper:       #f3efe5;
+    --paper-2:     #ecebe3;
+    --paper-3:     #ffffff;
+    --ink:         #15130f;
+    --ink-2:       #45413a;
+    --ink-soft:    #6b6557;
+    --ink-mute:    #9a9385;
+    --rule:        rgba(21,19,15,0.14);
+    --rule-soft:   rgba(21,19,15,0.06);
+    --on-dark:     #f3efe5;
+    --on-dark-2:   rgba(243,239,229,0.72);
+    --on-dark-3:   rgba(243,239,229,0.45);
+    --heading: '{{ theme.heading_font }}', 'Times New Roman', serif;
+    --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+
+    /* Premium forms — editorial paper, ink focus, no radius */
+    --lf-bg:            var(--paper-3);
+    --lf-bg-autofill:   var(--paper-3);
+    --lf-bg-soft:       var(--paper-2);
+    --lf-bg-icon:       rgba(21,19,15,0.06);
+    --lf-bg-chip:       var(--paper-2);
+    --lf-border:        var(--rule);
+    --lf-border-hover:  rgba(21,19,15,0.32);
+    --lf-border-focus:  var(--ink);
+    --lf-ring:          rgba(21,19,15,0.10);
+    --lf-ring-size:     2px;
+    --lf-radius:        0;
+    --lf-pad-y:         14px;
+    --lf-pad-x:         16px;
+    --lf-label-color:   var(--ink-soft);
+    --lf-label-size:    10px;
+    --lf-label-track:   0.22em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  var(--ink-soft);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   var(--ink-mute);
+    --lf-section-rule:  var(--rule);
+    --lf-section-title-color: var(--ink);
+    --lf-caret:         var(--accent);
+    --lf-listbox-bg:    var(--paper-3);
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  var(--rule);
+    --lf-listbox-hov:   var(--paper-2);
+    --lf-submit-bg:     var(--ink);
+    --lf-submit-bg-hover: var(--accent);
+    --lf-submit-fg:     var(--paper);
+    --lf-submit-arrow:  var(--accent);
+    --lf-submit-radius: 0;
+    --lf-submit-underline: 0;
+    --on-accent:        var(--paper);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.65; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--heading); font-weight: 800; line-height: 1.05;
+    letter-spacing: -0.025em; color: var(--ink);
+  }
+  em { font-style: italic; font-weight: 500; color: var(--accent); }
+
+  /* Marketplace bar */
+  .mp-bar {
+    background: var(--ink); color: var(--on-dark); font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .mp-bar .mp-back { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; font-weight: 600; }
+  .mp-bar .mp-name { color: rgba(243,239,229,0.55); }
+  .mp-lang { display: flex; align-items: center; gap: 14px; }
+  .mp-lang .mp-lang-label { font-size: 10px; letter-spacing: 0.22em; color: rgba(243,239,229,0.45); font-weight: 700; }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; color: rgba(243,239,229,0.55);
+    border: 1px solid rgba(243,239,229,0.15);
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover { color: var(--accent); border-color: rgba(243,239,229,0.35); }
+  .mp-lang a.mp-lang-pill.is-current { color: var(--accent); border-color: var(--accent); }
+
+  /* ============================================================
+     EDITORIAL HAIRLINE NAV — index-letter labels, status pill
+  ============================================================ */
+  .ed-nav {
+    position: sticky; top: 0; z-index: 50;
+    height: 78px;
+    display: flex; align-items: center; padding: 0 56px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+  }
+  .ed-nav .wm {
+    font-family: var(--heading); font-weight: 800; font-size: 22px;
+    letter-spacing: -0.03em; color: var(--ink);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .ed-nav .wm .asterisk {
+    display: inline-block; width: 14px; height: 14px;
+    background: var(--accent); transform: rotate(12deg);
+  }
+  .ed-nav .links {
+    display: flex; gap: 36px; margin-left: 56px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .ed-nav .links a { display: flex; align-items: center; gap: 12px; transition: color .15s ease; }
+  .ed-nav .links a:before {
+    content: attr(data-letter); color: var(--accent);
+    font-family: var(--heading); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .ed-nav .links a:hover { color: var(--ink); }
+  .ed-nav .links a.is-current { color: var(--ink); }
+  .ed-nav .links a.is-current:after {
+    content: ''; display: inline-block; width: 18px; height: 1px;
+    background: var(--ink); margin-left: 4px;
+  }
+  .ed-nav .status {
+    margin-left: auto; display: flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink);
+    padding: 10px 18px; border: 1px solid var(--rule);
+  }
+  .ed-nav .status .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .ed-nav .status .val {
+    color: var(--ink-soft); padding-left: 14px; margin-left: 2px;
+    border-left: 1px solid var(--rule);
+  }
+
+  /* ============================================================
+     PAGE LEAD — eyebrow + display headline + intro
+  ============================================================ */
+  .ed-lead {
+    padding: 96px 56px 64px; max-width: 1400px; margin: 0 auto;
+  }
+  .ed-lead .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .ed-lead .eyebrow:before { content: ''; width: 36px; height: 1.5px; background: var(--ink); }
+  .ed-lead h1 {
+    margin-top: 30px; font-size: 76px; line-height: 1.0;
+    letter-spacing: -0.032em; max-width: 18ch; color: var(--ink);
+  }
+  .ed-lead h1 em { color: var(--accent); }
+  .ed-lead .intro {
+    margin-top: 28px; max-width: 64ch;
+    font-family: var(--body); font-size: 18px; line-height: 1.65;
+    color: var(--ink-2);
+  }
+  .ed-lead .actions {
+    margin-top: 44px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center;
+  }
+  .ed-btn-primary {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink);
+    padding: 14px 26px; border: 1px solid var(--ink);
+    display: inline-flex; align-items: center; gap: 14px;
+    transition: background .2s ease, color .2s ease;
+  }
+  .ed-btn-primary:after { content: '→'; font-family: var(--heading); font-size: 15px; color: var(--accent); transition: transform .25s ease; }
+  .ed-btn-primary:hover { background: var(--ink); color: var(--paper); }
+  .ed-btn-primary:hover:after { transform: translateX(4px); color: var(--accent); }
+  .ed-btn-ghost {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft);
+    padding-bottom: 4px; border-bottom: 1px solid var(--ink-soft);
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .ed-btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+
+  /* ============================================================
+     SECTION HELPERS — airy editorial chapters
+  ============================================================ */
+  .ed-section { padding: 96px 56px; max-width: 1400px; margin: 0 auto; }
+  .ed-section .sec-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .ed-section h2 {
+    margin-top: 14px; font-size: 48px; line-height: 1.06;
+    max-width: 22ch; letter-spacing: -0.022em;
+  }
+  .ed-section .sec-intro {
+    margin-top: 20px; max-width: 64ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--ink-2);
+  }
+  .ed-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 56px 64px; }
+  .ed-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px 56px; }
+  .ed-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
+
+  /* Dark band variant — solid ink */
+  .ed-section.dark {
+    background: var(--ink); color: var(--on-dark);
+    max-width: none; padding: 96px 56px;
+  }
+  .ed-section.dark h2,
+  .ed-section.dark h3,
+  .ed-section.dark h4 { color: var(--on-dark); }
+  .ed-section.dark .sec-intro { color: var(--on-dark-2); }
+  .ed-section.dark .sec-label { color: var(--accent); }
+
+  /* ============================================================
+     CLIENTS RIBBON + FOOTER
+  ============================================================ */
+  .ed-foot {
+    margin-top: 0;
+    background: var(--paper-2); color: var(--ink);
+    padding: 56px 56px 28px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 13px;
+  }
+  .ed-foot .ribbon {
+    padding-bottom: 36px; border-bottom: 1px solid var(--rule);
+    display: grid; grid-template-columns: 0.6fr 1fr; gap: 48px; align-items: end;
+  }
+  .ed-foot .ribbon .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .ed-foot .ribbon .row {
+    display: flex; flex-wrap: wrap; gap: 28px;
+    font-family: var(--heading); font-size: 14px; font-weight: 800;
+    color: var(--ink); letter-spacing: 0.04em;
+  }
+  .ed-foot .ribbon .row span:nth-child(even) { color: var(--ink-mute); }
+  .ed-foot .top {
+    margin-top: 36px;
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 36px; border-bottom: 1px solid var(--rule);
+  }
+  .ed-foot .top h5 {
+    color: var(--ink-soft); font-family: var(--body);
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 18px;
+  }
+  .ed-foot .brand .word {
+    font-family: var(--heading); font-size: 22px; color: var(--ink); margin-bottom: 10px;
+  }
+  .ed-foot .brand p { color: var(--ink-soft); max-width: 36ch; line-height: 1.55; font-size: 13px; }
+  .ed-foot .col p, .ed-foot .col a { color: var(--ink-soft); display: block; padding: 4px 0; font-size: 13px; }
+  .ed-foot .col a:hover { color: var(--ink); }
+  .ed-foot .bot {
+    padding-top: 24px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 10px; color: var(--ink-mute);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .ed-foot .bot a:hover { color: var(--ink); }
+
+  /* ============================================================
+     EDITORIAL MOTION PROFILE — quiet, paper-precise
+  ============================================================ */
+  :root {
+    --lm-rise:     10px;
+    --lm-rise-lg:  18px;
+    --lm-dur-slow: 720ms;
+  }
+  .ed-btn-primary,
+  .ed-btn-ghost { transition: background .2s ease, color .2s ease, border-color .2s ease; }
+  @media (prefers-reduced-motion: reduce) {
+    .ed-btn-primary, .ed-btn-primary:after, .ed-btn-ghost { transition: none; }
+  }
+
+  /* ============================================================
+     RESPONSIVE — collapse generous paddings on tablet/mobile
+  ============================================================ */
+  @media (max-width: 1100px) {
+    .ed-nav { padding: 0 32px; }
+    .ed-nav .links { gap: 24px; margin-left: 32px; }
+    .ed-lead { padding: 72px 32px 48px; }
+    .ed-lead h1 { font-size: 56px; }
+    .ed-section { padding: 72px 32px; }
+    .ed-section h2 { font-size: 40px; }
+    .ed-grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .ed-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .ed-foot { padding: 48px 32px 24px; }
+    .ed-foot .top { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 720px) {
+    .ed-nav { height: 64px; padding: 0 20px; }
+    .ed-nav .links { display: none; }
+    .ed-nav .status { font-size: 9px; padding: 8px 12px; }
+    .ed-lead { padding: 48px 20px 36px; }
+    .ed-lead h1 { font-size: 40px; max-width: 100%; }
+    .ed-lead .intro { font-size: 16px; }
+    .ed-section { padding: 56px 20px; }
+    .ed-section h2 { font-size: 32px; }
+    .ed-grid-2, .ed-grid-3, .ed-grid-4 { grid-template-columns: 1fr; gap: 32px; }
+    .ed-foot .ribbon { grid-template-columns: 1fr; gap: 18px; }
+    .ed-foot .top { grid-template-columns: 1fr; }
+  }
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_portfolio }}</a>
+</div>
+
+<nav class="ed-nav">
+  <div class="wm">
+    <span class="asterisk"></span>
+    <span>{{ site.logo_word }}</span>
+  </div>
+  <div class="links">
+    {% for p in pages %}
+      {% if p.slug == "home" %}
+        <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}"
+           data-letter="{{ forloop.counter|stringformat:'02d' }}"
+           class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+      {% else %}
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}"
+           data-letter="{{ forloop.counter|stringformat:'02d' }}"
+           class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="status">
+    <span class="dot"></span>
+    <span>{{ site.tag }}</span>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="ed-foot">
+  <div class="ribbon">
+    <span class="lbl">{{ site.foot_clients }}</span>
+    <div class="row">
+      {% for client in site.clients_footer_rows %}<span>{{ client }}</span>{% endfor %}
+    </div>
+  </div>
+  <div class="top">
+    <div class="brand">
+      <h5>{{ site.foot_studio }}</h5>
+      <div class="word">{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_contact }}</h5>
+      <p>{{ site.address }}</p>
+      <p>{{ site.phone }}</p>
+      <p>{{ site.email }}</p>
+      <p>{{ site.hours_compact }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ chrome.foot_studio }}</h5>
+      {% for label, value in site.coordinates %}
+        <p>{{ label }} — {{ value }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="bot">
+    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
+</body>
+</html>
