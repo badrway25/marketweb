@@ -1,5 +1,75 @@
 # Session Log
 
+## Session 33 — Premium Forms & Inputs Polish (2026-04-13)
+
+**Agent:** Premium UI / interaction polish session. Sole target: the form pages on the 5 `tier=published_live` templates. Non-goals: auth, checkout, editor, projects, commerce, drafts, new categories, new archetypes, marketplace chrome.
+
+**Branch:** `phase-premium-forms-polish-v1` (forked from `phase-integration-baseline-v2`).
+
+### 1 — Audit
+Read the 12 context files. Enumerated the 5 form-bearing pages: cardio+derm `contatti` (6 fields) and `richiedi-visita` (8 fields, 2 selects), gusto `prenota` (8 fields, 1 select), pragma `contatti` (9 fields, 2 selects), elevate `demo` (8 fields, 3 selects). Problems observed on all 5: native `<select>` with grey/blue browser chrome, no helper text under fields, native checkbox on consent, tepid focus state (border-color only), no section grouping for 8–9 field forms, no file upload anywhere despite copy like "Allega gli esami recenti se vuoi" and "NDA reciproca", no reassurance note near the submit bar, uniform CTA without secondary action.
+
+### 2 — Strategy
+Shared `.lf-*` primitive system (CSS + JS) with per-skin token overrides. Real custom listbox for `<select>` on desktop/keyboard (touch keeps native). File upload only on the 3 forms where the copy justifies it (cardio/derm appointment · pragma contact · elevate demo — not on gusto or medical contact). Section grouping on the 4 heavier forms (≥8 fields). Submit reassurance + optional secondary action on every form.
+
+### 3 — Implementation
+
+**New static files:**
+- `static/css/live-forms.css` (~490 lines) — `.lf-field / .lf-label / .lf-control / .lf-helper / .lf-section / .lf-submit-bar / .lf-check / .lf-select / .lf-upload` primitives, 20+ CSS custom properties (`--lf-bg`, `--lf-border`, `--lf-border-focus`, `--lf-ring`, `--lf-radius`, `--lf-caret`, `--lf-submit-bg`, etc.) each overridable per skin, `.lf-boxed` variant for skins that want padded inputs, `prefers-reduced-motion` guard, RTL-safe via logical properties.
+- `static/js/live-forms.js` (~260 lines) — zero-dep IIFE. `enhanceSelect()` upgrades every `<select>` inside `.lf-select` to a role="combobox" trigger + role="listbox" panel with complete ARIA (aria-haspopup/controls/expanded/activedescendant), keyboard (↑ ↓ Home End Enter Space Esc typeahead), option hover + dot marker. Touch devices (`matchMedia('(hover:none) and (pointer:coarse)')`) keep the native picker. `enhanceUpload()` wires the drop zone + file chip list with size formatting + individual remove (DataTransfer-backed); graceful without JS.
+
+**Per-skin tokens** in each `_base.html :root`:
+- Specialist (clinical · paper + gold): minimal underline, 0 radius, gold caret, red-ring focus, paper listbox, primary-dark submit.
+- Fine-dining (moody · dark body + gold): transparent on dark bg, 14px padding, gold caret and secondary-gold focus, dark warm listbox.
+- Corporate-suite (institutional · paper-3 boxed): 1px border, boxed inputs, emerald focus, primary-dark submit with accent arrow.
+- Startup-saas (glass · dark cosmic + cyan glow): rgba(0,0,0,0.32) bg, 10px radius, cyan glow ring + cyan focus, dark cosmic listbox, pill-radius accent-cyan submit.
+
+**Specialist dark-band override block** (in `_base.html`) flips every `.lf-*` token to on-dark values for the `.sp-form-band` context on the appointment page — navy body, gold CTA.
+
+**Markup updated:**
+- `specialist/contact.html` — converted 6 hand-written field rows to the `.lf-*` primitive shape (label + input + helper), replaced native submit + native consent with custom `.lf-submit-bar` and `.lf-check`, added mobile breakpoint.
+- `specialist/appointment.html` — full rewrite of the form area: loop `page_data.form_sections` → `.lf-section > .lf-section-head + .lf-field×N`, special `"__upload__"` sentinel renders the file upload field, custom listbox for the 2 selects, consent + submit-bar + secondary alternative link all in `.lf-*`.
+- `fine-dining/reservations.html` — sectioned form when `form_sections` is present, fallback to tuple-loop for non-IT locales (preserves existing i18n content without forcing a section translation pass), custom listbox for occasion.
+- `corporate-suite/contact.html` — sectioned `.lf-boxed` form with upload, emerald consent box kept as container around `.lf-check`, submit-bar with reassurance.
+- `startup-saas-landing/demo.html` — sectioned `.lf-boxed` form with upload, cyan consent box, pill submit.
+
+**Content registries:**
+- Added 6 universal chrome keys across 5 locales (30 entries): `form_required`, `form_optional`, `form_select_placeholder`, `form_upload_browse_prefix`, `form_upload_browse_link`, `form_upload_remove`.
+- IT per-template additions for the 5 forms: `form_sections` (nested by field name), `upload_field` (where applicable), `form_submit_note`, per-field `helper`, `form_consent` where missing.
+- `form_submit_note` translated to EN/FR/ES/AR for cardio/derm/gusto (native-voice).
+- Sections/upload/helper text for the 3 multilingual templates remain IT-first; the HTML uses `{% if page_data.X %}` guards so non-IT locales render a working form without the IT enhancement copy. Flagged as follow-up translation pass in memory (Phase 2i.3 candidate).
+
+**Mobile breakpoints at 880px** added to all 5 form pages: outer grid collapses to 1-column, padding halves, section titles step down. Pre-existing specialist nav + footer legacy mobile overflow is documented as out of scope.
+
+### 4 — Late fix captured
+Section titles used `var(--primary)` which reads dark-on-dark for fine-dining (brown) and startup-saas (navy). Introduced `--lf-section-title-color` token, defaulting to `var(--ink)`; per-skin overrides: specialist `--primary`, fine-dining `--secondary` (gold), corporate-suite `--primary`, startup-saas `--ink`. Every section title now legible on its skin.
+
+### 5 — Validation
+
+- `python manage.py check`: 0 issues.
+- `smoke_forms.py` (new): 27/27 form-specific routes HTTP 200 across the 5 templates × supported locales; every form page carries `.lf-*` primitives, links `live-forms.css` + `live-forms.js`, and the select-bearing ones expose `.lf-select`. All green.
+- `smoke_full.py` (new): 149/149 routes across marketplace surfaces + detail + home + all inner pages of the 5 templates × supported locales. All green.
+- Browser walk at 1440×900 via Playwright: cardio appointment (4 sections · 2 selects enhanced · upload · 9 helpers · submit note), derm appointment (same specialist skin · 2 selects enhanced · upload), gusto prenota (3 sections · 1 select enhanced · 8 helpers · submit note with deposit copy), pragma contact (4 sections · 2 selects enhanced · upload · 10 helpers · submit note), elevate demo (4 sections · 3 selects enhanced · upload · 9 helpers · submit note). **10 selects total across the 5 live forms**, all upgraded to the custom listbox on desktop/keyboard. Listbox open-state verified on Gusto: dark warm panel with gold dots + accent caret.
+- RTL (cardio `contatti?lang=ar`): `dir=rtl`, `lang=ar`, 6 controls render, labels + placeholders + submit-note right-aligned, submit arrow flipped via `scaleX(-1)`, native Arabic font stack active.
+- Mobile 390×844: cardio appointment form collapses cleanly to 1-column; legacy chrome overflow (`.sp-nav .right` grid, `.sp-foot .col` grid) is pre-existing and documented.
+
+### 6 — Differentiation preserved
+- The 5 templates read as 4 distinct form families (specialist clinical · fine-dining hospitality · corporate-suite institutional · startup-saas growth-tech). Zero shared form CHROME between templates — same underlying primitive, different tokens.
+- Cardio vs Derm forms share the specialist skin by design (D-060 split is in imagery + hero variants, not in forms).
+
+### 7 — Memory / docs
+- `MEMORY.md` — new pointer to `premium_forms_polish_session33.md`.
+- `memory/premium_forms_polish_session33.md` — full session memory.
+- `SESSION_LOG.md` — this entry.
+- `DECISIONS.md` — new D-066 (Premium Forms System).
+- `TODO_NEXT.md` — Phase 2k block recording Session 33 closed + Phase 2i.3 candidate for the enhancement-copy i18n pass.
+
+### 8 — Decision
+
+**PREMIUM FORMS POLISH APPROVATO.** The 5 form pages on the 5 `tier=published_live` templates now ship with: a real custom accessible listbox (not native grey/blue), premium section-grouped forms on the 4 heavier pages, sensible file upload on cardio+derm appointment + pragma contact + elevate demo (not sprinkled where it doesn't belong), reassurance + CTA submit bar on every form, graceful no-JS + reduced-motion degradation, RTL-safe Arabic rendering, mobile 1-column collapse. `check` clean, 27/27 form checks green, 149/149 full route sweep green. Zero regressions on baseline.
+
+---
+
 ## Session 32 — Business Live Rollout (Phase 2g3.3 — Pragma + Elevate published_live) (2026-04-13)
 
 **Agent:** Premium UI + content authoring + integration session. Single objective: bring the two existing business templates (Pragma, Elevate) up to `published_live`, completing the second category-burst rollout after medical and restaurant.

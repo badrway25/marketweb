@@ -147,6 +147,13 @@ CHROME_I18N: dict[str, dict[str, str]] = {
         "fd_wine_pairing":  "In abbinamento",
         "fd_email_label":   "Email",
         "fd_phone_label":   "Telefono",
+        # Premium forms primitives (Session 33)
+        "form_required":    "Richiesto",
+        "form_optional":    "Facoltativo",
+        "form_select_placeholder": "Seleziona…",
+        "form_upload_browse_prefix": "Trascina un file qui oppure",
+        "form_upload_browse_link":   "sfoglia i documenti",
+        "form_upload_remove":        "Rimuovi",
     },
 
     # ─────────────────────────────────────────────────────────────
@@ -188,6 +195,12 @@ CHROME_I18N: dict[str, dict[str, str]] = {
         "fd_wine_pairing":  "Paired with",
         "fd_email_label":   "Email",
         "fd_phone_label":   "Phone",
+        "form_required":    "Required",
+        "form_optional":    "Optional",
+        "form_select_placeholder": "Select…",
+        "form_upload_browse_prefix": "Drag a file here or",
+        "form_upload_browse_link":   "browse your documents",
+        "form_upload_remove":        "Remove",
     },
 
     # ─────────────────────────────────────────────────────────────
@@ -229,6 +242,12 @@ CHROME_I18N: dict[str, dict[str, str]] = {
         "fd_wine_pairing":  "Accord mets-vin",
         "fd_email_label":   "E-mail",
         "fd_phone_label":   "Téléphone",
+        "form_required":    "Requis",
+        "form_optional":    "Facultatif",
+        "form_select_placeholder": "Sélectionner…",
+        "form_upload_browse_prefix": "Glissez un fichier ici ou",
+        "form_upload_browse_link":   "parcourez vos documents",
+        "form_upload_remove":        "Retirer",
     },
 
     # ─────────────────────────────────────────────────────────────
@@ -270,6 +289,12 @@ CHROME_I18N: dict[str, dict[str, str]] = {
         "fd_wine_pairing":  "Maridaje",
         "fd_email_label":   "Correo",
         "fd_phone_label":   "Teléfono",
+        "form_required":    "Obligatorio",
+        "form_optional":    "Opcional",
+        "form_select_placeholder": "Seleccionar…",
+        "form_upload_browse_prefix": "Arrastra un archivo aquí o",
+        "form_upload_browse_link":   "busca en tus documentos",
+        "form_upload_remove":        "Quitar",
     },
 
     # ─────────────────────────────────────────────────────────────
@@ -312,6 +337,12 @@ CHROME_I18N: dict[str, dict[str, str]] = {
         "fd_wine_pairing":  "مقترن مع",
         "fd_email_label":   "البريد الإلكتروني",
         "fd_phone_label":   "الهاتف",
+        "form_required":    "إلزامي",
+        "form_optional":    "اختياري",
+        "form_select_placeholder": "اختَر…",
+        "form_upload_browse_prefix": "اسحب ملفاً هنا أو",
+        "form_upload_browse_link":   "تصفّح مستنداتك",
+        "form_upload_remove":        "إزالة",
     },
 }
 

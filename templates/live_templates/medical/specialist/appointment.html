@@ -59,54 +59,18 @@
   }
 
   .sp-form-band form {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 32px 36px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px 36px;
+    row-gap: 24px;
   }
-  .sp-form-band .field { display: flex; flex-direction: column; gap: 8px; }
-  .sp-form-band .field.full { grid-column: 1 / -1; }
-  .sp-form-band label {
-    font-family: var(--body); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.22em; text-transform: uppercase;
-    color: rgba(247,243,238,0.55);
+  @media (max-width: 880px) {
+    .sp-form-band { padding: 56px 22px; }
+    .sp-form-band-inner { grid-template-columns: 1fr; gap: 32px; }
+    .sp-form-band h2 { font-size: 38px; }
+    .sp-form-band form { grid-template-columns: 1fr; gap: 20px; }
+    .sp-process { padding: 20px 22px; }
+    .sp-process .grid { grid-template-columns: 1fr; gap: 22px; }
+    .sp-foot-note { padding: 28px 22px; }
   }
-  .sp-form-band input, .sp-form-band select, .sp-form-band textarea {
-    background: transparent; border: 0;
-    border-bottom: 1.5px solid rgba(247,243,238,0.18);
-    padding: 10px 0; font-family: var(--body); font-size: 16px;
-    color: var(--paper); outline: none;
-  }
-  .sp-form-band input::placeholder,
-  .sp-form-band select::placeholder,
-  .sp-form-band textarea::placeholder {
-    color: rgba(247,243,238,0.35);
-  }
-  .sp-form-band input:focus, .sp-form-band select:focus, .sp-form-band textarea:focus {
-    border-color: var(--accent);
-  }
-  .sp-form-band textarea { min-height: 130px; resize: vertical; }
-  .sp-form-band .consent {
-    grid-column: 1 / -1;
-    display: flex; gap: 14px; align-items: flex-start;
-    font-family: var(--body); font-size: 12px; line-height: 1.5;
-    color: rgba(247,243,238,0.65);
-  }
-  .sp-form-band .consent input { flex: 0 0 auto; width: 16px; height: 16px; }
-  .sp-form-band .submit-row {
-    grid-column: 1 / -1;
-    padding-top: 12px;
-    display: flex; align-items: center; justify-content: space-between; gap: 24px;
-  }
-  .sp-form-band .submit-row button {
-    background: var(--accent); color: var(--primary);
-    padding: 18px 36px; border: 0;
-    font-family: var(--body); font-size: 12px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase; cursor: pointer;
-  }
-  .sp-form-band .submit-row .alt {
-    font-family: var(--body); font-size: 11px; font-weight: 600;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: rgba(247,243,238,0.55);
-  }
-  .sp-form-band .submit-row .alt a { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; }
 
   .sp-foot-note {
     background: var(--paper-2);
@@ -152,28 +116,99 @@
         </p>
       </div>
 
-      <form>
-        {% for f in page_data.form_fields %}
-          <div class="field{% if f.full_width %} full{% endif %}">
-            <label>{{ f.label }}</label>
-            {% if f.type == "select" %}
-              <select>
-                {% for opt in f.options %}<option>{{ opt }}</option>{% endfor %}
-              </select>
-            {% elif f.type == "textarea" %}
-              <textarea placeholder="{{ f.placeholder }}"></textarea>
-            {% else %}
-              <input type="{{ f.type }}" placeholder="{{ f.placeholder }}">
-            {% endif %}
-          </div>
-        {% endfor %}
-        <div class="consent">
-          <input type="checkbox">
-          <span>{{ page_data.consent }}</span>
-        </div>
-        <div class="submit-row">
-          <button type="button">{{ page_data.submit_label }}</button>
-          <span class="alt">{{ chrome.apt_alternative_prefix }} <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.apt_alternative_link }}</a></span>
+      <form method="post" action="" enctype="multipart/form-data" novalidate>
+        {# Build name→field map so sections can pull fields by name. #}
+        {% if page_data.form_sections %}
+          {% for s in page_data.form_sections %}
+            <div class="lf-section">
+              <div class="lf-section-head">
+                <span class="lf-section-num">{{ s.num }} · {{ page_data.form_sections|length }}</span>
+                <span class="lf-section-title">{{ s.title }}</span>
+                {% if s.meta %}<span class="lf-section-meta">{{ s.meta }}</span>{% endif %}
+              </div>
+              {% for fname in s.fields %}
+                {% if fname == "__upload__" and page_data.upload_field %}
+                  {% with u=page_data.upload_field %}
+                  <div class="lf-field lf-full">
+                    <label class="lf-label" for="sp-apt-{{ u.name }}">{{ u.label }}<span class="lf-opt">{{ chrome.form_optional }}</span></label>
+                    <div class="lf-upload">
+                      <input type="file" id="sp-apt-{{ u.name }}" name="{{ u.name }}" accept="{{ u.accept }}"{% if u.multiple %} multiple{% endif %}>
+                      <div class="lf-upload-zone" tabindex="0" role="button" aria-label="{{ u.primary }} {{ u.link }}">
+                        <span class="lf-upload-icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </span>
+                        <span class="lf-upload-text">
+                          <span class="lf-upload-primary">{{ u.primary }} <u>{{ u.link }}</u></span>
+                          <span class="lf-upload-meta">{{ u.meta }}</span>
+                        </span>
+                      </div>
+                      <div class="lf-upload-list"></div>
+                    </div>
+                    {% if u.helper %}<p class="lf-helper">{{ u.helper }}</p>{% endif %}
+                  </div>
+                  {% endwith %}
+                {% else %}
+                  {% for f in page_data.form_fields %}{% if f.name == fname %}
+                    <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+                      <label class="lf-label" for="sp-apt-{{ f.name }}">{{ f.label }}{% if not f.required %}<span class="lf-opt">{{ chrome.form_optional }}</span>{% endif %}</label>
+                      {% if f.type == "select" %}
+                        <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                          <select id="sp-apt-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                            <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                            {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                          </select>
+                        </div>
+                      {% elif f.type == "textarea" %}
+                        <textarea class="lf-control" id="sp-apt-{{ f.name }}" name="{{ f.name }}" rows="5" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}></textarea>
+                      {% else %}
+                        <input class="lf-control" type="{{ f.type }}" id="sp-apt-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}>
+                      {% endif %}
+                      {% if f.helper %}<p class="lf-helper">{{ f.helper }}</p>{% endif %}
+                    </div>
+                  {% endif %}{% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endfor %}
+        {% else %}
+          {# Fallback: non-IT locales without form_sections render a flat list. #}
+          {% for f in page_data.form_fields %}
+            <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+              <label class="lf-label">{{ f.label }}</label>
+              {% if f.type == "select" %}
+                <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                  <select name="{{ f.name|default:'field' }}">
+                    <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                    {% for opt in f.options %}<option>{{ opt }}</option>{% endfor %}
+                  </select>
+                </div>
+              {% elif f.type == "textarea" %}
+                <textarea class="lf-control" placeholder="{{ f.placeholder }}"></textarea>
+              {% else %}
+                <input class="lf-control" type="{{ f.type }}" placeholder="{{ f.placeholder }}">
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <label class="lf-check lf-full" style="grid-column:1/-1;">
+          <input type="checkbox" name="consent" required>
+          <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+          <span class="lf-check-text">{{ page_data.consent }}</span>
+        </label>
+
+        <div class="lf-submit-bar">
+          <button type="submit" class="lf-submit-primary">
+            <span>{{ page_data.submit_label }}</span>
+            <span class="lf-submit-arrow" aria-hidden="true">→</span>
+          </button>
+          {% if page_data.form_submit_note %}
+          <span class="lf-submit-note">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+            {{ page_data.form_submit_note }}
+          </span>
+          {% endif %}
+          <span class="lf-submit-secondary">{{ chrome.apt_alternative_prefix }} <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.apt_alternative_link }}</a></span>
         </div>
       </form>
     </div>

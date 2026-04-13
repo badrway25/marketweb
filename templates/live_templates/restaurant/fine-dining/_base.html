@@ -13,6 +13,7 @@
 {% endif %}
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 <style>
   :root {
     --primary:   {{ theme.primary }};      /* deep brown */
@@ -27,6 +28,42 @@
     --rule-2:    rgba(212,165,116,0.10);
     --heading: '{{ theme.heading_font }}', Georgia, serif;
     --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+
+    /* Premium forms (fine-dining · paper band on dark chrome) */
+    --lf-bg:            transparent;
+    --lf-bg-autofill:   #1f1810;
+    --lf-bg-soft:       rgba(212,165,116,0.04);
+    --lf-bg-icon:       rgba(212,165,116,0.15);
+    --lf-bg-chip:       rgba(212,165,116,0.10);
+    --lf-border:        rgba(212,165,116,0.28);
+    --lf-border-hover:  rgba(212,165,116,0.55);
+    --lf-border-focus:  var(--secondary);
+    --lf-ring:          rgba(212,165,116,0.18);
+    --lf-ring-size:     3px;
+    --lf-radius:        0;
+    --lf-pad-y:         14px;
+    --lf-pad-x:         0;
+    --lf-label-color:   rgba(243,231,200,0.58);
+    --lf-label-size:    10px;
+    --lf-label-track:   0.22em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  rgba(243,231,200,0.55);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   rgba(243,231,200,0.32);
+    --lf-section-rule:  rgba(212,165,116,0.18);
+    --lf-section-title-color: var(--secondary);
+    --lf-caret:         var(--secondary);
+    --lf-listbox-bg:    #1a140c;
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  rgba(212,165,116,0.18);
+    --lf-listbox-hov:   rgba(212,165,116,0.10);
+    --lf-submit-bg:     var(--secondary);
+    --lf-submit-bg-hover: #e0b886;
+    --lf-submit-fg:     var(--bg);
+    --lf-submit-arrow:  var(--bg);
+    --lf-submit-radius: 0;
+    --lf-submit-underline: 0;
+    --on-accent:        var(--bg);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
@@ -412,5 +449,6 @@
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
 <script src="{% static 'js/live-interactions.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>

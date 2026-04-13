@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:wght@400;500;600;700;800&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 <style>
   :root {
     --primary:    {{ theme.primary }};
@@ -26,6 +27,42 @@
     --surface-2:  rgba(255,255,255,0.04);
     --heading: '{{ theme.heading_font }}', system-ui, sans-serif;
     --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+
+    /* Premium forms (growth-tech · glass dark, cyan glow focus) */
+    --lf-bg:            rgba(0,0,0,0.32);
+    --lf-bg-autofill:   rgba(0,0,0,0.6);
+    --lf-bg-soft:       rgba(255,255,255,0.03);
+    --lf-bg-icon:       rgba(56,189,248,0.14);
+    --lf-bg-chip:       rgba(56,189,248,0.10);
+    --lf-border:        var(--rule);
+    --lf-border-hover:  rgba(238,240,255,0.24);
+    --lf-border-focus:  var(--accent);
+    --lf-ring:          rgba(56,189,248,0.24);
+    --lf-ring-size:     3px;
+    --lf-radius:        10px;
+    --lf-pad-y:         12px;
+    --lf-pad-x:         14px;
+    --lf-label-color:   var(--ink-faint);
+    --lf-label-size:    10px;
+    --lf-label-track:   0.16em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  var(--ink-mute);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   var(--ink-faint);
+    --lf-section-rule:  var(--rule);
+    --lf-section-title-color: var(--ink);
+    --lf-caret:         var(--accent);
+    --lf-listbox-bg:    #0c1128;
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  var(--rule);
+    --lf-listbox-hov:   rgba(56,189,248,0.08);
+    --lf-submit-bg:     var(--accent);
+    --lf-submit-bg-hover: var(--accent-glow);
+    --lf-submit-fg:     #051029;
+    --lf-submit-arrow:  #051029;
+    --lf-submit-radius: 999px;
+    --lf-submit-underline: 0;
+    --on-accent:        #051029;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
@@ -423,5 +460,6 @@
 </footer>
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>

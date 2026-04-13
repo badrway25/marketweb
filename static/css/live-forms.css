@@ -1,0 +1,548 @@
+/* ============================================================================
+ * MarketWeb — Live Forms (premium form primitives)
+ * ============================================================================
+ *
+ * Reusable, zero-dependency form primitives for live_templates. Pairs with
+ * static/js/live-forms.js for the custom listbox and file upload behaviours.
+ *
+ * Primitives (BEM-ish, all prefixed .lf-)
+ * ---------------------------------------
+ *   .lf-field         field wrapper (label + control + helper/error)
+ *   .lf-label         uppercase eyebrow label
+ *   .lf-label .req    required asterisk
+ *   .lf-control       input/textarea/select base
+ *   .lf-helper        helper text under the control
+ *   .lf-error         error state text (visually separated)
+ *   .lf-section       grouped section with heading + rule
+ *   .lf-section-head  sec label + title + optional meta
+ *   .lf-submit-bar    premium submit row (primary CTA + note + secondary)
+ *   .lf-check         custom checkbox (SVG check, focus ring)
+ *   .lf-select        custom listbox (progressive enhancement on <select>)
+ *   .lf-upload        file upload drop zone + chip
+ *
+ * Progressive enhancement contract
+ * --------------------------------
+ * - Every .lf-select wraps a real <select> and degrades to it if JS fails.
+ * - Every .lf-upload wraps a real <input type="file"> and uses its change
+ *   event. Without JS the label simply opens the native picker.
+ * - prefers-reduced-motion: reduce disables transitions.
+ * - Every control token is themeable via CSS custom properties declared on
+ *   the skin's :root so each archetype keeps its character.
+ *
+ * Tokens (with sensible fallbacks — override per skin in _base.html)
+ * -----------------------------------------------------------------
+ *   --lf-bg            field background              transparent
+ *   --lf-bg-hover      field background on hover     same
+ *   --lf-border        field border color            var(--rule)
+ *   --lf-border-hover  field border on hover         var(--ink-soft)
+ *   --lf-border-focus  field border on focus         var(--accent)
+ *   --lf-ring          focus ring color              rgba(accent, 0.18)
+ *   --lf-ring-size     focus ring width              3px
+ *   --lf-radius        field corner radius           0
+ *   --lf-pad-y         vertical padding              12px
+ *   --lf-pad-x         horizontal padding            0 (minimal) or 14px (boxed)
+ *   --lf-label-color   label color                   var(--ink-soft)
+ *   --lf-label-size    label font size               10px
+ *   --lf-label-track   label letter-spacing          0.22em
+ *   --lf-label-weight  label weight                  700
+ *   --lf-helper-color  helper text color             var(--ink-mute, var(--ink-soft))
+ *   --lf-control-color field text color              var(--ink)
+ *   --lf-placeholder   placeholder color             var(--ink-dim, var(--ink-soft))
+ *   --lf-section-rule  section divider               var(--rule)
+ *   --lf-caret         select caret color            var(--accent)
+ *   --lf-listbox-bg    listbox panel bg              var(--paper, #fff)
+ *   --lf-listbox-fg    listbox panel fg              var(--ink)
+ *   --lf-listbox-rule  listbox row rule              var(--rule)
+ *   --lf-listbox-hov   listbox row hover bg          rgba(accent, 0.06)
+ * ============================================================================ */
+
+
+/* ----------------------------------------------------------------------------
+ * FIELD / LABEL / HELPER
+ * -------------------------------------------------------------------------- */
+
+.lf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.lf-field.lf-full { grid-column: 1 / -1; }
+
+.lf-label {
+  font-family: var(--body);
+  font-size: var(--lf-label-size, 10px);
+  font-weight: var(--lf-label-weight, 700);
+  letter-spacing: var(--lf-label-track, 0.22em);
+  text-transform: uppercase;
+  color: var(--lf-label-color, var(--ink-soft, #6e5e52));
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.lf-label .lf-req {
+  color: var(--lf-caret, var(--accent));
+  letter-spacing: 0;
+  font-weight: 700;
+}
+.lf-label .lf-opt {
+  color: var(--lf-helper-color, rgba(0,0,0,0.45));
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+}
+
+.lf-helper {
+  font-family: var(--body);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--lf-helper-color, var(--ink-mute, var(--ink-soft, #6e5e52)));
+}
+.lf-helper.is-italic { font-family: var(--heading, inherit); font-style: italic; font-size: 13px; }
+
+.lf-error {
+  font-family: var(--body);
+  font-size: 12px;
+  line-height: 1.5;
+  color: #b24a3a;
+  display: none;
+  gap: 6px;
+  align-items: center;
+}
+.lf-field.is-error .lf-error { display: inline-flex; }
+.lf-field.is-error .lf-control,
+.lf-field.is-error .lf-select-trigger,
+.lf-field.is-error .lf-upload-zone {
+  border-color: #b24a3a;
+}
+
+
+/* ----------------------------------------------------------------------------
+ * CONTROLS — input, textarea (native <select> is hidden when upgraded; the
+ * .lf-select-trigger replaces it visually)
+ * -------------------------------------------------------------------------- */
+
+.lf-control {
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--lf-control-color, var(--ink, #1c1612));
+  background: var(--lf-bg, transparent);
+  border: 0;
+  border-bottom: 1.5px solid var(--lf-border, var(--rule, rgba(0,0,0,0.1)));
+  border-radius: var(--lf-radius, 0);
+  padding: var(--lf-pad-y, 12px) var(--lf-pad-x, 0);
+  outline: none;
+  transition: border-color 180ms ease, box-shadow 220ms ease, background 180ms ease;
+  width: 100%;
+  min-width: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.lf-control:hover { border-color: var(--lf-border-hover, var(--ink-soft, #6e5e52)); }
+.lf-control:focus {
+  border-color: var(--lf-border-focus, var(--accent));
+  box-shadow: 0 0 0 var(--lf-ring-size, 3px) var(--lf-ring, rgba(156,42,42,0.12));
+}
+.lf-control::placeholder { color: var(--lf-placeholder, var(--ink-dim, #9a8d80)); opacity: 1; }
+.lf-control:-webkit-autofill {
+  -webkit-text-fill-color: var(--lf-control-color, var(--ink, #1c1612));
+  -webkit-box-shadow: 0 0 0 40px var(--lf-bg-autofill, var(--paper-2, #efe8dd)) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+textarea.lf-control {
+  resize: vertical;
+  min-height: 128px;
+  line-height: 1.65;
+}
+
+/* boxed variant — when the skin uses padded boxes instead of minimal
+   underline inputs, it flips --lf-variant to "boxed" via a class below */
+.lf-boxed .lf-control,
+.lf-boxed .lf-select-trigger,
+.lf-boxed .lf-upload-zone {
+  border: 1px solid var(--lf-border, var(--rule));
+  border-radius: var(--lf-radius, 10px);
+  padding: 14px 16px;
+}
+.lf-boxed textarea.lf-control { padding: 14px 16px; }
+
+
+/* ----------------------------------------------------------------------------
+ * SECTION GROUPS — to carve 8–9 field forms into digestible groups
+ * -------------------------------------------------------------------------- */
+
+.lf-section {
+  display: contents;                         /* sits inside a parent grid */
+}
+.lf-section > .lf-section-head {
+  grid-column: 1 / -1;
+  padding-top: 14px;
+  border-top: 1px solid var(--lf-section-rule, var(--rule, rgba(0,0,0,0.08)));
+  display: flex; flex-direction: column; gap: 6px;
+}
+.lf-section:first-child > .lf-section-head {
+  border-top: 0; padding-top: 0;
+}
+.lf-section-head .lf-section-num {
+  font-family: var(--body); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--lf-caret, var(--accent));
+}
+.lf-section-head .lf-section-title {
+  font-family: var(--heading, Georgia, serif);
+  font-size: 22px; font-weight: 500; letter-spacing: -0.01em;
+  color: var(--lf-section-title-color, var(--ink, var(--primary)));
+  line-height: 1.25;
+}
+.lf-section-head .lf-section-meta {
+  font-family: var(--body); font-size: 12px; line-height: 1.5;
+  color: var(--lf-helper-color, var(--ink-mute, var(--ink-soft)));
+}
+
+
+/* ----------------------------------------------------------------------------
+ * CUSTOM LISTBOX — .lf-select wraps a native <select>. JS injects a
+ * role="combobox" button + role="listbox" panel. Fallback: native.
+ * -------------------------------------------------------------------------- */
+
+.lf-select {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+/* hide the native select when upgraded (JS adds .is-enhanced) */
+.lf-select.is-enhanced > select { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+/* if JS never runs, the native select gets the same control styling */
+.lf-select:not(.is-enhanced) > select {
+  font-family: var(--body); font-size: 15px; color: var(--lf-control-color, var(--ink));
+  background: var(--lf-bg, transparent);
+  border: 0; border-bottom: 1.5px solid var(--lf-border, var(--rule));
+  border-radius: var(--lf-radius, 0);
+  padding: var(--lf-pad-y, 12px) var(--lf-pad-x, 0);
+  padding-right: 32px; outline: none; width: 100%;
+  -webkit-appearance: none; -moz-appearance: none; appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--lf-caret, var(--accent)) 50%),
+    linear-gradient(135deg, var(--lf-caret, var(--accent)) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 9px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+.lf-boxed .lf-select:not(.is-enhanced) > select {
+  border: 1px solid var(--lf-border, var(--rule));
+  border-radius: var(--lf-radius, 10px);
+  padding: 14px 44px 14px 16px;
+}
+
+.lf-select-trigger {
+  font-family: var(--body); font-size: 15px; line-height: 1.5;
+  color: var(--lf-control-color, var(--ink));
+  background: var(--lf-bg, transparent);
+  border: 0;
+  border-bottom: 1.5px solid var(--lf-border, var(--rule));
+  border-radius: var(--lf-radius, 0);
+  padding: var(--lf-pad-y, 12px) 36px var(--lf-pad-y, 12px) var(--lf-pad-x, 0);
+  outline: none;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; text-align: inherit; cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 220ms ease, background 180ms ease;
+  position: relative;
+}
+.lf-boxed .lf-select-trigger {
+  border: 1px solid var(--lf-border, var(--rule));
+  border-radius: var(--lf-radius, 10px);
+  padding: 14px 44px 14px 16px;
+}
+.lf-select-trigger:hover { border-color: var(--lf-border-hover, var(--ink-soft)); }
+.lf-select-trigger:focus,
+.lf-select.is-open > .lf-select-trigger {
+  border-color: var(--lf-border-focus, var(--accent));
+  box-shadow: 0 0 0 var(--lf-ring-size, 3px) var(--lf-ring, rgba(156,42,42,0.12));
+}
+.lf-select-trigger .lf-select-value {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex: 1; min-width: 0;
+}
+.lf-select-trigger .lf-select-value.is-placeholder {
+  color: var(--lf-placeholder, var(--ink-dim, #9a8d80));
+}
+.lf-select-trigger .lf-select-caret {
+  width: 10px; height: 10px; flex-shrink: 0;
+  margin-inline-start: 12px;
+  color: var(--lf-caret, var(--accent));
+  transition: transform 260ms cubic-bezier(0.33,1,0.68,1);
+}
+.lf-select.is-open .lf-select-caret { transform: rotate(180deg); }
+
+.lf-select-listbox {
+  position: absolute;
+  top: calc(100% + 8px); left: 0; right: 0;
+  z-index: 30;
+  background: var(--lf-listbox-bg, var(--paper, #fff));
+  color: var(--lf-listbox-fg, var(--ink));
+  border: 1px solid var(--lf-listbox-rule, var(--rule, rgba(0,0,0,0.12)));
+  border-radius: var(--lf-radius, 0);
+  box-shadow: 0 14px 40px -16px rgba(0,0,0,0.25), 0 4px 10px -6px rgba(0,0,0,0.18);
+  padding: 6px 0;
+  max-height: 280px; overflow-y: auto;
+  display: none;
+  font-family: var(--body); font-size: 14px;
+}
+.lf-select.is-open .lf-select-listbox { display: block; }
+.lf-select-listbox li {
+  list-style: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  color: var(--lf-listbox-fg, var(--ink));
+  border: 0;
+  transition: background 120ms ease, color 120ms ease;
+}
+.lf-select-listbox li[aria-selected="true"] {
+  color: var(--lf-caret, var(--accent));
+  font-weight: 600;
+}
+.lf-select-listbox li[aria-selected="true"]::before {
+  content: '';
+  width: 6px; height: 6px; flex-shrink: 0;
+  background: var(--lf-caret, var(--accent));
+  border-radius: 50%;
+  margin-inline-end: 2px;
+}
+.lf-select-listbox li:not([aria-selected="true"])::before {
+  content: '';
+  width: 6px; height: 6px; flex-shrink: 0;
+  border: 1px solid var(--lf-listbox-rule, var(--rule));
+  border-radius: 50%;
+  margin-inline-end: 2px;
+}
+.lf-select-listbox li.is-active,
+.lf-select-listbox li:hover {
+  background: var(--lf-listbox-hov, rgba(0,0,0,0.04));
+}
+
+
+/* ----------------------------------------------------------------------------
+ * CUSTOM CHECKBOX (consent)
+ * -------------------------------------------------------------------------- */
+
+.lf-check {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 14px;
+  cursor: pointer;
+  font-family: var(--body);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--lf-helper-color, var(--ink-mute, var(--ink-soft)));
+}
+.lf-check > input {
+  position: absolute; opacity: 0; pointer-events: none;
+  width: 1px; height: 1px;
+}
+.lf-check-box {
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+  border: 1.5px solid var(--lf-border, var(--rule));
+  background: var(--lf-bg, transparent);
+  border-radius: 3px;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 220ms ease;
+  margin-top: 1px;
+}
+.lf-check-box svg {
+  width: 12px; height: 12px;
+  stroke: var(--on-accent, var(--paper, #fff));
+  fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 140ms ease, transform 180ms cubic-bezier(0.33,1,0.68,1);
+}
+.lf-check > input:checked + .lf-check-box {
+  border-color: var(--lf-caret, var(--accent));
+  background: var(--lf-caret, var(--accent));
+}
+.lf-check > input:checked + .lf-check-box svg { opacity: 1; transform: scale(1); }
+.lf-check > input:focus-visible + .lf-check-box {
+  box-shadow: 0 0 0 var(--lf-ring-size, 3px) var(--lf-ring, rgba(156,42,42,0.18));
+  border-color: var(--lf-border-focus, var(--accent));
+}
+.lf-check .lf-check-text { flex: 1; }
+.lf-check .lf-check-text strong { color: var(--lf-control-color, var(--ink)); font-weight: 600; }
+
+
+/* ----------------------------------------------------------------------------
+ * FILE UPLOAD — .lf-upload wraps <input type="file">. Drop zone shows state
+ * + chips of picked files. Graceful without JS (label opens native picker).
+ * -------------------------------------------------------------------------- */
+
+.lf-upload {
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 0;
+}
+.lf-upload > input[type="file"] {
+  position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;
+}
+.lf-upload-zone {
+  border: 1.5px dashed var(--lf-border, var(--rule));
+  border-radius: var(--lf-radius, 10px);
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 16px;
+  cursor: pointer;
+  background: var(--lf-bg-soft, transparent);
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 220ms ease;
+  min-width: 0;
+}
+.lf-upload-zone:hover { border-color: var(--lf-border-hover, var(--ink-soft)); }
+.lf-upload-zone:focus-within,
+.lf-upload.is-dragging .lf-upload-zone {
+  border-color: var(--lf-border-focus, var(--accent));
+  box-shadow: 0 0 0 var(--lf-ring-size, 3px) var(--lf-ring, rgba(156,42,42,0.12));
+}
+.lf-upload-zone .lf-upload-icon {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--lf-bg-icon, rgba(0,0,0,0.04));
+  color: var(--lf-caret, var(--accent));
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.lf-upload-zone .lf-upload-icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.lf-upload-zone .lf-upload-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.lf-upload-zone .lf-upload-primary {
+  font-family: var(--body); font-size: 13px; font-weight: 600;
+  color: var(--lf-control-color, var(--ink));
+}
+.lf-upload-zone .lf-upload-primary u { color: var(--lf-caret, var(--accent)); text-decoration: none; border-bottom: 1px solid var(--lf-caret, var(--accent)); }
+.lf-upload-zone .lf-upload-meta {
+  font-family: var(--body); font-size: 11px; line-height: 1.5;
+  color: var(--lf-helper-color, var(--ink-mute, var(--ink-soft)));
+  letter-spacing: 0.02em;
+}
+
+.lf-upload-list {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.lf-upload-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 10px 6px 12px;
+  background: var(--lf-bg-chip, rgba(0,0,0,0.04));
+  border: 1px solid var(--lf-border, var(--rule));
+  border-radius: 999px;
+  font-family: var(--body); font-size: 12px;
+  color: var(--lf-control-color, var(--ink));
+  max-width: 100%;
+}
+.lf-upload-chip .name {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 180px;
+}
+.lf-upload-chip .size {
+  color: var(--lf-helper-color, var(--ink-mute, var(--ink-soft)));
+  font-size: 11px;
+}
+.lf-upload-chip .remove {
+  background: none; border: 0; padding: 0 0 0 4px; cursor: pointer;
+  color: var(--lf-helper-color, var(--ink-mute, var(--ink-soft)));
+  font-size: 14px; line-height: 1;
+  transition: color 150ms ease;
+}
+.lf-upload-chip .remove:hover { color: var(--lf-caret, var(--accent)); }
+
+
+/* ----------------------------------------------------------------------------
+ * SUBMIT BAR — primary CTA + reassurance note + optional secondary action
+ * -------------------------------------------------------------------------- */
+
+.lf-submit-bar {
+  grid-column: 1 / -1;
+  padding-top: 18px;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 20px 28px;
+  justify-content: space-between;
+}
+.lf-submit-bar .lf-submit-primary {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--lf-submit-bg, var(--primary));
+  color: var(--lf-submit-fg, var(--paper, #fff));
+  padding: 16px 34px; border: 0;
+  font-family: var(--body); font-size: 12px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  border-radius: var(--lf-submit-radius, 0);
+  cursor: pointer;
+  transition: background 200ms ease, transform 240ms cubic-bezier(0.33,1,0.68,1), box-shadow 240ms ease;
+  border-bottom: var(--lf-submit-underline, 0);
+}
+.lf-submit-bar .lf-submit-primary:hover { background: var(--lf-submit-bg-hover, var(--ink, #000)); }
+.lf-submit-bar .lf-submit-primary:hover .lf-submit-arrow { transform: translateX(4px); }
+.lf-submit-bar .lf-submit-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--lf-ring-size, 3px) var(--lf-ring, rgba(156,42,42,0.30));
+}
+html[dir="rtl"] .lf-submit-bar .lf-submit-primary:hover .lf-submit-arrow { transform: translateX(-4px) scaleX(-1); }
+html[dir="rtl"] .lf-submit-bar .lf-submit-primary .lf-submit-arrow { transform: scaleX(-1); }
+
+.lf-submit-arrow {
+  display: inline-block;
+  font-size: 14px; line-height: 1; letter-spacing: 0;
+  color: var(--lf-submit-arrow, var(--accent));
+  transition: transform 240ms cubic-bezier(0.33,1,0.68,1);
+}
+
+.lf-submit-note {
+  font-family: var(--body); font-size: 11px; line-height: 1.55;
+  color: var(--lf-helper-color, var(--ink-mute, var(--ink-soft)));
+  letter-spacing: 0.04em;
+  display: flex; align-items: center; gap: 10px;
+  max-width: 44ch;
+}
+.lf-submit-note svg {
+  width: 14px; height: 14px; flex-shrink: 0;
+  stroke: var(--lf-caret, var(--accent));
+  fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.lf-submit-secondary {
+  font-family: var(--body); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--lf-helper-color, var(--ink-mute, var(--ink-soft)));
+}
+.lf-submit-secondary a {
+  color: var(--lf-caret, var(--accent));
+  border-bottom: 1px solid var(--lf-caret, var(--accent));
+  padding-bottom: 1px;
+  transition: opacity 150ms ease;
+}
+.lf-submit-secondary a:hover { opacity: 0.7; }
+
+
+/* ----------------------------------------------------------------------------
+ * RESPONSIVE
+ * -------------------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .lf-submit-bar { flex-direction: column; align-items: stretch; gap: 14px; }
+  .lf-submit-bar .lf-submit-primary { width: 100%; justify-content: center; }
+  .lf-section-head .lf-section-title { font-size: 19px; }
+}
+
+
+/* ----------------------------------------------------------------------------
+ * REDUCED MOTION
+ * -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .lf-control,
+  .lf-select-trigger,
+  .lf-select-caret,
+  .lf-check-box,
+  .lf-check-box svg,
+  .lf-upload-zone,
+  .lf-upload-chip .remove,
+  .lf-submit-bar .lf-submit-primary,
+  .lf-submit-arrow { transition: none !important; }
+}
