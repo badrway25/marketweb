@@ -1,6 +1,79 @@
 # Agent Handoff
 
-Last updated: 2026-04-13 — after **Session 29 Gusto i18n/RTL (Phase 2i.2 step 2)**
+Last updated: 2026-04-13 — after **Session 30 Premium Component Depth & Editor Schema Blueprint**
+
+## Session 30 — Premium Component Blueprint: Read This Before Adding Sections or Opening the Editor (2026-04-13)
+
+**Session 30 enriched the 3 `tier=published_live` templates with DISTINCT premium sections per archetype AND authored a concrete Editor Schema Blueprint** (~600 lines, `EDITOR_SCHEMA_BLUEPRINT.md` in repo root). The blueprint is binding for the future customer-personalization editor app.
+
+### What was added (distinct per template by design)
+
+| Template | New sections | New interactions |
+|----------|-------------|-----------------|
+| Cardio | anchor subnav + "Percorso paziente" 5-step timeline + "Garanzie & trasparenza" trust strip + location block with static map | anchor-nav (IO active state + smooth scroll) |
+| Derm | Treatment tabs (3 domains: clinica/chirurgia/estetica) + Before/After compare slider with ethical disclaimer + Editorial press feed 4-tile | Tabs (keyboard nav), Compare slider (mouse/touch/keyboard) |
+| Gusto | Producer showcase (4 artisans) + Private dining card (Chef's Table / evening buy-out / cellar tasting) + Wine program (sommelier + pairings + cellar facts) | — (reuses existing lightbox) |
+
+All sections conditional on `page_data.X` so the shared specialist skin never renders the wrong set on the wrong template.
+
+### New interaction primitives (live-interactions.css/js)
+
+- `[data-li="tabs"]` — keyboard-accessible tab bar with fade panel transitions.
+- `[data-li="compare"]` — before/after slider, mouse+touch+keyboard, clip-path driven.
+- `.li-anchor-nav` — sticky subnav with IntersectionObserver active state.
+
+All zero-dep, `prefers-reduced-motion` aware, graceful without JS.
+
+### i18n coverage
+
+All new sections authored in all 5 locales (it/en/fr/es/ar) for all 3 templates. Native editorial voice per locale — no machine translation. Proper names stay Latin across AR.
+
+### Current stable state
+
+- 3 published_live with FULL premium depth (~650+ lines per home, dense with motion + interactions + per-archetype sections).
+- 85/85 routes 200 across all locales + pages.
+- Cross-contamination zero. Differentiation strong.
+- 17 drafts unchanged.
+
+### Editor Schema Blueprint (EDITOR_SCHEMA_BLUEPRINT.md)
+
+Concrete (not theoretical). Covers:
+- Component registry: 8 edit targets (nav/hero/section/form/contact/blog/footer/locale).
+- 20+ section kinds with items shapes.
+- 23 atomic field types for editor UI.
+- Design tokens scope (palette/fonts/radius/motion_profile/density/alignment).
+- 6 hard invariants (D-047, D-053, D-054, D-057, D-058, D-059).
+- Persistence model (CustomerProject + ProjectContent + ProjectDesignTokens) — specified, not migrated.
+
+When Phase 2g3.7 closes and the editor worktree opens, this document is the implementation TODO. Read it end-to-end before touching `apps/editor/`.
+
+### Do NOT do
+
+- Do NOT add premium sections to drafts. Phase 2g3 authoring follows a different flow (full skin folder, then enrichment).
+- Do NOT replicate the same section set across the 3 templates — that would collapse the D-054 differentiation earned in Sessions 26/28/30.
+- Do NOT start implementing the editor until Phase 2g3.7 is green. D-049 roadmap freeze is still in effect.
+- Do NOT add arbitrary Google Fonts to templates. The blueprint curates 18. Anything else regresses D-040.
+- Do NOT modify `live-motion.css` tokens per-template — use motion_profile from the blueprint.
+- Do NOT machine-translate any locale block. Native editorial voice remains non-negotiable.
+- Do NOT add `href="#"` placeholders. Every CTA must resolve.
+- Do NOT wire a compare slider inside an RTL-first section without confirming label flip works. The drag itself is LTR-mouse-driven by design.
+
+### What to do next (priority order)
+
+1. **Phase 2g3.1** — author Sapore + Brace restaurant skin folders. They inherit restaurant-generic CHROME_I18N keys from Session 29 for free. When their homes are ready, they can optionally opt into a subset of new primitives (e.g., anchor-nav for long trattoria menus; tabs for Brace delivery vs dine-in).
+2. **Phase 2g2x.1 remainder** — lift agency / lawyer / real-estate CRITICO. Same Option A recipe (Sessions 17–19 precedent, now with even more authored sections to reference).
+3. **Phase 2i.3 deferred** — marketplace chrome i18n lives when Phase 3 unblocks.
+4. **Editor app** — do NOT start until 2g3.7 green. When it starts, `EDITOR_SCHEMA_BLUEPRINT.md` is the contract.
+
+### Gotchas (Session 30)
+
+- Clip-path animation on the compare slider is JS-driven (inline `clipPath` overrides CSS). To flip direction per-locale, change the JS, not the CSS.
+- The `.sp-compare .cmp-box` container MUST have `tabindex="0"` for keyboard accessibility. Missing it breaks ←/→ control.
+- The anchor-nav IntersectionObserver rootMargin is `-100px 0px -50% 0px` — tuned so a section "becomes active" when it's ~halfway up the viewport, not as soon as a pixel touches top.
+- Windows cp1252 console cannot print Arabic in stdout. Smoke scripts need `sys.stdout.reconfigure(encoding='utf-8')` or ASCII-only output. Same gotcha as Session 29.
+- New section CSS blocks (e.g., `.sp-tabs`, `.sp-compare`) live in the SHARED specialist `home.html` style block. Cardio renders the CSS but not the HTML (content-conditional). This is intentional: the CSS cost is negligible (~40KB unminified), and splitting into two home.html files would break the D-046 archetype-reuse recipe.
+
+---
 
 ## Session 29 — Gusto i18n/RTL: Read This Before Touching Multilingual Publishing (2026-04-13)
 

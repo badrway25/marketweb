@@ -257,6 +257,211 @@
 
 
 /* ----------------------------------------------------------------------------
+ * 4. TABS
+ * Parent: [data-li="tabs"]. Tab buttons: .li-tab-btn with data-li-target="id".
+ * Panels: .li-tab-panel with matching data-li-id="id". First tab open by default
+ * or the one with .is-active on its button.
+ * -------------------------------------------------------------------------- */
+
+.li-tabs-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--rule, rgba(0,0,0,0.08));
+  flex-wrap: wrap;
+}
+
+.li-tab-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 18px 28px 18px 0;
+  margin-right: 36px;
+  cursor: pointer;
+  font-family: var(--body, sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft, rgba(0,0,0,0.55));
+  position: relative;
+  transition: color 260ms ease;
+}
+
+.li-tab-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 28px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent, var(--secondary, #333));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 360ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.li-tab-btn:hover {
+  color: var(--ink, rgba(0,0,0,0.9));
+}
+
+.li-tab-btn.is-active {
+  color: var(--accent, var(--secondary, #333));
+}
+
+.li-tab-btn.is-active::after {
+  transform: scaleX(1);
+}
+
+.li-tab-panel {
+  display: none;
+  padding: 36px 0 0 0;
+  animation: liTabFade 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.li-tab-panel.is-active {
+  display: block;
+}
+
+@keyframes liTabFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------------------------------------------------------------
+ * 5. COMPARE (Before / After)
+ * Container: [data-li="compare"] with .li-cmp-before and .li-cmp-after nested.
+ * Split handle is injected by JS. Drag or click-to-move.
+ * -------------------------------------------------------------------------- */
+
+[data-li="compare"] {
+  position: relative;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: ew-resize;
+  isolation: isolate;
+}
+
+[data-li="compare"] .li-cmp-before,
+[data-li="compare"] .li-cmp-after {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+[data-li="compare"] .li-cmp-after {
+  clip-path: inset(0 0 0 50%);
+  transition: clip-path 140ms ease-out;
+}
+
+[data-li="compare"].is-dragging .li-cmp-after {
+  transition: none;
+}
+
+[data-li="compare"] .li-cmp-label {
+  position: absolute;
+  top: 18px;
+  padding: 7px 14px;
+  font-family: var(--body, sans-serif);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(11, 9, 7, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 3;
+  pointer-events: none;
+}
+
+[data-li="compare"] .li-cmp-label.before { left: 18px; }
+[data-li="compare"] .li-cmp-label.after  { right: 18px; }
+
+[data-li="compare"] .li-cmp-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  left: 50%;
+  margin-left: -1px;
+  background: rgba(255,255,255,0.9);
+  z-index: 4;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.12), 0 0 12px rgba(0,0,0,0.25);
+}
+
+[data-li="compare"] .li-cmp-handle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+
+[data-li="compare"] .li-cmp-handle::before {
+  content: '‹ ›';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-family: var(--body, sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent, #222);
+}
+
+/* ----------------------------------------------------------------------------
+ * 6. ANCHOR SUBNAV
+ * Sticky subnavigation for dense home pages. Container: .li-anchor-nav.
+ * Not JS-driven (pure CSS sticky). Active state toggled by anchor-active.js
+ * helper inside live-interactions.js.
+ * -------------------------------------------------------------------------- */
+
+.li-anchor-nav {
+  position: sticky;
+  top: 32px;
+  z-index: 20;
+  display: flex;
+  gap: 32px;
+  padding: 12px 0;
+  border-top: 1px solid var(--rule, rgba(0,0,0,0.10));
+  border-bottom: 1px solid var(--rule, rgba(0,0,0,0.10));
+  font-family: var(--body, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background: var(--paper, #fff);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.li-anchor-nav::-webkit-scrollbar { display: none; }
+
+.li-anchor-nav a {
+  color: var(--ink-soft, rgba(0,0,0,0.55));
+  white-space: nowrap;
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+  transition: color 240ms ease, border-color 240ms ease;
+}
+
+.li-anchor-nav a:hover,
+.li-anchor-nav a.is-active {
+  color: var(--accent, var(--secondary, #333));
+  border-bottom-color: var(--accent, var(--secondary, #333));
+}
+
+
+/* ----------------------------------------------------------------------------
  * Accessibility — prefers-reduced-motion
  * -------------------------------------------------------------------------- */
 
@@ -266,8 +471,13 @@
   .li-acc-head .li-acc-icon::after,
   .li-lightbox,
   .li-lightbox img,
-  [data-li="sticky-cta"] {
+  [data-li="sticky-cta"],
+  .li-tab-btn,
+  .li-tab-btn::after,
+  .li-tab-panel,
+  [data-li="compare"] .li-cmp-after {
     transition: none !important;
+    animation: none !important;
   }
 
   .li-lightbox img {

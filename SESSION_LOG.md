@@ -1,5 +1,125 @@
 # Session Log
 
+## Session 30 — Premium Component Depth & Editor Schema Blueprint (2026-04-13)
+
+**Agent:** Premium UI + Architecture session. Dual-scope: (a) enrich the 3 `published_live` templates with differentiated premium sections, (b) author a concrete Editor Schema Blueprint for future customer personalization.
+**Branch:** `phase-premium-components-blueprint-v1`.
+**Scope floor:** only the 3 published_live (cardio / dermatologia-elite-roma / gusto). Non-goals: drafts, new categories/templates, auth/checkout/editor/projects/commerce implementation, refactor of stable infra.
+
+### 1 — Audit & Strategy
+
+Read all 11 context/memory files. Each template is already rich (motion D-058/D-061, interactions D-062, i18n D-059/D-063). The enrichment bar is therefore high — adding "any" section would be noise. The strategy chosen: **each template gets distinct premium sections that fit its archetype tone, not a shared pack**.
+
+- Cardio (clinical precision) → utility-clinical (journey/trust/location/anchor-nav)
+- Derm (boutique aesthetic) → discovery-visual (treatment tabs / before-after / editorial feed)
+- Gusto (hospitality editorial) → theatrical-cultural (producers / private dining / wine program)
+
+Video decision: rejected for all 3 — not cheap enough to justify. Cinemagraph rejected as lower-quality substitute. Static imagery + motion language remain the premium floor.
+
+Map decision: only cardio gets a map (clinical utility). Derm gets location in the footer already; gusto's address is in the prenota page. Differentiation preserved.
+
+### 2 — New Interaction Primitives
+
+Extended `static/css/live-interactions.css` (+ 190 lines) and `static/js/live-interactions.js` (+ 170 lines) with 3 new components, all zero-dependency and `prefers-reduced-motion` aware:
+
+- **Tabs** — `[data-li="tabs"]` with `.li-tabs-nav .li-tab-btn[data-li-target]` and `.li-tab-panel[data-li-id]`. Keyboard nav (Enter/Space/←/→), ARIA roles set by JS, fade panel animation (520ms).
+- **Compare slider (before/after)** — `[data-li="compare"]` with absolute `.li-cmp-before/.li-cmp-after` layers, JS-injected `.li-cmp-handle`, mouse/touch/keyboard control, clip-path driven reveal. Labels `.li-cmp-label.before/.after`. Graceful 50% default without JS.
+- **Anchor subnav** — `.li-anchor-nav` sticky top with IntersectionObserver-driven `.is-active` class on current section link. Smooth scroll on click with reduced-motion fallback.
+
+### 3 — Cardio (specialist) enrichments
+
+Content registry (`template_content.py` CARDIO_CONTENT_IT.home):
+- `anchor_nav` — 6 entries (metodo/visite/percorso/tecnologie/medico/studio)
+- `percorso` — 5 steps with icons (clipboard/book/heart/chart/document), title/desc/duration each
+- `insurance` — 4 trust items (19% deductibility / 48h turnaround / 4 hospital network / 10-year archive)
+- `location` — address, map image fallback, 4 detail pairs (address/metro/parking/accessibility), 3 hours rows, CTA
+
+HTML (`templates/live_templates/medical/specialist/home.html`):
+- `.sp-anchor-wrap > .li-anchor-nav` right after facts
+- Section IDs added: `#metodo` (manifesto), `#visite` (signature), `#tecnologie` (tech), `#medico` (chief), `#studio` (location)
+- `.sp-journey` (5 steps with SVG icons, dashed timeline, duration badge)
+- `.sp-trust` (4-column figure cards)
+- `.sp-location` (split map + info + hours grid)
+All wrapped in `{% if page_data.X %}` so derm never renders them (derm content has no `percorso`/`insurance`/`location`/`anchor_nav`).
+
+### 4 — Derm (specialist, different branch on same skin) enrichments
+
+Content registry (DERMATOLOGIA_CONTENT_IT.home):
+- `trattamenti_tabs` — 3 tabs (clinica/chirurgia/estetica) with eyebrow + heading + body + 4 items each + CTA
+- `before_after` — 1 documented pair (CO2 laser) with before/after Unsplash URLs + ethical disclaimer
+- `editorial_feed` — 4 tiles (Vogue / SIDeMaST / Corriere Salute / studio opening) with meta + title
+
+HTML (same specialist `home.html`, conditional blocks):
+- `.sp-tabs` uses `data-li="tabs"` with 3 buttons + 3 panels (grid: body+CTA on left, items list on right)
+- `.sp-compare` uses `data-li="compare"` with `tabindex="0"` for keyboard control, 3 chip labels (consenso scritto / follow-up / no ritocco)
+- `.sp-feed` 4-col grid with lightbox triggers (data-li="lightbox-trigger" data-li-group="feed")
+All conditional — cardio never renders these.
+
+### 5 — Gusto (fine-dining) enrichments
+
+Content registry (GUSTO_CONTENT_IT.home):
+- `produttori` — 4 artisan cards (Tarbouriech / Brezza / Lageder / Pieropan) with portrait + role + area + blurb
+- `private_dining` — 3 experiences (Chef's Table / evening buy-out / cellar tasting) with icon + title + meta + desc + CTA
+- `wine_program` — sommelier block (Greta Vallesi bio) + 3 pairings (classic/contemporary/zero-alcohol) + 3 cellar facts
+
+HTML (`templates/live_templates/restaurant/fine-dining/home.html`):
+- `.fd-prod` 4-col portrait grid with hover filter lift (reusing existing `.fd-*` motion tokens)
+- `.fd-private` 3-col experience cards with border-color hover + icon SVG (fork/door/wine) + right-aligned CTA
+- `.fd-wine` split layout: sommelier sidebar (left) + 3-column pair-row list (right) with facts footer
+All conditional on `page_data.X`.
+
+### 6 — i18n / RTL coverage
+
+All new sections authored in all 5 locales for all 3 templates:
+- `template_content_cardio_i18n.py`: +350 lines (EN/FR/ES/AR for anchor_nav + percorso + insurance + location)
+- `template_content_dermatologia_i18n.py`: +380 lines (EN/FR/ES/AR for trattamenti_tabs + before_after + editorial_feed)
+- `template_content_gusto_i18n.py`: +380 lines (EN/FR/ES/AR for produttori + private_dining + wine_program)
+
+Native editorial voice per locale — no machine translation. Proper names (Tarbouriech / Lageder / Greta Vallesi / Dr. Marani / Viale Parioli / etc.) stay Latin across all locales consistent with D-059/D-063. Arabic uses MSA register with native punctuation.
+
+RTL adjustments added to specialist `_base.html` and fine-dining `_base.html`:
+- `html[dir="rtl"] .li-anchor-nav a` letter-spacing flatten
+- `.li-tab-btn` margin + padding direction flip, underline origin switched
+- `.li-cmp-label.before/.after` left/right swap
+- `.sp-location .map` border-left → border-right
+- `.sp-tabs .panel-body .cta:after` `→` → `←`
+- `.fd-prod .card .portrait` border direction flip
+- `.fd-wine .sommelier` border + pair-row grid-template-columns flip
+- `.fd-private .exp` text-align right / CTA text-align left
+
+Compare slider drag remains LTR-mouse-driven by deliberate design (handle tracks cursor X regardless of locale); only labels flip.
+
+### 7 — Editor Schema Blueprint
+
+Authored `EDITOR_SCHEMA_BLUEPRINT.md` (~600 lines, repo root). Concrete specification:
+- Component registry: 8 edit targets (nav/hero/section/form/contact/blog/footer/locale) with field tables showing Type / Edit? / Constraints / RTL-aware.
+- Section kinds vocabulary: 20+ kinds (old + new Session 30 kinds like tabs / compare_slider / editorial_feed / map_location / producer_showcase / wine_program / trust_strip / timeline_steps).
+- Field types: 23 atomic types for editor UI (text / richtext / image / video / color_token / font_ref / link / page_ref / list<T> / content_map / channel / icon / ...).
+- Design tokens scope: palette (5 colors), fonts (curated 18 Google Fonts), radius / icon_pack / image_treatment / motion_profile, text/layout alignment, section density.
+- 6 hard invariants the editor must uphold (D-047 chrome-authoring / D-053 Live Preview Law / D-054 Premium Differentiation / D-057 tier / D-058 motion / D-059 i18n).
+- Persistence model: CustomerProject + ProjectContent + ProjectDesignTokens + ProjectRevision (tables specified, NOT migrated).
+- Scalability section: how this extends to new section kinds, new archetypes, new locales, future SPA editor, 250-template target.
+
+The blueprint commits to concrete decisions: every field has a type, every list has min/max, every token has a scope, every variant has a source of truth (DNA-locked vs customer-edit). This is the architectural anchor for when the editor worktree opens after Phase 2g3.7.
+
+### 8 — Validation
+
+- `python manage.py check`: 0 issues.
+- Smoke test 85/85 routes 200: 3 templates × 5 locales × mixed page kinds (4/7 + 4/7 + 6/7 per template).
+- Marketplace surfaces 4/4 200 (`/templates/`, 3 detail pages).
+- Cross-contamination sweep: 0 (Ricciardi in cardio / Marani in derm / Osteria in medical / Parioli in gusto / Vallesi in medical all False).
+- Differentiation: 16/16 (all per-template sections render only on the right template, confirmed by content-string presence check on rendered HTML).
+- i18n coverage: 12/12 (new sections render in EN/FR/ES/AR on all 3 templates — verified by locale-specific content string presence).
+- AR RTL: 3/3 (dir=rtl + native translations visible on cardio/derm/gusto home).
+
+### 9 — Decision
+
+D-064 formalized in DECISIONS.md.
+
+**PREMIUM COMPONENT BLUEPRINT APPROVATO.**
+
+---
+
 ## Session 29 — Gusto i18n/RTL (Phase 2i.2 step 2) (2026-04-13)
 
 **Agent:** Premium UI i18n session. Close the multilingual gap on the third published_live template.

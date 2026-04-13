@@ -204,6 +204,112 @@ GUSTO_CONTENT_EN: dict[str, Any] = {
             "cta_label": "Discover all eight acts →",
             "cta_href":  "menu",
         },
+
+        "produttori": {
+            "label":   "From the producers",
+            "heading": "Four hands, <em>a single table.</em>",
+            "intro":
+                "Every morning part of the dining room comes in through the "
+                "kitchen door. The faces are these. Their land, their method — "
+                "you'll find them on the menu, line by line.",
+            "items": [
+                {"portrait":
+                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Roberto Tarbouriech",
+                 "role": "Oysters & shellfish",
+                 "area": "Sète · Étang de Thau",
+                 "blurb":
+                    "The Spéciales oysters come from the Étang de Thau lagoon. "
+                    "Delivery on Monday, served Tuesday evening."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Brezza family",
+                 "role": "Barolo & the Langhe",
+                 "area": "Barolo · Piedmont",
+                 "blurb":
+                    "Vineyards in Cannubi and Sarmassa, worked without an "
+                    "external oenologist. A vertical on our list from 2008 on."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Aloïs Lageder",
+                 "role": "Mountain biodynamics",
+                 "area": "Pacherhof · South Tyrol",
+                 "blurb":
+                    "White wines delivered directly from the Isarco valley. "
+                    "No filtering, no fining."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Gianfranco Pieropan",
+                 "role": "Soave Classico",
+                 "area": "Soave · Veneto",
+                 "blurb":
+                    "Calvarino and La Rocca, Soave Classico in purity. They "
+                    "have always accompanied the second act."},
+            ],
+        },
+        "private_dining": {
+            "label":   "Private events",
+            "heading": "Chef's Table & <em>private buy-outs.</em>",
+            "intro":
+                "For twelve covers in the private room or for the whole "
+                "evening — twenty-eight covers, one menu, open kitchen.",
+            "experiences": [
+                {"icon": "fork", "title": "Chef's Table",
+                 "meta":  "12 covers · from €190 / guest",
+                 "desc":
+                    "A single table overlooking the kitchen. Eight-act menu "
+                    "narrated directly by the chef. Tuesdays only."},
+                {"icon": "door", "title": "Evening buy-out",
+                 "meta":  "28 covers · from €5,800 / night",
+                 "desc":
+                    "The entire restaurant, a dedicated menu, flowers, "
+                    "personal maître d'hôtel. Two-week notice; Fridays declined."},
+                {"icon": "wine", "title": "Cellar tasting",
+                 "meta":  "6 covers · Thursdays only",
+                 "desc":
+                    "An evening a month with the sommelier on six bottles "
+                    "chosen from the producers on the list. Waiting list only."},
+            ],
+            "cta_label": "Write to the concierge",
+            "cta_href":  "prenota",
+        },
+        "wine_program": {
+            "label":   "The cellar",
+            "heading": "Four hundred labels, <em>three pairings per night.</em>",
+            "intro":
+                "The list follows the menu: every act has its pairing and two "
+                "alternatives — classic, contemporary, non-alcoholic.",
+            "sommelier": {
+                "name": "Greta Vallesi",
+                "role": "Maître & sommelier",
+                "bio":
+                    "Fifteen years between Burgundy, the Langhe and Champagne. "
+                    "The list is curated by her, the pairing is always offered "
+                    "at the table, never imposed.",
+            },
+            "pairings": [
+                ("01", "Classic pairing",
+                 "Blanc de blancs Champagne, Soave Classico, Barolo riserva, Moscato.",
+                 "+ €110"),
+                ("02", "Contemporary pairing",
+                 "Col Fondo from the Veneto, long Erbaluce, amphora Ribolla, "
+                 "Timorasso vertical.",
+                 "+ €130"),
+                ("03", "Zero-alcohol pairing",
+                 "Artisan kombucha, slow-infused iced teas, naturally fermented "
+                 "grape juice.",
+                 "+ €60"),
+            ],
+            "cellar_facts": [
+                ("420", "labels on the list"),
+                ("18", "wine regions"),
+                ("2005", "oldest vertical (Brunello)"),
+            ],
+        },
     },
 
     "filosofia": {
@@ -723,6 +829,114 @@ GUSTO_CONTENT_FR: dict[str, Any] = {
                 "obligatoire.",
             "cta_label": "Découvrir les huit actes →",
             "cta_href":  "menu",
+        },
+
+        "produttori": {
+            "label":   "Depuis les producteurs",
+            "heading": "Quatre mains, <em>une seule table.</em>",
+            "intro":
+                "Chaque matin, une partie de la salle entre par la porte de la "
+                "cuisine. Voici les visages. Leurs terres, leurs méthodes — "
+                "à retrouver sur la carte, ligne par ligne.",
+            "items": [
+                {"portrait":
+                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Roberto Tarbouriech",
+                 "role": "Huîtres & coquillages",
+                 "area": "Sète · Étang de Thau",
+                 "blurb":
+                    "Les huîtres Spéciales viennent de l'Étang de Thau. "
+                    "Livraison lundi, servies mardi soir."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Famille Brezza",
+                 "role": "Barolo & Langhe",
+                 "area": "Barolo · Piémont",
+                 "blurb":
+                    "Vignes de Cannubi et Sarmassa, travaillées sans œnologue "
+                    "extérieur. Une carte verticale depuis 2008."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Aloïs Lageder",
+                 "role": "Biodynamie de montagne",
+                 "area": "Pacherhof · Tyrol du Sud",
+                 "blurb":
+                    "Vins blancs livrés directement depuis le val d'Isarco. "
+                    "Ni filtration, ni collage."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Gianfranco Pieropan",
+                 "role": "Soave Classico",
+                 "area": "Soave · Vénétie",
+                 "blurb":
+                    "Calvarino et La Rocca, Soave Classico en pureté. Ils "
+                    "accompagnent le second acte depuis toujours."},
+            ],
+        },
+        "private_dining": {
+            "label":   "Événements privés",
+            "heading": "Chef's Table & <em>privatisations.</em>",
+            "intro":
+                "Pour douze couverts en salle privée ou pour toute la soirée "
+                "— vingt-huit couverts, un menu unique, cuisine à vue.",
+            "experiences": [
+                {"icon": "fork", "title": "Chef's Table",
+                 "meta":  "12 couverts · dès 190 € / personne",
+                 "desc":
+                    "Une seule table face à la cuisine. Menu en huit actes, "
+                    "narré directement par le chef. Mardis uniquement."},
+                {"icon": "door", "title": "Privatisation du soir",
+                 "meta":  "28 couverts · dès 5 800 € / soirée",
+                 "desc":
+                    "Le restaurant entier, un menu dédié, les fleurs, un "
+                    "maître d'hôtel personnel. Deux semaines de préavis; "
+                    "vendredis déclinés."},
+                {"icon": "wine", "title": "Dégustation de cave",
+                 "meta":  "6 couverts · jeudis uniquement",
+                 "desc":
+                    "Une soirée par mois avec le sommelier sur six bouteilles "
+                    "choisies parmi les producteurs de la carte. Liste "
+                    "d'attente uniquement."},
+            ],
+            "cta_label": "Écrire au concierge",
+            "cta_href":  "prenota",
+        },
+        "wine_program": {
+            "label":   "La cave",
+            "heading": "Quatre cents étiquettes, <em>trois accords par soir.</em>",
+            "intro":
+                "La carte suit le menu : chaque acte a son accord et deux "
+                "alternatives — classique, contemporain, sans alcool.",
+            "sommelier": {
+                "name": "Greta Vallesi",
+                "role": "Maître & sommelière",
+                "bio":
+                    "Quinze ans entre Bourgogne, Langhe et Champagne. La carte "
+                    "est signée par elle, l'accord est toujours proposé à "
+                    "table, jamais imposé.",
+            },
+            "pairings": [
+                ("01", "Accord classique",
+                 "Champagne blanc de blancs, Soave Classico, Barolo riserva, Moscato.",
+                 "+ 110 €"),
+                ("02", "Accord contemporain",
+                 "Col Fondo vénitien, Erbaluce long, Ribolla en amphore, "
+                 "Timorasso en verticale.",
+                 "+ 130 €"),
+                ("03", "Accord sans alcool",
+                 "Kombucha artisanal, thés glacés en infusion lente, jus de "
+                 "raisin en fermentation naturelle.",
+                 "+ 60 €"),
+            ],
+            "cellar_facts": [
+                ("420", "étiquettes à la carte"),
+                ("18", "régions viticoles"),
+                ("2005", "verticale la plus ancienne (Brunello)"),
+            ],
         },
     },
 
@@ -1263,6 +1477,114 @@ GUSTO_CONTENT_ES: dict[str, Any] = {
             "cta_label": "Descubre los ocho actos →",
             "cta_href":  "menu",
         },
+
+        "produttori": {
+            "label":   "De los productores",
+            "heading": "Cuatro manos, <em>una sola mesa.</em>",
+            "intro":
+                "Cada mañana una parte del comedor entra por la puerta de la "
+                "cocina. Estos son los rostros. Sus tierras, sus métodos — "
+                "los encontrará en carta, línea a línea.",
+            "items": [
+                {"portrait":
+                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Roberto Tarbouriech",
+                 "role": "Ostras y mariscos",
+                 "area": "Sète · Étang de Thau",
+                 "blurb":
+                    "Las ostras Spéciales llegan de la laguna del Étang de "
+                    "Thau. Entrega el lunes, servidas el martes por la noche."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Familia Brezza",
+                 "role": "Barolo y Langhe",
+                 "area": "Barolo · Piamonte",
+                 "blurb":
+                    "Viñedos en Cannubi y Sarmassa, trabajados sin enólogo "
+                    "externo. Una carta vertical desde 2008."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Aloïs Lageder",
+                 "role": "Biodinámica de montaña",
+                 "area": "Pacherhof · Alto Adigio",
+                 "blurb":
+                    "Vinos blancos que llegan directamente del valle de "
+                    "Isarco. Sin filtración, sin clarificación."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Gianfranco Pieropan",
+                 "role": "Soave Classico",
+                 "area": "Soave · Véneto",
+                 "blurb":
+                    "Calvarino y La Rocca, Soave Classico en pureza. Han "
+                    "acompañado el segundo acto desde siempre."},
+            ],
+        },
+        "private_dining": {
+            "label":   "Eventos privados",
+            "heading": "Chef's Table y <em>privatizaciones.</em>",
+            "intro":
+                "Para doce comensales en sala privada o para la velada entera "
+                "— veintiocho comensales, un solo menú, cocina a la vista.",
+            "experiences": [
+                {"icon": "fork", "title": "Chef's Table",
+                 "meta":  "12 comensales · desde 190 € / persona",
+                 "desc":
+                    "Mesa única frente a la cocina. Menú de ocho actos narrado "
+                    "directamente por el chef. Solo los martes."},
+                {"icon": "door", "title": "Privatización nocturna",
+                 "meta":  "28 comensales · desde 5.800 € / velada",
+                 "desc":
+                    "Todo el restaurante, menú dedicado, flores, maître "
+                    "personal. Dos semanas de antelación, declinamos los "
+                    "viernes."},
+                {"icon": "wine", "title": "Cata de bodega",
+                 "meta":  "6 comensales · solo los jueves",
+                 "desc":
+                    "Una velada al mes con la sumiller sobre seis botellas "
+                    "escogidas entre los productores de la carta. Solo en "
+                    "lista de espera."},
+            ],
+            "cta_label": "Escriba al concierge",
+            "cta_href":  "prenota",
+        },
+        "wine_program": {
+            "label":   "La bodega",
+            "heading": "Cuatrocientas etiquetas, <em>tres maridajes por noche.</em>",
+            "intro":
+                "La carta sigue al menú: cada acto tiene su maridaje y dos "
+                "alternativas — clásica, contemporánea, sin alcohol.",
+            "sommelier": {
+                "name": "Greta Vallesi",
+                "role": "Maître & sumiller",
+                "bio":
+                    "Quince años entre Borgoña, Langhe y Champaña. La carta "
+                    "está firmada por ella, el maridaje se propone siempre "
+                    "en mesa, nunca se impone.",
+            },
+            "pairings": [
+                ("01", "Maridaje clásico",
+                 "Champagne blanc de blancs, Soave Classico, Barolo riserva, Moscato.",
+                 "+ 110 €"),
+                ("02", "Maridaje contemporáneo",
+                 "Col Fondo veneciano, Erbaluce largo, Ribolla en ánfora, "
+                 "Timorasso en vertical.",
+                 "+ 130 €"),
+                ("03", "Maridaje sin alcohol",
+                 "Kombucha artesanal, tés fríos en infusión lenta, zumo de "
+                 "uva fermentado naturalmente.",
+                 "+ 60 €"),
+            ],
+            "cellar_facts": [
+                ("420", "etiquetas en carta"),
+                ("18", "regiones vinícolas"),
+                ("2005", "vertical más antigua (Brunello)"),
+            ],
+        },
     },
 
     "filosofia": {
@@ -1796,6 +2118,110 @@ GUSTO_CONTENT_AR: dict[str, Any] = {
                 "الأرشيف منذ 2022. الحجز إلزامي.",
             "cta_label": "اكتشف الفصول الثمانية ←",
             "cta_href":  "menu",
+        },
+
+        "produttori": {
+            "label":   "من المنتجين",
+            "heading": "أربعة أيدٍ، <em>مائدة واحدة.</em>",
+            "intro":
+                "في كلّ صباح يدخل جزء من القاعة من باب المطبخ. هذه هي الوجوه. "
+                "أراضيهم وأساليبهم — ستجدونها على القائمة، سطرًا سطرًا.",
+            "items": [
+                {"portrait":
+                    "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Roberto Tarbouriech",
+                 "role": "المحار والقشريات",
+                 "area": "Sète · Étang de Thau",
+                 "blurb":
+                    "محار Spéciales يأتي من بحيرة Étang de Thau. يُوصَل الإثنين "
+                    "ويُقدَّم مساء الثلاثاء."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "عائلة Brezza",
+                 "role": "Barolo وLanghe",
+                 "area": "Barolo · بييمونتي",
+                 "blurb":
+                    "كرومات في Cannubi وSarmassa تُستثمر بلا خبير خارجيّ. "
+                    "قائمة عموديّة منذ 2008."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Aloïs Lageder",
+                 "role": "زراعة ديناميّة حيوية جبلية",
+                 "area": "Pacherhof · تيرول الجنوبية",
+                 "blurb":
+                    "نبيذ أبيض يصل مباشرة من وادي Isarco. بلا ترشيح ولا "
+                    "توضيح."},
+                {"portrait":
+                    "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                    "?auto=format&fit=crop&w=800&q=80",
+                 "name": "Gianfranco Pieropan",
+                 "role": "Soave Classico",
+                 "area": "Soave · فينيتو",
+                 "blurb":
+                    "Calvarino وLa Rocca، Soave Classico صرف. يرافقان الفصل "
+                    "الثاني منذ البداية."},
+            ],
+        },
+        "private_dining": {
+            "label":   "مناسبات خاصة",
+            "heading": "طاولة الشيف و<em>الحجوزات الخاصة.</em>",
+            "intro":
+                "لاثني عشر ضيفاً في القاعة الخاصّة أو للسهرة بأكملها — ثمانية "
+                "وعشرون ضيفاً، قائمة واحدة، ومطبخ مكشوف.",
+            "experiences": [
+                {"icon": "fork", "title": "طاولة الشيف",
+                 "meta":  "١٢ ضيفاً · من ١٩٠ € للشخص",
+                 "desc":
+                    "طاولة وحيدة تُطلّ على المطبخ. قائمة من ثمانية فصول "
+                    "يرويها الشيف مباشرة. أيام الثلاثاء فقط."},
+                {"icon": "door", "title": "حجز السهرة كاملاً",
+                 "meta":  "٢٨ ضيفاً · من ٥٨٠٠ € للسهرة",
+                 "desc":
+                    "المطعم كاملاً، قائمة مخصّصة، الزهور، متر مختصّ. مهلة "
+                    "أسبوعين كحدّ أدنى، ونعتذر عن الجمعة."},
+                {"icon": "wine", "title": "ذَواق القبو",
+                 "meta":  "٦ ضيوف · الخميس فقط",
+                 "desc":
+                    "سهرة شهرياً مع السوميلييه حول ستّ قوارير مختارة من "
+                    "المنتجين على القائمة. على لائحة الانتظار فقط."},
+            ],
+            "cta_label": "اكتب إلى الكونسيرج",
+            "cta_href":  "prenota",
+        },
+        "wine_program": {
+            "label":   "القبو",
+            "heading": "أربعمئة ماركة، <em>ثلاث توافقات في السهرة.</em>",
+            "intro":
+                "القائمة تتبع القائمة: كلّ فصل له توافقه وبديلان — كلاسيكيّ، "
+                "معاصر، خالٍ من الكحول.",
+            "sommelier": {
+                "name": "Greta Vallesi",
+                "role": "متر و سوميلييه",
+                "bio":
+                    "خمسة عشر عاماً بين Bourgogne وLanghe وChampagne. القائمة "
+                    "مِن توقيعها، والتوافق يُقترَح دائماً على الطاولة ولا يُفرَض.",
+            },
+            "pairings": [
+                ("01", "توافق كلاسيكيّ",
+                 "شامبانيا Blanc de Blancs، Soave Classico، Barolo Riserva، Moscato.",
+                 "+ ١١٠ €"),
+                ("02", "توافق معاصر",
+                 "Col Fondo من فينيتو، Erbaluce طويل، Ribolla في أمفورة، "
+                 "Timorasso عمودي.",
+                 "+ ١٣٠ €"),
+                ("03", "توافق بلا كحول",
+                 "كومبوتشا حرفيّة، شاي بارد بتحضير بطيء، عصير عنب في تخمّر "
+                 "طبيعيّ.",
+                 "+ ٦٠ €"),
+            ],
+            "cellar_facts": [
+                ("٤٢٠", "ماركة على القائمة"),
+                ("١٨", "منطقة نبيذيّة"),
+                ("٢٠٠٥", "الأقدم عمودياً (Brunello)"),
+            ],
         },
     },
 

@@ -1,5 +1,70 @@
 # Decisions Log
 
+## D-064: Premium Component Depth & Editor Schema Blueprint — Differentiated enrichment of the 3 published_live + concrete future-editor contract (2026-04-13, Session 30)
+
+**Decision:** The 3 `tier=published_live` templates (cardio, dermatologia-elite-roma, gusto-fine-dining) receive a targeted premium-component enrichment pass where **each template gets a distinct set of new sections** chosen to fit its archetype tone, not a shared shopping list. A concrete Editor Schema Blueprint (`EDITOR_SCHEMA_BLUEPRINT.md`, ~600 lines, in repo root) is authored in the same session to define — without implementation — what the future customer editor will let buyers personalize, which fields are edit-gated by DNA, and which invariants (D-047, D-053, D-054, D-057, D-058, D-059) the editor must uphold.
+
+**Per-template new sections (all with distinct interaction patterns to preserve D-054 differentiation):**
+
+| Template | New sections | New interactions |
+|----------|-------------|-----------------|
+| Cardio (specialist clinical) | anchor subnav + "Percorso paziente" 5-step timeline with icons + "Garanzie & trasparenza" trust strip + "Sede" location block with static map / address / transport / accessibility / hours | anchor-nav (IntersectionObserver active state + smooth scroll) |
+| Derm (specialist boutique) | Treatment tabs with 3 domains (clinical/surgical/aesthetic) × items+price+cta + Before/After compare slider with ethical disclaimer + Editorial press feed 4-tile with lightbox | Tabs (keyboard-accessible), Compare slider (mouse/touch/keyboard) |
+| Gusto (fine-dining editorial) | Producer showcase (4 artisans with portraits/area/blurb) + Private dining card (Chef's Table / evening buy-out / cellar tasting) + Wine program (sommelier + 3 pairings + cellar facts) | — (reuses existing lightbox on atmospheres; new sections are static-rich) |
+
+**New interaction library additions** (extends `static/css/live-interactions.css` + `live-interactions.js`):
+- `[data-li="tabs"]` — horizontal tab bar with `.li-tabs-nav .li-tab-btn[data-li-target]` and matching `.li-tab-panel[data-li-id]`. Fade-in panel transition (520ms), keyboard navigation (Enter/Space/←/→), ARIA roles set by JS, `prefers-reduced-motion` respected.
+- `[data-li="compare"]` — before/after slider with `.li-cmp-before/.li-cmp-after` absolute layers, JS-injected handle, mouse+touch+keyboard control, clip-path inset transitions. Graceful no-JS state (handle at 50%).
+- `.li-anchor-nav` — sticky subnav with IntersectionObserver-driven `.is-active` state tagging and smooth scroll on anchor click (reduced-motion respecting).
+
+**i18n coverage:** all new sections authored in all 5 locales (it/en/fr/es/ar) across the 3 templates. Native editorial voice per locale — not machine translation. Proper names (chef names, producers, medical devices) stay Latin across all locales consistent with D-059/D-063. Roughly 1,100 new content lines across the 3 i18n tree files.
+
+**RTL adjustments:** new `html[dir="rtl"] ...` blocks added inside specialist `_base.html` and fine-dining `_base.html` to flip accent borders, tab buttons (margin + text direction + underline origin), compare slider labels (before/after swap), pair-row grid (num→right, price→left), producer portrait border (left→right). The compare slider's clip-path remains LTR-mouse-driven by deliberate design (the handle tracks cursor X position regardless of locale direction) — only labels flip.
+
+**Editor Schema Blueprint** (`EDITOR_SCHEMA_BLUEPRINT.md`) — concrete, not theoretical:
+- Component registry with 8 edit targets (nav/hero/section/form/contact/blog/footer/locale) + per-field type + edit? flag + constraints + RTL-aware flag.
+- Section kinds vocabulary expanded to 20+ kinds (facts, manifesto, signature_services, team_list, pricelist, timeline_steps, trust_strip, map_location, gallery_strip, tabs, compare_slider, editorial_feed, process_cards, wine_program, producer_showcase, press_strip, testimonial_quote, faq_accordion, awards_grid, seasonal_highlight).
+- 23 atomic field types for editor UI (text, richtext, image, video, color_token, font_ref, link, page_ref, post_ref, list<T>, content_map, channel, icon, ...).
+- Design tokens scope (palette 5 colors, font heading+body from curated list of 18 Google Fonts, radius/icon_pack/image_treatment/motion_profile as select, text/layout alignment, section_density).
+- 6 hard invariants the editor must uphold (D-047 → D-059).
+- Persistence model proposal (CustomerProject + ProjectContent + ProjectDesignTokens + ProjectRevision) — not implemented, just specified.
+
+**Rationale:** The task had a dual objective that normally tempts a cheap shared component-pack pass: "enrich the 3 live templates" AND "prepare the future editor". The cheap move would have been: one shared section pack applied to all 3, and one abstract editor doc full of hand-waves. Both are rejected. (a) **Shared section pack violates D-054**: making cardio and derm render the same "new sections" would collapse sibling differentiation — the whole point of the medical specialist split in D-060 was to prevent that. So each template gets a distinct section set motivated by its DNA tone: cardio gets clinical precision (journey/trust/map), derm gets boutique aesthetics (tabs/before-after/press feed), gusto gets hospitality editorial (producers/private/wine). (b) **Abstract editor doc is worthless**: a blueprint that says "we'll make everything editable" teaches nobody anything about how to build it. The authored blueprint commits to concrete field types, concrete constraints (min/max list lengths, contrast thresholds, required baseline pages), concrete variant locks (DNA choices are not user-edit), concrete font curation (18 Google Fonts, not "whatever"), concrete persistence model with DB tables. When the editor worktree opens, this document becomes the implementation TODO.
+
+**Option space considered and rejected:**
+- **Option A — Minimum enrichment, no blueprint**: quick sections + TODO_NEXT entry for the editor. Rejected because the user's brief explicitly asked for both enrichment AND blueprint in the same session, and postponing the blueprint leaves the next session without the architectural anchor.
+- **Option B — Shared section pack across all 3 templates**: rejected per (a) above — kills D-054 differentiation.
+- **Option C — Full-editor implementation**: out of scope. The brief explicitly says "NON implementiamo l'editor adesso". Respect scope.
+- **Option D — Chosen: differentiated enrichment + concrete blueprint**: yields 3 distinct enrichments and a 600-line spec, matching the brief exactly.
+
+**Trade-off:**
+- **Content volume**: +150 lines of IT content per template + 4 × ~90 lines of i18n content per template × 3 templates = ~1,100 new content lines total. Acceptable: content trees are cheap to review, the review surface is flat per-locale, and the new sections are load-bearing for the premium positioning (not filler).
+- **CSS/JS growth**: new primitives add ~360 lines of CSS + ~170 lines of JS to live-interactions. Acceptable: zero new dependencies, bundled once and reused by every skin that opts in. The medical specialist skin gains ~320 lines of CSS (cardio-only + derm-only sections each conditional on page_data), the fine-dining skin gains ~200 lines. Both still well under the 1000-line-per-skin authoring complexity budget.
+- **Editor not yet implemented**: the blueprint is binding for the future editor but the 3 templates remain non-editable today. This is intentional per the brief scope and D-049 (roadmap freeze until Phase 2g3.7).
+- **i18n parity**: all 5 locales authored in the same session — higher cost upfront but avoids the "IT-only new section" drift that would break the premium uniformity across locales.
+
+**Consequence:**
+- (a) The 3 `published_live` templates now genuinely differ in dense-home richness, not just in archetype chrome. A buyer comparing cardio vs derm on the marketplace card sees two distinct clinical propositions even though they share the specialist skin; a buyer opening gusto sees a hospitality product that no medical template even attempts to fake.
+- (b) The new interaction primitives (tabs, compare, anchor-nav) are now part of the `live-interactions.js` public surface. Any draft template reaching `published_live` in Phase 2g3 can opt in (e.g., ecommerce `fashion-editorial` could use tabs for collection browsing, portfolio could use compare for project before/after, lawyer could use anchor-nav on practice-areas pages).
+- (c) The Editor Schema Blueprint becomes the architectural anchor for the future editor app. When Phase 2g3.7 closes and auth/editor/projects/commerce unlock per D-049, the blueprint is the source of truth for: component registry shape, field types, constraints, invariants, persistence model. Implementation becomes a matter of reading the blueprint and writing code, not debating design.
+- (d) The D-054 Premium Differentiation Law is strengthened by concrete evidence: 3 templates that share 2 archetypes (specialist medical + fine-dining restaurant) can still carry genuinely distinct premium sections via content-driven conditional rendering. The pattern — `{% if page_data.X %}` in the shared skin + per-template content block — is confirmed as the scaling primitive for adding premium sections to archetype families without forking the skin.
+- (e) Any future `published_live` template should declare in its DNA which premium sections it carries (an optional `premium_sections: ["journey", "trust", ...]` list) and the content registry provides their data. This formalization is out of scope for Session 30 but is the natural next step when Phase 2g3 starts authoring new skin folders.
+
+**Non-negotiable quality floor:**
+- Every new section MUST fit the template's DNA tone (clinical / boutique / hospitality). A section that would work identically on all 3 templates is a red flag.
+- Every new content block MUST be authored in all 5 locales in native voice. Empty locales on a `published_live` template break the pilot architecture and get rejected at tier-sync time.
+- Every new interaction primitive MUST respect `prefers-reduced-motion` and degrade gracefully without JS.
+- Every new section MUST pass the D-047 leak sweep (no literal brand names / cities / quotes in HTML files — all strings from the content registry).
+
+**Validation results (Session 30):**
+- `python manage.py check`: 0 issues.
+- Route sweep: 85/85 across 3 templates × 5 locales × mixed page kinds = 200.
+- Marketplace surfaces: 4/4 200.
+- Cross-template contamination sweep: zero (Ricciardi/Marani/Osteria/Parioli/Vallesi all confined).
+- Differentiation validation: 16/16 (cardio sections never appear on derm, derm sections never appear on cardio, gusto sections never appear on medical, medical sections never appear on gusto).
+- i18n coverage: 12/12 (all 3 new section-sets × 4 non-IT locales).
+- AR RTL: 3/3 (`dir=rtl`, new section translations visible).
+
 ## D-063: Gusto i18n/RTL Closure — Third Published_live Template Fully Multilingual, Reusable Restaurant Chrome Keys (2026-04-13, Session 29)
 
 **Decision:** The third `tier=published_live` template, `gusto-fine-dining`, now ships in five locales (`it`, `en`, `fr`, `es`, `ar`) with real RTL for Arabic, completing Phase 2i.2. All 3 public templates (cardio / derm / gusto) are fully multilingual. The architecture established by D-059 (Session 23 cardio pilot) was extended to the fine-dining archetype with zero changes to the pilot infrastructure — proving the shape works across a second skin family with a different tone (restaurant hospitality, not medical clinical).

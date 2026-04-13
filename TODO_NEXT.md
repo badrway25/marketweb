@@ -44,6 +44,14 @@ The marketplace surface (homepage, listing, detail, category, search) remains It
 
 ---
 
+### 2g2x.13 — Premium Component Depth & Editor Schema Blueprint — ✅ CLOSED (Session 30, 2026-04-13)
+Per D-064, the 3 `tier=published_live` templates receive differentiated premium sections (cardio: journey/trust/location · derm: tabs/compare/feed · gusto: producers/private/wine) and a concrete Editor Schema Blueprint (`EDITOR_SCHEMA_BLUEPRINT.md`) is authored for the future customer editor. New interaction primitives (tabs, compare slider, anchor-nav) extend `live-interactions.css/js`. All 5 locales on all 3 templates for the new sections, native voice. 85/85 routes green, zero cross-contamination, 16/16 differentiation checks. D-064. See SESSION_LOG Session 30.
+
+**Phase 3 prerequisite restated:** the Editor Schema Blueprint is binding for when the editor worktree opens. Do NOT start editor implementation until Phase 2g3.7 closes (D-049 roadmap freeze still in effect).
+
+### 2g2x.12 — Ultra Premium Live Pass — ✅ CLOSED (Session 28, 2026-04-12)
+Per D-062, the 3 `tier=published_live` templates receive a comprehensive ultra-premium enrichment pass with new interactive components (accordion/lightbox/sticky CTA), premium content sections, and visual richness differentiated per template. `static/css/live-interactions.css` + `static/js/live-interactions.js` introduced. See SESSION_LOG Session 28.
+
 ### 2g2x.11 — Medical Motion Opt-In — ✅ CLOSED (Session 27, 2026-04-12)
 Specialist archetype (`cardio-studio-specialistico` + `dermatologia-elite-roma`) adopts the live motion language with a clinical profile. 4 patterns: reveal-on-scroll (10px rise), stagger (80–100ms), CTA hover refinement, image attention lift (filter, not zoom). 9 files modified, zero Gusto changes. 34/34 routes green. D-061. See SESSION_LOG Session 27.
 

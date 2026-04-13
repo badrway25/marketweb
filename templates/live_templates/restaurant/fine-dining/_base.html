@@ -308,6 +308,22 @@
   html[dir="rtl"] .fd-gallery .img .cap { text-align: right; }
   /* Chef/concierge left border → right border already handled above. */
   /* Courses dotted leaders still work in RTL — grid flips automatically. */
+
+  /* Session 30 — new premium sections (producers, private dining, wine) */
+  html[dir="rtl"] .fd-prod .card .portrait { border-left: 0; border-right: 4px solid var(--secondary); }
+  html[dir="rtl"] .fd-prod .card .role,
+  html[dir="rtl"] .fd-prod .card .area,
+  html[dir="rtl"] .fd-private .exp .exp-meta,
+  html[dir="rtl"] .fd-wine .sommelier .s-role,
+  html[dir="rtl"] .fd-wine .sommelier .facts div { letter-spacing: 0.04em; }
+  html[dir="rtl"] .fd-private .exp { text-align: right; }
+  html[dir="rtl"] .fd-private .private-cta { text-align: left; }
+  html[dir="rtl"] .fd-private .private-cta a:after,
+  html[dir="rtl"] .fd-prod .card .blurb { direction: rtl; }
+  html[dir="rtl"] .fd-wine .sommelier { border-left: 0; border-right: 4px solid var(--secondary); }
+  html[dir="rtl"] .fd-wine .pair-row { grid-template-columns: 90px 1fr 60px; }
+  html[dir="rtl"] .fd-wine .pair-row .p-num { text-align: left; }
+  html[dir="rtl"] .fd-wine .pair-row .p-price { text-align: left; }
   {% endif %}
 </style>
 </head>

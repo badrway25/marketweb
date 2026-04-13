@@ -260,6 +260,124 @@ CARDIO_CONTENT_IT: dict[str, Any] = {
             "Ogni visita è <em>concordata personalmente</em> con il medico.",
         "cta_primary_label":   "Richiedi visita privata",
         "cta_secondary_label": "Contatti dello studio",
+
+        # Anchor subnav (dense home scaffold)
+        "anchor_nav": [
+            ("metodo",        "Metodo"),
+            ("visite",        "Visite"),
+            ("percorso",      "Percorso paziente"),
+            ("tecnologie",    "Tecnologie"),
+            ("medico",        "Direzione clinica"),
+            ("studio",        "Sede & contatti"),
+        ],
+
+        # Patient journey / timeline (clinical reassurance)
+        "percorso": {
+            "label":   "Percorso paziente",
+            "heading": "Cosa aspettarsi dalla <em>prima visita.</em>",
+            "intro":
+                "Una visita cardiologica allo Studio Marani segue sempre lo "
+                "stesso protocollo: cinque tappe in quarantacinque minuti, "
+                "senza fretta e senza scorciatoie.",
+            "steps": [
+                {
+                    "num": "01",
+                    "icon": "clipboard",
+                    "title": "Arrivo & accoglienza",
+                    "desc": "La segreteria raccoglie i documenti, la cartella "
+                            "precedente e consegna la scheda anamnestica. "
+                            "Tempo medio in sala d'attesa: 4 minuti.",
+                    "duration": "5 min",
+                },
+                {
+                    "num": "02",
+                    "icon": "book",
+                    "title": "Anamnesi approfondita",
+                    "desc": "Lettura della cartella, storia familiare, "
+                            "terapie in corso e stile di vita. Annotazione "
+                            "personale del medico, non un questionario.",
+                    "duration": "15 min",
+                },
+                {
+                    "num": "03",
+                    "icon": "heart",
+                    "title": "Esame obiettivo + ECG",
+                    "desc": "Auscultazione, misurazione pressoria su entrambi "
+                            "gli arti, elettrocardiogramma a 12 derivazioni "
+                            "con refertazione immediata.",
+                    "duration": "15 min",
+                },
+                {
+                    "num": "04",
+                    "icon": "chart",
+                    "title": "Diagnostica mirata",
+                    "desc": "Se indicato, ecocardiografia in studio o "
+                            "programmazione di Holter / test ergometrico. "
+                            "Mai esami di routine inutili.",
+                    "duration": "Variabile",
+                },
+                {
+                    "num": "05",
+                    "icon": "document",
+                    "title": "Piano clinico scritto",
+                    "desc": "Refertazione firmata in carta riciclata, timeline "
+                            "dei controlli, canale diretto del medico per "
+                            "domande successive.",
+                    "duration": "10 min",
+                },
+            ],
+        },
+
+        # Insurance / trust strip — detraibilità, convenzioni, refertazione
+        "insurance": {
+            "label": "Garanzie & trasparenza",
+            "items": [
+                ("19%", "Detraibilità come spesa sanitaria",
+                 "Fattura emessa in giornata con tracciabilità completa."),
+                ("48h", "Tempi di refertazione",
+                 "Holter ed ecocardiogramma consegnati entro 48 ore lavorative."),
+                ("4", "Ospedali di riferimento",
+                 "Rete di consulto con Policlinico Umberto I, Gemelli, "
+                 "San Raffaele, Santo Spirito."),
+                ("10 anni", "Archivio clinico tracciato",
+                 "Cartella accessibile al paziente per dieci anni, copia "
+                 "richiedibile in qualsiasi momento."),
+            ],
+        },
+
+        # Location / sede — address, transport, accessibility
+        "location": {
+            "label":   "Sede dello studio",
+            "heading": "Viale Parioli 142, <em>Roma.</em>",
+            "intro":
+                "Lo studio occupa il piano nobile di un edificio storico "
+                "dei Parioli. Ingresso indipendente, sala d'attesa riservata "
+                "e ambulatorio con diagnostica in loco.",
+            "map_image":
+                "https://api.mapbox.com/styles/v1/mapbox/light-v11/static/"
+                "pin-l+9c2a2a(12.490,41.920)/12.490,41.920,14,0/"
+                "800x560@2x?access_token=pk.eyJ1IjoibWFya2V0d2ViIiwiYSI6IlExIn0.x",
+            "map_fallback_image":
+                "https://images.unsplash.com/photo-1529154691717-3306083d869e"
+                "?auto=format&fit=crop&w=1200&q=80",
+            "details": [
+                ("Indirizzo",
+                 "Viale Parioli 142\n00197 Roma"),
+                ("Metropolitana",
+                 "Linea A fermata Flaminio\n8 minuti a piedi"),
+                ("Parcheggio",
+                 "Parcheggio riservato convenzionato\nin Via Panama, 50 metri"),
+                ("Accessibilità",
+                 "Ingresso accessibile a sedie a rotelle\nAscensore diretto al piano"),
+            ],
+            "hours_short": [
+                ("Lun – Ven", "9:00 – 19:00"),
+                ("Sabato",    "Solo reperibilità"),
+                ("Domenica",  "Chiuso"),
+            ],
+            "cta_label": "Ottieni indicazioni stradali",
+            "cta_href":  "contatti",
+        },
     },
 
     # ─── LO STUDIO (about) ─────────────────────────────────────
@@ -845,6 +963,137 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "cta_label": "Scopri gli otto atti →",
             "cta_href":  "menu",
         },
+
+        # Producer showcase — 4 artisans portraits (editorial, not cheap)
+        "produttori": {
+            "label":   "Dai produttori",
+            "heading": "Quattro mani, <em>una tavola sola.</em>",
+            "intro":
+                "Ogni mattina una parte della sala entra dalla porta della cucina. "
+                "I volti sono questi. Le loro terre, i loro metodi — li trovate "
+                "in carta, riga per riga.",
+            "items": [
+                {
+                    "portrait":
+                        "https://images.unsplash.com/photo-1605100804763-247f67b3557e"
+                        "?auto=format&fit=crop&w=800&q=80",
+                    "name": "Roberto Tarbouriech",
+                    "role": "Ostriche & crostacei",
+                    "area": "Sète · Étang de Thau",
+                    "blurb":
+                        "Le ostriche Spéciales vengono dalla laguna dell'Étang de "
+                        "Thau. Consegna lunedì, servite martedì sera.",
+                },
+                {
+                    "portrait":
+                        "https://images.unsplash.com/photo-1560250097-0b93528c311a"
+                        "?auto=format&fit=crop&w=800&q=80",
+                    "name": "Famiglia Brezza",
+                    "role": "Barolo & Langhe",
+                    "area": "Barolo · Piemonte",
+                    "blurb":
+                        "Vigne di Cannubi e Sarmassa, lavorate senza enologo esterno. "
+                        "Una carta verticale dal 2008 in poi.",
+                },
+                {
+                    "portrait":
+                        "https://images.unsplash.com/photo-1552058544-f2b08422138a"
+                        "?auto=format&fit=crop&w=800&q=80",
+                    "name": "Aloïs Lageder",
+                    "role": "Biodinamica di montagna",
+                    "area": "Pacherhof · Alto Adige",
+                    "blurb":
+                        "Vini bianchi che arrivano a noi in via diretta dalla "
+                        "val d'Isarco. Niente filtro, niente chiarifica.",
+                },
+                {
+                    "portrait":
+                        "https://images.unsplash.com/photo-1556761175-5973dc0f32e7"
+                        "?auto=format&fit=crop&w=800&q=80",
+                    "name": "Gianfranco Pieropan",
+                    "role": "Soave classico",
+                    "area": "Soave · Veneto",
+                    "blurb":
+                        "Calvarino e La Rocca, Soave Classico in purezza. "
+                        "Accompagnano il secondo atto da sempre.",
+                },
+            ],
+        },
+
+        # Private dining / Chef's Table — exclusive experience block
+        "private_dining": {
+            "label":   "Eventi privati",
+            "heading": "Chef's Table & <em>privatizzazioni.</em>",
+            "intro":
+                "Per dodici coperti in sala privata o per la sera intera "
+                "— ventotto coperti, un solo menù, cucina a vista.",
+            "experiences": [
+                {
+                    "icon": "fork",
+                    "title": "Chef's Table",
+                    "meta":  "12 coperti · da €190 / persona",
+                    "desc":
+                        "Tavolo unico affacciato sulla cucina. Menù di "
+                        "otto atti in versione narrata direttamente "
+                        "dallo chef. Disponibile il martedì.",
+                },
+                {
+                    "icon": "door",
+                    "title": "Privatizzazione serale",
+                    "meta":  "28 coperti · da €5.800 / serata",
+                    "desc":
+                        "Intero ristorante, menù dedicato, fiori, maître "
+                        "d'hôtel personale. Minimo due settimane di "
+                        "anticipo, decliniamo il venerdì.",
+                },
+                {
+                    "icon": "wine",
+                    "title": "Degustazione di carta",
+                    "meta":  "6 coperti · solo giovedì",
+                    "desc":
+                        "Una serata al mese con il sommelier su sei "
+                        "bottiglie scelte tra i produttori in carta. "
+                        "Solo su lista d'attesa, da prenotare.",
+                },
+            ],
+            "cta_label": "Scrivi al concierge",
+            "cta_href":  "prenota",
+        },
+
+        # Wine program — pairings, sommelier signature
+        "wine_program": {
+            "label":   "La cantina",
+            "heading": "Quattrocento etichette, <em>tre abbinamenti notturni.</em>",
+            "intro":
+                "La carta segue il menù: ogni atto ha il suo abbinamento "
+                "e due alternative — classica, contemporanea, non alcolica.",
+            "sommelier": {
+                "name": "Greta Vallesi",
+                "role": "Maître & sommelier",
+                "bio":
+                    "Quindici anni tra Borgogna, Langhe e Champagne. "
+                    "La carta è curata da lei, l'abbinamento è sempre "
+                    "proposto al tavolo, mai imposto.",
+            },
+            "pairings": [
+                ("01", "Pairing classico",
+                 "Champagne en blanc, Soave Classico, Barolo riserva, Moscato.",
+                 "+ €110"),
+                ("02", "Pairing contemporaneo",
+                 "Col Fondo veneto, Erbaluce lungo, Ribolla anfora, "
+                 "Timorasso in verticale.",
+                 "+ €130"),
+                ("03", "Pairing zero-alcol",
+                 "Kombucha artigianale, tè freddi in infusione lenta, "
+                 "succo d'uva fermentato naturalmente.",
+                 "+ €60"),
+            ],
+            "cellar_facts": [
+                ("420", "etichette in carta"),
+                ("18", "regioni vitivinicole"),
+                ("2005", "verticale più antica (Brunello)"),
+            ],
+        },
     },
 
     # ─── FILOSOFIA (about) ─────────────────────────────────────
@@ -1419,6 +1668,118 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
             "Un percorso che inizia <em>dalla prima visita.</em>",
         "cta_primary_label":   "Prenota una prima visita",
         "cta_secondary_label": "Contatti e indicazioni",
+
+        # Treatment tabs — three clinical domains (boutique derm depth)
+        "trattamenti_tabs": {
+            "label":   "Aree di intervento",
+            "heading": "Tre ambiti, <em>una sola direzione clinica.</em>",
+            "intro":
+                "Ogni ambito segue lo stesso metodo — consulenza preliminare, "
+                "piano scritto, esecuzione dermatologica — e si integra con "
+                "gli altri in un percorso continuo.",
+            "tabs": [
+                {
+                    "id":       "clinica",
+                    "label":    "Clinica",
+                    "eyebrow":  "Dermatologia clinica",
+                    "heading":  "Visite, mappature, monitoraggio.",
+                    "body":
+                        "La base dello studio. Prima visita approfondita, "
+                        "mappatura digitale dei nevi con Fotofinder Vexia, "
+                        "dermatoscopia e monitoraggio cronologico.",
+                    "items": [
+                        ("Prima visita dermatologica", "45 min · € 180"),
+                        ("Mappatura digitale Fotofinder", "60 min · € 320"),
+                        ("Controllo annuale", "30 min · € 140"),
+                        ("Dermatologia pediatrica", "40 min · € 170"),
+                    ],
+                    "cta_label": "Tutte le visite cliniche →",
+                    "cta_href":  "visite",
+                },
+                {
+                    "id":       "chirurgia",
+                    "label":    "Chirurgia",
+                    "eyebrow":  "Chirurgia dermatologica",
+                    "heading":  "Escissioni, laser CO2, correzioni.",
+                    "body":
+                        "Piccola chirurgia ambulatoriale in sala operatoria "
+                        "certificata. Escissione di lesioni sospette con "
+                        "esame istologico e sutura estetica dedicata.",
+                    "items": [
+                        ("Escissione di nevo", "30 min · € 420"),
+                        ("Laser CO2 frazionato cicatrici", "60 min · € 520"),
+                        ("Asportazione di cisti", "45 min · € 380"),
+                        ("Correzione post-chirurgica", "40 min · € 290"),
+                    ],
+                    "cta_label": "Percorsi chirurgici →",
+                    "cta_href":  "visite",
+                },
+                {
+                    "id":       "estetica",
+                    "label":    "Estetica",
+                    "eyebrow":  "Dermatologia estetica",
+                    "heading":  "Protocolli medici, mai estetisti.",
+                    "body":
+                        "Ogni trattamento è eseguito personalmente da una "
+                        "dermatologa. Botulino, filler, peeling e laser "
+                        "vascolari in un approccio conservativo e graduale.",
+                    "items": [
+                        ("Tossina botulinica terzo superiore", "20 min · da € 380"),
+                        ("Filler acido ialuronico", "30 min · da € 420"),
+                        ("Peeling chimico superficiale", "40 min · € 240"),
+                        ("Laser vascolare", "30 min · da € 290"),
+                    ],
+                    "cta_label": "Protocolli estetici →",
+                    "cta_href":  "visite",
+                },
+            ],
+        },
+
+        # Before / After comparison — ethical dermatologic results
+        "before_after": {
+            "label":    "Risultati documentati",
+            "heading":  "Un trattamento, <em>tre mesi dopo.</em>",
+            "disclaimer":
+                "Le immagini pubblicate sono di paziente con consenso scritto. "
+                "I risultati sono clinicamente documentati, individuali e non "
+                "costituiscono una garanzia di esito identico per altri pazienti.",
+            "pairs": [
+                {
+                    "title": "Laser CO2 frazionato",
+                    "context": "Cicatrici post-acne, paziente 34 anni",
+                    "duration": "3 sedute in 4 mesi",
+                    "before_image":
+                        "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                        "?auto=format&fit=crop&w=1000&q=80",
+                    "after_image":
+                        "https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                        "?auto=format&fit=crop&w=1000&q=80",
+                },
+            ],
+        },
+
+        # Editorial / press feed — quadruple grid, square format
+        "editorial_feed": {
+            "label": "Dallo studio, nei mesi",
+            "items": [
+                ("https://images.unsplash.com/photo-1512290923902-8a9f81dc236c"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Vogue Italia · marzo 2026",
+                 "Intervista su patologie cutanee e menopausa"),
+                ("https://images.unsplash.com/photo-1616394584738-fc6e612e71b9"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Forum SIDeMaST 2026",
+                 "Presentazione clinica su fotoprotezione pediatrica"),
+                ("https://images.unsplash.com/photo-1559599101-f09722fb4948"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Corriere Salute · febbraio",
+                 "Consulenza sul percorso estetico medicalizzato"),
+                ("https://images.unsplash.com/photo-1576091160550-2173dba999ef"
+                 "?auto=format&fit=crop&w=800&q=80",
+                 "Studio · gennaio 2026",
+                 "Inaugurazione della nuova sala di chirurgia"),
+            ],
+        },
     },
 
     # ─── LO STUDIO (about) ─────────────────────────────────────
