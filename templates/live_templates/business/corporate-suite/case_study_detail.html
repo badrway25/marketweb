@@ -1,0 +1,166 @@
+{% extends "live_templates/business/corporate-suite/_base.html" %}
+
+{% block extra_css %}
+  .cs-post {
+    max-width: 880px; margin: 0 auto;
+    padding: 72px 64px 100px;
+  }
+  .cs-post .breadcrumb {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .cs-post .breadcrumb a { color: var(--accent); }
+  .cs-post .breadcrumb a:hover { text-decoration: underline; }
+  .cs-post .breadcrumb span.sep { color: var(--rule); }
+  .cs-post .eyebrow {
+    margin-top: 32px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-post h1 {
+    margin-top: 18px; font-size: 56px; line-height: 1.06;
+    letter-spacing: -0.022em;
+  }
+  .cs-post .meta-strip {
+    margin-top: 40px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    padding: 24px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .cs-post .meta-strip strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 14px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+  .cs-post .client-code {
+    margin-top: 32px; padding: 18px 24px;
+    background: var(--paper-2); border-left: 3px solid var(--accent);
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink-soft); letter-spacing: 0.02em;
+  }
+  .cs-post .lead {
+    margin-top: 40px;
+    font-family: var(--heading); font-size: 26px; font-weight: 400;
+    line-height: 1.5; color: var(--ink); font-style: italic;
+    max-width: 56ch;
+  }
+  .cs-post .section { margin-top: 56px; }
+  .cs-post .section .sec-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-post .section h2 {
+    margin-top: 14px; font-size: 36px; line-height: 1.15;
+    max-width: 26ch;
+  }
+  .cs-post .section p {
+    margin-top: 22px; font-family: var(--body); font-size: 17px;
+    line-height: 1.75; color: var(--ink-soft); max-width: 64ch;
+  }
+
+  /* KPI band */
+  .cs-post .kpi-band {
+    margin-top: 72px; padding: 48px; background: var(--primary); color: var(--on-dark);
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+  }
+  .cs-post .kpi-band .stat .num {
+    font-family: var(--heading); font-size: 36px; font-weight: 700;
+    color: var(--accent); letter-spacing: -0.018em; line-height: 1.0;
+  }
+  .cs-post .kpi-band .stat .lbl {
+    display: block; margin-top: 10px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--on-dark-2);
+  }
+
+  .cs-post .team-strip {
+    margin-top: 56px; padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  }
+  .cs-post .team-strip .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .cs-post .team-strip .item strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 15px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+
+  /* Next case link */
+  .cs-post .next-case {
+    margin-top: 72px; padding: 32px 0;
+    border-top: 1px solid var(--primary);
+    display: flex; justify-content: space-between; align-items: center; gap: 24px;
+  }
+  .cs-post .next-case .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-post .next-case .title {
+    margin-top: 6px; font-family: var(--heading); font-size: 22px;
+    font-weight: 600; color: var(--primary);
+  }
+  .cs-post .next-case .arrow {
+    font-family: var(--heading); font-size: 28px; color: var(--accent);
+    transition: transform .2s ease;
+  }
+  .cs-post .next-case a:hover .arrow { transform: translateX(8px); }
+{% endblock %}
+
+{% block content %}
+<article class="cs-post">
+  <div class="breadcrumb">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">← {{ page.label }}</a>
+    <span class="sep">/</span>
+    <span>{{ post.category }}</span>
+  </div>
+
+  <div class="eyebrow">{{ post.category }} · {{ post.year }} · {{ post.duration }}</div>
+  <h1>{{ post.title }}</h1>
+
+  <div class="meta-strip">
+    <div>Practice<strong>{{ post.category }}</strong></div>
+    <div>Anno<strong>{{ post.year }}</strong></div>
+    <div>Durata<strong>{{ post.duration }}</strong></div>
+    <div>Lead<strong>{{ post.lead_partner }}</strong></div>
+  </div>
+
+  <div class="client-code">{{ post.client_code }}</div>
+
+  <p class="lead">{{ post.lead }}</p>
+
+  {% for sec in post.sections %}
+    <div class="section" data-lm="reveal">
+      <div class="sec-label">{{ sec.label }}</div>
+      <h2>{{ sec.heading }}</h2>
+      <p>{{ sec.body }}</p>
+    </div>
+  {% endfor %}
+
+  <div class="kpi-band" data-lm-stagger data-lm-stagger-delay="100">
+    {% for num, label in post.kpi %}
+      <div class="stat" data-lm="reveal">
+        <div class="num">{{ num }}</div>
+        <span class="lbl">{{ label }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="team-strip">
+    <div class="item">Lead partner<strong>{{ post.lead_partner }}</strong></div>
+    <div class="item">Team & timeline<strong>{{ post.team }}</strong></div>
+  </div>
+
+  <a class="next-case" href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+    <div>
+      <div class="lbl">{{ post.next_label }}</div>
+      <div class="title">{{ page.label }}</div>
+    </div>
+    <span class="arrow">→</span>
+  </a>
+</article>
+{% endblock %}

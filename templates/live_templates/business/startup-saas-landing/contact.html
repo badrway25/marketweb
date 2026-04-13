@@ -1,0 +1,183 @@
+{% extends "live_templates/business/startup-saas-landing/_base.html" %}
+
+{% block extra_css %}
+  /* 4 channel cards */
+  .sl-channels { padding-top: 32px; padding-bottom: 64px; }
+  .sl-channels .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  }
+  .sl-channels .card {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 18px; padding: 28px 24px;
+    display: flex; flex-direction: column; gap: 14px;
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .sl-channels .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .sl-channels .card .icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 12px;
+    background: rgba(34,211,238,0.18); color: var(--accent);
+    font-family: var(--heading); font-size: 18px; font-weight: 800;
+    border: 1px solid var(--rule);
+  }
+  .sl-channels .card h3 { font-size: 18px; line-height: 1.18; }
+  .sl-channels .card .value {
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em; word-break: break-word;
+  }
+  .sl-channels .card p {
+    font-family: var(--body); font-size: 13px; line-height: 1.6;
+    color: var(--ink-mute); flex: 1;
+  }
+  .sl-channels .card .cta {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.06em; color: var(--ink);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .sl-channels .card .cta:after { content: '→'; color: var(--accent); }
+
+  /* Founders block */
+  .sl-team { padding-bottom: 64px; }
+  .sl-team .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .sl-team .card {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 18px; padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .sl-team .card .role {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+  }
+  .sl-team .card h3 { font-size: 22px; }
+  .sl-team .card .email {
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--accent); word-break: break-word;
+  }
+  .sl-team .card .tag {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--ink-mute);
+    padding: 6px 12px; background: var(--surface-2);
+    border: 1px solid var(--rule); border-radius: 999px;
+    display: inline-block;
+  }
+  .sl-team .card p {
+    font-family: var(--body); font-size: 13px; line-height: 1.7;
+    color: var(--ink-soft);
+  }
+
+  /* Office card */
+  .sl-office {
+    background: rgba(0,0,0,0.32);
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    padding: 80px 32px;
+  }
+  .sl-office .wrap { max-width: 1100px; margin: 0 auto; }
+  .sl-office .head { padding-bottom: 32px; text-align: center; }
+  .sl-office .head h2 { margin-top: 12px; max-width: 22ch; margin-left: auto; margin-right: auto; }
+  .sl-office .head .intro { margin: 18px auto 0; max-width: 56ch; font-family: var(--body); font-size: 16px; color: var(--ink-soft); line-height: 1.6; }
+  .sl-office .grid {
+    margin-top: 32px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  }
+  .sl-office .info {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-radius: 14px; padding: 28px;
+  }
+  .sl-office .info .row {
+    display: grid; grid-template-columns: 140px 1fr; gap: 16px;
+    padding: 14px 0;
+  }
+  .sl-office .info .row:not(:last-child) {
+    border-bottom: 1px solid var(--rule);
+  }
+  .sl-office .info .row .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  }
+  .sl-office .info .row .val {
+    font-family: var(--body); font-size: 14px; color: var(--ink-soft);
+  }
+
+  /* Footnote */
+  .sl-foot-note {
+    padding: 64px 32px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .sl-foot-note .note {
+    padding: 24px 28px;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
+    font-family: var(--body); font-size: 14px; line-height: 1.7;
+    color: var(--ink-soft); text-align: center;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="sl-lead">
+  <span class="eyebrow">{{ page_data.eyebrow }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="sl-section sl-channels center">
+  <span class="sec-label">{{ page_data.channels_label }}</span>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
+    {% for ch in page_data.channels %}
+      <article class="card" data-lm="reveal">
+        <span class="icon">{{ ch.icon }}</span>
+        <h3>{{ ch.title }}</h3>
+        <span class="value">{{ ch.value }}</span>
+        <p>{{ ch.desc }}</p>
+        <span class="cta">{{ ch.cta }}</span>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sl-section sl-team center">
+  <span class="sec-label">{{ page_data.team_label }}</span>
+  <h2>{{ page_data.team_heading }}</h2>
+  <p class="sec-intro">{{ page_data.team_intro }}</p>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for f in page_data.team %}
+      <article class="card" data-lm="reveal">
+        <div class="role">{{ f.role }}</div>
+        <h3>{{ f.name }}</h3>
+        <span class="email">{{ f.email }}</span>
+        <span class="tag">{{ f.tag }}</span>
+        <p>{{ f.bio }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sl-office">
+  <div class="wrap">
+    <div class="head">
+      <span class="sec-label">{{ page_data.office_label }}</span>
+      <h2>{{ page_data.office_heading }}</h2>
+      <p class="intro">{{ page_data.office_intro }}</p>
+    </div>
+    <div class="grid">
+      <div class="info" data-lm="reveal">
+        <div class="row"><span class="lbl">Sede</span><span class="val">{{ page_data.office.address }}</span></div>
+        <div class="row"><span class="lbl">Trasporti</span><span class="val">{{ page_data.office.transport }}</span></div>
+        <div class="row"><span class="lbl">Modello</span><span class="val">{{ page_data.office.hours }}</span></div>
+      </div>
+      <div class="info" data-lm="reveal">
+        {% for label, value in page_data.office.schedule %}
+          <div class="row"><span class="lbl">{{ label }}</span><span class="val">{{ value }}</span></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sl-foot-note">
+  <div class="note" data-lm="reveal">{{ page_data.footnote }}</div>
+</div>
+{% endblock %}

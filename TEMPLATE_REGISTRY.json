@@ -49,9 +49,13 @@
       "imagery_key": "business-corporate",
       "font_pairing": "Merriweather + Inter",
       "dna_phase": "2g2x.1",
-      "session_closed": 17,
-      "tier": "draft",
-      "tier_reason": "DNA + preview composition complete (Session 17, D-050) but no live skin folder yet. Phase 2g3.3 will author templates/live_templates/business/corporate-suite/."
+      "session_closed": 32,
+      "live_preview": true,
+      "live_pages": ["home", "chi-siamo", "competenze", "case-studies", "case-studies/<post>", "contatti"],
+      "locales": ["it"],
+      "rtl": false,
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.3 closed in Session 32 (Business live rollout) — full corporate-suite skin folder + content registry + 6 routes (home/about/services/case_studies/case_study_detail/contact) all 200. D-053 gate green, D-054 10/10 vs Elevate. i18n shape ready (IT-only at promotion); EN/FR/ES/AR can be added via the cardio/derm/gusto recipe."
     },
     {
       "slug": "elevate-startup-landing",
@@ -69,9 +73,13 @@
       "imagery_key": "business-startup",
       "font_pairing": "Manrope + Inter",
       "dna_phase": "2g2x.1",
-      "session_closed": 17,
-      "tier": "draft",
-      "tier_reason": "DNA + preview composition complete (Session 17, D-050) but no live skin folder yet. Phase 2g3.3 will author templates/live_templates/business/startup-saas-landing/."
+      "session_closed": 32,
+      "live_preview": true,
+      "live_pages": ["home", "prodotto", "prezzi", "demo", "contatti"],
+      "locales": ["it"],
+      "rtl": false,
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.3 closed in Session 32 (Business live rollout) — full startup-saas-landing skin folder + content registry + 5 routes (home/product/pricing/demo/contact) all 200. D-053 gate green, D-054 10/10 vs Pragma (cosmic-gradient + glow-pill vs cream-paper + serif-ghost). i18n shape ready (IT-only at promotion)."
     },
     {
       "slug": "gusto-fine-dining",

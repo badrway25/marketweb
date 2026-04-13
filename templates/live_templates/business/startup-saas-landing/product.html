@@ -1,0 +1,190 @@
+{% extends "live_templates/business/startup-saas-landing/_base.html" %}
+
+{% block extra_css %}
+  /* Modules — 6 detail blocks alternating layout */
+  .sl-modules { padding-top: 32px; padding-bottom: 64px; }
+  .sl-modules .grid {
+    margin-top: 56px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .sl-modules .module {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 18px; padding: 36px 32px;
+    display: flex; flex-direction: column; gap: 18px;
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .sl-modules .module:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .sl-modules .module .num {
+    font-family: var(--heading); font-size: 14px; font-weight: 800;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .sl-modules .module h3 {
+    font-size: 26px; line-height: 1.18;
+  }
+  .sl-modules .module .blurb {
+    font-family: var(--body); font-size: 15px; line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .sl-modules .module ul {
+    margin-top: 8px; padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    list-style: none; display: flex; flex-direction: column; gap: 8px;
+  }
+  .sl-modules .module ul li {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .sl-modules .module ul li:before {
+    content: '→'; color: var(--accent); font-weight: 700; flex-shrink: 0;
+  }
+
+  /* Integrations full grid */
+  .sl-int-full { padding-bottom: 64px; }
+  .sl-int-full .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .sl-int-full .item {
+    padding: 20px; border: 1px solid var(--rule); border-radius: 12px;
+    background: var(--surface-2);
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .sl-int-full .item:hover { border-color: var(--accent); background: var(--surface); }
+  .sl-int-full .item .cat {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .sl-int-full .item .name {
+    margin-top: 8px;
+    font-family: var(--heading); font-size: 17px; font-weight: 800;
+    color: var(--ink);
+  }
+  .sl-int-full .item .desc {
+    margin-top: 8px; font-family: var(--body); font-size: 12px;
+    color: var(--ink-mute); line-height: 1.5;
+  }
+
+  /* Stack list — 8 rows */
+  .sl-stack {
+    background: rgba(0,0,0,0.35);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 80px 32px;
+  }
+  .sl-stack .wrap {
+    max-width: 1100px; margin: 0 auto;
+  }
+  .sl-stack .head {
+    text-align: center; padding-bottom: 32px;
+  }
+  .sl-stack .head h2 {
+    margin-top: 12px; max-width: 22ch; margin-left: auto; margin-right: auto;
+  }
+  .sl-stack .head .intro {
+    margin: 22px auto 0; max-width: 56ch;
+    font-family: var(--body); font-size: 16px;
+    color: var(--ink-soft); line-height: 1.6;
+  }
+  .sl-stack .list {
+    margin-top: 32px;
+    display: grid; grid-template-columns: 200px 1fr; gap: 0 32px;
+  }
+  .sl-stack .list .row { display: contents; }
+  .sl-stack .list .row .lbl,
+  .sl-stack .list .row .val {
+    padding: 22px 0; border-top: 1px solid var(--rule);
+  }
+  .sl-stack .list .row .lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  }
+  .sl-stack .list .row .val {
+    font-family: var(--body); font-size: 15px; color: var(--ink-soft); line-height: 1.5;
+  }
+
+  /* Final CTA */
+  .sl-prod-cta {
+    padding: 96px 32px;
+    max-width: 1100px; margin: 0 auto;
+    text-align: center;
+  }
+  .sl-prod-cta h2 { font-size: 44px; max-width: 22ch; margin: 0 auto; }
+  .sl-prod-cta .intro {
+    margin: 22px auto 0; max-width: 56ch;
+    font-family: var(--body); font-size: 17px;
+    color: var(--ink-soft); line-height: 1.65;
+  }
+  .sl-prod-cta .actions { margin-top: 36px; display: inline-flex; gap: 22px; align-items: center; flex-wrap: wrap; justify-content: center; }
+{% endblock %}
+
+{% block content %}
+<section class="sl-lead">
+  <span class="eyebrow">{{ page_data.eyebrow }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="sl-section sl-modules center">
+  <span class="sec-label">{{ page_data.modules_label }}</span>
+  <h2>{{ page_data.modules_heading }}</h2>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
+    {% for m in page_data.modules %}
+      <article class="module" data-lm="reveal">
+        <div class="num">{{ m.num }} / {{ page_data.modules|length }}</div>
+        <h3>{{ m.title }}</h3>
+        <p class="blurb">{{ m.blurb }}</p>
+        <ul>
+          {% for h in m.highlights %}<li>{{ h }}</li>{% endfor %}
+        </ul>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sl-section sl-int-full center">
+  <span class="sec-label">{{ page_data.integrations_label }}</span>
+  <h2>{{ page_data.integrations_heading }}</h2>
+  <p class="sec-intro">{{ page_data.integrations_intro }}</p>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="60">
+    {% for i in page_data.integrations_full %}
+      <div class="item" data-lm="reveal">
+        <div class="cat">{{ i.category }}</div>
+        <div class="name">{{ i.name }}</div>
+        <div class="desc">{{ i.desc }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="sl-stack">
+  <div class="wrap">
+    <div class="head">
+      <span class="sec-label">{{ page_data.stack_label }}</span>
+      <h2>{{ page_data.stack_heading }}</h2>
+      <p class="intro">{{ page_data.stack_intro }}</p>
+    </div>
+    <div class="list" data-lm-stagger data-lm-stagger-delay="60">
+      {% for label, value in page_data.stack %}
+        <div class="row">
+          <div class="lbl" data-lm="reveal">{{ label }}</div>
+          <div class="val" data-lm="reveal">{{ value }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sl-prod-cta">
+  <h2 data-lm="reveal-lg">{{ page_data.cta_heading }}</h2>
+  <p class="intro" data-lm="reveal">{{ page_data.cta_intro }}</p>
+  <div class="actions" data-lm="reveal">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sl-btn">{{ page_data.cta_primary }}</a>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sl-btn secondary">{{ page_data.cta_secondary }}</a>
+  </div>
+</section>
+{% endblock %}

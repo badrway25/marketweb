@@ -1,0 +1,328 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<style>
+  :root {
+    --primary:    {{ theme.primary }};
+    --primary-2:  #2c3e6b;
+    --secondary:  {{ theme.secondary }};
+    --accent:     {{ theme.accent }};
+    --paper:      #eef0f3;
+    --paper-2:    #f5f6f8;
+    --paper-3:    #ffffff;
+    --ink:        #0f172a;
+    --ink-soft:   #475569;
+    --ink-mute:   #64748b;
+    --rule:       rgba(15,23,42,0.10);
+    --rule-soft:  rgba(15,23,42,0.05);
+    --on-dark:    #eef0f3;
+    --on-dark-2:  rgba(238,240,243,0.72);
+    --on-dark-3:  rgba(238,240,243,0.45);
+    --heading: '{{ theme.heading_font }}', Georgia, 'Times New Roman', serif;
+    --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.65; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--heading); font-weight: 700; line-height: 1.08;
+    letter-spacing: -0.018em; color: var(--primary);
+  }
+  em { font-style: italic; color: var(--accent); font-weight: 700; }
+
+  /* Marketplace bar */
+  .mp-bar {
+    background: #0a0e1a; color: #eef0f3; font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .mp-bar .mp-back { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; font-weight: 600; }
+  .mp-bar .mp-name { color: rgba(238,240,243,0.55); }
+  .mp-lang { display: flex; align-items: center; gap: 14px; }
+  .mp-lang .mp-lang-label { font-size: 10px; letter-spacing: 0.22em; color: rgba(238,240,243,0.45); font-weight: 700; }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; color: rgba(238,240,243,0.55);
+    border: 1px solid rgba(238,240,243,0.15);
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover { color: var(--accent); border-color: rgba(238,240,243,0.35); }
+  .mp-lang a.mp-lang-pill.is-current { color: var(--accent); border-color: var(--accent); }
+
+  /* ============================================================
+     CORPORATE-SUITE NAV — full-bleed solid navy, logo crest L,
+     links inline, phone CTA right (matches preview composition).
+  ============================================================ */
+  .cs-nav {
+    position: sticky; top: 0; z-index: 50;
+    height: 76px;
+    display: flex; align-items: center; padding: 0 56px;
+    background: var(--primary);
+    color: var(--on-dark);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 6px 30px -18px rgba(0,0,0,0.4);
+  }
+  .cs-nav .wm {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--heading); font-weight: 700;
+    font-size: 22px; letter-spacing: 0.005em;
+  }
+  .cs-nav .wm .crest {
+    width: 38px; height: 38px;
+    border: 1.5px solid var(--accent); color: var(--accent);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; font-family: var(--heading);
+  }
+  .cs-nav .links {
+    display: flex; gap: 32px; margin-left: 56px;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--on-dark-2);
+  }
+  .cs-nav .links a { transition: color .15s ease; }
+  .cs-nav .links a:hover { color: var(--on-dark); }
+  .cs-nav .links a.is-current { color: var(--accent); }
+  .cs-nav .phone {
+    margin-left: auto; display: flex; align-items: center; gap: 18px;
+    font-family: var(--heading); font-size: 15px; font-weight: 600;
+    color: var(--on-dark);
+  }
+  .cs-nav .phone .tag {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 6px 12px;
+  }
+
+  /* ============================================================
+     PAGE LEAD — eyebrow + huge serif headline + intro
+  ============================================================ */
+  .cs-lead {
+    padding: 96px 72px 64px; max-width: 1400px; margin: 0 auto;
+  }
+  .cs-lead .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--primary);
+  }
+  .cs-lead .eyebrow:before { content: ''; width: 36px; height: 1.5px; background: var(--accent); }
+  .cs-lead h1 {
+    margin-top: 36px; font-size: 80px; line-height: 1.0;
+    letter-spacing: -0.025em; max-width: 16ch;
+  }
+  .cs-lead h1 em { color: var(--accent); }
+  .cs-lead .intro {
+    margin-top: 30px; max-width: 64ch;
+    font-family: var(--body); font-size: 18px; line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .cs-lead .actions {
+    margin-top: 44px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center;
+  }
+  .cs-btn-primary {
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--primary);
+    border: 1.5px solid var(--primary); padding: 14px 28px;
+    display: inline-flex; align-items: center; gap: 14px;
+    transition: background .2s ease, color .2s ease;
+  }
+  .cs-btn-primary:after { content: '→'; font-family: var(--heading); font-size: 16px; color: var(--accent); }
+  .cs-btn-primary:hover { background: var(--primary); color: var(--on-dark); }
+  .cs-btn-primary:hover:after { color: var(--accent); }
+  .cs-btn-ghost {
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.10em; color: var(--ink-mute);
+    border-bottom: 1px solid var(--ink-mute); padding-bottom: 4px;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .cs-btn-ghost:hover { color: var(--primary); border-color: var(--primary); }
+
+  /* ============================================================
+     SECTION HELPERS — airy editorial chapters
+  ============================================================ */
+  .cs-section { padding: 96px 72px; max-width: 1400px; margin: 0 auto; }
+  .cs-section.dark {
+    background: var(--primary); color: var(--on-dark);
+    max-width: none; padding: 96px 72px;
+  }
+  .cs-section.dark h2,
+  .cs-section.dark h3,
+  .cs-section.dark h4 { color: var(--on-dark); }
+  .cs-section.dark em { color: var(--accent); }
+  .cs-section .sec-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-section h2 {
+    margin-top: 14px; font-size: 48px; line-height: 1.08;
+    max-width: 22ch; letter-spacing: -0.018em;
+  }
+  .cs-section .sec-intro {
+    margin-top: 20px; max-width: 64ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .cs-section.dark .sec-intro { color: var(--on-dark-2); }
+  .cs-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 56px 64px; }
+  .cs-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px 56px; }
+  .cs-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
+
+  /* ============================================================
+     FOOTER — 4-col on dark navy
+  ============================================================ */
+  .cs-foot {
+    margin-top: 24px;
+    background: var(--primary); color: var(--on-dark);
+    padding: 72px 72px 36px; font-family: var(--body); font-size: 13px;
+  }
+  .cs-foot .top {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.18);
+  }
+  .cs-foot .top h5 {
+    color: var(--accent); font-family: var(--body);
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 18px;
+  }
+  .cs-foot .brand .word {
+    font-family: var(--heading); font-size: 24px; color: var(--on-dark);
+    margin-bottom: 10px;
+  }
+  .cs-foot .brand p { color: var(--on-dark-2); max-width: 36ch; line-height: 1.55; }
+  .cs-foot .col p, .cs-foot .col a { color: var(--on-dark-2); display: block; padding: 4px 0; }
+  .cs-foot .col a:hover { color: var(--accent); }
+  .cs-foot .bot {
+    padding-top: 28px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 11px; color: var(--on-dark-3);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .cs-foot .bot a:hover { color: var(--accent); }
+
+  /* ============================================================
+     CORPORATE MOTION PROFILE — sober, restrained
+  ============================================================ */
+  :root {
+    --lm-rise:     12px;
+    --lm-rise-lg:  18px;
+    --lm-dur-slow: 720ms;
+  }
+  .cs-btn-primary,
+  .cs-btn-ghost { transition: background .2s ease, color .2s ease, border-color .2s ease; }
+  .cs-btn-primary:after {
+    display: inline-block;
+    transition: transform var(--lm-dur-fast, 320ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+  }
+  .cs-btn-primary:hover:after { transform: translateX(4px); }
+  @media (prefers-reduced-motion: reduce) {
+    .cs-btn-primary, .cs-btn-primary:after, .cs-btn-ghost { transition: none; }
+  }
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
+</div>
+
+<nav class="cs-nav">
+  <div class="wm">
+    <span class="crest">{{ site.logo_initial }}</span>
+    <span>{{ site.logo_word }}</span>
+  </div>
+  <div class="links">
+    {% for p in pages %}
+      {% if p.slug == "home" %}
+        <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+      {% else %}
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="phone">
+    <span class="tag">{{ site.tag }}</span>
+    <span>{{ site.phone }}</span>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="cs-foot">
+  <div class="top">
+    <div class="brand">
+      <h5>{{ site.foot_studio }}</h5>
+      <div class="word">{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_contact }}</h5>
+      <p>{{ site.address }}</p>
+      <p>{{ site.phone }}</p>
+      <p>{{ site.email }}</p>
+      <p>{{ site.hours_compact }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_offices }}</h5>
+      {% for row in site.offices_footer_rows %}
+        <p>{{ row }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="bot">
+    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+</body>
+</html>
