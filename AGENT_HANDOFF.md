@@ -1,6 +1,104 @@
 # Agent Handoff
 
-Last updated: 2026-04-14 — after **Session 40 Pragma + Elevate i18n Completion Pass**
+Last updated: 2026-04-14 — after **Session 42 eCommerce Premium Polish**
+
+## Session 42 — eCommerce Premium Polish: Read This Before Touching Any eCommerce Image, Motion, or DNA Drift Work (2026-04-14)
+
+**Session 42 closed two blockers** the user flagged on Session 41 review: (1) Bottega had visible image gaps + 9 visually-wrong Unsplash IDs (HEAD-200 but rendering blue stilettos / classroom / cat / cupcakes / Bond Street tube / etc.); (2) Luxe was rendering as a polished but motionless poster, lacking the editorial premium presence its maison register requires.
+
+### What's binding (D-074)
+
+1. **Bottega is now archetype-honest typographic-led.** All 6 portrait slots (4 makers in home + founder in atelier + artisan signature in product detail) converted to typographic stamp tiles. NO portrait images on Bottega anywhere. Future ecommerce siblings that fit the warm-artisan macro tone reuse this typographic-stamp pattern (`.aw-maker` with corner-N + BOTTEGA stamp + italic letter crest + name/craft/place/since/quote · `.aw-founder .monogram` circular cream stamp · `.aw-pdp .artisan .monogram` smaller circular). DO NOT re-add portrait images to Bottega — the artisan-workshop DNA was always typographic-led (Session 15 DNA notes); Session 41 drifted, Session 42 returned to the DNA.
+
+2. **Luxe ships ~280 LOC of editorial motion** that reads as italic-thinking unhurried. Hero scale-breathe (14s ease-in-out), italic-axis settle on h1 (1200ms cubic-bezier), counter on KPI bands (slow stagger 160-180ms with tabular-nums), press logo marquee (100s drift), drop card pulsing gold dot, primary button gold panel slide-in, nav links + ghost button + tile + atelier card + maison card + variant pill all get letter-spacing or color hover language. Cubic-bezier(0.16, 0.84, 0.32, 1) is the Luxe motion ease — DO NOT use startup-saas-landing's 200ms snappy timings or glow shadows on Luxe. The reduced-motion fallback is mandatory and already wired.
+
+3. **Image-coherence rule binding for all future authoring:** HEAD-200 ≠ visually correct on Unsplash. The `curl + Read tool` per candidate verification (Session 37 Chiara recipe) is the reliable check. When 6+ slots need verification of specific photographic content (older Italian artisans, fashion editorial models, etc.), prefer ARCHITECTURAL elimination of the photo requirement (typographic substitute, gradient placeholder) over endless candidate hunting. The Session 41 → 42 lesson: respect documented DNA notes BEFORE adding image-dependent elements.
+
+4. **The press strip pattern (`.lm-logo-marquee` from `live-media.css/js`) is now linked in Luxe `_base.html`** — also linked in Pragma + Elevate + Cardio + Derm + Gusto / Chiara / Pixel where used. Future templates that need a logo marquee just need `<link>` + `<script>` + the `<div class="lm-logo-marquee">...<div class="lm-logo-marquee-track">...` markup. The `live-motion.js` duplicates the track automatically for seamless looping.
+
+### Reusable recipe (Session 41 + 42)
+
+When a `published_live` ecommerce template ships from now on:
+1. Cross-check DNA notes in `template_dna.py` BEFORE adding ANY image-dependent element. If DNA says "typographic-led", honor it.
+2. Author the IT skin + content first under D-047 (every string from `page_data.*` / `site.*` / `chrome.*`).
+3. For maker / founder / artisan signature blocks: default to typographic stamp tiles (Bottega pattern) unless the DNA explicitly calls for image portraits AND a verified photo source exists. Fashion-editorial templates (Luxe pattern) default to image portraits with `data-latin` markers preserving Latin proper names + isolated unicode-bidi for AR.
+4. Wire IT, flip tier, run sync_template_tiers, validate IT-only with smoke_full.
+5. Dispatch 8 parallel sub-agents for locale trees (one per locale × 2 templates) with explicit voice contracts.
+6. For motion: choose ONE motion register per archetype and stay in it. Artisan-warm = slow warm 12px rise + 560ms cubic-bezier + paper-shadow stamp lift (no zoom/parallax). Maison-editorial = slow editorial 14-22px rise + 1100-1400ms cubic-bezier + tabular-num counters + scaleX gold underline slides (no glow/bounce). SaaS = snappy 200ms + glow shadows (Elevate pattern, NOT for ecommerce).
+7. Validate the full 8-suite matrix + run the dedicated cross-leak smoke for the category.
+
+### Do NOT do
+
+- Do NOT add portrait images to Bottega ever again. The artisan-workshop DNA is typographic-led. Maker stamps + monogram circles are the only acceptable identity markers.
+- Do NOT use startup-saas-landing motion timings on Luxe (200ms snappy bounce). Luxe motion is 600-1400ms cubic-bezier(0.16, 0.84, 0.32, 1) — italic-thinking unhurried.
+- Do NOT trust HEAD-200 Unsplash IDs blindly. Always visual-verify (Read tool can render JPGs).
+- Do NOT introduce real cart/checkout/payment on either template. Conversion patterns stay phone-and-whatsapp (Bottega) and private-request (Luxe).
+- Do NOT change `live-media.css/js` linking on Luxe — it now needs the marquee primitive. Pragma + Elevate + Luxe link it; the other 6 `published_live` don't.
+- Do NOT touch the 7 pre-existing live templates (cardio/derm/gusto/chiara/pixel/pragma/elevate). 867/867 regression matrix is the gate.
+
+### Gotchas (Session 42)
+
+- **Image-curator sub-agent timed out at 0 bytes output.** The dispatch worked, the agent never wrote. The pivot to architectural typographic conversion was the right call. For future visual-curation needs of >5 slots, dispatch the curator sub-agent BUT also have a typographic fallback ready in case it stalls.
+- **Django dev server `--noreload` does NOT auto-pick up file changes.** Bounce on a fresh port after every Python/template edit (8801 → 8802 → 8803 → 8804 → 8805 in this session). Session 19's ghost-server gotcha returns periodically — always restart on a different port to be safe.
+- **Same Unsplash ID can render different content at different sizes.** `photo-1543163521-1bf539c55dd2` rendered as a knit pullover at 600×600 thumb but blue floral stilettos at 900×900 product hero. The CDN serves a smart crop based on the dimensions request, and the crop can yield completely different visual content. Always verify at FULL size, not thumbnail size.
+- **Marquee CSS `flex: 1; min-width: 0` is required** when `.lm-logo-marquee` lives inside a flex container with other siblings (the press strip's "lbl" label). Without it, the marquee track collapses or overflows. Already applied via `.fe-press .lm-logo-marquee { flex: 1; min-width: 0 }`.
+- **Counter values get truncated mid-animation in screenshots.** "44" appearing instead of "45" on a viewport screenshot doesn't mean the counter is broken — it means the screenshot was taken at frame 0.95 of the 1400ms animation. Wait 2s then re-screenshot for the final value, or accept that mid-animation values are visible in a Playwright walk.
+
+---
+
+## Session 41 — eCommerce Live Rollout: Read This Before Touching Any eCommerce or Sibling-Pair Live-Rollout Work (2026-04-14)
+
+**Session 41 closed Phase 2g3.5** — `bottega-shop-artigianale` and `luxe-fashion-store` are flipped to `tier=published_live` with full multipage skins + 5 locales (it/en/fr/es/ar) + real RTL on day one. Catalog floor is now **9/20 published_live across 5 categories** (medical/restaurant/business/portfolio/ecommerce), 9/9 multilingual.
+
+### Catalog state
+
+- 9/20 published_live: cardio · derm · gusto · pragma · elevate · chiara · pixel · **bottega** · **luxe**.
+- 11/20 draft: sapore · brace (restaurant Phase 2g3.1) · salute · benessere · famiglia (medical Phase 2g3.2) · vertex · aura (agency Phase 2g3.6) · lex · juris (lawyer Phase 2g3.6) · casa · villa (real-estate Phase 2g3.6).
+- Phase 3 (auth/checkout/editor/projects/commerce) remains gated on Phase 2g3.6 closing per D-049/D-053.
+
+### What's binding (D-073)
+
+1. **Bottega + Luxe must STAY OPPOSITE in voice across every locale.** D-054 differentiation is enforced by the new `smoke_ecommerce_rollout.py` cross-leak gate (15 Bottega-only tokens + 16 Luxe-only tokens × 5 locales × 12 pages × 2 directions = 120 leak checks, must always be 0/120). A regression PR that introduces a Bottega vocabulary token on a Luxe page (or vice versa) must be rejected. Voice contracts: Bottega = warm artisan Toscana (Aesop EN, Astier FR `tu`, peninsular `tú` ES, Brownbook AR cultural-publishing); Luxe = maison editoriale (Gentlewoman EN formal, Hermès FR `vous`, Vogue España `usted`, Vogue Arabia luxury-maison AR).
+2. **Both ecommerce skin folders are now reusable archetypes.** A future ecommerce sibling that fits the warm-artisan macro tone reuses `templates/live_templates/ecommerce/artisan-workshop/`. A future ecommerce sibling that fits the maison-editorial macro tone reuses `templates/live_templates/ecommerce/fashion-editorial/`. Only when a third sibling is semantically as far from BOTH existing ones as Bottega is from Luxe should a new archetype be split (D-050/D-051 default).
+3. **D-047 chrome-cleanliness applied from line one.** Both `_base.html` files + all 12 page templates carry zero IT literals — every label flows from `page_data.*` / `site.*` / `chrome.*`. Future skin edits MUST keep this.
+4. **`html[dir="rtl"]` CSS block + conditional Amiri/Noto-Kufi font load on both bases.** Bottega uses Amiri body + Noto Kufi Arabic display (warm classical for the artisan voice). Luxe uses Amiri body + Noto Kufi Arabic display (classical for the maison voice). Latin proper names (La Bottega di Martino, Maison Luxe, Vogue Italia, The Gentlewoman, Hermès, Bottega Veneta, Lesage, Goyard, IMG Models, Grand Hôtel Villa d'Este, Setificio Tessitura Como, Maglificio Lanifer Biella, Conceria della Madonna, Atelier Sentier, Severino Falchi, Caterina Lippi, Bruno Ricci, Adele Pignatelli, Giulia Maison, Carla Sozzani, Letizia Carrera, Jean-Luc Berthier, Yumi Tanaka), prices (€ 420, € 95, € 2.480, € 1.290, € 860), edition numbers (N° 042, 3/8, Look 03, Drop 02, SS26), phone numbers (+39 055 234 11 90, +39 02 7600 1492, +33 1 4296 4720, +81 3 6450 5018), Italian city names (Firenze, Toscana, Santa Croce sull'Arno, Montelupo Fiorentino, Prato, Greve in Chianti, Milano, Brera, Sentier, Aoyama) all stay Latin via `unicode-bidi: isolate` (Bottega) or `[data-latin]` markup attribute (Luxe).
+5. **Native voice per locale, never machine translation.** Bottega EN reads as native Aesop. Luxe EN reads as native The Gentlewoman. Bottega FR uses `tu` + `« »`. Luxe FR uses `vous` + `« »` + insecable spaces. Bottega ES uses `tú` + peninsular vocabulary. Luxe ES uses `usted` + peninsular maison vocabulary. Bottega AR uses cultural-publishing register. Luxe AR uses luxury-maison register. Future content edits MUST follow these per-locale per-template voice contracts.
+6. **WhatsApp link is a Bottega-only conversion pattern.** Bottega's nav CTA + final CTA + contact card all expose WhatsApp via `{{ site.whatsapp_link }}`. Luxe NEVER carries WhatsApp — its conversion is private viewing by appointment. The cross-leak smoke enforces this: "WhatsApp" appearing on a Luxe page = D-054 violation.
+7. **Page slugs stay Italian (URL-canonical).** Bottega: home, shop, product, atelier, journal, contatti. Luxe: home, collezione, product, maison, lookbook, contatti. Only `label` fields change per locale (e.g., "Catálogo" vs "Catalogue" vs "Shop" vs "الكتالوج"). Slugs are IT — never translate.
+
+### Reusable recipe (now proven 6 times: Cardio · Derm · Gusto · Chiara · Pixel · Pragma + Elevate · **Bottega + Luxe**)
+
+The Session 23/29/37/39/40/41 recipe is now stable enough to be a checklist:
+1. Author both IT content registries first (D-047 from line one — never paste literals, every string flows from `page_data.*` / `site.*` / `chrome.*`).
+2. Author both skin folders next.
+3. Wire IT into `template_content.py` + flip tier in `TEMPLATE_REGISTRY.json` + `python manage.py sync_template_tiers`. Validate IT-only with `smoke_full.py`.
+4. Dispatch 8 parallel sub-agents (one per locale × 2 templates) with explicit voice contracts that articulate the differentiation gate as a "must NOT contain X" + "must contain Y" pair.
+5. While agents work: extend `smoke_full.py` + `smoke_forms.py` + `smoke_i18n_media_hardening.py` + author a new `smoke_<category>_rollout.py` that codifies the D-054 cross-leak gate.
+6. When agents return: run the full validation matrix (manage.py check + 4 smokes + 3 regression smokes).
+7. Update memory + DECISIONS + SESSION_LOG + TODO_NEXT + AGENT_HANDOFF + CATEGORY_ROADMAP + TEMPLATE_REGISTRY in a single follow-up commit.
+
+When opening any future ecommerce session, read `ecommerce_live_rollout_session41.md` in memory before starting.
+
+### Do NOT do
+
+- Do NOT collapse Bottega + Luxe voices into one shared register — they must stay sharply distinct across every locale.
+- Do NOT use machine translation for any locale block. The quality floor is native Aesop / Gentlewoman / Astier / Hermès / Vogue España / Vogue Arabia editorial voice per template per locale.
+- Do NOT introduce a real cart/checkout/payment/auth flow on either ecommerce template. The conversion patterns are deliberate demos: phone-and-whatsapp (Bottega) and private-request (Luxe). A real commerce engine is Phase 3 work, gated on Phase 2g3.6 closing.
+- Do NOT translate Italian page slugs (`shop`, `product`, `atelier`, `journal`, `contatti`, `collezione`, `maison`, `lookbook`) to non-IT equivalents — URLs stay canonical Italian, only labels change per locale.
+- Do NOT add WhatsApp anywhere on Luxe — it's the Bottega-only conversion marker.
+- Do NOT add Drop/Lookbook/Private Viewing vocabulary anywhere on Bottega — they're Luxe-only maison markers.
+- Do NOT touch the 7 already-multilingual templates (cardio/derm/gusto/chiara/pixel/pragma/elevate) when working on ecommerce. Regression smokes (76/76 chiara · 80/80 pixel · 52/52 gusto · 363/363 full sweep) are the binding gate.
+
+### Gotchas (Session 41)
+
+- **Add `product` to `pages` array even if it's a detail page.** First validation pass failed because the registries had `product` as a content block but not in the `pages` list — the LiveTemplateView's `find_page` lookup 404'd. The simplest fix is to add it as a navigable page (`{"slug": "product", "label": "Pezzo|Look", "kind": "product"}`). For a "real" product detail with multiple drilldown variants, the post mechanism (`/preview/<page>/<post_slug>/`) would be the right path, but requires a content registry with a `posts` list.
+- **`smoke_forms.py` `lf-select` marker is exact-match `class="lf-select"`.** A `<select class="lf-select lf-input">` element does NOT match. The reference pattern (Pragma/Elevate use it) is `<div class="lf-select" data-lf-label="…"><select class="lf-input">…</select></div>` — wrap the native select in a `lf-select` div, put `lf-input` on the select.
+- **8 stub locale files needed during bootstrap.** When the import-block at the bottom of `template_content.py` references `BOTTEGA_CONTENT_EN` etc. but the sub-agents haven't authored them yet, Python ImportError aborts the whole catalog. Workaround: create stub files first that re-export `..._CONTENT_IT as ..._CONTENT_EN` so the import succeeds; sub-agents overwrite each stub with their full locale tree. The validation chain stays green throughout.
+- **The legacy preview composition files (`templates/preview_compositions/ecommerce/{artisan-workshop,fashion-editorial}.html`) still carry their original 10+/12+ Bottega/Luxe literals.** They are deliberately untouched in this session. They are used only for the static listing PNG via the Playwright pipeline. Lifting them is a separate, cosmetic-only Phase 2g2x.3 leftover that doesn't affect the live preview tier — and is now particularly low-priority because the live preview is the primary surface, the static listing PNG is decorative.
+- **`Maglificio Lanifer` was first listed in BOTTEGA_ONLY_TOKENS in the smoke** (typo from the cross-leak audit) — it's actually a Luxe-only fabric house (Lanifer Biella). The smoke includes a sanity-fix `tuple(t for t in BOTTEGA_ONLY_TOKENS if t != "Maglignifico Lanifer")` to strip it. Future tokens authored for cross-leak must be verified against both content trees before being added to the gate.
+- **`data-latin` HTML attribute is a Luxe-only convention** for marking Latin proper names that need `unicode-bidi: isolate` in RTL CSS. Bottega's RTL CSS uses selector-based isolation instead (`html[dir="rtl"] .aw-nav .wm` etc.). Both work — the choice is per-archetype style, not a contract. Future templates can pick either pattern but must not mix them on the same skin.
+
+---
 
 ## Session 40 — Pragma + Elevate i18n: Read This Before Touching Any Multilingual or Business Template Work (2026-04-14)
 

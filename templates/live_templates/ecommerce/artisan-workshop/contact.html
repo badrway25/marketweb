@@ -1,0 +1,198 @@
+{% extends "live_templates/ecommerce/artisan-workshop/_base.html" %}
+{% block extra_css %}
+  .aw-cnt-lead { padding: 56px 56px 36px; max-width: 1080px; margin: 0 auto; }
+  .aw-cnt-lead .eyebrow {
+    display: inline-flex; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-cnt-lead .eyebrow:before { content: '✦'; }
+  .aw-cnt-lead h1 {
+    margin-top: 18px; font-family: var(--heading); font-weight: 700;
+    font-size: 64px; line-height: 1.0; letter-spacing: -0.022em; color: var(--ink); max-width: 18ch;
+  }
+  .aw-cnt-lead .intro {
+    margin-top: 22px; max-width: 64ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.7; color: var(--ink-2);
+  }
+
+  .aw-cnt {
+    padding: 32px 56px 80px; max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: start;
+  }
+  @media (max-width: 960px) { .aw-cnt { grid-template-columns: 1fr; } }
+
+  /* Form */
+  .aw-form-wrap { padding: 32px 32px; border: 2px solid var(--ink); background: var(--paper-2); }
+  .aw-form-wrap .lf-section-title {
+    font-family: var(--heading); font-size: 22px; color: var(--ink); font-weight: 700;
+    border-bottom: 1.5px dashed var(--rule-dash); padding-bottom: 14px; margin-bottom: 18px;
+  }
+  .aw-form-wrap .form-intro {
+    font-family: var(--body); font-size: 14px; line-height: 1.7; color: var(--ink-2);
+    margin-bottom: 20px;
+  }
+  .aw-form-wrap .lf-helper-required {
+    font-family: var(--body); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: 0.10em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .aw-form-wrap .lf-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 14px;
+  }
+  @media (max-width: 720px) { .aw-form-wrap .lf-row { grid-template-columns: 1fr; } }
+  .aw-form-wrap .lf-field { margin-bottom: 14px; }
+  .aw-form-wrap .lf-field.full { grid-column: 1 / -1; }
+  .aw-form-wrap .lf-label {
+    display: block;
+    font-family: var(--body); font-size: var(--lf-label-size); font-weight: var(--lf-label-weight);
+    letter-spacing: var(--lf-label-track); text-transform: uppercase;
+    color: var(--lf-label-color); margin-bottom: 6px;
+  }
+  .aw-form-wrap .lf-label .req { color: var(--accent); margin-left: 4px; }
+  .aw-form-wrap .lf-input,
+  .aw-form-wrap .lf-textarea {
+    width: 100%; padding: var(--lf-pad-y) var(--lf-pad-x);
+    background: var(--lf-bg); border: 1.5px solid var(--lf-border);
+    color: var(--lf-control-color); font-family: var(--body); font-size: 14px;
+    border-radius: var(--lf-radius);
+  }
+  .aw-form-wrap .lf-input:focus,
+  .aw-form-wrap .lf-textarea:focus {
+    outline: none; border-color: var(--lf-border-focus);
+    box-shadow: 0 0 0 var(--lf-ring-size) var(--lf-ring);
+  }
+  .aw-form-wrap .lf-textarea { resize: vertical; min-height: 130px; }
+  .aw-form-wrap .lf-select { position: relative; }
+  .aw-form-wrap .lf-select .lf-input {
+    padding: var(--lf-pad-y) 38px var(--lf-pad-y) var(--lf-pad-x);
+    cursor: pointer;
+    appearance: none; -webkit-appearance: none; -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23FF8F00' stroke-width='1.6' fill='none'/></svg>");
+    background-repeat: no-repeat; background-position: right 14px center;
+  }
+  .aw-form-wrap .lf-submit {
+    margin-top: 20px;
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--lf-submit-bg); color: var(--lf-submit-fg);
+    padding: 16px 28px; border: 1.5px solid var(--lf-submit-bg); border-radius: var(--lf-submit-radius);
+    font-family: var(--heading); font-size: 16px; font-weight: 600; cursor: pointer;
+    box-shadow: 5px 5px 0 var(--accent);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .aw-form-wrap .lf-submit:after { content: '→'; color: var(--lf-submit-arrow); transition: transform .2s ease; }
+  .aw-form-wrap .lf-submit:hover { transform: translate(-1px,-1px); box-shadow: 6px 6px 0 var(--accent); }
+  .aw-form-wrap .lf-submit:hover:after { transform: translateX(4px); }
+  .aw-form-wrap .lf-submit-note {
+    margin-top: 12px; font-family: var(--body); font-size: 12px; color: var(--ink-mute); font-style: italic;
+  }
+
+  /* Right card */
+  .aw-cnt-side { display: flex; flex-direction: column; gap: 22px; }
+  .aw-cnt-card { border: 1.5px solid var(--ink); padding: 24px 24px; background: var(--paper-2); }
+  .aw-cnt-card h5 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .aw-cnt-card .row {
+    padding: 10px 0; border-top: 1px dashed var(--rule-dash);
+    display: grid; grid-template-columns: 110px 1fr; gap: 16px;
+    font-family: var(--body); font-size: 13px;
+  }
+  .aw-cnt-card .row:first-of-type { border-top: 0; }
+  .aw-cnt-card .row .k {
+    font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; color: var(--ink-mute); font-size: 10px; padding-top: 2px;
+  }
+  .aw-cnt-card .row .v {
+    font-family: var(--heading); font-size: 16px; font-style: italic; color: var(--ink); font-weight: 600;
+  }
+  .aw-cnt-card .row.hours .v { font-style: normal; font-family: var(--body); font-size: 13px; }
+  .aw-cnt-card .directions {
+    margin-top: 18px; padding-top: 14px; border-top: 1.5px dashed var(--rule-dash);
+    font-family: var(--body); font-size: 13px; line-height: 1.7; color: var(--ink-2);
+  }
+  .aw-cnt-card .directions strong {
+    display: block; font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  /* FAQ */
+  .aw-faq { padding: 0 56px 80px; max-width: 1080px; margin: 0 auto; }
+  .aw-faq h3 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .aw-faq details {
+    padding: 18px 0; border-top: 1.5px dashed var(--rule-dash);
+  }
+  .aw-faq details:last-of-type { border-bottom: 1.5px dashed var(--rule-dash); }
+  .aw-faq summary {
+    cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--heading); font-size: 20px; color: var(--ink); font-weight: 700;
+  }
+  .aw-faq summary::-webkit-details-marker { display: none; }
+  .aw-faq summary:after { content: '+'; font-family: var(--heading); font-size: 28px; color: var(--accent); font-style: italic; }
+  .aw-faq details[open] summary:after { content: '−'; }
+  .aw-faq details p {
+    margin-top: 14px; font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 78ch;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="aw-cnt-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="aw-cnt">
+  <form class="aw-form-wrap lf-form" data-lm="reveal-soft">
+    <div class="lf-section-title">{{ page_data.form_section_label }}</div>
+    <p class="form-intro">{{ page_data.form_section_intro }}</p>
+    <div class="lf-helper-required">{{ page_data.form_helper_required }}</div>
+    {% for f in page_data.form_fields %}
+      <div class="lf-field{% if f.type == 'textarea' %} full{% endif %}">
+        <label class="lf-label" for="aw-{{ f.name }}">{{ f.label }}{% if f.required %}<span class="req">*</span>{% endif %}</label>
+        {% if f.type == 'select' %}
+          <div class="lf-select" data-lf-label="{{ f.label }}">
+            <select class="lf-input" id="aw-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+              <option value="">—</option>
+              {% for o in f.options %}<option value="{{ o }}">{{ o }}</option>{% endfor %}
+            </select>
+          </div>
+        {% elif f.type == 'textarea' %}
+          <textarea class="lf-textarea lf-input" id="aw-{{ f.name }}" name="{{ f.name }}" rows="{{ f.rows|default:5 }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}></textarea>
+        {% else %}
+          <input class="lf-input" type="{{ f.type }}" id="aw-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <button class="lf-submit" type="submit">{{ page_data.form_submit_button }}</button>
+    <p class="lf-submit-note">{{ page_data.form_submit_note }}</p>
+  </form>
+
+  <aside class="aw-cnt-side" data-lm="reveal-soft">
+    <div class="aw-cnt-card">
+      <h5>{{ page_data.card_label }}</h5>
+      <div class="row"><span class="k">{{ page_data.card_address_label }}</span><span class="v">{{ page_data.card_address_value }}</span></div>
+      <div class="row"><span class="k">{{ page_data.card_phone_label }}</span><span class="v">{{ page_data.card_phone_value }}</span></div>
+      <div class="row"><span class="k">{{ page_data.card_whatsapp_label }}</span><span class="v"><a href="{{ site.whatsapp_link }}" rel="noopener" target="_blank">{{ page_data.card_whatsapp_value }}</a></span></div>
+      <div class="row"><span class="k">{{ page_data.card_email_label }}</span><span class="v">{{ page_data.card_email_value }}</span></div>
+      <div class="row hours"><span class="k">{{ page_data.card_hours_label }}</span><span class="v">{% for h in page_data.card_hours_rows %}{{ h }}<br>{% endfor %}</span></div>
+      <div class="directions">
+        <strong>{{ page_data.card_directions_label }}</strong>
+        {{ page_data.card_directions_text }}
+      </div>
+    </div>
+  </aside>
+</section>
+
+<section class="aw-faq" data-lm-stagger>
+  <h3 data-lm="reveal">{{ page_data.faq_label }}</h3>
+  {% for f in page_data.faq_items %}
+    <details data-lm="reveal"><summary>{{ f.q }}</summary><p>{{ f.a }}</p></details>
+  {% endfor %}
+</section>
+{% endblock %}

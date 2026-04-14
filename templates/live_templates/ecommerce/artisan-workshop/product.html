@@ -1,0 +1,365 @@
+{% extends "live_templates/ecommerce/artisan-workshop/_base.html" %}
+{% block extra_css %}
+  .aw-pdp { padding: 56px 56px 80px; max-width: 1280px; margin: 0 auto; }
+  .aw-pdp .top {
+    display: grid; grid-template-columns: 1.25fr 1fr; gap: 56px;
+  }
+  @media (max-width: 1000px) { .aw-pdp .top { grid-template-columns: 1fr; } }
+
+  /* Gallery */
+  .aw-pdp .gallery .main {
+    aspect-ratio: 4 / 5; background: #d6c6a0 center/cover;
+    border: 1.5px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--terra-mute);
+    position: relative;
+  }
+  .aw-pdp .gallery .main .num {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--paper); padding: 6px 12px;
+    font-family: var(--heading); font-style: italic; font-size: 14px;
+    color: var(--ink); border: 1.5px solid var(--ink);
+  }
+  .aw-pdp .gallery .strip {
+    margin-top: 18px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  .aw-pdp .gallery .strip .t {
+    aspect-ratio: 1; background: #d6c6a0 center/cover;
+    border: 1.5px solid var(--ink); cursor: pointer;
+  }
+
+  /* Right info column */
+  .aw-pdp .info .eyebrow {
+    display: inline-flex; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-pdp .info .eyebrow:before { content: '✦'; color: var(--accent); }
+  .aw-pdp .info h1 {
+    margin-top: 14px; font-family: var(--heading); font-weight: 700;
+    font-size: 48px; line-height: 1.05; color: var(--ink); letter-spacing: -0.018em;
+  }
+  .aw-pdp .info .sub {
+    margin-top: 14px; font-family: var(--heading); font-style: italic;
+    font-size: 18px; color: var(--ink-2);
+  }
+  .aw-pdp .info .price-band {
+    margin-top: 26px; padding: 22px 0; border-top: 1.5px dashed var(--rule-dash);
+    border-bottom: 1.5px dashed var(--rule-dash);
+    display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap;
+  }
+  .aw-pdp .info .price-band .price {
+    font-family: var(--heading); font-size: 38px; font-weight: 700; color: var(--ink);
+  }
+  .aw-pdp .info .price-band .vat {
+    font-family: var(--body); font-size: 12px; color: var(--ink-mute); font-style: italic;
+  }
+  .aw-pdp .info .price-band .tag {
+    font-family: var(--body); font-size: 10px; font-weight: 800;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+    border: 1.5px solid var(--accent); padding: 5px 10px;
+  }
+  .aw-pdp .info .intro {
+    margin-top: 24px; font-family: var(--body); font-size: 16px; line-height: 1.7; color: var(--ink-2);
+  }
+
+  /* Variant card */
+  .aw-pdp .variant {
+    margin-top: 28px; border: 1.5px solid var(--ink); padding: 20px 22px;
+    background: var(--paper-2);
+  }
+  .aw-pdp .variant h5 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .aw-pdp .variant .pills { display: flex; gap: 10px; flex-wrap: wrap; }
+  .aw-pdp .variant .pill {
+    padding: 9px 16px; border: 1.5px solid var(--ink); background: var(--paper);
+    font-family: var(--heading); font-size: 14px; font-weight: 600; color: var(--ink);
+    cursor: pointer; transition: background .15s ease, color .15s ease;
+  }
+  .aw-pdp .variant .pill.is-current { background: var(--ink); color: var(--paper); }
+  .aw-pdp .variant .pill:hover { background: var(--accent); color: var(--ink); }
+  .aw-pdp .variant .helper {
+    margin-top: 12px; font-family: var(--body); font-size: 12px; color: var(--ink-mute); font-style: italic;
+  }
+  .aw-pdp .variant .chart-link {
+    margin-top: 8px; display: inline-flex; gap: 8px;
+    font-family: var(--heading); font-size: 14px; font-style: italic; color: var(--accent);
+    border-bottom: 1.5px solid var(--accent); padding-bottom: 2px;
+  }
+
+  /* Buy band */
+  .aw-pdp .buy {
+    margin-top: 28px;
+    display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center;
+  }
+  .aw-pdp .buy .aw-btn-primary { width: 100%; justify-content: center; padding: 18px 22px; }
+  .aw-pdp .buy .whatsapp {
+    font-family: var(--heading); font-size: 15px; font-weight: 600; color: var(--accent);
+    font-style: italic; border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+  .aw-pdp .buy-note {
+    grid-column: 1 / -1;
+    margin-top: 4px; font-family: var(--body); font-size: 12px; color: var(--ink-mute); font-style: italic;
+  }
+
+  /* Specs (info_rows) */
+  .aw-pdp .specs {
+    margin-top: 56px; border-top: 2px dashed var(--rule-dash); padding-top: 36px;
+    display: grid; grid-template-columns: 220px 1fr; gap: 32px;
+  }
+  @media (max-width: 720px) { .aw-pdp .specs { grid-template-columns: 1fr; } }
+  .aw-pdp .specs h4 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-pdp .specs .rows .r {
+    display: grid; grid-template-columns: 200px 1fr; gap: 20px;
+    padding: 12px 0; border-bottom: 1px dashed var(--rule-dash);
+    font-family: var(--body); font-size: 14px;
+  }
+  .aw-pdp .specs .rows .r:last-child { border-bottom: 0; }
+  .aw-pdp .specs .rows .r .k {
+    font-weight: 700; color: var(--ink); letter-spacing: 0.04em;
+    text-transform: uppercase; font-size: 11px; padding-top: 2px;
+  }
+  .aw-pdp .specs .rows .r .v { color: var(--ink-2); font-style: italic; font-family: var(--heading); font-size: 16px; font-weight: 500; }
+
+  /* Artisan signature card — typographic monogram (no portrait) per
+     Bottega's typographic-led DNA. */
+  .aw-pdp .artisan {
+    margin-top: 56px; border-top: 2px dashed var(--rule-dash); padding-top: 36px;
+    display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: center;
+  }
+  @media (max-width: 720px) { .aw-pdp .artisan { grid-template-columns: 1fr; } }
+  .aw-pdp .artisan .monogram {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: var(--paper-2);
+    border: 2.5px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--terra-mute);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .aw-pdp .artisan .monogram::before {
+    content: ''; position: absolute; inset: 12px;
+    border-radius: 50%;
+    border: 1px dashed var(--rule-dash);
+  }
+  .aw-pdp .artisan .monogram .letters {
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    color: var(--accent); font-size: 76px; line-height: 1; letter-spacing: -0.03em;
+  }
+  .aw-pdp .artisan .monogram .stamp-mini {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 9px; font-weight: 800;
+    letter-spacing: 0.30em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .aw-pdp .artisan h4 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-pdp .artisan h3 {
+    margin-top: 8px; font-family: var(--heading); font-size: 26px; color: var(--ink); font-weight: 700;
+  }
+  .aw-pdp .artisan .role {
+    font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--ink-2);
+    margin-top: 4px;
+  }
+  .aw-pdp .artisan .bio {
+    margin-top: 14px; font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--ink-2);
+    max-width: 60ch;
+  }
+
+  /* Care */
+  .aw-pdp .care {
+    margin-top: 56px; border-top: 2px dashed var(--rule-dash); padding-top: 36px;
+  }
+  .aw-pdp .care h4 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-pdp .care .intro {
+    margin-top: 10px; font-family: var(--body); font-size: 15px; line-height: 1.7;
+    color: var(--ink-2); max-width: 76ch;
+  }
+  .aw-pdp .care .grid {
+    margin-top: 22px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+  }
+  @media (max-width: 960px) { .aw-pdp .care .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px) { .aw-pdp .care .grid { grid-template-columns: 1fr; } }
+  .aw-pdp .care .item h5 {
+    font-family: var(--heading); font-size: 16px; color: var(--ink); font-weight: 700;
+    border-top: 2px solid var(--accent); padding-top: 12px;
+  }
+  .aw-pdp .care .item p {
+    margin-top: 6px; font-family: var(--body); font-size: 13px; line-height: 1.65; color: var(--ink-2);
+  }
+
+  /* Provenance steps */
+  .aw-pdp .prov {
+    margin-top: 56px; padding: 36px 0; border-top: 2px dashed var(--rule-dash);
+  }
+  .aw-pdp .prov h4 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-pdp .prov h3 {
+    margin-top: 10px; font-family: var(--heading); font-size: 32px; color: var(--ink); font-weight: 700; letter-spacing: -0.018em;
+  }
+  .aw-pdp .prov .timeline {
+    margin-top: 28px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    border-top: 2px dashed var(--rule-dash); position: relative;
+  }
+  @media (max-width: 960px) { .aw-pdp .prov .timeline { grid-template-columns: 1fr; } }
+  .aw-pdp .prov .step { padding: 24px 16px 0; border-right: 1px dashed var(--rule-dash); position: relative; }
+  .aw-pdp .prov .step:last-child { border-right: 0; }
+  .aw-pdp .prov .step .n {
+    font-family: var(--heading); font-style: italic; font-size: 32px; color: var(--accent); font-weight: 700;
+    background: var(--paper); padding: 0 6px; position: absolute; top: -22px; left: 16px;
+  }
+  .aw-pdp .prov .step h5 {
+    margin-top: 6px; font-family: var(--heading); font-size: 18px; color: var(--ink); font-weight: 700;
+  }
+  .aw-pdp .prov .step .place {
+    margin-top: 8px; font-family: var(--body); font-size: 12px; color: var(--ink-mute); font-style: italic;
+  }
+  .aw-pdp .prov .step .desc {
+    margin-top: 12px; font-family: var(--body); font-size: 13px; line-height: 1.6; color: var(--ink-2);
+  }
+
+  /* Related */
+  .aw-pdp .related {
+    margin-top: 56px; padding-top: 36px; border-top: 2px dashed var(--rule-dash);
+  }
+  .aw-pdp .related h4 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-pdp .related h3 {
+    margin-top: 10px; font-family: var(--heading); font-size: 32px; color: var(--ink); font-weight: 700;
+  }
+  .aw-pdp .related .intro {
+    margin-top: 10px; max-width: 60ch; font-family: var(--body); font-size: 14px; line-height: 1.7; color: var(--ink-2);
+  }
+  .aw-pdp .related .grid {
+    margin-top: 22px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+  }
+  @media (max-width: 960px) { .aw-pdp .related .grid { grid-template-columns: 1fr; } }
+{% endblock %}
+
+{% block content %}
+<section class="aw-pdp">
+  <div class="top" data-lm="reveal">
+    <div class="gallery">
+      <div class="main" style="background-image:url('{{ page_data.gallery.0 }}')">
+        <span class="num">{{ page_data.n }}</span>
+      </div>
+      <div class="strip">
+        {% for img in page_data.gallery %}
+          <div class="t" style="background-image:url('{{ img }}')"></div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="info">
+      <div class="eyebrow">{{ page_data.n }} · {{ page_data.edition_note }}</div>
+      <h1>{{ page_data.name }}</h1>
+      <div class="sub">{{ page_data.subtitle }}</div>
+
+      <div class="price-band">
+        <span class="price">{{ page_data.price }}</span>
+        <span class="vat">{{ page_data.vat_note }}</span>
+        <span class="tag">{{ page_data.edition }} · {{ site.edition_label }}</span>
+      </div>
+
+      <p class="intro">{{ page_data.intro }}</p>
+
+      <div class="variant">
+        <h5>{{ page_data.size_label }}</h5>
+        <div class="pills">
+          {% for s in page_data.size_options %}
+            <span class="pill{% if forloop.counter == 2 %} is-current{% endif %}">{{ s }}</span>
+          {% endfor %}
+        </div>
+        <div class="helper">{{ page_data.size_intro }}</div>
+        <a class="chart-link" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.size_chart_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.size_chart_link }} →</a>
+      </div>
+
+      <div class="buy">
+        <a class="aw-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.buy_primary }}</a>
+        <a class="whatsapp" href="{{ site.whatsapp_link }}" rel="noopener" target="_blank">{{ page_data.buy_secondary }} →</a>
+        <p class="buy-note">{{ page_data.buy_note }}</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="specs" data-lm="reveal">
+    <h4>{{ page_data.info_label }}</h4>
+    <div class="rows">
+      {% for k, v in page_data.info_rows %}
+        <div class="r"><span class="k">{{ k }}</span><span class="v">{{ v }}</span></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="artisan" data-lm="reveal">
+    <div class="monogram">
+      <div class="letters" data-latin>{{ page_data.artisan_name|first|upper }}</div>
+      <div class="stamp-mini">FIRMA</div>
+    </div>
+    <div>
+      <h4>{{ page_data.artisan_label }}</h4>
+      <h3 data-latin>{{ page_data.artisan_name }}</h3>
+      <div class="role">{{ page_data.artisan_role }}</div>
+      <p class="bio">{{ page_data.artisan_bio }}</p>
+    </div>
+  </section>
+
+  <section class="care" data-lm="reveal">
+    <h4>{{ page_data.care_label }}</h4>
+    <p class="intro">{{ page_data.care_intro }}</p>
+    <div class="grid">
+      {% for k, v in page_data.care_items %}
+        <div class="item"><h5>{{ k }}</h5><p>{{ v }}</p></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="prov" data-lm="reveal">
+    <h4>{{ page_data.provenance_label }}</h4>
+    <h3>{{ page_data.provenance_heading|safe }}</h3>
+    <div class="timeline">
+      {% for n, t, p in page_data.provenance_steps %}
+        <div class="step">
+          <span class="n">{{ n }}</span>
+          <h5>{{ t }}</h5>
+          <div class="desc">{{ p }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="related" data-lm-stagger>
+    <h4>{{ page_data.related_label }}</h4>
+    <h3 data-lm="reveal">{{ page_data.related_label }}</h3>
+    <p class="intro" data-lm="reveal">{{ page_data.related_intro }}</p>
+    <div class="grid">
+      {% for r in page_data.related_items %}
+        <a class="aw-card" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'product' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+          <div class="thumb" style="background-image:url('{{ r.image }}')">
+            <span class="num">{{ r.n }}</span>
+          </div>
+          <h4>{{ r.name }}</h4>
+          <div class="meta">{{ r.meta }}</div>
+          <div class="price-row"><span class="price">{{ r.price }}</span></div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+</section>
+{% endblock %}

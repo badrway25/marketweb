@@ -1,0 +1,114 @@
+{% extends "live_templates/ecommerce/artisan-workshop/_base.html" %}
+{% block extra_css %}
+  .aw-jour-lead { padding: 56px 56px 36px; max-width: 1080px; margin: 0 auto; }
+  .aw-jour-lead .eyebrow {
+    display: inline-flex; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-jour-lead .eyebrow:before { content: '✦'; }
+  .aw-jour-lead h1 {
+    margin-top: 18px; font-family: var(--heading); font-weight: 700;
+    font-size: 64px; line-height: 1.0; letter-spacing: -0.022em; color: var(--ink); max-width: 18ch;
+  }
+  .aw-jour-lead .intro {
+    margin-top: 22px; max-width: 64ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.7; color: var(--ink-2);
+  }
+
+  .aw-jour { padding: 32px 56px 80px; max-width: 1280px; margin: 0 auto; }
+  .aw-jour .head {
+    margin-bottom: 24px; padding-bottom: 18px;
+    border-bottom: 2px dashed var(--rule-dash);
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-jour .list { display: grid; gap: 0; }
+  .aw-jour .entry {
+    display: grid; grid-template-columns: 80px 1fr 200px;
+    gap: 36px; padding: 32px 0;
+    border-bottom: 1.5px dashed var(--rule-dash);
+    align-items: start;
+  }
+  @media (max-width: 720px) {
+    .aw-jour .entry { grid-template-columns: 60px 1fr; }
+    .aw-jour .entry .meta-col { grid-column: 2; padding-top: 8px; }
+  }
+  .aw-jour .entry .n {
+    font-family: var(--heading); font-style: italic; font-size: 56px;
+    color: var(--accent); font-weight: 700; line-height: 1; padding-top: 4px;
+  }
+  .aw-jour .entry h3 {
+    font-family: var(--heading); font-size: 28px; color: var(--ink); font-weight: 700; letter-spacing: -0.012em;
+    transition: color .15s ease;
+  }
+  .aw-jour .entry:hover h3 { color: var(--accent); }
+  .aw-jour .entry .place {
+    margin-top: 6px; font-family: var(--body); font-size: 12px;
+    color: var(--ink-mute); font-style: italic;
+  }
+  .aw-jour .entry .excerpt {
+    margin-top: 14px; font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--ink-2);
+    max-width: 64ch;
+  }
+  .aw-jour .entry .meta-col {
+    text-align: right;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .aw-jour .entry .meta-col a {
+    display: inline-block; margin-top: 12px;
+    font-family: var(--heading); font-style: italic; font-size: 14px;
+    color: var(--accent); border-bottom: 1.5px solid var(--accent); padding-bottom: 2px;
+    text-transform: none; letter-spacing: 0;
+  }
+
+  .aw-jour-foot {
+    padding: 36px 56px; background: var(--paper-3);
+    border-top: 2.5px dashed var(--rule-dash);
+  }
+  .aw-jour-foot .inner { max-width: 1280px; margin: 0 auto; }
+  .aw-jour-foot h5 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-jour-foot p {
+    margin-top: 10px; font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--ink-2);
+    max-width: 76ch;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="aw-jour-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="aw-jour" data-lm-stagger>
+  <div class="head" data-lm="reveal">{{ page_data.list_label }}</div>
+  <div class="list">
+    {% for e in page_data.entries %}
+      <article class="aw-jour-entry entry" data-lm="reveal">
+        <div class="n">{{ e.n }}</div>
+        <div>
+          <h3>{{ e.title }}</h3>
+          <div class="place">{{ e.place }}</div>
+          <p class="excerpt">{{ e.excerpt }}</p>
+        </div>
+        <div class="meta-col">
+          {{ e.minutes }}
+          <br><a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'journal' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}#{{ e.n }}">{{ chrome.read_more|default:"Leggi" }} →</a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="aw-jour-foot" data-lm="reveal">
+  <div class="inner">
+    <h5>{{ page_data.footer_note_label }}</h5>
+    <p>{{ page_data.footer_note }}</p>
+  </div>
+</section>
+{% endblock %}

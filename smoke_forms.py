@@ -27,6 +27,9 @@ PAGES = [
     ("pragma-corporate-suite",         "business",   "contatti",     "cs-form"),
     # Elevate startup-saas demo (8-field + upload)
     ("elevate-startup-landing",        "business",   "demo",         "sl-form"),
+    # Phase 2g3.5 — eCommerce contact forms
+    ("bottega-shop-artigianale",       "ecommerce",  "contatti",     "aw-form"),
+    ("luxe-fashion-store",             "ecommerce",  "contatti",     "fe-form"),
 ]
 
 LOCALES_BY_TEMPLATE = {
@@ -35,6 +38,8 @@ LOCALES_BY_TEMPLATE = {
     "gusto-fine-dining":              ["it", "en", "fr", "es", "ar"],
     "pragma-corporate-suite":         ["it", "en", "fr", "es", "ar"],
     "elevate-startup-landing":        ["it", "en", "fr", "es", "ar"],
+    "bottega-shop-artigianale":       ["it", "en", "fr", "es", "ar"],
+    "luxe-fashion-store":             ["it", "en", "fr", "es", "ar"],
 }
 
 # Features the new polish must expose
@@ -72,7 +77,7 @@ def run():
                 missing_primitives.append((url+q, "live-forms.js not linked"))
             # Every form page must carry at least ONE custom listbox except
             # the medical contact form which is select-free.
-            if page_kind != "contatti" or slug in {"pragma-corporate-suite", "elevate-startup-landing"}:
+            if page_kind != "contatti" or slug in {"pragma-corporate-suite", "elevate-startup-landing", "bottega-shop-artigianale", "luxe-fashion-store"}:
                 if MARKER_LF_SELECT not in body:
                     missing_primitives.append((url+q, "no .lf-select"))
             ok += 1

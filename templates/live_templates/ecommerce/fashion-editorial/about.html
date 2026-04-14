@@ -1,0 +1,277 @@
+{% extends "live_templates/ecommerce/fashion-editorial/_base.html" %}
+{% block extra_css %}
+  .fe-mais-lead { padding: 80px 56px 56px; max-width: 1100px; margin: 0 auto; border-bottom: 1px solid var(--rule); }
+  .fe-mais-lead .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-mais-lead .eyebrow:before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+  .fe-mais-lead h1 {
+    margin-top: 26px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 84px; line-height: 0.98; letter-spacing: -0.025em; color: var(--bone); max-width: 18ch;
+  }
+  .fe-mais-lead .intro {
+    margin-top: 28px; max-width: 64ch;
+    font-family: var(--heading); font-style: italic; font-size: 18px; line-height: 1.6; color: var(--bone-mute);
+  }
+
+  .fe-statement { padding: 96px 56px; max-width: 1100px; margin: 0 auto; }
+  .fe-statement .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-statement .lbl:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-statement h2 {
+    margin-top: 26px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 64px; line-height: 1.0; letter-spacing: -0.025em; color: var(--bone); max-width: 22ch;
+  }
+  .fe-statement p {
+    margin-top: 28px; max-width: 64ch;
+    font-family: var(--heading); font-style: italic; font-size: 18px; line-height: 1.6; color: var(--bone-mute);
+  }
+
+  /* Three atelier cards */
+  .fe-ateliers { padding: 96px 56px; max-width: 1320px; margin: 0 auto; border-top: 1px solid var(--rule); }
+  .fe-ateliers .head { margin-bottom: 56px; max-width: 760px; }
+  .fe-ateliers .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-ateliers .head .lbl:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-ateliers .head h2 {
+    margin-top: 24px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 52px; line-height: 1.04; letter-spacing: -0.022em; color: var(--bone);
+  }
+  .fe-ateliers .head p {
+    margin-top: 22px; max-width: 60ch;
+    font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.6; color: var(--bone-mute);
+  }
+  .fe-ateliers .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  @media (max-width: 1100px) { .fe-ateliers .grid { grid-template-columns: 1fr; } }
+  .fe-atel {
+    background: var(--ink-2); border: 1px solid var(--rule);
+  }
+  .fe-atel .img {
+    aspect-ratio: 4 / 3; background: var(--ink-3) center/cover;
+    filter: grayscale(10%) contrast(1.10);
+  }
+  .fe-atel .body { padding: 32px 28px 36px; }
+  .fe-atel .city {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 36px; color: var(--gold);
+  }
+  .fe-atel .place {
+    margin-top: 8px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .fe-atel .role {
+    margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--rule);
+    font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--bone);
+  }
+  .fe-atel .since {
+    margin-top: 6px; font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--bone-faint);
+  }
+  .fe-atel .head-r {
+    margin-top: 20px; font-family: var(--heading); font-style: italic; font-size: 15px; color: var(--bone-mute);
+  }
+  .fe-atel .team {
+    margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--rule);
+    font-family: var(--body); font-size: 12px; line-height: 1.65; color: var(--bone-mute);
+  }
+
+  /* Direction credit */
+  .fe-direction {
+    padding: 96px 56px; max-width: 1320px; margin: 0 auto;
+    display: grid; grid-template-columns: 240px 1fr; gap: 56px; align-items: center;
+    border-top: 1px solid var(--rule);
+  }
+  @media (max-width: 1000px) { .fe-direction { grid-template-columns: 1fr; } }
+  .fe-direction .portrait {
+    width: 240px; height: 320px; background: var(--ink-2) center/cover;
+    filter: grayscale(12%) contrast(1.10); border: 1px solid var(--rule);
+  }
+  .fe-direction .text .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-direction .text h3 {
+    margin-top: 14px; font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 42px; color: var(--bone);
+  }
+  .fe-direction .text .role {
+    margin-top: 8px; font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .fe-direction .text p {
+    margin-top: 22px; max-width: 60ch;
+    font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.65; color: var(--bone-mute);
+  }
+  .fe-direction .text blockquote {
+    margin-top: 28px; padding: 22px 26px; border-left: 2px solid var(--gold);
+    font-family: var(--heading); font-style: italic; font-size: 22px; line-height: 1.4; color: var(--bone);
+  }
+  .fe-direction .text .attribution {
+    margin-top: 14px; font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
+  }
+
+  /* Press list */
+  .fe-press-list { padding: 96px 56px; max-width: 1320px; margin: 0 auto; border-top: 1px solid var(--rule); }
+  .fe-press-list .head { margin-bottom: 36px; max-width: 720px; }
+  .fe-press-list .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-press-list .head .lbl:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-press-list .head h2 {
+    margin-top: 24px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 48px; line-height: 1.05; color: var(--bone);
+  }
+  .fe-press-list .row {
+    display: grid; grid-template-columns: 1.4fr 0.6fr 2fr 1fr; gap: 32px;
+    padding: 24px 0; border-top: 1px solid var(--rule); align-items: baseline;
+  }
+  @media (max-width: 1000px) {
+    .fe-press-list .row { grid-template-columns: 1fr; gap: 6px; padding: 20px 0; }
+  }
+  .fe-press-list .row:last-child { border-bottom: 1px solid var(--rule); }
+  .fe-press-list .magazine {
+    font-family: var(--heading); font-style: italic; font-size: 22px; color: var(--gold); font-weight: 500;
+  }
+  .fe-press-list .issue {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .fe-press-list .title {
+    font-family: var(--heading); font-style: italic; font-size: 17px; color: var(--bone); line-height: 1.4;
+  }
+  .fe-press-list .byline {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--bone-faint); text-align: right;
+  }
+  @media (max-width: 1000px) { .fe-press-list .byline { text-align: left; } }
+
+  /* Numbers + visit CTA */
+  .fe-numbers { padding: 96px 56px; max-width: 1320px; margin: 0 auto; border-top: 1px solid var(--rule); }
+  .fe-numbers .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-numbers .lbl:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-numbers .grid {
+    margin-top: 36px;
+    display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule);
+  }
+  @media (max-width: 720px) { .fe-numbers .grid { grid-template-columns: repeat(2, 1fr); } }
+  .fe-numbers .stat {
+    border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule);
+    padding: 36px 32px;
+  }
+  .fe-numbers .stat .v {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 64px; color: var(--gold); line-height: 1;
+    letter-spacing: -0.025em;
+  }
+  .fe-numbers .stat .l {
+    margin-top: 12px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+
+  .fe-visit { padding: 120px 56px; background: #050409; border-top: 1px solid var(--rule); text-align: center; }
+  .fe-visit .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-visit h2 {
+    margin-top: 24px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; line-height: 1.06; letter-spacing: -0.022em; color: var(--bone); max-width: 22ch;
+    margin-left: auto; margin-right: auto;
+  }
+  .fe-visit p {
+    margin-top: 22px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.6; color: var(--bone-mute);
+    margin-left: auto; margin-right: auto;
+  }
+  .fe-visit .actions { margin-top: 36px; }
+{% endblock %}
+
+{% block content %}
+<section class="fe-mais-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="fe-statement" data-lm="reveal">
+  <div class="lbl">{{ page_data.statement_label }}</div>
+  <h2>{{ page_data.statement_heading|safe }}</h2>
+  <p>{{ page_data.statement_text }}</p>
+</section>
+
+<section class="fe-ateliers">
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ page_data.ateliers_label }}</div>
+    <h2>{{ page_data.ateliers_heading|safe }}</h2>
+    <p>{{ page_data.ateliers_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="240">
+    {% for a in page_data.ateliers %}
+      <article class="fe-atel" data-lm="reveal">
+        <div class="img" style="background-image:url('{{ a.image }}')"></div>
+        <div class="body">
+          <div class="city" data-latin>{{ a.city }}</div>
+          <div class="place" data-latin>{{ a.place }}</div>
+          <div class="role">{{ a.role }}</div>
+          <div class="since">{{ a.since }}</div>
+          <div class="head-r" data-latin>{{ a.head }}</div>
+          <div class="team">{{ a.team }}</div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fe-direction" data-lm="reveal">
+  <div class="portrait" style="background-image:url('{{ page_data.direction_portrait }}')"></div>
+  <div class="text">
+    <div class="lbl">{{ page_data.direction_label }}</div>
+    <h3 data-latin>{{ page_data.direction_name }}</h3>
+    <div class="role">{{ page_data.direction_role }}</div>
+    <p>{{ page_data.direction_text }}</p>
+    <blockquote>{{ page_data.direction_quote }}</blockquote>
+    <div class="attribution" data-latin>{{ page_data.direction_quote_attribution }}</div>
+  </div>
+</section>
+
+<section class="fe-press-list" data-lm-stagger>
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ page_data.press_label }}</div>
+    <h2>{{ page_data.press_heading|safe }}</h2>
+  </div>
+  {% for p in page_data.press_items %}
+    <div class="row" data-lm="reveal">
+      <span class="magazine" data-latin>{{ p.magazine }}</span>
+      <span class="issue">{{ p.issue }}</span>
+      <span class="title">{{ p.title }}</span>
+      <span class="byline" data-latin>{{ p.byline }}</span>
+    </div>
+  {% endfor %}
+</section>
+
+<section class="fe-numbers" data-lm="reveal">
+  <div class="lbl">{{ page_data.numbers_label }}</div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="180">
+    {% for k, v in page_data.numbers_items %}
+      <div class="stat"><div class="v" data-latin data-lm="counter" data-lm-to="{{ k }}">{{ k }}</div><div class="l">{{ v }}</div></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fe-visit" data-lm="reveal">
+  <div class="lbl">{{ page_data.visit_label }}</div>
+  <h2>{{ page_data.visit_heading|safe }}</h2>
+  <p>{{ page_data.visit_text }}</p>
+  <div class="actions">
+    <a class="fe-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.visit_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.visit_primary }}</a>
+  </div>
+</section>
+{% endblock %}

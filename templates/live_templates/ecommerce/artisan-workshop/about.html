@@ -1,0 +1,257 @@
+{% extends "live_templates/ecommerce/artisan-workshop/_base.html" %}
+{% block extra_css %}
+  .aw-atelier-lead { padding: 56px 56px 36px; max-width: 1080px; margin: 0 auto; }
+  .aw-atelier-lead .eyebrow {
+    display: inline-flex; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-atelier-lead .eyebrow:before { content: '✦'; color: var(--accent); }
+  .aw-atelier-lead h1 {
+    margin-top: 18px; font-family: var(--heading); font-weight: 700;
+    font-size: 64px; line-height: 1.0; letter-spacing: -0.022em; color: var(--ink); max-width: 18ch;
+  }
+  .aw-atelier-lead .intro {
+    margin-top: 22px; max-width: 64ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.7; color: var(--ink-2);
+  }
+
+  .aw-mission { padding: 0 56px 60px; max-width: 1280px; margin: 0 auto; }
+  .aw-mission .grid {
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: center;
+  }
+  @media (max-width: 960px) { .aw-mission .grid { grid-template-columns: 1fr; } }
+  .aw-mission .panel-text .label {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-mission .panel-text h2 {
+    margin-top: 14px; font-family: var(--heading); font-size: 42px;
+    color: var(--ink); font-weight: 700; line-height: 1.1; letter-spacing: -0.018em;
+  }
+  .aw-mission .panel-text p {
+    margin-top: 22px; font-family: var(--body); font-size: 16px; line-height: 1.75; color: var(--ink-2); max-width: 60ch;
+  }
+
+  /* Process timeline */
+  .aw-process { padding: 80px 56px; max-width: 1280px; margin: 0 auto;
+    border-top: 2px dashed var(--rule-dash); }
+  .aw-process .head { margin-bottom: 32px; max-width: 660px; }
+  .aw-process .steps {
+    display: grid; grid-template-columns: 220px 1fr;
+    border-top: 2px dashed var(--rule-dash);
+  }
+  .aw-process .step {
+    display: contents;
+  }
+  .aw-process .step-n {
+    border-bottom: 1.5px dashed var(--rule-dash);
+    padding: 28px 0;
+    font-family: var(--heading); font-style: italic; font-size: 56px;
+    color: var(--accent); font-weight: 700;
+    align-self: start;
+  }
+  .aw-process .step-body {
+    border-bottom: 1.5px dashed var(--rule-dash);
+    padding: 28px 0 28px 32px;
+    border-left: 1.5px dashed var(--rule-dash);
+  }
+  @media (max-width: 720px) {
+    .aw-process .steps { grid-template-columns: 1fr; }
+    .aw-process .step-body { border-left: 0; padding-left: 0; }
+  }
+  .aw-process .step-body h3 {
+    font-family: var(--heading); font-size: 24px; color: var(--ink); font-weight: 700;
+  }
+  .aw-process .step-body .place {
+    margin-top: 6px; font-family: var(--body); font-size: 12px;
+    color: var(--ink-mute); font-style: italic;
+  }
+  .aw-process .step-body .desc {
+    margin-top: 14px; font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 64ch;
+  }
+  .aw-process .step-body .duration {
+    margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--rule-dash);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  }
+
+  /* Founder + numbers — typographic monogram replaces portrait per
+     Bottega's typographic-led DNA (Session 42 image-coherence pass). */
+  .aw-founder { padding: 80px 56px; max-width: 1280px; margin: 0 auto;
+    border-top: 2px dashed var(--rule-dash);
+    display: grid; grid-template-columns: 240px 1fr 240px; gap: 48px; align-items: center; }
+  @media (max-width: 1000px) { .aw-founder { grid-template-columns: 1fr; } }
+  .aw-founder .monogram {
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: var(--paper-2);
+    border: 2.5px solid var(--ink);
+    box-shadow: 7px 7px 0 var(--terra-mute);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .aw-founder .monogram .letters {
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    color: var(--accent); font-size: 92px; line-height: 1; letter-spacing: -0.04em;
+  }
+  .aw-founder .monogram .letters span {
+    font-style: normal; color: var(--ink); font-weight: 400;
+    font-size: 38px; vertical-align: middle; padding: 0 4px;
+  }
+  .aw-founder .monogram .since {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 9px; font-weight: 800;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .aw-founder .monogram::before {
+    content: ''; position: absolute; inset: 14px;
+    border-radius: 50%;
+    border: 1px dashed var(--rule-dash);
+    pointer-events: none;
+  }
+  .aw-founder .text .label {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-founder .text h2 {
+    margin-top: 14px; font-family: var(--heading); font-size: 38px;
+    color: var(--ink); font-weight: 700; letter-spacing: -0.018em;
+  }
+  .aw-founder .text p {
+    margin-top: 18px; font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 60ch;
+  }
+  .aw-founder .text .caption {
+    margin-top: 14px; font-family: var(--heading); font-style: italic; font-size: 14px;
+    color: var(--ink-mute);
+  }
+  .aw-founder .numbers {
+    border: 1.5px solid var(--ink); padding: 22px 24px; background: var(--paper-2);
+    transform: rotate(0.6deg); box-shadow: 6px 6px 0 var(--terra-mute);
+  }
+  .aw-founder .numbers h5 {
+    font-family: var(--body); font-size: 10px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .aw-founder .numbers .row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 8px 0; border-top: 1px dashed var(--rule-dash);
+  }
+  .aw-founder .numbers .row:first-of-type { border-top: 0; }
+  .aw-founder .numbers .row .v {
+    font-family: var(--heading); font-style: italic; font-size: 24px; color: var(--ink); font-weight: 700;
+  }
+  .aw-founder .numbers .row .k {
+    font-family: var(--body); font-size: 11px; color: var(--ink-mute);
+    text-align: right; max-width: 60%;
+  }
+
+  /* Visit card */
+  .aw-visit { padding: 80px 56px; background: var(--ink); color: var(--paper); }
+  .aw-visit .inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr auto; gap: 36px; align-items: center;
+  }
+  @media (max-width: 720px) { .aw-visit .inner { grid-template-columns: 1fr; } }
+  .aw-visit .text .label {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-visit .text h2 {
+    margin-top: 14px; font-family: var(--heading); font-size: 44px;
+    color: var(--paper); font-weight: 700; letter-spacing: -0.022em;
+  }
+  .aw-visit .text h2 em { color: var(--accent); font-style: italic; }
+  .aw-visit .text p {
+    margin-top: 18px; font-family: var(--body); font-size: 15px; line-height: 1.75;
+    color: rgba(246,236,216,0.78); max-width: 64ch;
+  }
+  .aw-visit .actions {
+    display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  }
+  .aw-visit .aw-btn-primary { background: var(--accent); border-color: var(--accent); color: var(--ink); box-shadow: 5px 5px 0 var(--paper); }
+  .aw-visit .aw-btn-primary:after { color: var(--ink); }
+  .aw-visit .whatsapp {
+    color: var(--accent); font-style: italic; font-family: var(--heading);
+    font-size: 16px; font-weight: 600; border-bottom: 1.5px solid var(--accent); padding-bottom: 4px;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="aw-atelier-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="aw-mission">
+  <div class="grid">
+    <aside class="aw-stamp" data-lm="reveal-soft">
+      <span class="corner-n">★</span>
+      <span class="corner-w">{{ page_data.mission_label }}</span>
+      <h3>{{ page_data.mission_heading|safe }}</h3>
+      <div class="rule"></div>
+      <p style="font-family:var(--body);font-size:14px;line-height:1.7;color:var(--ink-2)">{{ page_data.mission_text }}</p>
+      <div class="footer">✦ {{ site.tag }} ✦</div>
+    </aside>
+    <div class="panel-text" data-lm="reveal">
+      <div class="label">{{ page_data.process_label }}</div>
+      <h2>{{ page_data.process_heading|safe }}</h2>
+      <p>Cinque tappe ferme, mai accelerate. Da quando arriva la materia prima al banco di Severino, fino al momento in cui Anna scrive il numero progressivo sul cartoncino di consegna, ogni passaggio ha il suo tempo. Quello sotto è il percorso che ogni pezzo del catalogo segue, senza eccezioni.</p>
+    </div>
+  </div>
+</section>
+
+<section class="aw-process" data-lm-stagger>
+  <div class="head" data-lm="reveal">
+    <div class="aw-section sec-label" style="padding:0">{{ page_data.process_label }}</div>
+    <h2 style="margin-top:14px;font-family:var(--heading);font-size:42px;letter-spacing:-0.018em;line-height:1.1;color:var(--ink)">{{ page_data.process_heading|safe }}</h2>
+  </div>
+  <div class="steps">
+    {% for s in page_data.process_steps %}
+      <div class="step-n" data-lm="reveal">{{ s.n }}</div>
+      <div class="step-body" data-lm="reveal">
+        <h3>{{ s.title }}</h3>
+        <div class="place">{{ s.place }}</div>
+        <p class="desc">{{ s.desc }}</p>
+        <div class="duration">{{ s.duration }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="aw-founder" data-lm="reveal">
+  <div class="monogram">
+    <div class="letters" data-latin>M<span>·</span>A</div>
+    <div class="since">DAL 1968</div>
+  </div>
+  <div class="text">
+    <div class="label">{{ page_data.founder_label }}</div>
+    <h2>{{ page_data.founder_heading|safe }}</h2>
+    <p>{{ page_data.founder_text }}</p>
+    <div class="caption">{{ page_data.founder_caption }}</div>
+  </div>
+  <div class="numbers">
+    <h5>{{ page_data.numbers_label }}</h5>
+    {% for k, v in page_data.numbers_items %}
+      <div class="row"><span class="v">{{ k }}</span><span class="k">{{ v }}</span></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="aw-visit" data-lm="reveal">
+  <div class="inner">
+    <div class="text">
+      <div class="label">{{ page_data.visit_label }}</div>
+      <h2>{{ page_data.visit_heading|safe }}</h2>
+      <p>{{ page_data.visit_text }}</p>
+    </div>
+    <div class="actions">
+      <a class="aw-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.visit_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.visit_primary }}</a>
+      <a class="whatsapp" href="{{ site.whatsapp_link }}" rel="noopener" target="_blank">{{ page_data.visit_secondary }} · {{ site.whatsapp }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

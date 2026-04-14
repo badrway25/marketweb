@@ -1,6 +1,6 @@
 {
-  "version": "0.9.1",
-  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, tier, and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0–0.7.3: ecommerce DNA pilot (Luxe + Bottega, Session 15), business DNA split (Pragma + Elevate, Session 17, D-050), portfolio DNA split (Chiara + Pixel, Session 18, D-051), Chiara surgical layout fix (Session 19, D-052). v0.8.0: Session 20 Live Preview Policy v2 formalization — introduces the two-tier model (D-055). v0.9.0: Session 29 Gusto i18n/RTL closure — all 3 `published_live` templates now carry 5 locales (it/en/fr/es/ar) with working RTL for Arabic per D-063. Gusto's tier_reason is updated to reflect the i18n closure. Every row still carries a `tier` key: `published_live` or `draft`. Today 3 of 20 templates are `published_live` (cardio, dermatologia-elite-roma, gusto-fine-dining); the other 17 are `draft` pending Phase 2g3. The Premium Differentiation Law (D-054) applies retroactively. New optional `locales` field on published_live rows documents multilingual coverage.",
+  "version": "0.10.0",
+  "description": "Registry of all marketplace web templates with brand identity, DNA archetype, tier, and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0–0.7.3: ecommerce DNA pilot (Luxe + Bottega, Session 15), business DNA split (Pragma + Elevate, Session 17, D-050), portfolio DNA split (Chiara + Pixel, Session 18, D-051), Chiara surgical layout fix (Session 19, D-052). v0.8.0: Session 20 Live Preview Policy v2 formalization — introduces the two-tier model (D-055). v0.9.0: Session 29 Gusto i18n/RTL closure — all 3 `published_live` templates now carry 5 locales (it/en/fr/es/ar) with working RTL for Arabic per D-063. Every row still carries a `tier` key: `published_live` or `draft`. v0.10.0 (Session 41, Phase 2g3.5): eCommerce live rollout — Bottega + Luxe flipped from draft to `published_live` with full multipage live skins (artisan-workshop · fashion-editorial archetypes), 6-route coverage each (home/shop|collection/product/about/journal|lookbook/contact), 5 locales with real RTL for Arabic, distinct artisan-warm vs maison-editorial voice contracts. Catalog now 9/20 published_live across 5 categories (medical/restaurant/business/portfolio/ecommerce). The Premium Differentiation Law (D-054) applies retroactively.",
   "last_updated": "2026-04-14",
   "templates": [
     {
@@ -391,11 +391,17 @@
       "tone": "familiar-warm",
       "conversion_pattern": "phone-and-whatsapp",
       "dna_notes": "Session 15: full cream page, typographic-led hero (no photo), rubber-stamped info panel, N°-labeled edition cards. Macro tone differentiation from Luxe — same imagery pool, opposite page color.",
+      "dna_phase": "2g3.5",
+      "session_closed": 41,
+      "live_preview": true,
+      "live_pages": ["home", "shop", "product", "atelier", "journal", "contatti"],
+      "locales": ["it", "en", "fr", "es", "ar"],
+      "rtl": true,
       "price": 69,
       "featured": false,
       "status": "published",
-      "tier": "draft",
-      "tier_reason": "DNA + preview composition exist (Session 15), blocked on Phase 2g2x.3 leak lift (10+ Bottega literals in artisan-workshop.html) + Phase 2g3.5 skin authoring at templates/live_templates/ecommerce/artisan-workshop/."
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.5 closed in Session 41 (eCommerce live rollout). Bottega ships full artisan-workshop skin folder + per-template content registry + 6 page routes (home/shop/product/atelier/journal/contatti) all 200. 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic via Amiri+Noto-Kufi font load. D-053 gate green. D-054 10/10 vs Luxe (warm cream + typographic hero + phone-and-whatsapp + Tuscan artisan voice vs ink charcoal + full-bleed editorial cover + private-request + maison editoriale voice). D-047 chrome-authoring contract applied from line one."
     },
     {
       "slug": "luxe-fashion-store",
@@ -413,11 +419,17 @@
       "tone": "prestigious",
       "conversion_pattern": "private-request",
       "dna_notes": "Session 15: full dark charcoal page, italic Cormorant 108px headline, full-bleed fashion-model cover, gold editorial tile strip. Shares imagery pool with Bottega — differentiated purely by macro tone + typography.",
+      "dna_phase": "2g3.5",
+      "session_closed": 41,
+      "live_preview": true,
+      "live_pages": ["home", "collezione", "product", "maison", "lookbook", "contatti"],
+      "locales": ["it", "en", "fr", "es", "ar"],
+      "rtl": true,
       "price": 89,
       "featured": false,
       "status": "published",
-      "tier": "draft",
-      "tier_reason": "DNA + preview composition exist (Session 15), blocked on Phase 2g2x.3 leak lift (12+ Luxe literals in fashion-editorial.html) + Phase 2g3.5 skin authoring at templates/live_templates/ecommerce/fashion-editorial/."
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.5 closed in Session 41 (eCommerce live rollout). Luxe ships full fashion-editorial skin folder + per-template content registry + 6 page routes (home/collezione/product/maison/lookbook/contatti) all 200. 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic via Amiri+Noto-Kufi font load. D-053 gate green. D-054 10/10 vs Bottega (ink charcoal + italic Cormorant 108px hero + full-bleed editorial cover + private-request + maison voice vs warm cream + Libre Baskerville typographic monolith + phone-and-whatsapp + Tuscan artisan voice). D-047 chrome-authoring contract applied from line one. Latin proper names (Maison Luxe, Vogue, Hermès) preserved across all locales via unicode-bidi: isolate."
     }
   ]
 }

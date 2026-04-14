@@ -19,6 +19,9 @@ LOCALES = {
     "elevate-startup-landing":     ["it", "en", "fr", "es", "ar"],
     "chiara-portfolio-creativo":   ["it", "en", "fr", "es", "ar"],
     "pixel-portfolio-fotografico": ["it", "en", "fr", "es", "ar"],
+    # Phase 2g3.5 — eCommerce live rollout (Session 41)
+    "bottega-shop-artigianale":    ["it", "en", "fr", "es", "ar"],
+    "luxe-fashion-store":          ["it", "en", "fr", "es", "ar"],
 }
 
 CATEGORY = {
@@ -29,6 +32,8 @@ CATEGORY = {
     "elevate-startup-landing":     "business",
     "chiara-portfolio-creativo":   "portfolio",
     "pixel-portfolio-fotografico": "portfolio",
+    "bottega-shop-artigianale":    "ecommerce",
+    "luxe-fashion-store":          "ecommerce",
 }
 
 @override_settings(ALLOWED_HOSTS=["*"])
@@ -62,7 +67,7 @@ def run():
                 if r.status_code == 200: ok += 1
                 else: failed.append((url+q, r.status_code))
     # Catalog surfaces
-    for path in ["/", "/templates/", "/templates/medical/", "/templates/restaurant/", "/templates/business/", "/templates/portfolio/"]:
+    for path in ["/", "/templates/", "/templates/medical/", "/templates/restaurant/", "/templates/business/", "/templates/portfolio/", "/templates/ecommerce/"]:
         total += 1
         r = client.get(path)
         if r.status_code == 200: ok += 1

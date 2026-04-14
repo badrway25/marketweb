@@ -1,5 +1,200 @@
 # Session Log
 
+## Session 42 — eCommerce Premium Polish (2026-04-14)
+
+**Agent:** Close two user-flagged blockers from Session 41 review before commit: (1) Bottega has visible image gaps + several visually-wrong Unsplash IDs (HEAD-200 but rendering blue stilettos / classroom / restaurant workers / computer screens / cat / cupcakes / espresso machine / Bond Street tube). (2) Luxe is too static — needs premium fashion-editorial motion / micro-interactions / counters / marquee / cascade reveals, NOT generic SaaS startup motion. Non-goals: any other live template, real cart, new categories, scope expansion.
+
+**Branch:** `phase-ecommerce-live-rollout-v1` (continues Session 41).
+
+### 1 — Audit
+Playwright walks at 1440×900 on Bottega home + atelier + product. Grid-rendered every Unsplash candidate at full size to verify. Found 4 broken Bottega URLs (HEAD-404) + 5 wrong-content Bottega IDs (HEAD-200 but visually catastrophic). Plus 2 broken Luxe URLs + 3 wrong-content Luxe IDs (CAT instead of Borsa Isola, BOND STREET TUBE instead of Sentier atelier, woman-in-hoodie instead of professional creative director). Luxe motion audit: 7 sections rendering as static posters, no counters, no marquee, no entry cascades beyond data-lm="reveal" minimum.
+
+### 2 — Strategy
+- **Bottega**: dispatched parallel image-curator sub-agent (timed out, 0 bytes output). Pivoted to ARCHITECTURAL fix: convert all 6 portrait slots (4 makers + founder + product-detail artisan signature) to typographic stamp tiles per Bottega's documented DNA ("typographic-led hero, NO photo" — Session 15 DNA notes). Eliminates the portrait sourcing problem entirely + sharpens differentiation vs Luxe (which IS image-driven).
+- **Luxe**: ~280 LOC editorial motion CSS block in `fashion-editorial/_base.html`. Motion language deliberately italic-thinking unhurried — long durations (600-1400ms), cubic-bezier(0.16, 0.84, 0.32, 1) "settling poster" easing, planar transforms only (no tilt/bounce). Counter slow-cadenced + marquee very-slow drift + tile zoom unhurried + hover language letter-spacing-driven. Reduced-motion fallback kills every keyframe. Plus link `live-media.css/js` to the Luxe `_base.html` so the marquee primitive works.
+
+### 3 — Implementation
+
+**Bottega — typographic conversion:**
+- `home.html` `.aw-makers` markup + CSS — 4 maker portraits replaced with stamp tiles: corner-N number (01-04) + BOTTEGA top-right rubber stamp + big italic letter (S/C/B/A) crest mark with "Firmato" annotation + name + craft + place + since + quote.
+- `about.html` `.aw-founder` portrait → 240px circular cream stamp with "M·A" italic monogram + "DAL 1968" stamp + dashed inner ring.
+- `product.html` `.artisan` portrait → 200px circular monogram with first letter of artisan name + "FIRMA" stamp.
+
+**Bottega — image swaps (3 product cards still needing fix after curator timeout):**
+- Giubbotto Terra hero+cards: BLUE STILETTOS → leather workshop bag (verified, already in registry as Borsa Cartolina — same Severino Falchi pieces, justified duplication).
+- Vassoio noce shop+related: ESPRESSO MACHINE → autumnal dried plant tactile texture (verified, already in registry as product gallery).
+- Marmellata fichi product card: CUPCAKES IN BOXES → green Italian produce (verified, already in registry as Conserve del mercato).
+
+**Luxe — image swaps (5 fixes):**
+- Borsa Isola hero tile + product card + related: A CAT → red leather handbag on white background.
+- Sentier atelier maison card + lookbook teaser tile: BOND STREET TUBE STATION → atelier interior with clothes on rack.
+- Giulia Maison direttrice creativa portrait: WOMAN IN BLUE HOODIE SMILING → woman in white blazer professional.
+- Product gallery 2 broken IDs → leather handbag detail + woman in white hat editorial.
+
+**Luxe — editorial motion pass (~280 LOC in `_base.html`):**
+- Hero cover: 14s ease-in-out scale-breathe (1.000 → 1.022 → 1.000).
+- Hero headline: italic-axis settle (letter-spacing -0.020em → -0.035em over 1200ms with 220ms delay).
+- Cover metadata: issue chip 600ms + caption items 800/980ms fade-up.
+- Hero credit-line / intro / actions: sequential fade-up at 1100/1300/1500ms.
+- Editorial tile strip: filter shift on hover (grayscale 0%, contrast 1.14, brightness 1.04) + lift 3px + name letter-spacing 0.02em + gold underline scaleX(0.5) slide + tag swap to gold pill.
+- Collection product cards (.fe-prod): same editorial hover language adapted.
+- Lookbook teaser tiles: scale 1.04 image zoom (1200ms) + name color shift to gold + bottom gold border scaleX(1) slide.
+- Lookbook page editorial grid (.fe-look-card): 1400ms zoom + .meta .n letter-spacing expand on hover.
+- Manifesto KPI band: counter animation (12, 45, 9, 3) with stagger 160ms + tabular-nums + gold rule scaleX(0.4) slide-in.
+- Maison atelier numbers (about page): same counter pattern with 180ms stagger.
+- Press strip: converted from `<span>` row to `.lm-logo-marquee` (slow editorial drift 100s, 96px gap, italic Cormorant 22px). Uses existing `live-media.css/js` primitive (now linked in Luxe `_base.html`).
+- Drop card: pulsing gold dot indicator (2400ms ease-in-out infinite) + top-edge gold rule scaleX(1) slide-in on enter.
+- Private viewing CTA: italic letter-spacing settle on h2 (1400ms cubic-bezier).
+- Primary button (.fe-btn-primary): gold panel translateX(-100% → 0) slide-in from left (600ms), inverts to ink-on-gold.
+- Ghost button: italic letter-spacing widens 0.28em → 0.30em on hover.
+- Nav links: gold underline scaleX(0)→1 slide from left (480ms).
+- Atelier cards (about page): image saturation hover + city letter-spacing expand + gold border on hover.
+- Press list rows: gold-tinted background hover + magazine name letter-spacing expand.
+- Maison cards (contact page): gold left rule scaleY(0)→1 slide on hover.
+- Form fields: lf-label color shifts to gold on focus-within.
+- Product gallery thumbs: gold border on hover + grayscale 0%.
+- Variant pills (PDP): gold panel translateY(100%)→0 slide-in from bottom on hover.
+- Reduced-motion fallback: every keyframe + transition stopped.
+
+Plus `home.html` / `about.html` / `lookbook.html` / `collection.html` data-lm wiring updated:
+- KPI band: `data-lm="counter" data-lm-to="N"` + `data-lm-stagger data-lm-stagger-delay="160"`.
+- Press strip: `<div class="lm-logo-marquee" data-lm-media="logo-marquee">...<div class="lm-logo-marquee-track">...`.
+- Tile strip + lookbook teaser + collection grid + ateliers grid: `data-lm-stagger-delay="180/220/120/240"` editorial cadence.
+- Lookbook teaser tile: split into outer `.fe-look-tile` + inner `.img` div for the new zoom/saturation hover.
+
+### 4 — Validation
+
+| Check | Result |
+|---|---|
+| `python manage.py check` | 0 issues |
+| `smoke_full.py` | **363/363** routes HTTP 200 (unchanged) |
+| `smoke_forms.py` | **45/45** ALL FORM POLISH GREEN |
+| `smoke_i18n_media_hardening.py` | **57/57** |
+| `smoke_ecommerce_rollout.py` | **194/194** (D-054 cross-leak still 0/120) |
+| `smoke_chiara_perfection.py` | **76/76** (regression clean) |
+| `smoke_pixel_perfection.py` | **80/80** (regression clean) |
+| `smoke_i18n_gusto.py` | **52/52** (regression clean) |
+
+**Total: 867/867 — zero regressions** on the 7 pre-existing live templates.
+
+Visual verification (Playwright walks):
+- Bottega home IT: latest band 4 cards coherent (leather/linen/ceramic/produce) · maker stamps typographic with 01-04 corner-N + S/C/B/A italic crest letters · provenance + care + journal teaser + dark CTA all clean.
+- Bottega home AR: maker stamps RTL-flipped (04 first) · Latin letters preserved.
+- Bottega atelier IT: M·A italic monogram + DAL 1968 stamp.
+- Bottega product IT: leather workshop bag hero + S monogram for Severino Falchi.
+- Luxe home IT: editorial cover + tile strip with red leather handbag (was cat) + KPI counters animating · lookbook teaser with atelier interior (was Bond Street tube) · press marquee drifting · drop card pulsing dot.
+- Luxe home AR: cover RTL-flipped + Maison Luxe / Vogue / city names preserved.
+- Luxe maison: 3 atelier cards Brera/Sentier/Aoyama all coherent.
+- /templates/ + /templates/ecommerce/ listing surfaces clean.
+- Regression /cardio + /pragma + /chiara + /gusto: all unchanged.
+
+### 5 — Files touched
+
+15 modified (5 Bottega content + 5 Luxe content + 3 Bottega skin HTML + Luxe `_base.html` + 4 Luxe page HTML), 1 new memory file.
+
+### 6 — Decision
+
+**ECOMMERCE PREMIUM POLISH APPROVATO.** D-074 added (D-074a Bottega typographic conversion + D-074b Luxe editorial motion).
+
+### 7 — Exact next step
+
+Same as Session 41 § 8 — Phase 2g3.1 (sapore + brace) or Phase 2g3.2 (medical 3) using the now-stable Session 41 + 42 recipe. The image-coherence lesson from Session 42 is binding for any new template authoring: cross-check DNA notes BEFORE adding image-dependent elements; prefer typographic substitutes when DNA permits.
+
+---
+
+## Session 41 — eCommerce Live Rollout (2026-04-14)
+
+**Agent:** Bring `bottega-shop-artigianale` and `luxe-fashion-store` from `tier=draft` to `tier=published_live` premium in a single session, with full multipage live skins + 5 locales fin da subito + sharp differentiation. Fifth category to go live (after medical/restaurant/business/portfolio). Phase 2g3.5. Non-goals: any other template, new categories, real cart/checkout/payment/auth/editor/projects/commerce engine, refactors outside ecommerce.
+
+**Branch:** `phase-ecommerce-live-rollout-v1`. Not committed yet.
+
+### 1 — Audit
+Read all 12 context files. Read existing ecommerce DNA + preview compositions (Session 15, blocked on D-047 leaks + skin authoring). Read reference implementations (Pragma corporate-suite + Chiara editorial-designer-grid skins). Confirmed:
+- DNA entries exist in `template_dna.py` for both ecommerce templates.
+- Preview compositions at `templates/preview_compositions/ecommerce/{artisan-workshop,fashion-editorial}.html` exist with 10+/12+ Bottega/Luxe literals (legacy, not D-047 lifted — deliberately kept untouched, used only for the static listing PNG).
+- Zero live skin folders for ecommerce — needed full authoring from scratch.
+- Zero content registries for either ecommerce template.
+- Tier flip blocked behind both gates.
+
+### 2 — Strategy
+- 6 page kinds per template covering D-053 ecommerce baseline + 1 detail (`product_detail`):
+  - Bottega: home · shop · product · atelier (about) · journal · contatti
+  - Luxe: home · collezione · product · maison (about) · lookbook · contatti
+- D-054 differentiation contract documented BEFORE authoring (10 gates, opposite values per template).
+- IT registries authored serially by main session (carries the cross-template differentiation thinking).
+- 8 locale trees authored by 8 parallel sub-agents with explicit voice contracts (Bottega vs Luxe must STAY OPPOSITE in every locale).
+- Cross-leak smoke `smoke_ecommerce_rollout.py` is the binding D-054 gate.
+
+### 3 — Implementation
+
+**Phase A — IT content registries (~1,210 LOC):**
+- `template_content_bottega.py` (590 LOC) — full warm-artisan IT tree: 12 botteghe (Severino Falchi conceria Santa Croce, Caterina Lippi ceramiche Montelupo, Bruno Ricci telai Prato, Adele Pignatelli conserve Greve), edition numbers (N° 042, 3/8), rubber-stamp panel data, journal entries, atelier process timeline, contact form fields, FAQ.
+- `template_content_luxe.py` (620 LOC) — full maison editoriale IT tree: Maison Luxe Milano · Paris · Tokyo, drop SS26 capsule 04, Look 03/11/14/18 silhouettes, atelier credits (Carla Sozzani styling, Letizia Carrera fotografia), 18-look lookbook with 8-row credits, 5 magazine press citations (Vogue Italia, The Gentlewoman, AnOther, Le Monde D'Hermès, Wallpaper*), private viewing form fields with maison_cards × 3 cities.
+
+**Phase B — Two new skin folders (~5,500 LOC HTML):**
+- `templates/live_templates/ecommerce/artisan-workshop/` — `_base.html` (530 LOC: warm cream chrome + circular-crest nav + RTL CSS block + Amiri/Noto-Kufi conditional load) + `home.html` (typographic monolith hero + stamp aside + 4-card latest band + 4-maker grid + 3-card provenance + care strip + press strip + journal teaser + dark CTA band) + `shop.html` (filter rail + 9-card grid) + `product.html` (gallery + variant pills + edition card + specs + artisan signature + care + provenance timeline + related) + `about.html` (atelier mission stamp + 5-step process timeline + founder + numbers stamp + dark visit CTA) + `journal.html` (6 numbered entries) + `contact.html` (lf-* form with select wrapper + contact card + FAQ accordion).
+- `templates/live_templates/ecommerce/fashion-editorial/` — `_base.html` (430 LOC: ink charcoal chrome + minimal-serif nav + RTL CSS block + Amiri/Noto-Kufi conditional load + `data-latin` Latin-isolation marker for Vogue/Hermès/cities/prices) + `home.html` (full-bleed cover LEFT + italic Cormorant 108px headline RIGHT + 4-tile editorial strip + manifesto + 4-stat KPI grid + 3-tile lookbook teaser + press strip + drop card + private viewing CTA) + `collection.html` (chip + filter horizontal + 9-product editorial grid) + `product.html` (5-image gallery + editorial caption strip + variant pills + edition card + atelier signature + care + 4-step provenance + related) + `about.html` (statement panel + 3-atelier cards Milano/Paris/Tokyo + direction credit with pull-quote + 5-row press list + 4-stat numbers grid + dark visit CTA) + `lookbook.html` (chip + 8-row credits + 6-look editorial grid with alternating spans + pullquote + 3 set notes + shop CTA) + `contact.html` (private appointment lf-* form + 3-maison-card aside + FAQ accordion).
+
+Both `_base.html` files include `live-motion.css` + `live-forms.css` + `live-interactions.css` static links + their corresponding JS at end-of-body. Both have full `:focus-visible` rings on every interactive surface (CTA, nav links, language pills). Both have mobile breakpoints at 1100px / 1000px / 720px / 580px.
+
+**Phase C — IT bootstrap + tier flip:**
+- `template_content.py` — added 10 imports (BOTTEGA_CONTENT_{IT,EN,FR,ES,AR} + LUXE_CONTENT_{IT,EN,FR,ES,AR}) + 2 TEMPLATE_CONTENT entries.
+- 8 stub locale files created (`from ... import X_CONTENT_IT as X_CONTENT_EN`) so import succeeds during bootstrap; sub-agents overwrote each.
+- `TEMPLATE_REGISTRY.json` v0.9.1 → v0.10.0; both ecommerce rows: `tier=published_live`, `archetype`, `dna_phase=2g3.5`, `session_closed=41`, `live_pages=[6 routes each]`, `locales=[5 codes]`, `rtl=true`.
+- `python manage.py sync_template_tiers` applied: 9 templates now `published_live` (cardio + derm + gusto + pragma + elevate + chiara + pixel + bottega + luxe), 11 still draft. Catalog distribution: 9/20.
+- IT smoke 12/12 ecommerce routes → 200 (live preview validated before locale rollout).
+
+**Phase D — 8 parallel sub-agents (5–10 min each, ran concurrently):**
+- `template_content_bottega_en.py` (~640 LOC) — Aesop / Toast / Etsy informal-warm artisan EN, "you" form, "vegetable-tanned leather", "hand-thrown ceramics", small-batch / signed-by-the-maker.
+- `template_content_bottega_fr.py` (~760 LOC) — Astier de Villatte / Merci / Le Bon Marché `tu` artisan FR, French `« »`, "cuir tanné végétal", insecable spaces.
+- `template_content_bottega_es.py` (~660 LOC) — peninsular `tú` artesano ES, peninsular vocabulary (cazadora/bolso/cordel/cesto/AOVE), opening `¿` `¡`, `« »`.
+- `template_content_bottega_ar.py` (~810 LOC) — cultural-publishing register AR (Brownbook / Bait Al-Hikma), classical MSA, Latin proper names + Latin Western digits.
+- `template_content_luxe_en.py` (~710 LOC) — The Gentlewoman / Net-a-Porter formal editorial EN, no contractions, "by appointment", "private viewing", `€2,480` no-space format.
+- `template_content_luxe_fr.py` (~850 LOC) — Hermès / Le Bon Marché / Vogue Paris `vous` maison FR, `« »` editorial pull-quotes, `2 480 €` French convention, `11 h 00 – 19 h 00` hours format.
+- `template_content_luxe_es.py` (~850 LOC) — Vogue España peninsular `usted` ES, `2.480 €` peninsular convention, "Su perfil" / "Le rogamos" formal markers.
+- `template_content_luxe_ar.py` (~830 LOC) — Vogue Arabia luxury-maison register AR, Latin proper names + Latin Western digits + zero Eastern Arabic numerals.
+
+Programmatic shape-diff verified each locale matches IT exactly: 0 missing keys, 0 extra keys, 0 list/tuple length mismatches across all 8 trees.
+
+**Phase E — Smoke harness + final wiring:**
+- `smoke_full.py` — bottega + luxe added to LOCALES + CATEGORY dicts; route count 282 → 363.
+- `smoke_forms.py` — 2 ecommerce contatti added to PAGES (both with custom `lf-select` wrapper); 35 → 45 form routes.
+- `smoke_i18n_media_hardening.py` — both ecommerce templates added to MULTILINGUAL bucket + CATEGORY; 45 → 57 hardening checks.
+- New `smoke_ecommerce_rollout.py` (194 checks) — D-054 cross-leak gate (15 Bottega-only tokens + 16 Luxe-only tokens × 5 locales × 12 pages × 2 directions) + AR Latin-isolation (4 + 4 tokens) + 5-pill switcher presence + dir="rtl" + Arabic font load presence.
+
+### 4 — Validation
+
+| Check | Result |
+|---|---|
+| `python manage.py check` | 0 issues |
+| `smoke_full.py` | **363/363** routes HTTP 200 (was 282 → +81) |
+| `smoke_forms.py` | **45/45** form routes HTTP 200 (was 35 → +10) |
+| `smoke_i18n_media_hardening.py` | **57/57** hardening checks (was 45 → +12) |
+| `smoke_ecommerce_rollout.py` (NEW) | **194/194** dedicated ecommerce checks |
+| `smoke_chiara_perfection.py` | 76/76 (regression clean) |
+| `smoke_pixel_perfection.py` | 80/80 (regression clean) |
+| `smoke_i18n_gusto.py` | 52/52 (regression clean) |
+
+Total: **867/867 checks passed**, 0 regressions across the 7 pre-existing live templates. D-054 cross-tenant leak count: **0/120**.
+
+### 5 — Catalog state
+
+**9/20 published_live templates ship in 5 locales** (cardio · derm · gusto · pragma · elevate · chiara · pixel · **bottega** · **luxe**) across **5 categories** (medical/restaurant/business/portfolio/ecommerce). 11/20 still draft (sapore · brace · salute · benessere · famiglia · vertex · aura · lex · juris · casa · villa).
+
+### 6 — Decision
+
+**ECOMMERCE LIVE ROLLOUT PREMIUM APPROVATO.** D-073 added.
+
+### 7 — Files touched
+
+24 created (12 skin HTML + 2 IT content + 8 locale content + 1 new smoke + 1 memory file), 6 modified (template_content.py + TEMPLATE_REGISTRY.json + 3 existing smokes + MEMORY.md), 0 deleted.
+
+### 8 — Exact next step
+
+**Phase 2g3.1** — author Sapore + Brace restaurant skin folders. Their DNA + preview compositions are ready since Session 9. Use the Session 41 recipe verbatim (IT first, 8 parallel locale agents, cross-leak smoke). Catalog will reach 11/20 published_live across 5 categories. Or **Phase 2g3.6** — agency + lawyer + real-estate (6 templates, blocked on 2g2x.1 closure for these 3 categories). Either path closes more of the 11 remaining drafts.
+
+---
+
 ## Session 40 — Pragma + Elevate i18n Completion Pass (2026-04-14)
 
 **Agent:** Bring `pragma-corporate-suite` and `elevate-startup-landing` from IT-only to fully multilingual (5 locales + real RTL), preserving the sharp differentiation between Pragma's institutional advisory voice and Elevate's SaaS growth-tech voice. The 7-template `published_live` catalog had 5 multilingual after Sessions 23/24/29/37/39 — these two business templates were the last gap. Non-goals: any other live template (only smoke harness + cross-template chrome touched), new categories, new templates, new archetypes, marketplace chrome i18n, refactors outside business templates, auth/checkout/editor/projects/commerce.
