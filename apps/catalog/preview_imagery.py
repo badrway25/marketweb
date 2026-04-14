@@ -300,17 +300,25 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&q=80&auto=format&fit=crop",
     ],
     "portfolio-photographer": [
-        # 0: hero — dark moody still (reused from restaurant-fine, proven
-        #    offline-safe). Dominant fullbleed image in the Pixel composition.
-        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80&auto=format&fit=crop",
-        # 1: feature — plated-dish low-key still (reused from restaurant-fine,
-        #    also reads as "cinematic still life")
-        "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=1200&q=80&auto=format&fit=crop",
-        # 2-5: filmstrip series stills — low-key portraits + gravitas
-        "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80&auto=format&fit=crop",
+        # Pixel (cinematic-photographer) — image-first dominant fullbleed
+        # hero + 4 filmstrip frames. All 6 URLs are lifted directly from
+        # `template_content_pixel.py` (Pixel's live content registry) so
+        # the static preview reads as the same photographer brand the
+        # live preview already ships. Zero URL overlap with any other
+        # imagery pool — in particular zero overlap with `restaurant-fine`
+        # (Gusto), which the prior pool shared for slots 0-1 under a
+        # "proven offline-safe" rationale that produced a Gusto/Pixel
+        # visual collision in the listing card.
+        #
+        # 0: hero — moody editorial shadow portrait (Pixel live hero).
+        "https://images.unsplash.com/photo-1517021897933-0e0319cfbc28?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — cinematic wide reportage still (Pixel live series).
+        "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: filmstrip series stills — reportage, portrait, still-life
+        "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1505820013142-f86a3439c5b2?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1499346030926-9a72daac6c63?w=800&q=80&auto=format&fit=crop",
     ],
     "ecommerce": [
         # 0: hero - editorial fashion
