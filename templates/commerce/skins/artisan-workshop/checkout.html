@@ -1,0 +1,125 @@
+{% extends "commerce/skins/artisan-workshop/_base.html" %}
+{% block page_title %}Checkout{% endblock %}
+
+{% block content %}
+<main class="cx-wrap">
+  <section class="cx-lead">
+    <div>
+      <div class="eyebrow">Checkout · bottega</div>
+      <h1>Dove <em style="color:var(--terra); font-style:italic;">spediamo</em> e come ti <em style="color:var(--terra); font-style:italic;">scriviamo.</em></h1>
+      <p class="intro">Raccogliamo solo l'indispensabile per mandarti il pacco. Nessun account, nessuna newsletter obbligatoria.</p>
+    </div>
+  </section>
+
+  <section class="cx-cart-grid">
+    <form method="post" action="" class="cx-form">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="cx-messages"><div class="m is-error">{{ form.non_field_errors }}</div></div>
+      {% endif %}
+
+      <fieldset>
+        <legend>Chi sei</legend>
+        <div class="row-2">
+          <label>Nome e cognome
+            <input type="text" name="full_name" required value="{{ form.full_name.value|default:'' }}">
+            {% if form.full_name.errors %}<span class="err">{{ form.full_name.errors.0 }}</span>{% endif %}
+          </label>
+          <label>Email
+            <input type="email" name="email" required value="{{ form.email.value|default:'' }}">
+            {% if form.email.errors %}<span class="err">{{ form.email.errors.0 }}</span>{% endif %}
+          </label>
+        </div>
+        <div class="row-2">
+          <label>Telefono (per il corriere)
+            <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}">
+          </label>
+          <div></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Dove spediamo</legend>
+        <label>Indirizzo
+          <input type="text" name="line1" required value="{{ form.line1.value|default:'' }}">
+          {% if form.line1.errors %}<span class="err">{{ form.line1.errors.0 }}</span>{% endif %}
+        </label>
+        <label>Civico / scala / interno (opz.)
+          <input type="text" name="line2" value="{{ form.line2.value|default:'' }}">
+        </label>
+        <div class="row-2">
+          <label>Città
+            <input type="text" name="city" required value="{{ form.city.value|default:'' }}">
+            {% if form.city.errors %}<span class="err">{{ form.city.errors.0 }}</span>{% endif %}
+          </label>
+          <label>CAP
+            <input type="text" name="postal_code" required value="{{ form.postal_code.value|default:'' }}">
+            {% if form.postal_code.errors %}<span class="err">{{ form.postal_code.errors.0 }}</span>{% endif %}
+          </label>
+        </div>
+        <div class="row-2">
+          <label>Provincia
+            <input type="text" name="region" value="{{ form.region.value|default:'' }}">
+          </label>
+          <label>Paese
+            <input type="text" name="country" value="{{ form.country.value|default:'Italia' }}">
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Come spediamo</legend>
+        <div class="cx-shipping-options">
+          {% for method in shipping_methods %}
+            <label class="opt" data-selected="{% if forloop.first %}1{% else %}0{% endif %}">
+              <input type="radio" name="shipping_method" value="{{ method.code }}" {% if forloop.first %}checked{% endif %}>
+              <div class="body">
+                <div class="title">{{ method.title }}</div>
+                <div class="desc">{{ method.description }}{% if method.est_delivery_days %} · {{ method.est_delivery_days }}{% endif %}</div>
+              </div>
+              <div class="price">€ {{ method.price|floatformat:"0g" }}</div>
+            </label>
+          {% endfor %}
+        </div>
+        {% if form.shipping_method.errors %}<span class="err">{{ form.shipping_method.errors.0 }}</span>{% endif %}
+      </fieldset>
+
+      <fieldset>
+        <legend>Note (opz.)</legend>
+        <label style="text-transform:none; letter-spacing:0; font-weight:500; color:var(--ink-mute);">
+          Qualcosa che dovremmo sapere — regalo, citofono, orari
+          <textarea name="customer_note" rows="3">{{ form.customer_note.value|default:'' }}</textarea>
+        </label>
+      </fieldset>
+
+      <button type="submit" class="cx-btn">Conferma ordine</button>
+    </form>
+
+    <aside class="cx-summary">
+      <h3>Riepilogo carrello</h3>
+      {% for item in cart.items.all %}
+        <div class="row" style="font-family:var(--cx-body); font-size:13px;">
+          <span>{{ item.variant.product.title }} × {{ item.quantity }}</span>
+          <span>€ {{ item.line_total|floatformat:"0g" }}</span>
+        </div>
+      {% endfor %}
+      <div class="row"><span>Subtotale</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="row total"><span>Da pagare</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="policy">
+        Pagamento registrato dopo conferma. Ti scriviamo via email con tracking appena il corriere parte.
+      </div>
+    </aside>
+  </section>
+</main>
+
+<script>
+  document.querySelectorAll('.cx-shipping-options').forEach(function(g){
+    g.addEventListener('change', function(){
+      g.querySelectorAll('.opt').forEach(function(o){
+        o.dataset.selected = o.querySelector('input').checked ? '1' : '0';
+      });
+    });
+  });
+</script>
+{% endblock %}

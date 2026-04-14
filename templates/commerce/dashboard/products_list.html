@@ -1,0 +1,84 @@
+{% extends "commerce/dashboard/_base.html" %}
+{% block page_title %}Prodotti{% endblock %}
+{% block nav_products %}class="is-active"{% endblock %}
+
+{% block content %}
+<div class="ds-head">
+  <div>
+    <h1>Catalogo prodotti</h1>
+    <div class="sub">{% if page_obj %}{{ page_obj.paginator.count }}{% else %}{{ products|length }}{% endif %} prodotti · {{ storefront.collections.count }} collezioni.</div>
+  </div>
+  <div class="actions">
+    <a class="ds-btn" href="{% url 'commerce:dashboard_product_new' storefront.slug %}">+ Nuovo prodotto</a>
+  </div>
+</div>
+
+<section class="ds-card" style="padding: 0;">
+  {% if products %}
+  <table class="ds-table">
+    <thead>
+      <tr>
+        <th>Prodotto</th>
+        <th>Collezione</th>
+        <th>Prezzo</th>
+        <th>Varianti</th>
+        <th>Stock</th>
+        <th>Stato</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <td>
+          <a href="{% url 'commerce:dashboard_product_edit' storefront.slug p.pk %}"><strong>{{ p.title }}</strong></a>
+          <div class="muted">{{ p.subtitle|default:p.material }}</div>
+        </td>
+        <td>{{ p.collection.title|default:"—" }}</td>
+        <td><strong>€ {{ p.base_price|floatformat:"2" }}</strong>{% if p.compare_at_price %}<div class="muted">cmp € {{ p.compare_at_price|floatformat:"2" }}</div>{% endif %}</td>
+        <td>{{ p.variants.count }}</td>
+        <td>
+          {% with total=p.total_stock %}
+            {% if total == 0 %}
+              <span class="ds-pill is-out">Esaurito</span>
+            {% elif p.is_low_stock %}
+              <span class="ds-pill is-low">{{ total }} · basso</span>
+            {% else %}
+              {{ total }}
+            {% endif %}
+          {% endwith %}
+        </td>
+        <td>
+          {% if p.status == 'active' %}
+            <span class="ds-pill is-shipped">Attivo</span>
+          {% elif p.status == 'draft' %}
+            <span class="ds-pill is-pending">Bozza</span>
+          {% else %}
+            <span class="ds-pill is-cancelled">Archiviato</span>
+          {% endif %}
+          {% if p.featured %}<span class="ds-pill is-paid" style="margin-left:4px;">In vetrina</span>{% endif %}
+        </td>
+        <td>
+          <a class="ds-btn is-ghost" style="padding:6px 12px;" href="{% url 'commerce:dashboard_product_edit' storefront.slug p.pk %}">Modifica</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="padding:40px; text-align:center;">
+    <h3>Nessun prodotto ancora.</h3>
+    <p class="sub" style="margin-top:8px;">Crea il primo prodotto per iniziare a vendere.</p>
+    <div style="margin-top:14px;"><a class="ds-btn" href="{% url 'commerce:dashboard_product_new' storefront.slug %}">+ Crea prodotto</a></div>
+  </div>
+  {% endif %}
+</section>
+
+{% if is_paginated %}
+<div style="margin-top:18px; display:flex; gap:10px; align-items:center; color:var(--ink-mute); font-size:13px;">
+  {% if page_obj.has_previous %}<a class="ds-btn is-ghost" href="?page={{ page_obj.previous_page_number }}">◂</a>{% endif %}
+  <span>Pagina {{ page_obj.number }} di {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="ds-btn is-ghost" href="?page={{ page_obj.next_page_number }}">▸</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

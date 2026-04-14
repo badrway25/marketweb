@@ -1,0 +1,100 @@
+{% extends "commerce/skins/fashion-editorial/_base.html" %}
+{% block page_title %}Ordine {{ order.reference }}{% endblock %}
+
+{% block content %}
+<main class="cx-wrap-wide cx-confirm">
+  <section class="cx-lead" style="border-bottom:0; margin-bottom:20px;">
+    <div>
+      <div class="eyebrow">Grazie · ordine registrato</div>
+      <h1 style="font-style:italic; font-size:56px;">La direzione clienti <em style="color:var(--gold);">vi scriverà</em> entro ventiquattr'ore.</h1>
+      <p class="intro">Abbiamo ricevuto il vostro ordine. Lo verifichiamo, lo confermiamo via email e poi partiamo con la consegna maison in scatola firmata.</p>
+    </div>
+  </section>
+
+  <div class="ref-band">
+    <div>
+      <div style="font-family:var(--cx-body); font-size:10px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--bone-faint);">Riferimento ordine</div>
+      <div class="ref">{{ order.reference }}</div>
+      <div style="margin-top:4px; font-family:var(--cx-body); font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--bone-faint);">Direzione clienti · Milano</div>
+    </div>
+    <div style="text-align:right;">
+      <span class="status">{{ order.get_status_display }}</span>
+      <div style="margin-top:8px; font-family:var(--cx-body); font-size:11px; letter-spacing:0.2em; color:var(--bone-mute);">
+        {{ order.created_at|date:"d F Y · H:i" }}
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <h3 style="font-family:var(--cx-heading); font-style:italic; font-size:28px; font-weight:500; border-bottom:1px solid var(--rule); padding-bottom:14px; margin-bottom:16px;">
+        I look che stiamo preparando
+      </h3>
+      <div class="order-lines">
+        {% for item in items %}
+          <div class="line">
+            <div class="pic" {% if item.image_url %}style="background-image:url('{{ item.image_url }}')"{% endif %}></div>
+            <div>
+              <div class="title" style="font-style:italic;">{{ item.product_title }}</div>
+              <div class="qty">{{ item.variant_title|default:"Atelier" }} · {{ item.quantity }} × € {{ item.unit_price|floatformat:"0g" }}</div>
+            </div>
+            <div class="total">€ {{ item.line_total|floatformat:"0g" }}</div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div style="margin-top:32px; padding:22px 24px; background:rgba(212,165,116,0.06); border:1px solid var(--rule);">
+        <div style="font-family:var(--cx-heading); font-size:20px; font-style:italic; color:var(--bone);">Stato pagamento: {{ order.get_payment_status_display }}</div>
+        {% if latest_intent %}
+          {% if latest_intent.status == 'awaiting_transfer' %}
+          <div style="margin-top:10px; font-family:var(--cx-body); font-size:13px; color:var(--bone-mute); line-height:1.8;">
+            {{ latest_intent.payload.instructions }}<br>
+            Causale bonifico: <strong style="color:var(--gold);">{{ order.reference }}</strong>
+          </div>
+          {% elif latest_intent.status == 'succeeded' %}
+          <div style="margin-top:10px; font-family:var(--cx-body); font-size:13px; color:var(--bone-mute);">
+            Pagamento registrato. Il capo è in preparazione presso l'atelier.
+          </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <aside>
+      <div class="cx-summary">
+        <h3>Totale</h3>
+        <div class="row"><span>Sub-totale</span><span>€ {{ order.subtotal|floatformat:"0g" }}</span></div>
+        <div class="row"><span>Consegna ({{ order.shipping_method.title }})</span><span>€ {{ order.shipping_total|floatformat:"0g" }}</span></div>
+        <div class="row total"><span>Totale</span><span>€ {{ order.grand_total|floatformat:"0g" }}</span></div>
+      </div>
+
+      <div style="margin-top:24px; padding:22px 24px; background:rgba(212,165,116,0.06); border:1px solid var(--rule);">
+        <h3 style="font-family:var(--cx-heading); font-style:italic; font-size:20px; color:var(--bone); margin-bottom:12px;">Indirizzo di consegna</h3>
+        <div style="font-family:var(--cx-body); font-size:13px; color:var(--bone-mute); line-height:1.8;">
+          {{ order.shipping_address.full_name }}<br>
+          {{ order.shipping_address.line1 }}{% if order.shipping_address.line2 %} · {{ order.shipping_address.line2 }}{% endif %}<br>
+          {{ order.shipping_address.postal_code }} {{ order.shipping_address.city }}{% if order.shipping_address.region %} ({{ order.shipping_address.region }}){% endif %}<br>
+          {{ order.shipping_address.country }}<br>
+          <em style="color:var(--gold);">{{ order.shipping_address.email }}{% if order.shipping_address.phone %} · {{ order.shipping_address.phone }}{% endif %}</em>
+        </div>
+      </div>
+
+      {% if order.customer_note %}
+      <div style="margin-top:18px; padding:18px 22px; background:rgba(255,255,255,0.02); border:1px dashed var(--rule); font-family:var(--cx-heading); font-style:italic; font-size:14px; color:var(--bone-mute);">
+        <strong style="font-family:var(--cx-body); font-style:normal; font-size:10px; letter-spacing:0.28em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:8px;">Note alla direzione</strong>
+        {{ order.customer_note }}
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+
+  <div class="cx-policy-note" style="font-style:italic;">
+    <strong style="font-family:var(--cx-heading); color:var(--bone); font-weight:500;">Cosa succede ora.</strong>
+    {{ storefront.shipping_policy|default:"Confermiamo via email entro 24 ore e poi spediamo in scatola firmata maison. La direzione clienti vi terrà aggiornati." }}
+  </div>
+
+  <div style="margin-top:32px;">
+    <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">◂ Torna alla collezione</a>
+  </div>
+</main>
+{% endblock %}

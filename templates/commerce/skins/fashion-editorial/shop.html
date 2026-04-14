@@ -1,0 +1,112 @@
+{% extends "commerce/skins/fashion-editorial/_base.html" %}
+{% block page_title %}{% if current_collection %}{{ current_collection.title }}{% else %}Collezione{% endif %}{% endblock %}
+
+{% block content %}
+<main class="cx-wrap-wide">
+  <section class="cx-lead">
+    <div>
+      <div class="eyebrow">
+        {% if current_collection %}{{ current_collection.title }}{% else %}Spring — Summer 26 · collezione completa{% endif %}
+      </div>
+      <h1 style="font-style:italic; font-size:68px; line-height:1.0;">
+        {% if current_collection %}
+          {{ current_collection.title }}
+        {% else %}
+          La collezione <em style="color:var(--gold);">in questo momento.</em>
+        {% endif %}
+      </h1>
+      <p class="intro">
+        {% if current_collection %}
+          {{ current_collection.description|default:current_collection.subtitle }}
+        {% else %}
+          Quattro drop stagionali, un atelier di archivio. Cashmere di Biella, cady di Como,
+          cuoio di Firenze, ricamo dell'atelier di Sentier. Acquisto su appuntamento.
+        {% endif %}
+      </p>
+    </div>
+    <div class="count" style="color:var(--gold); font-style:italic;">
+      {% if page_obj %}{{ page_obj.paginator.count }}{% else %}{{ products|length }}{% endif %} look
+      <div style="font-family:var(--cx-body); font-size:11px; font-style:normal; letter-spacing:0.2em; text-transform:uppercase; color:var(--bone-faint); margin-top:6px;">
+        Aggiornata ogni primo del mese
+      </div>
+    </div>
+  </section>
+
+  <section class="cx-shop">
+    <aside class="cx-filters">
+      <h5>Navigazione</h5>
+      <div class="group">
+        <div class="label">Drop & capsule</div>
+        <ul>
+          <li><a href="{% url 'commerce:shop' storefront.slug %}" {% if not current_collection %}class="is-current"{% endif %}>· Collezione completa</a></li>
+          {% for c in collections %}
+            <li><a href="{% url 'commerce:shop_collection' storefront.slug c.slug %}" {% if current_collection and current_collection.slug == c.slug %}class="is-current"{% endif %}>· {{ c.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="group">
+        <div class="label">Ordina per</div>
+        <form method="get" action="">
+          <select name="sort" onchange="this.form.submit()">
+            <option value="recent" {% if sort == 'recent' %}selected{% endif %}>Ultimi drop</option>
+            <option value="featured" {% if sort == 'featured' %}selected{% endif %}>Selezione direzione</option>
+            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Silhouette crescente</option>
+            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Silhouette decrescente</option>
+          </select>
+          {% if search %}<input type="hidden" name="q" value="{{ search }}">{% endif %}
+        </form>
+      </div>
+      <form method="get" action="" class="cx-search">
+        <input type="search" name="q" placeholder="Cerca un look" value="{{ search }}">
+        <button type="submit">▸</button>
+      </form>
+    </aside>
+
+    <div>
+      {% if products %}
+      <div class="cx-grid">
+        {% for p in products %}
+          <a class="cx-card{% if p.is_sold_out %} is-out{% endif %}" href="{% url 'commerce:product_detail' storefront.slug p.slug %}">
+            <div class="thumb" {% if p.hero_image_url %}style="background-image:url('{{ p.hero_image_url }}'); aspect-ratio: 3/4;"{% endif %}>
+              {% if p.edition_number %}<span class="num">{{ p.edition_number }}</span>{% endif %}
+              {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
+            </div>
+            <h4 style="font-style:italic; font-weight:500;">{{ p.title }}</h4>
+            <div class="meta">{{ p.subtitle|default:p.material }}</div>
+            {% if p.collection %}<div class="meta" style="margin-top:2px; color:var(--gold);">{{ p.collection.title }}</div>{% endif %}
+            <div class="foot">
+              <span class="price">€ {{ p.display_price|floatformat:"0g" }}</span>
+              {% if p.is_sold_out %}
+                <span class="tag">Lista d'attesa</span>
+              {% elif p.is_low_stock %}
+                <span class="tag">Ultimi esemplari</span>
+              {% else %}
+                <span class="tag">{{ p.badge|default:"Disponibile" }}</span>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+
+      {% if is_paginated %}
+      <div style="margin-top:48px; display:flex; gap:20px; justify-content:center; font-family:var(--cx-heading); font-style:italic;">
+        {% if page_obj.has_previous %}
+          <a class="cx-btn-ghost" href="?page={{ page_obj.previous_page_number }}{% if search %}&q={{ search }}{% endif %}">◂ Precedente</a>
+        {% endif %}
+        <span style="color:var(--bone-mute); align-self:center; font-size:13px; letter-spacing:0.18em; text-transform:uppercase;">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="cx-btn-ghost" href="?page={{ page_obj.next_page_number }}{% if search %}&q={{ search }}{% endif %}">Successiva ▸</a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% else %}
+      <div class="cx-empty">
+        <h3 style="font-style:italic;">Nessun look in questa finestra</h3>
+        <p>La maison sta finendo il drop. Scriveteci alla direzione clienti per essere avvisati dell'apertura.</p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</main>
+{% endblock %}

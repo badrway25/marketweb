@@ -1,5 +1,62 @@
 # Decisions Log
 
+## D-075: Commerce Foundation v1 — Shared Engine Ships Under apps/commerce, /shop + /dashboard Orthogonal To /templates Live Preview (2026-04-14, Session 43)
+
+**Decision:** `apps/commerce` is no longer an empty stub. It now ships the full engine that turns `bottega-shop-artigianale` and `luxe-fashion-store` from "live preview premium templates" into real operational shops — catalog (Product + Variant + Image + Collection), basket (Cart + CartItem, session-keyed), checkout (Address + ShippingMethod + Order + OrderItem + PaymentIntent), seller dashboard (products/variants/orders CRUD + status transitions), and a provider-agnostic payment abstraction shipping two providers in v1 (stub auto-confirm · offline_bank_transfer · Stripe is documented extension point, not implemented).
+
+Concrete shape:
+
+1. **Models** (`apps/commerce/models.py`, 15 models): `Storefront` (OneToOne → WebTemplate, skin enum + payment_provider + is_operational gate) · `Collection` · `Product` (storefront FK + info_rows JSON for typographic spec tables) · `ProductImage` · `ProductVariant` (3 option axes + stock + price_override) · `Cart` + `CartItem` (session-keyed, user optional) · `Address` · `ShippingMethod` · `Order` (uuid + 10-char reference + 3 independent status enums: status/payment_status/fulfillment_status) · `OrderItem` (snapshot) · `PaymentIntent` (provider-agnostic).
+
+2. **Services + Selectors** — thin view layer, all writes in `services.py` (add/update/remove cart, create_order_from_cart with `select_for_update` stock lock + atomic transaction, mark_order_paid, set_order_fulfillment, cancel_order with stock rollback), all reads in `selectors.py` (list_active_products with sort/search/collection filter, get_product_detail with prefetch, dashboard_stock_summary).
+
+3. **Two orthogonal URL spaces.** `/shop/<storefront_slug>/...` is customer-facing operational commerce (shop, collection, product, cart with add/update/remove, checkout, order_confirmation). `/dashboard/<storefront_slug>/...` is seller operational (home, products list/CRUD, variants CRUD inline, orders list/detail with state transitions). The pre-existing `/templates/<cat>/<slug>/preview/…` live-preview routes are UNTOUCHED — they remain the marketing surface.
+
+4. **Two skin template sets** — `templates/commerce/skins/artisan-workshop/` (Bottega: warm cream palette, Playfair + Inter, stamp-shadow CTA, `.aw-*` namespace) and `templates/commerce/skins/fashion-editorial/` (Luxe: ink charcoal palette, Cormorant italic + gold outline, outlined-gold CTA, `.fe-*` namespace). Each set covers _base + shop + product + cart + checkout + order_confirmation. Skin-agnostic widgets live in `static/css/commerce.css` with `--cx-*` tokens set per-skin.
+
+5. **Dashboard is single-themed** (`templates/commerce/dashboard/_base.html` + home + products_list + product_form + orders_list + order_detail). Admin-leaning navy/bone with pill status colors, not skinned per storefront — dashboards are seller-facing, not customer-facing, so skin fidelity isn't the gate.
+
+6. **Guest-first checkout.** No login required. Cart is session-keyed, user FK is optional. Order confirmation is addressable by UUID. Seller dashboard is gated by `is_staff` (`SellerRequiredMixin` → `/admin/login/?next=…`). A `Seller` model scoping users to specific storefronts is a documented future split.
+
+7. **Seed command** (`python manage.py seed_commerce [--reset]`) materializes 9 Bottega products + 8 Luxe products with 16+23 variants + 4+5 collections + 3+4 shipping methods. Idempotent. Pulls copy and imagery from the existing `template_content_bottega.py` / `template_content_luxe.py` IT registries so the live preview and the real shop stay in sync voice-wise.
+
+**Rationale:** the user's product directive was unambiguous — "Bottega e Luxe devono poter funzionare da vero shop, non da poster premium". The existing 9/20 published_live catalog was peak-polished as a showcase but had zero operational surface: no products in DB, no cart, no checkout, no dashboard. Session 43 closes that gap structurally. The design deliberately leaves the /templates/ preview URLs unchanged (existing session artifacts — i18n trees, D-073 rollout, D-074 polish — are load-bearing for the marketing/showcase layer and MUST NOT regress). Commerce is a parallel layer mounted at `/shop/` that reuses the same brand identity but exposes real operations.
+
+**Trade-off:** the skin chrome CSS is duplicated between `templates/live_templates/ecommerce/<archetype>/_base.html` (preview) and `templates/commerce/skins/<skin>/_base.html` (operational). This is intentional — the two surfaces have different nav targets (preview chrome links to /templates/ preview pages; commerce chrome links to /shop/ and /dashboard/), different content blocks (preview has i18n locale switcher; commerce drops it for now since `/shop/` is IT-only in v1), and different CTA registers (preview's "visita la bottega" marketing CTA vs commerce's "aggiungi al carrello" operational CTA). Sharing a common partial would force both surfaces to compromise. The duplication is flagged for future consolidation once the commerce surface gains i18n (Phase 3b).
+
+**What's in v1 (operational right now):**
+- Product catalog with active/draft/archived status + featured flag + collections
+- Variants with stock tracking (transactional stock decrement on order creation, stock rollback on cancel)
+- Cart (session-keyed guest cart, add/update/remove, subtotal computation, item-count nav pill)
+- Checkout form (nome + email + indirizzo + spedizione + note; validates via `CheckoutForm`)
+- Order creation with `select_for_update` stock lock + PaymentIntent auto-dispatch (stub provider auto-confirms; offline_bank_transfer prints wiring instructions)
+- Order confirmation page with totals, shipping address echo, payment status + instructions
+- Seller dashboard: stock summary, recent orders, product CRUD, variants inline CRUD, orders list with status filter, order detail with mark-paid + fulfillment update + cancel (stock rollback)
+- Django admin integration for every commerce model
+
+**What's deliberately out of scope (Phase 3b):**
+- Real Stripe integration (abstraction point is clean — add `_handle_stripe` + webhook view)
+- Customer account pages (order history requires login flow)
+- i18n for /shop/ (IT-only in v1; the /templates/ preview pages keep 5-locale coverage)
+- Coupons / promotions / tax engine (`tax_total` field exists but always 0)
+- Reviews, wishlists, faceted search
+- Per-storefront seller scoping (any is_staff user today sees any dashboard)
+- Carrier integrations (tracking number is free text)
+
+**Consequence:** (a) the catalog remains 9/20 published_live but 2/9 of those now ALSO have operational commerce surfaces; (b) a Phase 3a ship-floor is established — any future ecommerce sibling that gets `is_operational = True` must use this shared engine, never reinvent cart/checkout; (c) the skin-templates-per-storefront pattern is the bar for future premium shops; (d) the existing 867/867 catalog validation matrix stays green plus the new 47/47 `smoke_commerce.py` proves the flow end-to-end.
+
+**Key insights:**
+
+1. **Orthogonal URL spaces beat overloading.** First instinct was to fold real commerce into the existing `/templates/<cat>/<slug>/preview/shop/` route (replace the registry-driven product grid with DB-driven). That would have fought the D-053 "Live Preview Law" which treats that URL as a marketing/showcase surface. Splitting to `/shop/<slug>/` kept the preview intact and made the commerce surface first-class.
+
+2. **Dashboard fidelity ≠ storefront fidelity.** Skinning the seller dashboard per-storefront was tempting (visual consistency with the shop) but wrong — sellers are operators, not shoppers. They benefit from a consistent admin-leaning tool layout across every shop they run. Keeping the dashboard single-themed also keeps the CSS surface small.
+
+3. **Payment abstraction from line one, Stripe later.** Building `PaymentIntent` as provider-agnostic from the start (with a `_dispatch_payment` switch on `storefront.payment_provider`) means adding Stripe later is a file-level add, not a schema change. The `stub` provider auto-confirms in dev so the end-to-end flow is testable without any real PSP. The `offline_bank_transfer` provider is real-usable today — the seller marks the order paid once the wire lands.
+
+4. **Stock lock on SQLite is a no-op but the code is Postgres-ready.** `select_for_update()` silently does nothing on SQLite. The service is already written to assume it works. When production moves to Postgres (planned per ARCHITECTURE.md), the overselling race window closes automatically with zero code change.
+
+---
+
 ## D-074: eCommerce Premium Polish — Bottega Portrait→Typographic Conversion (DNA-Honest) + Luxe Editorial Motion Pass (2026-04-14, Session 42)
 
 **Decision (D-074a — Bottega):** all 6 portrait slots in the artisan-workshop skin are converted to typographic stamp tiles. No portrait images on Bottega anywhere. The makers band's 4 cards become ink-bordered cream stamps with: corner-N number (01-04), top-right "BOTTEGA" rubber stamp, big italic letter S/C/B/A as crest mark with "Firmato" annotation, then maker name + craft + place + since + quote. The atelier founder block becomes a 240px circular cream stamp with "M·A" italic monogram + "DAL 1968" underneath + dashed inner ring. The product detail artisan signature becomes a 200px circular monogram with the artisan's first initial + "FIRMA" stamp.

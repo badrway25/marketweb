@@ -1,5 +1,131 @@
 # Session Log
 
+## Session 43 — Commerce Foundation v1 (2026-04-14)
+
+**Agent:** Build the real commerce engine that turns Bottega + Luxe from "live preview premium" into operational shops customers can buy from and sellers can manage. Non-goals: new categories, new templates, touching the 7 non-ecommerce live templates (medical/business/portfolio/restaurant), customer editor, huge refactors, regressions to the existing 9/20 published_live catalog.
+
+**Branch:** `phase-ecommerce-commerce-foundation-v1` (Phase 3a).
+
+### 1 — Audit
+`apps/commerce/` was a Django app stub: empty models.py, empty services.py, empty selectors.py, empty urls, placeholder admin. Bottega + Luxe product data lived inside `template_content_bottega.py` / `template_content_luxe.py` as hardcoded dicts — rendered on static pages with no DB, no cart, no checkout, no dashboard. The 9 published_live templates used `LiveTemplateView` + content registries for a marketing/preview surface under `/templates/<cat>/<slug>/preview/`.
+
+### 2 — Strategy
+- Keep `/templates/…/preview/` routes unchanged (D-053 Live Preview Law still binds that URL space to the marketing surface).
+- Build commerce as an orthogonal layer at `/shop/<storefront_slug>/` for customers and `/dashboard/<storefront_slug>/` for sellers.
+- `Storefront` (OneToOne → WebTemplate) is the DB-level "commerce operational" gate — parallels `WebTemplate.tier == published_live` but for commerce readiness (`Storefront.is_operational`).
+- Two skin template sets mirror the existing `artisan-workshop` / `fashion-editorial` visual language (warm cream / ink maison) with skin-agnostic `.cx-*` widget CSS driven by per-skin `--cx-*` tokens.
+- Dashboard is single-themed (admin-leaning navy/bone) since sellers are operators, not shoppers.
+- Payment is provider-agnostic from line one: `PaymentIntent` + `_dispatch_payment` switch. v1 ships `stub` (auto-confirm dev) + `offline_bank_transfer` (awaiting_transfer, seller marks paid). Stripe is documented extension point.
+- Products materialize into the DB via `seed_commerce` management command pulling from the IT registries — keeps preview + shop voice in sync.
+
+### 3 — Implementation
+
+**Models** (`apps/commerce/models.py`, 15 models, ~540 LOC):
+- `Storefront`, `Collection`, `Product` (with `info_rows` JSON for typographic spec tables + `total_stock` / `is_sold_out` / `is_low_stock` / `display_price` computed properties), `ProductImage`, `ProductVariant` (3 option axes + per-variant stock + price_override).
+- `Cart` (session-keyed, user optional) + `CartItem` (snapshots unit_price at add time).
+- `Address`, `ShippingMethod` (per-storefront, code+price+ETA).
+- `Order` with uuid + 10-char human reference + 3 independent status enums (status/payment_status/fulfillment_status) + timestamps for each transition + tracking fields.
+- `OrderItem` (snapshot of product_title, variant_title, sku, unit_price, quantity, line_total, image_url).
+- `PaymentIntent` (provider-agnostic, payload JSON for provider-specific data).
+
+**Services** (`apps/commerce/services.py`, ~260 LOC):
+- `get_or_create_cart` (upgrades guest→user on login).
+- `add_to_cart` / `update_cart_item` / `remove_cart_item` / `clear_cart` with inventory guard (raises `OutOfStockError`).
+- `create_order_from_cart` — transactional + `select_for_update` on variants to prevent overselling, creates shipping address row, creates Order + OrderItem snapshots, decrements stock, dispatches PaymentIntent via provider switch, marks cart inactive.
+- `_dispatch_payment` → `_handle_stub` (auto-succeed) / `_handle_offline_bank_transfer` (awaiting_transfer, instructions payload).
+- `mark_order_paid` (seller) — flips payment_status + order status, updates latest awaiting intent to succeeded.
+- `set_order_fulfillment` — transitions fulfillment_status + status, writes tracking fields on shipped, timestamps.
+- `cancel_order` — stock rollback + cancelled_at + optional reason in seller_note.
+
+**Selectors** (`apps/commerce/selectors.py`, ~130 LOC): `get_operational_storefront`, `list_active_products` (collection/search/sort filters + prefetch variants + images), `get_product_detail`, `list_collections`, `list_related_products`, `list_storefront_orders`, `dashboard_stock_summary`.
+
+**Customer views** (`apps/commerce/views/customer.py`):
+- `ShopView` (ListView with pagination 24/page), `ProductDetailView` (DetailView with variants + related), `CartView` (TemplateView), `AddToCartView` / `UpdateCartItemView` / `RemoveCartItemView` (POST-only), `CheckoutView` (GET renders form, POST creates order), `OrderConfirmationView` (UUID-addressable).
+
+**Seller views** (`apps/commerce/views/seller.py`):
+- `SellerRequiredMixin` gates every dashboard view via `is_staff` (redirects to `/admin/login/`).
+- `DashboardHomeView` with stock summary + recent orders.
+- `ProductsListView`, `ProductCreateView`, `ProductUpdateView` (includes inline variant management on edit page), `ProductDeleteView`.
+- `VariantCreateView`, `VariantUpdateView`, `VariantDeleteView` (POST-only, all scoped to storefront+product in one query to prevent cross-tenant access).
+- `OrdersListView` (with status filter + pagination), `OrderDetailView` with `mark_paid` / `fulfillment` / `cancel` actions via action=… POST pattern.
+
+**URL structure** (`apps/commerce/urls.py`): mounted at project root, 17 URL patterns split between `/shop/<slug>/...` (customer) and `/dashboard/<slug>/...` (seller).
+
+**Forms** (`apps/commerce/forms.py`): `CheckoutForm` (guest-ok, address + shipping method + note), `ProductForm` (ModelForm scoped to storefront), `ProductVariantForm`, `OrderStatusForm`.
+
+**Admin** (`apps/commerce/admin.py`): all 11 public models registered, Product has ProductImageInline + ProductVariantInline, Order has OrderItemInline + PaymentIntentInline (readonly on production data), list filters by storefront + status.
+
+**Templates** (`templates/commerce/`):
+- `skins/artisan-workshop/` — `_base.html` (warm cream palette, `.aw-nav` + `.aw-foot` chrome, Playfair Display + Inter, stamp-shadow `.cx-btn` override) + `shop.html` / `product.html` / `cart.html` / `checkout.html` / `order_confirmation.html`.
+- `skins/fashion-editorial/` — `_base.html` (ink charcoal palette, `.fe-nav` + `.fe-foot` chrome, Cormorant Garamond italic + Inter + gold outline, outlined-gold `.cx-btn` override) + same 5 pages.
+- `dashboard/` — `_base.html` (admin-leaning navy+bone, `.ds-*` namespace, status pills) + `home.html` (metrics + recent orders) + `products_list.html` + `product_form.html` (with inline variant CRUD) + `orders_list.html` (status filter) + `order_detail.html` (action-based state transitions).
+
+**Shared CSS** (`static/css/commerce.css`, ~450 LOC): skin-agnostic `.cx-*` widgets (messages, shop grid + card, filter rail, PDP hero+strip+info+variant form, specs table, cart table, summary sidebar, checkout form, order confirmation reference band + two-col layout). Driven by `--cx-*` variable contract each skin's `_base.html` defines.
+
+**Seed command** (`apps/commerce/management/commands/seed_commerce.py`): idempotent, `--reset` flag for clean re-seed. Produces:
+- Bottega: 9 products × 16 variants across 4 collections (Cuoio · Ceramica · Tessuti · Conserve), 3 shipping methods (48h Italia / ritiro Firenze / Europa 4d), stub payment provider.
+- Luxe: 8 products × 23 variants across 5 collections (Drop 01-04 · Atelier), 4 shipping methods (maison Milano / maison Italia / maison Europa / showroom Brera), stub payment provider.
+- Shipping policy + return policy + bank transfer instructions per storefront.
+
+**Settings touch:** none. `apps.commerce` was already in INSTALLED_APPS. Commerce URLs were already `include('apps.commerce.urls')` at root in `marketweb/urls.py` (just had zero patterns before).
+
+### 4 — Validation
+
+- `python manage.py check` — 0 issues, 0 warnings.
+- `python manage.py makemigrations commerce && migrate` — 1 new migration (`0001_initial.py`) applied cleanly.
+- `python manage.py seed_commerce` — green, 9+8 products seeded idempotently.
+- **`smoke_commerce.py` · 47/47 green** (new):
+  - 8 Bottega customer routes + 9 Luxe customer routes all 200
+  - add-to-cart → 2 items in DB (redirect 302)
+  - update cart quantity → 1 item (redirect 302)
+  - checkout GET 200 with form, checkout POST 302 → order_confirmation
+  - Order created with status=confirmed, payment_status=paid (stub auto-confirm), 10-char reference
+  - order_confirmation page 200 resolves by UUID
+  - Variant stock decremented correctly (3 → 2 after 1-qty order)
+  - PaymentIntent row auto-succeeded (stub provider)
+  - Seller dashboard anon → 302 → /admin/login/?next=…
+  - Staff-authenticated dashboard: 8 routes × Bottega+Luxe all 200 (home, products, products/new, orders, order detail, luxe equivalents)
+  - Product edit form renders 200
+  - Mark-shipped transition 302 + order.status → shipped, tracking captured
+  - All 9 pre-existing published_live templates still 200 under `/templates/<cat>/<slug>/preview/`
+- **`smoke_full.py` 363/363** — zero preview-route regressions.
+- **`smoke_forms.py` 45/45** — zero form-primitive regressions.
+- **`smoke_ecommerce_rollout.py` 194/194** — zero D-054 cross-tenant leaks on the preview layer.
+- **`smoke_i18n_media_hardening.py` 57/57** — zero i18n/media regressions.
+- **`smoke_chiara_perfection.py` 76/76 · `smoke_pixel_perfection.py` 80/80 · `smoke_i18n_gusto.py` 52/52** — zero regressions.
+
+**Cumulative matrix: 47 + 363 + 45 + 194 + 57 + 76 + 80 + 52 = 914/914 checks green.**
+
+### 5 — Files changed
+
+Created:
+- `apps/commerce/models.py` · `services.py` · `selectors.py` · `forms.py` · `urls.py` · `admin.py` · `views/__init__.py` · `views/customer.py` · `views/seller.py`
+- `apps/commerce/management/__init__.py` · `management/commands/__init__.py` · `management/commands/seed_commerce.py`
+- `apps/commerce/migrations/0001_initial.py` (generated)
+- `static/css/commerce.css`
+- `templates/commerce/skins/artisan-workshop/` — `_base.html` + 5 page templates
+- `templates/commerce/skins/fashion-editorial/` — `_base.html` + 5 page templates
+- `templates/commerce/dashboard/` — `_base.html` + `home.html` + `products_list.html` + `product_form.html` + `orders_list.html` + `order_detail.html`
+- `smoke_commerce.py`
+
+Untouched (deliberate):
+- All `templates/live_templates/**` (9 published_live template skins)
+- All `apps/catalog/template_content_*.py` (IT + 4 locale content registries)
+- `apps/catalog/template_dna.py`, `preview_imagery.py`, `template_i18n.py`, `views.py`, `urls.py`, `selectors.py`, `services.py`
+- `apps/editor/**`, `apps/projects/**`, `apps/pages/**`, `apps/accounts/**`
+- `marketweb/settings.py`, `marketweb/urls.py` (commerce include was already present)
+- `TEMPLATE_REGISTRY.json`, `CATEGORY_ROADMAP.md`
+
+### 6 — Key insights
+
+1. **Orthogonal URL spaces > overloading existing routes.** Rewiring `/templates/<cat>/<slug>/preview/shop/` to show DB-driven products would have violated D-053. Building `/shop/<slug>/` as a parallel layer preserved the marketing surface and made commerce first-class.
+2. **Skin chrome duplication is acceptable here.** The commerce skins duplicate structural CSS from the live-preview skins. Future Phase 3b can extract to a shared partial once commerce i18n is added; for now the duplication keeps both surfaces independently shippable.
+3. **Payment abstraction pays off on day 1.** Stripe isn't in v1, but `PaymentIntent` + `_dispatch_payment` makes adding it a file-scope addition, not a schema migration. The `stub` provider auto-confirms in dev so the entire flow is testable end-to-end without a PSP account.
+4. **`select_for_update` is Postgres-ready even on SQLite dev.** The service is written assuming the lock works. When production switches to Postgres (planned), overselling protection activates automatically with zero code change.
+5. **Guest checkout is first-class.** Cart session-keys + Order UUID-addressable-by-link + no login redirect on checkout means the conversion path is frictionless. Auth is a future value-add, not a precondition.
+
+---
+
 ## Session 42 — eCommerce Premium Polish (2026-04-14)
 
 **Agent:** Close two user-flagged blockers from Session 41 review before commit: (1) Bottega has visible image gaps + several visually-wrong Unsplash IDs (HEAD-200 but rendering blue stilettos / classroom / restaurant workers / computer screens / cat / cupcakes / espresso machine / Bond Street tube). (2) Luxe is too static — needs premium fashion-editorial motion / micro-interactions / counters / marquee / cascade reveals, NOT generic SaaS startup motion. Non-goals: any other live template, real cart, new categories, scope expansion.

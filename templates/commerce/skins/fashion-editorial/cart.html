@@ -1,0 +1,59 @@
+{% extends "commerce/skins/fashion-editorial/_base.html" %}
+{% block page_title %}Panier{% endblock %}
+
+{% block content %}
+<main class="cx-wrap-wide">
+  <section class="cx-lead">
+    <div>
+      <div class="eyebrow">Panier · maison</div>
+      <h1 style="font-style:italic; font-size:60px;">I look che <em style="color:var(--gold);">tratterrete</em> con voi.</h1>
+      <p class="intro">Ogni capo è preparato in atelier prima della consegna. La direzione clienti rilegge l'ordine personalmente prima di spedire.</p>
+    </div>
+    <div class="count" style="font-style:italic;">{{ cart.item_count }} look</div>
+  </section>
+
+  {% if cart.items.all %}
+  <section class="cx-cart-grid">
+    <div class="cx-cart-table">
+      {% for item in cart.items.all %}
+        <form method="post" action="{% url 'commerce:cart_update' storefront.slug item.id %}" class="row">
+          {% csrf_token %}
+          <div class="pic" {% if item.variant.product.hero_image_url %}style="background-image:url('{{ item.variant.product.hero_image_url }}')"{% endif %}></div>
+          <div>
+            <a href="{% url 'commerce:product_detail' storefront.slug item.variant.product.slug %}" class="title" style="font-style:italic;">{{ item.variant.product.title }}</a>
+            <div class="sub">{{ item.variant.variant_title|default:"Atelier" }} · {{ item.variant.sku }}</div>
+            <div class="sub" style="margin-top:2px;">€ {{ item.unit_price|floatformat:"0g" }} all'esemplare</div>
+          </div>
+          <div class="qty"><input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.variant.stock }}" onchange="this.form.submit()"></div>
+          <div class="line-total">€ {{ item.line_total|floatformat:"0g" }}</div>
+          <div class="remove">
+            <button type="submit" form="rm-{{ item.id }}" aria-label="Rimuovi">✕</button>
+          </div>
+        </form>
+        <form id="rm-{{ item.id }}" method="post" action="{% url 'commerce:cart_remove' storefront.slug item.id %}" style="display:none;">{% csrf_token %}</form>
+      {% endfor %}
+    </div>
+
+    <aside class="cx-summary">
+      <h3>Riepilogo maison</h3>
+      <div class="row"><span>Esemplari</span><span>{{ cart.item_count }}</span></div>
+      <div class="row"><span>Sub-totale</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="row"><span>Consegna</span><span>al checkout</span></div>
+      <div class="row total"><span>Da confermare</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="cta">
+        <a href="{% url 'commerce:checkout' storefront.slug %}" class="cx-btn is-full">Procedi al checkout</a>
+      </div>
+      <div class="policy">
+        {{ storefront.shipping_policy|default:"Consegna maison in scatola firmata, 24 ore Milano." }}
+      </div>
+    </aside>
+  </section>
+  {% else %}
+  <div class="cx-empty">
+    <h3 style="font-style:italic;">Il panier è ancora vuoto</h3>
+    <p>Sfogliate la collezione per selezionare i look che desiderate. La direzione clienti è a disposizione per un appuntamento privato.</p>
+    <div style="margin-top:26px;"><a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn">Apri la collezione</a></div>
+  </div>
+  {% endif %}
+</main>
+{% endblock %}

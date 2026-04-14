@@ -1,6 +1,62 @@
 # Agent Handoff
 
-Last updated: 2026-04-14 — after **Session 42 eCommerce Premium Polish**
+Last updated: 2026-04-14 — after **Session 43 Commerce Foundation v1**
+
+## Session 43 — Commerce Foundation v1: Read This Before Touching Any Commerce, Cart, Checkout, Order, or Seller Dashboard Work (2026-04-14)
+
+**Session 43 closed Phase 3a** — `apps/commerce` is no longer empty stub. It now ships a full operational engine for shops (Product/Variant/Cart/Order/PaymentIntent) with two skin template sets serving Bottega + Luxe at `/shop/<storefront>/…`, a seller dashboard at `/dashboard/<storefront>/…`, and a provider-agnostic payment abstraction (stub + offline_bank_transfer in v1, Stripe documented extension point).
+
+### What's binding (D-075)
+
+1. **`/shop/<slug>/...` and `/dashboard/<slug>/...` are the operational surfaces. `/templates/<cat>/<slug>/preview/...` stays the marketing surface.** D-053 Live Preview Law still binds the preview URL space. NEVER fold commerce operations into the preview routes — they must remain untouched. When a user visits a Bottega live preview they see the Session 41+42 showcase; when they visit `/shop/bottega-shop-artigianale/` they see the real operational shop. The two surfaces are peers, not versions.
+
+2. **`Storefront.is_operational` is the commerce-side shippability gate** — parallels `WebTemplate.tier == published_live`. Both Bottega + Luxe are operational in v1. Future ecommerce templates must flip BOTH `tier=published_live` (preview visible) AND create a `Storefront` row with `is_operational=True` (shop visible).
+
+3. **Inventory is decremented on order creation, not at payment time.** The `create_order_from_cart` service uses `select_for_update` to lock variants inside a transaction. For the `stub` dev provider payment auto-succeeds so there's no race window; for real providers (Stripe later, offline_bank_transfer today) the order sits at `payment_status=UNPAID` while stock is already held. A compensating "release held stock on payment failure" service is a Phase 3b add.
+
+4. **Guest checkout is first-class.** Cart is session-keyed (`request.session.session_key`). User FK is optional on both Cart and Order. Checkout form does not require login. Order confirmation page is addressable by UUID (shared link). Do NOT introduce login gates on any `/shop/` route.
+
+5. **Seller dashboard gate is `is_staff` today.** `SellerRequiredMixin` redirects anon/non-staff to `/admin/login/?next=…`. A `Seller` model scoping users to specific storefronts is a documented Phase 3b split.
+
+6. **Payment providers are registered in the `Storefront.PaymentProvider` enum.** v1 enum has `stub` + `offline_bank_transfer`. Adding Stripe means: (a) add `STRIPE = "stripe"` to the enum, (b) add `_handle_stripe(order)` to `services._dispatch_payment`, (c) create a webhook view that resolves PaymentIntent by `provider_reference` and transitions status, (d) add a `STRIPE_SECRET_KEY` setting. No model migration needed.
+
+7. **Skin template duplication is DELIBERATE in v1.** `templates/commerce/skins/<skin>/_base.html` files duplicate structural CSS from `templates/live_templates/ecommerce/<archetype>/_base.html`. The two surfaces have different nav targets (commerce chrome links to `/shop/`, preview chrome links to `/templates/`), different CTA registers (operational vs marketing), and different locale coverage (commerce is IT-only v1, preview has 5 locales). Consolidate when commerce gets i18n in Phase 3b.
+
+### Reusable recipe (for adding a new operational storefront)
+
+When a 3rd ecommerce template ever ships a real shop:
+1. Flip `tier=published_live` via the existing sync_template_tiers pipeline (Session 41 recipe).
+2. Decide which skin to reuse: `artisan-workshop` for warm-artisan macros (Aesop/Toscana/soulful), `fashion-editorial` for maison-editorial macros (Hermès/Vogue/gold-on-ink). If the sibling is semantically as far from both as Bottega is from Luxe, only then split a new skin under `Storefront.Skin`.
+3. Extend `seed_commerce.py` with a new `_seed_storefront(...)` call passing `template_slug`, the collections list, products list, shipping methods.
+4. `python manage.py seed_commerce` — idempotent, safe to run repeatedly.
+5. If a new skin: add its directory under `templates/commerce/skins/<new-skin>/` with the 5 page templates. Set `--cx-*` tokens in `_base.html`. The `commerce.css` widget CSS follows automatically.
+6. Run `smoke_commerce.py` — it dispatches routes dynamically from Storefront.objects.all() (extend smoke_commerce if adding a 3rd storefront to verify the new routes).
+
+### Do NOT do
+
+- Do NOT fold real commerce operations into `/templates/…/preview/…` URLs. Those URLs are bound by D-053 to the marketing/showcase surface.
+- Do NOT add login requirements to `/shop/` customer routes. Guest checkout is first-class.
+- Do NOT bypass the `SellerRequiredMixin` on dashboard views — it's the auth gate.
+- Do NOT decrement stock in templates or views. Stock mutations live in `apps/commerce/services.py`. Views call services.
+- Do NOT remove the `select_for_update` lock from `create_order_from_cart` — it's silent no-op on SQLite dev but activates on production Postgres.
+- Do NOT add Stripe directly to `views/customer.py`. Add it to the `_dispatch_payment` switch in `services.py` to keep the provider abstraction intact.
+- Do NOT touch `templates/live_templates/**` when working on commerce — those are the preview/showcase templates and must stay frozen. Session 41 D-073 + Session 42 D-074 set the bar; commerce parallels, doesn't replace.
+- Do NOT translate commerce UI strings into other locales yet. Commerce i18n is Phase 3b. The commerce pages are IT-only in v1; the preview pages keep their 5 locales.
+- Do NOT add a 3rd shipping method "shortcut" like `italy-express` without going through `seed_commerce` or admin — shipping methods are per-storefront scoped and must be created via Storefront.shipping_methods.
+
+### Gotchas (Session 43)
+
+- **Windows `manage.py shell -c` console encoding (cp1252) breaks Unicode print output.** Use plain ASCII in smoke script output, or set `PYTHONIOENCODING=utf-8`. Smokes that use `·`, `→`, `←`, box-drawing chars will crash with `UnicodeEncodeError` on a fresh Windows shell.
+- **Django Test Client rejects `testserver` hostname when `ALLOWED_HOSTS = []`.** Pass `Client(HTTP_HOST="localhost")` explicitly. `DEBUG=True` defaults to `['localhost', '127.0.0.1', '[::1]']` — not testserver.
+- **`session.session_key` is None until the session is saved.** Calling `request.session.save()` forces it to materialize. The commerce helper `_ensure_session` handles this; don't inline the access in views.
+- **`select_for_update` on SQLite is a no-op, the lock fires on Postgres only.** Dev works, production gains the lock automatically. If you test concurrent checkout flows on SQLite, they won't deadlock — they just race like any other SQLite writes.
+- **Cart.item_count() is a `Sum` aggregate, not `.count()`.** Calling `.count()` returns the number of CartItem rows (distinct variants), not the total quantity. Use `item_count()` for the nav pill number.
+- **Category.subtitle may be empty** on seeded collections. Templates that render `{{ current_collection.subtitle }}` should use `|default:current_collection.title` as fallback. Already applied in the shop.html templates.
+- **UpdateCartItemView accepts quantity=0 to mean "remove"** per the service contract. Don't assume the POST body has qty > 0 — the front-end qty input has min="0" because setting to 0 is an intentional remove gesture.
+
+---
+
+
 
 ## Session 42 — eCommerce Premium Polish: Read This Before Touching Any eCommerce Image, Motion, or DNA Drift Work (2026-04-14)
 
