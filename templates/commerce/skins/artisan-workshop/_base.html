@@ -1,0 +1,239 @@
+{% load static %}<!DOCTYPE html>
+<html lang="it" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ storefront.template.name }} — {% block page_title %}Bottega{% endblock %}</title>
+<meta name="description" content="{{ storefront.template.brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/commerce.css' %}">
+<style>
+  :root {
+    --paper:      #f6ecd8;
+    --paper-2:    #fbf3e0;
+    --paper-3:    #f0e4cd;
+    --ink:        #3b2a18;
+    --ink-2:      #5a4a36;
+    --ink-mute:   rgba(59,42,24,0.62);
+    --ink-faint:  rgba(59,42,24,0.42);
+    --rule:       rgba(59,42,24,0.16);
+    --rule-dash:  rgba(59,42,24,0.26);
+    --terra:      #ff8f00;
+    --terra-mute: rgba(255,143,0,0.18);
+
+    /* cx-* skin tokens — aligned with artisan-workshop preview DNA */
+    --cx-bg:          var(--paper);
+    --cx-surface:     var(--paper-2);
+    --cx-surface-2:   #f0e4cd;
+    --cx-ink:         var(--ink);
+    --cx-ink-mute:    var(--ink-mute);
+    --cx-ink-faint:   var(--ink-faint);
+    --cx-rule:        var(--rule);
+    --cx-rule-dash:   var(--rule-dash);
+    --cx-accent:      var(--terra);
+    --cx-accent-soft: var(--terra-mute);
+    --cx-on-accent:   var(--ink);
+    --cx-heading:     'Libre Baskerville', Georgia, serif;
+    --cx-body:        'Nunito Sans', system-ui, sans-serif;
+    --cx-mono:        'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --cx-radius:      0;
+    --cx-btn-bg:      var(--ink);
+    --cx-btn-fg:      var(--paper);
+    --cx-btn-radius:  0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    color: var(--ink); font-family: var(--cx-body); font-size: 16px; line-height: 1.65;
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(255,143,0,0.05) 0%, transparent 32%),
+      repeating-linear-gradient(0deg, rgba(59,42,24,0.022) 0px, rgba(59,42,24,0.022) 1px, transparent 1px, transparent 6px);
+    min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  h1, h2, h3, h4, h5 { font-family: var(--cx-heading); font-weight: 700; line-height: 1.12; letter-spacing: -0.012em; color: var(--ink); }
+
+  /* Premium CTA variant — artisan stamp-shadow */
+  .cx-btn {
+    box-shadow: 5px 5px 0 var(--terra-mute);
+  }
+  .cx-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 var(--terra-mute);
+  }
+
+  /* Marketplace strip */
+  .mp-bar {
+    background: #ede0c2; color: var(--ink); font-family: var(--cx-body);
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+    border-bottom: 1.5px solid var(--rule);
+  }
+  .mp-bar a.mp-back { color: var(--terra); font-weight: 700; border-bottom: 1px solid var(--terra); padding-bottom: 1px; }
+  .mp-bar .mp-name { color: var(--ink-mute); }
+
+  /* Top nav */
+  .aw-nav-wrap { padding: 0 56px; }
+  .aw-nav {
+    display: flex; align-items: center; height: 88px;
+    border-bottom: 1.5px solid var(--rule);
+  }
+  .aw-nav .crest {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: var(--terra); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--cx-heading); font-size: 26px; font-weight: 700;
+    transform: rotate(-3deg);
+    box-shadow: 0 2px 0 rgba(59,42,24,0.18);
+  }
+  .aw-nav .wm {
+    margin-left: 18px;
+    font-family: var(--cx-heading); font-size: 22px; font-weight: 700;
+    color: var(--ink); letter-spacing: 0.01em; line-height: 1.1;
+  }
+  .aw-nav .wm small {
+    display: block; font-family: var(--cx-body); font-size: 10px;
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-mute); margin-top: 2px;
+  }
+  .aw-nav .links {
+    display: flex; gap: 26px; margin-left: 56px;
+    font-family: var(--cx-heading); font-size: 15px; font-weight: 500;
+  }
+  .aw-nav .links a {
+    border-bottom: 1.5px solid transparent; padding-bottom: 3px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .aw-nav .links a:hover { color: var(--terra); border-color: var(--rule); }
+  .aw-nav .links a.is-current { color: var(--terra); border-color: var(--terra); }
+  .aw-nav .rs {
+    margin-left: auto; display: flex; align-items: center; gap: 20px;
+    font-family: var(--cx-body); font-size: 13px; font-weight: 600; color: var(--ink-mute);
+  }
+  .aw-nav .rs .cart-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; background: var(--paper-2); border: 1.5px solid var(--ink);
+    font-family: var(--cx-heading); font-size: 14px; font-weight: 600; color: var(--ink);
+    transition: background .15s ease;
+  }
+  .aw-nav .rs .cart-pill .num {
+    min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px;
+    background: var(--terra); color: var(--ink); font-size: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .aw-nav .rs .cart-pill:hover { background: var(--paper-3); }
+
+  /* Footer */
+  .aw-foot {
+    margin-top: 80px; background: var(--paper-3);
+    border-top: 2.5px dashed var(--rule-dash); padding: 56px 56px 28px;
+  }
+  .aw-foot .inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 32px; border-bottom: 1.5px dashed var(--rule-dash); }
+  @media (max-width: 880px) { .aw-foot .inner { grid-template-columns: 1fr; gap: 24px; } }
+  .aw-foot h5 {
+    font-family: var(--cx-body); font-size: 10px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--terra); font-weight: 800; margin-bottom: 14px;
+  }
+  .aw-foot .brand .word {
+    font-family: var(--cx-heading); font-size: 24px; font-weight: 700;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .aw-foot .brand p { color: var(--ink-mute); max-width: 38ch; line-height: 1.65; font-size: 14px; }
+  .aw-foot .col a, .aw-foot .col p {
+    color: var(--ink-mute); display: block; padding: 4px 0; font-size: 14px;
+  }
+  .aw-foot .col a:hover { color: var(--terra); }
+  .aw-foot .bot {
+    max-width: 1280px; margin: 0 auto; padding-top: 22px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+    font-size: 11px; color: var(--ink-faint);
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+
+  @media (max-width: 960px) {
+    .aw-nav .links { display: none; }
+    .aw-nav-wrap { padding: 0 28px; }
+    .aw-foot { padding: 40px 28px 24px; }
+  }
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' storefront.template.category.slug storefront.template.slug %}" class="mp-back">◂ Torna al catalogo</a>
+  <span class="mp-name">Shop attivo · {{ storefront.template.name }}</span>
+  <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}" class="mp-back">Anteprima live &nbsp;▸</a>
+</div>
+
+<div class="aw-nav-wrap">
+  <nav class="aw-nav">
+    <a href="{% url 'commerce:shop' storefront.slug %}" class="crest" aria-label="{{ storefront.template.brand.brand_name }}">M</a>
+    <a href="{% url 'commerce:shop' storefront.slug %}" class="wm">
+      {{ storefront.template.brand.brand_name }}
+      <small>Firenze · dal 1968 · fatto a mano</small>
+    </a>
+    <div class="links">
+      <a href="{% url 'commerce:shop' storefront.slug %}" {% block nav_shop_class %}{% endblock %}>Catalogo</a>
+      {% for c in storefront.collections.all %}{% if c.is_active %}
+        <a href="{% url 'commerce:shop_collection' storefront.slug c.slug %}">{{ c.title }}</a>
+      {% endif %}{% endfor %}
+    </div>
+    <div class="rs">
+      <a href="{% url 'commerce:cart' storefront.slug %}" class="cart-pill">
+        Carrello <span class="num">{{ cart.item_count|default:0 }}</span>
+      </a>
+    </div>
+  </nav>
+</div>
+
+{% if messages %}
+<div class="cx-messages">
+  {% for msg in messages %}
+    <div class="m {% if msg.tags %}is-{{ msg.tags }}{% endif %}">{{ msg }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<footer class="aw-foot">
+  <div class="inner">
+    <div class="brand">
+      <h5>La bottega</h5>
+      <div class="word">{{ storefront.template.brand.brand_name }}</div>
+      <p>Bottega artigiana fondata nel 1968. Cuoio, ceramica e tessuti fatti a mano in Toscana, in piccole edizioni che non si ripetono.</p>
+    </div>
+    <div class="col">
+      <h5>Bottega & ordini</h5>
+      <p>{{ storefront.contact_phone }}</p>
+      <p><a href="mailto:{{ storefront.contact_email }}">{{ storefront.contact_email }}</a></p>
+      <p>Via dei Serragli 47/r · 50124 Firenze</p>
+    </div>
+    <div class="col">
+      <h5>Navigazione</h5>
+      <a href="{% url 'commerce:shop' storefront.slug %}">Catalogo</a>
+      <a href="{% url 'commerce:cart' storefront.slug %}">Carrello</a>
+      <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}">Atelier</a>
+    </div>
+    <div class="col">
+      <h5>Pagamenti & resi</h5>
+      <p>Spedizione 48 ore in Italia</p>
+      <p>Garanzia riparazione 2 anni</p>
+      <p>Resi entro 14 giorni</p>
+    </div>
+  </div>
+  <div class="bot">
+    <span>© 2026 {{ storefront.template.brand.brand_name }} · P.IVA 04891240484</span>
+    <span>Commerce Foundation v1 · La Bottega di Martino</span>
+  </div>
+</footer>
+
+</body>
+</html>

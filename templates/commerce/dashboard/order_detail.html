@@ -1,0 +1,155 @@
+{% extends "commerce/dashboard/_base.html" %}
+{% block page_title %}Ordine {{ order.reference }}{% endblock %}
+{% block nav_orders %}class="is-active"{% endblock %}
+
+{% block content %}
+<div class="ds-head">
+  <div>
+    <h1>Ordine {{ order.reference }}</h1>
+    <div class="sub">
+      <a href="{% url 'commerce:dashboard_orders' storefront.slug %}">◂ Torna all'elenco</a>
+      · Ricevuto il {{ order.created_at|date:"d F Y · H:i" }}
+    </div>
+  </div>
+  <div class="actions" style="align-items:center; gap:8px;">
+    <span class="ds-pill is-{{ order.status }}">{{ order.get_status_display }}</span>
+    <span class="ds-pill is-{{ order.payment_status }}">{{ order.get_payment_status_display }}</span>
+    <span class="ds-pill is-{{ order.fulfillment_status }}">{{ order.get_fulfillment_status_display }}</span>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns: 1.5fr 1fr; gap: 28px;">
+  <div>
+    <section class="ds-card">
+      <h2>Articoli</h2>
+      <table class="ds-table">
+        <thead><tr><th>Prodotto</th><th>Variante</th><th>SKU</th><th style="text-align:right;">Qtà</th><th style="text-align:right;">Unitario</th><th style="text-align:right;">Totale</th></tr></thead>
+        <tbody>
+          {% for item in order.items.all %}
+          <tr>
+            <td><strong>{{ item.product_title }}</strong></td>
+            <td>{{ item.variant_title|default:"—" }}</td>
+            <td class="num" style="font-size:12px;">{{ item.sku }}</td>
+            <td class="num" style="text-align:right;">{{ item.quantity }}</td>
+            <td class="money" style="text-align:right;">€ {{ item.unit_price|floatformat:"2" }}</td>
+            <td class="money" style="text-align:right;"><strong>€ {{ item.line_total|floatformat:"2" }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--rule); display:grid; grid-template-columns: 1fr auto; gap:4px 28px; align-items:baseline; max-width:340px; margin-left:auto; font-variant-numeric:tabular-nums;">
+        <span style="color:var(--ink-mute); font-size:13px;">Subtotale</span>
+        <strong>€ {{ order.subtotal|floatformat:"2" }}</strong>
+        <span style="color:var(--ink-mute); font-size:13px;">Spedizione <em style="color:var(--ink-faint); font-weight:400;">{{ order.shipping_method.title }}</em></span>
+        <strong>€ {{ order.shipping_total|floatformat:"2" }}</strong>
+        <span style="font-size:16px; font-weight:700; padding-top:8px; border-top:1px solid var(--rule); margin-top:4px;">Totale</span>
+        <strong style="font-size:20px; font-weight:700; padding-top:8px; border-top:1px solid var(--rule); margin-top:4px; color:var(--accent);">€ {{ order.grand_total|floatformat:"2" }}</strong>
+      </div>
+    </section>
+
+    <section class="ds-card">
+      <h2>Pagamenti</h2>
+      {% if order.payment_intents.all %}
+      <table class="ds-table">
+        <thead><tr><th>Quando</th><th>Provider</th><th>Stato</th><th style="text-align:right;">Importo</th><th>Referenza</th></tr></thead>
+        <tbody>
+          {% for p in order.payment_intents.all %}
+          <tr>
+            <td class="muted">{{ p.created_at|date:"d M · H:i" }}</td>
+            <td>{{ p.provider }}</td>
+            <td>{{ p.get_status_display }}</td>
+            <td class="money" style="text-align:right;">€ {{ p.amount|floatformat:"2" }}</td>
+            <td class="num" style="font-size:11px;">{{ p.provider_reference|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="sub">Nessun payment intent registrato ancora.</div>
+      {% endif %}
+
+      {% if order.payment_status != 'paid' %}
+      <form method="post" action="" class="ds-form" style="margin-top:18px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="mark_paid">
+        <div class="actions-row">
+          <button type="submit" class="ds-btn is-success">✓ Segna come pagato</button>
+          <span class="hint">Usalo quando il bonifico è arrivato o il pagamento è stato incassato fuori piattaforma.</span>
+        </div>
+      </form>
+      {% endif %}
+    </section>
+
+    <section class="ds-card">
+      <h2>Fulfillment</h2>
+      <form method="post" action="" class="ds-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="fulfillment">
+        {% for field in status_form %}
+          <div class="row">
+            <label>{{ field.label }}</label>
+            <div>{{ field }}</div>
+          </div>
+        {% endfor %}
+        <div class="actions-row">
+          <button type="submit" class="ds-btn">Aggiorna stato</button>
+        </div>
+      </form>
+    </section>
+
+    {% if order.status != 'cancelled' and order.status != 'delivered' %}
+    <section class="ds-card" style="border-color: rgba(181,48,48,0.3); background: rgba(181,48,48,0.02);">
+      <h2 style="color: var(--danger);">⚠ Zona critica</h2>
+      <p class="sub">L'annullamento è irreversibile e ripristina lo stock. Usalo solo quando necessario.</p>
+      <form method="post" action="" onsubmit="return confirm('Annullare l''ordine {{ order.reference|escapejs }}? Lo stock sarà ripristinato. L''azione è irreversibile.')" class="ds-form" style="margin-top:14px;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="cancel">
+        <input type="text" name="reason" placeholder="Motivo dell'annullamento (opzionale)" style="padding:10px 13px; border:1px solid var(--rule); border-radius:6px; width:100%; margin-bottom:12px; font-family: var(--body); font-size: 14px;">
+        <button type="submit" class="ds-btn is-danger">Annulla ordine</button>
+      </form>
+    </section>
+    {% endif %}
+  </div>
+
+  <aside>
+    <section class="ds-card">
+      <h2>Cliente</h2>
+      <p><strong>{{ order.customer_name }}</strong></p>
+      <p><a href="mailto:{{ order.customer_email }}">{{ order.customer_email }}</a></p>
+      {% if order.customer_phone %}<p>{{ order.customer_phone }}</p>{% endif %}
+    </section>
+    <section class="ds-card">
+      <h2>Indirizzo di spedizione</h2>
+      <p>{{ order.shipping_address.full_name }}</p>
+      <p>{{ order.shipping_address.line1 }}</p>
+      {% if order.shipping_address.line2 %}<p>{{ order.shipping_address.line2 }}</p>{% endif %}
+      <p>{{ order.shipping_address.postal_code }} {{ order.shipping_address.city }}</p>
+      {% if order.shipping_address.region %}<p>{{ order.shipping_address.region }}</p>{% endif %}
+      <p>{{ order.shipping_address.country }}</p>
+    </section>
+    <section class="ds-card">
+      <h2>Metodo di spedizione</h2>
+      <p><strong>{{ order.shipping_method.title }}</strong></p>
+      <p class="sub">{{ order.shipping_method.description }}</p>
+      {% if order.shipping_method.est_delivery_days %}<p class="sub">Tempi: {{ order.shipping_method.est_delivery_days }}</p>{% endif %}
+      {% if order.tracking_number %}
+      <div style="margin-top:10px; padding:10px; background:var(--panel-2); border-radius:6px;">
+        <strong>Tracking:</strong> {{ order.tracking_carrier }} · {{ order.tracking_number }}
+      </div>
+      {% endif %}
+    </section>
+    {% if order.customer_note %}
+    <section class="ds-card">
+      <h2>Note del cliente</h2>
+      <p style="font-style:italic; color:var(--ink-mute);">{{ order.customer_note }}</p>
+    </section>
+    {% endif %}
+    {% if order.seller_note %}
+    <section class="ds-card">
+      <h2>Note interne</h2>
+      <p style="font-size:12px; white-space:pre-wrap; color:var(--ink-mute);">{{ order.seller_note }}</p>
+    </section>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

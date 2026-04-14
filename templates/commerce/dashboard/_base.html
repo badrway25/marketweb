@@ -1,0 +1,266 @@
+{% load static %}<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard · {{ storefront.template.brand.brand_name }} — {% block page_title %}Overview{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #f5f5f0;
+    --panel:    #ffffff;
+    --panel-2:  #f9f8f3;
+    --ink:      #0f1020;
+    --ink-2:    #23263a;
+    --ink-mute: #6b6f85;
+    --ink-faint:#a7abc0;
+    --rule:     rgba(15,16,32,0.10);
+    --rule-soft:rgba(15,16,32,0.06);
+    --accent:   #2c3e87;
+    --accent-2: #e8b04a;
+    --success:  #2f8a55;
+    --warning:  #c97700;
+    --danger:   #b53030;
+
+    --body:     'Inter', system-ui, sans-serif;
+    --mono:     'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--body); font-size: 14px; line-height: 1.55; color: var(--ink);
+    background: var(--bg); min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+  .ds-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+  @media (max-width: 900px) { .ds-shell { grid-template-columns: 1fr; } }
+
+  /* Sidebar */
+  .ds-side {
+    background: var(--ink); color: #f1f1f9;
+    padding: 28px 22px 32px; display: flex; flex-direction: column;
+    border-right: 1px solid var(--rule);
+  }
+  .ds-side .brand-band {
+    padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .ds-side .brand-band .kicker {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--accent-2);
+  }
+  .ds-side .brand-band .name {
+    margin-top: 8px; font-size: 18px; font-weight: 700; color: #f1f1f9;
+  }
+  .ds-side .brand-band .tpl {
+    margin-top: 4px; font-size: 11px; color: #a7abc0; font-family: var(--mono);
+  }
+  .ds-side .nav { margin-top: 24px; display: flex; flex-direction: column; gap: 2px; }
+  .ds-side .nav .nav-group {
+    font-size: 9px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase;
+    color: #a7abc0; padding: 12px 10px 6px;
+  }
+  .ds-side .nav a {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; font-size: 13px; font-weight: 500; color: #d4d6e5;
+    border-radius: 6px; transition: background .15s ease, color .15s ease;
+  }
+  .ds-side .nav a:hover { background: rgba(255,255,255,0.06); color: #f1f1f9; }
+  .ds-side .nav a.is-active { background: var(--accent); color: #fff; }
+  .ds-side .nav a .count {
+    background: rgba(255,255,255,0.12); padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; color: #f1f1f9;
+  }
+  .ds-side .foot { margin-top: auto; padding-top: 24px; font-size: 11px; color: #a7abc0; }
+  .ds-side .foot a { color: var(--accent-2); display: block; padding: 4px 0; }
+
+  /* Main */
+  .ds-main { padding: 32px 40px 56px; max-width: 1400px; }
+  @media (max-width: 900px) { .ds-main { padding: 24px; } }
+  .ds-head {
+    display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 18px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--rule); margin-bottom: 28px;
+  }
+  .ds-head h1 { font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .ds-head .sub { margin-top: 4px; font-size: 13px; color: var(--ink-mute); }
+  .ds-head .actions { display: flex; gap: 10px; }
+
+  /* Buttons */
+  .ds-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; background: var(--accent); color: #fff; font-weight: 600; font-size: 13px;
+    border: 1px solid var(--accent); border-radius: 6px; cursor: pointer;
+    text-decoration: none; min-height: 38px; line-height: 1;
+    transition: background .15s ease, box-shadow .15s ease, transform .1s ease;
+    font-family: var(--body);
+  }
+  .ds-btn:hover { background: #1f2f6d; box-shadow: 0 2px 8px rgba(44,62,135,0.18); }
+  .ds-btn:active { transform: translateY(1px); }
+  .ds-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ds-btn.is-ghost { background: transparent; color: var(--ink); border-color: var(--rule); box-shadow: none; }
+  .ds-btn.is-ghost:hover { background: var(--panel-2); box-shadow: none; }
+  .ds-btn.is-danger { background: var(--danger); border-color: var(--danger); }
+  .ds-btn.is-danger:hover { background: #8f2525; box-shadow: 0 2px 8px rgba(181,48,48,0.18); }
+  .ds-btn.is-danger-ghost { background: transparent; color: var(--danger); border-color: rgba(181,48,48,0.35); box-shadow: none; }
+  .ds-btn.is-danger-ghost:hover { background: rgba(181,48,48,0.06); border-color: var(--danger); box-shadow: none; }
+  .ds-btn.is-success { background: var(--success); border-color: var(--success); }
+  .ds-btn.is-success:hover { background: #256b43; box-shadow: 0 2px 8px rgba(47,138,85,0.18); }
+  .ds-btn.is-sm { padding: 6px 12px; font-size: 12px; min-height: 30px; }
+  .ds-btn[disabled] { opacity: 0.55; cursor: not-allowed; pointer-events: none; }
+
+  /* Cards / tables */
+  .ds-card {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 22px 24px; margin-bottom: 20px;
+  }
+  .ds-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; color: var(--ink); }
+  .ds-card .sub { font-size: 13px; color: var(--ink-mute); margin-bottom: 12px; }
+  .ds-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .ds-metric {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 22px 24px; position: relative; overflow: hidden;
+  }
+  .ds-metric::before {
+    content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--accent);
+    opacity: 0.65;
+  }
+  .ds-metric.is-warning::before { background: var(--warning); }
+  .ds-metric.is-danger::before { background: var(--danger); }
+  .ds-metric .label {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .ds-metric .value {
+    margin-top: 12px; font-size: 34px; font-weight: 700; color: var(--ink);
+    font-family: var(--mono); letter-spacing: -0.01em; font-variant-numeric: tabular-nums;
+    line-height: 1.05;
+  }
+  .ds-metric .hint { margin-top: 8px; font-size: 12px; color: var(--ink-faint); }
+  .ds-metric.is-warning .value { color: var(--warning); }
+  .ds-metric.is-danger .value { color: var(--danger); }
+
+  .ds-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ds-table th {
+    padding: 12px 14px; background: var(--panel-2); color: var(--ink-mute);
+    font-weight: 700; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    text-align: left; border-bottom: 1px solid var(--rule);
+  }
+  .ds-table td {
+    padding: 14px 14px; border-bottom: 1px solid var(--rule-soft); vertical-align: middle;
+  }
+  .ds-table tr:last-child td { border-bottom: 0; }
+  .ds-table tbody tr { transition: background .12s ease; }
+  .ds-table tbody tr:hover { background: var(--panel-2); }
+  .ds-table a { color: var(--accent); font-weight: 600; }
+  .ds-table a:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .ds-table .muted { color: var(--ink-mute); font-size: 12px; margin-top: 2px; }
+  .ds-table .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .ds-table .money { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .ds-pill {
+    display: inline-flex; padding: 3px 10px; border-radius: 999px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .ds-pill.is-pending   { background: #fff4dc; color: #8a6200; }
+  .ds-pill.is-confirmed { background: #dcf0ff; color: #18528a; }
+  .ds-pill.is-shipped   { background: #dbf1e1; color: #1e6b3d; }
+  .ds-pill.is-delivered { background: #c4e6ce; color: #105028; }
+  .ds-pill.is-cancelled { background: #fde0e0; color: #8a1b1b; }
+  .ds-pill.is-paid      { background: #dbf1e1; color: #1e6b3d; }
+  .ds-pill.is-unpaid    { background: #fff4dc; color: #8a6200; }
+  .ds-pill.is-low       { background: #fff4dc; color: #8a6200; }
+  .ds-pill.is-out       { background: #fde0e0; color: #8a1b1b; }
+
+  .ds-messages { margin-bottom: 20px; }
+  .ds-messages .m {
+    padding: 10px 14px; background: var(--panel); border-left: 3px solid var(--accent);
+    border-radius: 4px; margin-bottom: 6px; font-size: 13px;
+  }
+  .ds-messages .m.is-success { border-color: var(--success); }
+  .ds-messages .m.is-error   { border-color: var(--danger); color: var(--danger); }
+
+  /* Forms */
+  .ds-form .row { display: grid; grid-template-columns: 220px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--rule-soft); align-items: flex-start; }
+  .ds-form .row:last-child { border-bottom: 0; }
+  .ds-form label { font-weight: 600; color: var(--ink-2); font-size: 13px; padding-top: 9px; }
+  .ds-form label small { display: block; font-weight: 400; color: var(--ink-mute); font-size: 12px; margin-top: 4px; line-height: 1.5; }
+  .ds-form input[type="text"], .ds-form input[type="email"], .ds-form input[type="url"],
+  .ds-form input[type="number"], .ds-form textarea, .ds-form select {
+    width: 100%; padding: 10px 13px; border: 1px solid var(--rule); border-radius: 6px;
+    font-family: var(--body); font-size: 14px; background: #fff; color: var(--ink);
+    transition: border-color .12s ease, box-shadow .12s ease;
+  }
+  .ds-form input[type="number"] { font-variant-numeric: tabular-nums; font-family: var(--mono); }
+  .ds-form input:hover, .ds-form textarea:hover, .ds-form select:hover { border-color: var(--ink-mute); }
+  .ds-form input:focus, .ds-form textarea:focus, .ds-form select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(44,62,135,0.15);
+  }
+  .ds-form input:focus-visible, .ds-form textarea:focus-visible, .ds-form select:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .ds-form input[type="checkbox"] { width: auto; accent-color: var(--accent); }
+  .ds-form textarea { resize: vertical; min-height: 80px; }
+  .ds-form .err { color: var(--danger); font-size: 12px; margin-top: 6px; font-weight: 600; }
+  .ds-form .actions-row { margin-top: 22px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .ds-form .actions-row .hint { color: var(--ink-mute); font-size: 12px; font-style: italic; }
+
+  /* Inline variant edit reveal */
+  .ds-variant-edit { background: var(--panel-2); border-top: 2px solid var(--accent); padding: 18px 28px; }
+  .ds-variant-edit .ds-form .row { padding: 12px 0; }
+  .ds-variant-edit .ds-form .row:first-child { padding-top: 0; }
+
+  @media (max-width: 700px) {
+    .ds-form .row { grid-template-columns: 1fr; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="ds-shell">
+  <aside class="ds-side">
+    <div class="brand-band">
+      <div class="kicker">Commerce Foundation v1</div>
+      <div class="name">{{ storefront.template.brand.brand_name }}</div>
+      <div class="tpl">{{ storefront.slug }}</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">Overview</div>
+      <a href="{% url 'commerce:dashboard_home' storefront.slug %}" {% block nav_home %}{% endblock %}>Home</a>
+      <div class="nav-group">Catalogo</div>
+      <a href="{% url 'commerce:dashboard_products' storefront.slug %}" {% block nav_products %}{% endblock %}>
+        Prodotti <span class="count">{{ storefront.products.count }}</span>
+      </a>
+      <a href="{% url 'commerce:dashboard_product_new' storefront.slug %}">+ Nuovo prodotto</a>
+      <div class="nav-group">Vendite</div>
+      <a href="{% url 'commerce:dashboard_orders' storefront.slug %}" {% block nav_orders %}{% endblock %}>
+        Ordini <span class="count">{{ storefront.orders.count }}</span>
+      </a>
+      <div class="nav-group">Vetrina</div>
+      <a href="{% url 'commerce:shop' storefront.slug %}" target="_blank">Vedi shop ↗</a>
+      <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}" target="_blank">Anteprima live ↗</a>
+      <a href="/admin/" target="_blank">Admin Django ↗</a>
+    </nav>
+    <div class="foot">
+      Skin attiva · <strong style="color:#d4d6e5;">{{ storefront.skin }}</strong><br>
+      Pagamenti · {{ storefront.get_payment_provider_display }}<br>
+      {% if storefront.is_operational %}
+        <span style="color:#70d19c;">● operativo</span>
+      {% else %}
+        <span style="color:#ff8b62;">● offline</span>
+      {% endif %}
+    </div>
+  </aside>
+
+  <main class="ds-main">
+    {% if messages %}
+    <div class="ds-messages">
+      {% for msg in messages %}
+        <div class="m {% if msg.tags %}is-{{ msg.tags }}{% endif %}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>

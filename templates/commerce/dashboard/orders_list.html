@@ -1,0 +1,73 @@
+{% extends "commerce/dashboard/_base.html" %}
+{% block page_title %}Ordini{% endblock %}
+{% block nav_orders %}class="is-active"{% endblock %}
+
+{% block content %}
+<div class="ds-head">
+  <div>
+    <h1>Ordini</h1>
+    <div class="sub">{% if page_obj %}{{ page_obj.paginator.count }}{% else %}{{ orders|length }}{% endif %} ordini totali.</div>
+  </div>
+</div>
+
+<section class="ds-card" style="padding:18px 22px;">
+  <form method="get" action="" style="display:flex; gap:10px; align-items:center;">
+    <label style="font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-mute);">Filtra per stato</label>
+    <select name="status" onchange="this.form.submit()" style="padding:7px 10px; border:1px solid var(--rule); border-radius:6px;">
+      <option value="">— Tutti —</option>
+      {% for val, lbl in statuses %}
+        <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ lbl }}</option>
+      {% endfor %}
+    </select>
+    {% if status_filter %}<a href="?" class="ds-btn is-ghost" style="padding:6px 12px; font-size:12px;">Reset</a>{% endif %}
+  </form>
+</section>
+
+<section class="ds-card" style="padding:0;">
+  {% if orders %}
+  <table class="ds-table">
+    <thead>
+      <tr>
+        <th>Riferimento</th>
+        <th>Cliente</th>
+        <th>Data</th>
+        <th>Totale</th>
+        <th>Articoli</th>
+        <th>Stato</th>
+        <th>Pagamento</th>
+        <th>Spedizione</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td><a href="{% url 'commerce:dashboard_order_detail' storefront.slug o.uuid %}"><strong class="num">{{ o.reference }}</strong></a></td>
+        <td>{{ o.customer_name }}<div class="muted">{{ o.customer_email }}</div></td>
+        <td class="muted">{{ o.created_at|date:"d M Y · H:i" }}</td>
+        <td class="money"><strong>€ {{ o.grand_total|floatformat:"2" }}</strong></td>
+        <td class="num">{{ o.items.count }}</td>
+        <td><span class="ds-pill is-{{ o.status }}">{{ o.get_status_display }}</span></td>
+        <td><span class="ds-pill is-{{ o.payment_status }}">{{ o.get_payment_status_display }}</span></td>
+        <td><span class="ds-pill is-{{ o.fulfillment_status }}">{{ o.get_fulfillment_status_display }}</span></td>
+        <td><a class="ds-btn is-ghost" style="padding:6px 12px;" href="{% url 'commerce:dashboard_order_detail' storefront.slug o.uuid %}">Apri</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="padding:40px; text-align:center;">
+    <h3>Nessun ordine</h3>
+    <p class="sub">I nuovi ordini compariranno qui non appena i clienti concluderanno il checkout.</p>
+  </div>
+  {% endif %}
+</section>
+
+{% if is_paginated %}
+<div style="margin-top:18px; display:flex; gap:10px; align-items:center; color:var(--ink-mute); font-size:13px;">
+  {% if page_obj.has_previous %}<a class="ds-btn is-ghost" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">◂</a>{% endif %}
+  <span>Pagina {{ page_obj.number }} di {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="ds-btn is-ghost" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">▸</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

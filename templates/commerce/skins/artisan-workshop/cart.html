@@ -1,0 +1,100 @@
+{% extends "commerce/skins/artisan-workshop/_base.html" %}
+{% block page_title %}Carrello{% endblock %}
+
+{% block content %}
+<main class="cx-wrap">
+  <section class="cx-lead">
+    <div>
+      <div class="eyebrow">Carrello</div>
+      <h1>I pezzi che porterai <em style="color:var(--terra); font-style:italic;">a casa.</em></h1>
+      <p class="intro">
+        Ogni pezzo è preparato a mano dalla bottega. La spedizione parte il giorno seguente alla
+        conferma dell'ordine, sempre via corriere tracciato.
+      </p>
+    </div>
+    <div class="count">{{ cart.item_count }} pezz{{ cart.item_count|pluralize:"o,i" }}</div>
+  </section>
+
+  {% if cart.items.all %}
+  <section class="cx-cart-grid">
+    <div class="cx-cart-table">
+      {% for item in cart.items.all %}
+        <form method="post" action="{% url 'commerce:cart_update' storefront.slug item.id %}" class="row" data-cart-row>
+          {% csrf_token %}
+          <div class="pic" {% if item.variant.product.hero_image_url %}style="background-image:url('{{ item.variant.product.hero_image_url }}')"{% endif %}></div>
+          <div>
+            <a href="{% url 'commerce:product_detail' storefront.slug item.variant.product.slug %}" class="title">{{ item.variant.product.title }}</a>
+            <div class="sub">{{ item.variant.variant_title|default:"Unico" }} · <span class="sku">{{ item.variant.sku }}</span></div>
+            <div class="sub" style="margin-top:4px;">€ {{ item.unit_price|floatformat:"0g" }} al pezzo{% if item.variant.stock <= 2 %} · <em style="color:#b06300;">Ultimi {{ item.variant.stock }}</em>{% endif %}</div>
+          </div>
+          <div class="qty">
+            <div class="cx-qty-stepper" data-qty-stepper>
+              <button type="button" data-qty-dec aria-label="Riduci">−</button>
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.variant.stock }}" inputmode="numeric" aria-label="Quantità" data-autosubmit>
+              <button type="button" data-qty-inc aria-label="Aumenta">+</button>
+            </div>
+          </div>
+          <div class="line-total">€ {{ item.line_total|floatformat:"0g" }}</div>
+          <div class="remove">
+            <button type="submit" form="rm-{{ item.id }}" class="cx-btn-icon" aria-label="Rimuovi {{ item.variant.product.title }}">✕</button>
+          </div>
+        </form>
+        <form id="rm-{{ item.id }}" method="post" action="{% url 'commerce:cart_remove' storefront.slug item.id %}" style="display:none;">
+          {% csrf_token %}
+        </form>
+      {% endfor %}
+    </div>
+
+    <aside class="cx-summary">
+      <h3>Totale della bottega</h3>
+      <div class="row"><span>Pezzi</span><span>{{ cart.item_count }}</span></div>
+      <div class="row"><span>Subtotale</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="row"><span>Spedizione</span><span>calcolata al checkout</span></div>
+      <div class="row"><span>IVA</span><span>inclusa</span></div>
+      <div class="row total"><span>Da pagare</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="cta">
+        <a href="{% url 'commerce:checkout' storefront.slug %}" class="cx-btn is-full">Procedi al checkout</a>
+      </div>
+      <div style="margin-top:14px;">
+        <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">◂ Continua a sfogliare il catalogo</a>
+      </div>
+      <div class="policy">
+        {{ storefront.shipping_policy|default:"Spedizione tracciata in 48 ore in Italia, quattro giorni in Europa." }}
+      </div>
+    </aside>
+  </section>
+
+  <div class="cx-reassure" style="margin-top:28px;">
+    <div class="item"><span class="mark">S</span><div><strong>Spedizione 48h</strong>Corriere tracciato · ritiro in bottega gratuito su appuntamento.</div></div>
+    <div class="item"><span class="mark">R</span><div><strong>Resi entro 14 giorni</strong>Cambio o rimborso; edizioni numerate e conserve escluse.</div></div>
+    <div class="item"><span class="mark">P</span><div><strong>Pagamento sicuro</strong>Il pagamento viene registrato dopo la conferma dell'ordine.</div></div>
+  </div>
+  {% else %}
+  <div class="cx-empty">
+    <h3>Il carrello è ancora vuoto</h3>
+    <p>Torna in bottega a scegliere i pezzi che ti piacciono, o scrivici su WhatsApp se cerchi qualcosa di specifico.</p>
+    <div style="margin-top:24px;"><a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn">Apri il catalogo</a></div>
+  </div>
+  {% endif %}
+</main>
+
+<script>
+  document.querySelectorAll('[data-qty-stepper]').forEach(function(s){
+    var inp = s.querySelector('input[type="number"]');
+    if(!inp) return;
+    var mn = parseInt(inp.min || '0', 10), mx = parseInt(inp.max || '99', 10);
+    function clamp(v){ return Math.max(mn, Math.min(mx, v|0)); }
+    s.querySelector('[data-qty-dec]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) - 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+    s.querySelector('[data-qty-inc]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) + 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+  });
+  document.querySelectorAll('[data-autosubmit]').forEach(function(inp){
+    inp.addEventListener('change', function(){ inp.form && inp.form.submit(); });
+  });
+</script>
+{% endblock %}

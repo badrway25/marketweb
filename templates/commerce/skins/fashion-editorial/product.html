@@ -1,0 +1,190 @@
+{% extends "commerce/skins/fashion-editorial/_base.html" %}
+{% block page_title %}{{ product.title }}{% endblock %}
+
+{% block content %}
+<main class="cx-wrap-wide">
+  <div style="margin-bottom:28px; font-family:var(--cx-body); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--bone-faint); font-weight:600;">
+    <a href="{% url 'commerce:shop' storefront.slug %}" style="color:var(--gold);">◂ Collezione</a>
+    {% if product.collection %} · <a href="{% url 'commerce:shop_collection' storefront.slug product.collection.slug %}" style="color:var(--gold);">{{ product.collection.title }}</a>{% endif %}
+  </div>
+
+  <section class="cx-pdp">
+    <div class="gallery">
+      <div class="hero{% if not product.hero_image_url %} is-empty{% endif %}" id="pdpHero" {% if product.hero_image_url %}style="background-image:url('{{ product.hero_image_url }}'); aspect-ratio: 3/4;"{% endif %}></div>
+      {% if images %}
+      <div class="strip">
+        {% for img in images|slice:":4" %}
+          <div class="t" style="background-image:url('{{ img.image_url }}')" onclick="document.getElementById('pdpHero').style.backgroundImage='url({{ img.image_url }})'"></div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div style="margin-top:16px; font-family:var(--cx-body); font-size:10px; letter-spacing:0.24em; text-transform:uppercase; color:var(--bone-faint); text-align:center;">
+        Stilismo · Direzione creativa maison &nbsp;· &nbsp;Foto · Archivio Spring 26
+      </div>
+    </div>
+
+    <div class="info">
+      <div style="font-family:var(--cx-body); font-size:10px; font-weight:700; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold);">
+        {% if product.edition_number %}{{ product.edition_number }}{% endif %}{% if product.collection %} · {{ product.collection.title }}{% endif %}
+      </div>
+      <h1 style="font-style:italic; font-weight:500; font-size:52px; margin-top:14px;">{{ product.title }}</h1>
+      <div class="sub" style="font-style:italic;">{{ product.subtitle }}</div>
+
+      <div class="price-band">
+        <div>
+          <span class="price">€ {{ product.display_price|floatformat:"0g" }}</span>
+          {% if product.compare_at_price and product.compare_at_price > product.base_price %}
+            <span class="strike">€ {{ product.compare_at_price|floatformat:"0g" }}</span>
+          {% endif %}
+          <div style="margin-top:6px; font-family:var(--cx-body); font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--bone-faint);">IVA inclusa · consegna maison</div>
+        </div>
+        {% if product.is_sold_out %}
+          <span class="stock" style="color:#d46060; border-color:#d46060;">Sold-out · lista d'attesa</span>
+        {% elif product.is_low_stock %}
+          <span class="stock">Ultimi esemplari</span>
+        {% else %}
+          <span class="stock">Disponibile</span>
+        {% endif %}
+      </div>
+
+      {% if product.long_description %}
+      <p class="long" style="font-style:italic; color:var(--bone-soft); line-height:1.85;">{{ product.long_description }}</p>
+      {% endif %}
+
+      <form method="post" action="{% url 'commerce:cart_add' storefront.slug %}" class="cx-variant-form">
+        {% csrf_token %}
+        <div class="axes">
+          {% if variants|length > 1 %}
+          <div class="axis">
+            <h5>Silhouette / tonalità</h5>
+            <div class="pills" role="radiogroup">
+              {% for v in variants %}
+                <label class="pill{% if not v.in_stock %} is-out{% endif %}"
+                       data-selected="{% if forloop.first and v.in_stock %}1{% else %}0{% endif %}">
+                  <input type="radio" name="variant_id" value="{{ v.id }}"
+                         {% if forloop.first and v.in_stock %}checked{% endif %}
+                         {% if not v.in_stock %}disabled{% endif %}
+                         style="position:absolute; opacity:0; pointer-events:none;">
+                  {{ v.variant_title|default:"Atelier" }}
+                  {% if not v.in_stock %} · sold-out{% endif %}
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+          {% elif variants %}
+            {% for v in variants %}<input type="hidden" name="variant_id" value="{{ v.id }}">{% endfor %}
+          {% endif %}
+
+          <div class="cx-qty-row">
+            <span class="label" style="letter-spacing:0.24em;">Esemplari</span>
+            <div class="cx-qty-stepper" data-qty-stepper>
+              <button type="button" data-qty-dec aria-label="Riduci esemplari">−</button>
+              <input type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric" aria-label="Esemplari">
+              <button type="button" data-qty-inc aria-label="Aumenta esemplari">+</button>
+            </div>
+          </div>
+        </div>
+
+        {% if product.is_low_stock and not product.is_sold_out %}
+        <div class="cx-lowstock" style="--fill: 40%;">
+          <span class="label">Ultimi esemplari</span>
+          <span class="bar" aria-hidden="true"></span>
+          <span class="count">Rimasti · {{ product.total_stock }}</span>
+        </div>
+        {% endif %}
+
+        <div class="cx-cta-cluster">
+          <button type="submit" class="cx-btn{% if product.is_sold_out %} is-disabled{% endif %}" {% if product.is_sold_out %}disabled{% endif %}>
+            {% if product.is_sold_out %}Aggiungi alla lista d'attesa{% else %}Ordina — direzione clienti{% endif %}
+          </button>
+          <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">Continua a sfogliare</a>
+        </div>
+
+        <div class="cx-trust">
+          <div class="t">
+            <span class="sym">C</span>
+            <div><strong>Consegna maison</strong>Scatola firmata, corriere dedicato 24h Milano · 48h Italia.</div>
+          </div>
+          <div class="t">
+            <span class="sym">A</span>
+            <div><strong>Alta sartoria</strong>Acconto 30% alla conferma per i pezzi d'atelier numerati.</div>
+          </div>
+          <div class="t">
+            <span class="sym">D</span>
+            <div><strong>Direzione clienti</strong>Ogni ordine è riletto personalmente prima della spedizione.</div>
+          </div>
+          <div class="t">
+            <span class="sym">R</span>
+            <div><strong>Cambi su appuntamento</strong>Entro sette giorni, salvo edizioni numerate e archivio.</div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  {% if product.info_rows %}
+  <section class="cx-specs">
+    <h4>Specifiche atelier</h4>
+    <div>
+      {% for row in product.info_rows %}
+        <div class="r">
+          <div class="k">{{ row.label }}</div>
+          <div class="v" style="font-style:italic;">{{ row.value }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if related %}
+  <section style="margin-top:96px;">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--rule); padding-bottom:20px;">
+      <h2 style="font-family:var(--cx-heading); font-style:italic; font-size:36px; font-weight:500;">Altri look della maison</h2>
+      <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">Vedi collezione ▸</a>
+    </div>
+    <div class="cx-grid" style="margin-top:36px;">
+      {% for p in related %}
+        <a class="cx-card" href="{% url 'commerce:product_detail' storefront.slug p.slug %}">
+          <div class="thumb" {% if p.hero_image_url %}style="background-image:url('{{ p.hero_image_url }}'); aspect-ratio: 3/4;"{% endif %}>
+            {% if p.edition_number %}<span class="num">{{ p.edition_number }}</span>{% endif %}
+          </div>
+          <h4 style="font-style:italic;">{{ p.title }}</h4>
+          <div class="meta">{{ p.subtitle|default:p.material }}</div>
+          <div class="foot">
+            <span class="price">€ {{ p.display_price|floatformat:"0g" }}</span>
+            <span class="tag">{{ p.badge|default:"Disponibile" }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</main>
+
+<script>
+  document.querySelectorAll('.cx-variant-form .pills').forEach(function(g){
+    g.addEventListener('click', function(ev){
+      var lbl = ev.target.closest('.pill'); if(!lbl) return;
+      if(lbl.classList.contains('is-out')) return;
+      g.querySelectorAll('.pill').forEach(function(p){ p.dataset.selected = '0'; });
+      lbl.dataset.selected = '1';
+      var inp = lbl.querySelector('input'); if(inp) inp.checked = true;
+    });
+  });
+
+  document.querySelectorAll('[data-qty-stepper]').forEach(function(s){
+    var inp = s.querySelector('input[type="number"]');
+    if(!inp) return;
+    var mn = parseInt(inp.min || '0', 10), mx = parseInt(inp.max || '99', 10);
+    function clamp(v){ return Math.max(mn, Math.min(mx, v|0)); }
+    s.querySelector('[data-qty-dec]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) - 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+    s.querySelector('[data-qty-inc]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) + 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+  });
+</script>
+{% endblock %}

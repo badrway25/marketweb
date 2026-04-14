@@ -1,0 +1,120 @@
+{% extends "commerce/dashboard/_base.html" %}
+{% block page_title %}{% if is_create %}Nuovo prodotto{% else %}{{ object.title }}{% endif %}{% endblock %}
+{% block nav_products %}class="is-active"{% endblock %}
+
+{% block content %}
+<div class="ds-head">
+  <div>
+    <h1>{% if is_create %}Nuovo prodotto{% else %}{{ object.title }}{% endif %}</h1>
+    <div class="sub">
+      <a href="{% url 'commerce:dashboard_products' storefront.slug %}">◂ Torna al catalogo</a>
+      {% if not is_create %} · <a href="{% url 'commerce:product_detail' storefront.slug object.slug %}" target="_blank">Vedi nello shop ↗</a>{% endif %}
+    </div>
+  </div>
+  <div class="actions">
+    {% if not is_create %}
+    <form method="post" action="{% url 'commerce:dashboard_product_delete' storefront.slug object.pk %}" onsubmit="return confirm('Eliminare {{ object.title|escapejs }}? L''azione è irreversibile.')" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" class="ds-btn is-danger-ghost">🗑 Elimina prodotto</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<form method="post" action="" class="ds-form ds-card">
+  {% csrf_token %}
+  {% for field in form %}
+    <div class="row">
+      <label for="id_{{ field.name }}">
+        {{ field.label }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+      </label>
+      <div>
+        {{ field }}
+        {% if field.errors %}<div class="err">{{ field.errors.0 }}</div>{% endif %}
+      </div>
+    </div>
+  {% endfor %}
+  <div class="actions-row">
+    <button type="submit" class="ds-btn">{% if is_create %}Crea prodotto{% else %}Salva modifiche{% endif %}</button>
+    <a class="ds-btn is-ghost" href="{% url 'commerce:dashboard_products' storefront.slug %}">Annulla</a>
+  </div>
+</form>
+
+{% if not is_create %}
+<section class="ds-card">
+  <h2>Varianti (SKU, stock, prezzo override)</h2>
+  <div class="sub">Ogni variante è uno SKU distinto con stock proprio. Il prezzo override è opzionale; se vuoto, eredita da "Base price".</div>
+
+  {% if variants %}
+  <table class="ds-table" style="margin-top:10px;">
+    <thead>
+      <tr>
+        <th>SKU</th><th>Opzioni</th><th>Prezzo</th><th>Stock</th><th>Attiva</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in variants %}
+      <tr>
+        <td><strong class="num">{{ v.sku }}</strong></td>
+        <td>{{ v.variant_title|default:"—" }}</td>
+        <td class="money">€ {{ v.price|floatformat:"2" }}{% if v.price_override %}<div class="muted">override</div>{% endif %}</td>
+        <td class="num">
+          {% if v.stock == 0 %}
+            <span class="ds-pill is-out">Esaurito</span>
+          {% elif v.stock <= 2 %}
+            <span class="ds-pill is-low">{{ v.stock }} · basso</span>
+          {% else %}{{ v.stock }}{% endif %}
+        </td>
+        <td>{% if v.is_active %}<span class="ds-pill is-shipped">Attiva</span>{% else %}<span class="ds-pill is-cancelled">Disattivata</span>{% endif %}</td>
+        <td style="display:flex; gap:6px;">
+          <button class="ds-btn is-ghost is-sm" onclick="document.getElementById('v-{{ v.pk }}').classList.toggle('hide'); return false;" aria-label="Modifica variante {{ v.sku }}">Modifica</button>
+          <form method="post" action="{% url 'commerce:dashboard_variant_delete' storefront.slug object.pk v.pk %}" onsubmit="return confirm('Eliminare la variante {{ v.sku|escapejs }}?');" style="display:inline;">
+            {% csrf_token %}<button type="submit" class="ds-btn is-danger-ghost is-sm">Elimina</button>
+          </form>
+        </td>
+      </tr>
+      <tr id="v-{{ v.pk }}" class="hide">
+        <td colspan="6" class="ds-variant-edit">
+          <form method="post" action="{% url 'commerce:dashboard_variant_edit' storefront.slug object.pk v.pk %}" class="ds-form">
+            {% csrf_token %}
+            <div class="row"><label>SKU<small>Identificativo univoco della variante.</small></label><input type="text" name="sku" value="{{ v.sku }}" required></div>
+            <div class="row"><label>Opzione 1<small>Es. Taglia M, Colore Nero.</small></label><input type="text" name="option1" value="{{ v.option1 }}"></div>
+            <div class="row"><label>Opzione 2</label><input type="text" name="option2" value="{{ v.option2 }}"></div>
+            <div class="row"><label>Opzione 3</label><input type="text" name="option3" value="{{ v.option3 }}"></div>
+            <div class="row"><label>Prezzo override<small>Lascia vuoto per ereditare dal prodotto (€ {{ object.base_price|floatformat:"2" }}).</small></label><input type="number" step="0.01" name="price_override" value="{{ v.price_override|default:'' }}"></div>
+            <div class="row"><label>Stock<small>Quantità disponibile per questa variante.</small></label><input type="number" name="stock" value="{{ v.stock }}" min="0"></div>
+            <div class="row"><label>Attiva<small>Se disattivata, non appare nello shop.</small></label><input type="checkbox" name="is_active" value="on" {% if v.is_active %}checked{% endif %}></div>
+            <div class="row"><label>Immagine URL<small>Opzionale — specifica un'immagine per questa variante.</small></label><input type="url" name="image_url" value="{{ v.image_url }}" placeholder="https://..."></div>
+            <div class="row"><label>Ordine</label><input type="number" name="order" value="{{ v.order }}"></div>
+            <div class="actions-row">
+              <button type="submit" class="ds-btn">Salva variante</button>
+              <button type="button" class="ds-btn is-ghost" onclick="document.getElementById('v-{{ v.pk }}').classList.add('hide'); return false;">Chiudi senza salvare</button>
+            </div>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="sub" style="margin-top:14px;">Nessuna variante ancora. Aggiungine una qui sotto.</div>
+  {% endif %}
+
+  <h3 style="margin-top:26px; font-size:15px; color:var(--ink);">Nuova variante</h3>
+  <form method="post" action="{% url 'commerce:dashboard_variant_new' storefront.slug object.pk %}" class="ds-form">
+    {% csrf_token %}
+    <div class="row"><label>SKU<small>Identificativo univoco, es. BTG-GBT-042-S</small></label><input type="text" name="sku" required></div>
+    <div class="row"><label>Opzione 1<small>Es. Taglia M, Colore Nero</small></label><input type="text" name="option1"></div>
+    <div class="row"><label>Opzione 2<small>Opzionale</small></label><input type="text" name="option2"></div>
+    <div class="row"><label>Opzione 3<small>Opzionale</small></label><input type="text" name="option3"></div>
+    <div class="row"><label>Prezzo override<small>Se vuoto, eredita il base price del prodotto</small></label><input type="number" step="0.01" name="price_override"></div>
+    <div class="row"><label>Stock</label><input type="number" name="stock" value="0" min="0"></div>
+    <div class="row"><label>Attiva</label><input type="checkbox" name="is_active" value="on" checked></div>
+    <div class="row"><label>Ordine</label><input type="number" name="order" value="0"></div>
+    <div class="actions-row"><button type="submit" class="ds-btn">+ Aggiungi variante</button></div>
+  </form>
+</section>
+<style>.hide{display:none;}</style>
+{% endif %}
+{% endblock %}

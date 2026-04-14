@@ -1,0 +1,95 @@
+{% extends "commerce/skins/fashion-editorial/_base.html" %}
+{% block page_title %}Panier{% endblock %}
+
+{% block content %}
+<main class="cx-wrap-wide">
+  <section class="cx-lead">
+    <div>
+      <div class="eyebrow">Panier · maison</div>
+      <h1 style="font-style:italic; font-size:60px;">I look che <em style="color:var(--gold);">tratterrete</em> con voi.</h1>
+      <p class="intro">Ogni capo è preparato in atelier prima della consegna. La direzione clienti rilegge l'ordine personalmente prima di spedire.</p>
+    </div>
+    <div class="count" style="font-style:italic;">{{ cart.item_count }} look</div>
+  </section>
+
+  {% if cart.items.all %}
+  <section class="cx-cart-grid">
+    <div class="cx-cart-table">
+      {% for item in cart.items.all %}
+        <form method="post" action="{% url 'commerce:cart_update' storefront.slug item.id %}" class="row" data-cart-row>
+          {% csrf_token %}
+          <div class="pic" {% if item.variant.product.hero_image_url %}style="background-image:url('{{ item.variant.product.hero_image_url }}')"{% endif %}></div>
+          <div>
+            <a href="{% url 'commerce:product_detail' storefront.slug item.variant.product.slug %}" class="title" style="font-style:italic;">{{ item.variant.product.title }}</a>
+            <div class="sub">{{ item.variant.variant_title|default:"Atelier" }} · <span class="sku">{{ item.variant.sku }}</span></div>
+            <div class="sub" style="margin-top:4px;">€ {{ item.unit_price|floatformat:"0g" }} all'esemplare{% if item.variant.stock <= 2 %} · <em style="color:var(--gold);">Ultimi {{ item.variant.stock }}</em>{% endif %}</div>
+          </div>
+          <div class="qty">
+            <div class="cx-qty-stepper" data-qty-stepper>
+              <button type="button" data-qty-dec aria-label="Riduci esemplari">−</button>
+              <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.variant.stock }}" inputmode="numeric" aria-label="Esemplari" data-autosubmit>
+              <button type="button" data-qty-inc aria-label="Aumenta esemplari">+</button>
+            </div>
+          </div>
+          <div class="line-total">€ {{ item.line_total|floatformat:"0g" }}</div>
+          <div class="remove">
+            <button type="submit" form="rm-{{ item.id }}" class="cx-btn-icon" aria-label="Rimuovi {{ item.variant.product.title }}">✕</button>
+          </div>
+        </form>
+        <form id="rm-{{ item.id }}" method="post" action="{% url 'commerce:cart_remove' storefront.slug item.id %}" style="display:none;">{% csrf_token %}</form>
+      {% endfor %}
+    </div>
+
+    <aside class="cx-summary">
+      <h3>Riepilogo maison</h3>
+      <div class="row"><span>Esemplari</span><span>{{ cart.item_count }}</span></div>
+      <div class="row"><span>Sub-totale</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="row"><span>Consegna</span><span>calcolata al checkout</span></div>
+      <div class="row"><span>IVA</span><span>inclusa</span></div>
+      <div class="row total"><span>Da confermare</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="cta">
+        <a href="{% url 'commerce:checkout' storefront.slug %}" class="cx-btn is-full">Procedi al checkout</a>
+      </div>
+      <div style="margin-top:16px;">
+        <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">◂ Continua a sfogliare la collezione</a>
+      </div>
+      <div class="policy">
+        {{ storefront.shipping_policy|default:"Consegna maison in scatola firmata, 24 ore Milano." }}
+      </div>
+    </aside>
+  </section>
+
+  <div class="cx-reassure" style="margin-top:32px;">
+    <div class="item"><span class="mark">C</span><div><strong>Consegna maison</strong>Scatola firmata, corriere dedicato 24h Milano · 48h Italia.</div></div>
+    <div class="item"><span class="mark">A</span><div><strong>Alta sartoria</strong>Acconto 30% alla conferma per i pezzi d'atelier numerati.</div></div>
+    <div class="item"><span class="mark">D</span><div><strong>Direzione clienti</strong>Chiamata di conferma per ordini maggiori di 2.500 €.</div></div>
+  </div>
+  {% else %}
+  <div class="cx-empty">
+    <h3 style="font-style:italic;">Il panier è ancora vuoto</h3>
+    <p>Sfogliate la collezione per selezionare i look che desiderate. La direzione clienti è a disposizione per un appuntamento privato.</p>
+    <div style="margin-top:26px;"><a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn">Apri la collezione</a></div>
+  </div>
+  {% endif %}
+</main>
+
+<script>
+  document.querySelectorAll('[data-qty-stepper]').forEach(function(s){
+    var inp = s.querySelector('input[type="number"]');
+    if(!inp) return;
+    var mn = parseInt(inp.min || '0', 10), mx = parseInt(inp.max || '99', 10);
+    function clamp(v){ return Math.max(mn, Math.min(mx, v|0)); }
+    s.querySelector('[data-qty-dec]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) - 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+    s.querySelector('[data-qty-inc]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) + 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+  });
+  document.querySelectorAll('[data-autosubmit]').forEach(function(inp){
+    inp.addEventListener('change', function(){ inp.form && inp.form.submit(); });
+  });
+</script>
+{% endblock %}

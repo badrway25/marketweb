@@ -1,0 +1,334 @@
+{% load static %}<!DOCTYPE html>
+<html lang="it" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ storefront.template.name }} — {% block page_title %}Maison{% endblock %}</title>
+<meta name="description" content="{{ storefront.template.brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/commerce.css' %}">
+<style>
+  :root {
+    --ink:        #08070a;
+    --ink-2:      #11101a;
+    --bone:       #f2ecdf;
+    --bone-soft:  rgba(242,236,223,0.78);
+    --bone-mute:  rgba(242,236,223,0.55);
+    --bone-faint: rgba(242,236,223,0.32);
+    --gold:       #d4a574;
+    --gold-soft:  rgba(212,165,116,0.55);
+    --rule:       rgba(212,165,116,0.25);
+    --rule-soft:  rgba(242,236,223,0.10);
+    --surface:    rgba(255,255,255,0.04);
+
+    /* cx-* skin tokens — aligned with fashion-editorial preview DNA */
+    --cx-bg:          var(--ink);
+    --cx-surface:     rgba(255,255,255,0.04);
+    --cx-surface-2:   rgba(212,165,116,0.08);
+    --cx-ink:         var(--bone);
+    --cx-ink-mute:    var(--bone-soft);
+    --cx-ink-faint:   var(--bone-faint);
+    --cx-rule:        var(--rule);
+    --cx-rule-dash:   var(--rule);
+    --cx-accent:      var(--gold);
+    --cx-accent-soft: var(--rule);
+    --cx-on-accent:   var(--ink);
+    --cx-heading:     'Cormorant Garamond', Georgia, serif;
+    --cx-body:        'Montserrat', system-ui, sans-serif;
+    --cx-mono:        'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --cx-radius:      0;
+    --cx-btn-bg:      transparent;
+    --cx-btn-fg:      var(--gold);
+    --cx-btn-radius:  0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    color: var(--bone); font-family: var(--cx-body); font-size: 15px; line-height: 1.65;
+    background: var(--ink);
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(212,165,116,0.06) 0%, transparent 36%),
+      radial-gradient(circle at 100% 100%, rgba(212,165,116,0.04) 0%, transparent 36%);
+    min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--cx-heading); font-weight: 500; line-height: 1.06;
+    letter-spacing: -0.018em; color: var(--bone);
+  }
+  h1 { letter-spacing: -0.03em; font-style: italic; }
+
+  /* Luxe-specific CTA — outlined gold */
+  .cx-btn {
+    background: transparent; color: var(--gold); border: 1px solid var(--gold);
+    padding: 16px 30px; border-radius: 0; font-family: var(--cx-heading); font-style: italic;
+    font-size: 16px; font-weight: 500; letter-spacing: 0.02em;
+    box-shadow: none; position: relative; overflow: hidden;
+    transition: color .4s ease, background .4s ease;
+  }
+  .cx-btn:hover { background: var(--gold); color: var(--ink); transform: none; box-shadow: none; }
+  .cx-btn:after { color: var(--gold); }
+  .cx-btn:hover:after { color: var(--ink); }
+
+  .cx-btn-ghost {
+    color: var(--gold); border-color: var(--gold);
+    font-family: var(--cx-heading); font-style: italic; font-size: 15px;
+  }
+  .cx-btn-ghost:hover { color: var(--bone); border-color: var(--bone); }
+
+  /* Override commerce widget defaults for the dark maison palette */
+  .cx-lead h1 { color: var(--bone); }
+  .cx-card {
+    background: rgba(255,255,255,0.02); border: 1px solid var(--rule); color: var(--bone);
+  }
+  .cx-card:hover { transform: none; box-shadow: 0 0 0 1px var(--gold); }
+  .cx-card .thumb { background: rgba(212,165,116,0.08); }
+  .cx-card .thumb .num {
+    background: rgba(0,0,0,0.6); color: var(--gold); border: 0;
+    font-family: var(--cx-heading); font-style: italic;
+  }
+  .cx-card .thumb .badge {
+    background: var(--gold); color: var(--ink);
+    letter-spacing: 0.22em;
+  }
+  .cx-card h4 { color: var(--bone); font-weight: 500; }
+  .cx-card .meta { color: var(--bone-mute); }
+  .cx-card .price { color: var(--bone); font-family: var(--cx-heading); }
+  .cx-card .tag {
+    color: var(--gold); border-color: var(--gold);
+    font-family: var(--cx-body); font-size: 9px;
+  }
+
+  .cx-filters {
+    background: rgba(255,255,255,0.02); border-color: var(--rule); color: var(--bone);
+  }
+  .cx-filters h5 { color: var(--gold); }
+  .cx-filters .group .label { color: var(--bone); }
+  .cx-filters li a { color: var(--bone-mute); }
+  .cx-filters li a.is-current, .cx-filters li a:hover { color: var(--gold); }
+  .cx-filters input, .cx-filters select {
+    background: rgba(0,0,0,0.35); border-color: var(--rule); color: var(--bone);
+  }
+  .cx-filters button {
+    background: var(--gold); color: var(--ink); border-color: var(--gold);
+  }
+
+  .cx-pdp .info h1 { color: var(--bone); font-weight: 500; }
+  .cx-pdp .info .sub { color: var(--bone-mute); }
+  .cx-pdp .info .price-band { border-color: var(--rule); }
+  .cx-pdp .info .price-band .price { color: var(--bone); font-weight: 500; }
+  .cx-pdp .info .price-band .stock { color: var(--gold); border-color: var(--gold); }
+  .cx-pdp .gallery .hero { border: 1px solid var(--rule); background-color: rgba(212,165,116,0.05); }
+  .cx-pdp .gallery .strip .t { border: 1px solid var(--rule); }
+
+  .cx-variant-form .pill {
+    background: transparent; border: 1px solid var(--rule); color: var(--bone);
+    font-family: var(--cx-heading); font-style: italic;
+  }
+  .cx-variant-form .pill[data-selected="1"] { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .cx-variant-form .qty-row input[type="number"] {
+    background: rgba(0,0,0,0.35); border-color: var(--rule); color: var(--bone); font-family: var(--cx-heading);
+  }
+
+  .cx-specs h4 { color: var(--gold); }
+  .cx-specs .r { border-color: var(--rule); }
+  .cx-specs .r .k { color: var(--bone); }
+  .cx-specs .r .v { color: var(--bone-mute); font-family: var(--cx-heading); }
+
+  .cx-cart-table { background: rgba(255,255,255,0.02); border-color: var(--rule); }
+  .cx-cart-table .row { border-color: var(--rule); }
+  .cx-cart-table .row .title { color: var(--bone); font-family: var(--cx-heading); }
+  .cx-cart-table .row .sub { color: var(--bone-mute); }
+  .cx-cart-table .row .qty input {
+    background: rgba(0,0,0,0.35); border-color: var(--rule); color: var(--bone);
+  }
+  .cx-cart-table .row .line-total { color: var(--bone); }
+  .cx-cart-table .row .pic { background-color: rgba(212,165,116,0.06); border-color: var(--rule); }
+
+  .cx-summary { background: rgba(212,165,116,0.06); border: 1px solid var(--rule); color: var(--bone); }
+  .cx-summary h3 { color: var(--bone); font-family: var(--cx-heading); font-style: italic; }
+  .cx-summary .row { color: var(--bone-mute); border-color: var(--rule); }
+  .cx-summary .row.total { color: var(--bone); font-family: var(--cx-heading); }
+  .cx-summary .policy { color: var(--bone-faint); }
+
+  .cx-form label { color: var(--bone-faint); }
+  .cx-form input, .cx-form textarea, .cx-form select {
+    background: rgba(0,0,0,0.35); border: 1px solid var(--rule); color: var(--bone);
+  }
+  .cx-shipping-options .opt {
+    background: rgba(255,255,255,0.02); border-color: var(--rule); color: var(--bone);
+  }
+  .cx-shipping-options .opt[data-selected="1"] { border-color: var(--gold); background: rgba(212,165,116,0.06); }
+  .cx-shipping-options .opt .title { color: var(--bone); font-family: var(--cx-heading); font-style: italic; }
+  .cx-shipping-options .opt .desc { color: var(--bone-mute); }
+  .cx-shipping-options .opt .price { color: var(--bone); font-family: var(--cx-heading); }
+
+  .cx-empty { background: rgba(255,255,255,0.02); border-color: var(--rule); color: var(--bone); }
+  .cx-empty h3 { color: var(--bone); }
+  .cx-empty p { color: var(--bone-mute); }
+
+  .cx-confirm .ref-band { background: rgba(212,165,116,0.06); border-color: var(--rule); }
+  .cx-confirm .ref-band h2 { color: var(--bone); }
+  .cx-confirm .order-lines .line { border-color: var(--rule); }
+
+  /* Marketplace bar */
+  .mp-bar {
+    background: rgba(0,0,0,0.65); color: var(--bone-soft);
+    font-family: var(--cx-body); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 600;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--rule);
+  }
+  .mp-bar a.mp-back { color: var(--gold); }
+  .mp-bar .mp-name { color: var(--bone-mute); }
+
+  /* Top nav — maison */
+  .fe-nav-wrap { padding: 0 56px; border-bottom: 1px solid var(--rule); }
+  .fe-nav {
+    display: flex; align-items: center; height: 96px;
+    max-width: 1440px; margin: 0 auto;
+  }
+  .fe-nav .wm {
+    font-family: var(--cx-heading); font-weight: 500; font-style: italic;
+    font-size: 26px; color: var(--bone); letter-spacing: -0.01em;
+  }
+  .fe-nav .wm small {
+    display: block; font-family: var(--cx-body); font-size: 9px;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--bone-faint);
+    margin-top: 2px; font-style: normal; font-weight: 600;
+  }
+  .fe-nav .links {
+    display: flex; gap: 32px; margin-left: 64px;
+    font-family: var(--cx-body); font-size: 12px; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: 600; color: var(--bone);
+  }
+  .fe-nav .links a { transition: color .3s ease; }
+  .fe-nav .links a:hover, .fe-nav .links a.is-current { color: var(--gold); }
+  .fe-nav .rs { margin-left: auto; display: flex; align-items: center; gap: 22px; }
+  .fe-nav .rs .cart-pill {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 20px; border: 1px solid var(--gold);
+    font-family: var(--cx-heading); font-style: italic; font-size: 14px; color: var(--gold);
+    transition: color .3s ease, background .3s ease;
+  }
+  .fe-nav .rs .cart-pill .num {
+    min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px;
+    background: var(--gold); color: var(--ink); font-size: 11px; font-family: var(--cx-body);
+    font-style: normal; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .fe-nav .rs .cart-pill:hover { background: var(--gold); color: var(--ink); }
+  .fe-nav .rs .cart-pill:hover .num { background: var(--ink); color: var(--gold); }
+
+  /* Footer */
+  .fe-foot {
+    margin-top: 96px; padding: 56px 56px 28px; border-top: 1px solid var(--rule);
+    background: rgba(0,0,0,0.3);
+  }
+  .fe-foot .inner { max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--rule); }
+  @media (max-width: 880px) { .fe-foot .inner { grid-template-columns: 1fr; gap: 24px; } }
+  .fe-foot h5 {
+    font-family: var(--cx-body); font-size: 10px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 14px;
+  }
+  .fe-foot .brand .word {
+    font-family: var(--cx-heading); font-style: italic; font-size: 26px; font-weight: 500;
+    color: var(--bone); margin-bottom: 10px;
+  }
+  .fe-foot .brand p { color: var(--bone-mute); max-width: 40ch; line-height: 1.75; font-size: 13px; }
+  .fe-foot .col a, .fe-foot .col p {
+    color: var(--bone-mute); display: block; padding: 5px 0; font-size: 13px;
+  }
+  .fe-foot .col a:hover { color: var(--gold); }
+  .fe-foot .bot {
+    max-width: 1440px; margin: 0 auto; padding-top: 22px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+    font-size: 10px; color: var(--bone-faint);
+    letter-spacing: 0.28em; text-transform: uppercase; font-weight: 600;
+  }
+
+  @media (max-width: 960px) {
+    .fe-nav .links { display: none; }
+    .fe-nav-wrap { padding: 0 28px; }
+    .fe-foot { padding: 40px 28px 24px; }
+  }
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' storefront.template.category.slug storefront.template.slug %}" class="mp-back">◂ Catalogo marketplace</a>
+  <span class="mp-name">Maison attiva · {{ storefront.template.name }}</span>
+  <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}" class="mp-back">Anteprima maison &nbsp;▸</a>
+</div>
+
+<div class="fe-nav-wrap">
+  <nav class="fe-nav">
+    <a href="{% url 'commerce:shop' storefront.slug %}" class="wm">
+      {{ storefront.template.brand.brand_name }}
+      <small>Maison · Milano — Parigi</small>
+    </a>
+    <div class="links">
+      <a href="{% url 'commerce:shop' storefront.slug %}">Collezione</a>
+      {% for c in storefront.collections.all %}{% if c.is_active and forloop.counter < 4 %}
+        <a href="{% url 'commerce:shop_collection' storefront.slug c.slug %}">{{ c.title }}</a>
+      {% endif %}{% endfor %}
+      <a href="{% url 'catalog:live_template_page' storefront.template.category.slug storefront.template.slug 'maison' %}">Maison</a>
+    </div>
+    <div class="rs">
+      <a href="{% url 'commerce:cart' storefront.slug %}" class="cart-pill">
+        Panier <span class="num">{{ cart.item_count|default:0 }}</span>
+      </a>
+    </div>
+  </nav>
+</div>
+
+{% if messages %}
+<div class="cx-messages">
+  {% for msg in messages %}
+    <div class="m {% if msg.tags %}is-{{ msg.tags }}{% endif %}">{{ msg }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<footer class="fe-foot">
+  <div class="inner">
+    <div class="brand">
+      <h5>La maison</h5>
+      <div class="word">{{ storefront.template.brand.brand_name }}</div>
+      <p>Maison milanese di alta confezione. Capi fatti a mano a Biella, Como, Firenze e Sentier. Acquisto su appuntamento con la direzione clienti o per drop privati.</p>
+    </div>
+    <div class="col">
+      <h5>Direzione clienti</h5>
+      <p>{{ storefront.contact_phone }}</p>
+      <p><a href="mailto:{{ storefront.contact_email }}">{{ storefront.contact_email }}</a></p>
+      <p>Via Brera 14 · 20121 Milano</p>
+    </div>
+    <div class="col">
+      <h5>Navigazione</h5>
+      <a href="{% url 'commerce:shop' storefront.slug %}">Collezione</a>
+      <a href="{% url 'commerce:cart' storefront.slug %}">Panier</a>
+      <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}">Lookbook</a>
+    </div>
+    <div class="col">
+      <h5>Servizio</h5>
+      <p>Consegna maison Milano · 24h</p>
+      <p>Cambi su appuntamento · 7 giorni</p>
+      <p>Alta sartoria · acconto 30%</p>
+    </div>
+  </div>
+  <div class="bot">
+    <span>© 2026 {{ storefront.template.brand.brand_name }} · Commerce Foundation v1</span>
+    <span>Maison · Milano — Parigi — Firenze</span>
+  </div>
+</footer>
+
+</body>
+</html>

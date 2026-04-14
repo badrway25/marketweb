@@ -1,0 +1,89 @@
+{% extends "commerce/dashboard/_base.html" %}
+{% block page_title %}Home{% endblock %}
+{% block nav_home %}class="is-active"{% endblock %}
+
+{% block content %}
+<div class="ds-head">
+  <div>
+    <h1>Dashboard · {{ storefront.template.brand.brand_name }}</h1>
+    <div class="sub">Stato operativo dello shop · aggiornato ora.</div>
+  </div>
+  <div class="actions">
+    <a class="ds-btn is-ghost" href="{% url 'commerce:dashboard_orders' storefront.slug %}">Vedi ordini</a>
+    <a class="ds-btn" href="{% url 'commerce:dashboard_product_new' storefront.slug %}">+ Nuovo prodotto</a>
+  </div>
+</div>
+
+<section class="ds-grid-3" style="margin-bottom: 28px;">
+  <div class="ds-metric">
+    <div class="label">Prodotti attivi</div>
+    <div class="value">{{ stock_summary.total_products }}</div>
+    <div class="hint">In catalogo</div>
+  </div>
+  <div class="ds-metric">
+    <div class="label">Varianti totali</div>
+    <div class="value">{{ stock_summary.total_variants }}</div>
+    <div class="hint">SKU distinti</div>
+  </div>
+  <div class="ds-metric {% if stock_summary.low_stock > 0 %}is-warning{% endif %}">
+    <div class="label">Stock basso</div>
+    <div class="value">{{ stock_summary.low_stock }}</div>
+    <div class="hint">Varianti con 1–2 pezzi</div>
+  </div>
+  <div class="ds-metric {% if stock_summary.sold_out > 0 %}is-danger{% endif %}">
+    <div class="label">Esauriti</div>
+    <div class="value">{{ stock_summary.sold_out }}</div>
+    <div class="hint">Varianti a zero</div>
+  </div>
+  <div class="ds-metric">
+    <div class="label">Ordini aperti</div>
+    <div class="value">{{ open_orders_count }}</div>
+    <div class="hint">Non consegnati né annullati</div>
+  </div>
+</section>
+
+<section class="ds-card">
+  <h2>Ordini recenti</h2>
+  {% if recent_orders %}
+  <table class="ds-table">
+    <thead>
+      <tr>
+        <th>Riferimento</th>
+        <th>Cliente</th>
+        <th>Data</th>
+        <th>Totale</th>
+        <th>Stato</th>
+        <th>Pagamento</th>
+        <th>Spedizione</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in recent_orders %}
+      <tr>
+        <td><a href="{% url 'commerce:dashboard_order_detail' storefront.slug o.uuid %}"><strong>{{ o.reference }}</strong></a></td>
+        <td>{{ o.customer_name }}<div class="muted">{{ o.customer_email }}</div></td>
+        <td>{{ o.created_at|date:"d M · H:i" }}</td>
+        <td class="money"><strong>€ {{ o.grand_total|floatformat:"0g" }}</strong></td>
+        <td><span class="ds-pill is-{{ o.status }}">{{ o.get_status_display }}</span></td>
+        <td><span class="ds-pill is-{{ o.payment_status }}">{{ o.get_payment_status_display }}</span></td>
+        <td><span class="ds-pill is-{{ o.fulfillment_status }}">{{ o.get_fulfillment_status_display }}</span></td>
+        <td><a href="{% url 'commerce:dashboard_order_detail' storefront.slug o.uuid %}" class="ds-btn is-ghost" style="padding:6px 12px;">Apri</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="sub">Nessun ordine registrato ancora. Quando un cliente conferma un acquisto dallo shop comparirà qui.</div>
+  {% endif %}
+</section>
+
+<section class="ds-card">
+  <h2>Collegamenti rapidi</h2>
+  <div class="ds-grid-3">
+    <a class="ds-btn is-ghost" href="{% url 'commerce:dashboard_products' storefront.slug %}">Gestisci catalogo</a>
+    <a class="ds-btn is-ghost" href="{% url 'commerce:dashboard_orders' storefront.slug %}">Tutti gli ordini</a>
+    <a class="ds-btn is-ghost" href="{% url 'commerce:shop' storefront.slug %}" target="_blank">Apri shop ↗</a>
+  </div>
+</section>
+{% endblock %}
