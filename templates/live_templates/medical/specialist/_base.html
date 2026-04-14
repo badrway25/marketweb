@@ -75,11 +75,24 @@
   {% endif %}
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
   img { max-width: 100%; display: block; }
   a { color: inherit; text-decoration: none; }
-  h1,h2,h3,h4,h5 { font-family: var(--heading); font-weight: 500; line-height: 1.08; letter-spacing: -0.018em; color: var(--primary); }
+  h1,h2,h3,h4,h5 {
+    font-family: var(--heading); font-weight: 500; line-height: 1.06; letter-spacing: -0.022em;
+    color: var(--primary);
+    font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
+  }
+  /* Italic editorial accent on serif headings — clinical sobriety, prestigious tone */
+  h1 em, h2 em, h3 em { font-weight: 400; font-style: italic; letter-spacing: -0.012em; }
   em { font-style: italic; color: var(--accent); font-weight: 500; }
+  /* Tabular numerals on the facts strip + signature visit numbers */
+  .sp-facts .fact .num,
+  .sp-visits .field .num,
+  .sp-pat-journey .step .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
 
   /* ============================================================
      MARKETPLACE BAR — minimal "you are in a preview" hint
@@ -462,6 +475,7 @@
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
   <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
 
+  {% if locale_switcher %}
   <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
     <span class="mp-lang-label">{{ chrome.mp_language }}</span>
     <div class="mp-lang-list">
@@ -480,6 +494,7 @@
       {% endfor %}
     </div>
   </div>
+  {% endif %}
 
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other }}</a>
 </div>

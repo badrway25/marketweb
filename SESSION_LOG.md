@@ -1,5 +1,346 @@
 # Session Log
 
+## Session 37 — Chiara Perfection Pass (2026-04-13)
+
+**Agent:** Quality perfection pass on a single template. Sole target: bring `chiara-portfolio-creativo` to gold-standard product quality — full 5-locale i18n with native editorial voice, replace generic laptop stock photos with editorial-designer-coherent imagery, lift all hardcoded Italian literals out of the skin HTML, add full RTL CSS support, fix mobile horizontal overflow, add a11y focus rings. Non-goals: any other live template (only smoke harness + cross-template chrome touched), auth/checkout/editor/projects/commerce, drafts, new categories, new templates, new archetypes, marketplace chrome i18n, refactors outside Chiara.
+
+**Branch:** `phase-live-i18n-media-hardening-v1` (continuation — Session 36 still uncommitted on this branch; Session 37 work stacks on top awaiting user direction on branching/commits).
+
+### 1 — Audit
+Read all 12 context files. Read all 7 Chiara templates (_base.html + 6 page templates) end-to-end + the 948-LOC IT content registry. Browser walk at 1440×900 (Playwright) on home + studio + lavoro + project_detail + contatti. Mobile walk at 390×844.
+
+**Findings:**
+
+- **9 hardcoded Italian literals** in skin HTML: `home.html` "Tutto l'archivio" + ledger count format · `project_list.html` Disciplina/Durata/Anno meta-row labels · `project_detail.html` Disciplina/Anno/Durata/Equipe meta-strip + "Sintesi del progetto" + "Deliverable consegnati" + "Cosa abbiamo prodotto" + "Colophon" · `process.html` "Sequenza" + "Step X di Y" + "Durata indicativa" · `contact.html` Indirizzo/Ingresso/Metro/Orari studio-card labels.
+- **i18n state:** IT only. Switcher correctly auto-hidden via Session 36 D-069 guard. Need full EN/FR/ES/AR content trees (~3500 LOC total budget per D-063 precedent).
+- **Featured project images are catastrophically off-brand:** all 4 cards show generic stock photos of laptops/code/dashboards/people-walking. A premium editorial-design studio's home grid showing "Triennale catalog" / "Adelphi book series" / "Querini signage" / "Velluti monograph" should never visualize them as coding workspaces.
+- **Founder portrait** is a smiling-businessperson stock photo, not a designer-at-work shot.
+- **Mobile horizontal overflow ~124px** on 390px viewport — sections lack proper mobile breakpoints. Inline-styled grid `<div class="head" style="grid-template-columns: 0.45fr 1fr">` blocks let long Italian/Arabic words (Riconoscimenti, pubblicazioni) force columns wider than viewport via grid-item default `min-width: auto`.
+
+### 2 — Strategy
+Lift literals first (so all 5 locale trees are authored against the same complete contract), then dispatch 4 parallel sub-agents (one per locale) for content authoring + 1 sub-agent for image curation, then while they work do the RTL CSS + a11y focus + mobile breakpoints, then wire everything up + validate.
+
+### 3 — Implementation
+
+**Phase A — Literal lift on skin HTML (5 files modified, single commit):**
+- `apps/catalog/template_content_chiara.py` — added new fields to `home` (`ledger_full_link_label`, `ledger_count_prefix`, `ledger_count_unit`), `lavoro` (`row_discipline_label`, `row_duration_label`, `row_year_label`, `dossier_meta_*_label` × 4, `dossier_summary_label`, `dossier_deliverables_label`, `dossier_deliverables_heading`, `dossier_colophon_label`), `processo` (`step_sequence_label`, `step_index_prefix`, `step_index_separator`, `capability_duration_label`), `contatti` (`studio_address_label`, `studio_area_label`, `studio_metro_label`, `studio_hours_label`).
+- 5 skin HTML files updated to read from these new fields instead of hardcoded Italian.
+
+**Phase B — 4 parallel content authoring sub-agents (~5–13 min each, ran concurrently):**
+- `template_content_chiara_en.py` — 951 LOC · Anglo-American Pentagram/Eye Magazine register · "Forms that endure, one page at a time" hero
+- `template_content_chiara_fr.py` — 1003 LOC · classical étapes/Felix Pfäffli register · `vous` form · French ordinals (24ᵉ Triennale, 38ᵉ édition) · `« »` quotes · French insecable typography
+- `template_content_chiara_es.py` — 964 LOC · peninsular Visual/Mucho register · `usted` form throughout
+- `template_content_chiara_ar.py` — 940 LOC · formal MSA editorial cultural-publishing register · proper names Latin · Latin digits for technical data · `« »` AR quotes
+
+**Phase C — 1 parallel image curation sub-agent:**
+- Downloaded ~50 Unsplash candidates via curl + inspected each via Read tool
+- Picked 5 verified IDs with rationale per slot
+- Caveats noted: Triennale pick has tablet (not paper); Founder pick is woman holding editorial book (not AD-with-paste-ups). Best-available given the no-laptop/no-phone/no-office constraint stack
+- Image IDs swapped in IT tree manually + propagated to 4 locale trees via byte-level Python script (5/5 swaps applied per locale, verified)
+
+**Phase D — RTL CSS + Arabic font conditional:**
+- `editorial-designer-grid/_base.html` — added conditional `<link>` for Amiri + Noto Kufi Arabic when `is_rtl`
+- New `html[dir="rtl"]` CSS block: font-family swap with Latin fallback, letter-spacing flatten on h1-h5, eyebrow accent-rule flip, `.ed-btn-primary:after` arrow flip (`→` → `←`), ledger + dossier next-arrow scaleX(-1), Latin wordmark font lock (Chiara Velluti Studio stays Latin), JetBrains Mono lock for Latin numeric runs (year/count/credits stay Latin in AR), eyebrow rule margin flip
+- Page-level flips guarded by `{% if is_rtl %}` so LTR loads zero RTL bytes: hero grid-template-columns swap, summary/deliverables `<li>` em-dash padding flip, client-code border-side flip, form consent border-side flip, clients-ribbon border-left → border-right
+- Founder credentials list em-dash margin flip
+
+**Phase E — Mobile polish + a11y focus:**
+- `home.html` — extended `@media (max-width: 720px)` block: ed-commissions padding 56px → 20px gutter, ed-press inline-styled grid heads forced to single-column with `min-width: 0` on grid items + h2 font-size override (`!important` since fighting inline style), ed-cta wrap collapses to 1fr, additional `@media (max-width: 480px)` for hero h1 down to 38px
+- `_base.html` — new `:focus-visible` rings on `.ed-btn-primary` + `.ed-btn-ghost` (2px accent outline + 4px offset)
+
+**Phase F — Wiring + smoke harness extension:**
+- `template_content.py` — added 4 new imports, registered 4 new locale keys for chiara
+- `smoke_full.py` — chiara LOCALES list extended from `["it"]` to all 5 codes (route count 170 → 198)
+- `smoke_i18n_media_hardening.py` — moved chiara from IT_ONLY tuple to MULTILINGUAL tuple (Session 36 hardening pass anticipated this)
+- New `smoke_chiara_perfection.py` (155 LOC) — 76 content-marker checks: 5-locale signature phrase render, AR `dir="rtl"` + Arabic font load, image ID swap verification × 5 locales, founder portrait swap × 5 locales, IT-literal leak sweep on lifted labels × 4 non-IT × 5 pages, full route sweep × 5 locales × 8 pages
+
+### 4 — Validation
+
+- `python manage.py check`: 0 issues.
+- `smoke_full.py`: **198/198 routes HTTP 200** (was 170 baseline pre-Chiara; +28 = 4 new locales × 7 chiara pages).
+- `smoke_forms.py`: **27/27 form routes HTTP 200** (D-066 forms system untouched).
+- `smoke_i18n_media_hardening.py`: **45/45 hardening checks passed** (Chiara migrated from IT_ONLY to MULTILINGUAL bucket — switcher must now render on all 5 locale routes).
+- `smoke_chiara_perfection.py` (new): **76/76 checks passed**.
+- Playwright walk 1440×900 on IT/EN/FR/ES/AR home + AR project_detail + AR contact + ES home + FR home: signature phrase rendered per locale ("Forme che durano" / "Forms that endure" / "qui durent" / "que perduran" / "أشكالٌ تَبقى"), 5-pill switcher visible everywhere, AR has `dir="rtl"` + `lang="ar"` + Latin wordmark stays Latin + Latin digits in numeric meta + section grid flips correctly, 4/4 featured project images visibly editorial (book-spine stack, warm museum interior, type-ideation tablet, fountain-pen-on-manuscript).
+- Mobile sanity at 390×844: overflow **-15px** (fits with slack, no horizontal scrollbar) — was 124px before Session 37.
+
+### 5 — Files touched
+
+22 modified (3 of them new), 0 deleted.
+
+**New files (5):**
+- `apps/catalog/template_content_chiara_en.py` (951 LOC)
+- `apps/catalog/template_content_chiara_fr.py` (1003 LOC)
+- `apps/catalog/template_content_chiara_es.py` (964 LOC)
+- `apps/catalog/template_content_chiara_ar.py` (940 LOC)
+- `smoke_chiara_perfection.py` (155 LOC)
+
+**Modified Python (3):**
+- `apps/catalog/template_content_chiara.py` — added Phase A label fields + image ID swaps
+- `apps/catalog/template_content.py` — registered 4 new locale imports + chiara TEMPLATE_CONTENT entries
+- `smoke_full.py` — chiara LOCALES list expanded to 5
+- `smoke_i18n_media_hardening.py` — chiara migrated IT_ONLY → MULTILINGUAL
+
+**Modified skin HTML (5):**
+- `templates/live_templates/portfolio/editorial-designer-grid/_base.html` — Arabic font conditional + RTL CSS block + a11y focus rings
+- `templates/live_templates/portfolio/editorial-designer-grid/home.html` — literal lift + mobile breakpoints
+- `templates/live_templates/portfolio/editorial-designer-grid/project_list.html` — literal lift
+- `templates/live_templates/portfolio/editorial-designer-grid/project_detail.html` — literal lift
+- `templates/live_templates/portfolio/editorial-designer-grid/process.html` — literal lift
+- `templates/live_templates/portfolio/editorial-designer-grid/contact.html` — literal lift
+
+### 6 — Decision
+
+**CHIARA I18N COMPLETION + PREMIUM PERFECTION PASS APPROVATO.** D-070 documented in DECISIONS.md.
+
+`chiara-portfolio-creativo` now meets the gold-standard quality bar the user asked for:
+- 5 vere lingue · zero fallback finti · structural parity verified per locale
+- Editorial-designer-coherent imagery on home + founder portrait — laptop stock photos retired
+- Skin HTML zero-leak: every label flows through `page_data.*`
+- Mobile horizontal overflow at 390px: -15px (fits with slack)
+- AR RTL: `dir="rtl"` + Amiri body + Noto Kufi Arabic display + Latin wordmark/digit lock
+- a11y focus rings on every CTA
+- Native editorial voice per locale (no machine translation)
+
+Catalog state: 4/7 published_live now ship in 5 locales (cardio · derm · gusto · chiara). Pixel + Pragma + Elevate remain IT-only — Pixel is the natural next target (shares portfolio category, will inherit the editorial-designer-grid Phase D RTL pattern only if it gets its own RTL CSS block since it uses the cinematic-photographer skin).
+
+### 7 — Exact next step
+
+**Phase 2i.2c** — Pixel locale rollout. Same Session 37 recipe (4 parallel content agents + 1 image curator + RTL CSS + smoke). Budget ~3h end-to-end based on Session 37 timing. Pixel's cinematic-photographer skin needs its own `html[dir="rtl"]` CSS block (not shared with editorial-designer-grid). After Pixel closes, only Pragma + Elevate remain IT-only; both can ship their locales together via Phase 2i.2d.
+
+---
+
+## Session 36 — Live i18n & Media Coherence Hardening (2026-04-13)
+
+**Agent:** Quality hardening on top of Sessions 34–35. Sole target: correct two user-flagged coherence defects on the 7 `tier=published_live` templates — (1) a language switcher that advertised 5 locales on IT-only templates and silently fell back to IT; (2) three `lm-video` blocks shipping with the Big Buck Bunny placeholder MP4 as src plus codec-theatre metadata (`4K`, `1080p · 24 fps`, `Play · 3:12`). Non-goals: auth, checkout, editor, projects, commerce, drafts, new categories, new templates, new archetypes, new locale trees for IT-only templates, marketplace chrome i18n.
+
+**Branch:** `phase-live-i18n-media-hardening-v1` (forked from `phase-integration-baseline-v4`). Session 35's `phase-live-motion-media-pass-v1` was first merged in so the hardening could operate on the integrated surface; the merge + subsequent fixes are the content of this branch.
+
+### 1 — Audit (read-only)
+Read the 12 context files front-to-back. Walked the i18n registry (`template_content.py` + `template_content_cardio_i18n.py` / `_dermatologia_i18n.py` / `_gusto_i18n.py`) to tally locale coverage per template. Walked the media surface (`templates/live_templates/**/home.html` + `_base.html`) to locate every `lm-video`, `lm-logo-marquee`, `live-media.css`, `live-media.js` site.
+
+**Coverage matrix found:**
+
+| Template | IT | EN | FR | ES | AR |
+|---|---|---|---|---|---|
+| cardio-studio-specialistico | yes | yes | yes | yes | yes |
+| dermatologia-elite-roma | yes | yes | yes | yes | yes |
+| gusto-fine-dining | yes | yes* | yes* | yes* | yes* |
+| pragma-corporate-suite | yes | — | — | — | — |
+| elevate-startup-landing | yes | — | — | — | — |
+| chiara-portfolio-creativo | yes | — | — | — | — |
+| pixel-portfolio-fotografico | yes | — | — | — | — |
+
+(*) Gusto non-IT locales are complete for all Sessions 23–30 content keys but the Session 35 `signature_video` block was added IT-only — under `?lang=en|fr|es|ar` on Gusto the block disappears gracefully via its `{% if page_data.signature_video %}` guard, producing content-depth disparity between locales. Not a bug per se (graceful), but a symptom of the same under-authored-new-block pattern.
+
+**Media surface found:**
+- 3 `lm-video` blocks: `gusto-fine-dining` (home `signature_video`), `elevate-startup-landing` (home `product_video`), `pixel-portfolio-fotografico` (home `reel`). All three used `commondatastorage.googleapis.com/.../ForBiggerBlazes.mp4` as src. All three carried codec-theatre captions (`Demo · 2:14 · 1080p`, `Reel · 1080p · 24 fps`, `Play · 3:12`) and meta rows (`Camere · Due fisse · 4K`).
+- 3 `lm-logo-marquee` blocks: `pragma-corporate-suite` (home `sectors` + `trust_logos`), `elevate-startup-landing` (home `integrations`). Content is real institutional/tech wordmarks — coherent, kept.
+- 1 `featured_works` lightbox grid on `chiara-portfolio-creativo` home — real project images, kept.
+- `live-media.css/js` linked on 6 bases but only consumed on 3 (Pragma, Elevate, Gusto pre-hardening). Cardio, Derm, Chiara, Pixel bases linked the primitives without using them — orphan payload.
+
+### 2 — Strategy
+
+Two surgical hardening decisions, no new content authoring:
+
+1. **Switcher honesty (D-069 rule 1):** `locale_switcher_entries()` becomes template-aware. View computes `available_locales` via `template_content.get_available_locales(slug)` and suppresses the switcher when `len(available_locales) <= 1`. All 6 skin `_base.html` files wrap their switcher markup in `{% if locale_switcher %}`. Result: Pragma / Elevate / Chiara / Pixel render with no switcher; Cardio / Derm / Gusto keep their 5-pill switcher.
+
+2. **Media honesty (D-069 rule 2–4):**
+   - `gusto-fine-dining.signature_video` — REMOVED entirely (content block + HTML section + CSS rules). The atmosphere_teaser 4-tile lightbox already carries behind-the-scenes mood.
+   - `pixel-portfolio-fotografico.reel` — REMOVED entirely (content block + HTML section + CSS rules). The filmstrip + EXIF strip + series index carry the cinematic identity.
+   - `elevate-startup-landing.product_video` — CONVERTED to `product_demo_card`: same cosmic-glass frame + dashboard-still poster, but the `<video>` tag and codec caption become a premium overlay with dual CTA pointing to `/demo/` (primary, "Prenota il walkthrough") + `/prodotto/` (secondary, "Esplora il prodotto").
+
+Every cardio/derm/chiara/pixel/gusto `_base.html` unlinks `live-media.css` + `live-media.js` (orphan after video removal) and drops orphan `--lm-video-*` tokens + specificity-shielding selectors. Pragma + Elevate keep both (they still consume the marquee primitive).
+
+### 3 — Implementation
+
+**`apps/catalog/template_i18n.py`** — `locale_switcher_entries(current_locale, available_locales=None)` gets a new optional arg. When passed, scopes the returned entries to that list; when omitted, preserves legacy "all 5 locales" behaviour for backward compat.
+
+**`apps/catalog/template_content.py`** — new helper `get_available_locales(slug) -> list[str]`. Reads `TEMPLATE_CONTENT[slug]` and returns the ordered subset of `SUPPORTED_LOCALES` that have a locale tree. Also the place where `gusto-fine-dining.signature_video` IT block was removed (`GUSTO_CONTENT_IT` home dict).
+
+**`apps/catalog/views.py`** — `LiveTemplateView.get_context_data` computes `available_locales` once and threads `ctx["available_locales"]` + a conditionally-empty `ctx["locale_switcher"]`. When `len(available_locales) > 1`, the switcher populates as usual; otherwise empty list → skin's `{% if locale_switcher %}` branch is skipped.
+
+**6 skin `_base.html` files** — switcher markup wrapped in `{% if locale_switcher %}`:
+- `medical/specialist/_base.html`
+- `restaurant/fine-dining/_base.html`
+- `business/corporate-suite/_base.html`
+- `business/startup-saas-landing/_base.html`
+- `portfolio/editorial-designer-grid/_base.html`
+- `portfolio/cinematic-photographer/_base.html`
+
+**4 skin `_base.html` files** — `live-media.css` + `live-media.js` unlinked + orphan `--lm-video-*` tokens stripped + `.lm-video` specificity-shielding rules pruned:
+- `medical/specialist/_base.html` (cardio + derm)
+- `restaurant/fine-dining/_base.html` (gusto)
+- `portfolio/editorial-designer-grid/_base.html` (chiara)
+- `portfolio/cinematic-photographer/_base.html` (pixel)
+
+**Gusto home** (`templates/live_templates/restaurant/fine-dining/home.html`) — `<section class="fd-signature-video">` block (27 LOC HTML) + 46 LOC of `.fd-signature-video*` CSS rules both removed.
+
+**Pixel home** (`templates/live_templates/portfolio/cinematic-photographer/home.html`) — `<section class="cp-reel">` block (27 LOC HTML) + 46 LOC of `.cp-reel*` CSS rules both removed.
+
+**Elevate home** (`templates/live_templates/business/startup-saas-landing/home.html`) — the `<section class="sl-product-video">` block with the lm-video figure (22 LOC) is replaced by a `<section class="sl-demo-card">` block (18 LOC) using the same poster, new dual-CTA overlay, no `<video>`. 21 LOC of `.sl-product-video` + `.sl-video-frame` CSS become 52 LOC of `.sl-demo-card` + `.sl-demo-frame` CSS (overlay gradient, poster background-image layer, secondary-button contrast tuning).
+
+**Elevate content** (`apps/catalog/template_content_elevate.py`) — `product_video` key replaced with `product_demo_card` dict: `label / heading / intro / poster / primary_cta / primary_href / secondary_cta / secondary_href / caption`. Two CTAs target existing pages (`demo`, `prodotto`) so the routing is honest and functional. Updated `.sl-mono` utility selectors in the base to target `.sl-demo-card .head .sec-label.sl-mono` + `.sl-demo-frame .caption.sl-mono` (replacing `.sl-product-video` selectors that no longer match anything).
+
+**Pixel content** (`apps/catalog/template_content_pixel.py`) — `reel` key removed. Replacement comment block explains the decision and the conditions for reintroducing (real signed MP4 + on-brand meta).
+
+**Gusto content** (`apps/catalog/template_content.py`) — `signature_video` key removed from `GUSTO_CONTENT_IT.home`. Replacement comment block explains the decision.
+
+### 4 — Verification — new smoke harness
+
+Added `smoke_i18n_media_hardening.py` (~155 LOC). Scope:
+
+1. **IT-only-switcher-hidden (25 checks).** For Pragma / Elevate / Chiara / Pixel × home + every inner page, fetch the page and assert the rendered HTML does NOT contain `<div class="mp-lang"` / `<nav class="mp-lang"` / `class="mp-lang-pill`. The CSS rules for `.mp-lang*` may still appear in the inline `<style>` block (structural) — only the markup opening tag is forbidden.
+2. **Multilingual-switcher-intact (15 checks).** For Cardio / Derm / Gusto × 5 locales, fetch the home page and assert the switcher markup IS present AND the 5 badges (`IT`, `EN`, `FR`, `ES`, `AR`) all render.
+3. **Forbidden-media-token scan (7 checks).** For every live template's home page, scan the rendered HTML for `ForBiggerBlazes.mp4`, `commondatastorage.googleapis.com`, `Demo · 2:14 · 1080p`, `Reel · 1080p · 24 fps`, `Play · 3:12`, `Due fisse · 4K`. Zero tolerance.
+4. **Elevate demo-card presence (1 check).** Assert `sl-demo-card` class + `Prenota il walkthrough` copy both render.
+5. **Pixel no-video (1 check).** Assert `lm-video` AND `cp-reel` are both absent.
+6. **Gusto no-video (1 check).** Assert `lm-video` AND `fd-signature-video` are both absent.
+
+**Result: 45/45 hardening checks passed.**
+
+### 5 — Regression safety net
+
+- `python manage.py check`: 0 issues.
+- `smoke_full.py`: **170/170 routes HTTP 200** — identical to the Session 34 baseline. Zero regression from the D-068 motion/media pass removal of video blocks.
+- `smoke_forms.py`: **27/27 form routes HTTP 200** — D-066 forms system untouched.
+- Playwright walk at 1440×900 on: Elevate `/preview/` (demo card renders, no video tag, no switcher), Gusto `?lang=en` (signature_video gone, 5-pill switcher present), Gusto `?lang=ar` (`dir=rtl` + RTL content preserved + no video), Chiara + Pixel `/preview/` (no switcher + no video + no reel frame + filmstrip and ledger intact), Cardio `?lang=fr` (5-pill switcher intact).
+
+### 6 — Files touched
+
+13 modified, 1 new, 0 deleted. New file: `smoke_i18n_media_hardening.py`.
+
+**Python (5):**
+- `apps/catalog/template_i18n.py` — `locale_switcher_entries()` extended with optional `available_locales` parameter.
+- `apps/catalog/template_content.py` — `get_available_locales()` helper added + Gusto `signature_video` block removed with rationale comment.
+- `apps/catalog/template_content_elevate.py` — `product_video` → `product_demo_card` conversion.
+- `apps/catalog/template_content_pixel.py` — `reel` block removed with rationale comment.
+- `apps/catalog/views.py` — `LiveTemplateView` threads `available_locales` + conditional `locale_switcher` into context.
+
+**Skin `_base.html` (6):**
+- `templates/live_templates/medical/specialist/_base.html` — switcher guard + live-media unlink.
+- `templates/live_templates/restaurant/fine-dining/_base.html` — switcher guard + live-media unlink + `--lm-video-*` token removal.
+- `templates/live_templates/business/corporate-suite/_base.html` — switcher guard (live-media kept; marquee consumer).
+- `templates/live_templates/business/startup-saas-landing/_base.html` — switcher guard + `--lm-video-*` token removal (live-media kept; marquee consumer) + `.sl-product-video` selector renamed to `.sl-demo-card` chain.
+- `templates/live_templates/portfolio/editorial-designer-grid/_base.html` — switcher guard + live-media unlink + `--lm-video-*` token removal + `.lm-video .cp-mono` specificity selectors pruned.
+- `templates/live_templates/portfolio/cinematic-photographer/_base.html` — switcher guard + live-media unlink + `--lm-video-*` + `--lm-marquee-*` token removal + `.lm-video .cp-mono` specificity selectors pruned.
+
+**Skin `home.html` (3):**
+- `templates/live_templates/restaurant/fine-dining/home.html` — signature_video section + CSS removed.
+- `templates/live_templates/portfolio/cinematic-photographer/home.html` — reel section + CSS removed.
+- `templates/live_templates/business/startup-saas-landing/home.html` — product_video section + CSS converted to product_demo_card.
+
+### 7 — Decision
+
+**LIVE I18N & MEDIA HARDENING APPROVATO.** D-069 documented in DECISIONS.md.
+
+The catalog's 7 `tier=published_live` templates now pass the two coherence gates the user flagged:
+1. Every template's language switcher matches its content depth (5 pills only where 5 locales are authored).
+2. Every template's media surface is either real (Pragma sectors / Elevate integrations wordmarks / Chiara lightbox project grid) or absent (no Big Buck Bunny placeholders, no codec-theatre captions).
+
+The live-media.css/js primitive remains in the repo as a latent capability. When a future template has a real signed MP4 and on-brand metadata that reinforces (not pretends) its identity, re-introduction is zero-infrastructure work.
+
+### 8 — Exact next step
+
+**Phase 2g3.5 — agency CRITICO lift** remains the blocking roadmap gate (per D-049). Separately, **Phase 2i.2b** is a new latent ticket: when the next locale-coverage wave is scheduled, author EN/FR/ES/AR content trees for Pragma / Elevate / Chiara / Pixel (one per session, ~3h each per the D-063 budget). When each template's `TEMPLATE_CONTENT[slug]` entry gains a 2nd locale key, its switcher automatically re-appears — no chrome work needed.
+
+---
+
+## Session 35 — Live Motion, Media & Typography Premium Pass (2026-04-13)
+
+**Agent:** Premium UI / interaction polish session. Sole target: raise the quality of the 7 `tier=published_live` templates along three axes — motion (counters where credible), media (video + gallery + marquee where genuinely coherent with the archetype), typography (per-template font character). Non-goals: new categories, new templates, draft templates, auth/checkout/editor/projects/commerce, refactors outside scope.
+
+**Branch:** `phase-live-motion-media-pass-v1` (forked from `phase-integration-baseline-v4`).
+
+### 1 — Audit
+Read the 12 context files + memory index. Audited the 6 skin folders (medical/specialist · restaurant/fine-dining · business/corporate-suite · business/startup-saas-landing · portfolio/editorial-designer-grid · portfolio/cinematic-photographer) hosting the 7 published_live templates. Found 4 systemic gaps: (1) **zero counters wired** on Pragma KPI strip + Elevate metric strip + Elevate mockup metrics + Elevate founders despite numeric-heavy layouts; (2) **no video integration anywhere** — the entire catalog had no template demonstrating a real video moment; (3) **no marquee/logo drift** on institutional sectors / SaaS integrations / press wordmarks; (4) **typography under-developed** — every skin loaded only 2 fonts (heading + body), no monospace accent, no italic-axis emphasis, no tabular-nums on metric strips.
+
+### 2 — Strategy
+Ship two new shared primitives + per-template wiring under D-047/D-054 invariants:
+
+| Template | Counters | Lightbox | Video | Marquee | Typography refinement |
+|---|---|---|---|---|---|
+| Cardio (specialist) | preserved (3) | — | NO (clinical) | NO | italic h-em wt 400 + tabular-nums + line-height 1.6→1.55 |
+| Derm (shared specialist) | preserved (3) | preserved | NO (shared) | NO | inherits cardio refinements |
+| Gusto (fine-dining) | preserved (3) | preserved | **YES — signature ambient video** | NO | italic h-em wt 600 + tabular-nums on facts/courses |
+| Pragma (corporate-suite) | **YES — KPI strip × 4** | NO | NO (corporate authority) | **YES — sectors + trust** | italic accent serif + tabular-nums KPI |
+| Elevate (startup-saas-landing) | **YES — metric × 4 + mockup × 3 + founders × 2 = 9** | NO | **YES — product demo video** | **YES — integrations × 12** | **JetBrains Mono** ship-log + metric labels |
+| Chiara (editorial-designer-grid) | NO (typographic identity) | **YES — featured grid** | NO (typographic identity) | NO | italic Syne wt 700 + **JetBrains Mono** indices |
+| Pixel (cinematic-photographer) | NO (would cheapen) | preserved | **YES — cinematic reel block** | NO | h1 letter-spacing 0.005em → 0.018em + push existing **JetBrains Mono** |
+
+Video decisions: **3 templates get video** (the 3 archetypes where motion/cinema is part of the category vocabulary — fine-dining hospitality, growth-tech SaaS, photographer reel). **4 templates do NOT get video** (clinical specialist + corporate authority + typographic editorial — adding video would cheapen each archetype).
+
+### 3 — Implementation
+
+**New shared primitives:**
+- `static/css/live-media.css` — `.lm-video` poster + click-to-play HTML5 native (no autoplay, no iframes, no third-party tracking), `.lm-logo-marquee` slow-drift wordmark scroll, `.lm-num` 3-cell numeric break-out helper. ~250 LOC, prefers-reduced-motion aware, RTL-safe via logical properties, per-skin token overrides via 5 CSS custom properties.
+- `static/js/live-media.js` — lazy video boot on first user click (creates `<video controls preload="metadata" playsinline>` with `<source>`, attaches `is-playing` class, swallows blocked autoplay rejection silently), Esc-to-pause, marquee track JS-duplication for seamless `-50%` keyframe loop, prefers-reduced-motion opt-out (skips marquee duplication). ~110 LOC zero-dep IIFE.
+
+**Counter primitive extension (live-motion.js):**
+- Regex extended from `^(-?\d+(?:[.,]\d+)?)(.*)$` to `^(\D*?)(-?\d+(?:[.,]\d+)?)(.*)$` so leading non-digit prefix (`€ 1.4 B`, `+ 38%`, `↑ 22`) is captured + preserved verbatim during animation.
+- Italian thousand-separator heuristic added: if numeric matches `^(\d{1,3})\.(\d{3})$` (e.g. "1.200") the dot is treated as thousand-separator → animates 0 → 1200 with regex-based `\B(?=(\d{3})+(?!\d))` re-formatting back to "1.200" on each frame. Backwards-compatible with every previously-working counter (verified on cardio/gusto facts).
+
+**Per-template `_base.html` token + font + typography:**
+- `business/corporate-suite/_base.html` — wire live-media; sectors marquee tokens (110s drift, 72px gap, ink-soft color); italic h-em accent at weight 600; tabular-nums on KPI/cases.
+- `business/startup-saas-landing/_base.html` — wire live-media; load JetBrains Mono via Google Fonts; cosmic video frame tokens (cyan-glow play orb ring); growth-tech marquee tokens (70s, snappier); `--mono` CSS token; `.sl-mono` utility selector specificity-shielded against existing `.sl-shiplog .list .ver` (chained 0,0,3,0).
+- `restaurant/fine-dining/_base.html` — wire live-media; cinematic video frame tokens (gold play orb on warm-cream); italic h-em accent at weight 600; tabular-nums on facts + courses.
+- `medical/specialist/_base.html` — wire live-media; italic h-em accent at weight 400 (clinical sobriety); body line-height 1.6→1.55; tabular-nums on facts + signature_visits + percorso. Shared by cardio + derm (D-046 archetype reuse).
+- `portfolio/editorial-designer-grid/_base.html` — wire live-media + live-interactions + load JetBrains Mono; italic Syne accent at weight 700; `--mono` token; `.ed-mono` utility specificity-shielded.
+- `portfolio/cinematic-photographer/_base.html` — wire live-media + live-interactions; cinema video frame tokens (red pulse ring); cinematic marquee tokens (130s, very slow); h1 letter-spacing 0.005em → 0.018em (cinematic measured rhythm); `.cp-mono` utility specificity-shielded.
+
+**Per-template home.html (sections / wiring):**
+- `business/corporate-suite/home.html` — counters on `.cs-kpi-band .stat .num` (4 metrics: 22 / 180+ / € 1.4 B / 94%); sectors marquee block under sectors band; trust wordmarks marquee under trust band.
+- `business/startup-saas-landing/home.html` — counters on mockup `.metric .big` × 3 + `.sl-metric-band .stat .num` × 4 + founders `.metric .num` × 2 = **9 counters total**; new `.sl-product-video` section between mockup and trust strip; integrations marquee below static integrations grid; mono utility on shiplog version + date + integration items + product video caption.
+- `restaurant/fine-dining/home.html` — new `.fd-signature-video` section between chef portrait and atmosphere strip with editorial italic title + 4-cell ambient meta + gold play orb + caption.
+- `portfolio/editorial-designer-grid/home.html` — new `.ed-projects` section between capabilities and clients with asymmetric 4-card grid (1 large + 3 normal) + lightbox group + mono "№ 01" indices + footer link.
+- `portfolio/cinematic-photographer/home.html` — new `.cp-reel` section between filmstrip and about-excerpt with cinematic poster + 6-cell EXIF strip (Format / Durata / Camera / Ottica / Audio / Color grade) + bracket-mono caption.
+
+**Content registries (per-template content blocks):**
+- `apps/catalog/template_content.py` (Gusto IT) — added `home.signature_video` block (label/title/intro/4-cell meta/poster/src/play_label/caption + NOTE comment about CC-licensed src placeholder).
+- `apps/catalog/template_content_elevate.py` — added `home.product_video` block (label/heading/intro/poster/src/play_label/caption + NOTE comment).
+- `apps/catalog/template_content_chiara.py` — added `home.featured_works` block (label/heading/intro/4 items with year/discipline/title/blurb/image/href + footer link).
+- `apps/catalog/template_content_pixel.py` — added `home.reel` block (label/heading/intro/6-cell EXIF/poster/src/play_label/caption + NOTE comment).
+
+### 4 — Video URL strategy (BINDING, recorded for production migration)
+
+The 3 video blocks (Elevate / Gusto / Pixel) ship with a **functional placeholder src** pointing at `https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4` — a CC-licensed Big Buck Bunny test asset on Google's public CDN. It demonstrates the lm-video integration end-to-end (poster + native HTML5 player on click + controls + Esc-to-pause), but the content (animated film) is obviously off-brand. **Each video block is annotated in its content registry with a NOTE comment.** Real customers / production fills `src` with their own brand video URL — the poster + caption typography then carry the brand identity uninterrupted.
+
+If the placeholder URL ever 404s, the lm-video CSS keeps the poster visible behind the `.is-playing` overlay (the `<video>` tag's source-load failure is silent; black frame underneath the play button which fades out via `.is-playing`). Acceptable risk: the moment a user clicks Play and sees a broken video, they understand the placeholder is provisional. The poster + caption typography never break.
+
+### 5 — Validation
+
+- `python manage.py check` — 0 issues.
+- Full DB rebuild + `seed_categories` + `seed_templates` — 8 categories, 20 templates, 7 promoted to `published_live` (auto registry sync).
+- `python smoke_full.py` — **170/170 routes HTTP 200** (no regression vs Session 34 baseline).
+- `python smoke_forms.py` — **27/27 form routes HTTP 200** (no regression vs Session 33).
+- Browser walk via Playwright at 1440×900:
+  - **Pragma** — KPI strip animates `0 / 0 / € 0.0 B / 0%` → `22 / 180+ / € 1.4 B / 94%`; sectors marquee scrolls (track JS-duplicated to 20 items); KPI numerals use Merriweather with `font-variant-numeric: tabular-nums`. Italic h-em accent active on hero "decisioni che contano".
+  - **Elevate** — 9 counter elements all reach final values; `.sl-product-video` renders with code/dashboard poster + white play orb + JetBrains Mono "Tour del prodotto · Demo · 2:14 · 1080p" caption; integrations marquee scrolls; `.sl-shiplog .row .ver.sl-mono` computed font is `"JetBrains Mono", ui-monospace, ...`.
+  - **Gusto** — 3 counters preserved; `.fd-signature-video` renders with kitchen-team poster + gold play orb + 4-cell ambient meta strip + italic-axis "Quattro ore in cucina, due camere fisse." headline.
+  - **Cardio (IT)** — 3 counters animate to "15 / 1.200 / 4" — Italian thousand-separator heuristic correctly preserves "1.200" (was "1.2" before). Italic h-em editorial accent at weight 400.
+  - **Cardio (AR)** — `dir=rtl`, `lang=ar`, body font `"Noto Kufi Arabic", Inter, system-ui, sans-serif` — i18n/RTL not regressed.
+  - **Chiara** — `.ed-projects` renders 4 lightbox-enabled cards in asymmetric grid; mono "№ 01 / 02 / 03 / 04" indices on each frame; italic Syne accent on "quattro discipline." in section heading.
+  - **Pixel** — `.cp-reel` renders moody library poster + white play orb + 6-cell EXIF strip; play label "PLAY · 3:12" + caption "REEL · 1080P · 24 FPS" use JetBrains Mono with letter-spacing 0.06em.
+
+### 6 — D-047 leak sweep clean
+
+All new content keys (signature_video, product_video, featured_works, reel) flow through `page_data.*` content registries — zero literal brand strings introduced into shared HTML. CSS classnames (`.fd-signature-video`, `.sl-product-video`, `.cp-reel`, `.ed-projects`) are archetype-internal naming, not user-visible literals. D-047 chrome-authoring contract preserved across all 6 skin folders.
+
+### 7 — D-054 differentiation preserved 10/10
+
+- **Cardio vs Derm** — both inherit specialist typography refinements; differentiation remains brand-color + hero variant + imagery pool (D-060). Neither gets video, both get italic-axis emphasis at the same weight.
+- **Pragma vs Elevate** — Pragma gets institutional sectors marquee (sober drift, no video, italic accent serif). Elevate gets growth-tech marquee + product video + JetBrains Mono ship-log. Two distinct B2B vocabularies — boardroom-document vs SaaS-product-tour.
+- **Gusto** — only restaurant template, gets the cinematic signature video. Sapore + Brace (drafts) untouched.
+- **Chiara vs Pixel** — Chiara gets a typographic-led featured-projects visual grid (NO video, asymmetric grid, italic Syne accent, mono indices). Pixel gets a cinematic reel video block (YES video, EXIF strip, mono caption, uppercase letter-spacing). The two portfolios diverge further: Chiara reads as a designer studio's project ledger, Pixel as a photographer's authored short-form reel.
+
+### 8 — Decision
+
+**LIVE MOTION MEDIA PASS APPROVATO.** D-068 documented in DECISIONS.md.
+
+The 7 published_live templates now ship with: 16 active counter elements across 4 templates, 3 video blocks (Elevate/Gusto/Pixel) with poster + native HTML5 player + per-skin tokens, 2 marquees (Pragma sectors + trust, Elevate integrations), JetBrains Mono accent on 3 templates, italic-axis h-em emphasis on 4 templates, tabular-nums on every metric strip, refined per-template line-height + letter-spacing. D-047 chrome-authoring contract preserved across all 6 skin folders. D-054 differentiation preserved 10/10. D-058 motion language extended (counter prefix + thousand-sep). D-066 forms primitives untouched. i18n/RTL preserved on the 3 multilingual templates.
+
+---
+
 ## Session 34 — Portfolio Live Rollout (Phase 2g3.4 · 2026-04-13)
 
 **Agent:** Premium UI / portfolio category live rollout. Sole target: bring `chiara-portfolio-creativo` (editorial-designer-grid) and `pixel-portfolio-fotografico` (cinematic-photographer) from `draft` to `published_live` with full multi-page live previews. Non-goals: auth, checkout, editor, projects, commerce, other categories' drafts, marketplace chrome i18n, new templates, new archetypes, refactors outside scope.

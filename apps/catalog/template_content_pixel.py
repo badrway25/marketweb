@@ -145,6 +145,15 @@ PIXEL_CONTENT_IT: dict[str, Any] = {
              "ritratti-del-po"),
         ],
 
+        # Reel — REMOVED per D-068 (Session 36).
+        # A short-film claim without a real signed MP4 shipped as a placeholder
+        # contradicts the cinematic-photographer identity; the "Play · 3:12" +
+        # "Reel · 1080p · 24 fps" meta also trespassed into codec-theatre.
+        # Lorenzo's identity is stills — the filmstrip + EXIF cells + series
+        # index already carry the cinematic voice. When a genuine Carso reel
+        # exists, this block can return with a real `src` and meta pruned of
+        # pseudo-technical cues.
+
         # About excerpt — 3 sentences (full bio on /biografia)
         "about_label":   "Note autobiografiche",
         "about_heading": "LORENZO BIANCHI",

@@ -134,8 +134,8 @@
         <h3>{{ post.title }}</h3>
         <p class="medium">{{ post.lead }}</p>
       </div>
-      <div class="meta">Disciplina<strong>{{ post.discipline }}</strong></div>
-      <div class="meta">Durata<strong>{{ post.duration }}</strong></div>
+      <div class="meta">{{ page_data.row_discipline_label }}<strong>{{ post.discipline }}</strong></div>
+      <div class="meta">{{ page_data.row_duration_label }}<strong>{{ post.duration }}</strong></div>
       <span class="yr">{{ post.year }}</span>
       <span class="arrow">→</span>
     </a>
@@ -150,8 +150,8 @@
           <h3>{{ title }}</h3>
           <p class="medium">{{ medium }}</p>
         </div>
-        <div class="meta">Disciplina<strong>{{ cat }}</strong></div>
-        <div class="meta">Anno<strong>{{ yr }}</strong></div>
+        <div class="meta">{{ page_data.row_discipline_label }}<strong>{{ cat }}</strong></div>
+        <div class="meta">{{ page_data.row_year_label }}<strong>{{ yr }}</strong></div>
         <span class="yr">{{ yr }}</span>
         <span class="arrow">·</span>
       </div>

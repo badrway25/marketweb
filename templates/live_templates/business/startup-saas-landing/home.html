@@ -114,6 +114,62 @@
     content: '→'; color: var(--accent); font-weight: 700;
   }
 
+  /* Demo-walkthrough invitation card — cosmic glass frame, between mockup
+     and trust. Replaces a placeholder video with an honest 1-on-1 booking
+     pattern: dashboard still as poster, legible caption bar, two-CTA overlay. */
+  .sl-demo-card {
+    position: relative; z-index: 5;
+    padding: 80px 32px 48px;
+    max-width: 1240px; margin: 0 auto;
+  }
+  .sl-demo-card .head { margin-bottom: 36px; max-width: 720px; }
+  .sl-demo-card .head .sec-label { color: var(--accent); }
+  .sl-demo-card .head h2 {
+    margin-top: 14px; font-size: 44px; letter-spacing: -0.03em;
+  }
+  .sl-demo-card .head .sec-intro { margin-top: 16px; color: var(--ink-soft); font-size: 17px; }
+  .sl-demo-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    box-shadow: 0 60px 120px -50px rgba(0,0,0,0.55), 0 0 0 1px rgba(56,189,248,0.06);
+    background: #050a18;
+    overflow: hidden;
+  }
+  .sl-demo-frame .poster {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    filter: saturate(1.05) brightness(0.86);
+    transform: scale(1.02);
+  }
+  .sl-demo-frame .overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(8,10,24,0.10) 0%, rgba(8,10,24,0.78) 62%, rgba(8,10,24,0.94) 100%);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    gap: 22px; padding: 36px 40px;
+  }
+  .sl-demo-frame .overlay .caption {
+    font-size: 11px; color: rgba(238,240,255,0.72);
+    letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .sl-demo-frame .overlay .ctas {
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  .sl-demo-frame .overlay .ctas .sl-btn.secondary {
+    background: rgba(238,240,255,0.04);
+    color: rgba(238,240,255,0.92);
+    border: 1px solid rgba(238,240,255,0.32);
+  }
+  .sl-demo-frame .overlay .ctas .sl-btn.secondary:hover {
+    border-color: rgba(238,240,255,0.6);
+    background: rgba(238,240,255,0.08);
+  }
+  @media (max-width: 720px) {
+    .sl-demo-frame .overlay { padding: 24px; gap: 16px; }
+    .sl-demo-frame { aspect-ratio: 4 / 3; }
+  }
+
   /* Trust band — wordmarks */
   .sl-trust {
     position: relative; z-index: 5;
@@ -426,22 +482,46 @@
     </div>
     <div class="grid">
       <div class="metric">
-        <span class="label">{{ page_data.mockup.metric_label }}</span>
-        <div class="big">{{ page_data.mockup.metric_primary }}</div>
+        <span class="label sl-mono">{{ page_data.mockup.metric_label }}</span>
+        <div class="big" data-lm="counter">{{ page_data.mockup.metric_primary }}</div>
         <span class="desc">{{ page_data.mockup.metric_desc }}</span>
       </div>
       <div class="metric alt">
-        <span class="label">{{ page_data.mockup.secondary_label }}</span>
-        <div class="big">{{ page_data.mockup.secondary_metric }}</div>
+        <span class="label sl-mono">{{ page_data.mockup.secondary_label }}</span>
+        <div class="big" data-lm="counter">{{ page_data.mockup.secondary_metric }}</div>
         <span class="desc">{{ page_data.mockup.secondary_desc }}</span>
       </div>
       <div class="metric feature">
-        <span class="label">{{ page_data.mockup.feature_label }}</span>
+        <span class="label sl-mono">{{ page_data.mockup.feature_label }}</span>
         {% for perk in page_data.mockup.perks %}<span class="perk">{{ perk }}</span>{% endfor %}
       </div>
     </div>
   </div>
 </div>
+
+{% if page_data.product_demo_card %}
+<section class="sl-section sl-demo-card">
+  <div class="head" data-lm="reveal">
+    <span class="sec-label sl-mono">{{ page_data.product_demo_card.label }}</span>
+    <h2>{{ page_data.product_demo_card.heading|safe }}</h2>
+    <p class="sec-intro" style="margin-left:0;text-align:left;max-width:62ch;">{{ page_data.product_demo_card.intro }}</p>
+  </div>
+  <div class="sl-demo-frame" data-lm="reveal-soft">
+    <div class="poster" style="background-image:url('{{ page_data.product_demo_card.poster }}')" aria-hidden="true"></div>
+    <div class="overlay">
+      <span class="caption sl-mono">{{ page_data.product_demo_card.caption }}</span>
+      <div class="ctas">
+        <a class="sl-btn" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.product_demo_card.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+          {{ page_data.product_demo_card.primary_cta }}
+        </a>
+        <a class="sl-btn secondary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.product_demo_card.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+          {{ page_data.product_demo_card.secondary_cta }}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <section class="sl-trust">
   <div class="label">{{ page_data.trust_label }}</div>
@@ -474,7 +554,7 @@
     <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
       {% for num, label in page_data.metric_strip %}
         <div class="stat" data-lm="reveal">
-          <div class="num">{{ num }}</div>
+          <div class="num" data-lm="counter">{{ num }}</div>
           <span class="lbl">{{ label }}</span>
         </div>
       {% endfor %}
@@ -483,7 +563,7 @@
 </section>
 
 <section class="sl-section sl-integrations center">
-  <span class="sec-label">{{ page_data.integrations_label }}</span>
+  <span class="sec-label sl-mono">{{ page_data.integrations_label }}</span>
   <h2>{{ page_data.integrations_heading }}</h2>
   <div class="grid" data-lm-stagger data-lm-stagger-delay="60">
     {% for name, desc in page_data.integrations %}
@@ -492,6 +572,11 @@
         <div class="desc">{{ desc }}</div>
       </div>
     {% endfor %}
+  </div>
+  <div class="lm-logo-marquee" data-lm-media="logo-marquee" aria-hidden="true" style="margin-top:48px;">
+    <div class="lm-logo-marquee-track">
+      {% for name, desc in page_data.integrations %}<span class="lm-logo-marquee-item sl-mono">{{ name }}</span>{% endfor %}
+    </div>
   </div>
 </section>
 
@@ -531,7 +616,7 @@
             <div class="role">{{ f.role }}</div>
           </div>
           <div class="metric">
-            <div class="num">{{ f.metric_primary }}</div>
+            <div class="num" data-lm="counter">{{ f.metric_primary }}</div>
             <div class="lbl">{{ f.metric_label }}</div>
           </div>
         </div>
@@ -556,8 +641,8 @@
   <div class="list" data-lm-stagger data-lm-stagger-delay="70">
     {% for entry in page_data.shiplog %}
       <div class="row">
-        <div class="ver" data-lm="reveal">{{ entry.version }}</div>
-        <div class="date" data-lm="reveal">{{ entry.date }}</div>
+        <div class="ver sl-mono" data-lm="reveal">{{ entry.version }}</div>
+        <div class="date sl-mono" data-lm="reveal">{{ entry.date }}</div>
         <div class="body" data-lm="reveal">
           <h4>{{ entry.title }}</h4>
           <p>{{ entry.desc }}</p>

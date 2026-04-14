@@ -103,6 +103,83 @@
     margin-top: 14px; font-family: var(--body); font-size: 14px; line-height: 1.7; color: var(--ink-soft);
   }
 
+  /* FEATURED PROJECTS — visual grid below the typo hero. Lightbox + asymmetric
+     grid (1 large + 3 normal). Premium media moment without breaking the
+     editorial typographic identity. */
+  .ed-projects {
+    padding: 96px 56px;
+    max-width: 1400px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .ed-projects .head {
+    display: grid; grid-template-columns: 0.55fr 1fr; gap: 56px;
+    margin-bottom: 56px; align-items: end;
+  }
+  .ed-projects .head .sec-label { font-size: 10px; font-weight: 700; color: var(--accent); }
+  .ed-projects .head h2 {
+    margin-top: 14px; font-size: 60px; line-height: 1.04;
+    letter-spacing: -0.035em; max-width: 14ch;
+  }
+  .ed-projects .head .intro {
+    font-family: var(--body); font-size: 16px; line-height: 1.7;
+    color: var(--ink-soft); max-width: 44ch;
+  }
+  .ed-projects .grid {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px;
+    grid-auto-rows: auto;
+  }
+  .ed-projects .ed-card { display: flex; flex-direction: column; gap: 14px; }
+  .ed-projects .ed-card:first-child { grid-column: 1 / span 1; grid-row: span 2; }
+  .ed-projects .ed-card-frame {
+    position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden;
+    background: var(--paper-2); cursor: zoom-in;
+    border: 1px solid var(--rule);
+  }
+  .ed-projects .ed-card:first-child .ed-card-frame { aspect-ratio: 4 / 5.5; }
+  .ed-projects .ed-card-frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(20%) contrast(1.02);
+    transition: filter 540ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .ed-projects .ed-card-frame:hover img { filter: grayscale(0%) contrast(1.04); }
+  .ed-projects .ed-card-num {
+    position: absolute; top: 14px; left: 14px;
+    padding: 5px 10px;
+    background: rgba(243,239,229,0.92);
+    color: var(--ink); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+  .ed-projects .ed-card .meta {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .ed-projects .ed-card h3 {
+    font-size: 22px; line-height: 1.18; letter-spacing: -0.014em;
+  }
+  .ed-projects .ed-card p {
+    font-family: var(--body); font-size: 13.5px; line-height: 1.65;
+    color: var(--ink-soft); max-width: 36ch;
+  }
+  .ed-projects .foot {
+    margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--rule);
+    text-align: right;
+  }
+  .ed-projects .foot .ed-link {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--ink);
+    border-bottom: 1.5px solid var(--accent); padding-bottom: 3px;
+  }
+  @media (max-width: 1100px) {
+    .ed-projects .head { grid-template-columns: 1fr; gap: 16px; }
+    .ed-projects .grid { grid-template-columns: 1fr 1fr; }
+    .ed-projects .ed-card:first-child { grid-column: 1 / -1; grid-row: auto; }
+    .ed-projects .ed-card:first-child .ed-card-frame { aspect-ratio: 16 / 9; }
+  }
+  @media (max-width: 700px) {
+    .ed-projects .grid { grid-template-columns: 1fr; }
+  }
+
   /* CLIENTS RIBBON — text-only wordmarks */
   .ed-clients { background: var(--paper-2); padding: 48px 56px; border-top: 1px solid var(--rule); }
   .ed-clients .row {
@@ -207,9 +284,35 @@
   }
   @media (max-width: 720px) {
     .ed-hero .left h1 { font-size: 44px; max-width: 100%; }
+    .ed-hero, .ed-capabilities, .ed-projects, .ed-press,
+    .ed-cta { padding-left: 20px; padding-right: 20px; }
     .ed-capabilities .grid { grid-template-columns: 1fr; }
     .ed-clients .row { grid-template-columns: 1fr; gap: 16px; }
     .ed-clients .logos { gap: 18px; font-size: 12px; }
+    /* Dark commissions band — collapse 56px → 20px gutter and reset paddings */
+    .ed-commissions { padding: 64px 20px; }
+    .ed-commissions .head h2 { font-size: 32px; }
+    .ed-press .grid, .ed-press .head { padding-left: 0; padding-right: 0; }
+    .ed-cta .wrap { grid-template-columns: 1fr; gap: 22px; }
+    .ed-cta h2 { font-size: 32px; }
+    .ed-projects .head h2 { font-size: 38px; }
+    .ed-hero-card { padding: 24px 22px 22px; }
+    /* Inline-grid overrides — grid items default to min-width: auto which
+       lets long Italian/Arabic words (Riconoscimenti, pubblicazioni, etc.)
+       force columns wider than the viewport. Force 1fr collapse + min-width:0
+       on children, and shrink display heads to fit. */
+    .ed-press .head[style], .ed-capabilities .head[style] {
+      grid-template-columns: 1fr !important; gap: 18px !important;
+    }
+    .ed-press .head[style] > * , .ed-capabilities .head[style] > * { min-width: 0; }
+    .ed-press .head h2[style] { font-size: 28px !important; max-width: 100% !important; }
+    .ed-capabilities .head h2 { font-size: 30px; max-width: 100%; }
+    .ed-capabilities .head .intro { font-size: 15px; }
+  }
+  @media (max-width: 480px) {
+    /* Extra-small phones — tighten hero h1 to avoid 14ch min-content overflow */
+    .ed-hero .left h1 { font-size: 38px; word-break: keep-all; }
+    .ed-hero-card h3 { font-size: 20px; }
   }
 {% endblock %}
 
@@ -241,8 +344,8 @@
       {% endfor %}
     </div>
     <a class="all-link" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'lavoro' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
-      <span>Tutto l'archivio</span>
-      <span>→ {{ page_data.ledger_rows|length }} progetti</span>
+      <span>{{ page_data.ledger_full_link_label }}</span>
+      <span>{{ page_data.ledger_count_prefix }} {{ page_data.ledger_rows|length }} {{ page_data.ledger_count_unit }}</span>
     </a>
   </aside>
 </section>
@@ -264,6 +367,38 @@
     {% endfor %}
   </div>
 </section>
+
+{% if page_data.featured_works %}
+<section class="ed-projects">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label ed-mono">{{ page_data.featured_works.label }}</div>
+      <h2>{{ page_data.featured_works.heading|safe }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.featured_works.intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for w in page_data.featured_works.items %}
+      <article class="ed-card" data-lm="reveal">
+        <a class="ed-card-frame lm-img-frame"
+           data-li="lightbox-trigger"
+           data-li-src="{{ w.image }}"
+           data-li-caption="{{ w.title }} · {{ w.year }} · {{ w.discipline }}"
+           data-li-group="featured-works">
+          <img class="lm-img" src="{{ w.image }}" alt="{{ w.title }}" loading="lazy">
+          <span class="ed-card-num ed-mono">№ {{ forloop.counter|stringformat:"02d" }}</span>
+        </a>
+        <div class="meta ed-mono">{{ w.year }} · {{ w.discipline }}</div>
+        <h3>{{ w.title }}</h3>
+        <p>{{ w.blurb }}</p>
+      </article>
+    {% endfor %}
+  </div>
+  <div class="foot" data-lm="reveal">
+    <a class="ed-link" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.featured_works.footer_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.featured_works.footer_link }} →</a>
+  </div>
+</section>
+{% endif %}
 
 <section class="ed-clients">
   <div class="row">

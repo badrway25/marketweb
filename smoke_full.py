@@ -17,7 +17,7 @@ LOCALES = {
     "gusto-fine-dining":           ["it", "en", "fr", "es", "ar"],
     "pragma-corporate-suite":      ["it"],
     "elevate-startup-landing":     ["it"],
-    "chiara-portfolio-creativo":   ["it"],
+    "chiara-portfolio-creativo":   ["it", "en", "fr", "es", "ar"],
     "pixel-portfolio-fotografico": ["it"],
 }
 

@@ -7,8 +7,9 @@
 <meta name="description" content="{{ brand.tagline }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:wght@400;500;600;700;800&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:wght@400;500;600;700;800&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-media.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 <style>
   :root {
@@ -63,11 +64,23 @@
     --lf-submit-radius: 999px;
     --lf-submit-underline: 0;
     --on-accent:        #051029;
+
+    /* JetBrains Mono accent — ship-log timestamps, metric labels, code fragments */
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /* Logo marquee — growth-tech snappier drift */
+    /* Logo marquee — growth-tech snappier drift. Video tokens were dropped
+       with the product_video block (D-068) — the integrations marquee remains. */
+    --lm-marquee-duration: 70s;
+    --lm-marquee-gap:      56px;
+    --lm-marquee-color:    rgba(238,240,255,0.46);
+    --lm-marquee-rule:     var(--rule);
+    --lm-marquee-pad-y:    18px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   body {
-    color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.65;
+    color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6;
     background: var(--primary);
     background-image:
       radial-gradient(circle at 12% 108%, color-mix(in oklab, var(--secondary) 55%, var(--primary) 45%) 0%, transparent 52%),
@@ -85,12 +98,38 @@
   h1, h2, h3, h4, h5 {
     font-family: var(--heading); font-weight: 800; line-height: 1.04;
     letter-spacing: -0.025em; color: var(--ink);
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
   }
+  h1 { letter-spacing: -0.04em; }
   em {
     font-style: normal; font-weight: 800;
     background: linear-gradient(95deg, var(--accent) 0%, var(--accent-glow) 100%);
     -webkit-background-clip: text; background-clip: text;
     color: transparent;
+  }
+  /* Mono accent — surfaced via .sl-mono utility (ship log, metric labels).
+     Uses :where() shield + explicit re-binding on common per-skin selectors so
+     the utility wins the cascade against existing .sl-shiplog .ver, .sl-mockup
+     .metric .label and other already-styled chained selectors. */
+  .sl-mono,
+  .sl-shiplog .row .ver.sl-mono,
+  .sl-shiplog .row .date.sl-mono,
+  .sl-mockup .metric .label.sl-mono,
+  .sl-metric-band .head .lbl.sl-mono,
+  .sl-integrations .sec-label.sl-mono,
+  .sl-demo-card .head .sec-label.sl-mono,
+  .sl-demo-frame .caption.sl-mono,
+  .lm-logo-marquee-item.sl-mono {
+    font-family: var(--mono);
+    font-feature-settings: "tnum" 1, "zero" 1;
+    letter-spacing: 0.02em;
+  }
+  /* Tabular numerals everywhere a counter ticks */
+  .sl-mockup .metric .big,
+  .sl-metric-band .stat .num,
+  .sl-founders .quote .author .metric .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
   }
 
   /* Marketplace bar */
@@ -374,6 +413,7 @@
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
   <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
 
+  {% if locale_switcher %}
   <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
     <span class="mp-lang-label">{{ chrome.mp_language }}</span>
     <div class="mp-lang-list">
@@ -392,6 +432,7 @@
       {% endfor %}
     </div>
   </div>
+  {% endif %}
 
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
 </div>
@@ -460,6 +501,7 @@
 </footer>
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-media.js' %}" defer></script>
 <script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>

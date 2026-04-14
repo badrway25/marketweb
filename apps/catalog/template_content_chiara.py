@@ -101,6 +101,11 @@ CHIARA_CONTENT_IT: dict[str, Any] = {
         "secondary_cta": "Visita lo studio",
         "secondary_href":"studio",
 
+        # Hero ledger card footer label + count format (lifted from skin)
+        "ledger_full_link_label":   "Tutto l'archivio",
+        "ledger_count_prefix":      "→",
+        "ledger_count_unit":        "progetti",
+
         # Project ledger preview — 6 indexed rows
         "ledger_label":   "Lavoro selezionato · 2022 — 2026",
         "ledger_heading": "Sei progetti, sei discipline",
@@ -164,6 +169,54 @@ CHIARA_CONTENT_IT: dict[str, Any] = {
             "MAISON LAMBRATE",
             "ATELIER VELLUTI & CO.",
         ],
+
+        # Featured projects — visual grid below the typo hero. Lightbox-enabled,
+        # 4 cards with project image, year, discipline. Reads as a designer's
+        # opening reel without breaking the typographic editorial identity.
+        "featured_works": {
+            "label":   "Lavori in catalogo",
+            "heading": "Quattro progetti, <em>quattro discipline.</em>",
+            "intro":
+                "Una selezione del 2024 — 2025 — sistemi tipografici, identità "
+                "istituzionali, segnaletica museale, oggetti editoriali stampati. "
+                "Cliccare per aprire il dossier completo.",
+            "items": [
+                {
+                    "year":       "2025",
+                    "discipline": "Catalogo · Editoria d'arte",
+                    "title":      "Triennale Milano 2025",
+                    "blurb":      "Direzione tipografica e impaginazione del catalogo principale dell'edizione.",
+                    "image":      "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1400&q=80&auto=format&fit=crop",
+                    "href":       "lavoro",
+                },
+                {
+                    "year":       "2024 — 2025",
+                    "discipline": "Sistema tipografico · Editoriale",
+                    "title":      "Collana «Carta Bianca» · Adelphi",
+                    "blurb":      "Sistema editoriale per dodici titoli — copertine, tipografia, codice cromatico.",
+                    "image":      "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=1400&q=80&auto=format&fit=crop",
+                    "href":       "lavoro",
+                },
+                {
+                    "year":       "2024",
+                    "discipline": "Segnaletica · Identità museale",
+                    "title":      "Querini Stampalia · Venezia",
+                    "blurb":      "Segnaletica permanente delle sale + sistema di chiamata sale conferenze.",
+                    "image":      "https://images.unsplash.com/photo-1564399579883-451a5d44ec08?w=1400&q=80&auto=format&fit=crop",
+                    "href":       "lavoro",
+                },
+                {
+                    "year":       "2023",
+                    "discipline": "Monografia · Editoria indipendente",
+                    "title":      "Atelier Velluti · Lambrate",
+                    "blurb":      "Monografia di studio — 240 pagine, sistema typografico custom, stampa Antiga.",
+                    "image":      "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1400&q=80&auto=format&fit=crop",
+                    "href":       "lavoro",
+                },
+            ],
+            "footer_link":  "Vedi tutti i progetti",
+            "footer_href":  "lavoro",
+        },
 
         # Press / recognitions — 3 honors
         "press_label":   "Riconoscimenti recenti",
@@ -255,7 +308,7 @@ CHIARA_CONTENT_IT: dict[str, Any] = {
                 "Aiap · membro ordinario dal 2010",
                 "ADI · giurata Design Index 2024",
             ],
-            "image": "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&q=80&auto=format&fit=crop",
+            "image": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=1200&q=80&auto=format&fit=crop",
         },
 
         # Studio team (full team — 4 collaborators beyond founder)
@@ -388,6 +441,11 @@ CHIARA_CONTENT_IT: dict[str, Any] = {
             "Direzione artistica",
         ],
 
+        # Ledger row labels (lifted from skin for i18n)
+        "row_discipline_label": "Disciplina",
+        "row_duration_label":   "Durata",
+        "row_year_label":       "Anno",
+
         # Index intro band on top of the ledger
         "ledger_label": "Indice cronologico",
         "ledger_intro":
@@ -403,6 +461,17 @@ CHIARA_CONTENT_IT: dict[str, Any] = {
             "rilevanti — formato A4, stampa per la presentazione interna.",
         "cta_primary":      "Scrivici",
         "cta_primary_href": "contatti",
+
+        # Dossier (project_detail) labels — constants across all posts,
+        # localized via the `lavoro` page_data block.
+        "dossier_meta_discipline_label": "Disciplina",
+        "dossier_meta_year_label":       "Anno",
+        "dossier_meta_duration_label":   "Durata",
+        "dossier_meta_team_label":       "Equipe",
+        "dossier_summary_label":         "Sintesi del progetto",
+        "dossier_deliverables_label":    "Deliverable consegnati",
+        "dossier_deliverables_heading":  "Cosa abbiamo prodotto",
+        "dossier_colophon_label":        "Colophon",
     },
 
     # ─── PROCESSO (process) ─────────────────────────────────────
@@ -415,6 +484,12 @@ CHIARA_CONTENT_IT: dict[str, Any] = {
             "un proprio fascicolo fisico — cartella verde con numero, "
             "etichetta tipografica, conservata in archivio per "
             "vent'anni minimo.",
+
+        # Process step + capability labels (lifted from skin for i18n)
+        "step_sequence_label":       "Sequenza",
+        "step_index_prefix":         "Step",
+        "step_index_separator":      "di",
+        "capability_duration_label": "Durata indicativa",
 
         # 5-step process (richer than business)
         "process_label":   "Sequenza di studio",
@@ -563,11 +638,16 @@ CHIARA_CONTENT_IT: dict[str, Any] = {
             "— prima di qualsiasi proposta scritta.",
 
         # Studio info side card
-        "studio_label":   "Lo studio",
-        "studio_address": "Via Tortona 27 · 20144 Milano",
-        "studio_area":    "Ingresso dal cortile interno · campanello «Velluti»",
-        "studio_metro":   "MM2 Porta Genova · 4 minuti a piedi",
-        "studio_hours":   "Lun – Ven · 10:00 – 19:00 · su appuntamento",
+        "studio_label":          "Lo studio",
+        "studio_address":        "Via Tortona 27 · 20144 Milano",
+        "studio_area":           "Ingresso dal cortile interno · campanello «Velluti»",
+        "studio_metro":          "MM2 Porta Genova · 4 minuti a piedi",
+        "studio_hours":          "Lun – Ven · 10:00 – 19:00 · su appuntamento",
+        # Studio card row labels (lifted from skin for i18n)
+        "studio_address_label":  "Indirizzo",
+        "studio_area_label":     "Ingresso",
+        "studio_metro_label":    "Metro",
+        "studio_hours_label":    "Orari",
 
         # Form fields — generic loop in chrome
         "form_label":   "Richiedi una prima call",

@@ -175,6 +175,29 @@ ELEVATE_CONTENT_IT: dict[str, Any] = {
             },
         ],
 
+        # Live product walkthrough invitation — replaces a fake video block.
+        # Rationale (D-068, Session 36): shipping a real, current product demo
+        # video would require a recorded MP4 per build; a placeholder source
+        # reads as a cheap template. The card below keeps the editorial shelf
+        # (dashboard still as poster, cosmic glass frame) but swaps the play
+        # button for an honest booking CTA — one real primary CTA to the demo
+        # form, one secondary to the existing changelog. No codec metadata.
+        "product_demo_card": {
+            "label":      "Vedi Elevate in presa diretta",
+            "heading":    "Quindici minuti con chi l'ha costruito.",
+            "intro":
+                "Invece di un video registrato: prenotiamo un walkthrough breve "
+                "sul progetto reale — editor drag-and-drop, wizard di pricing, "
+                "cablaggio Stripe + Linear, deploy su Vercel. Domande vere, "
+                "progetto vero, senza email di follow-up.",
+            "poster":     "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1800&q=80&auto=format&fit=crop",
+            "primary_cta":    "Prenota il walkthrough",
+            "primary_href":   "demo",
+            "secondary_cta":  "Esplora il prodotto",
+            "secondary_href": "prodotto",
+            "caption":        "Walkthrough 1-a-1 · calendario live",
+        },
+
         # Metric strip on dark band
         "metric_label":   "I numeri del kit in produzione",
         "metric_heading": "Lo stack che spedisce",

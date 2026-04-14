@@ -414,13 +414,28 @@ def pick_localized(content_by_locale: dict[str, Any], locale: str) -> Any:
     return content_by_locale[DEFAULT_LOCALE]
 
 
-def locale_switcher_entries(current_locale: str) -> list[dict[str, Any]]:
+def locale_switcher_entries(
+    current_locale: str,
+    available_locales: list[str] | tuple[str, ...] | None = None,
+) -> list[dict[str, Any]]:
     """Build the data the language switcher template loops over.
 
     Each entry has: `code`, `label`, `badge`, `is_current`. The order
     matches SUPPORTED_LOCALES. Used by the marketplace bar in every
-    specialist skin page.
+    live-template skin page.
+
+    `available_locales` scopes the switcher to the languages actually
+    authored for the current template. When omitted (or empty), the
+    full SUPPORTED_LOCALES set is returned — preserved for callers
+    that predate the per-template coverage check. A template that only
+    authors Italian must pass `["it"]` and the returned list will contain
+    a single entry (or zero, if the caller prefers to hide the switcher
+    entirely when coverage is 1 or less).
     """
+    if available_locales:
+        codes = [c for c in SUPPORTED_LOCALES if c in available_locales]
+    else:
+        codes = list(SUPPORTED_LOCALES)
     return [
         {
             "code":       code,
@@ -428,5 +443,5 @@ def locale_switcher_entries(current_locale: str) -> list[dict[str, Any]]:
             "badge":      LOCALE_BADGES[code],
             "is_current": code == current_locale,
         }
-        for code in SUPPORTED_LOCALES
+        for code in codes
     ]

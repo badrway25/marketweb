@@ -70,8 +70,20 @@
   body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.65; }
   img { max-width: 100%; display: block; }
   a { color: inherit; text-decoration: none; }
-  h1,h2,h3,h4,h5 { font-family: var(--heading); font-weight: 500; line-height: 1.04; letter-spacing: -0.022em; color: var(--ink); }
-  em { font-style: italic; color: var(--secondary); font-weight: 500; }
+  h1,h2,h3,h4,h5 {
+    font-family: var(--heading); font-weight: 500; line-height: 1.04; letter-spacing: -0.022em;
+    color: var(--ink);
+    font-feature-settings: "kern" 1, "liga" 1, "onum" 1, "calt" 1;
+  }
+  em { font-style: italic; color: var(--secondary); font-weight: 600; }
+  /* Italic emphasis with gold rule for editorial dish-name moments */
+  h2 em, h3 em { font-weight: 600; }
+  /* Tabular figures on facts strip + course numerals — keeps "180€" / "14" aligned */
+  .fd-facts .fact .num,
+  .fd-courses .course .roman {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
 
   /* ============================================================
      MARKETPLACE BAR
@@ -368,6 +380,7 @@
 
 <div class="mp-bar">
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  {% if locale_switcher %}
   <nav class="mp-lang" aria-label="{{ chrome.mp_language }}">
     {% for entry in locale_switcher %}
       {% if page.slug == "home" %}
@@ -381,6 +394,7 @@
       {% endif %}
     {% endfor %}
   </nav>
+  {% endif %}
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_restaurant }}</a>
 </div>
 
