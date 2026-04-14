@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:wght@400;500;600;700;800&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+{% endif %}
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-media.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
@@ -403,6 +406,139 @@
     .sl-btn, .sl-nav .cta { transition: none; }
     .sl-btn:hover, .sl-nav .cta:hover { transform: none; }
   }
+  /* Accessible focus rings — cyan glow accent, not browser-blue */
+  .sl-btn:focus-visible,
+  .sl-btn.secondary:focus-visible,
+  .sl-link:focus-visible,
+  .sl-nav .cta:focus-visible,
+  .sl-nav .links a:focus-visible,
+  .mp-lang a.mp-lang-pill:focus-visible,
+  .sl-banner .inner a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* ============================================================
+     ARABIC / RTL — Noto Kufi Arabic display + Noto Naskh body
+     Modern, geometric (matches Manrope's growth-tech voice).
+     Core tokens always loaded once is_rtl is true; page-level
+     section flips guarded by an is-rtl conditional below.
+  ============================================================ */
+  html[dir="rtl"] {
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', system-ui, sans-serif;
+    --body:    'Noto Naskh Arabic', '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.78; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 {
+    letter-spacing: 0; line-height: 1.18;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  html[dir="rtl"] em {
+    /* Glow gradient still works in RTL — keep brand neon */
+    font-style: normal; font-weight: 800;
+  }
+  /* Button arrow flips */
+  html[dir="rtl"] .sl-btn:after { content: '←'; }
+  html[dir="rtl"] .sl-banner .inner .pulse,
+  html[dir="rtl"] .sl-lead .eyebrow:before {
+    /* RTL: keep dot at start of reading flow */
+    margin-left: 4px; margin-right: 0;
+  }
+  /* Letter-spacing flatten on chrome labels */
+  html[dir="rtl"] .sl-banner .inner,
+  html[dir="rtl"] .sl-banner .inner .label,
+  html[dir="rtl"] .sl-nav .links,
+  html[dir="rtl"] .sl-section .sec-label,
+  html[dir="rtl"] .sl-lead .eyebrow,
+  html[dir="rtl"] .sl-trust .label,
+  html[dir="rtl"] .sl-metric-band .head .lbl,
+  html[dir="rtl"] .sl-metric-band .stat .lbl,
+  html[dir="rtl"] .sl-shiplog .head .release .lbl,
+  html[dir="rtl"] .sl-shiplog .head .release .chip,
+  html[dir="rtl"] .sl-prc .toggle .lbl,
+  html[dir="rtl"] .sl-prc .tier .price-note,
+  html[dir="rtl"] .sl-prc .tier .pop-badge,
+  html[dir="rtl"] .sl-int-full .item .cat,
+  html[dir="rtl"] .sl-stack .list .row .lbl,
+  html[dir="rtl"] .sl-channels .card h3,
+  html[dir="rtl"] .sl-team .card .role,
+  html[dir="rtl"] .sl-office .info .row .lbl,
+  html[dir="rtl"] .sl-foot .top h5,
+  html[dir="rtl"] .sl-foot .bot,
+  html[dir="rtl"] .sl-form .form-label,
+  html[dir="rtl"] .sl-side .block .lbl,
+  html[dir="rtl"] .sl-modules .module .num,
+  html[dir="rtl"] .sl-features .card,
+  html[dir="rtl"] .mp-lang .mp-lang-label,
+  html[dir="rtl"] .mp-lang a.mp-lang-pill {
+    letter-spacing: 0;
+  }
+  /* Latin wordmark + product tool names + version numbers stay Latin */
+  html[dir="rtl"] .sl-nav .wm,
+  html[dir="rtl"] .sl-foot .brand .word,
+  html[dir="rtl"] .sl-int-full .item .name,
+  html[dir="rtl"] .sl-team .card .email,
+  html[dir="rtl"] .sl-office .info .row .val[lang="en"],
+  html[dir="rtl"] .sl-mockup .chrome,
+  html[dir="rtl"] .sl-mono,
+  html[dir="rtl"] .lm-logo-marquee-item.sl-mono,
+  html[dir="rtl"] .sl-shiplog .row .ver.sl-mono,
+  html[dir="rtl"] .sl-shiplog .row .date.sl-mono {
+    font-family: '{{ theme.heading_font }}', system-ui, sans-serif;
+    unicode-bidi: isolate;
+  }
+  html[dir="rtl"] .sl-mono { font-family: var(--mono); }
+  /* Latin numeric runs (versions, KPIs, prices) stay Latin */
+  html[dir="rtl"] .sl-mockup .metric .big,
+  html[dir="rtl"] .sl-metric-band .stat .num,
+  html[dir="rtl"] .sl-prc .tier .price,
+  html[dir="rtl"] .sl-founders .quote .author .metric .num,
+  html[dir="rtl"] .sl-shiplog .list .ver,
+  html[dir="rtl"] .sl-modules .module .num,
+  html[dir="rtl"] .sl-prc .tier ul li .ico {
+    font-family: '{{ theme.heading_font }}', system-ui, sans-serif;
+    unicode-bidi: isolate;
+  }
+  {% if is_rtl %}
+  /* Page-level section flips — only emitted when actually rendering AR */
+  .sl-banner { text-align: center; }
+  .sl-mp-bar { flex-direction: row-reverse; }
+  /* Pill nav: keep pill geometry, reverse divider direction */
+  .sl-nav .wm {
+    border-right: 0; border-left: 1px solid var(--rule);
+    margin-right: 0; margin-left: 28px;
+    padding-right: 0; padding-left: 28px;
+  }
+  .sl-nav .cta { margin-left: 0; margin-right: 28px; }
+  /* Hero inner alignment stays centered (already text-align:center) */
+  /* Mockup card metric grid: invert to put feature on left */
+  .sl-mockup .grid { direction: rtl; }
+  /* Pricing cards: pop-badge moves to right edge */
+  .sl-prc .tier .pop-badge { left: auto; right: 32px; }
+  /* Comparison item: flip key/val grid columns */
+  .sl-comparison .item { grid-template-columns: 1fr 200px; }
+  /* Stack 2-col list: flip lbl/val */
+  .sl-stack .list { grid-template-columns: 1fr 200px; }
+  /* Office info row: flip lbl/val */
+  .sl-office .info .row { grid-template-columns: 1fr 140px; }
+  /* Channel card .cta arrow: flip and re-anchor */
+  .sl-channels .card .cta:after { content: '←'; }
+  /* Demo form trust list — already flow-RTL via flexbox */
+  /* Pricing perks list: tick icon gets natural right-side flow */
+  .sl-prc .tier ul li { flex-direction: row-reverse; justify-content: flex-end; }
+  .sl-modules .module ul li:before { content: '←'; }
+  .sl-modules .module ul li { flex-direction: row-reverse; justify-content: flex-end; }
+  /* FAQ summary marker */
+  .sl-faq .item summary:after { /* "+" / "−" stay LTR-friendly glyphs */ }
+  /* Shiplog grid: ver/date/body stays in original order — direction flips it visually */
+  .sl-shiplog .list { direction: rtl; }
+  .sl-shiplog .list .row { direction: rtl; }
+  /* Founder quote: flip blockquote tracking */
+  .sl-founders .quote .author { flex-direction: row-reverse; }
+  /* Footer 4-col asymmetric flip */
+  .sl-foot .top { grid-template-columns: 1fr 1fr 1fr 1.6fr; }
+  {% endif %}
 
   {% block extra_css %}{% endblock %}
 </style>
@@ -459,7 +595,7 @@
         {% endif %}
       {% endfor %}
     </div>
-    <a class="cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'demo' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ site.tag|default:"Inizia gratis" }}</a>
+    <a class="cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'demo' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ site.nav_cta }}</a>
   </nav>
 </div>
 

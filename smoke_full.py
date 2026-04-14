@@ -15,8 +15,8 @@ LOCALES = {
     "cardio-studio-specialistico": ["it", "en", "fr", "es", "ar"],
     "dermatologia-elite-roma":     ["it", "en", "fr", "es", "ar"],
     "gusto-fine-dining":           ["it", "en", "fr", "es", "ar"],
-    "pragma-corporate-suite":      ["it"],
-    "elevate-startup-landing":     ["it"],
+    "pragma-corporate-suite":      ["it", "en", "fr", "es", "ar"],
+    "elevate-startup-landing":     ["it", "en", "fr", "es", "ar"],
     "chiara-portfolio-creativo":   ["it", "en", "fr", "es", "ar"],
     "pixel-portfolio-fotografico": ["it", "en", "fr", "es", "ar"],
 }

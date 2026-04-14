@@ -2406,10 +2406,24 @@ from apps.catalog.template_content_gusto_i18n import (  # noqa: E402
 )
 
 # Phase 2g3.3 — Business live rollout (Session 32). Pragma + Elevate
-# ship IT-only at promotion time; the i18n keys can be added later via
-# the same recipe used for cardio/derm/gusto (Sessions 23/24/29).
+# initially shipped IT-only at promotion time.
+#
+# Phase 2g3.3b — Business i18n completion pass (Session 40, 2026-04-14).
+# Both Pragma and Elevate now ship in 5 locales (it/en/fr/es/ar) with
+# real RTL for Arabic. Pragma keeps its institutional advisory voice
+# (FT/HBR/Les Echos/Cinco Días registers; usted, vouvoiement, MSA
+# boardroom). Elevate keeps its SaaS growth-tech voice (TechCrunch/
+# Linear/Maddyness/Wamda registers; tu, contractions, anglicismes).
 from apps.catalog.template_content_pragma import PRAGMA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_pragma_en import PRAGMA_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_pragma_fr import PRAGMA_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_pragma_es import PRAGMA_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_pragma_ar import PRAGMA_CONTENT_AR  # noqa: E402
 from apps.catalog.template_content_elevate import ELEVATE_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_elevate_en import ELEVATE_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_elevate_fr import ELEVATE_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_elevate_es import ELEVATE_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_elevate_ar import ELEVATE_CONTENT_AR  # noqa: E402
 
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
@@ -2457,9 +2471,17 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     },
     "pragma-corporate-suite": {
         "it": PRAGMA_CONTENT_IT,
+        "en": PRAGMA_CONTENT_EN,
+        "fr": PRAGMA_CONTENT_FR,
+        "es": PRAGMA_CONTENT_ES,
+        "ar": PRAGMA_CONTENT_AR,
     },
     "elevate-startup-landing": {
         "it": ELEVATE_CONTENT_IT,
+        "en": ELEVATE_CONTENT_EN,
+        "fr": ELEVATE_CONTENT_FR,
+        "es": ELEVATE_CONTENT_ES,
+        "ar": ELEVATE_CONTENT_AR,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,

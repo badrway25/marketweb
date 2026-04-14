@@ -95,8 +95,8 @@
           {% for item in svc.scope %}<li>{{ item }}</li>{% endfor %}
         </ul>
         <div class="meta">
-          <div>Durata<strong>{{ svc.duration }}</strong></div>
-          <div>Lead partner<strong>{{ svc.leader }}</strong></div>
+          <div>{{ page_data.svc_duration_label }}<strong>{{ svc.duration }}</strong></div>
+          <div>{{ page_data.svc_leader_label }}<strong>{{ svc.leader }}</strong></div>
         </div>
       </article>
     {% endfor %}

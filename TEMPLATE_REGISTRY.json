@@ -1,7 +1,7 @@
 {
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Registry of all marketplace web templates with brand identity, DNA archetype, tier, and metadata. Each template's `archetype` field corresponds to an HTML composition under templates/preview_compositions/<category>/<archetype>.html. The full DNA (hero_style, navbar_style, density, tone, conversion_pattern, ...) lives in apps/catalog/template_dna.py. v0.6.1: specialist skin hosts TWO templates (cardio + dermatologia-elite-roma) and has been fully copy-abstracted (Phase 2g.2, Session 14). D-044 lifted by D-048, D-047 governs chrome authoring. v0.7.0–0.7.3: ecommerce DNA pilot (Luxe + Bottega, Session 15), business DNA split (Pragma + Elevate, Session 17, D-050), portfolio DNA split (Chiara + Pixel, Session 18, D-051), Chiara surgical layout fix (Session 19, D-052). v0.8.0: Session 20 Live Preview Policy v2 formalization — introduces the two-tier model (D-055). v0.9.0: Session 29 Gusto i18n/RTL closure — all 3 `published_live` templates now carry 5 locales (it/en/fr/es/ar) with working RTL for Arabic per D-063. Gusto's tier_reason is updated to reflect the i18n closure. Every row still carries a `tier` key: `published_live` or `draft`. Today 3 of 20 templates are `published_live` (cardio, dermatologia-elite-roma, gusto-fine-dining); the other 17 are `draft` pending Phase 2g3. The Premium Differentiation Law (D-054) applies retroactively. New optional `locales` field on published_live rows documents multilingual coverage.",
-  "last_updated": "2026-04-13",
+  "last_updated": "2026-04-14",
   "templates": [
     {
       "slug": "vertex-creative-agency",
@@ -52,10 +52,10 @@
       "session_closed": 32,
       "live_preview": true,
       "live_pages": ["home", "chi-siamo", "competenze", "case-studies", "case-studies/<post>", "contatti"],
-      "locales": ["it"],
-      "rtl": false,
+      "locales": ["it", "en", "fr", "es", "ar"],
+      "rtl": true,
       "tier": "published_live",
-      "tier_reason": "Phase 2g3.3 closed in Session 32 (Business live rollout) — full corporate-suite skin folder + content registry + 6 routes (home/about/services/case_studies/case_study_detail/contact) all 200. D-053 gate green, D-054 10/10 vs Elevate. i18n shape ready (IT-only at promotion); EN/FR/ES/AR can be added via the cardio/derm/gusto recipe."
+      "tier_reason": "Phase 2g3.3 closed in Session 32 (Business live rollout). Phase 2g3.3b closed in Session 40 (Business i18n completion pass) — Pragma now ships in 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic. EN: FT/HBR institutional. FR: Les Echos vouvoiement + insecable spaces. ES: Cinco Días peninsular usted. AR: MSA boardroom register, Latin proper names, Latin digits. RTL CSS block on .cs-* selectors with conditional Amiri+Noto-Kufi font load. D-053 gate green, D-054 10/10 vs Elevate."
     },
     {
       "slug": "elevate-startup-landing",
@@ -76,10 +76,10 @@
       "session_closed": 32,
       "live_preview": true,
       "live_pages": ["home", "prodotto", "prezzi", "demo", "contatti"],
-      "locales": ["it"],
-      "rtl": false,
+      "locales": ["it", "en", "fr", "es", "ar"],
+      "rtl": true,
       "tier": "published_live",
-      "tier_reason": "Phase 2g3.3 closed in Session 32 (Business live rollout) — full startup-saas-landing skin folder + content registry + 5 routes (home/product/pricing/demo/contact) all 200. D-053 gate green, D-054 10/10 vs Pragma (cosmic-gradient + glow-pill vs cream-paper + serif-ghost). i18n shape ready (IT-only at promotion)."
+      "tier_reason": "Phase 2g3.3 closed in Session 32 (Business live rollout). Phase 2g3.3b closed in Session 40 (Business i18n completion pass) — Elevate now ships in 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic. EN: TechCrunch/Linear/Figma SaaS direct (`you`). FR: Maddyness modern SaaS with anglicismes. ES: Xataka/K Fund peninsular `tú`. AR: Wamda modern startup MSA, Latin product names + Latin digits. RTL CSS block on .sl-* selectors with conditional Noto-Naskh+Noto-Kufi font load. Voice stays sharply distinct from Pragma's institutional advisory register."
     },
     {
       "slug": "gusto-fine-dining",

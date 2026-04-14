@@ -205,10 +205,10 @@
           <div class="city">{{ office.city }}</div>
           <div class="tag">{{ office.tag }}</div>
           <div class="meta">
-            <div class="row"><strong>Indirizzo</strong>{{ office.address }}</div>
-            <div class="row"><strong>Zona</strong>{{ office.area }}</div>
-            <div class="row"><strong>Telefono</strong>{{ office.phone }}</div>
-            <div class="row"><strong>Email</strong>{{ office.email }}</div>
+            <div class="row"><strong>{{ page_data.office_address_label }}</strong>{{ office.address }}</div>
+            <div class="row"><strong>{{ page_data.office_area_label }}</strong>{{ office.area }}</div>
+            <div class="row"><strong>{{ page_data.office_phone_label }}</strong>{{ office.phone }}</div>
+            <div class="row"><strong>{{ page_data.office_email_label }}</strong>{{ office.email }}</div>
           </div>
         </div>
       {% endfor %}

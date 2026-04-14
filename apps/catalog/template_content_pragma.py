@@ -77,6 +77,17 @@ PRAGMA_CONTENT_IT: dict[str, Any] = {
             "Frankfurt am Main · Bockenheim",
             "Zürich · Paradeplatz",
         ],
+        # Case study cross-page meta labels (rendered on case_study_list +
+        # case_study_detail meta-strips). Lifted from skin in Session 40 so
+        # every locale picks up the right translation. Kept on `site` because
+        # the labels appear in the chrome of TWO different page kinds.
+        "case_practice_label":     "Practice",
+        "case_year_label":         "Anno",
+        "case_duration_label":     "Durata",
+        "case_lead_label":         "Lead",
+        "case_lead_partner_label": "Lead partner",
+        "case_team_label":         "Team & timeline",
+        "case_timeline_label":     "Timeline",
     },
 
     # ─── HOME ───────────────────────────────────────────────────
@@ -235,6 +246,11 @@ PRAGMA_CONTENT_IT: dict[str, Any] = {
         # Studio history — 5-step timeline
         "history_label":   "Storia dello studio",
         "history_heading": "Cinque tappe, ventidue anni",
+        "history_intro":
+            "Cinque date che hanno definito Pragma. Dietro ognuna di queste "
+            "pietre miliari c'è una scelta strutturale — di indipendenza, "
+            "di geografia, di pratica — che ancora oggi orienta come "
+            "accettiamo i mandati.",
         "history": [
             ("2004", "Fondazione",
              "Federico Seregni e tre soci aprono Pragma in via Filodrammatici, "
@@ -349,6 +365,10 @@ PRAGMA_CONTENT_IT: dict[str, Any] = {
             "Le sei pratiche di Pragma. Ogni cliente accede a un team "
             "multidisciplinare — non si paga per ciascuna pratica separatamente, "
             "il mandato copre la combinazione di competenze necessarie.",
+
+        # Card meta labels (lifted from skin Session 40 for locale support)
+        "svc_duration_label": "Durata",
+        "svc_leader_label":   "Lead partner",
 
         # 6 services in airy cards
         "services": [
@@ -794,6 +814,12 @@ PRAGMA_CONTENT_IT: dict[str, Any] = {
             "Regolamento UE 679/2016. I dati sono custoditi in archivio "
             "cifrato con accesso limitato ai partner Pragma. Nessun dato "
             "viene comunicato a terzi senza esplicita autorizzazione.",
+
+        # Office meta-row labels (lifted from skin Session 40 for i18n)
+        "office_address_label": "Indirizzo",
+        "office_area_label":    "Zona",
+        "office_phone_label":   "Telefono",
+        "office_email_label":   "Email",
 
         # Sidebar — offices + contact channels
         "offices_label":   "Le sedi",

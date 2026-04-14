@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endif %}
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-media.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
@@ -205,6 +208,16 @@
     transition: color .2s ease, border-color .2s ease;
   }
   .cs-btn-ghost:hover { color: var(--primary); border-color: var(--primary); }
+  /* Accessible focus rings — institutional gold accent, not browser-blue */
+  .cs-btn-primary:focus-visible,
+  .cs-btn-ghost:focus-visible,
+  .cs-nav .links a:focus-visible,
+  .mp-lang a.mp-lang-pill:focus-visible,
+  .cs-cases-preview .row:focus-visible,
+  .cs-cases-list .row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
 
   /* ============================================================
      SECTION HELPERS — airy editorial chapters
@@ -286,6 +299,137 @@
   @media (prefers-reduced-motion: reduce) {
     .cs-btn-primary, .cs-btn-primary:after, .cs-btn-ghost { transition: none; }
   }
+
+  /* ============================================================
+     ARABIC / RTL — Noto Kufi Arabic display + Amiri body
+     Core tokens always loaded once is_rtl is true; page-level
+     section flips guarded by an is-rtl conditional below to spare
+     LTR visitors from CSS bytes they would never read.
+  ============================================================ */
+  html[dir="rtl"] {
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', Georgia, serif;
+    --body:    'Amiri', '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.78; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 {
+    letter-spacing: 0; line-height: 1.18;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  html[dir="rtl"] h1 em, html[dir="rtl"] h2 em, html[dir="rtl"] h3 em {
+    font-style: normal; font-weight: 700; letter-spacing: 0;
+  }
+  html[dir="rtl"] em { font-style: normal; font-weight: 700; }
+  /* Eyebrow accent rule + button arrow flips */
+  html[dir="rtl"] .cs-lead .eyebrow:before,
+  html[dir="rtl"] .cs-hero .left .eyebrow:before {
+    margin-left: 4px; margin-right: 0;
+  }
+  html[dir="rtl"] .cs-btn-primary:after { content: '←'; }
+  html[dir="rtl"] .cs-btn-primary:hover:after { transform: translateX(-4px); }
+  html[dir="rtl"] .cs-cases-preview .row .arrow,
+  html[dir="rtl"] .cs-cases-list .row .arrow,
+  html[dir="rtl"] .cs-post .next-case .arrow { transform: scaleX(-1); }
+  html[dir="rtl"] .cs-cases-preview .row:hover .arrow,
+  html[dir="rtl"] .cs-cases-list .row:hover .arrow { transform: translateX(-6px) scaleX(-1); }
+  html[dir="rtl"] .cs-post .next-case a:hover .arrow { transform: translateX(-8px) scaleX(-1); }
+  /* Letter-spacing flatten on chrome labels (Latin tracking is hostile to Arabic) */
+  html[dir="rtl"] .cs-nav .links,
+  html[dir="rtl"] .cs-nav .phone .tag,
+  html[dir="rtl"] .cs-foot .top h5,
+  html[dir="rtl"] .cs-foot .bot,
+  html[dir="rtl"] .cs-section .sec-label,
+  html[dir="rtl"] .cs-lead .eyebrow,
+  html[dir="rtl"] .cs-hero .left .eyebrow,
+  html[dir="rtl"] .cs-hero .left .meta-strip .item,
+  html[dir="rtl"] .cs-kpi-band .stat .lbl,
+  html[dir="rtl"] .cs-sectors .row,
+  html[dir="rtl"] .cs-trust .label,
+  html[dir="rtl"] .cs-leadership .card .role,
+  html[dir="rtl"] .cs-cases-preview .row .meta,
+  html[dir="rtl"] .cs-cases-list .row .meta,
+  html[dir="rtl"] .cs-cta .label,
+  html[dir="rtl"] .cs-team .card .role,
+  html[dir="rtl"] .cs-team .card .office,
+  html[dir="rtl"] .cs-coords .label,
+  html[dir="rtl"] .cs-services .card .num,
+  html[dir="rtl"] .cs-services .card .meta,
+  html[dir="rtl"] .cs-process .head .sec-label,
+  html[dir="rtl"] .cs-form .form-label,
+  html[dir="rtl"] .cs-side .block .lbl,
+  html[dir="rtl"] .cs-side .office .tag,
+  html[dir="rtl"] .cs-post .breadcrumb,
+  html[dir="rtl"] .cs-post .meta-strip,
+  html[dir="rtl"] .cs-post .team-strip .item,
+  html[dir="rtl"] .cs-post .next-case .lbl,
+  html[dir="rtl"] .cs-post .kpi-band .stat .lbl,
+  html[dir="rtl"] .mp-lang .mp-lang-label,
+  html[dir="rtl"] .mp-lang a.mp-lang-pill {
+    letter-spacing: 0;
+  }
+  /* Latin wordmark stays Latin — preserve brand legibility */
+  html[dir="rtl"] .cs-nav .wm,
+  html[dir="rtl"] .cs-foot .brand .word {
+    font-family: '{{ theme.heading_font }}', Georgia, serif;
+  }
+  /* Latin numeric runs (years, KPIs, prices) stay Latin via heading font */
+  html[dir="rtl"] .cs-kpi-band .stat .num,
+  html[dir="rtl"] .cs-cases-preview .row .num,
+  html[dir="rtl"] .cs-cases-list .row .num,
+  html[dir="rtl"] .cs-pillars .pillar .num,
+  html[dir="rtl"] .cs-history .timeline .year-cell,
+  html[dir="rtl"] .cs-values .item .num,
+  html[dir="rtl"] .cs-services .card .num,
+  html[dir="rtl"] .cs-process .step .num,
+  html[dir="rtl"] .cs-post .kpi-band .stat .num {
+    font-family: '{{ theme.heading_font }}', Georgia, serif;
+    unicode-bidi: isolate;
+  }
+  {% if is_rtl %}
+  /* Page-level section flips — only emitted when actually rendering AR */
+  .cs-hero { grid-template-columns: 1fr 1.3fr; }
+  .cs-hero .right .credit { left: 36px; right: 36px; }
+  .cs-pillars .head,
+  .cs-cases-preview .head,
+  .cs-cases-list .head { grid-template-columns: 1fr 0.45fr; }
+  .cs-cta .wrap,
+  .cs-cta-band { grid-template-columns: 0.6fr 1fr; }
+  .cs-foot .top { grid-template-columns: 1fr 1fr 1fr 1.4fr; }
+  .cs-pillars .pillar,
+  .cs-values .item,
+  .cs-team .card,
+  .cs-services .card { border-top-color: var(--primary); }
+  .cs-services .card .scope li:before {
+    content: '←';
+  }
+  .cs-history .timeline .body-cell {
+    padding: 32px 32px 32px 0;
+    border-left: 0; border-right: 1px solid var(--rule);
+  }
+  .cs-history .timeline .body-cell:before {
+    left: auto; right: -7px;
+  }
+  .cs-form .cs-consent-box,
+  .cs-side .block:first-child,
+  .cs-post .client-code {
+    border-left: 0;
+  }
+  .cs-form .cs-consent-box,
+  .cs-post .client-code { border-right: 3px solid var(--accent); }
+  .cs-sectors .label {
+    border-left: 0; border-right: 2px solid var(--accent);
+    padding-left: 0; padding-right: 14px;
+  }
+  .cs-leadership .card .creds li:before { content: ' ·'; }
+  .cs-kpi-band .heading {
+    padding-right: 0; padding-left: 32px;
+    border-right: 0; border-left: 1px solid rgba(255,255,255,0.18);
+  }
+  .cs-kpi-band .stat {
+    border-right: 0; border-left: 1px solid rgba(255,255,255,0.18);
+  }
+  .cs-kpi-band .stat:last-child { border-left: 0; }
+  {% endif %}
 
   {% block extra_css %}{% endblock %}
 </style>
