@@ -1,0 +1,419 @@
+{% extends "live_templates/ecommerce/artisan-workshop/_base.html" %}
+{% block extra_css %}
+  /* Hero — typographic monolith + stamp aside (NO photo) */
+  .aw-hero {
+    padding: 56px 56px 72px;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px;
+    align-items: start;
+    border-bottom: 2px dashed var(--rule-dash);
+  }
+  .aw-hero .text .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .aw-hero .text .eyebrow:before { content: '✦'; color: var(--accent); font-size: 14px; }
+  .aw-hero .text h1 {
+    margin-top: 26px;
+    font-family: var(--heading); font-weight: 700;
+    font-size: 92px; line-height: 0.95; letter-spacing: -0.022em; color: var(--ink);
+  }
+  .aw-hero .text .intro {
+    margin-top: 32px; max-width: 520px;
+    font-family: var(--body); font-size: 16px; line-height: 1.7;
+    color: var(--ink-2);
+  }
+  .aw-hero .text .actions {
+    margin-top: 38px; display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
+  }
+
+  /* Latest band — 4 product cards */
+  .aw-latest { padding: 80px 56px; max-width: 1320px; margin: 0 auto; }
+  .aw-latest .head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 18px;
+  }
+  .aw-latest .head .left { max-width: 640px; }
+  .aw-latest .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+  }
+  @media (max-width: 1100px) { .aw-latest .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px)  { .aw-latest .grid { grid-template-columns: 1fr; } }
+
+  /* Makers band — 4 typographic stamp cards (NO portrait — archetype-honest:
+     Bottega's artisan-workshop DNA is typographic-led, never photo-portrait
+     for makers. The crest letter takes the place of the missing portrait. */
+  .aw-makers { padding: 80px 56px; max-width: 1320px; margin: 0 auto;
+    border-top: 2px dashed var(--rule-dash); }
+  .aw-makers .head { margin-bottom: 36px; max-width: 720px; }
+  .aw-makers .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
+  @media (max-width: 1100px) { .aw-makers .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px)  { .aw-makers .grid { grid-template-columns: 1fr; } }
+  .aw-maker {
+    background: var(--paper-2);
+    border: 2px solid var(--ink);
+    padding: 32px 28px 28px;
+    position: relative;
+    transition: transform .2s ease, box-shadow .2s ease;
+    box-shadow: 5px 5px 0 var(--terra-mute);
+  }
+  .aw-maker:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--terra-mute); }
+  /* Decorative top-left corner-N — like the stamp aside */
+  .aw-maker::before {
+    content: attr(data-n);
+    position: absolute; top: -22px; left: 22px;
+    background: var(--paper);
+    padding: 0 12px;
+    font-family: var(--heading); font-size: 32px; font-weight: 700;
+    color: var(--accent); font-style: italic;
+  }
+  /* Decorative top-right "Bottega" rubber stamp */
+  .aw-maker::after {
+    content: 'BOTTEGA';
+    position: absolute; top: -10px; right: 22px;
+    background: var(--paper);
+    padding: 0 12px;
+    font-family: var(--body); font-size: 9px; font-weight: 800;
+    letter-spacing: 0.28em; color: var(--ink);
+  }
+  /* Big craft-letter mark — replaces the portrait block.
+     Single uppercase initial (C, B, S, A) or icon glyph. */
+  .aw-maker .crest-mark {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border: 1.5px dashed var(--rule-dash);
+    background: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    color: var(--accent);
+    font-size: 84px; line-height: 1;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .aw-maker .crest-mark::after {
+    content: attr(data-glyph);
+    position: absolute; bottom: 8px; right: 12px;
+    font-family: var(--body); font-style: normal; font-weight: 800;
+    font-size: 9px; letter-spacing: 0.22em; color: var(--ink-mute);
+    text-transform: uppercase;
+  }
+  .aw-maker h4 {
+    font-family: var(--heading); font-size: 19px; font-weight: 700;
+    color: var(--ink); line-height: 1.2;
+  }
+  .aw-maker .craft {
+    margin-top: 6px; font-family: var(--body); font-size: 11px;
+    font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .aw-maker .place {
+    margin-top: 12px; padding-top: 10px;
+    border-top: 1px dashed var(--rule-dash);
+    font-family: var(--body); font-size: 12px;
+    color: var(--ink-mute); font-style: italic;
+  }
+  .aw-maker .since {
+    margin-top: 2px; font-family: var(--body); font-size: 11px;
+    color: var(--ink-faint);
+  }
+  .aw-maker blockquote {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px dashed var(--rule-dash);
+    font-family: var(--heading); font-size: 14px; font-style: italic;
+    color: var(--ink); line-height: 1.55;
+  }
+
+  /* Provenance band — 3 cards */
+  .aw-prov { padding: 80px 56px; max-width: 1280px; margin: 0 auto;
+    border-top: 2px dashed var(--rule-dash); }
+  .aw-prov .head { margin-bottom: 32px; max-width: 680px; }
+  .aw-prov .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  @media (max-width: 960px) { .aw-prov .grid { grid-template-columns: 1fr; } }
+  .aw-prov-card {
+    border: 1.5px solid var(--ink); padding: 28px 26px;
+    background: var(--paper-2); position: relative;
+  }
+  .aw-prov-card .icon {
+    position: absolute; top: -16px; left: 24px;
+    background: var(--paper); padding: 0 12px;
+    font-family: var(--heading); font-style: italic; font-size: 28px;
+    font-weight: 700; color: var(--accent);
+  }
+  .aw-prov-card h3 {
+    margin-top: 8px;
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: var(--ink);
+  }
+  .aw-prov-card p {
+    margin-top: 14px; font-family: var(--body); font-size: 14px;
+    line-height: 1.7; color: var(--ink-2);
+  }
+  .aw-prov-card .place {
+    margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--rule-dash);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* Care strip — 4 columns of guarantees */
+  .aw-care { padding: 64px 56px; background: var(--paper-3);
+    border-top: 2.5px dashed var(--rule-dash); border-bottom: 2.5px dashed var(--rule-dash); }
+  .aw-care .inner { max-width: 1280px; margin: 0 auto; }
+  .aw-care .head { margin-bottom: 28px; max-width: 640px; }
+  .aw-care .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
+  @media (max-width: 960px) { .aw-care .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px) { .aw-care .grid { grid-template-columns: 1fr; } }
+  .aw-care-item {
+    border-top: 2px solid var(--accent); padding-top: 14px;
+  }
+  .aw-care-item h4 {
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    color: var(--ink);
+  }
+  .aw-care-item p {
+    margin-top: 8px; font-family: var(--body); font-size: 13px;
+    line-height: 1.65; color: var(--ink-2);
+  }
+
+  /* Press strip + journal teaser inline */
+  .aw-press {
+    padding: 48px 56px; max-width: 1280px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 24px;
+  }
+  .aw-press .lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .aw-press .row {
+    display: flex; align-items: center; gap: 32px; flex-wrap: wrap;
+  }
+  .aw-press .row span {
+    font-family: var(--heading); font-size: 18px; font-style: italic;
+    color: var(--ink); font-weight: 500;
+  }
+
+  .aw-journal-teaser {
+    padding: 64px 56px; max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center;
+    border-top: 2px dashed var(--rule-dash);
+  }
+  @media (max-width: 960px) { .aw-journal-teaser { grid-template-columns: 1fr; } }
+  .aw-journal-teaser .text .sec-label {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .aw-journal-teaser .text .sec-label:before { content: '✦'; }
+  .aw-journal-teaser h3 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 38px; font-weight: 700;
+    line-height: 1.1; color: var(--ink); letter-spacing: -0.018em;
+  }
+  .aw-journal-teaser .link { margin-top: 22px; }
+  .aw-journal-teaser .stamp-mini {
+    border: 1.5px solid var(--ink); padding: 28px 28px;
+    background: var(--paper-2);
+    transform: rotate(-1deg);
+    box-shadow: 6px 6px 0 var(--terra-mute);
+  }
+  .aw-journal-teaser .stamp-mini .row {
+    display: flex; justify-content: space-between; padding: 8px 0;
+    border-bottom: 1px dashed var(--rule-dash);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .aw-journal-teaser .stamp-mini .row:last-child { border-bottom: 0; }
+  .aw-journal-teaser .stamp-mini .row strong {
+    font-family: var(--heading); font-size: 14px; font-style: italic;
+    font-weight: 600; color: var(--ink); letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* Final CTA — visit the bottega */
+  .aw-cta-band {
+    padding: 80px 56px; background: var(--ink); color: var(--paper);
+    margin-top: 0;
+  }
+  .aw-cta-band .inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: center;
+  }
+  @media (max-width: 960px) { .aw-cta-band .inner { grid-template-columns: 1fr; } }
+  .aw-cta-band .text .sec-label {
+    display: inline-flex; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .aw-cta-band .text .sec-label:before { content: '✦'; }
+  .aw-cta-band h2 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 50px; font-weight: 700;
+    line-height: 1.1; color: var(--paper); letter-spacing: -0.022em;
+  }
+  .aw-cta-band h2 em { color: var(--accent); font-style: italic; }
+  .aw-cta-band p {
+    margin-top: 22px; font-family: var(--body); font-size: 16px;
+    line-height: 1.7; color: rgba(246,236,216,0.78); max-width: 60ch;
+  }
+  .aw-cta-band .actions {
+    display: flex; align-items: center; justify-content: flex-end; gap: 18px;
+    flex-wrap: wrap;
+  }
+  .aw-cta-band .aw-btn-primary { background: var(--accent); border-color: var(--accent); color: var(--ink); box-shadow: 5px 5px 0 var(--paper); }
+  .aw-cta-band .aw-btn-primary:after { color: var(--ink); }
+  .aw-cta-band .aw-btn-primary:hover { box-shadow: 6px 6px 0 var(--paper); }
+  .aw-cta-band .whatsapp {
+    color: var(--accent); font-style: italic; font-family: var(--heading);
+    font-size: 16px; font-weight: 600; border-bottom: 1.5px solid var(--accent);
+    padding-bottom: 4px;
+  }
+
+  @media (max-width: 960px) {
+    .aw-hero { grid-template-columns: 1fr; padding: 36px 28px 48px; gap: 36px; }
+    .aw-hero .text h1 { font-size: 60px; }
+    .aw-latest, .aw-makers, .aw-prov, .aw-care, .aw-press, .aw-journal-teaser, .aw-cta-band { padding-left: 28px; padding-right: 28px; }
+    .aw-cta-band h2 { font-size: 36px; }
+    .aw-cta-band .actions { justify-content: flex-start; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="aw-hero" data-lm="reveal">
+  <div class="text">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+    <div class="actions">
+      <a class="aw-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.primary_cta }}</a>
+      <a class="aw-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.secondary_cta }}</a>
+    </div>
+  </div>
+
+  <aside class="aw-stamp" data-lm="reveal-soft">
+    <span class="corner-n">{{ page_data.stamp_corner_index }}</span>
+    <span class="corner-w">{{ page_data.stamp_corner_word }}</span>
+    <h3>{{ page_data.stamp_heading|safe }}</h3>
+    <div class="rule"></div>
+    {% for k, v in page_data.stamp_rows %}
+      <div class="row"><span>{{ k }}</span><strong>{{ v }}</strong></div>
+    {% endfor %}
+    <div class="footer">✦ {{ page_data.stamp_footer }} ✦</div>
+  </aside>
+</section>
+
+<section class="aw-latest" data-lm-stagger>
+  <div class="head" data-lm="reveal">
+    <div class="left">
+      <div class="aw-section sec-label" style="padding:0">{{ page_data.latest_label }}</div>
+      <h2 style="margin-top:14px;font-family:var(--heading);font-size:36px;letter-spacing:-0.018em;line-height:1.1;color:var(--ink)">{{ page_data.latest_heading|safe }}</h2>
+    </div>
+    <a class="aw-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.latest_link_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.latest_link_label }} →</a>
+  </div>
+  <div class="grid">
+    {% for it in page_data.latest_items %}
+      <a class="aw-card" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'product' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <div class="thumb" style="background-image:url('{{ it.image }}')">
+          <span class="num">{{ it.n }}</span>
+          <span class="edition">{{ it.edition }}</span>
+        </div>
+        <h4>{{ it.name }}</h4>
+        <div class="meta">{{ it.meta }}</div>
+        <div class="price-row"><span class="price">{{ it.price }}</span><span class="tag">{{ it.tag }}</span></div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="aw-makers" data-lm-stagger>
+  <div class="head" data-lm="reveal">
+    <div class="aw-section sec-label" style="padding:0">{{ page_data.makers_label }}</div>
+    <h2 style="margin-top:14px;font-family:var(--heading);font-size:42px;letter-spacing:-0.02em;line-height:1.1;color:var(--ink)">{{ page_data.makers_heading|safe }}</h2>
+    <p style="margin-top:18px;max-width:62ch;font-family:var(--body);font-size:16px;line-height:1.7;color:var(--ink-2)">{{ page_data.makers_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for m in page_data.makers %}
+      <article class="aw-maker" data-lm="reveal" data-n="{% if forloop.counter < 10 %}0{% endif %}{{ forloop.counter }}">
+        <div class="crest-mark" data-glyph="Firmato"><span data-latin>{{ m.name|first|upper }}</span></div>
+        <h4>{{ m.name }}</h4>
+        <div class="craft">{{ m.craft }}</div>
+        <div class="place">{{ m.place }}</div>
+        <div class="since">{{ m.since }}</div>
+        <blockquote>{{ m.quote }}</blockquote>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="aw-prov" data-lm-stagger>
+  <div class="head" data-lm="reveal">
+    <div class="aw-section sec-label" style="padding:0">{{ page_data.provenance_label }}</div>
+    <h2 style="margin-top:14px;font-family:var(--heading);font-size:42px;letter-spacing:-0.02em;line-height:1.1;color:var(--ink)">{{ page_data.provenance_heading|safe }}</h2>
+    <p style="margin-top:18px;max-width:62ch;font-family:var(--body);font-size:16px;line-height:1.7;color:var(--ink-2)">{{ page_data.provenance_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for p in page_data.provenance_items %}
+      <article class="aw-prov-card" data-lm="reveal">
+        <span class="icon">{{ p.icon }}</span>
+        <h3>{{ p.title }}</h3>
+        <p>{{ p.desc }}</p>
+        <div class="place">{{ p.place }}</div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="aw-care" data-lm-stagger>
+  <div class="inner">
+    <div class="head" data-lm="reveal">
+      <div class="aw-section sec-label" style="padding:0">{{ page_data.care_label }}</div>
+      <h2 style="margin-top:14px;font-family:var(--heading);font-size:38px;letter-spacing:-0.02em;line-height:1.1;color:var(--ink)">{{ page_data.care_heading|safe }}</h2>
+    </div>
+    <div class="grid">
+      {% for k, v in page_data.care_items %}
+        <div class="aw-care-item" data-lm="reveal"><h4>{{ k }}</h4><p>{{ v }}</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="aw-press" data-lm="reveal">
+  <span class="lbl">{{ page_data.press_label }}</span>
+  <div class="row">
+    {% for p in page_data.press_items %}<span>{{ p }}</span>{% endfor %}
+  </div>
+</section>
+
+<section class="aw-journal-teaser" data-lm="reveal">
+  <div class="text">
+    <div class="sec-label">{{ page_data.journal_teaser_label }}</div>
+    <h3>{{ page_data.journal_teaser_heading|safe }}</h3>
+    <div class="link"><a class="aw-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.journal_teaser_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.journal_teaser_link }} →</a></div>
+  </div>
+  <aside class="stamp-mini">
+    <div class="row"><span>N° 47</span><strong>marzo 2026</strong></div>
+    <div class="row"><span>N° 46</span><strong>febbraio 2026</strong></div>
+    <div class="row"><span>N° 45</span><strong>gennaio 2026</strong></div>
+    <div class="row"><span>N° 44</span><strong>dicembre 2025</strong></div>
+  </aside>
+</section>
+
+<section class="aw-cta-band" data-lm="reveal">
+  <div class="inner">
+    <div class="text">
+      <div class="sec-label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading|safe }}</h2>
+      <p>{{ page_data.cta_intro }}</p>
+    </div>
+    <div class="actions">
+      <a class="aw-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary }}</a>
+      <a class="whatsapp" href="{{ site.whatsapp_link }}" rel="noopener" target="_blank">{{ page_data.cta_secondary }} · {{ site.whatsapp }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

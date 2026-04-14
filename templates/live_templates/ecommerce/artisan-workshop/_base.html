@@ -1,0 +1,541 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family={{ theme.body_font|urlencode }}:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<style>
+  :root {
+    --primary:    {{ theme.primary }};
+    --secondary:  {{ theme.secondary }};
+    --accent:     {{ theme.accent }};
+    --paper:      #f6ecd8;
+    --paper-2:    #fbf3e0;
+    --paper-3:    #f0e4cd;
+    --ink:        #3b2a18;
+    --ink-2:      #5a4a36;
+    --ink-mute:   rgba(59,42,24,0.62);
+    --ink-faint:  rgba(59,42,24,0.42);
+    --rule:       rgba(59,42,24,0.16);
+    --rule-soft:  rgba(59,42,24,0.08);
+    --rule-dash:  rgba(59,42,24,0.26);
+    --terra-mute: rgba(255,143,0,0.18);
+
+    --heading: '{{ theme.heading_font }}', Georgia, serif;
+    --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+    --mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /* Premium forms — warm artisan tokens */
+    --lf-bg:           #fdf8ea;
+    --lf-bg-autofill:  #fbf3e0;
+    --lf-bg-soft:      #faf2db;
+    --lf-bg-icon:      rgba(255,143,0,0.14);
+    --lf-bg-chip:      rgba(255,143,0,0.10);
+    --lf-border:       var(--rule);
+    --lf-border-hover: rgba(59,42,24,0.32);
+    --lf-border-focus: var(--accent);
+    --lf-ring:         rgba(255,143,0,0.20);
+    --lf-ring-size:    3px;
+    --lf-radius:       0;
+    --lf-pad-y:        14px;
+    --lf-pad-x:        16px;
+    --lf-label-color:  var(--ink-mute);
+    --lf-label-size:   10px;
+    --lf-label-track:  0.20em;
+    --lf-label-weight: 700;
+    --lf-helper-color: var(--ink-mute);
+    --lf-control-color:var(--ink);
+    --lf-placeholder:  var(--ink-faint);
+    --lf-section-rule: var(--rule-dash);
+    --lf-section-title-color: var(--ink);
+    --lf-caret:        var(--accent);
+    --lf-listbox-bg:   #fdf8ea;
+    --lf-listbox-fg:   var(--ink);
+    --lf-listbox-rule: var(--rule);
+    --lf-listbox-hov:  rgba(255,143,0,0.10);
+    --lf-submit-bg:    var(--ink);
+    --lf-submit-bg-hover: #2a1d0f;
+    --lf-submit-fg:    var(--paper);
+    --lf-submit-arrow: var(--accent);
+    --lf-submit-radius:0;
+    --lf-submit-underline:0;
+    --on-accent:       var(--ink);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.65;
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(255,143,0,0.05) 0%, transparent 32%),
+      radial-gradient(circle at 88% 92%, rgba(59,42,24,0.04) 0%, transparent 32%),
+      repeating-linear-gradient(0deg, rgba(59,42,24,0.022) 0px, rgba(59,42,24,0.022) 1px, transparent 1px, transparent 6px);
+    min-height: 100vh;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--heading); font-weight: 700; line-height: 1.12;
+    letter-spacing: -0.012em; color: var(--ink);
+  }
+  h1 { letter-spacing: -0.02em; }
+  em { font-style: italic; color: var(--accent); font-weight: 700; }
+
+  /* Marketplace bar — warm cream */
+  .mp-bar {
+    background: #ede0c2; color: var(--ink); font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+    border-bottom: 1.5px solid var(--rule);
+  }
+  .mp-bar .mp-back { color: var(--accent); font-weight: 700; border-bottom: 1px solid var(--accent); padding-bottom: 1px; }
+  .mp-bar .mp-name { color: var(--ink-mute); }
+  .mp-lang { display: flex; align-items: center; gap: 14px; }
+  .mp-lang .mp-lang-label { font-size: 10px; letter-spacing: 0.22em; color: var(--ink-faint); font-weight: 700; }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; color: var(--ink-mute);
+    border: 1px solid var(--rule);
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover { color: var(--accent); border-color: var(--accent); }
+  .mp-lang a.mp-lang-pill.is-current { color: var(--accent); border-color: var(--accent); background: var(--paper-2); }
+
+  /* Top warm cream nav with circular crest */
+  .aw-nav-wrap { padding: 0 56px; }
+  .aw-nav {
+    display: flex; align-items: center; height: 88px;
+    border-bottom: 1.5px solid var(--rule);
+  }
+  .aw-nav .crest {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: var(--accent); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-size: 26px; font-weight: 700;
+    transform: rotate(-3deg);
+    box-shadow: 0 2px 0 rgba(59,42,24,0.18);
+  }
+  .aw-nav .wm {
+    margin-left: 18px;
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: var(--ink); letter-spacing: 0.01em;
+    line-height: 1.1;
+  }
+  .aw-nav .wm small {
+    display: block; font-family: var(--body); font-size: 10px;
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-mute); margin-top: 2px;
+  }
+  .aw-nav .links {
+    display: flex; gap: 26px; margin-left: 56px;
+    font-family: var(--heading); font-size: 15px; font-weight: 500;
+    color: var(--ink);
+  }
+  .aw-nav .links a { border-bottom: 1.5px solid transparent; padding-bottom: 3px; transition: color .15s ease, border-color .15s ease; }
+  .aw-nav .links a:hover { color: var(--accent); border-color: var(--rule); }
+  .aw-nav .links a.is-current { border-color: var(--accent); color: var(--accent); }
+  .aw-nav .rs {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: var(--ink-mute);
+  }
+  .aw-nav .rs .cta {
+    background: var(--ink); color: var(--paper);
+    padding: 12px 22px; border-radius: 0;
+    font-family: var(--heading); font-size: 14px; font-weight: 600;
+    letter-spacing: 0.02em;
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1.5px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--accent);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .aw-nav .rs .cta:after { content: '→'; color: var(--accent); transition: transform .2s ease; }
+  .aw-nav .rs .cta:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 var(--accent); }
+  .aw-nav .rs .cta:hover:after { transform: translateX(3px); }
+
+  /* Section helpers */
+  .aw-wrap { padding: 0 56px; }
+  .aw-section { padding: 64px 56px; max-width: 1280px; margin: 0 auto; }
+  .aw-section .sec-label {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .aw-section .sec-label:before { content: '✦'; color: var(--accent); font-size: 14px; }
+  .aw-section h2 {
+    margin-top: 14px; font-size: 42px; line-height: 1.1;
+    letter-spacing: -0.02em; max-width: 22ch;
+  }
+  .aw-section .sec-intro {
+    margin-top: 18px; max-width: 60ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.7;
+    color: var(--ink-2);
+  }
+
+  /* Buttons */
+  .aw-btn-primary {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--ink); color: var(--paper);
+    padding: 16px 28px; border-radius: 0;
+    font-family: var(--heading); font-size: 16px; font-weight: 600;
+    border: 1.5px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--accent);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .aw-btn-primary:after { content: '→'; color: var(--accent); transition: transform .2s ease; }
+  .aw-btn-primary:hover { transform: translate(-1px,-1px); box-shadow: 6px 6px 0 var(--accent); }
+  .aw-btn-primary:hover:after { transform: translateX(4px); }
+  .aw-btn-ghost {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding-bottom: 4px;
+    font-family: var(--heading); font-size: 16px; font-weight: 600;
+    color: var(--accent); font-style: italic;
+    border-bottom: 1.5px solid var(--accent);
+    transition: color .15s ease;
+  }
+  .aw-btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+
+  /* Stamp aside reusable block */
+  .aw-stamp {
+    position: relative;
+    border: 2.5px solid var(--ink);
+    padding: 38px 34px;
+    background: var(--paper-2);
+    transform: rotate(0.6deg);
+    box-shadow: 8px 8px 0 var(--terra-mute);
+  }
+  .aw-stamp .corner-n {
+    position: absolute; top: -22px; left: 24px;
+    background: var(--paper);
+    padding: 0 12px;
+    font-family: var(--heading); font-size: 32px; font-weight: 700;
+    color: var(--accent); font-style: italic;
+  }
+  .aw-stamp .corner-w {
+    position: absolute; top: -10px; right: 24px;
+    background: var(--paper);
+    padding: 0 12px;
+    font-family: var(--body); font-size: 10px; font-weight: 800;
+    letter-spacing: 0.24em; color: var(--ink);
+  }
+  .aw-stamp h3 {
+    font-family: var(--heading); font-size: 24px; font-weight: 700;
+    color: var(--ink); line-height: 1.2;
+  }
+  .aw-stamp .rule { height: 1.5px; background: var(--ink); opacity: 0.2; margin: 18px 0; }
+  .aw-stamp .row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--ink-mute);
+    padding: 8px 0; border-bottom: 1px dashed var(--rule-dash);
+  }
+  .aw-stamp .row:last-of-type { border-bottom: 0; }
+  .aw-stamp .row strong {
+    font-family: var(--heading); font-size: 16px; font-style: italic;
+    font-weight: 600; color: var(--ink); letter-spacing: 0;
+    text-transform: none;
+  }
+  .aw-stamp .footer {
+    margin-top: 14px; padding-top: 12px; border-top: 1.5px dashed var(--rule-dash);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); text-align: center;
+  }
+
+  /* Reusable product card */
+  .aw-card {
+    background: var(--paper-2);
+    border: 1.5px solid var(--ink);
+    padding: 14px 16px 16px;
+    position: relative;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .aw-card:hover { transform: translate(-2px,-2px); box-shadow: 4px 4px 0 var(--terra-mute); }
+  .aw-card .thumb {
+    aspect-ratio: 4 / 3;
+    background: #d6c6a0 center/cover;
+    border: 1px solid var(--rule);
+    position: relative;
+  }
+  .aw-card .thumb .num {
+    position: absolute; top: 8px; left: 8px;
+    background: var(--paper);
+    padding: 4px 10px;
+    font-family: var(--heading); font-size: 12px; font-weight: 700;
+    color: var(--ink); font-style: italic;
+    border: 1px solid rgba(59,42,24,0.4);
+  }
+  .aw-card .thumb .edition {
+    position: absolute; bottom: 8px; right: 8px;
+    background: var(--accent); color: var(--ink);
+    padding: 3px 8px;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .aw-card h4 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 18px; font-weight: 600;
+    color: var(--ink); line-height: 1.2;
+  }
+  .aw-card .meta {
+    margin-top: 4px; font-family: var(--body); font-size: 12px;
+    font-weight: 500; color: var(--ink-mute);
+    font-style: italic;
+  }
+  .aw-card .price-row {
+    margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--rule-dash);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .aw-card .price {
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    color: var(--ink);
+  }
+  .aw-card .tag {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent); padding: 3px 7px;
+  }
+  .aw-card.is-out { opacity: 0.74; }
+  .aw-card.is-out .tag { color: var(--ink-mute); border-color: var(--ink-mute); }
+
+  /* Footer */
+  .aw-foot {
+    margin-top: 64px;
+    background: var(--paper-3);
+    border-top: 2.5px dashed var(--rule-dash);
+    padding: 56px 56px 28px;
+  }
+  .aw-foot .top {
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 36px; border-bottom: 1.5px dashed var(--rule-dash);
+    max-width: 1280px; margin: 0 auto;
+  }
+  .aw-foot h5 {
+    font-family: var(--body); font-size: 10px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--accent);
+    font-weight: 800; margin-bottom: 14px;
+  }
+  .aw-foot .brand .word {
+    font-family: var(--heading); font-size: 24px; font-weight: 700;
+    color: var(--ink); margin-bottom: 8px; letter-spacing: 0.01em;
+  }
+  .aw-foot .brand p { color: var(--ink-mute); max-width: 38ch; line-height: 1.65; font-size: 14px; }
+  .aw-foot .col p, .aw-foot .col a {
+    color: var(--ink-mute); display: block; padding: 4px 0; font-size: 14px;
+    font-family: var(--body);
+  }
+  .aw-foot .col a:hover { color: var(--accent); }
+  .aw-foot .bot {
+    max-width: 1280px; margin: 0 auto; padding-top: 22px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+    font-size: 11px; color: var(--ink-faint);
+    letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .aw-foot .bot a:hover { color: var(--accent); }
+
+  /* ARTISAN MOTION PROFILE — slow, warm, hand-made */
+  :root {
+    --lm-rise:     12px;
+    --lm-rise-lg:  18px;
+    --lm-dur:      560ms;
+    --lm-dur-slow: 720ms;
+  }
+
+  /* Accessible focus rings — terracotta */
+  .aw-btn-primary:focus-visible,
+  .aw-btn-ghost:focus-visible,
+  .aw-nav .links a:focus-visible,
+  .aw-nav .rs .cta:focus-visible,
+  .mp-lang a.mp-lang-pill:focus-visible,
+  .aw-card:focus-visible,
+  .aw-card a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* Mobile breakpoints */
+  @media (max-width: 960px) {
+    .aw-nav .links { display: none; }
+    .aw-nav .wm { font-size: 18px; }
+    .aw-section { padding: 48px 28px; }
+    .aw-section h2 { font-size: 32px; }
+    .aw-foot .top { grid-template-columns: 1fr; gap: 32px; }
+  }
+
+  /* ===========================================================
+     ARABIC / RTL — Amiri body + Noto Kufi Arabic display
+     Warm classical for Bottega's familiar voice. Latin proper
+     names, prices, edition numbers stay Latin.
+  =========================================================== */
+  html[dir="rtl"] {
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', Georgia, serif;
+    --body:    'Amiri', '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.85; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 {
+    letter-spacing: 0; line-height: 1.22;
+  }
+  html[dir="rtl"] em { font-style: normal; font-weight: 700; }
+  /* Button arrow flip */
+  html[dir="rtl"] .aw-btn-primary:after,
+  html[dir="rtl"] .aw-nav .rs .cta:after { content: '←'; }
+  html[dir="rtl"] .aw-btn-primary:hover:after,
+  html[dir="rtl"] .aw-nav .rs .cta:hover:after { transform: translateX(-4px); }
+  /* Letter-spacing flatten on chrome */
+  html[dir="rtl"] .aw-section .sec-label,
+  html[dir="rtl"] .mp-bar,
+  html[dir="rtl"] .aw-foot h5,
+  html[dir="rtl"] .aw-foot .bot,
+  html[dir="rtl"] .aw-card .meta,
+  html[dir="rtl"] .aw-card .tag,
+  html[dir="rtl"] .aw-card .thumb .edition,
+  html[dir="rtl"] .aw-stamp .row,
+  html[dir="rtl"] .aw-stamp .footer,
+  html[dir="rtl"] .aw-stamp .corner-w,
+  html[dir="rtl"] .aw-nav .wm small,
+  html[dir="rtl"] .mp-lang .mp-lang-label,
+  html[dir="rtl"] .mp-lang a.mp-lang-pill {
+    letter-spacing: 0;
+  }
+  /* Latin wordmark + edition numbers + prices stay Latin */
+  html[dir="rtl"] .aw-nav .wm,
+  html[dir="rtl"] .aw-foot .brand .word,
+  html[dir="rtl"] .aw-card .price,
+  html[dir="rtl"] .aw-card .thumb .num,
+  html[dir="rtl"] .aw-stamp .corner-n {
+    font-family: '{{ theme.heading_font }}', Georgia, serif;
+    unicode-bidi: isolate;
+  }
+  html[dir="rtl"] .aw-card .thumb .edition {
+    font-family: '{{ theme.body_font }}', system-ui, sans-serif;
+    unicode-bidi: isolate;
+  }
+  /* Stamp aside: keep slight rotation but mirror it */
+  html[dir="rtl"] .aw-stamp { transform: rotate(-0.6deg); }
+  html[dir="rtl"] .aw-stamp .corner-n { left: auto; right: 24px; }
+  html[dir="rtl"] .aw-stamp .corner-w { right: auto; left: 24px; }
+  {% if is_rtl %}
+  /* Page-level flips emitted only in AR */
+  .aw-nav .crest { transform: rotate(3deg); }
+  .aw-nav .links { margin-left: 0; margin-right: 56px; }
+  .aw-nav .rs { margin-left: 0; margin-right: auto; }
+  .aw-nav .wm { margin-left: 0; margin-right: 18px; }
+  .aw-card .thumb .num { left: auto; right: 8px; }
+  .aw-card .thumb .edition { right: auto; left: 8px; }
+  .aw-foot .top { grid-template-columns: 1fr 1fr 1fr 1.6fr; }
+  {% endif %}
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  {% if locale_switcher %}
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
+</div>
+
+<div class="aw-nav-wrap">
+  <nav class="aw-nav">
+    <div class="crest">{{ site.logo_initial }}</div>
+    <a class="wm" href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+      {{ site.logo_word }}
+      <small>{{ site.tag }}</small>
+    </a>
+    <div class="links">
+      {% for p in pages %}
+        {% if p.slug != "home" %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="rs">
+      <a class="cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ site.nav_cta }}</a>
+    </div>
+  </nav>
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="aw-foot">
+  <div class="top">
+    <div class="brand">
+      <h5>{{ site.foot_studio }}</h5>
+      <div class="word">{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_contact }}</h5>
+      <p>{{ site.address }}</p>
+      <p>{{ site.phone }}</p>
+      <p>{{ site.email }}</p>
+      <p>{{ site.hours_compact }}</p>
+      {% for row in site.hours_footer_rows %}<p>{{ row }}</p>{% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_stockists }}</h5>
+      {% for row in site.stockists_rows %}<p>{{ row }}</p>{% endfor %}
+    </div>
+  </div>
+  <div class="bot">
+    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
+<script src="{% static 'js/live-interactions.js' %}" defer></script>
+</body>
+</html>

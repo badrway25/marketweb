@@ -1,0 +1,166 @@
+{% extends "live_templates/ecommerce/fashion-editorial/_base.html" %}
+{% block extra_css %}
+  .fe-coll-lead {
+    padding: 80px 56px 36px; max-width: 1320px; margin: 0 auto;
+    border-bottom: 1px solid var(--rule);
+  }
+  .fe-coll-lead .chip {
+    display: inline-block; padding: 8px 14px; border: 1px solid var(--gold);
+    color: var(--gold); font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .fe-coll-lead .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-coll-lead .eyebrow:before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+  .fe-coll-lead h1 {
+    margin-top: 26px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 76px; line-height: 0.98; letter-spacing: -0.025em; max-width: 18ch; color: var(--bone);
+  }
+  .fe-coll-lead .intro {
+    margin-top: 24px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 17px; line-height: 1.6; color: var(--bone-mute);
+  }
+  .fe-coll-lead .result {
+    margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap;
+  }
+  .fe-coll-lead .result strong {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 26px;
+    color: var(--gold);
+  }
+  .fe-coll-lead .result span {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--bone-faint);
+  }
+
+  /* Filters horizontal */
+  .fe-coll-filters {
+    padding: 28px 56px; max-width: 1320px; margin: 0 auto;
+    border-bottom: 1px solid var(--rule);
+    display: flex; gap: 36px; flex-wrap: wrap; align-items: flex-start;
+  }
+  .fe-coll-filters .group { flex: 1; min-width: 180px; }
+  .fe-coll-filters .group h5 {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .fe-coll-filters .group ul { list-style: none; }
+  .fe-coll-filters .group li {
+    padding: 6px 0; font-family: var(--heading); font-style: italic; font-size: 14px; color: var(--bone-mute);
+    cursor: pointer;
+  }
+  .fe-coll-filters .group li:hover { color: var(--gold); }
+  .fe-coll-filters .sort-side {
+    flex-basis: 220px;
+  }
+  .fe-coll-filters .sort-side select {
+    width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--rule); color: var(--bone);
+    font-family: var(--body); font-size: 12px; letter-spacing: 0.12em;
+  }
+
+  /* Grid */
+  .fe-coll-grid {
+    padding: 60px 56px 80px; max-width: 1320px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px 28px;
+  }
+  @media (max-width: 1100px) { .fe-coll-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px)  { .fe-coll-grid { grid-template-columns: 1fr; } }
+  .fe-prod {
+    position: relative; display: block;
+    transition: transform .25s ease;
+  }
+  .fe-prod:hover { transform: translateY(-4px); }
+  .fe-prod .img {
+    position: relative; aspect-ratio: 4 / 5; background: var(--ink-2) center/cover;
+    filter: grayscale(8%) contrast(1.06); overflow: hidden;
+  }
+  .fe-prod .img:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(8,7,10,0) 60%, rgba(8,7,10,0.85) 100%);
+  }
+  .fe-prod .tag {
+    position: absolute; top: 14px; left: 14px; z-index: 2;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--gold);
+    border: 1px solid var(--gold); padding: 5px 10px; background: rgba(8,7,10,0.6);
+  }
+  .fe-prod.is-out .tag { color: var(--bone-faint); border-color: var(--bone-faint); }
+  .fe-prod .meta {
+    margin-top: 16px; display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  }
+  .fe-prod .name {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 22px; color: var(--bone);
+  }
+  .fe-prod .px { font-family: var(--body); font-size: 12px; color: var(--gold); font-weight: 700; letter-spacing: 0.04em; }
+  .fe-prod .submeta {
+    margin-top: 6px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--bone-faint);
+  }
+  .fe-prod .row-bot {
+    margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between;
+    font-family: var(--heading); font-style: italic; font-size: 13px; color: var(--bone-mute);
+  }
+
+  .fe-coll-foot { padding: 56px 56px 0; max-width: 1320px; margin: 0 auto; border-top: 1px solid var(--rule); }
+  .fe-coll-foot h5 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-coll-foot p {
+    margin-top: 14px; max-width: 76ch;
+    font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.65; color: var(--bone-mute);
+  }
+{% endblock %}
+
+{% block content %}
+<section class="fe-coll-lead" data-lm="reveal">
+  <span class="chip" data-latin>{{ page_data.season_chip }}</span>
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+  <div class="result">
+    <strong>{{ page_data.result_count }}</strong>
+    <span>{{ page_data.result_subtitle }}</span>
+  </div>
+</section>
+
+<section class="fe-coll-filters" data-lm="reveal-soft">
+  {% for g in page_data.filter_groups %}
+    <div class="group">
+      <h5>{{ g.label }}</h5>
+      <ul>{% for o in g.options %}<li>· {{ o }}</li>{% endfor %}</ul>
+    </div>
+  {% endfor %}
+  <div class="sort-side">
+    <h5 style="font-family:var(--body);font-size:9px;font-weight:700;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">{{ page_data.sort_label }}</h5>
+    <select aria-label="{{ page_data.sort_label }}">
+      {% for o in page_data.sort_options %}<option>{{ o }}</option>{% endfor %}
+    </select>
+  </div>
+</section>
+
+<section class="fe-coll-grid" data-lm-stagger data-lm-stagger-delay="120">
+  {% for it in page_data.products %}
+    <a class="fe-prod{% if not it.available %} is-out{% endif %}" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'product' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+      <div class="img" style="background-image:url('{{ it.image }}')">
+        <span class="tag">{{ it.tag }}</span>
+      </div>
+      <div class="meta"><span class="name">{{ it.name }}</span><span class="px" data-latin>{{ it.price }}</span></div>
+      <div class="submeta" data-latin>{{ it.n }}</div>
+      <div class="row-bot"><span>{{ it.meta }}</span><span data-latin>{{ it.drop }}</span></div>
+    </a>
+  {% endfor %}
+</section>
+
+<section class="fe-coll-foot" data-lm="reveal">
+  <h5>{{ page_data.footer_note_label }}</h5>
+  <p>{{ page_data.footer_note }}</p>
+</section>
+{% endblock %}

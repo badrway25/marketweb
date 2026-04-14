@@ -1,0 +1,414 @@
+{% extends "live_templates/ecommerce/fashion-editorial/_base.html" %}
+{% block extra_css %}
+  /* Hero — full-bleed cover LEFT + italic drama RIGHT */
+  .fe-hero {
+    display: grid; grid-template-columns: 1.15fr 1fr;
+    min-height: 720px;
+    border-bottom: 1px solid var(--rule);
+  }
+  @media (max-width: 1000px) { .fe-hero { grid-template-columns: 1fr; min-height: auto; } }
+
+  .fe-cover {
+    position: relative;
+    background: var(--ink-2) center/cover;
+    filter: grayscale(12%) contrast(1.10) brightness(0.86);
+    min-height: 480px;
+  }
+  .fe-cover:after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(8,7,10,0.10) 0%, rgba(8,7,10,0) 32%, rgba(8,7,10,0.55) 100%),
+      linear-gradient(180deg, rgba(8,7,10,0.40) 0%, rgba(8,7,10,0) 28%, rgba(8,7,10,0) 70%, rgba(8,7,10,0.50) 100%);
+  }
+  .fe-cover .issue {
+    position: absolute; top: 36px; left: 40px;
+    border: 1px solid rgba(242,236,223,0.55); padding: 10px 18px;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--bone);
+    background: rgba(8,7,10,0.4); backdrop-filter: blur(4px);
+  }
+  .fe-cover .caption {
+    position: absolute; left: 40px; right: 40px; bottom: 36px;
+    display: flex; justify-content: space-between; gap: 24px; align-items: flex-end;
+    color: var(--bone-soft);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase;
+  }
+  .fe-cover .caption .item strong {
+    display: block; margin-top: 8px;
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 22px;
+    color: var(--gold); letter-spacing: 0; text-transform: none;
+  }
+
+  /* Right editorial column */
+  .fe-editorial {
+    padding: 96px 56px 96px 72px; position: relative;
+    border-left: 1px solid var(--rule);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  @media (max-width: 1000px) { .fe-editorial { padding: 56px 28px; border-left: 0; } }
+  .fe-editorial .eyebrow {
+    display: inline-flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-editorial .eyebrow:before { content: ''; width: 32px; height: 1px; background: var(--gold); }
+  .fe-editorial h1 {
+    margin-top: 36px;
+    font-family: var(--heading); font-size: 108px; font-weight: 500;
+    font-style: italic; line-height: 0.92; letter-spacing: -0.035em; color: var(--bone);
+  }
+  @media (max-width: 1280px) { .fe-editorial h1 { font-size: 88px; } }
+  @media (max-width: 1000px) { .fe-editorial h1 { font-size: 64px; } }
+  .fe-editorial .credit-line {
+    margin-top: 32px; padding-top: 18px; border-top: 1px solid var(--rule);
+    max-width: 380px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-editorial .intro {
+    margin-top: 36px; max-width: 420px;
+    font-family: var(--heading); font-style: italic; font-size: 17px; line-height: 1.55;
+    color: var(--bone-mute);
+  }
+  .fe-editorial .actions {
+    margin-top: 44px; display: flex; align-items: center; gap: 36px;
+    flex-wrap: wrap;
+  }
+  .fe-editorial .credit {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-faint);
+  }
+  .fe-editorial .credit strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 16px;
+    color: var(--gold); text-transform: none; letter-spacing: 0;
+  }
+
+  /* Editorial tile strip — 4 silhouettes */
+  .fe-strip { padding: 80px 56px; max-width: 1320px; margin: 0 auto; }
+  .fe-strip .head {
+    display: flex; align-items: baseline; gap: 24px; margin-bottom: 28px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .fe-strip .head:after { content: ''; flex: 1; height: 1px; background: var(--rule); margin-left: 16px; }
+  .fe-strip .head em {
+    font-family: var(--heading); font-style: italic; font-weight: 500; color: var(--gold);
+    font-size: 16px; letter-spacing: 0; text-transform: none;
+  }
+  .fe-tiles {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px;
+  }
+  @media (max-width: 1100px) { .fe-tiles { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px)  { .fe-tiles { grid-template-columns: 1fr; } }
+  .fe-tile {
+    position: relative; aspect-ratio: 3 / 4;
+    background: var(--ink-2) center/cover;
+    filter: grayscale(8%) contrast(1.06);
+    overflow: hidden;
+    transition: filter .3s ease;
+  }
+  .fe-tile:hover { filter: grayscale(0%) contrast(1.10); }
+  .fe-tile:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(8,7,10,0) 35%, rgba(8,7,10,0.85) 100%);
+  }
+  .fe-tile .tag {
+    position: absolute; top: 14px; left: 14px; z-index: 2;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--gold);
+    border: 1px solid var(--gold); padding: 5px 10px;
+    background: rgba(8,7,10,0.6);
+  }
+  .fe-tile .caption {
+    position: absolute; left: 16px; right: 16px; bottom: 16px; z-index: 2;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .fe-tile .caption .name {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 18px; color: var(--bone);
+  }
+  .fe-tile .caption .px {
+    font-family: var(--body); font-size: 12px; font-weight: 700; color: var(--gold);
+    letter-spacing: 0.06em;
+  }
+
+  /* Manifesto + atelier numbers */
+  .fe-manifesto {
+    padding: 96px 56px; max-width: 1320px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: center;
+    border-top: 1px solid var(--rule);
+  }
+  @media (max-width: 1000px) { .fe-manifesto { grid-template-columns: 1fr; gap: 48px; } }
+  .fe-manifesto .text .label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-manifesto .text .label:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-manifesto .text h2 {
+    margin-top: 24px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; line-height: 1.04; letter-spacing: -0.022em; color: var(--bone);
+  }
+  .fe-manifesto .text p {
+    margin-top: 28px; max-width: 60ch;
+    font-family: var(--heading); font-style: italic; font-size: 17px; line-height: 1.6; color: var(--bone-mute);
+  }
+  .fe-manifesto .numbers {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0;
+    border-top: 1px solid var(--rule); border-left: 1px solid var(--rule);
+  }
+  .fe-manifesto .numbers .stat {
+    border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule);
+    padding: 28px 24px;
+  }
+  .fe-manifesto .numbers .stat .v {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; color: var(--gold); line-height: 1; letter-spacing: -0.025em;
+  }
+  .fe-manifesto .numbers .stat .l {
+    margin-top: 12px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+
+  /* Lookbook teaser — 3 tile editorial grid */
+  .fe-look-teaser { padding: 96px 56px; max-width: 1320px; margin: 0 auto; border-top: 1px solid var(--rule); }
+  .fe-look-teaser .head {
+    display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 720px) { .fe-look-teaser .head { grid-template-columns: 1fr; } }
+  .fe-look-teaser .head h2 {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; line-height: 1.04; letter-spacing: -0.022em; max-width: 18ch;
+  }
+  .fe-look-teaser .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-look-teaser .head .lbl:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-look-teaser .head .intro {
+    margin-top: 16px; max-width: 64ch;
+    font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.6; color: var(--bone-mute);
+  }
+  .fe-look-teaser .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  @media (max-width: 1000px) { .fe-look-teaser .grid { grid-template-columns: 1fr; } }
+  .fe-look-tile {
+    position: relative; aspect-ratio: 4 / 5; overflow: hidden;
+    background: var(--ink-2);
+    isolation: isolate;
+  }
+  .fe-look-tile .img {
+    position: absolute; inset: 0;
+    background: var(--ink-2) center/cover;
+    filter: grayscale(10%) contrast(1.06);
+    will-change: transform, filter;
+  }
+  .fe-look-tile:after {
+    content: ''; position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(180deg, rgba(8,7,10,0) 50%, rgba(8,7,10,0.85) 100%);
+    pointer-events: none;
+  }
+  .fe-look-tile .meta {
+    position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 3;
+  }
+  .fe-look-tile .meta .ttl {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 22px; color: var(--bone);
+  }
+  .fe-look-tile .meta .credit {
+    margin-top: 6px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
+  }
+
+  /* Press strip */
+  .fe-press {
+    padding: 56px 56px; max-width: 1320px; margin: 0 auto;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; gap: 36px; flex-wrap: wrap; justify-content: space-between;
+  }
+  .fe-press .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .fe-press .row {
+    display: flex; gap: 36px; flex-wrap: wrap; align-items: center;
+  }
+  .fe-press .row span {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 22px;
+    color: var(--bone); letter-spacing: 0.06em;
+  }
+
+  /* Drop card */
+  .fe-drop { padding: 96px 56px; max-width: 1320px; margin: 0 auto; }
+  .fe-drop .card {
+    border: 1px solid var(--gold); padding: 48px 48px;
+    background: linear-gradient(180deg, rgba(212,165,116,0.04), rgba(8,7,10,0));
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: center;
+  }
+  @media (max-width: 1000px) { .fe-drop .card { grid-template-columns: 1fr; padding: 32px 28px; } }
+  .fe-drop .card .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-drop .card .lbl:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-drop .card h2 {
+    margin-top: 22px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 50px; line-height: 1.04; letter-spacing: -0.022em; color: var(--bone);
+  }
+  .fe-drop .card .sub {
+    margin-top: 18px; font-family: var(--heading); font-style: italic; font-size: 17px; color: var(--bone-mute); max-width: 60ch;
+  }
+  .fe-drop .card .meta-side {
+    display: grid; grid-template-columns: 1fr; gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .fe-drop .card .meta-side .row {
+    display: grid; grid-template-columns: 130px 1fr; gap: 18px;
+    padding: 14px 0; border-bottom: 1px solid var(--rule);
+    font-family: var(--body); font-size: 12px;
+  }
+  .fe-drop .card .meta-side .row .k {
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bone-faint); font-size: 10px;
+  }
+  .fe-drop .card .meta-side .row .v {
+    font-family: var(--heading); font-style: italic; font-size: 17px; color: var(--bone); font-weight: 500; letter-spacing: 0;
+  }
+  .fe-drop .actions {
+    grid-column: 1 / -1; margin-top: 8px; display: flex; justify-content: flex-end;
+  }
+
+  /* Private viewing CTA */
+  .fe-private {
+    padding: 120px 56px; background: #050409; border-top: 1px solid var(--rule);
+  }
+  .fe-private .inner {
+    max-width: 1100px; margin: 0 auto; text-align: center;
+  }
+  .fe-private .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-private h2 {
+    margin-top: 28px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 64px; line-height: 1.05; letter-spacing: -0.025em; color: var(--bone); max-width: 22ch;
+    margin-left: auto; margin-right: auto;
+  }
+  .fe-private .intro {
+    margin-top: 26px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 17px; line-height: 1.6; color: var(--bone-mute);
+    margin-left: auto; margin-right: auto;
+  }
+  .fe-private .actions {
+    margin-top: 40px; display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="fe-hero" data-lm="reveal">
+  <div class="fe-cover" style="background-image:url('{{ page_data.cover_image }}')">
+    <span class="issue" data-latin>{{ page_data.issue }}</span>
+    <div class="caption">
+      <div class="item">{{ page_data.cover_styling_label }}<strong data-latin>{{ page_data.cover_styling_name }}</strong></div>
+      <div class="item">{{ page_data.cover_label }}<strong>{{ page_data.cover_subject }}</strong></div>
+    </div>
+  </div>
+  <div class="fe-editorial">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <div class="credit-line">{{ page_data.headline_credit_line }}</div>
+    <p class="intro">{{ page_data.intro }}</p>
+    <div class="actions">
+      <a class="fe-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.primary_cta }}</a>
+      <div class="credit">{{ page_data.secondary_label }}<strong data-latin>{{ page_data.secondary_name }}</strong></div>
+    </div>
+  </div>
+</section>
+
+<section class="fe-strip" data-lm="reveal">
+  <div class="head">{{ page_data.edition_label }} &nbsp;<em>— {{ page_data.edition_subline }}</em></div>
+  <div class="fe-tiles" data-lm-stagger data-lm-stagger-delay="180">
+    {% for t in page_data.tiles %}
+      <a class="fe-tile" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'product' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" style="background-image:url('{{ t.image }}')" data-lm="reveal">
+        <span class="tag">{{ t.tag }}</span>
+        <div class="caption">
+          <span class="name">{{ t.name }}</span>
+          <span class="px" data-latin>{{ t.price }}</span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fe-manifesto" data-lm="reveal">
+  <div class="text">
+    <div class="label">{{ page_data.manifesto_label }}</div>
+    <h2>{{ page_data.manifesto_heading|safe }}</h2>
+    <p>{{ page_data.manifesto_text }}</p>
+  </div>
+  <div class="numbers" data-lm-stagger data-lm-stagger-delay="160">
+    {% for k, v in page_data.atelier_numbers %}
+      <div class="stat" data-lm="reveal-soft"><div class="v" data-latin data-lm="counter" data-lm-to="{{ k }}">{{ k }}</div><div class="l">{{ v }}</div></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fe-look-teaser" data-lm-stagger>
+  <div class="head" data-lm="reveal">
+    <div>
+      <div class="lbl">{{ page_data.lookbook_teaser_label }}</div>
+      <h2 style="margin-top:18px">{{ page_data.lookbook_teaser_heading|safe }}</h2>
+      <p class="intro">{{ page_data.lookbook_teaser_intro }}</p>
+    </div>
+    <a class="fe-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.lookbook_teaser_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.lookbook_teaser_link }}</a>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="220">
+    {% for tl in page_data.lookbook_teaser_tiles %}
+      <a class="fe-look-tile" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'lookbook' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <div class="img" style="background-image:url('{{ tl.image }}')"></div>
+        <div class="meta"><div class="ttl">{{ tl.title }}</div><div class="credit">{{ tl.credit }}</div></div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fe-press" data-lm="reveal">
+  <span class="lbl">{{ page_data.press_label }} · {{ page_data.press_intro }}</span>
+  <div class="lm-logo-marquee" data-lm-media="logo-marquee" aria-label="{{ page_data.press_label }}">
+    <div class="lm-logo-marquee-track">
+      {% for p in page_data.press_items %}<span class="lm-logo-marquee-item" data-latin>{{ p }}</span>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="fe-drop">
+  <div class="card" data-lm="reveal">
+    <div class="lead">
+      <div class="lbl">{{ page_data.drop_label }}</div>
+      <h2>{{ page_data.drop_heading|safe }}</h2>
+      <p class="sub">{{ page_data.drop_subhead }}</p>
+    </div>
+    <div class="meta-side">
+      {% for k, v in page_data.drop_metadata %}
+        <div class="row"><span class="k">{{ k }}</span><span class="v">{{ v }}</span></div>
+      {% endfor %}
+    </div>
+    <div class="actions">
+      <a class="fe-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.drop_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.drop_cta }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="fe-private" data-lm="reveal">
+  <div class="inner">
+    <div class="lbl">{{ page_data.private_label }}</div>
+    <h2>{{ page_data.private_heading|safe }}</h2>
+    <p class="intro">{{ page_data.private_intro }}</p>
+    <div class="actions">
+      <a class="fe-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.private_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.private_primary }}</a>
+      <a class="fe-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.private_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.private_secondary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

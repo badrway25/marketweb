@@ -1,0 +1,194 @@
+{% extends "live_templates/ecommerce/fashion-editorial/_base.html" %}
+{% block extra_css %}
+  .fe-cnt-lead { padding: 80px 56px 56px; max-width: 1100px; margin: 0 auto; border-bottom: 1px solid var(--rule); }
+  .fe-cnt-lead .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-cnt-lead .eyebrow:before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+  .fe-cnt-lead h1 {
+    margin-top: 26px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 80px; line-height: 0.98; letter-spacing: -0.025em; color: var(--bone); max-width: 16ch;
+  }
+  .fe-cnt-lead .intro {
+    margin-top: 28px; max-width: 60ch;
+    font-family: var(--heading); font-style: italic; font-size: 18px; line-height: 1.6; color: var(--bone-mute);
+  }
+
+  .fe-cnt {
+    padding: 56px 56px 96px; max-width: 1320px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: start;
+  }
+  @media (max-width: 1000px) { .fe-cnt { grid-template-columns: 1fr; } }
+
+  /* Form — dark editorial */
+  .fe-form {
+    padding: 36px 36px;
+    border: 1px solid var(--gold); background: rgba(255,255,255,0.02);
+  }
+  .fe-form .lf-section-title {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 28px; color: var(--bone);
+    border-bottom: 1px solid var(--rule); padding-bottom: 18px; margin-bottom: 22px;
+  }
+  .fe-form .form-intro {
+    font-family: var(--heading); font-style: italic; font-size: 14px; line-height: 1.6;
+    color: var(--bone-mute); margin-bottom: 22px;
+  }
+  .fe-form .lf-helper-required {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-faint); margin-bottom: 18px;
+  }
+  .fe-form .lf-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 14px;
+  }
+  @media (max-width: 720px) { .fe-form .lf-row { grid-template-columns: 1fr; } }
+  .fe-form .lf-field { margin-bottom: 16px; }
+  .fe-form .lf-field.full { grid-column: 1 / -1; }
+  .fe-form .lf-label {
+    display: block;
+    font-family: var(--body); font-size: var(--lf-label-size); font-weight: var(--lf-label-weight);
+    letter-spacing: var(--lf-label-track); text-transform: uppercase;
+    color: var(--lf-label-color); margin-bottom: 8px;
+  }
+  .fe-form .lf-label .req { color: var(--gold); margin-left: 4px; }
+  .fe-form .lf-input,
+  .fe-form .lf-textarea {
+    width: 100%; padding: var(--lf-pad-y) var(--lf-pad-x);
+    background: var(--lf-bg); border: 1px solid var(--lf-border);
+    color: var(--lf-control-color); font-family: var(--body); font-size: 14px;
+    border-radius: var(--lf-radius);
+  }
+  .fe-form .lf-input::placeholder { color: var(--lf-placeholder); }
+  .fe-form .lf-input:focus,
+  .fe-form .lf-textarea:focus {
+    outline: none; border-color: var(--lf-border-focus);
+    box-shadow: 0 0 0 var(--lf-ring-size) var(--lf-ring);
+  }
+  .fe-form .lf-textarea { resize: vertical; min-height: 130px; }
+  .fe-form .lf-select { position: relative; }
+  .fe-form .lf-select .lf-input {
+    padding: var(--lf-pad-y) 38px var(--lf-pad-y) var(--lf-pad-x);
+    cursor: pointer;
+    appearance: none; -webkit-appearance: none; -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23B8860B' stroke-width='1.6' fill='none'/></svg>");
+    background-repeat: no-repeat; background-position: right 14px center;
+  }
+  .fe-form .lf-submit {
+    margin-top: 22px;
+    display: inline-flex; align-items: center; gap: 14px;
+    background: var(--lf-submit-bg); color: var(--lf-submit-fg);
+    padding: 16px 28px; border: 1px solid var(--gold); border-radius: var(--lf-submit-radius);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+  }
+  .fe-form .lf-submit:after { content: '→'; font-family: var(--heading); font-size: 16px; color: var(--gold); }
+  .fe-form .lf-submit:hover { background: var(--gold); color: var(--ink); }
+  .fe-form .lf-submit:hover:after { color: var(--ink); }
+  .fe-form .lf-submit-note {
+    margin-top: 14px; font-family: var(--heading); font-style: italic; font-size: 13px; color: var(--bone-mute); line-height: 1.6;
+  }
+
+  /* Right side — three maison cards */
+  .fe-cnt-side { display: flex; flex-direction: column; gap: 22px; }
+  .fe-mais-card {
+    border: 1px solid var(--rule); padding: 28px 28px;
+    background: var(--ink-2);
+  }
+  .fe-mais-card .city {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 32px; color: var(--gold);
+  }
+  .fe-mais-card .row {
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 110px 1fr; gap: 16px;
+    font-family: var(--body); font-size: 12px;
+  }
+  .fe-mais-card .row .k {
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bone-faint); font-size: 9px; padding-top: 2px;
+  }
+  .fe-mais-card .row .v {
+    font-family: var(--heading); font-style: italic; font-size: 15px; color: var(--bone);
+  }
+
+  /* FAQ */
+  .fe-faq { padding: 0 56px 96px; max-width: 1100px; margin: 0 auto; }
+  .fe-faq h3 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 22px;
+  }
+  .fe-faq h3:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-faq details {
+    padding: 22px 0; border-top: 1px solid var(--rule);
+  }
+  .fe-faq details:last-of-type { border-bottom: 1px solid var(--rule); }
+  .fe-faq summary {
+    cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 22px; color: var(--bone);
+  }
+  .fe-faq summary::-webkit-details-marker { display: none; }
+  .fe-faq summary:after {
+    content: '+'; font-family: var(--heading); font-style: italic; font-size: 28px; color: var(--gold);
+  }
+  .fe-faq details[open] summary:after { content: '−'; }
+  .fe-faq details p {
+    margin-top: 16px;
+    font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.65; color: var(--bone-mute); max-width: 78ch;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="fe-cnt-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="fe-cnt">
+  <form class="fe-form lf-form" data-lm="reveal-soft">
+    <div class="lf-section-title">{{ page_data.form_section_label }}</div>
+    <p class="form-intro">{{ page_data.form_section_intro }}</p>
+    <div class="lf-helper-required">{{ page_data.form_helper_required }}</div>
+    {% for f in page_data.form_fields %}
+      <div class="lf-field{% if f.type == 'textarea' %} full{% endif %}">
+        <label class="lf-label" for="fe-{{ f.name }}">{{ f.label }}{% if f.required %}<span class="req">*</span>{% endif %}</label>
+        {% if f.type == 'select' %}
+          <div class="lf-select" data-lf-label="{{ f.label }}">
+            <select class="lf-input" id="fe-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+              <option value="">—</option>
+              {% for o in f.options %}<option value="{{ o }}">{{ o }}</option>{% endfor %}
+            </select>
+          </div>
+        {% elif f.type == 'textarea' %}
+          <textarea class="lf-textarea lf-input" id="fe-{{ f.name }}" name="{{ f.name }}" rows="{{ f.rows|default:5 }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}></textarea>
+        {% else %}
+          <input class="lf-input" type="{{ f.type }}" id="fe-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <button class="lf-submit" type="submit">{{ page_data.form_submit_button }}</button>
+    <p class="lf-submit-note">{{ page_data.form_submit_note }}</p>
+  </form>
+
+  <aside class="fe-cnt-side" data-lm-stagger>
+    {% for c in page_data.maison_cards %}
+      <div class="fe-mais-card" data-lm="reveal">
+        <div class="city" data-latin>{{ c.city }}</div>
+        <div class="row"><span class="k">{{ chrome.mp_address|default:"Indirizzo" }}</span><span class="v" data-latin>{{ c.address }}</span></div>
+        <div class="row"><span class="k">{{ chrome.mp_phone|default:"Tel." }}</span><span class="v" data-latin>{{ c.phone }}</span></div>
+        <div class="row"><span class="k">{{ chrome.mp_email|default:"Email" }}</span><span class="v" data-latin>{{ c.email }}</span></div>
+        <div class="row"><span class="k">{{ chrome.mp_hours|default:"Orari" }}</span><span class="v">{{ c.hours }}</span></div>
+      </div>
+    {% endfor %}
+  </aside>
+</section>
+
+<section class="fe-faq" data-lm-stagger>
+  <h3 data-lm="reveal">{{ page_data.faq_label }}</h3>
+  {% for f in page_data.faq_items %}
+    <details data-lm="reveal"><summary>{{ f.q }}</summary><p>{{ f.a }}</p></details>
+  {% endfor %}
+</section>
+{% endblock %}

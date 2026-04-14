@@ -1,0 +1,365 @@
+{% extends "live_templates/ecommerce/fashion-editorial/_base.html" %}
+{% block extra_css %}
+  .fe-pdp { padding: 80px 56px; max-width: 1320px; margin: 0 auto; }
+  .fe-pdp .top {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px;
+  }
+  @media (max-width: 1100px) { .fe-pdp .top { grid-template-columns: 1fr; } }
+
+  /* Gallery */
+  .fe-gal .main {
+    aspect-ratio: 4 / 5; background: var(--ink-2) center/cover;
+    filter: grayscale(8%) contrast(1.06);
+  }
+  .fe-gal .strip {
+    margin-top: 18px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  .fe-gal .strip .t {
+    aspect-ratio: 1; background: var(--ink-2) center/cover;
+    filter: grayscale(8%) contrast(1.06);
+    border: 1px solid var(--rule); cursor: pointer;
+    transition: filter .2s ease;
+  }
+  .fe-gal .strip .t:hover { filter: grayscale(0%) contrast(1.10); }
+  .fe-gal .caps {
+    margin-top: 18px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--bone-faint);
+    padding-top: 14px; border-top: 1px solid var(--rule);
+  }
+
+  /* Right info */
+  .fe-info .tag {
+    display: inline-block; padding: 6px 12px;
+    border: 1px solid var(--gold); color: var(--gold);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase;
+  }
+  .fe-info .n {
+    margin-top: 22px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .fe-info h1 {
+    margin-top: 14px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; line-height: 1.0; color: var(--bone); letter-spacing: -0.025em;
+  }
+  .fe-info .subtitle {
+    margin-top: 18px; max-width: 380px;
+    font-family: var(--heading); font-style: italic; font-size: 17px; line-height: 1.5; color: var(--bone-mute);
+  }
+  .fe-info .price-band {
+    margin-top: 32px; padding: 24px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .fe-info .price-band .price {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 40px; color: var(--gold);
+  }
+  .fe-info .price-band .vat {
+    display: block; margin-top: 8px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-faint);
+  }
+  .fe-info .intro {
+    margin-top: 24px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 15px; line-height: 1.6; color: var(--bone-mute);
+  }
+
+  .fe-info .variant {
+    margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rule);
+  }
+  .fe-info .variant h5 {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .fe-info .variant .pills { display: flex; gap: 10px; flex-wrap: wrap; }
+  .fe-info .variant .pill {
+    padding: 10px 18px; border: 1px solid var(--rule);
+    font-family: var(--heading); font-style: italic; font-size: 14px; color: var(--bone);
+    cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .fe-info .variant .pill:hover { border-color: var(--gold); }
+  .fe-info .variant .pill.is-current { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+  .fe-info .edition-card {
+    margin-top: 24px; padding: 18px 20px;
+    border: 1px solid var(--gold); background: rgba(212,165,116,0.04);
+  }
+  .fe-info .edition-card .lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-info .edition-card .v {
+    margin-top: 8px; font-family: var(--heading); font-style: italic; font-size: 18px; color: var(--bone);
+  }
+  .fe-info .edition-card .note {
+    margin-top: 10px; font-family: var(--heading); font-style: italic; font-size: 13px; color: var(--bone-mute); line-height: 1.55;
+  }
+
+  .fe-info .buy {
+    margin-top: 28px; display: grid; gap: 12px;
+  }
+  .fe-info .buy .fe-btn-primary { width: 100%; justify-content: center; padding: 16px 22px; }
+  .fe-info .buy .ghost {
+    text-align: center; padding: 14px 22px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--bone-mute);
+    border: 1px solid var(--rule);
+  }
+  .fe-info .buy .ghost:hover { color: var(--bone); border-color: var(--bone-mute); }
+  .fe-info .buy-note {
+    margin-top: 8px; font-family: var(--heading); font-style: italic; font-size: 13px; color: var(--bone-mute); line-height: 1.6;
+  }
+
+  /* Specs */
+  .fe-pdp .specs {
+    margin-top: 80px; padding-top: 48px; border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 240px 1fr; gap: 48px;
+  }
+  @media (max-width: 720px) { .fe-pdp .specs { grid-template-columns: 1fr; } }
+  .fe-pdp .specs h4 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-pdp .specs .rows .r {
+    display: grid; grid-template-columns: 200px 1fr; gap: 24px;
+    padding: 14px 0; border-bottom: 1px solid var(--rule);
+  }
+  .fe-pdp .specs .rows .r:last-child { border-bottom: 0; }
+  .fe-pdp .specs .rows .r .k {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-faint); padding-top: 4px;
+  }
+  .fe-pdp .specs .rows .r .v {
+    font-family: var(--heading); font-style: italic; font-size: 18px; color: var(--bone); font-weight: 500;
+  }
+
+  /* Atelier */
+  .fe-pdp .atelier {
+    margin-top: 80px; padding-top: 48px; border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 220px 1fr; gap: 48px; align-items: center;
+  }
+  @media (max-width: 720px) { .fe-pdp .atelier { grid-template-columns: 1fr; } }
+  .fe-pdp .atelier .portrait {
+    width: 220px; height: 280px; background: var(--ink-2) center/cover;
+    filter: grayscale(10%) contrast(1.10);
+    border: 1px solid var(--rule);
+  }
+  .fe-pdp .atelier h4 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-pdp .atelier h3 {
+    margin-top: 12px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 32px; color: var(--bone);
+  }
+  .fe-pdp .atelier .sub {
+    margin-top: 6px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .fe-pdp .atelier .text {
+    margin-top: 18px; max-width: 60ch;
+    font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.6; color: var(--bone-mute);
+  }
+
+  /* Care */
+  .fe-pdp .care {
+    margin-top: 80px; padding-top: 48px; border-top: 1px solid var(--rule);
+  }
+  .fe-pdp .care h4 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-pdp .care .intro {
+    margin-top: 10px; max-width: 76ch;
+    font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.6; color: var(--bone-mute);
+  }
+  .fe-pdp .care .grid {
+    margin-top: 22px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px;
+  }
+  @media (max-width: 960px) { .fe-pdp .care .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px) { .fe-pdp .care .grid { grid-template-columns: 1fr; } }
+  .fe-pdp .care .item {
+    border-top: 1px solid var(--gold); padding-top: 14px;
+  }
+  .fe-pdp .care .item h5 {
+    font-family: var(--heading); font-style: italic; font-size: 18px; color: var(--bone); font-weight: 500;
+  }
+  .fe-pdp .care .item p {
+    margin-top: 8px; font-family: var(--body); font-size: 13px; line-height: 1.65; color: var(--bone-mute);
+  }
+
+  /* Provenance */
+  .fe-pdp .prov {
+    margin-top: 80px; padding-top: 48px; border-top: 1px solid var(--rule);
+  }
+  .fe-pdp .prov h4 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-pdp .prov h3 {
+    margin-top: 12px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 38px; color: var(--bone); letter-spacing: -0.022em;
+  }
+  .fe-pdp .prov .timeline {
+    margin-top: 32px; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule);
+  }
+  @media (max-width: 960px) { .fe-pdp .prov .timeline { grid-template-columns: 1fr; } }
+  .fe-pdp .prov .step { padding: 28px 18px; border-right: 1px solid var(--rule); position: relative; }
+  .fe-pdp .prov .step:last-child { border-right: 0; }
+  .fe-pdp .prov .step .n {
+    font-family: var(--heading); font-style: italic; font-size: 36px; color: var(--gold); font-weight: 500;
+  }
+  .fe-pdp .prov .step h5 {
+    margin-top: 12px; font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 20px; color: var(--bone);
+  }
+  .fe-pdp .prov .step .desc {
+    margin-top: 12px; font-family: var(--body); font-size: 12px; line-height: 1.65; color: var(--bone-mute);
+  }
+
+  /* Related */
+  .fe-pdp .related {
+    margin-top: 80px; padding-top: 48px; border-top: 1px solid var(--rule);
+  }
+  .fe-pdp .related h4 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-pdp .related h3 {
+    margin-top: 12px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 36px; color: var(--bone); letter-spacing: -0.022em;
+  }
+  .fe-pdp .related .intro {
+    margin-top: 10px; max-width: 60ch;
+    font-family: var(--heading); font-style: italic; font-size: 15px; color: var(--bone-mute);
+  }
+  .fe-pdp .related .grid {
+    margin-top: 28px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+  }
+  @media (max-width: 960px) { .fe-pdp .related .grid { grid-template-columns: 1fr; } }
+{% endblock %}
+
+{% block content %}
+<section class="fe-pdp">
+  <div class="top" data-lm="reveal">
+    <div class="fe-gal">
+      <div class="main" style="background-image:url('{{ page_data.gallery.0 }}')"></div>
+      <div class="strip">
+        {% for img in page_data.gallery %}
+          <div class="t" style="background-image:url('{{ img }}')"></div>
+        {% endfor %}
+      </div>
+      <div class="caps">
+        <span>{{ page_data.gallery_caption_styling }}</span>
+        <span>{{ page_data.gallery_caption_photo }}</span>
+        <span>{{ page_data.gallery_caption_location }}</span>
+      </div>
+    </div>
+
+    <div class="fe-info">
+      <span class="tag">{{ page_data.tag }}</span>
+      <div class="n" data-latin>{{ page_data.n }}</div>
+      <h1>{{ page_data.name }}</h1>
+      <p class="subtitle">{{ page_data.subtitle }}</p>
+      <div class="price-band">
+        <span class="price" data-latin>{{ page_data.price }}</span>
+        <span class="vat">{{ page_data.vat_note }}</span>
+      </div>
+      <p class="intro">{{ page_data.intro }}</p>
+
+      <div class="variant">
+        <h5>{{ page_data.size_label }}</h5>
+        <div class="pills">
+          {% for s in page_data.size_options %}
+            <span class="pill{% if forloop.first %} is-current{% endif %}" data-latin>{{ s }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="variant">
+        <h5>{{ page_data.color_label }}</h5>
+        <div class="pills">
+          {% for c in page_data.color_options %}
+            <span class="pill{% if forloop.first %} is-current{% endif %}">{{ c }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="edition-card">
+        <div class="lbl">{{ page_data.edition_label }}</div>
+        <div class="v" data-latin>{{ page_data.edition_value }}</div>
+        <div class="note">{{ page_data.edition_note }}</div>
+      </div>
+
+      <div class="buy">
+        <a class="fe-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.buy_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.buy_primary }}</a>
+        <a class="ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.buy_secondary }}</a>
+        <p class="buy-note">{{ page_data.buy_note }}</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="specs" data-lm="reveal">
+    <h4>{{ page_data.info_label }}</h4>
+    <div class="rows">
+      {% for k, v in page_data.info_rows %}
+        <div class="r"><span class="k">{{ k }}</span><span class="v">{{ v }}</span></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="atelier" data-lm="reveal">
+    <div class="portrait" style="background-image:url('{{ page_data.atelier_portrait }}')"></div>
+    <div>
+      <h4>{{ page_data.atelier_label }}</h4>
+      <h3 data-latin>{{ page_data.atelier_name }}</h3>
+      <div class="sub">{{ page_data.atelier_founded }}</div>
+      <p class="text">{{ page_data.atelier_text }}</p>
+    </div>
+  </section>
+
+  <section class="care" data-lm="reveal">
+    <h4>{{ page_data.care_label }}</h4>
+    <p class="intro">{{ page_data.care_intro }}</p>
+    <div class="grid">
+      {% for k, v in page_data.care_items %}
+        <div class="item"><h5>{{ k }}</h5><p>{{ v }}</p></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="prov" data-lm="reveal">
+    <h4>{{ page_data.provenance_label }}</h4>
+    <h3>{{ page_data.provenance_heading|safe }}</h3>
+    <div class="timeline">
+      {% for n, t, p in page_data.provenance_steps %}
+        <div class="step">
+          <span class="n" data-latin>{{ n }}</span>
+          <h5>{{ t }}</h5>
+          <div class="desc">{{ p }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="related" data-lm-stagger>
+    <h4>{{ page_data.related_label }}</h4>
+    <h3 data-lm="reveal">{{ page_data.related_label }}</h3>
+    <p class="intro" data-lm="reveal">{{ page_data.related_intro }}</p>
+    <div class="grid">
+      {% for r in page_data.related_items %}
+        <a class="fe-prod" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'product' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+          <div class="img" style="background-image:url('{{ r.image }}'); aspect-ratio: 4/5; background-size:cover; background-position:center; filter: grayscale(8%) contrast(1.06)"></div>
+          <div class="meta" style="margin-top:14px;display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+            <span class="name" style="font-family:var(--heading);font-style:italic;font-weight:500;font-size:20px;color:var(--bone)">{{ r.name }}</span>
+            <span class="px" data-latin style="font-family:var(--body);font-size:12px;color:var(--gold);font-weight:700">{{ r.price }}</span>
+          </div>
+          <div class="submeta" data-latin style="margin-top:6px;font-family:var(--body);font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--bone-faint)">{{ r.n }}</div>
+          <div class="row-bot" style="margin-top:8px;padding-top:10px;border-top:1px solid var(--rule);font-family:var(--heading);font-style:italic;font-size:13px;color:var(--bone-mute)">{{ r.meta }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+</section>
+{% endblock %}

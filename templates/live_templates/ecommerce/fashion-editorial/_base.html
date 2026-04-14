@@ -1,0 +1,793 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family={{ theme.body_font|urlencode }}:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-media.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<style>
+  :root {
+    --primary:    {{ theme.primary }};
+    --secondary:  {{ theme.secondary }};
+    --accent:     {{ theme.accent }};
+
+    --ink:        #08070a;
+    --ink-2:      #11101a;
+    --ink-3:      #181722;
+    --bone:       #f2ecdf;
+    --bone-soft:  rgba(242,236,223,0.78);
+    --bone-mute:  rgba(242,236,223,0.55);
+    --bone-faint: rgba(242,236,223,0.32);
+    --gold:       {{ theme.accent }};
+    --gold-soft:  color-mix(in oklab, {{ theme.accent }} 60%, #f2ecdf 40%);
+    --gold-mute:  color-mix(in oklab, {{ theme.accent }} 45%, #08070a 55%);
+    --rule:       rgba(212,165,116,0.25);
+    --rule-soft:  rgba(242,236,223,0.10);
+    --surface:    rgba(8,7,10,0.72);
+
+    --heading: '{{ theme.heading_font }}', Georgia, serif;
+    --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+
+    /* Premium forms — dark editorial maison tokens */
+    --lf-bg:           rgba(255,255,255,0.04);
+    --lf-bg-autofill:  rgba(255,255,255,0.06);
+    --lf-bg-soft:      rgba(255,255,255,0.02);
+    --lf-bg-icon:      rgba(212,165,116,0.18);
+    --lf-bg-chip:      rgba(212,165,116,0.10);
+    --lf-border:       rgba(212,165,116,0.25);
+    --lf-border-hover: rgba(212,165,116,0.5);
+    --lf-border-focus: var(--gold);
+    --lf-ring:         rgba(212,165,116,0.22);
+    --lf-ring-size:    3px;
+    --lf-radius:       0;
+    --lf-pad-y:        14px;
+    --lf-pad-x:        16px;
+    --lf-label-color:  var(--bone-faint);
+    --lf-label-size:   10px;
+    --lf-label-track:  0.28em;
+    --lf-label-weight: 700;
+    --lf-helper-color: var(--bone-mute);
+    --lf-control-color:var(--bone);
+    --lf-placeholder:  var(--bone-faint);
+    --lf-section-rule: var(--rule);
+    --lf-section-title-color: var(--bone);
+    --lf-caret:        var(--gold);
+    --lf-listbox-bg:   #0c0b12;
+    --lf-listbox-fg:   var(--bone);
+    --lf-listbox-rule: var(--rule);
+    --lf-listbox-hov:  rgba(212,165,116,0.10);
+    --lf-submit-bg:    transparent;
+    --lf-submit-bg-hover: var(--gold);
+    --lf-submit-fg:    var(--gold);
+    --lf-submit-arrow: var(--gold);
+    --lf-submit-radius:0;
+    --lf-submit-underline:0;
+    --on-accent:       var(--ink);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    color: var(--bone); font-family: var(--body); font-size: 15px; line-height: 1.65;
+    background: var(--ink);
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(212,165,116,0.06) 0%, transparent 36%),
+      radial-gradient(circle at 100% 100%, rgba(212,165,116,0.04) 0%, transparent 36%);
+    min-height: 100vh;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--heading); font-weight: 500; line-height: 1.05;
+    letter-spacing: -0.018em; color: var(--bone);
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  h1 { letter-spacing: -0.03em; font-style: italic; }
+  em { font-style: italic; color: var(--gold); font-weight: 500; }
+
+  /* Marketplace bar */
+  .mp-bar {
+    background: rgba(0,0,0,0.65); color: var(--bone-soft);
+    font-family: var(--body); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 600;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--rule);
+  }
+  .mp-bar .mp-back { color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 1px; font-weight: 700; }
+  .mp-bar .mp-name { color: var(--bone-mute); }
+  .mp-lang { display: flex; align-items: center; gap: 14px; }
+  .mp-lang .mp-lang-label { font-size: 9px; letter-spacing: 0.32em; color: var(--bone-faint); font-weight: 700; }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; color: var(--bone-mute);
+    border: 1px solid var(--rule);
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover { color: var(--gold); border-color: var(--gold); }
+  .mp-lang a.mp-lang-pill.is-current { color: var(--gold); border-color: var(--gold); background: rgba(212,165,116,0.06); }
+
+  /* Top ink-black nav */
+  .fe-nav {
+    display: flex; align-items: center; height: 80px;
+    padding: 0 56px;
+    border-bottom: 1px solid var(--rule);
+    background: rgba(8,7,10,0.92); backdrop-filter: blur(10px);
+  }
+  .fe-nav .wm {
+    font-family: var(--heading); font-size: 26px; font-style: italic; font-weight: 500;
+    letter-spacing: 0.14em; color: var(--bone);
+    line-height: 1.1;
+  }
+  .fe-nav .wm strong {
+    display: block; margin-top: 4px;
+    font-style: normal; font-weight: 700;
+    font-family: var(--body); font-size: 9px; letter-spacing: 0.40em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-nav .links {
+    display: flex; gap: 30px; margin-left: 64px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase;
+    color: var(--bone-mute);
+  }
+  .fe-nav .links a { padding-bottom: 4px; border-bottom: 1px solid transparent; transition: color .15s ease, border-color .15s ease; }
+  .fe-nav .links a:hover { color: var(--bone); border-color: var(--rule); }
+  .fe-nav .links a.is-current { color: var(--gold); border-color: var(--gold); }
+  .fe-nav .rs {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 28px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase;
+    color: var(--bone-mute);
+  }
+  .fe-nav .rs .private {
+    color: var(--gold);
+    border: 1px solid var(--gold); padding: 12px 20px;
+    transition: background .2s ease, color .2s ease;
+  }
+  .fe-nav .rs .private:hover { background: var(--gold); color: var(--ink); }
+
+  /* Section helpers */
+  .fe-section { padding: 96px 56px; max-width: 1320px; margin: 0 auto; }
+  .fe-section .sec-label {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-section .sec-label:before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+  .fe-section h2 {
+    margin-top: 24px; font-family: var(--heading); font-size: 64px; font-style: italic;
+    font-weight: 500; line-height: 1.0; letter-spacing: -0.025em;
+    color: var(--bone); max-width: 22ch;
+  }
+  .fe-section .sec-intro {
+    margin-top: 26px; max-width: 56ch;
+    font-family: var(--heading); font-style: italic; font-size: 17px; line-height: 1.55;
+    color: var(--bone-mute);
+  }
+
+  /* Buttons */
+  .fe-btn-primary {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 14px 26px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--gold);
+    border: 1px solid var(--gold); background: transparent;
+    transition: background .2s ease, color .2s ease;
+  }
+  .fe-btn-primary:after { content: '→'; font-family: var(--heading); font-size: 16px; }
+  .fe-btn-primary:hover { background: var(--gold); color: var(--ink); }
+  .fe-btn-ghost {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding-bottom: 6px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
+    border-bottom: 1px solid var(--gold);
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .fe-btn-ghost:hover { color: var(--bone); border-color: var(--bone); }
+
+  /* Footer */
+  .fe-foot {
+    margin-top: 80px;
+    background: #050409; border-top: 1px solid var(--rule);
+    padding: 80px 56px 40px;
+  }
+  .fe-foot .top {
+    display: grid; grid-template-columns: 1.7fr 1fr 1fr 1fr; gap: 56px;
+    padding-bottom: 56px; border-bottom: 1px solid var(--rule);
+    max-width: 1320px; margin: 0 auto;
+  }
+  .fe-foot h5 {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 18px;
+  }
+  .fe-foot .brand .word {
+    font-family: var(--heading); font-size: 28px; font-style: italic; font-weight: 500;
+    letter-spacing: 0.14em; color: var(--bone); margin-bottom: 8px;
+  }
+  .fe-foot .brand .word small {
+    display: block; margin-top: 6px;
+    font-style: normal; font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.40em; color: var(--gold); text-transform: uppercase;
+  }
+  .fe-foot .brand p {
+    margin-top: 14px; max-width: 38ch;
+    font-family: var(--heading); font-style: italic; font-size: 14px; line-height: 1.6;
+    color: var(--bone-mute);
+  }
+  .fe-foot .col p, .fe-foot .col a {
+    color: var(--bone-mute); display: block; padding: 5px 0; font-size: 13px;
+    font-family: var(--body);
+  }
+  .fe-foot .col a:hover { color: var(--gold); }
+  .fe-foot .bot {
+    max-width: 1320px; margin: 0 auto; padding-top: 32px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 18px;
+    font-size: 10px; color: var(--bone-faint);
+    letter-spacing: 0.28em; text-transform: uppercase;
+  }
+  .fe-foot .bot a:hover { color: var(--gold); }
+
+  /* MAISON MOTION PROFILE — slow, editorial, italic-thinking. Distinctly
+     unhurried compared to startup glow timings. Long durations + heavy
+     ease-out for a "settling poster" feel. */
+  :root {
+    --lm-rise:     14px;
+    --lm-rise-lg:  22px;
+    --lm-dur:      680ms;
+    --lm-dur-slow: 1100ms;
+    --lm-marquee-duration: 90s;
+    --lm-marquee-gap: 88px;
+    --lm-marquee-color: var(--bone-mute);
+    --lm-marquee-rule: var(--rule);
+    --lm-marquee-pad-y: 22px;
+  }
+  body.lm-ready [data-lm="reveal"]   { transition-duration: var(--lm-dur); }
+  body.lm-ready [data-lm="reveal-soft"] { transition-duration: var(--lm-dur-slow); }
+
+  /* ============================================================
+     EDITORIAL MOTION ENRICHMENT (Session 42 premium pass)
+     Per-block premium motion — slow, italic-thinking, never tech.
+  ============================================================ */
+
+  /* HERO COVER — subtle living-poster scale (12s loop, 2% range) */
+  @keyframes fe-cover-breathe {
+    0%   { transform: scale(1.000); }
+    50%  { transform: scale(1.022); }
+    100% { transform: scale(1.000); }
+  }
+  body.lm-ready .fe-cover {
+    animation: fe-cover-breathe 14s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  /* HERO HEADLINE — italic-axis settle: enter slightly tighter then relax */
+  @keyframes fe-headline-settle {
+    0%   { letter-spacing: -0.020em; opacity: 0; transform: translateY(18px); }
+    100% { letter-spacing: -0.035em; opacity: 1; transform: translateY(0); }
+  }
+  body.lm-ready .fe-editorial h1 {
+    animation: fe-headline-settle 1200ms cubic-bezier(0.16, 0.84, 0.32, 1) both;
+    animation-delay: 220ms;
+  }
+  body.lm-ready .fe-editorial .credit-line {
+    opacity: 0; animation: fe-fade-in 800ms ease-out 1100ms forwards;
+  }
+  body.lm-ready .fe-editorial .intro {
+    opacity: 0; animation: fe-fade-in 800ms ease-out 1300ms forwards;
+  }
+  body.lm-ready .fe-editorial .actions {
+    opacity: 0; animation: fe-fade-in 800ms ease-out 1500ms forwards;
+  }
+  @keyframes fe-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* COVER METADATA — fade-up the issue chip + caption pieces */
+  body.lm-ready .fe-cover .issue {
+    opacity: 0; animation: fe-fade-in 800ms ease-out 600ms forwards;
+  }
+  body.lm-ready .fe-cover .caption .item {
+    opacity: 0; animation: fe-fade-in 800ms ease-out forwards;
+  }
+  body.lm-ready .fe-cover .caption .item:nth-child(1) { animation-delay: 800ms; }
+  body.lm-ready .fe-cover .caption .item:nth-child(2) { animation-delay: 980ms; }
+
+  /* EDITORIAL TILE STRIP — slow editorial cascade + tile filter shift */
+  .fe-tile {
+    transition: transform 700ms cubic-bezier(0.16, 0.84, 0.32, 1),
+                filter 600ms ease-out;
+  }
+  .fe-tile:hover {
+    filter: grayscale(0%) contrast(1.14) brightness(1.04);
+    transform: translateY(-3px);
+  }
+  .fe-tile .caption .name {
+    transition: letter-spacing 600ms ease-out, transform 600ms ease-out;
+  }
+  .fe-tile:hover .caption .name {
+    letter-spacing: 0.02em;
+    transform: translateX(2px);
+  }
+  /* Gold accent rule slides in below product name on hover */
+  .fe-tile .caption .name {
+    position: relative; padding-bottom: 4px;
+  }
+  .fe-tile .caption .name::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -2px;
+    height: 1px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 700ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  }
+  .fe-tile:hover .caption .name::after { transform: scaleX(0.5); }
+  .fe-tile .tag {
+    transition: background 350ms ease-out, color 350ms ease-out;
+  }
+  .fe-tile:hover .tag { background: var(--gold); color: var(--ink); }
+
+  /* COLLECTION PRODUCT CARDS — same editorial hover language */
+  .fe-prod {
+    transition: transform 700ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  }
+  .fe-prod .img {
+    transition: filter 700ms ease-out;
+  }
+  .fe-prod:hover .img {
+    filter: grayscale(0%) contrast(1.12) brightness(1.03);
+  }
+  .fe-prod .name {
+    position: relative;
+    transition: color 350ms ease-out;
+  }
+  .fe-prod:hover .name { color: var(--gold); }
+
+  /* LOOKBOOK TILES — enter cascade + slow zoom on hover */
+  .fe-look-tile {
+    transition: filter 800ms ease-out;
+  }
+  .fe-look-tile .img {
+    transition: transform 1200ms cubic-bezier(0.16, 0.84, 0.32, 1);
+    will-change: transform;
+  }
+  .fe-look-tile:hover .img { transform: scale(1.04); }
+  .fe-look-tile .meta .ttl {
+    transition: letter-spacing 600ms ease-out, color 350ms ease-out;
+  }
+  .fe-look-tile:hover .meta .ttl {
+    letter-spacing: 0.005em;
+    color: var(--gold);
+  }
+  /* Gold border slides up from bottom on hover */
+  .fe-look-tile {
+    position: relative; isolation: isolate;
+  }
+  .fe-look-tile::before {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+    height: 2px; background: var(--gold); z-index: 3;
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 900ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  }
+  .fe-look-tile:hover::before { transform: scaleX(1); }
+
+  /* EDITORIAL LOOKBOOK GRID (lookbook page) — same treatment */
+  .fe-look-card .img {
+    transition: filter 800ms ease-out, transform 1400ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  }
+  .fe-look-card:hover .img {
+    filter: grayscale(0%) contrast(1.10);
+    transform: scale(1.025);
+  }
+  .fe-look-card .meta .ttl {
+    transition: letter-spacing 600ms ease-out, color 350ms ease-out;
+  }
+  .fe-look-card:hover .meta .ttl {
+    letter-spacing: 0.004em;
+    color: var(--gold);
+  }
+  .fe-look-card .meta .n {
+    transition: letter-spacing 500ms ease-out;
+  }
+  .fe-look-card:hover .meta .n { letter-spacing: 0.36em; }
+
+  /* MANIFESTO KPI BAND — counters + slow-reveal numbers */
+  .fe-manifesto .numbers .stat {
+    overflow: hidden; position: relative;
+  }
+  body.lm-ready .fe-manifesto .numbers .stat .v {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Gold rule slides in from left below each stat label after entry */
+  .fe-manifesto .numbers .stat::after {
+    content: ''; position: absolute; left: 32px; right: 32px; bottom: 22px;
+    height: 1px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 1200ms cubic-bezier(0.16, 0.84, 0.32, 1);
+    transition-delay: 300ms;
+  }
+  body.lm-ready .fe-manifesto .numbers .stat.lm-in::after {
+    transform: scaleX(0.4);
+  }
+
+  /* MAISON ATELIER NUMBERS (about page) — same treatment */
+  .fe-numbers .stat {
+    overflow: hidden; position: relative;
+  }
+  .fe-numbers .stat .v { font-variant-numeric: tabular-nums; }
+  .fe-numbers .stat::after {
+    content: ''; position: absolute; left: 32px; right: 32px; bottom: 32px;
+    height: 1px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 1200ms cubic-bezier(0.16, 0.84, 0.32, 1);
+    transition-delay: 400ms;
+  }
+  body.lm-ready .fe-numbers .stat::after { transform: scaleX(0.5); }
+
+  /* PRESS LOGO MARQUEE — rebrand for maison */
+  .fe-press .lm-logo-marquee {
+    --lm-marquee-duration: 100s;
+    --lm-marquee-gap: 96px;
+    --lm-marquee-color: var(--bone-mute);
+    --lm-marquee-rule: transparent;
+    --lm-marquee-pad-y: 0;
+    border-top: 0; border-bottom: 0;
+    flex: 1; min-width: 0;
+  }
+  .fe-press .lm-logo-marquee-item {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 22px; color: var(--bone); letter-spacing: 0.04em;
+    transition: color 400ms ease-out;
+  }
+  .fe-press .lm-logo-marquee-item:hover { color: var(--gold); }
+  .fe-press .lm-logo-marquee-item::after {
+    content: '·'; color: var(--bone-faint); font-style: normal;
+    font-size: 18px;
+  }
+
+  /* DROP CARD — pulsing gold accent + corner rule slide */
+  @keyframes fe-pulse-gold {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(212,165,116,0.32); }
+    50%      { box-shadow: 0 0 0 4px rgba(212,165,116,0); }
+  }
+  .fe-drop .card {
+    position: relative; overflow: hidden;
+    transition: border-color 600ms ease-out;
+  }
+  .fe-drop .card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 1px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 1400ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  }
+  body.lm-ready .fe-drop .card.lm-in::before { transform: scaleX(1); }
+  .fe-drop .card .lbl::before {
+    /* The eyebrow rule already exists. Add a pulsing gold dot. */
+    background: var(--gold);
+    animation: fe-pulse-gold 2400ms ease-in-out infinite;
+    width: 6px; height: 6px; border-radius: 50%;
+    margin-right: 14px;
+  }
+
+  /* PRIVATE VIEWING CTA — italic letter-spacing settle on h2 */
+  body.lm-ready .fe-private h2 {
+    transition: letter-spacing 1400ms cubic-bezier(0.16, 0.84, 0.32, 1);
+    transition-delay: 200ms;
+  }
+  body.lm-ready .fe-private h2:not(.lm-in) { letter-spacing: -0.020em; }
+  body.lm-ready .fe-private h2.lm-in { letter-spacing: -0.025em; }
+
+  /* PRIMARY BUTTON — gold panel slides in from left under text */
+  .fe-btn-primary {
+    position: relative; overflow: hidden; isolation: isolate;
+  }
+  .fe-btn-primary::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--gold);
+    transform: translateX(-100%);
+    transition: transform 600ms cubic-bezier(0.16, 0.84, 0.32, 1);
+    z-index: -1;
+  }
+  .fe-btn-primary:hover { background: transparent; color: var(--ink); }
+  .fe-btn-primary:hover::before { transform: translateX(0); }
+  .fe-btn-primary:hover:after { color: var(--ink); }
+
+  /* GHOST BUTTON — italic letter-spacing tightens on hover */
+  .fe-btn-ghost {
+    transition: color 350ms ease-out, border-color 350ms ease-out, letter-spacing 500ms ease-out;
+  }
+  .fe-btn-ghost:hover { letter-spacing: 0.30em; }
+
+  /* NAV LINKS — gold underline slides in from left */
+  .fe-nav .links a {
+    position: relative;
+  }
+  .fe-nav .links a::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+    height: 1px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 480ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  }
+  .fe-nav .links a:hover::after,
+  .fe-nav .links a.is-current::after { transform: scaleX(1); }
+  .fe-nav .links a:hover { color: var(--bone); border-color: transparent; }
+
+  /* ATELIER CARDS (about page) — slow image saturation hover */
+  .fe-atel {
+    transition: border-color 500ms ease-out;
+  }
+  .fe-atel:hover { border-color: var(--gold); }
+  .fe-atel .img {
+    transition: filter 800ms ease-out;
+  }
+  .fe-atel:hover .img { filter: grayscale(0%) contrast(1.12); }
+  .fe-atel .city {
+    transition: letter-spacing 500ms ease-out;
+  }
+  .fe-atel:hover .city { letter-spacing: 0.005em; }
+
+  /* PRESS LIST ROWS (about page) — italic hover lift */
+  .fe-press-list .row {
+    transition: background 400ms ease-out;
+  }
+  .fe-press-list .row:hover {
+    background: rgba(212,165,116,0.04);
+  }
+  .fe-press-list .row .magazine {
+    transition: letter-spacing 500ms ease-out;
+  }
+  .fe-press-list .row:hover .magazine { letter-spacing: 0.008em; }
+
+  /* MAISON CARDS (contact page) — gold left rule on hover */
+  .fe-mais-card {
+    position: relative; overflow: hidden;
+    transition: border-color 500ms ease-out;
+  }
+  .fe-mais-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: var(--gold);
+    transform: scaleY(0); transform-origin: top center;
+    transition: transform 600ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  }
+  .fe-mais-card:hover { border-color: var(--rule); }
+  .fe-mais-card:hover::before { transform: scaleY(1); }
+  .fe-mais-card .city {
+    transition: letter-spacing 500ms ease-out;
+  }
+  .fe-mais-card:hover .city { letter-spacing: 0.005em; }
+
+  /* FORM FOCUS — gold underline expands beneath each focused input */
+  .fe-form .lf-input {
+    transition: border-color 320ms ease-out, box-shadow 320ms ease-out;
+  }
+  .fe-form .lf-label {
+    transition: color 350ms ease-out;
+  }
+  .fe-form .lf-field:focus-within .lf-label {
+    color: var(--gold);
+  }
+
+  /* PRODUCT GALLERY (PDP) — slow grain shift on hover */
+  .fe-gal .strip .t {
+    transition: filter 700ms ease-out, border-color 400ms ease-out;
+    border: 1px solid var(--rule);
+  }
+  .fe-gal .strip .t:hover {
+    filter: grayscale(0%) contrast(1.14);
+    border-color: var(--gold);
+  }
+  .fe-info .variant .pill {
+    position: relative; overflow: hidden;
+    transition: background 400ms ease-out, color 400ms ease-out, border-color 400ms ease-out;
+  }
+  .fe-info .variant .pill::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--gold);
+    transform: translateY(100%);
+    transition: transform 500ms cubic-bezier(0.16, 0.84, 0.32, 1);
+    z-index: -1;
+  }
+  .fe-info .variant .pill:hover { background: transparent; color: var(--ink); border-color: var(--gold); }
+  .fe-info .variant .pill:hover::before { transform: translateY(0); }
+
+  /* REDUCED MOTION — kill all keyframe loops */
+  @media (prefers-reduced-motion: reduce) {
+    body.lm-ready .fe-cover,
+    body.lm-ready .fe-editorial h1,
+    body.lm-ready .fe-editorial .credit-line,
+    body.lm-ready .fe-editorial .intro,
+    body.lm-ready .fe-editorial .actions,
+    body.lm-ready .fe-cover .issue,
+    body.lm-ready .fe-cover .caption .item,
+    .fe-drop .card .lbl::before {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      letter-spacing: -0.025em !important;
+    }
+    .fe-tile, .fe-prod, .fe-look-tile, .fe-look-card,
+    .fe-tile *, .fe-prod *, .fe-look-tile *, .fe-look-card *,
+    .fe-btn-primary, .fe-btn-ghost,
+    .fe-btn-primary::before, .fe-btn-ghost::before,
+    .fe-info .variant .pill,
+    .fe-info .variant .pill::before,
+    .fe-mais-card, .fe-mais-card::before,
+    .fe-press .lm-logo-marquee-item {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+
+  /* Accessible focus rings */
+  .fe-btn-primary:focus-visible,
+  .fe-btn-ghost:focus-visible,
+  .fe-nav .links a:focus-visible,
+  .fe-nav .rs .private:focus-visible,
+  .mp-lang a.mp-lang-pill:focus-visible {
+    outline: 1px solid var(--gold);
+    outline-offset: 4px;
+  }
+
+  /* Mobile breakpoints */
+  @media (max-width: 1000px) {
+    .fe-nav { padding: 0 28px; height: 64px; }
+    .fe-nav .links { display: none; }
+    .fe-nav .wm { font-size: 22px; }
+    .fe-section { padding: 64px 28px; }
+    .fe-section h2 { font-size: 44px; }
+    .fe-foot { padding: 56px 28px 32px; }
+    .fe-foot .top { grid-template-columns: 1fr; gap: 36px; padding-bottom: 36px; }
+  }
+
+  /* ===========================================================
+     ARABIC / RTL — Amiri editorial body + Noto Kufi display
+     Maison voice: classical Arabic with editorial cadence.
+     Latin proper names (Maison Luxe, Milano, Parigi, Tokyo,
+     Vogue, Hermès), prices and sizing stay Latin via
+     unicode-bidi: isolate.
+  =========================================================== */
+  html[dir="rtl"] {
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', Georgia, serif;
+    --body:    'Amiri', '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.85; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 {
+    letter-spacing: 0; line-height: 1.22;
+    font-style: normal;
+  }
+  html[dir="rtl"] em { font-style: normal; font-weight: 700; color: var(--gold); }
+  /* Button arrow flip */
+  html[dir="rtl"] .fe-btn-primary:after { content: '←'; }
+  /* Letter-spacing flatten on chrome */
+  html[dir="rtl"] .fe-section .sec-label,
+  html[dir="rtl"] .mp-bar,
+  html[dir="rtl"] .fe-foot h5,
+  html[dir="rtl"] .fe-foot .bot,
+  html[dir="rtl"] .fe-nav .wm strong,
+  html[dir="rtl"] .fe-nav .links,
+  html[dir="rtl"] .fe-nav .rs,
+  html[dir="rtl"] .fe-btn-primary,
+  html[dir="rtl"] .fe-btn-ghost,
+  html[dir="rtl"] .mp-lang .mp-lang-label,
+  html[dir="rtl"] .mp-lang a.mp-lang-pill {
+    letter-spacing: 0;
+  }
+  /* Latin wordmark + city subline + editorial Latin runs */
+  html[dir="rtl"] .fe-nav .wm,
+  html[dir="rtl"] .fe-foot .brand .word,
+  html[dir="rtl"] .fe-foot .brand .word small,
+  html[dir="rtl"] [data-latin] {
+    font-family: '{{ theme.heading_font }}', Georgia, serif;
+    unicode-bidi: isolate;
+  }
+  {% if is_rtl %}
+  /* Page-level flips emitted only in AR */
+  .fe-nav .links { margin-left: 0; margin-right: 64px; }
+  .fe-nav .rs { margin-left: 0; margin-right: auto; }
+  .fe-foot .top { grid-template-columns: 1fr 1fr 1fr 1.7fr; }
+  {% endif %}
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  {% if locale_switcher %}
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
+</div>
+
+<nav class="fe-nav">
+  <a class="wm" href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-latin>
+    {{ site.logo_word }}
+    <strong>{{ site.logo_subline }}</strong>
+  </a>
+  <div class="links">
+    {% for p in pages %}
+      {% if p.slug != "home" %}
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="rs">
+    <a class="private" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ site.nav_cta }}</a>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="fe-foot">
+  <div class="top">
+    <div class="brand">
+      <div class="word" data-latin>{{ site.logo_word }} <small>{{ site.logo_subline }}</small></div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_contact }}</h5>
+      <p>{{ site.private_email_label }}</p>
+      <p data-latin>{{ site.email }}</p>
+      <p data-latin>{{ site.phone }}</p>
+      <p>{{ site.hours_compact }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_offices }}</h5>
+      {% for row in site.office_rows %}<p data-latin>{{ row }}</p>{% endfor %}
+    </div>
+  </div>
+  <div class="bot">
+    <span data-latin>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-media.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
+<script src="{% static 'js/live-interactions.js' %}" defer></script>
+</body>
+</html>

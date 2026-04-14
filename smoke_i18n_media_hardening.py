@@ -46,6 +46,9 @@ MULTILINGUAL = (
     # Session 40 — Business i18n completion pass.
     "pragma-corporate-suite",
     "elevate-startup-landing",
+    # Session 41 — eCommerce live rollout (Phase 2g3.5).
+    "bottega-shop-artigianale",
+    "luxe-fashion-store",
 )
 CATEGORY = {
     "pragma-corporate-suite":      "business",
@@ -55,6 +58,8 @@ CATEGORY = {
     "cardio-studio-specialistico": "medical",
     "dermatologia-elite-roma":     "medical",
     "gusto-fine-dining":           "restaurant",
+    "bottega-shop-artigianale":    "ecommerce",
+    "luxe-fashion-store":          "ecommerce",
 }
 
 FORBIDDEN_MEDIA_TOKENS = (

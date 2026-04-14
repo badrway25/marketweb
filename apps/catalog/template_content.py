@@ -2446,6 +2446,24 @@ from apps.catalog.template_content_pixel_fr import PIXEL_CONTENT_FR  # noqa: E40
 from apps.catalog.template_content_pixel_es import PIXEL_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_pixel_ar import PIXEL_CONTENT_AR  # noqa: E402
 
+# Phase 2g3.5 — eCommerce live rollout (Session 41, 2026-04-14).
+# Bottega + Luxe ship in 5 locales (it/en/fr/es/ar) with real RTL for AR.
+# Bottega keeps its familiar artisan-warm Toscana voice (workshops, makers,
+# small-batch editions, phone-and-whatsapp). Luxe keeps its maison editoriale
+# voice (Vogue/Gentlewoman/Net-a-Porter, private viewing, lookbook,
+# drop semestrali, Lei formale). The two voices must STAY OPPOSITE across
+# every locale — that is the D-054 differentiation contract for ecommerce.
+from apps.catalog.template_content_bottega import BOTTEGA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_bottega_en import BOTTEGA_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_bottega_fr import BOTTEGA_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_bottega_es import BOTTEGA_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_bottega_ar import BOTTEGA_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_luxe import LUXE_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_luxe_en import LUXE_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_luxe_fr import LUXE_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_luxe_es import LUXE_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_luxe_ar import LUXE_CONTENT_AR  # noqa: E402  # noqa
+
 
 TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     "cardio-studio-specialistico": {
@@ -2496,6 +2514,20 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": PIXEL_CONTENT_FR,
         "es": PIXEL_CONTENT_ES,
         "ar": PIXEL_CONTENT_AR,
+    },
+    "bottega-shop-artigianale": {
+        "it": BOTTEGA_CONTENT_IT,
+        "en": BOTTEGA_CONTENT_EN,
+        "fr": BOTTEGA_CONTENT_FR,
+        "es": BOTTEGA_CONTENT_ES,
+        "ar": BOTTEGA_CONTENT_AR,
+    },
+    "luxe-fashion-store": {
+        "it": LUXE_CONTENT_IT,
+        "en": LUXE_CONTENT_EN,
+        "fr": LUXE_CONTENT_FR,
+        "es": LUXE_CONTENT_ES,
+        "ar": LUXE_CONTENT_AR,
     },
 }
 

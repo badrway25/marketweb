@@ -1,0 +1,245 @@
+{% extends "live_templates/ecommerce/fashion-editorial/_base.html" %}
+{% block extra_css %}
+  .fe-look-lead {
+    padding: 80px 56px 56px; max-width: 1320px; margin: 0 auto;
+    border-bottom: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: end;
+  }
+  @media (max-width: 1000px) { .fe-look-lead { grid-template-columns: 1fr; } }
+  .fe-look-lead .left .issue {
+    display: inline-block; padding: 8px 14px; border: 1px solid var(--gold);
+    color: var(--gold); font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase;
+  }
+  .fe-look-lead .left .eyebrow {
+    margin-top: 22px;
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-look-lead .left .eyebrow:before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+  .fe-look-lead .left h1 {
+    margin-top: 26px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 88px; line-height: 0.96; letter-spacing: -0.025em; color: var(--bone); max-width: 18ch;
+  }
+  .fe-look-lead .right .intro {
+    font-family: var(--heading); font-style: italic; font-size: 17px; line-height: 1.6; color: var(--bone-mute);
+    max-width: 50ch;
+  }
+
+  /* Credits panel */
+  .fe-credits { padding: 64px 56px; max-width: 1320px; margin: 0 auto; border-bottom: 1px solid var(--rule); }
+  .fe-credits h4 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 22px;
+  }
+  .fe-credits .grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 64px;
+  }
+  @media (max-width: 720px) { .fe-credits .grid { grid-template-columns: 1fr; } }
+  .fe-credits .row {
+    display: grid; grid-template-columns: 200px 1fr; gap: 24px;
+    padding: 14px 0; border-top: 1px solid var(--rule);
+  }
+  .fe-credits .row:last-child { border-bottom: 1px solid var(--rule); }
+  .fe-credits .row .k {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-faint); padding-top: 2px;
+  }
+  .fe-credits .row .v {
+    font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--bone);
+  }
+
+  /* Looks editorial grid — 6 looks, alternating spans */
+  .fe-looks { padding: 96px 56px; max-width: 1320px; margin: 0 auto; }
+  .fe-looks .head { margin-bottom: 56px; max-width: 720px; }
+  .fe-looks .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-looks .head .lbl:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-looks .head h2 {
+    margin-top: 18px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 50px; line-height: 1.04; color: var(--bone);
+  }
+  .fe-looks .head p {
+    margin-top: 18px; font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--bone-mute); max-width: 60ch;
+  }
+
+  .fe-looks .grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px 28px;
+  }
+  @media (max-width: 720px) { .fe-looks .grid { grid-template-columns: 1fr; } }
+  .fe-look-card {
+    position: relative;
+  }
+  .fe-look-card .img {
+    aspect-ratio: 3 / 4; background: var(--ink-2) center/cover;
+    filter: grayscale(8%) contrast(1.06);
+    overflow: hidden; transition: filter .3s ease;
+  }
+  .fe-look-card:hover .img { filter: grayscale(0%) contrast(1.10); }
+  .fe-look-card.wide .img { aspect-ratio: 16 / 9; }
+  .fe-look-card.tall .img { aspect-ratio: 3 / 5; }
+  .fe-look-card .meta { padding: 18px 4px 0; display: grid; gap: 8px; }
+  .fe-look-card .n {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-look-card .ttl {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 28px; line-height: 1.1; color: var(--bone);
+  }
+  .fe-look-card .outfit {
+    margin-top: 4px; font-family: var(--heading); font-style: italic; font-size: 14px; color: var(--bone-mute);
+  }
+  .fe-look-card .credit {
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--bone-faint);
+  }
+  /* Layout: spans alternate */
+  .fe-look-card:nth-child(3n+1).wide-lg { grid-column: 1 / -1; }
+
+  /* Pull-quote */
+  .fe-pullq {
+    padding: 120px 56px; max-width: 1080px; margin: 0 auto; text-align: center;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .fe-pullq blockquote {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 38px; line-height: 1.3; color: var(--bone); letter-spacing: -0.012em;
+  }
+  .fe-pullq .attribution {
+    margin-top: 24px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-pullq .attribution:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+
+  /* Notes from set */
+  .fe-notes { padding: 96px 56px; max-width: 1320px; margin: 0 auto; }
+  .fe-notes .head { margin-bottom: 32px; max-width: 760px; }
+  .fe-notes .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-notes .head .lbl:before { content: ''; display: inline-block; width: 28px; height: 1px; background: var(--gold); margin-right: 16px; vertical-align: middle; }
+  .fe-notes .head h2 {
+    margin-top: 18px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 42px; line-height: 1.06; color: var(--bone);
+  }
+  .fe-notes .head p {
+    margin-top: 18px; max-width: 64ch;
+    font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--bone-mute);
+  }
+  .fe-notes .list { display: grid; gap: 0; }
+  .fe-notes .item {
+    display: grid; grid-template-columns: 280px 1fr; gap: 36px;
+    padding: 28px 0; border-top: 1px solid var(--rule);
+  }
+  @media (max-width: 720px) { .fe-notes .item { grid-template-columns: 1fr; } }
+  .fe-notes .item:last-child { border-bottom: 1px solid var(--rule); }
+  .fe-notes .item .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-notes .item .text {
+    font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.65; color: var(--bone-mute);
+  }
+
+  /* Shop CTA */
+  .fe-shop-cta { padding: 120px 56px; background: #050409; border-top: 1px solid var(--rule); }
+  .fe-shop-cta .inner { max-width: 1100px; margin: 0 auto; text-align: center; }
+  .fe-shop-cta .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold);
+  }
+  .fe-shop-cta h2 {
+    margin-top: 24px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; line-height: 1.05; color: var(--bone); max-width: 22ch; margin-left: auto; margin-right: auto;
+  }
+  .fe-shop-cta p {
+    margin-top: 22px; max-width: 56ch; margin-left: auto; margin-right: auto;
+    font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--bone-mute);
+  }
+  .fe-shop-cta .actions {
+    margin-top: 36px; display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="fe-look-lead" data-lm="reveal">
+  <div class="left">
+    <span class="issue" data-latin>{{ page_data.issue_n }} · {{ page_data.issue }}</span>
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+  </div>
+  <div class="right">
+    <p class="intro">{{ page_data.intro }}</p>
+  </div>
+</section>
+
+<section class="fe-credits" data-lm="reveal">
+  <h4>{{ page_data.credits_label }}</h4>
+  <div class="grid">
+    {% for k, v in page_data.credits_rows %}
+      <div class="row"><span class="k">{{ k }}</span><span class="v" data-latin>{{ v }}</span></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fe-looks">
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ page_data.looks_label }}</div>
+    <h2>{{ page_data.looks_label }}</h2>
+    <p>{{ page_data.looks_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="220">
+    {% for l in page_data.looks %}
+      <article class="fe-look-card{% if forloop.counter == 1 %} wide-lg{% endif %}{% if forloop.counter == 4 %} tall{% endif %}" data-lm="reveal">
+        <div class="img" style="background-image:url('{{ l.image }}')"></div>
+        <div class="meta">
+          <span class="n" data-latin>{{ l.n }}</span>
+          <h3 class="ttl">{{ l.title }}</h3>
+          <div class="outfit">{{ l.outfit }}</div>
+          <div class="credit">{{ l.credit }}</div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fe-pullq" data-lm="reveal">
+  <blockquote>{{ page_data.pullquote }}</blockquote>
+  <div class="attribution" data-latin>{{ page_data.pullquote_attribution }}</div>
+</section>
+
+<section class="fe-notes" data-lm-stagger>
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ page_data.notes_label }}</div>
+    <h2>{{ page_data.notes_label }}</h2>
+    <p>{{ page_data.notes_intro }}</p>
+  </div>
+  <div class="list">
+    {% for n in page_data.notes_items %}
+      <div class="item" data-lm="reveal">
+        <div class="lbl">{{ n.label }}</div>
+        <p class="text">{{ n.text }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fe-shop-cta" data-lm="reveal">
+  <div class="inner">
+    <div class="lbl">{{ page_data.shop_label }}</div>
+    <h2>{{ page_data.shop_heading|safe }}</h2>
+    <p>{{ page_data.shop_intro }}</p>
+    <div class="actions">
+      <a class="fe-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.shop_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.shop_primary }}</a>
+      <a class="fe-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.shop_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.shop_secondary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "live_templates/ecommerce/artisan-workshop/_base.html" %}
+{% block extra_css %}
+  .aw-shop-lead { padding: 56px 56px 32px; max-width: 1280px; margin: 0 auto; }
+  .aw-shop-lead .eyebrow {
+    display: inline-flex; gap: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-shop-lead .eyebrow:before { content: '✦'; color: var(--accent); }
+  .aw-shop-lead h1 {
+    margin-top: 18px; font-family: var(--heading); font-weight: 700;
+    font-size: 64px; line-height: 0.98; letter-spacing: -0.022em; color: var(--ink); max-width: 18ch;
+  }
+  .aw-shop-lead .intro {
+    margin-top: 22px; max-width: 60ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.7; color: var(--ink-2);
+  }
+  .aw-shop-result {
+    margin-top: 28px; padding-top: 22px; border-top: 2px dashed var(--rule-dash);
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 12px;
+  }
+  .aw-shop-result strong {
+    font-family: var(--heading); font-size: 22px; font-style: italic; color: var(--ink); font-weight: 600;
+  }
+  .aw-shop-result span {
+    font-family: var(--body); font-size: 12px; color: var(--ink-mute); font-style: italic;
+  }
+
+  /* Filter rail + grid */
+  .aw-shop {
+    padding: 0 56px 80px; max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 240px 1fr; gap: 48px;
+  }
+  @media (max-width: 960px) { .aw-shop { grid-template-columns: 1fr; } }
+
+  .aw-filters {
+    border: 1.5px solid var(--ink); padding: 24px 22px;
+    background: var(--paper-2);
+    height: max-content;
+  }
+  .aw-filters h5 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .aw-filters .group { padding: 16px 0; border-top: 1px dashed var(--rule-dash); }
+  .aw-filters .group:first-of-type { border-top: 0; padding-top: 0; }
+  .aw-filters .group .label {
+    font-family: var(--heading); font-size: 15px; font-weight: 700; color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .aw-filters .group ul { list-style: none; }
+  .aw-filters .group li {
+    padding: 5px 0; font-family: var(--body); font-size: 13px;
+    color: var(--ink-mute); cursor: pointer;
+  }
+  .aw-filters .group li:hover { color: var(--accent); }
+  .aw-filters .sort {
+    border-top: 1px dashed var(--rule-dash); padding-top: 16px; margin-top: 8px;
+  }
+  .aw-filters .sort select {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--ink);
+    background: var(--paper); font-family: var(--body); font-size: 13px;
+    color: var(--ink); border-radius: 0;
+  }
+
+  .aw-shop-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  @media (max-width: 1100px) { .aw-shop-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 580px)  { .aw-shop-grid { grid-template-columns: 1fr; } }
+
+  .aw-card .meta-place { margin-top: 4px; font-family: var(--body); font-size: 11px; color: var(--ink-faint); }
+
+  .aw-shop-foot {
+    margin-top: 56px; padding: 36px 0 0; border-top: 2px dashed var(--rule-dash);
+    max-width: 1280px; margin-left: auto; margin-right: auto;
+  }
+  .aw-shop-foot h5 {
+    font-family: var(--body); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .aw-shop-foot p {
+    margin-top: 10px; font-family: var(--body); font-size: 14px; line-height: 1.7;
+    color: var(--ink-2); max-width: 76ch;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="aw-shop-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+  <div class="aw-shop-result">
+    <strong>{{ page_data.result_count }}</strong>
+    <span>{{ page_data.result_subtitle }}</span>
+  </div>
+</section>
+
+<section class="aw-shop">
+  <aside class="aw-filters" data-lm="reveal-soft">
+    <h5>{{ page_data.filter_section_label }}</h5>
+    {% for g in page_data.filter_groups %}
+      <div class="group">
+        <div class="label">{{ g.label }}</div>
+        <ul>{% for o in g.options %}<li>· {{ o }}</li>{% endfor %}</ul>
+      </div>
+    {% endfor %}
+    <div class="sort">
+      <h5 style="margin-bottom:8px">{{ page_data.sort_label }}</h5>
+      <select aria-label="{{ page_data.sort_label }}">
+        {% for o in page_data.sort_options %}<option>{{ o }}</option>{% endfor %}
+      </select>
+    </div>
+  </aside>
+
+  <div class="aw-shop-grid" data-lm-stagger>
+    {% for it in page_data.products %}
+      <a class="aw-card{% if not it.available %} is-out{% endif %}" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'product' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <div class="thumb" style="background-image:url('{{ it.image }}')">
+          <span class="num">{{ it.n }}</span>
+          <span class="edition">{{ it.edition }}</span>
+        </div>
+        <h4>{{ it.name }}</h4>
+        <div class="meta">{{ it.meta }}</div>
+        <div class="meta-place">{{ site.made_in_label }} {{ it.place }} · {{ site.artisan_label }} {{ it.artisan }}</div>
+        <div class="price-row"><span class="price">{{ it.price }}</span><span class="tag">{{ it.tag }}</span></div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="aw-shop-foot" data-lm="reveal">
+  <h5>{{ page_data.footer_note_label }}</h5>
+  <p>{{ page_data.footer_note }}</p>
+</section>
+{% endblock %}
