@@ -34,6 +34,7 @@ from apps.commerce.models import (
     ShippingMethod,
     Storefront,
 )
+from apps.commerce import payments
 
 
 # ── Errors ─────────────────────────────────────────────────────────
@@ -243,10 +244,14 @@ def create_order_from_cart(
         # Stock decrement — guarded by select_for_update above.
         ProductVariant.objects.filter(pk=variant.pk).update(stock=variant.stock - item.quantity)
 
-    # Dispatch payment.
-    intent = _dispatch_payment(order)
+    # Dispatch payment via the provider abstraction. Stripe intents
+    # start as INITIATED and need the customer to complete the
+    # Elements flow on a follow-up page; stub + offline bank
+    # transfer terminate synchronously here.
+    result = payments.dispatch(payments.PaymentContext(order=order))
+    intent = result.intent
 
-    # Reflect intent on order if auto-succeeded (stub provider).
+    # Reflect intent on order if already terminal.
     order.refresh_from_db()
     if intent.status == PaymentIntent.Status.SUCCEEDED:
         order.payment_status = Order.PaymentStatus.PAID
@@ -261,51 +266,18 @@ def create_order_from_cart(
     return order
 
 
-# ── Payment dispatch ───────────────────────────────────────────────
+@transaction.atomic
+def retry_payment(*, order: Order) -> PaymentIntent:
+    """Open a fresh PaymentIntent for an order whose previous attempt
+    is in a terminal failed state.
 
-def _dispatch_payment(order: Order) -> PaymentIntent:
-    provider = order.storefront.payment_provider
-    if provider == Storefront.PaymentProvider.STUB:
-        return _handle_stub(order)
-    if provider == Storefront.PaymentProvider.OFFLINE_BANK_TRANSFER:
-        return _handle_offline_bank_transfer(order)
-    # Unknown provider = initiated, awaiting seller intervention.
-    return PaymentIntent.objects.create(
-        order=order,
-        provider=provider,
-        amount=order.grand_total,
-        currency=order.currency,
-        status=PaymentIntent.Status.INITIATED,
-    )
-
-
-def _handle_stub(order: Order) -> PaymentIntent:
-    return PaymentIntent.objects.create(
-        order=order,
-        provider=Storefront.PaymentProvider.STUB,
-        amount=order.grand_total,
-        currency=order.currency,
-        status=PaymentIntent.Status.SUCCEEDED,
-        succeeded_at=timezone.now(),
-        payload={"note": "stub provider · auto-confirmed"},
-    )
-
-
-def _handle_offline_bank_transfer(order: Order) -> PaymentIntent:
-    return PaymentIntent.objects.create(
-        order=order,
-        provider=Storefront.PaymentProvider.OFFLINE_BANK_TRANSFER,
-        amount=order.grand_total,
-        currency=order.currency,
-        status=PaymentIntent.Status.AWAITING_TRANSFER,
-        payload={
-            "instructions": (
-                order.storefront.bank_transfer_instructions
-                or "Pagamento con bonifico bancario — il venditore invierà le coordinate via email."
-            ),
-            "reference": order.reference,
-        },
-    )
+    Used by the customer-facing retry CTA on the order confirmation
+    page. No stock is touched — that was locked at order creation.
+    """
+    if order.payment_status == Order.PaymentStatus.PAID:
+        raise CommerceError("Questo ordine è già stato pagato.")
+    result = payments.dispatch(payments.PaymentContext(order=order))
+    return result.intent
 
 
 # ── Seller operations ──────────────────────────────────────────────

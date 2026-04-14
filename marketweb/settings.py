@@ -151,3 +151,25 @@ SPECTACULAR_SETTINGS = {
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+# ── Commerce: payment providers ────────────────────────────────────
+#
+# Stripe is optional. Storefronts configured with payment_provider
+# = "stripe" will use real Stripe PaymentIntents when STRIPE_SECRET_KEY
+# is set; otherwise apps/commerce/payments.py falls back to the stub
+# provider gracefully (see PaymentIntent.payload.stub_fallback).
+#
+# Read from env so the same codebase can run dev (empty env = stub
+# fallback, carts still complete) and prod (real keys = real charges).
+
+import os
+
+STRIPE_SECRET_KEY      = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
+STRIPE_WEBHOOK_SECRET  = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+# When True (default), a missing STRIPE_SECRET_KEY is treated as an
+# intentional dev setup: the storefront keeps its configured provider
+# but dispatch falls back to stub + logs a warning. Set False in
+# production to surface a hard error on misconfiguration.
+STRIPE_ALLOW_STUB_FALLBACK = os.environ.get("STRIPE_ALLOW_STUB_FALLBACK", "1") != "0"

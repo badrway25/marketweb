@@ -78,12 +78,57 @@
   {% endif %}
 </section>
 
-<section class="ds-card">
-  <h2>Collegamenti rapidi</h2>
-  <div class="ds-grid-3">
-    <a class="ds-btn is-ghost" href="{% url 'commerce:dashboard_products' storefront.slug %}">Gestisci catalogo</a>
-    <a class="ds-btn is-ghost" href="{% url 'commerce:dashboard_orders' storefront.slug %}">Tutti gli ordini</a>
-    <a class="ds-btn is-ghost" href="{% url 'commerce:shop' storefront.slug %}" target="_blank">Apri shop ↗</a>
+<section class="ds-grid-3" style="margin-bottom: 28px;">
+  <div class="ds-card">
+    <h2>Pagamenti</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0 4px;">
+      <div>
+        <div style="font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--ink-mute); font-weight:700;">Provider configurato</div>
+        <div style="margin-top:6px; font-weight:600;">{{ payment_provider_label }}</div>
+      </div>
+      {% if payment_provider_ok %}
+        <span class="ds-pill is-paid">● Operativo</span>
+      {% else %}
+        <span class="ds-pill is-unpaid">⚠ Configurazione mancante</span>
+      {% endif %}
+    </div>
+    {% if not payment_provider_ok %}
+    <div class="sub" style="margin-top:12px; padding:10px 12px; background:#fff4dc; border-left:3px solid var(--warning); color:var(--warning); font-weight:500;">
+      Stripe selezionato ma <code style="font-family:var(--mono); font-size:12px;">STRIPE_SECRET_KEY</code> non impostata.
+      Il fallback stub conferma comunque gli ordini; per accettare pagamenti reali imposta le variabili d'ambiente.
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="ds-card">
+    <h2>Membri</h2>
+    <table class="ds-table" style="font-size:12px;">
+      <tbody>
+      {% for m in members %}
+        <tr>
+          <td>{{ m.user.username }}<div class="muted">{{ m.user.email }}</div></td>
+          <td><span class="ds-pill is-confirmed">{{ m.get_role_display }}</span></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="2" class="muted">Nessun membro assegnato.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <div class="sub" style="margin-top:12px; font-size:12px;">
+      Solo utenti con riga <code style="font-family:var(--mono); font-size:11px;">StorefrontMember</code> possono accedere a questo dashboard. Aggiungi membri dall'<a href="/admin/commerce/storefront/{{ storefront.pk }}/change/" style="color:var(--accent); font-weight:600;">admin</a>.
+    </div>
+  </div>
+
+  <div class="ds-card">
+    <h2>Collegamenti rapidi</h2>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <a class="ds-btn is-ghost" href="{% url 'commerce:dashboard_products' storefront.slug %}">Gestisci catalogo</a>
+      <a class="ds-btn is-ghost" href="{% url 'commerce:dashboard_orders' storefront.slug %}">Tutti gli ordini</a>
+      <a class="ds-btn is-ghost" href="{% url 'commerce:shop' storefront.slug %}" target="_blank">Apri shop ↗</a>
+      {% if all_storefronts|length > 1 %}
+        <a class="ds-btn is-ghost" href="{% url 'commerce:dashboard_root' %}">Cambia storefront ({{ all_storefronts|length }})</a>
+      {% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

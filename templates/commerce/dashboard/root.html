@@ -1,0 +1,90 @@
+{% load static %}<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard · Le tue boutique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:#f5f5f0; --panel:#fff; --ink:#0f1020; --ink-mute:#6b6f85; --rule:rgba(15,16,32,0.10);
+    --accent:#2c3e87; --accent-2:#e8b04a;
+  }
+  body { background: var(--bg); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.55; min-height: 100vh; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 64px 24px; }
+  .brand {
+    font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent-2);
+    font-weight: 700; margin-bottom: 18px;
+  }
+  h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.012em; margin-bottom: 6px; }
+  .sub { color: var(--ink-mute); font-size: 14px; margin-bottom: 32px; }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 22px 24px; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    transition: border-color .12s ease, box-shadow .12s ease;
+  }
+  .card:hover { border-color: var(--accent); box-shadow: 0 6px 18px rgba(15,16,32,0.06); }
+  .card .brandline { font-size: 18px; font-weight: 700; }
+  .card .slug { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: var(--ink-mute); margin-top: 4px; }
+  .card .skin {
+    display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 4px;
+    background: rgba(44,62,135,0.08); color: var(--accent); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .card .cta {
+    padding: 10px 18px; background: var(--ink); color: #fff;
+    border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none;
+    white-space: nowrap;
+  }
+  .card .cta:hover { background: #000; }
+
+  .empty {
+    background: var(--panel); border: 1px dashed var(--rule); border-radius: 10px;
+    padding: 40px 32px; text-align: center; color: var(--ink-mute);
+  }
+  .empty h2 { font-size: 18px; color: var(--ink); margin-bottom: 8px; }
+  .empty p { max-width: 420px; margin: 0 auto; }
+
+  .note {
+    margin-top: 20px; padding: 12px 16px;
+    background: rgba(232,176,74,0.10); border-left: 3px solid var(--accent-2);
+    font-size: 12px; color: var(--ink); font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">MarketWeb Commerce · Dashboard</div>
+  <h1>Le tue boutique</h1>
+  <div class="sub">Apri una delle tue vetrine per gestire prodotti, ordini e pagamenti.</div>
+
+  {% if storefronts %}
+    {% for sf in storefronts %}
+    <div class="card">
+      <div>
+        <div class="brandline">{{ sf.template.brand.brand_name }}</div>
+        <div class="slug">{{ sf.slug }}</div>
+        <span class="skin">{{ sf.skin }}</span>
+      </div>
+      <a class="cta" href="{% url 'commerce:dashboard_home' sf.slug %}">Apri dashboard ▸</a>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty">
+      <h2>Non sei ancora membro di nessuno storefront</h2>
+      <p>Chiedi al proprietario dello storefront di aggiungerti come <strong>Owner</strong> o <strong>Editor</strong> dall'area admin. Senza un <em>StorefrontMember</em> non puoi accedere a nessun dashboard.</p>
+    </div>
+  {% endif %}
+
+  {% if is_superuser %}
+  <div class="note">
+    ● Accesso <strong>superuser</strong>: vedi tutti gli storefront registrati nel sistema, anche quelli di cui non sei membro.
+  </div>
+  {% endif %}
+</div>
+</body>
+</html>

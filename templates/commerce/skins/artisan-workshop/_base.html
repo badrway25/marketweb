@@ -1,13 +1,14 @@
 {% load static %}<!DOCTYPE html>
-<html lang="it" dir="ltr">
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{ storefront.template.name }} — {% block page_title %}Bottega{% endblock %}</title>
-<meta name="description" content="{{ storefront.template.brand.tagline }}">
+<title>{{ storefront.template.name }} — {% block page_title %}{{ chrome.nav_catalog|default:"Bottega" }}{% endblock %}</title>
+<meta name="description" content="{{ storefront_tagline|default:storefront.template.brand.tagline }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+{% if is_rtl %}<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">{% endif %}
 <link rel="stylesheet" href="{% static 'css/commerce.css' %}">
 <style>
   :root {
@@ -76,6 +77,21 @@
   }
   .mp-bar a.mp-back { color: var(--terra); font-weight: 700; border-bottom: 1px solid var(--terra); padding-bottom: 1px; }
   .mp-bar .mp-name { color: var(--ink-mute); }
+
+  /* Language switcher — pills */
+  .mp-lang { display: inline-flex; gap: 8px; align-items: center; }
+  .mp-lang .mp-lang-lbl { color: var(--ink-faint); font-size: 10px; letter-spacing: 0.22em; }
+  .mp-lang a {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border: 1px solid var(--rule);
+    font-family: var(--cx-body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute);
+    background: transparent; transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .mp-lang a:hover { color: var(--terra); border-color: var(--terra); }
+  .mp-lang a.is-current {
+    color: var(--ink); border-color: var(--terra); background: var(--terra-mute);
+  }
 
   /* Top nav */
   .aw-nav-wrap { padding: 0 56px; }
@@ -161,33 +177,61 @@
     .aw-foot { padding: 40px 28px 24px; }
   }
 
+  /* ── RTL overrides (Arabic) ───────────────────────────────────── */
+  html[dir="rtl"] body { font-family: 'Noto Kufi Arabic', var(--cx-body); }
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4,
+  html[dir="rtl"] h5 { font-family: 'Amiri', 'Libre Baskerville', Georgia, serif; letter-spacing: 0; }
+  html[dir="rtl"] .mp-bar a.mp-back { border-bottom-color: var(--terra); }
+  html[dir="rtl"] .aw-nav .crest { transform: rotate(3deg); }
+  html[dir="rtl"] .aw-nav .wm { margin-left: 0; margin-right: 18px; }
+  html[dir="rtl"] .aw-nav .links { margin-left: 0; margin-right: 56px; }
+  html[dir="rtl"] .aw-nav .rs { margin-left: 0; margin-right: auto; }
+  html[dir="rtl"] .aw-foot .bot,
+  html[dir="rtl"] .mp-bar { direction: rtl; }
+  html[dir="rtl"] .cx-btn { box-shadow: -5px 5px 0 var(--terra-mute); }
+  html[dir="rtl"] .cx-btn:hover { transform: translate(1px, -1px); box-shadow: -6px 6px 0 var(--terra-mute); }
+
   {% block extra_css %}{% endblock %}
 </style>
 </head>
 <body>
 
 <div class="mp-bar">
-  <a href="{% url 'catalog:template_detail' storefront.template.category.slug storefront.template.slug %}" class="mp-back">◂ Torna al catalogo</a>
-  <span class="mp-name">Shop attivo · {{ storefront.template.name }}</span>
-  <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}" class="mp-back">Anteprima live &nbsp;▸</a>
+  <a href="{% url 'catalog:template_detail' storefront.template.category.slug storefront.template.slug %}{{ lang_qs }}" class="mp-back">{{ chrome.mp_back_catalog }}</a>
+  <span class="mp-name">{{ chrome.mp_shop_active }} · {{ storefront.template.name }}</span>
+  {% if locale_switcher %}
+  <span class="mp-lang" aria-label="{{ chrome.switch_language }}">
+    <span class="mp-lang-lbl">{{ chrome.switch_language }}</span>
+    {% for entry in locale_switcher %}
+      <a href="{{ request.path }}{% if entry.code != 'it' %}?lang={{ entry.code }}{% endif %}"
+         data-lang="{{ entry.code }}"
+         class="{% if entry.is_current %}is-current{% endif %}"
+         title="{{ entry.label }}">{{ entry.badge }}</a>
+    {% endfor %}
+  </span>
+  {% endif %}
+  <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}{{ lang_qs }}" class="mp-back">{{ chrome.mp_live_preview }}</a>
 </div>
 
 <div class="aw-nav-wrap">
   <nav class="aw-nav">
-    <a href="{% url 'commerce:shop' storefront.slug %}" class="crest" aria-label="{{ storefront.template.brand.brand_name }}">M</a>
-    <a href="{% url 'commerce:shop' storefront.slug %}" class="wm">
+    <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="crest" aria-label="{{ storefront.template.brand.brand_name }}">M</a>
+    <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="wm">
       {{ storefront.template.brand.brand_name }}
-      <small>Firenze · dal 1968 · fatto a mano</small>
+      <small>{{ storefront_tagline|default:"Firenze · dal 1968 · fatto a mano" }}</small>
     </a>
     <div class="links">
-      <a href="{% url 'commerce:shop' storefront.slug %}" {% block nav_shop_class %}{% endblock %}>Catalogo</a>
-      {% for c in storefront.collections.all %}{% if c.is_active %}
-        <a href="{% url 'commerce:shop_collection' storefront.slug c.slug %}">{{ c.title }}</a>
-      {% endif %}{% endfor %}
+      <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" {% block nav_shop_class %}{% endblock %}>{{ chrome.nav_catalog }}</a>
+      {% for c in collections_i18n %}
+        <a href="{% url 'commerce:shop_collection' storefront.slug c.slug %}{{ lang_qs }}">{{ c.title }}</a>
+      {% endfor %}
     </div>
     <div class="rs">
-      <a href="{% url 'commerce:cart' storefront.slug %}" class="cart-pill">
-        Carrello <span class="num">{{ cart.item_count|default:0 }}</span>
+      <a href="{% url 'commerce:cart' storefront.slug %}{{ lang_qs }}" class="cart-pill">
+        {{ chrome.nav_cart }} <span class="num">{{ cart.item_count|default:0 }}</span>
       </a>
     </div>
   </nav>
@@ -206,31 +250,33 @@
 <footer class="aw-foot">
   <div class="inner">
     <div class="brand">
-      <h5>La bottega</h5>
+      <h5>{{ chrome.foot_studio_aw }}</h5>
       <div class="word">{{ storefront.template.brand.brand_name }}</div>
-      <p>Bottega artigiana fondata nel 1968. Cuoio, ceramica e tessuti fatti a mano in Toscana, in piccole edizioni che non si ripetono.</p>
+      <p>{{ storefront_footer_bio|default:"Bottega artigiana fondata nel 1968." }}</p>
     </div>
     <div class="col">
-      <h5>Bottega & ordini</h5>
+      <h5>{{ chrome.foot_contacts }}</h5>
       <p>{{ storefront.contact_phone }}</p>
       <p><a href="mailto:{{ storefront.contact_email }}">{{ storefront.contact_email }}</a></p>
       <p>Via dei Serragli 47/r · 50124 Firenze</p>
     </div>
     <div class="col">
-      <h5>Navigazione</h5>
-      <a href="{% url 'commerce:shop' storefront.slug %}">Catalogo</a>
-      <a href="{% url 'commerce:cart' storefront.slug %}">Carrello</a>
-      <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}">Atelier</a>
+      <h5>{{ chrome.foot_nav }}</h5>
+      <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}">{{ chrome.nav_catalog }}</a>
+      <a href="{% url 'commerce:cart' storefront.slug %}{{ lang_qs }}">{{ chrome.nav_cart }}</a>
+      <a href="{% url 'commerce:policies' storefront.slug %}{{ lang_qs }}">{{ chrome.nav_policies }}</a>
+      <a href="{% url 'commerce:order_lookup' storefront.slug %}{{ lang_qs }}">{{ chrome.nav_lookup_order }}</a>
+      <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}{{ lang_qs }}">{{ storefront_content.nav_atelier_label|default:"Atelier" }}</a>
     </div>
     <div class="col">
-      <h5>Pagamenti & resi</h5>
-      <p>Spedizione 48 ore in Italia</p>
-      <p>Garanzia riparazione 2 anni</p>
-      <p>Resi entro 14 giorni</p>
+      <h5>{{ chrome.foot_service }}</h5>
+      <p>{{ chrome.cart_trust_ship_title }}</p>
+      <p>{{ chrome.cart_trust_return_title }}</p>
+      <p>{{ chrome.cart_trust_pay_title }}</p>
     </div>
   </div>
   <div class="bot">
-    <span>© 2026 {{ storefront.template.brand.brand_name }} · P.IVA 04891240484</span>
+    <span>© 2026 {{ storefront.template.brand.brand_name }} · {{ chrome.foot_rights }}</span>
     <span>Commerce Foundation v1 · La Bottega di Martino</span>
   </div>
 </footer>

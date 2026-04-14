@@ -1,5 +1,26 @@
 # TODO Next
 
+## 🟢 Phase 3b — Commerce Completion v2 — ✅ CLOSED (Session 45, 2026-04-14)
+Per D-076, commerce è passato da foundation v1 ("poster operativo single-seller, IT-only, dev-payment") a v2 reale su 4 assi: (1) storefront `/shop/<slug>/` multilingua 5 locales (it/en/fr/es/ar) con RTL arabo reale via `COMMERCE_CHROME` + `STOREFRONT_CONTENT` + `COLLECTION_CONTENT` + LocaleMixin + translations JSONField; (2) payment provider abstraction vera con Stripe integration env-driven + idempotency_key + webhook signature verification + graceful fallback a stub se `STRIPE_SECRET_KEY` manca (`apps/commerce/payments.py`); (3) merchant-scoped dashboard via nuovo `StorefrontMember(storefront, user, role=owner|editor)` modello — `SellerRequiredMixin` ora verifica membership invece di `is_staff` global; (4) customer flow chiuso con `PoliciesView` + `OrderLookupView` (guest self-service reference+email) + `RetryPaymentView` (retry su PaymentIntent failed) + `PaymentPageView` (Stripe Elements). Validation: `check` clean, migration 0003 applied, 73/73 commerce smoke + 45/45 live preview regression + 7/7 ACL matrix green. Credenziali demo: `bottega_owner` / `commerce-v2`, `luxe_owner` / `commerce-v2`. Senza env vars: stub + offline funzionano end-to-end; con env vars + `pip install stripe`: Stripe real-mode operativo. See SESSION_LOG Session 45.
+
+**Catalog state after Session 45: 9/20 published_live (unchanged), 2/9 of those now fully multilingual operational storefronts (Bottega + Luxe). Preview live surface untouched — zero regression.**
+
+**Follow-ups (Phase 3c candidates, none blocking):**
+- [ ] **Customer account pages.** Login-gated order history at `/shop/<slug>/account/` per autenticati. Oggi l'order lookup resta guest-first (reference + email); l'account surface è additivo.
+- [ ] **Email sending.** `django-anymail` + provider (Postmark/Resend/SendGrid) + order confirmation email + bank transfer instructions email + shipment tracking email. Templates per locale.
+- [ ] **Stripe Connect per multi-account.** Oggi single-account (una `STRIPE_SECRET_KEY` serve tutto). Multi-merchant con payout automatico richiede Connect + `account_id` per storefront.
+- [ ] **Refunds flow UI.** `PaymentIntent.Status.REFUNDED` esiste; dashboard CTA "Rimborsa" → provider-specific refund dispatch (Stripe Refund API).
+- [ ] **Dashboard i18n.** Commerce dashboard resta IT-only. Low priority — è uno strumento interno, non customer-facing.
+- [ ] **Coupons / promotions.** Schema-compatible. Order ha `tax_total` + `shipping_total` separati; aggiungere `discount_total` + `Coupon` model additivo.
+- [ ] **Tax engine reale.** `Order.tax_total` esiste ma è 0. Per VAT reale serve logic giurisdizionale (origin vs destination VAT).
+- [ ] **Carrier integration.** `tracking_number` è free text; carrier-specific tracking URL generation via `shipping_method.carrier_code`.
+- [ ] **Reviews + wishlists.** Additivi, nessun blocco.
+- [ ] **Per-product localization UI.** Oggi `product.translations` si popola via seeder o admin JSON. Un future add è un tab "Traduzioni" nel ProductUpdateView per locale.
+- [ ] **Commerce chrome consolidation.** Il `/templates/.../preview/` chrome e `/shop/…/` chrome restano volutamente duplicati (diversi CTA register, diverso scope). Una volta stabilizzato, estraibile in `templates/commerce/skins/<skin>/_chrome.html` condiviso.
+- [ ] **Product image CDN.** Oggi Unsplash hot-link + hero_image_url sono campi URL — va bene per demo. Per produzione: `ImageField` + storage S3/Cloudinary + responsive sizes.
+
+---
+
 ## 🟢 Phase 3a — Commerce Foundation v1 — ✅ CLOSED (Session 43, 2026-04-14)
 Per D-075, `apps/commerce` is now a real engine. Bottega + Luxe have DB-backed catalogs (9+8 products, 16+23 variants, 4+5 collections, 3+4 shipping methods) rendered through two skin template sets at `/shop/<storefront>/…` with a shared `.cx-*` widget CSS surface. Customer flow is operational end-to-end: browse → product detail with variant picker → add to cart (session-keyed, guest-ok) → update qty / remove → checkout (name + email + shipping address + shipping method + note) → order creation (transactional, `select_for_update` stock lock, atomic) → confirmation page (UUID-addressable, echoes address + totals + payment instructions). Seller dashboard lives at `/dashboard/<storefront>/…` gated by `is_staff`: products/variants CRUD, orders list with status filter, order detail with mark-paid + fulfillment state transition + cancel (stock rollback) + tracking capture. Payment is provider-agnostic via `PaymentIntent` + `_dispatch_payment` — v1 ships `stub` (auto-confirm dev) and `offline_bank_transfer` (awaiting_transfer, seller marks paid); Stripe is documented extension point, not implemented. Validation: `check` clean, 47/47 new `smoke_commerce.py`, 363/363 + 45/45 + 194/194 + 57/57 + 76/76 + 80/80 + 52/52 all existing smokes **unchanged — zero regression**. Total 914/914. See SESSION_LOG Session 43.
 

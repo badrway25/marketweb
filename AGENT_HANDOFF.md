@@ -1,6 +1,59 @@
 # Agent Handoff
 
-Last updated: 2026-04-14 — after **Session 43 Commerce Foundation v1**
+Last updated: 2026-04-14 — after **Session 45 Commerce Completion v2**
+
+## Session 45 — Commerce Completion v2: Read This Before Touching Any /shop/, /dashboard/, Payment, i18n, or Merchant Work (2026-04-14)
+
+**What changed in Session 45.** `apps/commerce` è passato da foundation v1 (IT-only, dev-payment, is_staff global) a v2 operativa. Le 4 modifiche load-bearing:
+
+### 1. Multilingua /shop/ — 5 locales via chrome dict + translations JSONField
+- `apps/commerce/i18n.py` è la nuova fonte di verità per le stringhe chrome commerce. `COMMERCE_CHROME` ha ~125 keys × 5 locales. Re-esporta `SUPPORTED_LOCALES`/`DEFAULT_LOCALE`/`RTL_LOCALES` da `apps/catalog/template_i18n.py` (non riallinearle indipendentemente).
+- `apps/commerce/content.py` porta il per-storefront brand copy (tagline, footer_bio, shipping_policy, return_policy, bank_transfer_instructions) × 5 locales. Il seeder lo popola su `Storefront.translations`.
+- `Storefront`, `Collection`, `Product`, `ShippingMethod` hanno tutti `translations` JSONField con shape `{locale: {field: value}}` + helper `.localized(locale)`.
+- `LocaleMixin` (in views/customer.py) è l'unico punto in cui si risolve `?lang=` — chiamare `self.get_locale_context(storefront)` per ottenere il context bundle.
+- **Regola:** ogni internal `commerce:*` URL DEVE avere `{{ lang_qs }}` appeso: `{% url 'commerce:cart' storefront.slug %}{{ lang_qs }}`. Se saltate questo, la locale si perde al primo click.
+- **Regola:** NON leggere `product.title` direttamente nei template — usate `product_l10n.title` o `products_l10n` iteration. Il fallback IT è già gestito da `localized()`.
+
+### 2. Payment — Stripe real-path via env vars, graceful fallback altrimenti
+- `apps/commerce/payments.py` è il dispatcher. `dispatch(PaymentContext(order))` sostituisce il vecchio inline `_dispatch_payment` rimosso da `services.py`.
+- Stripe è lazy-imported: senza `stripe` package o senza `STRIPE_SECRET_KEY` → `ProviderUnavailable` raise → `dispatch` falla a stub con `payload.stub_fallback=True` + warning log.
+- Idempotency: `idempotency_key=f"order-{order.reference}"` — retry del medesimo ordine ritorna il medesimo PaymentIntent, no double-charge.
+- Webhook: `/commerce/webhook/stripe/` (csrf_exempt). Verifica signature con `STRIPE_WEBHOOK_SECRET`. Gestisce `payment_intent.succeeded`/`payment_failed`/`canceled`.
+- Env vars: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_ALLOW_STUB_FALLBACK` (default `"1"`).
+- **Regola:** NON chiamare `_handle_stub` o `_handle_stripe` direttamente — sempre `payments.dispatch()`.
+
+### 3. Merchant scoping — StorefrontMember table
+- Nuovo modello `StorefrontMember(storefront, user, role=owner|editor)` unique_together.
+- `SellerRequiredMixin` ora extende `LoginRequiredMixin` e in `dispatch()` verifica `_user_can_access(user, storefront)` (membership OR superuser). Anonymous → login redirect. Staff senza membership → 403 `PermissionDenied`.
+- Nuova view `DashboardRootView` a `/dashboard/` — chooser page o auto-redirect se single-membership.
+- **Regola:** NON usare `user.is_staff` come gate per visibility di uno storefront. Ogni query dashboard deve scope-filter per `storefront=self.storefront` (il mixin pre-carica il storefront autorizzato).
+- Demo users creati dal seeder: `bottega_owner` / `commerce-v2`, `luxe_owner` / `commerce-v2`.
+
+### 4. Customer flow — policies + lookup + retry + Stripe Elements page
+- `PoliciesView` a `/shop/<slug>/politiche/` — renderizza shipping/returns/contact policy localized.
+- `OrderLookupView` a `/shop/<slug>/ordine/` — guest self-service: reference + email → 302 a confirmation se match, altrimenti re-render con messaggio.
+- `RetryPaymentView` POST-only a `/shop/<slug>/order/<uuid>/retry-payment/` — richiama `services.retry_payment()` che re-dispatcha via `payments.dispatch`. Per Stripe → 302 a payment_page; altrimenti → 302 a confirmation.
+- `PaymentPageView` a `/shop/<slug>/order/<uuid>/payment/` — renderizza `templates/commerce/payment/stripe.html` (Stripe Elements + fallback friendly).
+
+### Seeder workflow
+- `python manage.py seed_commerce` è idempotente e ri-esegue popolamento translations + merchant users.
+- Se aggiungi un nuovo shipping method code, aggiorna `SHIPPING_TRANSLATIONS` nello stesso file — senza entry, ship_method renderizza solo in IT.
+
+### Validation matrix da rieseguire dopo modifiche
+- `python manage.py check` → 0 issues
+- Commerce smoke (73/73): shop/cart/checkout/policies/ordine × 5 locales × 2 skin + product × 3 locales × 2 skin + collection × 2
+- Live preview regression (45/45): 9 templates × 5 locales, must stay green
+- ACL matrix (7/7): anon/bottega_owner/luxe_owner × 3 dashboard paths
+- Customer flow: add_to_cart→302, checkout POST→302, order confirmation AR→200, order lookup POST match→302
+
+### Non fare
+- Non modificare `/templates/<cat>/<slug>/preview/*` routes o live_templates templates — zona marketing intoccabile, protetta da 45/45 regression.
+- Non aggiungere hardcoded `?lang=` in un template — usa `{{ lang_qs }}`.
+- Non chiamare il vecchio `_dispatch_payment` — è stato rimosso.
+- Non gate dashboard su `is_staff` — usa StorefrontMember.
+- Non committare chiavi Stripe reali in `settings.py` — solo env vars.
+
+---
 
 ## Session 43 — Commerce Foundation v1: Read This Before Touching Any Commerce, Cart, Checkout, Order, or Seller Dashboard Work (2026-04-14)
 

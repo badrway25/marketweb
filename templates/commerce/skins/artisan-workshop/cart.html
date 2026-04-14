@@ -1,79 +1,76 @@
 {% extends "commerce/skins/artisan-workshop/_base.html" %}
-{% block page_title %}Carrello{% endblock %}
+{% block page_title %}{{ chrome.cart_heading }}{% endblock %}
 
 {% block content %}
 <main class="cx-wrap">
   <section class="cx-lead">
     <div>
-      <div class="eyebrow">Carrello</div>
-      <h1>I pezzi che porterai <em style="color:var(--terra); font-style:italic;">a casa.</em></h1>
-      <p class="intro">
-        Ogni pezzo è preparato a mano dalla bottega. La spedizione parte il giorno seguente alla
-        conferma dell'ordine, sempre via corriere tracciato.
-      </p>
+      <div class="eyebrow">{{ chrome.cart_heading }}</div>
+      <h1>{{ chrome.cart_heading }} <em style="color:var(--terra); font-style:italic;">·</em></h1>
+      <p class="intro">{{ storefront_shipping_policy|truncatechars:200 }}</p>
     </div>
-    <div class="count">{{ cart.item_count }} pezz{{ cart.item_count|pluralize:"o,i" }}</div>
+    <div class="count">
+      {{ cart.item_count }} {% if cart.item_count == 1 %}{{ chrome.cart_count_piece }}{% else %}{{ chrome.cart_count_pieces }}{% endif %}
+    </div>
   </section>
 
-  {% if cart.items.all %}
+  {% if cart_lines %}
   <section class="cx-cart-grid">
     <div class="cx-cart-table">
-      {% for item in cart.items.all %}
-        <form method="post" action="{% url 'commerce:cart_update' storefront.slug item.id %}" class="row" data-cart-row>
+      {% for line in cart_lines %}
+        <form method="post" action="{% url 'commerce:cart_update' storefront.slug line.item.id %}" class="row" data-cart-row>
           {% csrf_token %}
-          <div class="pic" {% if item.variant.product.hero_image_url %}style="background-image:url('{{ item.variant.product.hero_image_url }}')"{% endif %}></div>
+          <div class="pic" {% if line.product.hero_image_url %}style="background-image:url('{{ line.product.hero_image_url }}')"{% endif %}></div>
           <div>
-            <a href="{% url 'commerce:product_detail' storefront.slug item.variant.product.slug %}" class="title">{{ item.variant.product.title }}</a>
-            <div class="sub">{{ item.variant.variant_title|default:"Unico" }} · <span class="sku">{{ item.variant.sku }}</span></div>
-            <div class="sub" style="margin-top:4px;">€ {{ item.unit_price|floatformat:"0g" }} al pezzo{% if item.variant.stock <= 2 %} · <em style="color:#b06300;">Ultimi {{ item.variant.stock }}</em>{% endif %}</div>
+            <a href="{% url 'commerce:product_detail' storefront.slug line.product.slug %}{{ lang_qs }}" class="title">{{ line.l10n.title }}</a>
+            <div class="sub">{{ line.item.variant.variant_title|default:chrome.pc_unique }} · <span class="sku">{{ line.item.variant.sku }}</span></div>
+            <div class="sub" style="margin-top:4px;">€ {{ line.item.unit_price|floatformat:"0g" }}{% if line.item.variant.stock <= 2 %} · <em style="color:#b06300;">{{ chrome.pc_low_stock }} · {{ line.item.variant.stock }}</em>{% endif %}</div>
           </div>
           <div class="qty">
             <div class="cx-qty-stepper" data-qty-stepper>
-              <button type="button" data-qty-dec aria-label="Riduci">−</button>
-              <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.variant.stock }}" inputmode="numeric" aria-label="Quantità" data-autosubmit>
-              <button type="button" data-qty-inc aria-label="Aumenta">+</button>
+              <button type="button" data-qty-dec aria-label="−">−</button>
+              <input type="number" name="quantity" value="{{ line.item.quantity }}" min="0" max="{{ line.item.variant.stock }}" inputmode="numeric" aria-label="{{ chrome.pdp_qty }}" data-autosubmit>
+              <button type="button" data-qty-inc aria-label="+">+</button>
             </div>
           </div>
-          <div class="line-total">€ {{ item.line_total|floatformat:"0g" }}</div>
+          <div class="line-total">€ {{ line.item.line_total|floatformat:"0g" }}</div>
           <div class="remove">
-            <button type="submit" form="rm-{{ item.id }}" class="cx-btn-icon" aria-label="Rimuovi {{ item.variant.product.title }}">✕</button>
+            <button type="submit" form="rm-{{ line.item.id }}" class="cx-btn-icon" aria-label="{{ chrome.cart_remove }}">✕</button>
           </div>
         </form>
-        <form id="rm-{{ item.id }}" method="post" action="{% url 'commerce:cart_remove' storefront.slug item.id %}" style="display:none;">
+        <form id="rm-{{ line.item.id }}" method="post" action="{% url 'commerce:cart_remove' storefront.slug line.item.id %}" style="display:none;">
           {% csrf_token %}
         </form>
       {% endfor %}
     </div>
 
     <aside class="cx-summary">
-      <h3>Totale della bottega</h3>
-      <div class="row"><span>Pezzi</span><span>{{ cart.item_count }}</span></div>
-      <div class="row"><span>Subtotale</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
-      <div class="row"><span>Spedizione</span><span>calcolata al checkout</span></div>
-      <div class="row"><span>IVA</span><span>inclusa</span></div>
-      <div class="row total"><span>Da pagare</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <h3>{{ chrome.co_summary }}</h3>
+      <div class="row"><span>{{ chrome.cart_count_pieces|capfirst }}</span><span>{{ cart.item_count }}</span></div>
+      <div class="row"><span>{{ chrome.cart_subtotal }}</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="row"><span>{{ chrome.cart_shipping }}</span><span>{{ chrome.cart_shipping_at_checkout }}</span></div>
+      <div class="row"><span>{{ chrome.cart_vat }}</span><span>{{ chrome.cart_vat_included }}</span></div>
+      <div class="row total"><span>{{ chrome.cart_total_due }}</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
       <div class="cta">
-        <a href="{% url 'commerce:checkout' storefront.slug %}" class="cx-btn is-full">Procedi al checkout</a>
+        <a href="{% url 'commerce:checkout' storefront.slug %}{{ lang_qs }}" class="cx-btn is-full">{{ chrome.cart_go_checkout }}</a>
       </div>
       <div style="margin-top:14px;">
-        <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">◂ Continua a sfogliare il catalogo</a>
+        <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn-ghost">{{ chrome.cart_continue }}</a>
       </div>
-      <div class="policy">
-        {{ storefront.shipping_policy|default:"Spedizione tracciata in 48 ore in Italia, quattro giorni in Europa." }}
-      </div>
+      <div class="policy">{{ storefront_shipping_policy|truncatechars:120 }}</div>
     </aside>
   </section>
 
   <div class="cx-reassure" style="margin-top:28px;">
-    <div class="item"><span class="mark">S</span><div><strong>Spedizione 48h</strong>Corriere tracciato · ritiro in bottega gratuito su appuntamento.</div></div>
-    <div class="item"><span class="mark">R</span><div><strong>Resi entro 14 giorni</strong>Cambio o rimborso; edizioni numerate e conserve escluse.</div></div>
-    <div class="item"><span class="mark">P</span><div><strong>Pagamento sicuro</strong>Il pagamento viene registrato dopo la conferma dell'ordine.</div></div>
+    <div class="item"><span class="mark">S</span><div><strong>{{ chrome.cart_trust_ship_title }}</strong>{{ chrome.cart_trust_ship_body }}</div></div>
+    <div class="item"><span class="mark">R</span><div><strong>{{ chrome.cart_trust_return_title }}</strong>{{ chrome.cart_trust_return_body }}</div></div>
+    <div class="item"><span class="mark">P</span><div><strong>{{ chrome.cart_trust_pay_title }}</strong>{{ chrome.cart_trust_pay_body }}</div></div>
   </div>
   {% else %}
   <div class="cx-empty">
-    <h3>Il carrello è ancora vuoto</h3>
-    <p>Torna in bottega a scegliere i pezzi che ti piacciono, o scrivici su WhatsApp se cerchi qualcosa di specifico.</p>
-    <div style="margin-top:24px;"><a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn">Apri il catalogo</a></div>
+    <h3>{{ chrome.cart_empty_title }}</h3>
+    <p>{{ chrome.cart_empty_body }}</p>
+    <div style="margin-top:24px;"><a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn">{{ chrome.cart_empty_cta }}</a></div>
   </div>
   {% endif %}
 </main>

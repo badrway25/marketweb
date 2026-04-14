@@ -1,17 +1,17 @@
 {% extends "commerce/skins/artisan-workshop/_base.html" %}
-{% block page_title %}{{ product.title }}{% endblock %}
+{% block page_title %}{{ product_l10n.title }}{% endblock %}
 
 {% block content %}
 <main class="cx-wrap">
   <div style="margin-bottom:24px; font-family:var(--cx-body); font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-mute);">
-    <a href="{% url 'commerce:shop' storefront.slug %}" style="color:var(--terra);">◂ Catalogo</a>
-    {% if product.collection %} · <a href="{% url 'commerce:shop_collection' storefront.slug product.collection.slug %}" style="color:var(--terra);">{{ product.collection.title }}</a>{% endif %}
+    <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" style="color:var(--terra);">◂ {{ chrome.nav_catalog }}</a>
+    {% if product.collection %} · <a href="{% url 'commerce:shop_collection' storefront.slug product.collection.slug %}{{ lang_qs }}" style="color:var(--terra);">{{ product.collection.title }}</a>{% endif %}
   </div>
 
   <section class="cx-pdp">
     <div class="gallery">
       <div class="hero{% if not product.hero_image_url %} is-empty{% endif %}" id="pdpHero" {% if product.hero_image_url %}style="background-image:url('{{ product.hero_image_url }}')"{% endif %}>
-        {% if not product.hero_image_url %}<span>{{ product.title|slice:":1"|upper }}</span>{% endif %}
+        {% if not product.hero_image_url %}<span>{{ product_l10n.title|slice:":1"|upper }}</span>{% endif %}
         {% if product.edition_number %}
         <span style="position:absolute; top:14px; left:14px; background:var(--paper); padding:6px 12px; font-family:var(--cx-heading); font-style:italic; font-size:14px; color:var(--ink); border:1.5px solid var(--ink); z-index:2;">N° {{ product.edition_number }}</span>
         {% endif %}
@@ -27,10 +27,10 @@
 
     <div class="info">
       <div style="font-family:var(--cx-body); font-size:11px; font-weight:800; letter-spacing:0.22em; text-transform:uppercase; color:var(--terra);">
-        {% if product.badge %}✦ {{ product.badge }}{% endif %}{% if product.edition_number %} · Edizione {{ product.edition_number }}{% endif %}
+        {% if product_l10n.badge %}✦ {{ product_l10n.badge }}{% endif %}{% if product.edition_number %} · {{ chrome.pdp_edition }} {{ product.edition_number }}{% endif %}
       </div>
-      <h1>{{ product.title }}</h1>
-      <div class="sub">{{ product.subtitle }}</div>
+      <h1>{{ product_l10n.title }}</h1>
+      <div class="sub">{{ product_l10n.subtitle }}</div>
 
       <div class="price-band">
         <div>
@@ -38,19 +38,19 @@
           {% if product.compare_at_price and product.compare_at_price > product.base_price %}
             <span class="strike">€ {{ product.compare_at_price|floatformat:"0g" }}</span>
           {% endif %}
-          <div style="margin-top:6px; font-family:var(--cx-body); font-size:12px; color:var(--ink-mute); font-style:italic;">IVA inclusa · spedizione in 48 ore</div>
+          <div style="margin-top:6px; font-family:var(--cx-body); font-size:12px; color:var(--ink-mute); font-style:italic;">{{ chrome.cart_vat }} {{ chrome.cart_vat_included }} · {{ chrome.cart_trust_ship_title }}</div>
         </div>
         {% if product.is_sold_out %}
-          <span class="stock is-out">Esaurito · lista d'attesa</span>
+          <span class="stock is-out">{{ chrome.pc_sold_out }}</span>
         {% elif product.is_low_stock %}
-          <span class="stock is-low">Ultimi pezzi in bottega</span>
+          <span class="stock is-low">{{ chrome.pc_low_stock }}</span>
         {% else %}
-          <span class="stock">In bottega</span>
+          <span class="stock">{{ chrome.pdp_stock_available }}</span>
         {% endif %}
       </div>
 
-      {% if product.long_description %}
-      <p class="long">{{ product.long_description }}</p>
+      {% if product_l10n.long_description %}
+      <p class="long">{{ product_l10n.long_description }}</p>
       {% endif %}
 
       <form method="post" action="{% url 'commerce:cart_add' storefront.slug %}" class="cx-variant-form">
@@ -58,7 +58,7 @@
         <div class="axes">
           {% if variants|length > 1 %}
           <div class="axis">
-            <h5>Taglia / finitura</h5>
+            <h5>{{ chrome.pdp_variants }}</h5>
             <div class="pills" role="radiogroup">
               {% for v in variants %}
                 <label class="pill{% if not v.in_stock %} is-out{% endif %}"
@@ -67,8 +67,8 @@
                          {% if forloop.first and v.in_stock %}checked{% endif %}
                          {% if not v.in_stock %}disabled{% endif %}
                          style="position:absolute; opacity:0; pointer-events:none;">
-                  {{ v.variant_title|default:"Unico" }}
-                  {% if not v.in_stock %} · esaurito{% endif %}
+                  {{ v.variant_title|default:chrome.pc_unique }}
+                  {% if not v.in_stock %} · {{ chrome.pdp_stock_out|lower }}{% endif %}
                 </label>
               {% endfor %}
             </div>
@@ -80,57 +80,57 @@
           {% endif %}
 
           <div class="cx-qty-row">
-            <span class="label">Quantità</span>
+            <span class="label">{{ chrome.pdp_qty }}</span>
             <div class="cx-qty-stepper" data-qty-stepper>
-              <button type="button" data-qty-dec aria-label="Riduci quantità">−</button>
-              <input type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric" aria-label="Quantità">
-              <button type="button" data-qty-inc aria-label="Aumenta quantità">+</button>
+              <button type="button" data-qty-dec aria-label="−">−</button>
+              <input type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric" aria-label="{{ chrome.pdp_qty }}">
+              <button type="button" data-qty-inc aria-label="+">+</button>
             </div>
           </div>
         </div>
 
         {% if product.is_low_stock and not product.is_sold_out %}
         <div class="cx-lowstock" style="--fill: 30%;">
-          <span class="label">Ultimi pezzi</span>
+          <span class="label">{{ chrome.pc_low_stock }}</span>
           <span class="bar" aria-hidden="true"></span>
-          <span class="count">Rimasti · {{ product.total_stock }}</span>
+          <span class="count">· {{ product.total_stock }}</span>
         </div>
         {% endif %}
 
         <div class="cx-cta-cluster">
           <button type="submit" class="cx-btn{% if product.is_sold_out %} is-disabled{% endif %}" {% if product.is_sold_out %}disabled{% endif %}>
-            {% if product.is_sold_out %}Aggiungi alla lista d'attesa{% else %}Aggiungi al carrello{% endif %}
+            {{ chrome.pdp_add_to_cart }}
           </button>
-          <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">Continua a sfogliare</a>
+          <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn-ghost">{{ chrome.cart_continue }}</a>
         </div>
 
         <div class="cx-trust">
           <div class="t">
             <span class="sym">S</span>
-            <div><strong>Spedizione 48 ore</strong>Corriere tracciato in Italia, ritiro gratuito a Firenze.</div>
+            <div><strong>{{ chrome.cart_trust_ship_title }}</strong>{{ chrome.cart_trust_ship_body }}</div>
           </div>
           <div class="t">
             <span class="sym">R</span>
-            <div><strong>Resi entro 14 giorni</strong>Cambio o rimborso su richiesta, edizioni numerate escluse.</div>
+            <div><strong>{{ chrome.cart_trust_return_title }}</strong>{{ chrome.cart_trust_return_body }}</div>
           </div>
           <div class="t">
-            <span class="sym">G</span>
-            <div><strong>Garanzia 2 anni</strong>Riparazione gratuita in bottega, cuciture e tintura.</div>
+            <span class="sym">P</span>
+            <div><strong>{{ chrome.cart_trust_pay_title }}</strong>{{ chrome.cart_trust_pay_body }}</div>
           </div>
           <div class="t">
             <span class="sym">B</span>
-            <div><strong>Bottega a Firenze</strong>WhatsApp {{ storefront.contact_phone }} per dubbi e misure.</div>
+            <div><strong>{{ chrome.foot_contacts }}</strong>{{ storefront.contact_phone }} · {{ storefront.contact_email }}</div>
           </div>
         </div>
       </form>
     </div>
   </section>
 
-  {% if product.info_rows %}
+  {% if product_l10n.info_rows %}
   <section class="cx-specs">
-    <h4>Specifiche di bottega</h4>
+    <h4>{{ chrome.pdp_description }}</h4>
     <div>
-      {% for row in product.info_rows %}
+      {% for row in product_l10n.info_rows %}
         <div class="r">
           <div class="k">{{ row.label }}</div>
           <div class="v">{{ row.value }}</div>
@@ -140,25 +140,27 @@
   </section>
   {% endif %}
 
-  {% if related %}
+  {% if related_l10n %}
   <section style="margin-top:80px;">
     <div style="display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px dashed var(--rule-dash); padding-bottom:18px;">
-      <h2 style="font-family:var(--cx-heading); font-size:32px;">Altri pezzi della bottega</h2>
-      <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">Vedi tutto il catalogo</a>
+      <h2 style="font-family:var(--cx-heading); font-size:32px;">{{ chrome.pdp_related_title }}</h2>
+      <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn-ghost">{{ chrome.nav_catalog }}</a>
     </div>
     <div class="cx-grid" style="margin-top:32px;">
-      {% for p in related %}
-        <a class="cx-card" href="{% url 'commerce:product_detail' storefront.slug p.slug %}">
+      {% for entry in related_l10n %}
+        {% with p=entry.obj %}
+        <a class="cx-card" href="{% url 'commerce:product_detail' storefront.slug p.slug %}{{ lang_qs }}">
           <div class="thumb" {% if p.hero_image_url %}style="background-image:url('{{ p.hero_image_url }}')"{% endif %}>
             {% if p.edition_number %}<span class="num">N° {{ p.edition_number }}</span>{% endif %}
           </div>
-          <h4>{{ p.title }}</h4>
-          <div class="meta">{{ p.subtitle|default:p.material }}</div>
+          <h4>{{ entry.title }}</h4>
+          <div class="meta">{{ entry.subtitle|default:entry.material }}</div>
           <div class="foot">
             <span class="price">€ {{ p.display_price|floatformat:"0g" }}</span>
-            <span class="tag">{{ p.badge|default:"In bottega" }}</span>
+            <span class="tag">{{ entry.badge|default:chrome.pc_featured }}</span>
           </div>
         </a>
+        {% endwith %}
       {% endfor %}
     </div>
   </section>
@@ -166,7 +168,6 @@
 </main>
 
 <script>
-  // Simple pill-group highlighting — clicks flip data-selected on sibling pills.
   document.querySelectorAll('.cx-variant-form .pills').forEach(function(g){
     g.addEventListener('click', function(ev){
       var lbl = ev.target.closest('.pill'); if(!lbl) return;
@@ -176,8 +177,6 @@
       var inp = lbl.querySelector('input'); if(inp) inp.checked = true;
     });
   });
-
-  // Quantity stepper
   document.querySelectorAll('[data-qty-stepper]').forEach(function(s){
     var inp = s.querySelector('input[type="number"]');
     if(!inp) return;

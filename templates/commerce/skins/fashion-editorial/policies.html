@@ -1,0 +1,62 @@
+{% extends "commerce/skins/fashion-editorial/_base.html" %}
+{% block page_title %}{{ chrome.policy_heading }}{% endblock %}
+
+{% block content %}
+<main class="cx-wrap-wide">
+  <section class="cx-lead">
+    <div>
+      <div class="eyebrow">{{ chrome.policy_heading }}</div>
+      <h1 style="font-style:italic; font-size:64px;">{{ chrome.policy_heading }} <em style="color:var(--gold);">·</em></h1>
+      <p class="intro">{{ storefront_footer_bio|truncatechars:220 }}</p>
+    </div>
+  </section>
+
+  <section style="display:grid; grid-template-columns: 1fr 1fr; gap:36px; margin-top:12px;">
+    <article style="background:rgba(212,165,116,0.06); border:1px solid var(--rule); padding:32px 32px;">
+      <h5 style="font-family:var(--cx-body); font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:14px;">01</h5>
+      <h2 style="font-family:var(--cx-heading); font-style:italic; font-weight:500; font-size:32px; margin-bottom:14px; color:var(--bone);">{{ chrome.policy_shipping_heading }}</h2>
+      <p style="font-family:var(--cx-body); font-size:14px; color:var(--bone-mute); line-height:1.85;">{{ storefront_shipping_policy|linebreaksbr }}</p>
+    </article>
+
+    <article style="background:rgba(212,165,116,0.06); border:1px solid var(--rule); padding:32px 32px;">
+      <h5 style="font-family:var(--cx-body); font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:14px;">02</h5>
+      <h2 style="font-family:var(--cx-heading); font-style:italic; font-weight:500; font-size:32px; margin-bottom:14px; color:var(--bone);">{{ chrome.policy_returns_heading }}</h2>
+      <p style="font-family:var(--cx-body); font-size:14px; color:var(--bone-mute); line-height:1.85;">{{ storefront_return_policy|linebreaksbr }}</p>
+    </article>
+  </section>
+
+  <section style="margin-top:36px; padding:32px 32px; background:rgba(212,165,116,0.06); border:1px solid var(--gold);">
+    <h5 style="font-family:var(--cx-body); font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:14px;">03</h5>
+    <h2 style="font-family:var(--cx-heading); font-style:italic; font-weight:500; font-size:32px; margin-bottom:14px; color:var(--bone);">{{ chrome.policy_contact_heading }}</h2>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:28px; font-family:var(--cx-body); font-size:14px; color:var(--bone); line-height:1.85;">
+      <div>
+        <div style="font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--bone-faint); font-weight:600; margin-bottom:6px;">{{ chrome.f_phone }}</div>
+        <div>{{ storefront.contact_phone }}</div>
+      </div>
+      <div>
+        <div style="font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--bone-faint); font-weight:600; margin-bottom:6px;">{{ chrome.f_email }}</div>
+        <div><a href="mailto:{{ storefront.contact_email }}" style="color:var(--gold); border-bottom:1px solid currentColor;">{{ storefront.contact_email }}</a></div>
+      </div>
+      <div>
+        <div style="font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--bone-faint); font-weight:600; margin-bottom:6px;">{{ chrome.foot_studio_fe }}</div>
+        <div style="font-style:italic;">Via Brera 14<br>20121 Milano</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cx-cta-cluster" style="margin-top:40px;">
+    <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn">{{ chrome.cart_continue|cut:'◂ ' }}</a>
+    <a href="{% url 'commerce:order_lookup' storefront.slug %}{{ lang_qs }}" class="cx-btn-ghost">{{ chrome.lookup_title }} ▸</a>
+  </div>
+</main>
+
+<style>
+  @media (max-width: 880px) {
+    main.cx-wrap-wide section[style*="grid-template-columns: 1fr 1fr"],
+    main.cx-wrap-wide section[style*="grid-template-columns: 1fr 1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+      gap: 22px !important;
+    }
+  }
+</style>
+{% endblock %}

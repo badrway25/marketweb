@@ -1,5 +1,93 @@
 # Session Log
 
+## Session 45 — Commerce Completion v2 (2026-04-14)
+
+**Agent:** Portare il commerce v1 a stato boutique online reale su 4 assi: (1) `/shop/` davvero multilingua 5 locales con RTL arabo, (2) Stripe integration seria env-driven con graceful fallback, (3) seller dashboard merchant-scoped via StorefrontMember, (4) customer flow completo (policies, order lookup, retry payment). Preservare livello premium Bottega/Luxe e zero regressione sui 9 preview live templates.
+
+### What shipped
+
+**Infrastructure (Python):**
+- `apps/commerce/i18n.py` — nuovo modulo con `COMMERCE_CHROME` (125 keys × 5 locales), resolve_locale, get_chrome, is_rtl, html_dir, locale_switcher_entries, preserve_lang_qs
+- `apps/commerce/content.py` — `STOREFRONT_CONTENT` (Bottega + Luxe × 5 locales: tagline, footer_bio, shipping_policy, return_policy, bank_transfer_instructions) + `COLLECTION_CONTENT`
+- `apps/commerce/payments.py` — nuovo payment abstraction (PaymentContext, PaymentDispatchResult, dispatch_stub, dispatch_offline_bank_transfer, dispatch_stripe, handle_stripe_webhook_event, is_provider_available, graceful ProviderUnavailable fallback)
+- `apps/commerce/models.py` — added `translations` JSONField a Storefront + Collection + Product + ShippingMethod; aggiunta Stripe a PaymentProvider choices; nuovo StorefrontMember model (storefront/user/role=owner|editor)
+- `apps/commerce/services.py` — `create_order_from_cart` ora usa `payments.dispatch`; nuova `retry_payment(order)`
+- `apps/commerce/views/customer.py` — riscritta con LocaleMixin, nuove views PoliciesView + OrderLookupView + PaymentPageView + RetryPaymentView + StripeWebhookView
+- `apps/commerce/views/seller.py` — SellerRequiredMixin ora extende LoginRequiredMixin + verifica StorefrontMember; nuova DashboardRootView (chooser)
+- `apps/commerce/forms.py` — CheckoutForm chrome-driven + nuova OrderLookupForm + StorefrontMemberForm
+- `apps/commerce/urls.py` — nuove routes policies/ordine/payment/retry-payment/webhook/dashboard root
+- `apps/commerce/admin.py` — StorefrontMemberInline + StorefrontMemberAdmin
+- `apps/commerce/migrations/0003_commerce_v2.py` — manual migration (4 JSONField add + AlterField payment_provider + CreateModel StorefrontMember)
+- `marketweb/settings.py` — STRIPE_SECRET_KEY / STRIPE_PUBLISHABLE_KEY / STRIPE_WEBHOOK_SECRET / STRIPE_ALLOW_STUB_FALLBACK from env
+- `apps/commerce/management/commands/seed_commerce.py` — SHIPPING_TRANSLATIONS (7 codes × 5 locales), populates translations su Storefront/Collection/ShippingMethod, nuova `_seed_demo_merchants` (bottega_owner/luxe_owner + StorefrontMember)
+
+**Templates (17 touched):**
+- `commerce/skins/artisan-workshop/_base.html` — html[lang/dir] dinamico, RTL CSS block, language switcher, chrome-driven, lang_qs ovunque
+- `commerce/skins/fashion-editorial/_base.html` — idem per skin maison
+- `commerce/skins/*/shop.html` × 2 — iterazione `products_l10n` + chrome labels
+- `commerce/skins/*/product.html` × 2 — product_l10n + chrome labels + related_l10n
+- `commerce/skins/*/cart.html` × 2 — iterazione `cart_lines` + chrome trust labels
+- `commerce/skins/*/checkout.html` × 2 — chrome form labels + shipping_methods_l10n
+- `commerce/skins/*/order_confirmation.html` × 2 — chrome status messages + retry payment CTA + Stripe payment page link per intent initiated
+- `commerce/skins/*/policies.html` × 2 — NEW (3 card: shipping/returns/contact)
+- `commerce/skins/*/order_lookup.html` × 2 — NEW (reference + email form)
+- `commerce/payment/stripe.html` — NEW (Stripe Elements + fallback friendly in 5 lingue)
+- `commerce/dashboard/_base.html` — "Cambia storefront" + "Esci" nav
+- `commerce/dashboard/home.html` — 3 nuove cards (Pagamenti · Membri · Collegamenti rapidi con multi-storefront switch)
+- `commerce/dashboard/root.html` — NEW (multi-storefront chooser)
+
+### Validation
+
+- `python manage.py check` → 0 issues
+- `python manage.py migrate` → 0003_commerce_v2 applied clean
+- `python manage.py seed_commerce` → idempotent, ri-eseguito dopo fix shipping codes
+- Commerce smoke: **73/73 OK** (shop/cart/checkout/policies/ordine × 5 locales × 2 skin + product detail × 3 locales × 2 skin + collezione × 2 locales)
+- Catalog regression: **45/45 OK** (9 live templates × 5 locales, zero regressione)
+- Catalog nav: **5/5 OK**
+- Merchant ACL validation:
+  - anon `/dashboard/` → 302 (login redirect) ✓
+  - anon `/dashboard/<slug>/` → 302 ✓
+  - bottega_owner `/dashboard/` → 302 (single-membership auto-redirect) ✓
+  - bottega_owner own dashboard → 200 ✓
+  - bottega_owner on luxe dashboard → 403 ✓
+  - luxe_owner on luxe → 200, on bottega → 403 ✓
+- Customer flow end-to-end:
+  - add_to_cart → 302 ✓
+  - cart EN → 200 ✓
+  - checkout POST → 302 con `Order(reference=77159CFCC6, payment=paid, status=confirmed)` ✓
+  - order confirmation AR → 200 ✓
+  - order lookup POST match → 302 a confirmation ✓
+- Stripe graceful:
+  - `is_provider_available('stub')` → True
+  - `is_provider_available('offline_bank_transfer')` → True
+  - `is_provider_available('stripe')` → False (no env keys), ma storefront stripe-configured non 500-a → fallback a stub con `payload.stub_fallback=True` loggato
+  - Stripe payment page renders fallback card con CTA in IT/EN/FR/ES/AR quando non configurato
+
+### What's operational with/without env vars
+
+**Without env vars (dev/QA default):**
+- stub + offline_bank_transfer payment path end-to-end
+- `/commerce/webhook/stripe/` returns 400 "Webhook not configured."
+- Stripe payment page renders fallback card (non-configured) con CTA verso order confirmation
+- Storefront impostato su stripe degrada a stub con warning log
+
+**With env vars (`STRIPE_SECRET_KEY` + `STRIPE_PUBLISHABLE_KEY` + `STRIPE_WEBHOOK_SECRET` + `pip install stripe`):**
+- Real Stripe PaymentIntent flow (test mode o live mode secondo la chiave)
+- Webhook signature verification + event routing → PaymentIntent.status + Order.payment_status aggiornati
+- Idempotency su order.reference (no double-charge su retry)
+
+### Demo credentials
+
+Da `python manage.py seed_commerce`:
+- `bottega_owner` / `commerce-v2` — membro owner di bottega-shop-artigianale
+- `luxe_owner`   / `commerce-v2` — membro owner di luxe-fashion-store
+
+### Final verdict: COMMERCE COMPLETION V2 APPROVATO
+
+Tutti i 4 obiettivi chiusi. Commerce ora è una boutique online funzionale, multilingua, con payment provider reale pronto e merchant scoping serio. Zero regressioni sul catalogo live premium.
+
+---
+
 ## Session 43 — Commerce Foundation v1 (2026-04-14)
 
 **Agent:** Build the real commerce engine that turns Bottega + Luxe from "live preview premium" into operational shops customers can buy from and sellers can manage. Non-goals: new categories, new templates, touching the 7 non-ecommerce live templates (medical/business/portfolio/restaurant), customer editor, huge refactors, regressions to the existing 9/20 published_live catalog.

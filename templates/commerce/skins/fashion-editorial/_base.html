@@ -1,13 +1,14 @@
 {% load static %}<!DOCTYPE html>
-<html lang="it" dir="ltr">
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{ storefront.template.name }} — {% block page_title %}Maison{% endblock %}</title>
-<meta name="description" content="{{ storefront.template.brand.tagline }}">
+<title>{{ storefront.template.name }} — {% block page_title %}{{ chrome.nav_collection|default:"Maison" }}{% endblock %}</title>
+<meta name="description" content="{{ storefront_tagline|default:storefront.template.brand.tagline }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+{% if is_rtl %}<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">{% endif %}
 <link rel="stylesheet" href="{% static 'css/commerce.css' %}">
 <style>
   :root {
@@ -185,6 +186,21 @@
   .mp-bar a.mp-back { color: var(--gold); }
   .mp-bar .mp-name { color: var(--bone-mute); }
 
+  /* Language switcher — pills */
+  .mp-lang { display: inline-flex; gap: 8px; align-items: center; }
+  .mp-lang .mp-lang-lbl { color: var(--bone-faint); font-size: 9px; letter-spacing: 0.3em; }
+  .mp-lang a {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border: 1px solid var(--rule);
+    font-family: var(--cx-body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--bone-mute);
+    background: transparent; transition: color .3s ease, border-color .3s ease, background .3s ease;
+  }
+  .mp-lang a:hover { color: var(--gold); border-color: var(--gold); }
+  .mp-lang a.is-current {
+    color: var(--ink); background: var(--gold); border-color: var(--gold);
+  }
+
   /* Top nav — maison */
   .fe-nav-wrap { padding: 0 56px; border-bottom: 1px solid var(--rule); }
   .fe-nav {
@@ -256,33 +272,61 @@
     .fe-foot { padding: 40px 28px 24px; }
   }
 
+  /* ── RTL overrides (Arabic) ───────────────────────────────────── */
+  html[dir="rtl"] body { font-family: 'Noto Kufi Arabic', var(--cx-body); }
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4,
+  html[dir="rtl"] h5,
+  html[dir="rtl"] .fe-nav .wm,
+  html[dir="rtl"] .cx-summary h3,
+  html[dir="rtl"] .cx-shipping-options .opt .title { font-family: 'Amiri', 'Cormorant Garamond', Georgia, serif; letter-spacing: 0; font-style: normal; }
+  html[dir="rtl"] .fe-nav .links { margin-left: 0; margin-right: 64px; }
+  html[dir="rtl"] .fe-nav .rs { margin-left: 0; margin-right: auto; }
+  html[dir="rtl"] .fe-foot .bot,
+  html[dir="rtl"] .mp-bar { direction: rtl; }
+  html[dir="rtl"] .cx-btn,
+  html[dir="rtl"] .cx-btn-ghost { font-style: normal; }
+
   {% block extra_css %}{% endblock %}
 </style>
 </head>
 <body>
 
 <div class="mp-bar">
-  <a href="{% url 'catalog:template_detail' storefront.template.category.slug storefront.template.slug %}" class="mp-back">◂ Catalogo marketplace</a>
-  <span class="mp-name">Maison attiva · {{ storefront.template.name }}</span>
-  <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}" class="mp-back">Anteprima maison &nbsp;▸</a>
+  <a href="{% url 'catalog:template_detail' storefront.template.category.slug storefront.template.slug %}{{ lang_qs }}" class="mp-back">{{ chrome.mp_back_catalog }}</a>
+  <span class="mp-name">{{ chrome.mp_maison_active }} · {{ storefront.template.name }}</span>
+  {% if locale_switcher %}
+  <span class="mp-lang" aria-label="{{ chrome.switch_language }}">
+    <span class="mp-lang-lbl">{{ chrome.switch_language }}</span>
+    {% for entry in locale_switcher %}
+      <a href="{{ request.path }}{% if entry.code != 'it' %}?lang={{ entry.code }}{% endif %}"
+         data-lang="{{ entry.code }}"
+         class="{% if entry.is_current %}is-current{% endif %}"
+         title="{{ entry.label }}">{{ entry.badge }}</a>
+    {% endfor %}
+  </span>
+  {% endif %}
+  <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}{{ lang_qs }}" class="mp-back">{{ chrome.mp_maison_preview }}</a>
 </div>
 
 <div class="fe-nav-wrap">
   <nav class="fe-nav">
-    <a href="{% url 'commerce:shop' storefront.slug %}" class="wm">
+    <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="wm">
       {{ storefront.template.brand.brand_name }}
-      <small>Maison · Milano — Parigi</small>
+      <small>{{ storefront_tagline|default:"Maison · Milano — Parigi" }}</small>
     </a>
     <div class="links">
-      <a href="{% url 'commerce:shop' storefront.slug %}">Collezione</a>
-      {% for c in storefront.collections.all %}{% if c.is_active and forloop.counter < 4 %}
-        <a href="{% url 'commerce:shop_collection' storefront.slug c.slug %}">{{ c.title }}</a>
+      <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}">{{ chrome.nav_collection }}</a>
+      {% for c in collections_i18n %}{% if forloop.counter < 4 %}
+        <a href="{% url 'commerce:shop_collection' storefront.slug c.slug %}{{ lang_qs }}">{{ c.title }}</a>
       {% endif %}{% endfor %}
-      <a href="{% url 'catalog:live_template_page' storefront.template.category.slug storefront.template.slug 'maison' %}">Maison</a>
+      <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}{{ lang_qs }}">{{ storefront_content.nav_maison_label|default:"Maison" }}</a>
     </div>
     <div class="rs">
-      <a href="{% url 'commerce:cart' storefront.slug %}" class="cart-pill">
-        Panier <span class="num">{{ cart.item_count|default:0 }}</span>
+      <a href="{% url 'commerce:cart' storefront.slug %}{{ lang_qs }}" class="cart-pill">
+        {{ chrome.nav_panier }} <span class="num">{{ cart.item_count|default:0 }}</span>
       </a>
     </div>
   </nav>
@@ -301,32 +345,34 @@
 <footer class="fe-foot">
   <div class="inner">
     <div class="brand">
-      <h5>La maison</h5>
+      <h5>{{ chrome.foot_studio_fe }}</h5>
       <div class="word">{{ storefront.template.brand.brand_name }}</div>
-      <p>Maison milanese di alta confezione. Capi fatti a mano a Biella, Como, Firenze e Sentier. Acquisto su appuntamento con la direzione clienti o per drop privati.</p>
+      <p>{{ storefront_footer_bio|default:"Maison milanese di alta confezione." }}</p>
     </div>
     <div class="col">
-      <h5>Direzione clienti</h5>
+      <h5>{{ chrome.foot_contacts }}</h5>
       <p>{{ storefront.contact_phone }}</p>
       <p><a href="mailto:{{ storefront.contact_email }}">{{ storefront.contact_email }}</a></p>
       <p>Via Brera 14 · 20121 Milano</p>
     </div>
     <div class="col">
-      <h5>Navigazione</h5>
-      <a href="{% url 'commerce:shop' storefront.slug %}">Collezione</a>
-      <a href="{% url 'commerce:cart' storefront.slug %}">Panier</a>
-      <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}">Lookbook</a>
+      <h5>{{ chrome.foot_nav }}</h5>
+      <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}">{{ chrome.nav_collection }}</a>
+      <a href="{% url 'commerce:cart' storefront.slug %}{{ lang_qs }}">{{ chrome.nav_panier }}</a>
+      <a href="{% url 'commerce:policies' storefront.slug %}{{ lang_qs }}">{{ chrome.nav_policies }}</a>
+      <a href="{% url 'commerce:order_lookup' storefront.slug %}{{ lang_qs }}">{{ chrome.nav_lookup_order }}</a>
+      <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}{{ lang_qs }}">{{ storefront_content.nav_maison_label|default:"Lookbook" }}</a>
     </div>
     <div class="col">
-      <h5>Servizio</h5>
-      <p>Consegna maison Milano · 24h</p>
-      <p>Cambi su appuntamento · 7 giorni</p>
-      <p>Alta sartoria · acconto 30%</p>
+      <h5>{{ chrome.foot_service }}</h5>
+      <p>{{ chrome.cart_trust_ship_title }}</p>
+      <p>{{ chrome.cart_trust_return_title }}</p>
+      <p>{{ chrome.cart_trust_pay_title }}</p>
     </div>
   </div>
   <div class="bot">
-    <span>© 2026 {{ storefront.template.brand.brand_name }} · Commerce Foundation v1</span>
-    <span>Maison · Milano — Parigi — Firenze</span>
+    <span>© 2026 {{ storefront.template.brand.brand_name }} · {{ chrome.foot_rights }}</span>
+    <span>Commerce Foundation v1 · Maison Luxe</span>
   </div>
 </footer>
 

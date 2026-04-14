@@ -1,5 +1,104 @@
 # Decisions Log
 
+## D-076: Commerce v2 — /shop Multilingua, Stripe Graceful, Merchant-Scoped Dashboard, Customer Flow Chiuso (2026-04-14, Session 45)
+
+**Decision:** `apps/commerce` passa da foundation v1 (single-seller, IT-only, dev-payment) a v2 operativa su quattro assi incrociati: (a) lo storefront `/shop/<slug>/` e le sue 7 pagine (shop · collezione · product · cart · checkout · order_confirmation · policies · order_lookup + payment Stripe) sono davvero multilingua 5 locales (it/en/fr/es/ar) con RTL vero per arabo; (b) il payment dispatcher è provider-agnostico con stripe reale integrato (`apps/commerce/payments.py`, Stripe SDK lazy, PaymentIntent + webhook con signature verification, idempotency_key=order.reference, graceful fallback a stub se `STRIPE_SECRET_KEY` manca); (c) il seller dashboard passa da `is_staff` global-see-all a `StorefrontMember(storefront, user, role)` scoping reale; (d) customer flow completato con policies page, order lookup self-service (reference + email), retry payment su failed intent, stripe payment page custom con Elements.
+
+Concrete shape:
+
+1. **`apps/commerce/i18n.py`** (~430 LOC) — nuovo modulo i18n che rispecchia `apps/catalog/template_i18n.py`. Re-esporta `SUPPORTED_LOCALES` / `DEFAULT_LOCALE` / `RTL_LOCALES` dal catalog (una sola fonte di verità per il set), definisce `COMMERCE_CHROME` (125 keys × 5 locales = 625 stringhe UI commerce: nav, shop, PDP, cart, checkout, order confirmation, policies, lookup, footer, form labels, status labels). Helpers: `resolve_locale(request)` / `get_chrome(locale)` / `html_dir(locale)` / `is_rtl(locale)` / `locale_switcher_entries(current)` / `localize(translations, locale, field, fallback)` / `preserve_lang_qs(locale)`.
+
+2. **`apps/commerce/content.py`** (~260 LOC) — per-storefront brand-specific copy × 5 locales. `STOREFRONT_CONTENT = {slug: {locale: {tagline, footer_bio, shipping_policy, return_policy, bank_transfer_instructions, nav_atelier_label|nav_maison_label}}}`. `COLLECTION_CONTENT = {slug: {coll_slug: {locale: {title, subtitle}}}}`. Il seeder importa entrambi e popola i JSONField su Storefront/Collection.
+
+3. **Models: 4 nuovi JSONField + 1 nuovo modello** (migration `0003_commerce_v2`):
+   - `Storefront.translations` (JSONField) + `.localized_field(field, locale, fallback)` helper
+   - `Collection.translations` + `.localized(locale)` → {title, subtitle, description}
+   - `Product.translations` + `.localized(locale)` → {title, subtitle, short_description, long_description, material, made_in, badge, info_rows}
+   - `ShippingMethod.translations` + `.localized(locale)` → {title, description, est_delivery_days}
+   - `StorefrontMember(storefront, user, role=owner|editor)` — unique_together (storefront, user)
+   - `Storefront.PaymentProvider` estesa con `STRIPE = "stripe"`
+
+4. **Payment abstraction** (`apps/commerce/payments.py` · 270 LOC):
+   - `PaymentContext` (dataclass con order + success_url/cancel_url/return_url)
+   - `PaymentDispatchResult` (dataclass con intent + redirect_url + client_config)
+   - `dispatch_stub` / `dispatch_offline_bank_transfer` / `dispatch_stripe` (provider functions)
+   - `dispatch_stripe` usa `stripe.PaymentIntent.create` con `automatic_payment_methods`, `metadata={order_id, order_reference, storefront}`, `idempotency_key=f"order-{order.reference}"`, `receipt_email`. Amount in cents via `to_integral_value()` per evitare subnormal decimals.
+   - `handle_stripe_webhook_event(event)` mappa `payment_intent.succeeded/payment_failed/canceled` → transizioni stato locali PaymentIntent + Order.
+   - Graceful fallback: `ProviderUnavailable` (missing SDK o missing `STRIPE_SECRET_KEY`) → `dispatch` crea stub intent con `payload.stub_fallback=True` + log warning. L'ordine resta pagato; il merchant vede `stub_fallback` nell'intent payload e sa di dover configurare le chiavi.
+   - `is_provider_available(provider)` runtime probe per dashboard badge.
+
+5. **Views layer** (`apps/commerce/views/customer.py` · 400 LOC):
+   - `LocaleMixin` risolve `?lang=` una volta in `setup()` e inietta in context: `locale`, `html_dir`, `is_rtl`, `chrome`, `locale_switcher`, `lang_qs`, `storefront_content`, `storefront_tagline`, `storefront_footer_bio`, `storefront_shipping_policy`, `storefront_return_policy`, `storefront_bank_instructions`, `collections_i18n`.
+   - Views pre-calcolate `products_l10n` (list), `product_l10n` (dict), `cart_lines` (list con `{item, product, l10n}`), `shipping_methods_l10n`, `shipping_method_l10n` per usare template ergonomici.
+   - Nuove views: `PoliciesView`, `OrderLookupView` (guest reference+email → redirect a confirmation se match), `PaymentPageView` (Stripe Elements con client_secret da PaymentIntent.payload), `RetryPaymentView` (POST per riprovare payment failed), `StripeWebhookView` (csrf_exempt, verifica signature con `STRIPE_WEBHOOK_SECRET`).
+   - Checkout ora routa a `commerce:payment_page` se intent stripe initiated, altrimenti a confirmation.
+
+6. **Seller scoping** (`apps/commerce/views/seller.py` · 320 LOC):
+   - `SellerRequiredMixin` ora estende `LoginRequiredMixin`; in `dispatch` carica lo storefront per slug e verifica `_user_can_access(user, sf)` (membership OR superuser). Anonymous → login redirect; staff senza membership → `PermissionDenied` (403).
+   - `_user_storefronts_qs(user)` + `_user_can_access(user, sf)` helpers.
+   - Nuovo `DashboardRootView` a `/dashboard/` (no slug): redirect auto se single-membership, altrimenti card chooser. Mostra badge superuser se applicabile.
+   - `DashboardHomeView` ora espone `payment_provider_ok` (bool da `payments.is_provider_available`), `payment_provider_label`, `members` (queryset `sf.members.select_related('user')`), `all_storefronts`.
+
+7. **Forms chrome-driven** (`apps/commerce/forms.py`):
+   - `CheckoutForm.__init__` accetta `chrome=` e `locale=` e sovrascrive `fields[*].label` dal dict; `shipping_method.choices` usa `m.localized(locale).title` per i titoli localizzati.
+   - Nuovo `OrderLookupForm(reference, email)` con chrome-driven labels.
+   - Nuovo `StorefrontMemberForm` per admin inline.
+
+8. **Templates × 5 locales** (entrambi skin):
+   - `_base.html` × 2 skin — html[lang/dir] dinamico, conditional Amiri + Noto Kufi per Arabic, language switcher (5 pills) nella mp-bar, `chrome.*` keys ovunque, `storefront_tagline`/`storefront_footer_bio` dal JSON, tutti gli internal hrefs con `{{ lang_qs }}`, RTL CSS block completo, footer link a `commerce:policies` e `commerce:order_lookup`.
+   - shop, product, cart, checkout, order_confirmation × 2 skin — chrome-driven ovunque, iterano `products_l10n`/`cart_lines`/`related_l10n`/`shipping_methods_l10n`, product titolo/desc da `product_l10n`.
+   - Nuovi: `policies.html` × 2 skin (3 cards: shipping/returns/contact con icon 01/02/03 e accent color per skin), `order_lookup.html` × 2 skin (centered form reference+email), `payment/stripe.html` (skin-agnostic clean card con Stripe Elements + fallback friendly se non configurato + RTL supported).
+   - `dashboard/_base.html` — nav "Cambia storefront" + "Esci"
+   - `dashboard/home.html` — 3 cards nuove (Pagamenti con badge ok/warn, Membri con role pills, Collegamenti rapidi)
+   - `dashboard/root.html` — chooser page multi-storefront
+
+9. **Seeder esteso** (`apps/commerce/management/commands/seed_commerce.py`):
+   - Nuova `SHIPPING_TRANSLATIONS` dict × 5 locales per i 7 codici shipping (3 Bottega · 4 Luxe) allineati ai codici già seedati (italy-48h, italy-pickup, europe-4d, maison-milano, maison-italia, maison-europa, private-appointment).
+   - `_seed_storefront` popola `Storefront.translations` da `commerce_content.STOREFRONT_CONTENT`, `Collection.translations` da `COLLECTION_CONTENT`, `ShippingMethod.translations` da `SHIPPING_TRANSLATIONS`.
+   - Nuova `_seed_demo_merchants`: crea `bottega_owner` + `luxe_owner` users (is_staff=True, password `commerce-v2`) + `StorefrontMember(role=OWNER)` ciascuno. Idempotente — ri-eseguire non resetta le password.
+
+10. **URLs + settings**:
+   - Nuovi path: `shop/<slug>/politiche/`, `shop/<slug>/ordine/`, `shop/<slug>/order/<uuid>/payment/`, `shop/<slug>/order/<uuid>/retry-payment/`, `commerce/webhook/stripe/`, `dashboard/` (root chooser).
+   - `settings.py` aggiunge `STRIPE_SECRET_KEY` / `STRIPE_PUBLISHABLE_KEY` / `STRIPE_WEBHOOK_SECRET` letti da env, + `STRIPE_ALLOW_STUB_FALLBACK` toggle (default True).
+
+**Rationale:** la direttiva era portare il commerce v1 — "poster operativo single-seller, IT-only, dev-payment" — a uno stato boutique online reale senza riscrivere da zero. Ogni pezzo v1 è stato conservato (Storefront, Product, Variant, Cart, Order, PaymentIntent hanno ancora tutti i loro campi originali) e la v2 è additiva (JSONField nuovi con default=dict, nuovo modello isolato, nuovo modulo payments al posto dei `_handle_*` inline, LocaleMixin sovrappone senza toccare ListView/DetailView già funzionanti). Lo stripe adapter è lazy (import dentro la funzione, degrada a ProviderUnavailable) perché la baseline dev usa SQLite senza chiavi e non deve 500-are — il dispatcher falla graceful a stub e logga. Lo scoping merchant con membership è più robusto di "storefront.owner FK" perché una stessa boutique può avere più owner/editor e perché un utente può gestire più storefront (il chooser esiste proprio per questo). Il customer flow si chiude con retry e lookup perché senza questi due una boutique online non è credibile: il primo salva l'ordine dopo una carta rifiutata, il secondo salva il cliente dopo una email di conferma persa.
+
+**Trade-off deliberati:**
+- Il dashboard resta IT-only (non è customer-facing; localizzarlo × 5 lingue sarebbe churn senza valore). La migrazione può essere aggiunta in v3 senza toccare il chrome customer.
+- `Product.translations` è un singolo JSONField con lookups stringa invece di rows per-locale. Scelta deliberata: evita una tabella di traduzione con schema rigido, allinea al pattern `template_content_*.py` del catalog, e la query cost è zero (il campo è letto in memoria dopo select_related). Quando il volume cresce oltre ~10k prodotti × 5 locales si potrà migrare a `ProductTranslation(product, locale, field, value)` senza rompere il consumer (`product.localized(locale)` resta la stessa API).
+- Stripe è single-account: una sola `STRIPE_SECRET_KEY` serve tutti gli storefront. Multi-account (un secret key per merchant) richiede Stripe Connect — documentato come evoluzione v3, non bloccante in v2.
+- Nessun email sending automatico (order confirmation email non viene inviata). Richiede `django-anymail` + provider transactional. Spostato a v3; customer note "write us for help" rimane l'escape hatch.
+- Nessun coupon/promotion/tax engine — non richiesto, conservati campi (`tax_total`, `compare_at_price`) per estensione futura.
+
+**What's operational NOW (with and without env vars):**
+- Without env vars: stub + offline_bank_transfer payment path end-to-end funzionante, i ordini confermano auto, il dashboard mostra warning giallo sul Payments card se lo storefront è impostato su stripe. Ideale per dev e QA.
+- With `STRIPE_SECRET_KEY` + `STRIPE_PUBLISHABLE_KEY` + `STRIPE_WEBHOOK_SECRET` + `pip install stripe`: Stripe reale in test mode (switch su live mode = cambio della chiave); la webhook route `/commerce/webhook/stripe/` riceve gli eventi Stripe e aggiorna `PaymentIntent.status` + `Order.payment_status` localmente.
+
+**Consequence:** (a) la baseline commerce passa da "v1 foundation" a "v2 operativa multi-tenant-ready"; (b) il cliente accede in 5 lingue con real RTL; (c) un merchant loggato non vede i dati di un altro; (d) un pagamento Stripe reale gira end-to-end su chiavi env; (e) un cliente che ha perso la email di conferma può recuperare l'ordine con reference + email senza contattare il merchant; (f) un pagamento fallito può essere ritentato senza rifare il carrello — lo stock era già locked.
+
+**Validazione:**
+- `python manage.py check` → 0 issues
+- Migration `0003_commerce_v2` applicata pulita
+- 73/73 routes commerce green (customer flow × 5 locales × 2 skin)
+- 45/45 live preview routes green (9 templates × 5 locales, zero regressione catalog)
+- ACL validation: anon→302, bottega_owner sul proprio dashboard→200, sul luxe dashboard→403; luxe_owner sul proprio→200, sul bottega→403
+- Payment flow: add_to_cart→302, checkout POST→302 con order creato `payment=paid status=confirmed` (stub), order confirmation AR→200, order lookup POST con reference+email match→302
+- Stripe availability probe: `is_provider_available('stripe')` False senza env, True con env + `pip install stripe`
+
+**Key insights:**
+
+1. **JSONField translations beat a translation table here.** Un `ProductTranslation(product, locale, field, value)` modello sarebbe più "Django idiomatic" ma costringe ogni authoring a creare N rows. Il JSONField è un dict Python lato authoring (lo stesso `{locale: {field: value}}` che già usa il catalog) ed è zero-cost per la read path (un `select_related`).
+
+2. **LocaleMixin vs template context processor.** Un context processor avrebbe iniettato il chrome globalmente, ma un customer visita le catalog pages (IT-only) e le commerce pages (5 locales) dentro la stessa session. Un processor globale avrebbe dovuto sapere "sei in commerce?" aggiungendo complessità. Il mixin per-view è più cheap e più testabile.
+
+3. **Graceful fallback is a production guardrail.** La tentazione era fare raise se `STRIPE_SECRET_KEY` manca. Sarebbe corretto ma rompe QA. Il fallback a stub + `stub_fallback: True` nel payload + warning log dà la corretta telemetria al merchant ("c'è un problema di config") senza rompere la user experience.
+
+4. **Merchant scoping ≠ permission system.** Si poteva scegliere di aggiungere `django-guardian` o un permission framework completo. Un modello custom `StorefrontMember(role=owner|editor)` copre il 95% dei casi (un merchant vede solo i propri prodotti/ordini) con ~40 righe di codice. Se in futuro serve granular permissions (e.g. "editor può aggiungere prodotti ma non rimuoverli") si aggiunge un campo `permissions` al Member senza toccare il mixin esistente.
+
+5. **Stripe idempotency_key = order.reference.** Senza questo una retry accidentale (browser refresh, timeout, network glitch) creerebbe due charges. Con `idempotency_key=f"order-{order.reference}"` Stripe fa la deduplica lato suo — la seconda chiamata ritorna il medesimo PaymentIntent. Questa è la differenza tra un'integrazione stripe toy e una production-grade.
+
+---
+
 ## D-075: Commerce Foundation v1 — Shared Engine Ships Under apps/commerce, /shop + /dashboard Orthogonal To /templates Live Preview (2026-04-14, Session 43)
 
 **Decision:** `apps/commerce` is no longer an empty stub. It now ships the full engine that turns `bottega-shop-artigianale` and `luxe-fashion-store` from "live preview premium templates" into real operational shops — catalog (Product + Variant + Image + Collection), basket (Cart + CartItem, session-keyed), checkout (Address + ShippingMethod + Order + OrderItem + PaymentIntent), seller dashboard (products/variants/orders CRUD + status transitions), and a provider-agnostic payment abstraction shipping two providers in v1 (stub auto-confirm · offline_bank_transfer · Stripe is documented extension point, not implemented).

@@ -1,74 +1,72 @@
 {% extends "commerce/skins/fashion-editorial/_base.html" %}
-{% block page_title %}Panier{% endblock %}
+{% block page_title %}{{ chrome.nav_panier }}{% endblock %}
 
 {% block content %}
 <main class="cx-wrap-wide">
   <section class="cx-lead">
     <div>
-      <div class="eyebrow">Panier · maison</div>
-      <h1 style="font-style:italic; font-size:60px;">I look che <em style="color:var(--gold);">tratterrete</em> con voi.</h1>
-      <p class="intro">Ogni capo è preparato in atelier prima della consegna. La direzione clienti rilegge l'ordine personalmente prima di spedire.</p>
+      <div class="eyebrow">{{ chrome.nav_panier }} · maison</div>
+      <h1 style="font-style:italic; font-size:60px;">{{ chrome.cart_heading }} <em style="color:var(--gold);">·</em></h1>
+      <p class="intro">{{ storefront_shipping_policy|truncatechars:220 }}</p>
     </div>
-    <div class="count" style="font-style:italic;">{{ cart.item_count }} look</div>
+    <div class="count" style="font-style:italic;">{{ cart.item_count }} {% if cart.item_count == 1 %}{{ chrome.cart_count_piece }}{% else %}{{ chrome.cart_count_pieces }}{% endif %}</div>
   </section>
 
-  {% if cart.items.all %}
+  {% if cart_lines %}
   <section class="cx-cart-grid">
     <div class="cx-cart-table">
-      {% for item in cart.items.all %}
-        <form method="post" action="{% url 'commerce:cart_update' storefront.slug item.id %}" class="row" data-cart-row>
+      {% for line in cart_lines %}
+        <form method="post" action="{% url 'commerce:cart_update' storefront.slug line.item.id %}" class="row" data-cart-row>
           {% csrf_token %}
-          <div class="pic" {% if item.variant.product.hero_image_url %}style="background-image:url('{{ item.variant.product.hero_image_url }}')"{% endif %}></div>
+          <div class="pic" {% if line.product.hero_image_url %}style="background-image:url('{{ line.product.hero_image_url }}')"{% endif %}></div>
           <div>
-            <a href="{% url 'commerce:product_detail' storefront.slug item.variant.product.slug %}" class="title" style="font-style:italic;">{{ item.variant.product.title }}</a>
-            <div class="sub">{{ item.variant.variant_title|default:"Atelier" }} · <span class="sku">{{ item.variant.sku }}</span></div>
-            <div class="sub" style="margin-top:4px;">€ {{ item.unit_price|floatformat:"0g" }} all'esemplare{% if item.variant.stock <= 2 %} · <em style="color:var(--gold);">Ultimi {{ item.variant.stock }}</em>{% endif %}</div>
+            <a href="{% url 'commerce:product_detail' storefront.slug line.product.slug %}{{ lang_qs }}" class="title" style="font-style:italic;">{{ line.l10n.title }}</a>
+            <div class="sub">{{ line.item.variant.variant_title|default:"Atelier" }} · <span class="sku">{{ line.item.variant.sku }}</span></div>
+            <div class="sub" style="margin-top:4px;">€ {{ line.item.unit_price|floatformat:"0g" }}{% if line.item.variant.stock <= 2 %} · <em style="color:var(--gold);">{{ chrome.pc_low_stock }} · {{ line.item.variant.stock }}</em>{% endif %}</div>
           </div>
           <div class="qty">
             <div class="cx-qty-stepper" data-qty-stepper>
-              <button type="button" data-qty-dec aria-label="Riduci esemplari">−</button>
-              <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.variant.stock }}" inputmode="numeric" aria-label="Esemplari" data-autosubmit>
-              <button type="button" data-qty-inc aria-label="Aumenta esemplari">+</button>
+              <button type="button" data-qty-dec aria-label="−">−</button>
+              <input type="number" name="quantity" value="{{ line.item.quantity }}" min="0" max="{{ line.item.variant.stock }}" inputmode="numeric" aria-label="{{ chrome.pdp_qty }}" data-autosubmit>
+              <button type="button" data-qty-inc aria-label="+">+</button>
             </div>
           </div>
-          <div class="line-total">€ {{ item.line_total|floatformat:"0g" }}</div>
+          <div class="line-total">€ {{ line.item.line_total|floatformat:"0g" }}</div>
           <div class="remove">
-            <button type="submit" form="rm-{{ item.id }}" class="cx-btn-icon" aria-label="Rimuovi {{ item.variant.product.title }}">✕</button>
+            <button type="submit" form="rm-{{ line.item.id }}" class="cx-btn-icon" aria-label="{{ chrome.cart_remove }}">✕</button>
           </div>
         </form>
-        <form id="rm-{{ item.id }}" method="post" action="{% url 'commerce:cart_remove' storefront.slug item.id %}" style="display:none;">{% csrf_token %}</form>
+        <form id="rm-{{ line.item.id }}" method="post" action="{% url 'commerce:cart_remove' storefront.slug line.item.id %}" style="display:none;">{% csrf_token %}</form>
       {% endfor %}
     </div>
 
     <aside class="cx-summary">
-      <h3>Riepilogo maison</h3>
-      <div class="row"><span>Esemplari</span><span>{{ cart.item_count }}</span></div>
-      <div class="row"><span>Sub-totale</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
-      <div class="row"><span>Consegna</span><span>calcolata al checkout</span></div>
-      <div class="row"><span>IVA</span><span>inclusa</span></div>
-      <div class="row total"><span>Da confermare</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <h3>{{ chrome.co_summary }}</h3>
+      <div class="row"><span>{{ chrome.cart_count_pieces|capfirst }}</span><span>{{ cart.item_count }}</span></div>
+      <div class="row"><span>{{ chrome.cart_subtotal }}</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="row"><span>{{ chrome.cart_shipping }}</span><span>{{ chrome.cart_shipping_at_checkout }}</span></div>
+      <div class="row"><span>{{ chrome.cart_vat }}</span><span>{{ chrome.cart_vat_included }}</span></div>
+      <div class="row total"><span>{{ chrome.cart_total_due }}</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
       <div class="cta">
-        <a href="{% url 'commerce:checkout' storefront.slug %}" class="cx-btn is-full">Procedi al checkout</a>
+        <a href="{% url 'commerce:checkout' storefront.slug %}{{ lang_qs }}" class="cx-btn is-full">{{ chrome.cart_go_checkout }}</a>
       </div>
       <div style="margin-top:16px;">
-        <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">◂ Continua a sfogliare la collezione</a>
+        <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn-ghost">{{ chrome.cart_continue }}</a>
       </div>
-      <div class="policy">
-        {{ storefront.shipping_policy|default:"Consegna maison in scatola firmata, 24 ore Milano." }}
-      </div>
+      <div class="policy">{{ storefront_shipping_policy|truncatechars:140 }}</div>
     </aside>
   </section>
 
   <div class="cx-reassure" style="margin-top:32px;">
-    <div class="item"><span class="mark">C</span><div><strong>Consegna maison</strong>Scatola firmata, corriere dedicato 24h Milano · 48h Italia.</div></div>
-    <div class="item"><span class="mark">A</span><div><strong>Alta sartoria</strong>Acconto 30% alla conferma per i pezzi d'atelier numerati.</div></div>
-    <div class="item"><span class="mark">D</span><div><strong>Direzione clienti</strong>Chiamata di conferma per ordini maggiori di 2.500 €.</div></div>
+    <div class="item"><span class="mark">S</span><div><strong>{{ chrome.cart_trust_ship_title }}</strong>{{ chrome.cart_trust_ship_body }}</div></div>
+    <div class="item"><span class="mark">R</span><div><strong>{{ chrome.cart_trust_return_title }}</strong>{{ chrome.cart_trust_return_body }}</div></div>
+    <div class="item"><span class="mark">P</span><div><strong>{{ chrome.cart_trust_pay_title }}</strong>{{ chrome.cart_trust_pay_body }}</div></div>
   </div>
   {% else %}
   <div class="cx-empty">
-    <h3 style="font-style:italic;">Il panier è ancora vuoto</h3>
-    <p>Sfogliate la collezione per selezionare i look che desiderate. La direzione clienti è a disposizione per un appuntamento privato.</p>
-    <div style="margin-top:26px;"><a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn">Apri la collezione</a></div>
+    <h3 style="font-style:italic;">{{ chrome.cart_empty_title }}</h3>
+    <p>{{ chrome.cart_empty_body }}</p>
+    <div style="margin-top:26px;"><a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn">{{ chrome.cart_empty_cta }}</a></div>
   </div>
   {% endif %}
 </main>

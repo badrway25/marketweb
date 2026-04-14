@@ -1,42 +1,43 @@
 {% extends "commerce/skins/artisan-workshop/_base.html" %}
-{% block page_title %}Checkout{% endblock %}
+{% block page_title %}{{ chrome.co_heading }}{% endblock %}
 
 {% block content %}
 <main class="cx-wrap">
   <section class="cx-lead">
     <div>
-      <div class="eyebrow">Checkout · bottega</div>
-      <h1>Dove <em style="color:var(--terra); font-style:italic;">spediamo</em> e come ti <em style="color:var(--terra); font-style:italic;">scriviamo.</em></h1>
-      <p class="intro">Raccogliamo solo l'indispensabile per mandarti il pacco. Nessun account, nessuna newsletter obbligatoria.</p>
+      <div class="eyebrow">{{ chrome.co_heading }}</div>
+      <h1>{{ chrome.co_heading }} <em style="color:var(--terra); font-style:italic;">·</em></h1>
+      <p class="intro">{{ chrome.co_contact_hint }}</p>
     </div>
   </section>
 
   <section class="cx-cart-grid">
     <form method="post" action="" class="cx-form">
       {% csrf_token %}
+      {% if locale and locale != 'it' %}<input type="hidden" name="lang" value="{{ locale }}">{% endif %}
 
       {% if form.non_field_errors %}
         <div class="cx-messages"><div class="m is-error">{{ form.non_field_errors }}</div></div>
       {% endif %}
 
       <fieldset>
-        <legend><span class="step">1</span>Chi sei</legend>
+        <legend><span class="step">1</span>{{ chrome.co_contact_heading }}</legend>
         <div class="field-grid">
           <div class="row-2">
-            <label>Nome e cognome
-              <input type="text" name="full_name" required value="{{ form.full_name.value|default:'' }}" autocomplete="name" placeholder="Come ti firmi sulle lettere">
+            <label>{{ chrome.f_full_name }}
+              <input type="text" name="full_name" required value="{{ form.full_name.value|default:'' }}" autocomplete="name">
               {% if form.full_name.errors %}<span class="err">{{ form.full_name.errors.0 }}</span>{% endif %}
             </label>
-            <label>Email
-              <span class="hint">Usiamo questa per mandarti la conferma e il tracking.</span>
-              <input type="email" name="email" required value="{{ form.email.value|default:'' }}" autocomplete="email" inputmode="email" placeholder="nome@esempio.it">
+            <label>{{ chrome.f_email }}
+              <span class="hint">{{ chrome.co_contact_hint }}</span>
+              <input type="email" name="email" required value="{{ form.email.value|default:'' }}" autocomplete="email" inputmode="email">
               {% if form.email.errors %}<span class="err">{{ form.email.errors.0 }}</span>{% endif %}
             </label>
           </div>
           <div class="row-2">
-            <label>Telefono
-              <span class="hint">Serve al corriere per avvisarti della consegna.</span>
-              <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" autocomplete="tel" inputmode="tel" placeholder="+39 ...">
+            <label>{{ chrome.f_phone }}
+              <span class="hint">{{ chrome.f_optional_mark }}</span>
+              <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" autocomplete="tel" inputmode="tel">
             </label>
             <div></div>
           </div>
@@ -44,46 +45,46 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="step">2</span>Dove spediamo</legend>
+        <legend><span class="step">2</span>{{ chrome.co_shipping_heading }}</legend>
         <div class="field-grid">
-          <label>Indirizzo
-            <input type="text" name="line1" required value="{{ form.line1.value|default:'' }}" autocomplete="address-line1" placeholder="Via, numero civico">
+          <label>{{ chrome.f_line1 }}
+            <input type="text" name="line1" required value="{{ form.line1.value|default:'' }}" autocomplete="address-line1">
             {% if form.line1.errors %}<span class="err">{{ form.line1.errors.0 }}</span>{% endif %}
           </label>
-          <label>Civico · scala · interno
-            <span class="hint">Opzionale — aggiungi dettagli per il corriere.</span>
+          <label>{{ chrome.f_line2 }}
+            <span class="hint">{{ chrome.f_optional_mark }}</span>
             <input type="text" name="line2" value="{{ form.line2.value|default:'' }}" autocomplete="address-line2">
           </label>
           <div class="row-3">
-            <label>Città
+            <label>{{ chrome.f_city }}
               <input type="text" name="city" required value="{{ form.city.value|default:'' }}" autocomplete="address-level2">
               {% if form.city.errors %}<span class="err">{{ form.city.errors.0 }}</span>{% endif %}
             </label>
-            <label>CAP
-              <input type="text" name="postal_code" required value="{{ form.postal_code.value|default:'' }}" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{4,5}">
+            <label>{{ chrome.f_postal_code }}
+              <input type="text" name="postal_code" required value="{{ form.postal_code.value|default:'' }}" autocomplete="postal-code" inputmode="numeric">
               {% if form.postal_code.errors %}<span class="err">{{ form.postal_code.errors.0 }}</span>{% endif %}
             </label>
-            <label>Provincia
+            <label>{{ chrome.f_region }}
               <input type="text" name="region" value="{{ form.region.value|default:'' }}" autocomplete="address-level1" maxlength="32">
             </label>
           </div>
-          <label>Paese
+          <label>{{ chrome.f_country }}
             <input type="text" name="country" value="{{ form.country.value|default:'Italia' }}" autocomplete="country-name">
           </label>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend><span class="step">3</span>Come spediamo</legend>
+        <legend><span class="step">3</span>{{ chrome.co_method_heading }}</legend>
         <div class="cx-shipping-options">
-          {% for method in shipping_methods %}
+          {% for m in shipping_methods_l10n %}
             <label class="opt" data-selected="{% if forloop.first %}1{% else %}0{% endif %}">
-              <input type="radio" name="shipping_method" value="{{ method.code }}" {% if forloop.first %}checked{% endif %}>
+              <input type="radio" name="shipping_method" value="{{ m.code }}" {% if forloop.first %}checked{% endif %}>
               <div class="body">
-                <div class="title">{{ method.title }}</div>
-                <div class="desc">{{ method.description }}{% if method.est_delivery_days %} · <strong>{{ method.est_delivery_days }}</strong>{% endif %}</div>
+                <div class="title">{{ m.title }}</div>
+                <div class="desc">{{ m.description }}{% if m.est_delivery_days %} · <strong>{{ m.est_delivery_days }}</strong>{% endif %}</div>
               </div>
-              <div class="price">{% if method.price > 0 %}€ {{ method.price|floatformat:"0g" }}{% else %}Gratis{% endif %}</div>
+              <div class="price">{% if m.price > 0 %}€ {{ m.price|floatformat:"0g" }}{% else %}—{% endif %}</div>
             </label>
           {% endfor %}
         </div>
@@ -91,40 +92,38 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="step">4</span>Note per la bottega</legend>
+        <legend><span class="step">4</span>{{ chrome.co_notes_heading }}</legend>
         <label class="cx-note-label">
-          Qualcosa che dovremmo sapere — regalo, citofono, orari preferiti
-          <textarea name="customer_note" rows="3" placeholder="Scrivici tutto ciò che può servire.">{{ form.customer_note.value|default:'' }}</textarea>
+          {{ chrome.co_notes_hint }}
+          <textarea name="customer_note" rows="3">{{ form.customer_note.value|default:'' }}</textarea>
         </label>
       </fieldset>
 
       <div class="cx-reassure">
-        <div class="item"><span class="mark">P</span><div><strong>Pagamento registrato</strong>Riceverai le istruzioni subito dopo la conferma.</div></div>
-        <div class="item"><span class="mark">S</span><div><strong>Spedizione tracciata</strong>Partiamo appena il pezzo è pronto in bottega.</div></div>
-        <div class="item"><span class="mark">R</span><div><strong>Resi entro 14 giorni</strong>Cambio o rimborso su richiesta, restano escluse le edizioni numerate.</div></div>
+        <div class="item"><span class="mark">S</span><div><strong>{{ chrome.cart_trust_ship_title }}</strong>{{ chrome.cart_trust_ship_body }}</div></div>
+        <div class="item"><span class="mark">R</span><div><strong>{{ chrome.cart_trust_return_title }}</strong>{{ chrome.cart_trust_return_body }}</div></div>
+        <div class="item"><span class="mark">P</span><div><strong>{{ chrome.cart_trust_pay_title }}</strong>{{ chrome.cart_trust_pay_body }}</div></div>
       </div>
 
       <div class="cx-cta-cluster" style="margin-top:22px;">
-        <button type="submit" class="cx-btn is-full">Conferma ordine della bottega</button>
+        <button type="submit" class="cx-btn is-full">{{ chrome.co_pay_now }}</button>
       </div>
       <p style="margin-top:12px; font-family:var(--cx-body); font-size:12px; color:var(--ink-faint); font-style:italic; line-height:1.6;">
-        Confermando l'ordine accetti le <a href="#" style="color:var(--terra); border-bottom:1px solid currentColor;">condizioni della bottega</a> e la nostra <a href="#" style="color:var(--terra); border-bottom:1px solid currentColor;">privacy</a>. Nessun dato viene condiviso con terzi.
+        <a href="{% url 'commerce:policies' storefront.slug %}{{ lang_qs }}" style="color:var(--terra); border-bottom:1px solid currentColor;">{{ chrome.nav_policies }}</a>
       </p>
     </form>
 
     <aside class="cx-summary">
-      <h3>Riepilogo carrello</h3>
+      <h3>{{ chrome.co_summary }}</h3>
       {% for item in cart.items.all %}
         <div class="row" style="font-family:var(--cx-body); font-size:13px;">
           <span>{{ item.variant.product.title }} × {{ item.quantity }}</span>
           <span>€ {{ item.line_total|floatformat:"0g" }}</span>
         </div>
       {% endfor %}
-      <div class="row"><span>Subtotale</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
-      <div class="row total"><span>Da pagare</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
-      <div class="policy">
-        Pagamento registrato dopo conferma. Ti scriviamo via email con tracking appena il corriere parte.
-      </div>
+      <div class="row"><span>{{ chrome.cart_subtotal }}</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="row total"><span>{{ chrome.cart_total_due }}</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="policy">{{ storefront_shipping_policy|truncatechars:160 }}</div>
     </aside>
   </section>
 </main>

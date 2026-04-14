@@ -17,7 +17,22 @@ from apps.commerce.models import (
     ProductVariant,
     ShippingMethod,
     Storefront,
+    StorefrontMember,
 )
+
+
+class StorefrontMemberInline(admin.TabularInline):
+    model = StorefrontMember
+    extra = 1
+    autocomplete_fields = ("user",)
+
+
+@admin.register(StorefrontMember)
+class StorefrontMemberAdmin(admin.ModelAdmin):
+    list_display = ("storefront", "user", "role", "created_at")
+    list_filter = ("storefront", "role")
+    search_fields = ("storefront__template__slug", "user__username", "user__email")
+    autocomplete_fields = ("user",)
 
 
 @admin.register(Storefront)
@@ -25,6 +40,7 @@ class StorefrontAdmin(admin.ModelAdmin):
     list_display = ("template", "skin", "currency", "payment_provider", "is_operational")
     list_filter = ("skin", "is_operational", "payment_provider")
     search_fields = ("template__name", "template__slug")
+    inlines = [StorefrontMemberInline]
 
 
 @admin.register(Collection)

@@ -24,7 +24,10 @@ from typing import Any
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+from django.contrib.auth import get_user_model
+
 from apps.catalog.models import WebTemplate
+from apps.commerce import content as commerce_content
 from apps.commerce.models import (
     Collection,
     Product,
@@ -32,7 +35,68 @@ from apps.commerce.models import (
     ProductVariant,
     ShippingMethod,
     Storefront,
+    StorefrontMember,
 )
+
+
+# Per-storefront, per-shipping-code translations. Picked up by the
+# seeder to populate ShippingMethod.translations. New shipping codes
+# without entries here render in IT only.
+SHIPPING_TRANSLATIONS: dict[str, dict[str, dict[str, dict[str, str]]]] = {
+    "bottega-shop-artigianale": {
+        "italy-48h": {
+            "it": {"title": "Italia · 48 ore",                  "description": "Corriere espresso, consegnato in 48 ore lavorative.",          "est_delivery_days": "48 ore"},
+            "en": {"title": "Italy · 48h tracked",              "description": "Express courier within 48 working hours.",                     "est_delivery_days": "48 hours"},
+            "fr": {"title": "Italie · livraison 48h",           "description": "Transporteur express en 48 heures ouvrées.",                  "est_delivery_days": "48 heures"},
+            "es": {"title": "Italia · 48 horas",                "description": "Mensajería urgente en 48 horas laborables.",                  "est_delivery_days": "48 horas"},
+            "ar": {"title": "إيطاليا · خلال 48 ساعة",          "description": "بريدٌ سريعٌ خلال 48 ساعة عمل.",                                "est_delivery_days": "48 ساعة"},
+        },
+        "italy-pickup": {
+            "it": {"title": "Ritiro in bottega · Firenze",       "description": "Via dei Serragli 47/r · su appuntamento.",                     "est_delivery_days": "Quando vuoi"},
+            "en": {"title": "Pickup in bottega · Florence",      "description": "Via dei Serragli 47/r · by appointment.",                      "est_delivery_days": "Whenever you like"},
+            "fr": {"title": "Retrait à la bottega · Florence",   "description": "Via dei Serragli 47/r · sur rendez-vous.",                     "est_delivery_days": "Quand vous voulez"},
+            "es": {"title": "Recogida en la bottega · Florencia","description": "Via dei Serragli 47/r · con cita.",                            "est_delivery_days": "Cuando quieras"},
+            "ar": {"title": "الاستلام من البوتيغا · فلورنسا",    "description": "Via dei Serragli 47/r · بحجزٍ مسبق.",                           "est_delivery_days": "متى تشاء"},
+        },
+        "europe-4d": {
+            "it": {"title": "Europa · 4 giorni",                 "description": "Spedizione tracciata in tutta l'UE.",                          "est_delivery_days": "4 giorni"},
+            "en": {"title": "Europe · 4 days",                   "description": "Tracked shipping across the EU.",                              "est_delivery_days": "4 days"},
+            "fr": {"title": "Europe · 4 jours",                  "description": "Livraison suivie dans toute l'UE.",                            "est_delivery_days": "4 jours"},
+            "es": {"title": "Europa · 4 días",                   "description": "Envío con seguimiento por toda la UE.",                        "est_delivery_days": "4 días"},
+            "ar": {"title": "أوروبا · 4 أيام",                   "description": "شحنٌ مع تتبّع في الاتحاد الأوروبي.",                            "est_delivery_days": "4 أيام"},
+        },
+    },
+    "luxe-fashion-store": {
+        "maison-milano": {
+            "it": {"title": "Consegna maison · Milano",          "description": "Corriere dedicato, consegna in 24 ore.",                       "est_delivery_days": "24 ore"},
+            "en": {"title": "Maison delivery · Milan",           "description": "Dedicated courier, 24h delivery.",                             "est_delivery_days": "24 hours"},
+            "fr": {"title": "Livraison maison · Milan",          "description": "Transporteur dédié, livraison en 24 heures.",                  "est_delivery_days": "24 heures"},
+            "es": {"title": "Entrega maison · Milán",            "description": "Mensajería dedicada, entrega en 24 horas.",                    "est_delivery_days": "24 horas"},
+            "ar": {"title": "توصيلٌ من الميزون · ميلانو",       "description": "ناقلٌ مخصّص، التسليم خلال 24 ساعة.",                            "est_delivery_days": "24 ساعة"},
+        },
+        "maison-italia": {
+            "it": {"title": "Consegna maison · Italia",         "description": "Corriere dedicato, consegna in 24–48 ore.",                    "est_delivery_days": "48 ore"},
+            "en": {"title": "Maison delivery · Italy",          "description": "Dedicated courier, 24–48h delivery.",                          "est_delivery_days": "48 hours"},
+            "fr": {"title": "Livraison maison · Italie",        "description": "Transporteur dédié, livraison en 24 à 48 heures.",             "est_delivery_days": "48 heures"},
+            "es": {"title": "Entrega maison · Italia",          "description": "Mensajería dedicada, entrega en 24–48 horas.",                 "est_delivery_days": "48 horas"},
+            "ar": {"title": "توصيلٌ من الميزون · إيطاليا",     "description": "ناقلٌ مخصّص، التسليم خلال 24–48 ساعة.",                          "est_delivery_days": "48 ساعة"},
+        },
+        "maison-europa": {
+            "it": {"title": "Consegna maison · Europa",         "description": "DHL Express internazionale, assicurato alla totalità.",         "est_delivery_days": "3–5 giorni"},
+            "en": {"title": "Maison delivery · Europe",         "description": "DHL Express international, fully insured.",                    "est_delivery_days": "3–5 days"},
+            "fr": {"title": "Livraison maison · Europe",        "description": "DHL Express international, entièrement assuré.",               "est_delivery_days": "3 à 5 jours"},
+            "es": {"title": "Entrega maison · Europa",          "description": "DHL Express internacional, asegurado al valor.",               "est_delivery_days": "3–5 días"},
+            "ar": {"title": "توصيلٌ من الميزون · أوروبا",      "description": "DHL Express دولي، مؤمَّنٌ بكامل القيمة.",                       "est_delivery_days": "3–5 أيام"},
+        },
+        "private-appointment": {
+            "it": {"title": "Consegna su appuntamento · showroom","description": "Ritiro nello showroom Brera con la direzione clienti.",        "est_delivery_days": "Quando vuoi"},
+            "en": {"title": "Showroom appointment",              "description": "Pickup at the Brera showroom with the client director.",        "est_delivery_days": "Whenever you like"},
+            "fr": {"title": "Rendez-vous showroom",              "description": "Retrait au showroom Brera avec la direction clientèle.",        "est_delivery_days": "Quand vous voulez"},
+            "es": {"title": "Cita en el showroom",               "description": "Recogida en el showroom Brera con la dirección de clientes.",    "est_delivery_days": "Cuando quieras"},
+            "ar": {"title": "موعدٌ في الشورُوم",                "description": "الاستلام من شورُوم بريرا مع إدارة العملاء.",                     "est_delivery_days": "متى تشاء"},
+        },
+    },
+}
 
 
 def _parse_price(raw: str) -> Decimal:
@@ -611,7 +675,41 @@ class Command(BaseCommand):
             ),
             reset=reset,
         )
-        self.stdout.write(self.style.SUCCESS("Commerce Foundation v1 seeded."))
+        # Demo merchant accounts + storefront memberships.
+        # Idempotent: re-running won't reset passwords or duplicate rows.
+        self._seed_demo_merchants()
+
+        self.stdout.write(self.style.SUCCESS("Commerce v2 seeded."))
+
+    def _seed_demo_merchants(self):
+        """Create one demo merchant per storefront, link via StorefrontMember.
+
+        Usernames `bottega_owner` / `luxe_owner`, password `commerce-v2`.
+        Used for dev login and to prove the merchant-scoped dashboard ACL
+        in manual QA — production deployments should rotate these
+        before exposing the dashboard publicly.
+        """
+        User = get_user_model()
+        seed_specs = [
+            ("bottega_owner", "bottega@bottegadimartino.it", "bottega-shop-artigianale"),
+            ("luxe_owner",    "direzione.clienti@maisonluxe.com", "luxe-fashion-store"),
+        ]
+        for username, email, sf_slug in seed_specs:
+            user, created = User.objects.get_or_create(
+                username=username,
+                defaults={"email": email, "is_staff": True},
+            )
+            if created:
+                user.set_password("commerce-v2")
+                user.save(update_fields=["password"])
+                self.stdout.write(f"  user: {username} (created · pwd: commerce-v2)")
+            sf = Storefront.objects.filter(template__slug=sf_slug).first()
+            if sf is None:
+                continue
+            StorefrontMember.objects.get_or_create(
+                storefront=sf, user=user,
+                defaults={"role": StorefrontMember.Role.OWNER},
+            )
 
     def _seed_storefront(
         self, *, template_slug: str, skin: str, collections: list[dict],
@@ -627,6 +725,9 @@ class Command(BaseCommand):
             ))
             return
 
+        # Pull locale-keyed storefront text from apps/commerce/content.py.
+        store_translations = commerce_content.STOREFRONT_CONTENT.get(template_slug) or {}
+
         sf, created = Storefront.objects.update_or_create(
             template=template,
             defaults={
@@ -640,6 +741,7 @@ class Command(BaseCommand):
                 "payment_provider": payment_provider,
                 "bank_transfer_instructions": bank_transfer_instructions,
                 "is_operational": True,
+                "translations": store_translations,
             },
         )
         self.stdout.write(f"  storefront: {sf.slug} ({'created' if created else 'updated'})")
@@ -650,6 +752,7 @@ class Command(BaseCommand):
             sf.shipping_methods.all().delete()
 
         # Collections
+        coll_translations = commerce_content.COLLECTION_CONTENT.get(template_slug) or {}
         coll_by_slug: dict[str, Collection] = {}
         for c in collections:
             coll, _ = Collection.objects.update_or_create(
@@ -658,11 +761,13 @@ class Command(BaseCommand):
                     "title": c["title"], "subtitle": c.get("subtitle", ""),
                     "description": c.get("description", ""),
                     "order": c.get("order", 0), "is_active": True,
+                    "translations": coll_translations.get(c["slug"], {}),
                 },
             )
             coll_by_slug[c["slug"]] = coll
 
         # Shipping methods
+        ship_translations = SHIPPING_TRANSLATIONS.get(template_slug) or {}
         for m in shipping_methods:
             ShippingMethod.objects.update_or_create(
                 storefront=sf, code=m["code"],
@@ -671,6 +776,7 @@ class Command(BaseCommand):
                     "price": Decimal(m["price"]),
                     "est_delivery_days": m.get("eta", ""),
                     "is_active": True,
+                    "translations": ship_translations.get(m["code"], {}),
                 },
             )
 
