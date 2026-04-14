@@ -161,6 +161,16 @@
     .cp-awards .grid { grid-template-columns: 1fr; }
     .cp-cta-pub .wrap { grid-template-columns: 1fr; gap: 28px; }
   }
+  @media (max-width: 720px) {
+    .cp-press, .cp-awards, .cp-cta-pub { padding-left: 20px; padding-right: 20px; }
+    .cp-exhib { padding: 48px 20px; }
+    .cp-press .card { padding: 22px; }
+    .cp-press .card .outlet { font-size: 18px; }
+    .cp-exhib .row { padding: 20px 0; }
+    .cp-exhib .row .event { font-size: 14px; }
+    .cp-awards .item h3 { font-size: 16px; }
+    .cp-cta-pub h2 { font-size: 26px; }
+  }
 {% endblock %}
 
 {% block content %}

@@ -18,7 +18,7 @@ LOCALES = {
     "pragma-corporate-suite":      ["it"],
     "elevate-startup-landing":     ["it"],
     "chiara-portfolio-creativo":   ["it", "en", "fr", "es", "ar"],
-    "pixel-portfolio-fotografico": ["it"],
+    "pixel-portfolio-fotografico": ["it", "en", "fr", "es", "ar"],
 }
 
 CATEGORY = {

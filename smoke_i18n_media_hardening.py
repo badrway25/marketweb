@@ -35,7 +35,6 @@ client = Client()
 IT_ONLY = (
     "pragma-corporate-suite",
     "elevate-startup-landing",
-    "pixel-portfolio-fotografico",
 )
 MULTILINGUAL = (
     "cardio-studio-specialistico",
@@ -43,6 +42,8 @@ MULTILINGUAL = (
     "gusto-fine-dining",
     # Session 37 — Chiara perfection pass: full 5-locale rollout.
     "chiara-portfolio-creativo",
+    # Session 39 — Pixel perfection pass: full 5-locale rollout.
+    "pixel-portfolio-fotografico",
 )
 CATEGORY = {
     "pragma-corporate-suite":      "business",

@@ -2411,19 +2411,26 @@ from apps.catalog.template_content_gusto_i18n import (  # noqa: E402
 from apps.catalog.template_content_pragma import PRAGMA_CONTENT_IT  # noqa: E402
 from apps.catalog.template_content_elevate import ELEVATE_CONTENT_IT  # noqa: E402
 
-# Phase 2g3.4 — Portfolio live rollout (Session 34). Pixel ships IT-only at
-# promotion time; the i18n keys can be added later via the same recipe used
-# for cardio/derm/gusto (Sessions 23/24/29).
+# Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
 # Phase 2g3.4b — Chiara perfection pass (Session 37). Chiara now ships in 5
 # locales (it/en/fr/es/ar) — the EN/FR/ES/AR trees mirror the IT shape and
 # carry hand-authored editorial-design native voice per locale.
+#
+# Phase 2g3.4c — Pixel perfection pass (Session 39). Pixel now ships in 5
+# locales (it/en/fr/es/ar) — the EN/FR/ES/AR trees mirror the IT shape and
+# carry hand-authored cinematic-photographer native voice per locale
+# (Aperture/FOAM / Polka 6 Mois / Blank Paper EPS / formal MSA registers).
 from apps.catalog.template_content_chiara import CHIARA_CONTENT_IT  # noqa: E402
 from apps.catalog.template_content_chiara_en import CHIARA_CONTENT_EN  # noqa: E402
 from apps.catalog.template_content_chiara_fr import CHIARA_CONTENT_FR  # noqa: E402
 from apps.catalog.template_content_chiara_es import CHIARA_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_chiara_ar import CHIARA_CONTENT_AR  # noqa: E402
 from apps.catalog.template_content_pixel import PIXEL_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_pixel_en import PIXEL_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_pixel_fr import PIXEL_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_pixel_es import PIXEL_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_pixel_ar import PIXEL_CONTENT_AR  # noqa: E402
 
 
 TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
@@ -2463,6 +2470,10 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     },
     "pixel-portfolio-fotografico": {
         "it": PIXEL_CONTENT_IT,
+        "en": PIXEL_CONTENT_EN,
+        "fr": PIXEL_CONTENT_FR,
+        "es": PIXEL_CONTENT_ES,
+        "ar": PIXEL_CONTENT_AR,
     },
 }
 

@@ -231,9 +231,19 @@
     .cp-next-series { padding: 48px 32px 64px; }
   }
   @media (max-width: 720px) {
+    .cp-cover .breadcrumb { left: 20px; top: 20px; padding: 8px 12px; font-size: 8px; }
+    .cp-cover .meta { left: 20px; right: 20px; bottom: 40px; }
     .cp-cover h1 { font-size: 30px; }
-    .cp-meta-strip .row { grid-template-columns: 1fr; }
+    .cp-cover .meta .lead { font-size: 14px; margin-top: 18px; }
+    .cp-meta-strip { padding: 24px 20px; }
+    .cp-meta-strip .row { grid-template-columns: 1fr; gap: 18px; }
+    .cp-essay { padding: 40px 20px; }
+    .cp-essay .section h2 { font-size: 22px; }
+    .cp-essay .section p { font-size: 15px; line-height: 1.7; }
+    .cp-gallery { padding: 40px 20px; }
     .cp-gallery .grid { grid-template-columns: 1fr; grid-auto-rows: 240px; }
+    .cp-series-exif { padding: 24px 20px; }
+    .cp-next-series { padding: 32px 20px 48px; gap: 16px; }
   }
 {% endblock %}
 
@@ -241,7 +251,7 @@
 <section class="cp-cover">
   <div class="frame-corners"></div>
   <div class="breadcrumb">
-    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">[ ← {{ page.label }} ]</a>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">[ <span class="cp-dir-arrow">←</span> {{ page.label }} ]</a>
     <span class="sep">/</span>
     <span>{{ post.discipline }}</span>
   </div>
@@ -263,10 +273,10 @@
 
 <div class="cp-meta-strip">
   <div class="row" data-lm-stagger data-lm-stagger-delay="60">
-    <div class="item" data-lm="reveal">Disciplina<strong>{{ post.discipline }}</strong></div>
-    <div class="item" data-lm="reveal">Periodo<strong>{{ post.duration }}</strong></div>
-    <div class="item" data-lm="reveal">Luogo<strong>{{ post.location }}</strong></div>
-    <div class="item" data-lm="reveal">Frame<strong>{{ post.frame_count }}</strong></div>
+    <div class="item" data-lm="reveal">{{ page_data.post_discipline_label }}<strong>{{ post.discipline }}</strong></div>
+    <div class="item" data-lm="reveal">{{ page_data.post_period_label }}<strong>{{ post.duration }}</strong></div>
+    <div class="item" data-lm="reveal">{{ page_data.post_location_label }}<strong>{{ post.location }}</strong></div>
+    <div class="item" data-lm="reveal">{{ page_data.post_frames_label }}<strong>{{ post.frame_count }}</strong></div>
   </div>
 </div>
 
@@ -281,7 +291,7 @@
 </article>
 
 <section class="cp-gallery">
-  <div class="lbl">Galleria · {{ post.frame_count }}</div>
+  <div class="lbl">{{ page_data.post_gallery_label }} · {{ post.frame_count }}</div>
   <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
     {% for url, num, caption in post.gallery %}
       <figure class="frame" data-lm="reveal">
@@ -297,7 +307,7 @@
 
 <div class="cp-series-exif">
   <div class="wrap">
-    <span class="lbl">[ Edizione ]</span>
+    <span class="lbl">[ {{ page_data.post_edition_label }} ]</span>
     {% for label, value in post.print_meta %}
       <div class="cell">{{ label }}<strong>{{ value }}</strong></div>
     {% endfor %}
@@ -307,8 +317,8 @@
 <a class="cp-next-series" href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
   <div>
     <div class="lbl">{{ post.next_label }}</div>
-    <div class="title">[ → {{ page.label }} ]</div>
+    <div class="title">[ <span class="cp-dir-arrow">→</span> {{ page.label }} ]</div>
   </div>
-  <span class="arrow">→</span>
+  <span class="arrow cp-dir-arrow">→</span>
 </a>
 {% endblock %}

@@ -65,6 +65,8 @@ PIXEL_CONTENT_IT: dict[str, Any] = {
             "respiro, ritratto editoriale e commissioni di marca per "
             "case editrici, gallerie e maison di moda. Rappresentato "
             "da Galleria Carla Sozzani per la stampa fine art.",
+        # Primary nav bracket CTA (right-side) — lifted Session 39 per D-047
+        "nav_cta":       "Apri conversazione",
         "foot_studio":   "Lo studio",
         "foot_pages":    "Indice",
         "foot_contact":  "Contatto",
@@ -237,6 +239,17 @@ PIXEL_CONTENT_IT: dict[str, Any] = {
             "lavoro: aprite una conversazione preliminare.",
         "cta_primary":      "Scrivi al fotografo",
         "cta_primary_href": "contatti",
+
+        # Chrome labels shared by serie card + series_detail page.
+        # Lifted Session 39 (D-047 lift) — same labels across every post,
+        # so they live on the parent serie block rather than on each post.
+        "card_arrow_label":        "apri serie",
+        "post_discipline_label":   "Disciplina",
+        "post_period_label":       "Periodo",
+        "post_location_label":     "Luogo",
+        "post_frames_label":       "Frame",
+        "post_gallery_label":      "Galleria",
+        "post_edition_label":      "Edizione",
     },
 
     # ─── BIOGRAFIA (about) ──────────────────────────────────────
@@ -284,9 +297,12 @@ PIXEL_CONTENT_IT: dict[str, Any] = {
             "dello studio. Tutto il resto è scelto per progetto.",
         ],
 
-        # Camera kit — what we shoot with
-        "kit_label":   "Equipaggiamento di lavoro",
-        "kit_heading": "QUATTRO SISTEMI, UNA SOLA SCELTA PER PROGETTO",
+        # Camera kit — what we shoot with.
+        # Availability label + value lifted Session 39 (D-047).
+        "kit_label":                "Equipaggiamento di lavoro",
+        "kit_heading":              "QUATTRO SISTEMI, UNA SOLA SCELTA PER PROGETTO",
+        "kit_availability_label":   "Disponibile",
+        "kit_availability_value":   "Per commissione",
         "kit": [
             ("01", "Mamiya 7II",
              "Telemetro medio formato 6 × 7 cm, due obiettivi (80mm e 43mm). "
@@ -500,6 +516,11 @@ PIXEL_CONTENT_IT: dict[str, Any] = {
         "studio_area":    "Porta Venezia · ingresso laterale · campanello «Bianchi»",
         "studio_metro":   "MM1 / MM3 Loreto · 4 minuti a piedi",
         "studio_hours":   "Disponibile per appuntamento · mai a sorpresa",
+        # Studio-card row labels — lifted Session 39 final verify (D-047)
+        "studio_row_address_label":  "Indirizzo",
+        "studio_row_entrance_label": "Ingresso",
+        "studio_row_metro_label":    "Metro",
+        "studio_row_hours_label":    "Disponibile",
 
         # Form fields
         "form_label":   "Breve di commissione",

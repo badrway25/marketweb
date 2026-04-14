@@ -123,6 +123,17 @@
   }
   @media (max-width: 720px) {
     .cp-filter, .cp-index-band, .cp-series-gallery, .cp-cta-list { padding-left: 20px; padding-right: 20px; }
+    .cp-index-band { flex-direction: column; align-items: flex-start; gap: 10px; padding-top: 16px; padding-bottom: 16px; }
+    .cp-series-gallery .serie .meta { left: 20px; right: 20px; bottom: 18px; }
+    .cp-series-gallery .serie .meta h3 { font-size: 20px; }
+    .cp-series-gallery .serie .meta .lead { font-size: 12px; }
+    .cp-series-gallery .serie .meta .row { flex-wrap: wrap; gap: 10px; }
+    .cp-series-gallery .serie .meta .row .arrow { margin-left: 0; }
+    .cp-series-gallery .serie .top-corner,
+    .cp-series-gallery .serie .year-corner { top: 12px; font-size: 8px; padding: 4px 10px; }
+    .cp-series-gallery .serie .top-corner { left: 12px; }
+    .cp-series-gallery .serie .year-corner { right: 12px; }
+    .cp-cta-list h2 { font-size: 26px; }
   }
 {% endblock %}
 
@@ -159,7 +170,7 @@
             <span>{{ post.frame_count }}</span>
             <span>·</span>
             <span>{{ post.duration }}</span>
-            <span class="arrow">[ apri serie ] →</span>
+            <span class="arrow">[ {{ page_data.card_arrow_label }} ] <span class="cp-dir-arrow">→</span></span>
           </div>
         </div>
       </a>
