@@ -64,7 +64,7 @@
         <td><a href="{% url 'commerce:dashboard_order_detail' storefront.slug o.uuid %}"><strong>{{ o.reference }}</strong></a></td>
         <td>{{ o.customer_name }}<div class="muted">{{ o.customer_email }}</div></td>
         <td>{{ o.created_at|date:"d M · H:i" }}</td>
-        <td><strong>€ {{ o.grand_total|floatformat:"0g" }}</strong></td>
+        <td class="money"><strong>€ {{ o.grand_total|floatformat:"0g" }}</strong></td>
         <td><span class="ds-pill is-{{ o.status }}">{{ o.get_status_display }}</span></td>
         <td><span class="ds-pill is-{{ o.payment_status }}">{{ o.get_payment_status_display }}</span></td>
         <td><span class="ds-pill is-{{ o.fulfillment_status }}">{{ o.get_fulfillment_status_display }}</span></td>

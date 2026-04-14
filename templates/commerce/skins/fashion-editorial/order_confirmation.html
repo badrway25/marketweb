@@ -88,13 +88,31 @@
     </aside>
   </div>
 
-  <div class="cx-policy-note" style="font-style:italic;">
-    <strong style="font-family:var(--cx-heading); color:var(--bone); font-weight:500;">Cosa succede ora.</strong>
-    {{ storefront.shipping_policy|default:"Confermiamo via email entro 24 ore e poi spediamo in scatola firmata maison. La direzione clienti vi terrà aggiornati." }}
-  </div>
+  <section class="cx-timeline">
+    <h4>Il percorso dell'ordine presso la maison</h4>
+    <ol>
+      <li>
+        <strong>Email di conferma entro pochi minuti</strong>
+        <p>Riceverete una conferma con il riferimento {{ order.reference }} e le istruzioni di pagamento.</p>
+      </li>
+      <li>
+        <strong>Rilettura della direzione clienti</strong>
+        <p>Entro 24 ore la direzione vi scrive per confermare i dettagli. Per gli ordini oltre i 2.500 € c'è anche una telefonata.</p>
+      </li>
+      <li>
+        <strong>Preparazione in atelier</strong>
+        <p>Il capo viene finito o selezionato in atelier, confezionato nella scatola maison e affidato al corriere.</p>
+      </li>
+      <li>
+        <strong>Consegna in scatola firmata</strong>
+        <p>Consegna su appuntamento a Milano entro 24h · 48h nel resto d'Italia · DHL express per l'estero.</p>
+      </li>
+    </ol>
+  </section>
 
-  <div style="margin-top:32px;">
-    <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">◂ Torna alla collezione</a>
+  <div class="cx-cta-cluster" style="margin-top:32px;">
+    <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-secondary">Torna alla collezione</a>
+    <a href="mailto:{{ storefront.contact_email }}?subject=Ordine {{ order.reference }}" class="cx-btn-ghost">Scrivere alla direzione ▸</a>
   </div>
 </main>
 {% endblock %}

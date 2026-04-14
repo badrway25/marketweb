@@ -11,8 +11,9 @@
   <section class="cx-pdp">
     <div class="gallery">
       <div class="hero{% if not product.hero_image_url %} is-empty{% endif %}" id="pdpHero" {% if product.hero_image_url %}style="background-image:url('{{ product.hero_image_url }}')"{% endif %}>
+        {% if not product.hero_image_url %}<span>{{ product.title|slice:":1"|upper }}</span>{% endif %}
         {% if product.edition_number %}
-        <span style="position:absolute; top:14px; left:14px; background:var(--paper); padding:6px 12px; font-family:var(--cx-heading); font-style:italic; font-size:14px; color:var(--ink); border:1.5px solid var(--ink);">N° {{ product.edition_number }}</span>
+        <span style="position:absolute; top:14px; left:14px; background:var(--paper); padding:6px 12px; font-family:var(--cx-heading); font-style:italic; font-size:14px; color:var(--ink); border:1.5px solid var(--ink); z-index:2;">N° {{ product.edition_number }}</span>
         {% endif %}
       </div>
       {% if images %}
@@ -78,26 +79,50 @@
             {% endfor %}
           {% endif %}
 
-          <div class="qty-row">
-            <label>Quantità</label>
-            <input type="number" name="quantity" value="1" min="1" max="99">
+          <div class="cx-qty-row">
+            <span class="label">Quantità</span>
+            <div class="cx-qty-stepper" data-qty-stepper>
+              <button type="button" data-qty-dec aria-label="Riduci quantità">−</button>
+              <input type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric" aria-label="Quantità">
+              <button type="button" data-qty-inc aria-label="Aumenta quantità">+</button>
+            </div>
           </div>
         </div>
 
-        <div style="margin-top:28px; display:flex; gap:18px; flex-wrap:wrap; align-items:center;">
+        {% if product.is_low_stock and not product.is_sold_out %}
+        <div class="cx-lowstock" style="--fill: 30%;">
+          <span class="label">Ultimi pezzi</span>
+          <span class="bar" aria-hidden="true"></span>
+          <span class="count">Rimasti · {{ product.total_stock }}</span>
+        </div>
+        {% endif %}
+
+        <div class="cx-cta-cluster">
           <button type="submit" class="cx-btn{% if product.is_sold_out %} is-disabled{% endif %}" {% if product.is_sold_out %}disabled{% endif %}>
             {% if product.is_sold_out %}Aggiungi alla lista d'attesa{% else %}Aggiungi al carrello{% endif %}
           </button>
           <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">Continua a sfogliare</a>
         </div>
-      </form>
 
-      {% if storefront.shipping_policy %}
-      <div style="margin-top:36px; padding:18px 20px; background:var(--paper-2); border:1px dashed var(--rule-dash); font-family:var(--cx-body); font-size:13px; color:var(--ink-mute); line-height:1.7;">
-        <strong style="font-family:var(--cx-heading); font-size:14px; font-style:italic; color:var(--ink); display:block; margin-bottom:6px;">Spedizione & ritiro</strong>
-        {{ storefront.shipping_policy }}
-      </div>
-      {% endif %}
+        <div class="cx-trust">
+          <div class="t">
+            <span class="sym">S</span>
+            <div><strong>Spedizione 48 ore</strong>Corriere tracciato in Italia, ritiro gratuito a Firenze.</div>
+          </div>
+          <div class="t">
+            <span class="sym">R</span>
+            <div><strong>Resi entro 14 giorni</strong>Cambio o rimborso su richiesta, edizioni numerate escluse.</div>
+          </div>
+          <div class="t">
+            <span class="sym">G</span>
+            <div><strong>Garanzia 2 anni</strong>Riparazione gratuita in bottega, cuciture e tintura.</div>
+          </div>
+          <div class="t">
+            <span class="sym">B</span>
+            <div><strong>Bottega a Firenze</strong>WhatsApp {{ storefront.contact_phone }} per dubbi e misure.</div>
+          </div>
+        </div>
+      </form>
     </div>
   </section>
 
@@ -149,6 +174,22 @@
       g.querySelectorAll('.pill').forEach(function(p){ p.dataset.selected = '0'; });
       lbl.dataset.selected = '1';
       var inp = lbl.querySelector('input'); if(inp) inp.checked = true;
+    });
+  });
+
+  // Quantity stepper
+  document.querySelectorAll('[data-qty-stepper]').forEach(function(s){
+    var inp = s.querySelector('input[type="number"]');
+    if(!inp) return;
+    var mn = parseInt(inp.min || '0', 10), mx = parseInt(inp.max || '99', 10);
+    function clamp(v){ return Math.max(mn, Math.min(mx, v|0)); }
+    s.querySelector('[data-qty-dec]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) - 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+    s.querySelector('[data-qty-inc]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) + 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
     });
   });
 </script>

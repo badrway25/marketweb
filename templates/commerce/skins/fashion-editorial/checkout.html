@@ -16,77 +16,93 @@
       {% csrf_token %}
 
       <fieldset>
-        <legend>Signora / Signore</legend>
-        <div class="row-2">
-          <label>Nome e cognome
-            <input type="text" name="full_name" required value="{{ form.full_name.value|default:'' }}">
-            {% if form.full_name.errors %}<span class="err">{{ form.full_name.errors.0 }}</span>{% endif %}
-          </label>
-          <label>Email
-            <input type="email" name="email" required value="{{ form.email.value|default:'' }}">
-            {% if form.email.errors %}<span class="err">{{ form.email.errors.0 }}</span>{% endif %}
-          </label>
-        </div>
-        <div class="row-2">
-          <label>Telefono
-            <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}">
-          </label>
-          <div></div>
+        <legend><span class="step">1</span>Signora · signore</legend>
+        <div class="field-grid">
+          <div class="row-2">
+            <label>Nome e cognome
+              <input type="text" name="full_name" required value="{{ form.full_name.value|default:'' }}" autocomplete="name">
+              {% if form.full_name.errors %}<span class="err">{{ form.full_name.errors.0 }}</span>{% endif %}
+            </label>
+            <label>Email
+              <span class="hint">Per la conferma della direzione clienti entro 24 ore.</span>
+              <input type="email" name="email" required value="{{ form.email.value|default:'' }}" autocomplete="email" inputmode="email">
+              {% if form.email.errors %}<span class="err">{{ form.email.errors.0 }}</span>{% endif %}
+            </label>
+          </div>
+          <div class="row-2">
+            <label>Telefono
+              <span class="hint">La direzione vi chiama personalmente per gli ordini maggiori di 2.500 €.</span>
+              <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" autocomplete="tel" inputmode="tel">
+            </label>
+            <div></div>
+          </div>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Indirizzo di consegna</legend>
-        <label>Indirizzo
-          <input type="text" name="line1" required value="{{ form.line1.value|default:'' }}">
-          {% if form.line1.errors %}<span class="err">{{ form.line1.errors.0 }}</span>{% endif %}
-        </label>
-        <label>Civico / scala / interno (opz.)
-          <input type="text" name="line2" value="{{ form.line2.value|default:'' }}">
-        </label>
-        <div class="row-2">
-          <label>Città
-            <input type="text" name="city" required value="{{ form.city.value|default:'' }}">
+        <legend><span class="step">2</span>Indirizzo di consegna</legend>
+        <div class="field-grid">
+          <label>Indirizzo
+            <input type="text" name="line1" required value="{{ form.line1.value|default:'' }}" autocomplete="address-line1">
+            {% if form.line1.errors %}<span class="err">{{ form.line1.errors.0 }}</span>{% endif %}
           </label>
-          <label>CAP
-            <input type="text" name="postal_code" required value="{{ form.postal_code.value|default:'' }}">
+          <label>Civico · scala · interno
+            <span class="hint">Opzionale — aiutate il corriere maison.</span>
+            <input type="text" name="line2" value="{{ form.line2.value|default:'' }}" autocomplete="address-line2">
           </label>
-        </div>
-        <div class="row-2">
-          <label>Provincia
-            <input type="text" name="region" value="{{ form.region.value|default:'' }}">
-          </label>
+          <div class="row-3">
+            <label>Città
+              <input type="text" name="city" required value="{{ form.city.value|default:'' }}" autocomplete="address-level2">
+            </label>
+            <label>CAP
+              <input type="text" name="postal_code" required value="{{ form.postal_code.value|default:'' }}" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{4,5}">
+            </label>
+            <label>Provincia
+              <input type="text" name="region" value="{{ form.region.value|default:'' }}" autocomplete="address-level1" maxlength="32">
+            </label>
+          </div>
           <label>Paese
-            <input type="text" name="country" value="{{ form.country.value|default:'Italia' }}">
+            <input type="text" name="country" value="{{ form.country.value|default:'Italia' }}" autocomplete="country-name">
           </label>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Consegna maison</legend>
+        <legend><span class="step">3</span>Consegna maison</legend>
         <div class="cx-shipping-options">
           {% for method in shipping_methods %}
             <label class="opt" data-selected="{% if forloop.first %}1{% else %}0{% endif %}">
               <input type="radio" name="shipping_method" value="{{ method.code }}" {% if forloop.first %}checked{% endif %}>
               <div class="body">
                 <div class="title">{{ method.title }}</div>
-                <div class="desc">{{ method.description }}{% if method.est_delivery_days %} · {{ method.est_delivery_days }}{% endif %}</div>
+                <div class="desc">{{ method.description }}{% if method.est_delivery_days %} · <strong>{{ method.est_delivery_days }}</strong>{% endif %}</div>
               </div>
-              <div class="price">€ {{ method.price|floatformat:"0g" }}</div>
+              <div class="price">{% if method.price > 0 %}€ {{ method.price|floatformat:"0g" }}{% else %}Offerta maison{% endif %}</div>
             </label>
           {% endfor %}
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Note alla direzione</legend>
-        <label style="text-transform:none; letter-spacing:0; font-weight:400; color:var(--bone-mute); font-style:italic;">
+        <legend><span class="step">4</span>Note alla direzione</legend>
+        <label class="cx-note-label">
           Modalità di consegna particolari, appuntamento desiderato, note sull'acquisto
-          <textarea name="customer_note" rows="3">{{ form.customer_note.value|default:'' }}</textarea>
+          <textarea name="customer_note" rows="3" placeholder="La direzione clienti legge ogni nota prima di confermare l'ordine.">{{ form.customer_note.value|default:'' }}</textarea>
         </label>
       </fieldset>
 
-      <button type="submit" class="cx-btn">Conferma ordine maison</button>
+      <div class="cx-reassure">
+        <div class="item"><span class="mark">D</span><div><strong>Rilettura direzione</strong>Ogni ordine è verificato personalmente prima della spedizione.</div></div>
+        <div class="item"><span class="mark">C</span><div><strong>Consegna maison</strong>Scatola firmata, corriere dedicato, 24h Milano.</div></div>
+        <div class="item"><span class="mark">A</span><div><strong>Alta sartoria</strong>Acconto 30% alla conferma per pezzi d'atelier numerati.</div></div>
+      </div>
+
+      <div class="cx-cta-cluster" style="margin-top:24px;">
+        <button type="submit" class="cx-btn is-full">Conferma ordine maison</button>
+      </div>
+      <p style="margin-top:14px; font-family:var(--cx-body); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--bone-faint); font-weight:500; line-height:1.7;">
+        Confermando accettate le <a href="#" style="color:var(--gold); border-bottom:1px solid currentColor;">condizioni della maison</a> e la nostra <a href="#" style="color:var(--gold); border-bottom:1px solid currentColor;">privacy</a>.
+      </p>
     </form>
 
     <aside class="cx-summary">

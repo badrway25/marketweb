@@ -90,14 +90,31 @@
     </aside>
   </div>
 
-  <div class="cx-policy-note">
-    <strong style="font-family:var(--cx-heading); font-style:italic; color:var(--ink);">Cosa succede adesso.</strong>
-    {{ storefront.shipping_policy|default:"Preparazione nei prossimi giorni, spedizione tracciata appena pronta." }}
-    Ti aggiorniamo via email e via WhatsApp a ogni passo.
-  </div>
+  <section class="cx-timeline">
+    <h4>Cosa succede adesso, passo per passo</h4>
+    <ol>
+      <li>
+        <strong>Email di conferma in arrivo</strong>
+        <p>Nei prossimi minuti ricevi un'email con il riferimento {{ order.reference }} e le istruzioni di pagamento.</p>
+      </li>
+      <li>
+        <strong>Preparazione in bottega</strong>
+        <p>Il tuo pezzo entra nella pianificazione della settimana. Le edizioni numerate richiedono qualche giorno in più.</p>
+      </li>
+      <li>
+        <strong>Spedizione tracciata</strong>
+        <p>Appena il pezzo è pronto, partiamo con corriere espresso e ti scriviamo via email e WhatsApp con il tracking.</p>
+      </li>
+      <li>
+        <strong>Consegna e garanzia</strong>
+        <p>Riponi la custodia in cuoio e l'elenco delle cure — hai due anni di garanzia riparazione direttamente in bottega.</p>
+      </li>
+    </ol>
+  </section>
 
-  <div style="margin-top:32px;">
-    <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">◂ Torna al catalogo</a>
+  <div class="cx-cta-cluster" style="margin-top:32px;">
+    <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-secondary">Torna al catalogo</a>
+    <a href="mailto:{{ storefront.contact_email }}?subject=Ordine {{ order.reference }}" class="cx-btn-ghost">Scrivici in bottega ▸</a>
   </div>
 </main>
 {% endblock %}

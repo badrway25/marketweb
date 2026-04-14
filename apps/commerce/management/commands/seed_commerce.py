@@ -87,7 +87,6 @@ BOTTEGA_PRODUCTS = [
         "gallery": [
             "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?w=1200&q=80&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=80&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1606112219348-204d7d8b94ee?w=1200&q=80&auto=format&fit=crop",
         ],
         "info_rows": [
             {"label": "Materia", "value": "Cuoio del Valdarno · concia vegetale"},
@@ -119,9 +118,9 @@ BOTTEGA_PRODUCTS = [
             "Una borsa rigida in cuoio naturale, formato cartolina. Cucita a sella, finita a cera "
             "d'api. Disponibile in due finiture: naturale e cognac."
         ),
-        "hero": "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=1200&q=80&auto=format&fit=crop",
+        "hero": "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1200&q=80&auto=format&fit=crop",
         "gallery": [
-            "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1200&q=80&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?w=1200&q=80&auto=format&fit=crop",
         ],
         "info_rows": [
             {"label": "Materia", "value": "Cuoio naturale"},
@@ -286,7 +285,9 @@ BOTTEGA_PRODUCTS = [
         "featured": False,
         "short": "Vasetto da 280g di marmellata di fichi neri.",
         "long": "Fichi neri maturi, cottura lenta in paiolo di rame. Senza conservanti.",
-        "hero": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=1200&q=80&auto=format&fit=crop",
+        # Typographic tile (artisan-workshop DNA-honest fallback) — no hero image,
+        # the shop/product pages render an .is-empty stamp with the product initials.
+        "hero": "",
         "gallery": [],
         "info_rows": [
             {"label": "Peso", "value": "280 g"},
@@ -518,7 +519,7 @@ LUXE_PRODUCTS = [
         "featured": False,
         "short": "Cappotto d'archivio, riedizione limitata.",
         "long": "Drop 2024, riprodotto su richiesta in sei esemplari numerati.",
-        "hero": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1400&q=80&auto=format&fit=crop",
+        "hero": "https://images.unsplash.com/photo-1611042553365-9b101441c135?w=1400&q=80&auto=format&fit=crop",
         "gallery": [],
         "info_rows": [
             {"label": "Atelier", "value": "Lanifer Biella"},

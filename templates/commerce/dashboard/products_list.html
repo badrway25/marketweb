@@ -35,8 +35,8 @@
           <div class="muted">{{ p.subtitle|default:p.material }}</div>
         </td>
         <td>{{ p.collection.title|default:"—" }}</td>
-        <td><strong>€ {{ p.base_price|floatformat:"2" }}</strong>{% if p.compare_at_price %}<div class="muted">cmp € {{ p.compare_at_price|floatformat:"2" }}</div>{% endif %}</td>
-        <td>{{ p.variants.count }}</td>
+        <td class="money"><strong>€ {{ p.base_price|floatformat:"2" }}</strong>{% if p.compare_at_price %}<div class="muted">cmp € {{ p.compare_at_price|floatformat:"2" }}</div>{% endif %}</td>
+        <td class="num">{{ p.variants.count }}</td>
         <td>
           {% with total=p.total_stock %}
             {% if total == 0 %}

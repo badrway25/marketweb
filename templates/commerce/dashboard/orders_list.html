@@ -42,11 +42,11 @@
     <tbody>
       {% for o in orders %}
       <tr>
-        <td><a href="{% url 'commerce:dashboard_order_detail' storefront.slug o.uuid %}"><strong style="font-family:var(--mono);">{{ o.reference }}</strong></a></td>
+        <td><a href="{% url 'commerce:dashboard_order_detail' storefront.slug o.uuid %}"><strong class="num">{{ o.reference }}</strong></a></td>
         <td>{{ o.customer_name }}<div class="muted">{{ o.customer_email }}</div></td>
-        <td>{{ o.created_at|date:"d M Y · H:i" }}</td>
-        <td><strong>€ {{ o.grand_total|floatformat:"2" }}</strong></td>
-        <td>{{ o.items.count }}</td>
+        <td class="muted">{{ o.created_at|date:"d M Y · H:i" }}</td>
+        <td class="money"><strong>€ {{ o.grand_total|floatformat:"2" }}</strong></td>
+        <td class="num">{{ o.items.count }}</td>
         <td><span class="ds-pill is-{{ o.status }}">{{ o.get_status_display }}</span></td>
         <td><span class="ds-pill is-{{ o.payment_status }}">{{ o.get_payment_status_display }}</span></td>
         <td><span class="ds-pill is-{{ o.fulfillment_status }}">{{ o.get_fulfillment_status_display }}</span></td>

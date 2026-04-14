@@ -75,26 +75,50 @@
             {% for v in variants %}<input type="hidden" name="variant_id" value="{{ v.id }}">{% endfor %}
           {% endif %}
 
-          <div class="qty-row">
-            <label style="letter-spacing:0.22em;">Quantità</label>
-            <input type="number" name="quantity" value="1" min="1" max="99">
+          <div class="cx-qty-row">
+            <span class="label" style="letter-spacing:0.24em;">Esemplari</span>
+            <div class="cx-qty-stepper" data-qty-stepper>
+              <button type="button" data-qty-dec aria-label="Riduci esemplari">−</button>
+              <input type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric" aria-label="Esemplari">
+              <button type="button" data-qty-inc aria-label="Aumenta esemplari">+</button>
+            </div>
           </div>
         </div>
 
-        <div style="margin-top:32px; display:flex; gap:18px; flex-wrap:wrap; align-items:center;">
+        {% if product.is_low_stock and not product.is_sold_out %}
+        <div class="cx-lowstock" style="--fill: 40%;">
+          <span class="label">Ultimi esemplari</span>
+          <span class="bar" aria-hidden="true"></span>
+          <span class="count">Rimasti · {{ product.total_stock }}</span>
+        </div>
+        {% endif %}
+
+        <div class="cx-cta-cluster">
           <button type="submit" class="cx-btn{% if product.is_sold_out %} is-disabled{% endif %}" {% if product.is_sold_out %}disabled{% endif %}>
             {% if product.is_sold_out %}Aggiungi alla lista d'attesa{% else %}Ordina — direzione clienti{% endif %}
           </button>
           <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-ghost">Continua a sfogliare</a>
         </div>
-      </form>
 
-      {% if storefront.shipping_policy %}
-      <div style="margin-top:40px; padding:22px 24px; background:rgba(212,165,116,0.06); border:1px solid var(--rule); font-family:var(--cx-body); font-size:13px; color:var(--bone-mute); line-height:1.8;">
-        <strong style="font-family:var(--cx-heading); font-style:italic; font-size:16px; font-weight:500; color:var(--bone); display:block; margin-bottom:8px;">Consegna maison</strong>
-        {{ storefront.shipping_policy }}
-      </div>
-      {% endif %}
+        <div class="cx-trust">
+          <div class="t">
+            <span class="sym">C</span>
+            <div><strong>Consegna maison</strong>Scatola firmata, corriere dedicato 24h Milano · 48h Italia.</div>
+          </div>
+          <div class="t">
+            <span class="sym">A</span>
+            <div><strong>Alta sartoria</strong>Acconto 30% alla conferma per i pezzi d'atelier numerati.</div>
+          </div>
+          <div class="t">
+            <span class="sym">D</span>
+            <div><strong>Direzione clienti</strong>Ogni ordine è riletto personalmente prima della spedizione.</div>
+          </div>
+          <div class="t">
+            <span class="sym">R</span>
+            <div><strong>Cambi su appuntamento</strong>Entro sette giorni, salvo edizioni numerate e archivio.</div>
+          </div>
+        </div>
+      </form>
     </div>
   </section>
 
@@ -145,6 +169,21 @@
       g.querySelectorAll('.pill').forEach(function(p){ p.dataset.selected = '0'; });
       lbl.dataset.selected = '1';
       var inp = lbl.querySelector('input'); if(inp) inp.checked = true;
+    });
+  });
+
+  document.querySelectorAll('[data-qty-stepper]').forEach(function(s){
+    var inp = s.querySelector('input[type="number"]');
+    if(!inp) return;
+    var mn = parseInt(inp.min || '0', 10), mx = parseInt(inp.max || '99', 10);
+    function clamp(v){ return Math.max(mn, Math.min(mx, v|0)); }
+    s.querySelector('[data-qty-dec]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) - 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
+    });
+    s.querySelector('[data-qty-inc]').addEventListener('click', function(){
+      inp.value = clamp(parseInt(inp.value||'1',10) + 1);
+      inp.dispatchEvent(new Event('change', {bubbles: true}));
     });
   });
 </script>

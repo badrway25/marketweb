@@ -68,7 +68,7 @@
         {% for p in products %}
           <a class="cx-card{% if p.is_sold_out %} is-out{% endif %}" href="{% url 'commerce:product_detail' storefront.slug p.slug %}">
             <div class="thumb{% if not p.hero_image_url %} is-empty{% endif %}" {% if p.hero_image_url %}style="background-image:url('{{ p.hero_image_url }}')"{% endif %}>
-              {% if not p.hero_image_url %}<span>{{ p.title|slice:":2" }}</span>{% endif %}
+              {% if not p.hero_image_url %}<span>{{ p.title|slice:":1"|upper }}</span>{% endif %}
               {% if p.edition_number %}<span class="num">N° {{ p.edition_number }}</span>{% endif %}
               {% if p.badge %}<span class="badge">{{ p.badge }}</span>{% endif %}
             </div>
