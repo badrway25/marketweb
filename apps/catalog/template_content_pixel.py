@@ -145,31 +145,14 @@ PIXEL_CONTENT_IT: dict[str, Any] = {
              "ritratti-del-po"),
         ],
 
-        # Cinematic reel — short-form video moment between filmstrip and bio.
-        # NOTE: src is a CC-licensed Big Buck Bunny test asset hosted on
-        # Google's public bucket. Functional placeholder so the live preview
-        # demonstrates the lm-video integration end-to-end. Replace with the
-        # photographer's real motion reel in production.
-        "reel": {
-            "label":      "Reel breve · 2024 — 2026",
-            "heading":    "TRE MINUTI<br>SUL CARSO",
-            "intro":
-                "Estratto del materiale girato in parallelo alla serie "
-                "Porto Vecchio. Una camera fissa, sei mattine, due tramonti — "
-                "vento, ferro, acqua salmastra. Nessun voice-over.",
-            "exif": [
-                ("Format",       "Short editoriale"),
-                ("Durata",       "3:12"),
-                ("Camera",       "Sony α7 IV"),
-                ("Ottica",       "Sony 24-70 GM"),
-                ("Audio",        "Microfono ambiente"),
-                ("Color grade",  "Print emulation Portra"),
-            ],
-            "poster":     "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1800&q=80&auto=format&fit=crop",
-            "src":        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-            "play_label": "Play · 3:12",
-            "caption":    "Reel · 1080p · 24 fps",
-        },
+        # Reel — REMOVED per D-068 (Session 36).
+        # A short-film claim without a real signed MP4 shipped as a placeholder
+        # contradicts the cinematic-photographer identity; the "Play · 3:12" +
+        # "Reel · 1080p · 24 fps" meta also trespassed into codec-theatre.
+        # Lorenzo's identity is stills — the filmstrip + EXIF cells + series
+        # index already carry the cinematic voice. When a genuine Carso reel
+        # exists, this block can return with a real `src` and meta pruned of
+        # pseudo-technical cues.
 
         # About excerpt — 3 sentences (full bio on /biografia)
         "about_label":   "Note autobiografiche",

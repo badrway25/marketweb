@@ -226,10 +226,25 @@ class LiveTemplateView(TemplateView):
         #   (each with code/label/badge/is_current)
         # - `default_locale`: exposed so templates can suppress the
         #   `?lang=` query param when building links for the IT default
-        ctx["locale"]          = self.locale
-        ctx["chrome"]          = template_i18n.get_chrome(self.locale)
-        ctx["html_dir"]        = template_i18n.html_dir(self.locale)
-        ctx["is_rtl"]          = template_i18n.is_rtl(self.locale)
-        ctx["locale_switcher"] = template_i18n.locale_switcher_entries(self.locale)
-        ctx["default_locale"]  = template_i18n.DEFAULT_LOCALE
+        # D-068 — the switcher must not advertise locales the template has
+        # not actually authored. Without this, a template with only `it` shows
+        # 5 pills that each silently fall back to IT — dishonest chrome that
+        # contradicts the premium positioning. When a template ships a single
+        # locale, the switcher is suppressed entirely (the IT pill alone adds
+        # noise without utility). Template authors extend this by adding a new
+        # locale block to `TEMPLATE_CONTENT[slug]` in `template_content.py`.
+        available_locales = template_content.get_available_locales(
+            self.template_obj.slug
+        )
+        ctx["locale"]            = self.locale
+        ctx["chrome"]            = template_i18n.get_chrome(self.locale)
+        ctx["html_dir"]          = template_i18n.html_dir(self.locale)
+        ctx["is_rtl"]            = template_i18n.is_rtl(self.locale)
+        ctx["available_locales"] = available_locales
+        ctx["locale_switcher"]   = (
+            template_i18n.locale_switcher_entries(self.locale, available_locales)
+            if len(available_locales) > 1
+            else []
+        )
+        ctx["default_locale"]    = template_i18n.DEFAULT_LOCALE
         return ctx

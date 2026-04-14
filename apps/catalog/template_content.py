@@ -974,32 +974,13 @@ GUSTO_CONTENT_IT: dict[str, Any] = {
             "image_caption": "Ingredienti del menù autunno '26 · mercato del mattino",
         },
 
-        # Signature ambient video — quattro ore di servizio in cucina,
-        # registrate con due camere fisse e un microfono ambiente. Premium
-        # editorial moment fra ritratto chef e atmosphere strip.
-        # NOTE: src is a CC-licensed Big Buck Bunny test asset hosted on
-        # Google's public bucket. Functional placeholder so the live preview
-        # demonstrates the lm-video integration end-to-end. Replace with the
-        # restaurant's real kitchen footage in production.
-        "signature_video": {
-            "label":      "Cucina a vista · 24 ottobre",
-            "title":      "Quattro ore in <em>cucina</em>, due camere fisse.",
-            "intro":
-                "Lorenzo, due sous-chef e un pasticciere. Nessun fuoco scenico, "
-                "nessuna voce fuori campo. La preparazione del menù del venerdì "
-                "sera nei suoi tempi reali — il rumore del coltello, il vapore "
-                "del fondo, il silenzio prima del primo servizio.",
-            "meta": [
-                ("Format",   "Loop ambiente"),
-                ("Durata",   "3 min · estratto"),
-                ("Camere",   "Due fisse · 4K"),
-                ("Audio",    "Microfono ambiente"),
-            ],
-            "poster":     "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1600&q=80&auto=format&fit=crop",
-            "src":        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-            "play_label": "Guarda · 3 min",
-            "caption":    "Servizio del venerdì · 19:30 — 23:00",
-        },
+        # Signature ambient video — REMOVED per D-068 (Session 36).
+        # The original concept (kitchen footage) would only work with a real
+        # restaurant-filmed clip. Shipping a placeholder MP4 as src turned a
+        # premium editorial moment into a click-to-play demo artifact and the
+        # "4K" / codec-style meta contradicted Gusto's editorial voice.
+        # The atmosphere_teaser 4-tile lightbox below already carries the
+        # behind-the-scenes mood; adding a fake video on top was gratuitous.
 
         # Atmosphere teaser — expanded to 4 images with lightbox
         "atmosphere_teaser": {
@@ -2430,10 +2411,18 @@ from apps.catalog.template_content_gusto_i18n import (  # noqa: E402
 from apps.catalog.template_content_pragma import PRAGMA_CONTENT_IT  # noqa: E402
 from apps.catalog.template_content_elevate import ELEVATE_CONTENT_IT  # noqa: E402
 
-# Phase 2g3.4 — Portfolio live rollout (Session 34). Chiara + Pixel ship
-# IT-only at promotion time; the i18n keys can be added later via the
-# same recipe used for cardio/derm/gusto (Sessions 23/24/29).
+# Phase 2g3.4 — Portfolio live rollout (Session 34). Pixel ships IT-only at
+# promotion time; the i18n keys can be added later via the same recipe used
+# for cardio/derm/gusto (Sessions 23/24/29).
+#
+# Phase 2g3.4b — Chiara perfection pass (Session 37). Chiara now ships in 5
+# locales (it/en/fr/es/ar) — the EN/FR/ES/AR trees mirror the IT shape and
+# carry hand-authored editorial-design native voice per locale.
 from apps.catalog.template_content_chiara import CHIARA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_chiara_en import CHIARA_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_chiara_fr import CHIARA_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_chiara_es import CHIARA_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_chiara_ar import CHIARA_CONTENT_AR  # noqa: E402
 from apps.catalog.template_content_pixel import PIXEL_CONTENT_IT  # noqa: E402
 
 
@@ -2467,6 +2456,10 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,
+        "en": CHIARA_CONTENT_EN,
+        "fr": CHIARA_CONTENT_FR,
+        "es": CHIARA_CONTENT_ES,
+        "ar": CHIARA_CONTENT_AR,
     },
     "pixel-portfolio-fotografico": {
         "it": PIXEL_CONTENT_IT,
@@ -2523,3 +2516,20 @@ def find_post(slug: str, post_slug: str, locale: str | None = None) -> dict[str,
         if post["slug"] == post_slug:
             return post
     return None
+
+
+def get_available_locales(slug: str) -> list[str]:
+    """Return the list of locales actually authored for a template slug.
+
+    The language switcher uses this to avoid displaying pills for locales
+    that would silently fall back to Italian. A template with only `it`
+    authored must NOT advertise EN/FR/ES/AR — that is a D-068 honesty
+    violation introduced when the media/motion pass promoted templates
+    without extending their locale coverage.
+    """
+    entry = TEMPLATE_CONTENT.get(slug)
+    if not entry:
+        return []
+    return [
+        code for code in template_i18n.SUPPORTED_LOCALES if code in entry
+    ]

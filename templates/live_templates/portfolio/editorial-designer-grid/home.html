@@ -284,9 +284,35 @@
   }
   @media (max-width: 720px) {
     .ed-hero .left h1 { font-size: 44px; max-width: 100%; }
+    .ed-hero, .ed-capabilities, .ed-projects, .ed-press,
+    .ed-cta { padding-left: 20px; padding-right: 20px; }
     .ed-capabilities .grid { grid-template-columns: 1fr; }
     .ed-clients .row { grid-template-columns: 1fr; gap: 16px; }
     .ed-clients .logos { gap: 18px; font-size: 12px; }
+    /* Dark commissions band — collapse 56px → 20px gutter and reset paddings */
+    .ed-commissions { padding: 64px 20px; }
+    .ed-commissions .head h2 { font-size: 32px; }
+    .ed-press .grid, .ed-press .head { padding-left: 0; padding-right: 0; }
+    .ed-cta .wrap { grid-template-columns: 1fr; gap: 22px; }
+    .ed-cta h2 { font-size: 32px; }
+    .ed-projects .head h2 { font-size: 38px; }
+    .ed-hero-card { padding: 24px 22px 22px; }
+    /* Inline-grid overrides — grid items default to min-width: auto which
+       lets long Italian/Arabic words (Riconoscimenti, pubblicazioni, etc.)
+       force columns wider than the viewport. Force 1fr collapse + min-width:0
+       on children, and shrink display heads to fit. */
+    .ed-press .head[style], .ed-capabilities .head[style] {
+      grid-template-columns: 1fr !important; gap: 18px !important;
+    }
+    .ed-press .head[style] > * , .ed-capabilities .head[style] > * { min-width: 0; }
+    .ed-press .head h2[style] { font-size: 28px !important; max-width: 100% !important; }
+    .ed-capabilities .head h2 { font-size: 30px; max-width: 100%; }
+    .ed-capabilities .head .intro { font-size: 15px; }
+  }
+  @media (max-width: 480px) {
+    /* Extra-small phones — tighten hero h1 to avoid 14ch min-content overflow */
+    .ed-hero .left h1 { font-size: 38px; word-break: keep-all; }
+    .ed-hero-card h3 { font-size: 20px; }
   }
 {% endblock %}
 
@@ -318,8 +344,8 @@
       {% endfor %}
     </div>
     <a class="all-link" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'lavoro' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
-      <span>Tutto l'archivio</span>
-      <span>→ {{ page_data.ledger_rows|length }} progetti</span>
+      <span>{{ page_data.ledger_full_link_label }}</span>
+      <span>{{ page_data.ledger_count_prefix }} {{ page_data.ledger_rows|length }} {{ page_data.ledger_count_unit }}</span>
     </a>
   </aside>
 </section>

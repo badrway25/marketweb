@@ -8,9 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,700&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endif %}
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
-<link rel="stylesheet" href="{% static 'css/live-media.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 <style>
   :root {
@@ -70,13 +72,6 @@
 
     /* Editorial accent — JetBrains Mono for credit lines, indices, dossier meta */
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-
-    /* Cinema video block (almost never used here, but tokens ready) */
-    --lm-video-radius:     0;
-    --lm-video-overlay:    linear-gradient(180deg, rgba(21,19,15,0.05) 0%, rgba(21,19,15,0.50) 100%);
-    --lm-video-play-bg:    var(--paper);
-    --lm-video-play-fg:    var(--ink);
-    --lm-video-play-ring:  rgba(21,19,15,0.18);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
@@ -91,14 +86,11 @@
   /* Editorial italic accent — Syne italic axis used for emphasis blocks */
   h1 em, h2 em, h3 em { font-weight: 700; font-style: italic; letter-spacing: -0.025em; }
   em { font-style: italic; font-weight: 500; color: var(--accent); }
-  /* Mono utility — credit lines, project meta, ledger indices.
-     Specificity-shielded so it beats live-media.css's .lm-video selector. */
+  /* Mono utility — credit lines, project meta, ledger indices. */
   .ed-mono,
   .ed-projects .head .sec-label.ed-mono,
   .ed-projects .ed-card .meta.ed-mono,
-  .ed-projects .ed-card-num.ed-mono,
-  .lm-video .lm-video-play-label.ed-mono,
-  .lm-video .lm-video-caption.ed-mono {
+  .ed-projects .ed-card-num.ed-mono {
     font-family: var(--mono);
     font-feature-settings: "tnum" 1, "zero" 1, "ss01" 1;
     letter-spacing: 0;
@@ -225,6 +217,12 @@
     transition: color .2s ease, border-color .2s ease;
   }
   .ed-btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+  /* Accessible focus rings — sober, paper-precise, never browser-blue */
+  .ed-btn-primary:focus-visible,
+  .ed-btn-ghost:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
 
   /* ============================================================
      SECTION HELPERS — airy editorial chapters
@@ -320,6 +318,98 @@
   }
 
   /* ============================================================
+     ARABIC / RTL — Amiri body + Noto Kufi Arabic display
+     Core tokens always loaded once is_rtl is true; page-level
+     section flips guarded by an is-rtl conditional below to spare
+     LTR visitors from CSS bytes they would never read.
+  ============================================================ */
+  html[dir="rtl"] {
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', 'Times New Roman', serif;
+    --body:    'Amiri', '{{ theme.body_font }}', system-ui, sans-serif;
+    --mono:    'Amiri', 'JetBrains Mono', ui-monospace, monospace;
+  }
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.85; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 {
+    letter-spacing: 0; line-height: 1.18;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  html[dir="rtl"] h1 em, html[dir="rtl"] h2 em, html[dir="rtl"] h3 em {
+    font-style: normal; font-weight: 700; letter-spacing: 0;
+  }
+  html[dir="rtl"] em { font-style: normal; font-weight: 600; }
+  /* Eyebrow accent rule + ghost-CTA arrow flip */
+  html[dir="rtl"] .ed-hero .left .eyebrow:before,
+  html[dir="rtl"] .ed-lead .eyebrow:before {
+    margin-left: 4px; margin-right: 0;
+  }
+  html[dir="rtl"] .ed-btn-primary:after { content: '←'; }
+  html[dir="rtl"] .ed-btn-primary:hover:after { transform: translateX(-4px); }
+  html[dir="rtl"] .ed-ledger-full .row .arrow,
+  html[dir="rtl"] .ed-dossier .next .arrow { transform: scaleX(-1); }
+  html[dir="rtl"] .ed-ledger-full a.row:hover .arrow { transform: translateX(-6px) scaleX(-1); }
+  html[dir="rtl"] .ed-dossier .next a:hover .arrow { transform: translateX(-8px) scaleX(-1); }
+  /* Letter-spacing flatten on chrome labels (Latin tracking is hostile to Arabic) */
+  html[dir="rtl"] .ed-nav .links,
+  html[dir="rtl"] .ed-nav .status,
+  html[dir="rtl"] .ed-foot .col h5,
+  html[dir="rtl"] .ed-foot .ribbon .lbl,
+  html[dir="rtl"] .ed-foot .bot,
+  html[dir="rtl"] .ed-section .sec-label,
+  html[dir="rtl"] .ed-press-ledger .row .cat,
+  html[dir="rtl"] .ed-process .step .duration,
+  html[dir="rtl"] .ed-process .step .deliverable,
+  html[dir="rtl"] .ed-projects .ed-card .meta,
+  html[dir="rtl"] .ed-projects .ed-card-num,
+  html[dir="rtl"] .ed-clients .lbl,
+  html[dir="rtl"] .ed-cta-list .label,
+  html[dir="rtl"] .ed-cta .label,
+  html[dir="rtl"] .ed-form .form-label {
+    letter-spacing: 0;
+  }
+  html[dir="rtl"] .ed-nav .links a:before {
+    /* Index letter prefix — flip the colon-style spacing to RTL */
+    margin-left: 12px; margin-right: 0;
+  }
+  /* Latin wordmark stays Latin in RTL — keep brand legibility */
+  html[dir="rtl"] .ed-nav .wm,
+  html[dir="rtl"] .ed-foot .brand .word {
+    font-family: '{{ theme.heading_font }}', 'Times New Roman', serif;
+  }
+  /* Latin numeric runs (year, count, prices) stay Latin via JetBrains Mono */
+  html[dir="rtl"] .ed-press-ledger .row .yr,
+  html[dir="rtl"] .ed-ledger-full .row .yr,
+  html[dir="rtl"] .ed-press .card .yr,
+  html[dir="rtl"] .ed-process .step .num,
+  html[dir="rtl"] .ed-cap-full .card .num,
+  html[dir="rtl"] .ed-principles .item .num,
+  html[dir="rtl"] .ed-commissions .item .num,
+  html[dir="rtl"] .ed-hero-card .row .num,
+  html[dir="rtl"] .ed-hero-card .row .yr {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  {% if is_rtl %}
+  /* Page-level section flips — only emitted when actually rendering AR */
+  .ed-hero { grid-template-columns: 1fr 1.18fr; }
+  .ed-foot .top { grid-template-columns: 1fr 1fr 1fr 1.4fr; }
+  .ed-press-ledger .row .work,
+  .ed-cta .actions { text-align: left; }
+  .ed-clients .lbl { border-left: 0; border-right: 2px solid var(--accent); padding-left: 0; padding-right: 14px; }
+  .ed-dossier .summary li,
+  .ed-dossier .deliverables li,
+  .ed-cap-full .card .scope li {
+    padding-left: 0; padding-right: 22px;
+  }
+  .ed-dossier .summary li:before,
+  .ed-dossier .deliverables li:before,
+  .ed-cap-full .card .scope li:before { left: auto; right: 0; }
+  .ed-founder .bio .creds li:before { /* swap em-dash spacing */ margin-left: 0; margin-right: 4px; }
+  .ed-dossier .client-code { border-left: 0; border-right: 3px solid var(--accent); }
+  .ed-form .ed-consent-box { border-left: 0; border-right: 3px solid var(--accent); }
+  .ed-side .block:first-child { border-top: 1.5px solid var(--ink); }
+  {% endif %}
+
+  /* ============================================================
      RESPONSIVE — collapse generous paddings on tablet/mobile
   ============================================================ */
   @media (max-width: 1100px) {
@@ -357,6 +447,7 @@
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
   <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
 
+  {% if locale_switcher %}
   <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
     <span class="mp-lang-label">{{ chrome.mp_language }}</span>
     <div class="mp-lang-list">
@@ -375,6 +466,7 @@
       {% endfor %}
     </div>
   </div>
+  {% endif %}
 
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_portfolio }}</a>
 </div>
@@ -450,7 +542,6 @@
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
 <script src="{% static 'js/live-interactions.js' %}" defer></script>
-<script src="{% static 'js/live-media.js' %}" defer></script>
 <script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>

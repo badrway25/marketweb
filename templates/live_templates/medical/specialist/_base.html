@@ -10,7 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
-<link rel="stylesheet" href="{% static 'css/live-media.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 {% if is_rtl %}
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
@@ -476,6 +475,7 @@
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
   <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
 
+  {% if locale_switcher %}
   <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
     <span class="mp-lang-label">{{ chrome.mp_language }}</span>
     <div class="mp-lang-list">
@@ -494,6 +494,7 @@
       {% endfor %}
     </div>
   </div>
+  {% endif %}
 
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other }}</a>
 </div>
@@ -564,7 +565,6 @@
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
 <script src="{% static 'js/live-interactions.js' %}" defer></script>
-<script src="{% static 'js/live-media.js' %}" defer></script>
 <script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>

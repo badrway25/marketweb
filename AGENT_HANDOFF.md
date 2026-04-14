@@ -1,6 +1,103 @@
 # Agent Handoff
 
-Last updated: 2026-04-13 — after **Session 30 Premium Component Depth & Editor Schema Blueprint**
+Last updated: 2026-04-13 — after **Session 37 Chiara Perfection Pass**
+
+## Session 37 — Chiara Perfection: Read This Before Touching Any Locale Rollout (2026-04-13)
+
+**Session 37 brought `chiara-portfolio-creativo` to gold-standard product quality** — full 5-locale i18n (it/en/fr/es/ar) + editorial-designer-coherent imagery (laptop stock photos retired) + skin-HTML literal lift × 9 sites + mobile horizontal overflow fix (124px → -15px) + `html[dir="rtl"]` CSS block + a11y focus rings. Single template only — no other live template touched except smoke harness + cross-template chrome.
+
+### Catalog state
+
+- 4/7 published_live ship in 5 locales: **cardio · derm · gusto · chiara**.
+- 3/7 IT-only: **pragma · elevate · pixel** (next targets for Phase 2i.2c-d).
+
+### What's binding (D-070)
+
+1. **Every chiara live route renders in 5 locales** with structural parity (same `pages` slugs/kinds, same key shapes, locale-specific labels + content). Verified via `smoke_chiara_perfection.py`.
+2. **Skin HTML zero-leak.** The 9 hardcoded Italian literals previously in `editorial-designer-grid/*.html` are now `page_data.*` fields. Future skin edits MUST keep this — no labels in HTML, ever. Smoke checks this on lift sites.
+3. **Editorial-designer imagery only.** No laptop / coding / businessperson / generic-office stock photos in any chiara surface. The 5 new IDs (`photo-1611532736597-de2d4265fba3` Triennale, `photo-1497633762265-9d179a990aa6` Adelphi, `photo-1564399579883-451a5d44ec08` Querini, `photo-1455390582262-044cdead277a` Velluti, `photo-1544717305-2782549b5136` Founder) are the references. Old laptop IDs are scrubbed.
+4. **Native voice per locale**, never machine translation. FR uses `vous` + `« »` + insecable spaces + French ordinals (24ᵉ). ES uses `usted` form throughout. AR keeps proper names in Latin script + Latin digits for technical data + uses `، ؛ ؟` and `« »`.
+5. **Mobile horizontal overflow at 390px viewport: ≤ 0px.** Inline-styled `<div class="head" style="display:grid; grid-template-columns: 0.45fr 1fr">` patterns require `!important` overrides at `@media (max-width: 720px)` to collapse — the Session 37 home.html fix is the precedent.
+6. **a11y focus rings on every CTA.** `.ed-btn-primary` + `.ed-btn-ghost` have `:focus-visible` 2px accent outline + 4px offset. Future buttons must follow.
+
+### Reusable recipe (now proven 4 times: Cardio · Derm · Gusto · Chiara)
+
+1. **Lift literals** out of skin HTML into `page_data.*` content fields BEFORE authoring locale trees. Otherwise the 4 non-IT trees miss labels.
+2. **Spawn 4 parallel sub-agents**, one per locale (EN/FR/ES/AR). Give each: full IT source path, exhaustive voice guidelines (proper names verbatim, taxonomy translations, typography conventions, idiomatic register), output spec (Python module mirroring IT shape exactly).
+3. **Spawn 1 image curation sub-agent** (if imagery is off-brand). Method: download via curl + inspect via Read tool per candidate, reject laptops/phones/lifestyle, output verified IDs with rationale per slot.
+4. **In parallel** to the agents: do the RTL CSS block + Arabic font conditional + mobile breakpoint fixes + a11y focus rings on the skin's `_base.html`. These are 100% skin-side, don't need content trees ready.
+5. When agents return: verify structural parity via deep keyset diff (must be 0 missing / 0 extra per locale). Wire imports into `template_content.py` `TEMPLATE_CONTENT` dict. Apply image swaps to all 4 locale trees via batch script. Extend `smoke_full.py` LOCALES list. Migrate template from `IT_ONLY` to `MULTILINGUAL` in `smoke_i18n_media_hardening.py`. Add a per-template content-marker smoke (signature phrase per locale + RTL marker + image swap verify + IT-leak sweep).
+6. Run full validation matrix: `check`, `smoke_full`, `smoke_forms`, `smoke_i18n_media_hardening`, `smoke_<template>_perfection`. All must be green. Playwright walk on 1440×900 × 5 locales + 390×844 mobile.
+
+### Do NOT do
+
+- Do NOT use machine translation for any locale block. The quality floor is native editorial voice. A PR that ships auto-translated content should be rejected.
+- Do NOT add new content blocks to chiara IT tree without mirroring in all 4 non-IT trees at the same commit (D-069 silent-disparity rule — adding to IT only creates content-depth disparity that the `{% if page_data.X %}` guard hides).
+- Do NOT use laptop/coding/businessperson stock photos anywhere in chiara. Editorial designer identity is print/type/paper/ink/signage/manuscript matter only.
+- Do NOT remove the `html[dir="rtl"]` CSS block from `editorial-designer-grid/_base.html` even if no AR content exists later — it's load-bearing for any RTL locale future-state.
+- Do NOT translate page slugs. Only `label` fields change per locale. URLs stay Italian (`/lavoro/`, `/processo/`, `/contatti/`).
+- Do NOT transliterate proper names in AR. Chiara stays "Chiara", not "كيارا". Triennale stays Latin.
+- Do NOT introduce Django gettext / .po / middleware. D-059 still binding.
+- Do NOT open auth / checkout / editor / projects / commerce / dashboard / new categories / new templates.
+
+### Gotchas (Session 37)
+
+- **Django template tag literals inside CSS comments are still parsed.** A CSS comment like `/* guarded by {% if is_rtl %} below */` will be interpreted as an actual `{% if %}` tag (with no matching `{% endif %}` in scope) and crash `TemplateSyntaxError`. Workaround: use plain text in CSS comments, never reproduce literal tag syntax. Caught + fixed during Session 37.
+- **Inline `style=` attributes have specificity 1,0,0,0** — beats normal class selectors. To override an inline style at a media query, use `[style]` attribute selector + `!important`. Session 37 mobile fix uses `.ed-press .head h2[style] { font-size: 28px !important; max-width: 100% !important; }`.
+- **CSS Grid items default to `min-width: auto`** (= min-content). For text, min-content is the longest single word. Italian "pubblicazioni" or Arabic display words can force a grid column wider than the viewport. Fix: explicit `min-width: 0` on grid children at mobile breakpoints. Session 37 added this for `.ed-press .head[style] > *`.
+- **Browser cache + dev server combo is a pitfall.** After major template changes, kill + restart dev server on a fresh port (e.g. 8767 vs 8765). The Session 37 mobile fix appeared not to apply until the server was bounced — same class as Session 19's ghost-server gotcha and Session 23's stale `runserver --noreload` trap.
+- **Smoke patterns must avoid Romance-language word collisions.** Italian "Disciplina" / "Colophon" / "Metro" are valid Spanish/English/French words too — checking for them as "IT leak" produces false positives on EN/FR/ES pages. Session 37 smoke restricts the leak pattern to IT-specific phrasings ("Sintesi del progetto", "Deliverable consegnati", "Sequenza", "Indirizzo", "Ingresso", "Orari", "Equipe" without French acute accent, etc.).
+- **Latin proper names + Latin digits + Arabic body text** is the editorial AR voice — don't transliterate. The CSS `font-family` stack keeps Latin runs in JetBrains Mono / Latin fallback so they stay legible against Amiri body. The cardio/derm/gusto AR pages all do this; chiara now joins.
+- **Sub-agent prompts must mention the actual IT key shape.** Session 37 prompt initially mentioned `ledger_count_format` / `step_index_format` (placeholder format-strings) but the IT source actually uses pair-form keys (`_prefix` + `_unit`). All 4 sub-agents independently caught this via deep-comparison and corrected to mirror the true IT shape — flagged as a lesson for future locale rollouts: always read the IT source first, not the prompt's key list.
+
+---
+
+## Session 36 — i18n & Media Coherence: Read This Before Adding New Blocks or Promoting IT-Only Templates (2026-04-13)
+
+**Session 36 is a hardening pass on Session 35's motion/media work (D-068).** The 7 `tier=published_live` templates now satisfy two coherence gates the user flagged:
+
+1. **Language switcher honesty.** The 4 IT-only templates (Pragma, Elevate, Chiara, Pixel) no longer show a 5-pill switcher that silently fell back to Italian. `locale_switcher_entries(current_locale, available_locales)` is now template-aware, and `LiveTemplateView` computes `available_locales` via `template_content.get_available_locales(slug)`. When `len <= 1`, the switcher context value is an empty list and every skin's markup is guarded by `{% if locale_switcher %}`. The 3 multilingual templates (Cardio, Derm, Gusto) keep their 5-pill strip as before.
+
+2. **Media honesty.** The 3 `lm-video` blocks introduced in Session 35 all shipped with the same Big Buck Bunny placeholder MP4 and codec-theatre metadata. They are now resolved per-archetype:
+   - **Gusto signature_video** — REMOVED (content block + HTML + CSS). The atmosphere_teaser lightbox already carries BTS mood.
+   - **Pixel reel** — REMOVED. The filmstrip + EXIF strip + series index already carry the cinematic identity.
+   - **Elevate product_video** — CONVERTED to `product_demo_card`: same cosmic-glass frame + dashboard poster, now with a dual CTA overlay pointing to `/demo/` + `/prodotto/`. No `<video>` tag, no codec metadata.
+   - **Pragma + Elevate marquees** — kept (real institutional B2B wordmarks + real SaaS integration names).
+
+Orphan `live-media.css/js` links + `--lm-video-*` tokens pruned from bases that no longer consume them (Cardio, Derm, Gusto, Chiara, Pixel). Pragma + Elevate still link the primitive because they render marquees.
+
+### Current stable state
+
+- 7/20 templates `tier=published_live` (unchanged from Session 34).
+- All 7 pass D-069 coherence gates.
+- 170/170 full route sweep + 27/27 form sweep + 45/45 new hardening smoke (`smoke_i18n_media_hardening.py`) all green.
+- `live-media.css/js` remains in the repo as a latent capability — re-introduce when a real signed MP4 and on-brand metadata exist.
+
+### What to do next (priority order)
+
+1. **Phase 2g3.5 — agency CRITICO lift.** Same D-047 + D-054 recipe as Sessions 17 / 18 / 32 / 34. Blocking roadmap gate per D-049.
+2. **Phase 2i.2b — IT-only template locale rollout.** Author EN/FR/ES/AR content trees for Pragma / Elevate / Chiara / Pixel (one per session, ~3h each per D-063 budget). When `TEMPLATE_CONTENT[slug]` gains a second locale key, the switcher reappears automatically — the `{% if locale_switcher %}` guards installed in Session 36 already handle the re-activation.
+3. **Phase 2g2x.1 remainder** — lift lawyer + real-estate CRITICO. Same DNA-split recipe (Sessions 17–19 precedent).
+4. **Editor app** — do NOT start until Phase 2g3.7 closes. D-049 roadmap freeze still in effect. When it starts, `EDITOR_SCHEMA_BLUEPRINT.md` is the contract.
+
+### Do NOT do
+
+- Do NOT re-introduce a placeholder MP4 as an `lm-video` src. Either the source is a real brand asset or the block is not in the template. D-069 is binding.
+- Do NOT ship a 5-pill language switcher on a template whose `TEMPLATE_CONTENT[slug]` has only one locale key. D-069 is binding.
+- Do NOT add codec-theatre metadata (`4K`, `1080p`, `24 fps`, `Play · 3:12`) to any block where it does not genuinely reinforce the template's identity.
+- Do NOT add a new content block on the IT tree without either (a) mirroring it in the 4 non-IT locale trees at the same commit or (b) documenting that the block is IT-only-intentional in a comment adjacent to the key. Silent content-depth disparity between locales is the Session 35 antipattern that produced the Session 36 cleanup.
+- Do NOT revert the `live-media.css/js` unlinking on cardio/derm/chiara/pixel/gusto bases unless you are re-adding a real `lm-video` block at the same commit. Orphan primitive links are payload dead-weight.
+- Do NOT open auth / checkout / editor / projects / commerce / dashboard / new categories / new templates.
+
+### Gotchas (Session 36)
+
+- **CSS rules for `.mp-lang*` appear in the inline `<style>` block on every page** — this is structural, not rendered chrome. Smoke tests for "switcher absent" must look for `<div class="mp-lang"` / `<nav class="mp-lang"` opening tags, not the class name alone. `smoke_i18n_media_hardening.py` does this correctly.
+- **The `--lm-video-*` CSS custom properties were spread across many `:root` blocks.** Removing them requires touching every skin `_base.html` that linked live-media.css speculatively (cardio/derm/gusto/chiara/pixel). Pragma + Elevate keep their `--lm-marquee-*` tokens because they still render marquees.
+- **Elevate's `.sl-product-video .head .sec-label.sl-mono` specificity-shielded selector** must be renamed to `.sl-demo-card .head .sec-label.sl-mono` after the video→demo_card conversion, otherwise the mono utility silently stops working on that element. Check any rule that chains on deprecated class names whenever a section is renamed.
+- **The `--lm-video-*` specificity rule `.lm-video .lm-video-play-label.cp-mono` in the cinematic-photographer base** was orphaned after the reel removal. Pruning it was part of the cleanup. Same class of orphan risk for any future skin that declares `.lm-video` specificity-shielding rules: if the block is later removed, the rule becomes dead.
+- **Elevate's existing `.sl-btn` has a `::after { content: '→' }` globally.** Adding a custom `<span class="arr">→</span>` inside a button duplicates the arrow. The demo card uses the standard `.sl-btn` primary + `.sl-btn.secondary` classes and lets the global arrow handle the glyph. When extending a button class, check for `::after` content before adding custom glyphs.
+
+---
 
 ## Session 30 — Premium Component Blueprint: Read This Before Adding Sections or Opening the Editor (2026-04-13)
 

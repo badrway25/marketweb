@@ -171,10 +171,10 @@
   <h1>{{ post.title }}</h1>
 
   <div class="meta-strip" data-lm="reveal">
-    <div class="item">Disciplina<strong>{{ post.discipline }}</strong></div>
-    <div class="item">Anno<strong>{{ post.year }}</strong></div>
-    <div class="item">Durata<strong>{{ post.duration }}</strong></div>
-    <div class="item">Equipe<strong>{{ post.team }}</strong></div>
+    <div class="item">{{ page_data.dossier_meta_discipline_label }}<strong>{{ post.discipline }}</strong></div>
+    <div class="item">{{ page_data.dossier_meta_year_label }}<strong>{{ post.year }}</strong></div>
+    <div class="item">{{ page_data.dossier_meta_duration_label }}<strong>{{ post.duration }}</strong></div>
+    <div class="item">{{ page_data.dossier_meta_team_label }}<strong>{{ post.team }}</strong></div>
   </div>
 
   <div class="client-code">{{ post.client_code }}</div>
@@ -182,7 +182,7 @@
 
   {% if post.summary %}
     <aside class="summary" data-lm="reveal">
-      <div class="lbl">Sintesi del progetto</div>
+      <div class="lbl">{{ page_data.dossier_summary_label }}</div>
       <ul>
         {% for line in post.summary %}<li>{{ line }}</li>{% endfor %}
       </ul>
@@ -199,8 +199,8 @@
 
   {% if post.deliverables %}
     <div class="deliverables" data-lm="reveal">
-      <div class="lbl">Deliverable consegnati</div>
-      <h3>Cosa abbiamo prodotto</h3>
+      <div class="lbl">{{ page_data.dossier_deliverables_label }}</div>
+      <h3>{{ page_data.dossier_deliverables_heading }}</h3>
       <ul>
         {% for line in post.deliverables %}<li>{{ line }}</li>{% endfor %}
       </ul>
@@ -209,7 +209,7 @@
 
   {% if post.credits %}
     <div class="credits">
-      <div class="lbl">Colophon</div>
+      <div class="lbl">{{ page_data.dossier_colophon_label }}</div>
       <div class="grid" data-lm-stagger data-lm-stagger-delay="60">
         {% for key, val in post.credits %}
           <div class="item" data-lm="reveal">

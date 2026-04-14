@@ -69,18 +69,13 @@
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
     /* Logo marquee — growth-tech snappier drift */
+    /* Logo marquee — growth-tech snappier drift. Video tokens were dropped
+       with the product_video block (D-068) — the integrations marquee remains. */
     --lm-marquee-duration: 70s;
     --lm-marquee-gap:      56px;
     --lm-marquee-color:    rgba(238,240,255,0.46);
     --lm-marquee-rule:     var(--rule);
     --lm-marquee-pad-y:    18px;
-
-    /* Video block — cosmic glass play orb */
-    --lm-video-radius:     14px;
-    --lm-video-overlay:    linear-gradient(180deg, rgba(8,10,24,0.10) 0%, rgba(8,10,24,0.55) 100%);
-    --lm-video-play-bg:    rgba(255,255,255,0.96);
-    --lm-video-play-fg:    #051029;
-    --lm-video-play-ring:  rgba(56,189,248,0.42);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
@@ -122,9 +117,8 @@
   .sl-mockup .metric .label.sl-mono,
   .sl-metric-band .head .lbl.sl-mono,
   .sl-integrations .sec-label.sl-mono,
-  .sl-product-video .head .sec-label.sl-mono,
-  .sl-product-video .lm-video-play-label.sl-mono,
-  .sl-product-video .lm-video-caption.sl-mono,
+  .sl-demo-card .head .sec-label.sl-mono,
+  .sl-demo-frame .caption.sl-mono,
   .lm-logo-marquee-item.sl-mono {
     font-family: var(--mono);
     font-feature-settings: "tnum" 1, "zero" 1;
@@ -419,6 +413,7 @@
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
   <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
 
+  {% if locale_switcher %}
   <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
     <span class="mp-lang-label">{{ chrome.mp_language }}</span>
     <div class="mp-lang-list">
@@ -437,6 +432,7 @@
       {% endfor %}
     </div>
   </div>
+  {% endif %}
 
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
 </div>

@@ -175,24 +175,27 @@ ELEVATE_CONTENT_IT: dict[str, Any] = {
             },
         ],
 
-        # Product demo video block — cosmic glass frame between mockup and trust
-        # NOTE: the demo `src` below is a CC-licensed Big Buck Bunny sample hosted
-        # on Google's public test bucket. Functional placeholder so the live preview
-        # demonstrates the lm-video integration end-to-end (poster + click-to-play
-        # native HTML5 player). Replace with a real product walkthrough mp4 in
-        # production. Poster is an editorial code/dashboard still that fits the
-        # cosmic skin without needing to ship the actual video assets.
-        "product_video": {
-            "label":      "Tour del prodotto",
-            "heading":    "Vedi <em>Elevate</em> in azione, due minuti.",
+        # Live product walkthrough invitation — replaces a fake video block.
+        # Rationale (D-068, Session 36): shipping a real, current product demo
+        # video would require a recorded MP4 per build; a placeholder source
+        # reads as a cheap template. The card below keeps the editorial shelf
+        # (dashboard still as poster, cosmic glass frame) but swaps the play
+        # button for an honest booking CTA — one real primary CTA to the demo
+        # form, one secondary to the existing changelog. No codec metadata.
+        "product_demo_card": {
+            "label":      "Vedi Elevate in presa diretta",
+            "heading":    "Quindici minuti con chi l'ha costruito.",
             "intro":
-                "Una panoramica registrata sul progetto reale: editor drag-and-drop, "
-                "wizard di pricing, cablaggio Stripe + Linear, deploy su Vercel. "
-                "Senza demo programmate, senza commerciali, senza email di follow-up.",
+                "Invece di un video registrato: prenotiamo un walkthrough breve "
+                "sul progetto reale — editor drag-and-drop, wizard di pricing, "
+                "cablaggio Stripe + Linear, deploy su Vercel. Domande vere, "
+                "progetto vero, senza email di follow-up.",
             "poster":     "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1800&q=80&auto=format&fit=crop",
-            "src":        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-            "play_label": "Guarda · 2 min",
-            "caption":    "Demo · 2:14 · 1080p",
+            "primary_cta":    "Prenota il walkthrough",
+            "primary_href":   "demo",
+            "secondary_cta":  "Esplora il prodotto",
+            "secondary_href": "prodotto",
+            "caption":        "Walkthrough 1-a-1 · calendario live",
         },
 
         # Metric strip on dark band

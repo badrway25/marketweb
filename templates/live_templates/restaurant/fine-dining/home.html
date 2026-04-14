@@ -224,56 +224,6 @@
     color: var(--secondary); border-bottom: 1.5px solid var(--secondary); padding-bottom: 4px;
   }
 
-  /* Signature video block — ambient kitchen / chef-prep loop, dark moody frame
-     between chef portrait and atmosphere strip. Reads as cinematic editorial,
-     not a YouTube embed. */
-  .fd-signature-video {
-    padding: 90px 90px; max-width: 1440px; margin: 0 auto;
-    border-top: 1px solid var(--rule);
-  }
-  .fd-signature-video-inner {
-    display: grid; grid-template-columns: 1fr 1.45fr; gap: 72px; align-items: stretch;
-  }
-  .fd-signature-video .meta { display: flex; flex-direction: column; justify-content: center; gap: 18px; max-width: 38ch; }
-  .fd-signature-video .meta .lbl {
-    font-family: var(--body); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.28em; text-transform: uppercase; color: var(--secondary);
-  }
-  .fd-signature-video .meta h3 {
-    font-size: 38px; line-height: 1.06; letter-spacing: -0.022em;
-    color: var(--ink); font-style: italic; font-weight: 500;
-  }
-  .fd-signature-video .meta p {
-    font-family: var(--body); font-size: 15.5px; line-height: 1.7;
-    color: var(--ink-soft);
-  }
-  .fd-signature-video .meta-rows {
-    margin-top: 14px; padding-top: 14px;
-    border-top: 1px solid var(--rule);
-    display: grid; gap: 8px;
-  }
-  .fd-signature-video .meta-row {
-    display: flex; justify-content: space-between; align-items: baseline;
-    font-family: var(--body); font-size: 11px;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--ink-dim);
-    padding: 6px 0; border-bottom: 1px solid var(--rule-2);
-  }
-  .fd-signature-video .meta-row b {
-    color: var(--secondary); font-weight: 600; letter-spacing: 0.10em;
-  }
-  .fd-video-frame {
-    aspect-ratio: 4 / 5;
-    border: 1px solid var(--rule);
-    background: #050402;
-    box-shadow: 0 60px 120px -50px rgba(0,0,0,0.65);
-  }
-  @media (max-width: 900px) {
-    .fd-signature-video { padding: 64px 24px; }
-    .fd-signature-video-inner { grid-template-columns: 1fr; gap: 32px; }
-    .fd-video-frame { aspect-ratio: 16 / 10; }
-  }
-
   /* press strip */
   .fd-press {
     padding: 36px 90px;
@@ -732,34 +682,6 @@
       </div>
     </div>
   </section>
-
-  {% if page_data.signature_video %}
-  <section class="fd-signature-video">
-    <div class="fd-signature-video-inner">
-      <div class="meta" data-lm="reveal">
-        <span class="lbl">{{ page_data.signature_video.label }}</span>
-        <h3>{{ page_data.signature_video.title|safe }}</h3>
-        <p>{{ page_data.signature_video.intro }}</p>
-        <div class="meta-rows">
-          {% for k, v in page_data.signature_video.meta %}
-            <div class="meta-row"><span>{{ k }}</span><b>{{ v }}</b></div>
-          {% endfor %}
-        </div>
-      </div>
-      <figure class="lm-video fd-video-frame" data-lm="reveal-soft"
-              data-lm-media="video"
-              data-lm-video-src="{{ page_data.signature_video.src }}"
-              data-lm-video-poster="{{ page_data.signature_video.poster }}">
-        <img class="lm-video-poster" src="{{ page_data.signature_video.poster }}" alt="" loading="lazy">
-        <button type="button" class="lm-video-play" aria-label="{{ page_data.signature_video.play_label|default:'Riproduci' }}">
-          <span class="lm-video-play-icon"></span>
-          <span class="lm-video-play-label">{{ page_data.signature_video.play_label }}</span>
-        </button>
-        <figcaption class="lm-video-caption">{{ page_data.signature_video.caption }}</figcaption>
-      </figure>
-    </div>
-  </section>
-  {% endif %}
 
   {% if page_data.atmosphere_teaser %}
   <section class="fd-atmo">

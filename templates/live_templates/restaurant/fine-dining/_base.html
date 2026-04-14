@@ -13,7 +13,6 @@
 {% endif %}
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
-<link rel="stylesheet" href="{% static 'css/live-media.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 <style>
   :root {
@@ -65,14 +64,6 @@
     --lf-submit-radius: 0;
     --lf-submit-underline: 0;
     --on-accent:        var(--bg);
-
-    /* Cinematic video frame — moody dark with gold play orb */
-    --lm-video-radius:     0;
-    --lm-video-overlay:    linear-gradient(180deg, rgba(11,9,7,0.10) 0%, rgba(11,9,7,0.62) 100%);
-    --lm-video-play-bg:    var(--secondary);
-    --lm-video-play-fg:    var(--bg);
-    --lm-video-play-ring:  rgba(212,165,116,0.42);
-    --lm-video-caption-color: rgba(243,231,200,0.86);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
@@ -389,6 +380,7 @@
 
 <div class="mp-bar">
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  {% if locale_switcher %}
   <nav class="mp-lang" aria-label="{{ chrome.mp_language }}">
     {% for entry in locale_switcher %}
       {% if page.slug == "home" %}
@@ -402,6 +394,7 @@
       {% endif %}
     {% endfor %}
   </nav>
+  {% endif %}
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_restaurant }}</a>
 </div>
 
@@ -470,7 +463,6 @@
 
 <script src="{% static 'js/live-motion.js' %}" defer></script>
 <script src="{% static 'js/live-interactions.js' %}" defer></script>
-<script src="{% static 'js/live-media.js' %}" defer></script>
 <script src="{% static 'js/live-forms.js' %}" defer></script>
 </body>
 </html>

@@ -139,7 +139,7 @@
           <p>{{ body }}</p>
         </div>
         <div class="duration">{{ dur_label }}<strong>{{ dur_value }}</strong></div>
-        <div class="deliverable">Sequenza<strong>Step {{ forloop.counter }} di {{ page_data.process|length }}</strong></div>
+        <div class="deliverable">{{ page_data.step_sequence_label }}<strong>{{ page_data.step_index_prefix }} {{ forloop.counter }} {{ page_data.step_index_separator }} {{ page_data.process|length }}</strong></div>
       </article>
     {% endfor %}
   </div>
@@ -163,7 +163,7 @@
           <ul class="scope">
             {% for line in cap.scope %}<li>{{ line }}</li>{% endfor %}
           </ul>
-          <div class="duration">Durata indicativa<strong>{{ cap.duration }}</strong></div>
+          <div class="duration">{{ page_data.capability_duration_label }}<strong>{{ cap.duration }}</strong></div>
         </article>
       {% endfor %}
     </div>

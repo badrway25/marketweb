@@ -296,6 +296,7 @@
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
   <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
 
+  {% if locale_switcher %}
   <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
     <span class="mp-lang-label">{{ chrome.mp_language }}</span>
     <div class="mp-lang-list">
@@ -314,6 +315,7 @@
       {% endfor %}
     </div>
   </div>
+  {% endif %}
 
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
 </div>
