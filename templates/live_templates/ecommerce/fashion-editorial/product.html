@@ -271,17 +271,17 @@
 
       <div class="variant">
         <h5>{{ page_data.size_label }}</h5>
-        <div class="pills">
+        <div class="pills" data-variant-pills>
           {% for s in page_data.size_options %}
-            <span class="pill{% if forloop.first %} is-current{% endif %}" data-latin>{{ s }}</span>
+            <span class="pill{% if forloop.first %} is-current{% endif %}" data-latin role="button" tabindex="0">{{ s }}</span>
           {% endfor %}
         </div>
       </div>
       <div class="variant">
         <h5>{{ page_data.color_label }}</h5>
-        <div class="pills">
+        <div class="pills" data-variant-pills>
           {% for c in page_data.color_options %}
-            <span class="pill{% if forloop.first %} is-current{% endif %}">{{ c }}</span>
+            <span class="pill{% if forloop.first %} is-current{% endif %}" role="button" tabindex="0">{{ c }}</span>
           {% endfor %}
         </div>
       </div>
@@ -293,7 +293,7 @@
       </div>
 
       <div class="buy">
-        <a class="fe-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.buy_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.buy_primary }}</a>
+        <a class="fe-btn-primary" href="/shop/{{ template.slug }}/{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.buy_primary }} · shop</a>
         <a class="ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.buy_secondary }}</a>
         <p class="buy-note">{{ page_data.buy_note }}</p>
       </div>
@@ -362,4 +362,21 @@
     </div>
   </section>
 </section>
+
+<script>
+  document.querySelectorAll('[data-variant-pills]').forEach(function(g){
+    g.addEventListener('click', function(ev){
+      var p = ev.target.closest('.pill'); if (!p) return;
+      g.querySelectorAll('.pill').forEach(function(s){ s.classList.remove('is-current'); });
+      p.classList.add('is-current');
+    });
+    g.addEventListener('keydown', function(ev){
+      if (ev.key !== 'Enter' && ev.key !== ' ') return;
+      var p = ev.target.closest('.pill'); if (!p) return;
+      ev.preventDefault();
+      g.querySelectorAll('.pill').forEach(function(s){ s.classList.remove('is-current'); });
+      p.classList.add('is-current');
+    });
+  });
+</script>
 {% endblock %}

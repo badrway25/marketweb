@@ -187,7 +187,14 @@ class ProductDetailView(LocaleMixin, DetailView):
         ctx = super().get_context_data(**kwargs)
         ctx.update(self.get_locale_context(self.storefront))
         ctx["storefront"] = self.storefront
-        ctx["variants"] = list(self.object.variants.all())
+        variants = list(self.object.variants.all())
+        ctx["variants"] = variants
+        # Pick a sane default variant: first in-stock one. If every variant is
+        # out of stock, leave default_variant_id=None so the submit button is
+        # disabled and the form cannot 404 with variant_id="".
+        default_vid = next((v.id for v in variants if v.is_active and v.stock > 0), None)
+        ctx["default_variant_id"] = default_vid
+        ctx["can_add_to_cart"] = default_vid is not None
         ctx["images"] = list(self.object.images.all())
         related = selectors.list_related_products(self.object)
         ctx["related"] = related
@@ -232,24 +239,31 @@ class AddToCartView(View):
     def post(self, request, storefront_slug):
         storefront = _resolve_storefront(storefront_slug)
         cart = _cart_context(request, storefront)
-        variant_id = request.POST.get("variant_id")
+        variant_id = request.POST.get("variant_id") or ""
         quantity = int(request.POST.get("quantity", "1") or 1)
-        variant = get_object_or_404(
-            ProductVariant,
-            pk=variant_id,
-            product__storefront=storefront,
-            is_active=True,
-        )
+        chrome = commerce_i18n.get_chrome(commerce_i18n.resolve_locale(request))
+        lang_qs = commerce_i18n.preserve_lang_qs(commerce_i18n.resolve_locale(request))
+        # Guard: no variant selected (first was out-of-stock, or picker broke
+        # client-side). Don't 404 — return to the product with a clear message.
+        if not variant_id.strip().isdigit():
+            messages.error(request, chrome.get("pdp_variants", "Scegli una variante."))
+            referer = request.POST.get("referer") or request.META.get("HTTP_REFERER") or \
+                reverse("commerce:shop", args=[storefront_slug])
+            return redirect(referer)
+        variant = ProductVariant.objects.filter(
+            pk=variant_id, product__storefront=storefront, is_active=True,
+        ).first()
+        if variant is None:
+            messages.error(request, chrome.get("pdp_stock_out", "Variante non disponibile."))
+            return redirect(reverse("commerce:shop", args=[storefront_slug]) + lang_qs)
         try:
             services.add_to_cart(cart=cart, variant=variant, quantity=quantity)
             locale = commerce_i18n.resolve_locale(request)
             title = variant.product.localized(locale).get("title") or variant.product.title
-            chrome = commerce_i18n.get_chrome(locale)
             messages.success(request, f"{title} · {chrome['pdp_add_to_cart'].lower()} ✓")
         except services.CommerceError as exc:
             messages.error(request, str(exc))
-        qs = commerce_i18n.preserve_lang_qs(commerce_i18n.resolve_locale(request))
-        return redirect(reverse("commerce:cart", args=[storefront_slug]) + qs)
+        return redirect(reverse("commerce:cart", args=[storefront_slug]) + lang_qs)
 
 
 class UpdateCartItemView(View):

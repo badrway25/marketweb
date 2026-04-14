@@ -50,6 +50,8 @@
 
       <form method="post" action="{% url 'commerce:cart_add' storefront.slug %}" class="cx-variant-form">
         {% csrf_token %}
+        {% if locale and locale != 'it' %}<input type="hidden" name="lang" value="{{ locale }}">{% endif %}
+        <input type="hidden" name="referer" value="{{ request.get_full_path }}">
         <div class="axes">
           {% if variants|length > 1 %}
           <div class="axis">
@@ -57,9 +59,9 @@
             <div class="pills" role="radiogroup">
               {% for v in variants %}
                 <label class="pill{% if not v.in_stock %} is-out{% endif %}"
-                       data-selected="{% if forloop.first and v.in_stock %}1{% else %}0{% endif %}">
+                       data-selected="{% if v.id == default_variant_id %}1{% else %}0{% endif %}">
                   <input type="radio" name="variant_id" value="{{ v.id }}"
-                         {% if forloop.first and v.in_stock %}checked{% endif %}
+                         {% if v.id == default_variant_id %}checked{% endif %}
                          {% if not v.in_stock %}disabled{% endif %}
                          style="position:absolute; opacity:0; pointer-events:none;">
                   {{ v.variant_title|default:"Atelier" }}
@@ -69,7 +71,9 @@
             </div>
           </div>
           {% elif variants %}
-            {% for v in variants %}<input type="hidden" name="variant_id" value="{{ v.id }}">{% endfor %}
+            {% for v in variants %}
+              {% if v.id == default_variant_id %}<input type="hidden" name="variant_id" value="{{ v.id }}">{% endif %}
+            {% endfor %}
           {% endif %}
 
           <div class="cx-qty-row">
@@ -91,8 +95,8 @@
         {% endif %}
 
         <div class="cx-cta-cluster">
-          <button type="submit" class="cx-btn{% if product.is_sold_out %} is-disabled{% endif %}" {% if product.is_sold_out %}disabled{% endif %}>
-            {{ chrome.pdp_add_to_cart }}
+          <button type="submit" class="cx-btn{% if not can_add_to_cart %} is-disabled{% endif %}" {% if not can_add_to_cart %}disabled{% endif %}>
+            {% if can_add_to_cart %}{{ chrome.pdp_add_to_cart }}{% else %}{{ chrome.pc_sold_out }}{% endif %}
           </button>
           <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn-ghost">{{ chrome.cart_continue }}</a>
         </div>
