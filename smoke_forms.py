@@ -33,8 +33,8 @@ LOCALES_BY_TEMPLATE = {
     "cardio-studio-specialistico":    ["it", "en", "fr", "es", "ar"],
     "dermatologia-elite-roma":        ["it", "en", "fr", "es", "ar"],
     "gusto-fine-dining":              ["it", "en", "fr", "es", "ar"],
-    "pragma-corporate-suite":         ["it"],
-    "elevate-startup-landing":        ["it"],
+    "pragma-corporate-suite":         ["it", "en", "fr", "es", "ar"],
+    "elevate-startup-landing":        ["it", "en", "fr", "es", "ar"],
 }
 
 # Features the new polish must expose

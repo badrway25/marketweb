@@ -164,9 +164,9 @@
     </div>
     <div class="grid">
       <div class="info" data-lm="reveal">
-        <div class="row"><span class="lbl">Sede</span><span class="val">{{ page_data.office.address }}</span></div>
-        <div class="row"><span class="lbl">Trasporti</span><span class="val">{{ page_data.office.transport }}</span></div>
-        <div class="row"><span class="lbl">Modello</span><span class="val">{{ page_data.office.hours }}</span></div>
+        <div class="row"><span class="lbl">{{ page_data.office_address_label }}</span><span class="val">{{ page_data.office.address }}</span></div>
+        <div class="row"><span class="lbl">{{ page_data.office_transport_label }}</span><span class="val">{{ page_data.office.transport }}</span></div>
+        <div class="row"><span class="lbl">{{ page_data.office_model_label }}</span><span class="val">{{ page_data.office.hours }}</span></div>
       </div>
       <div class="info" data-lm="reveal">
         {% for label, value in page_data.office.schedule %}

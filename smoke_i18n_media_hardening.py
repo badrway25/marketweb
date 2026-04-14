@@ -32,9 +32,8 @@ from apps.catalog.template_content import TEMPLATE_CONTENT
 
 client = Client()
 
-IT_ONLY = (
-    "pragma-corporate-suite",
-    "elevate-startup-landing",
+IT_ONLY: tuple[str, ...] = (
+    # Session 40 closed Phase 2g3.3b — Pragma + Elevate now ship 5 locales.
 )
 MULTILINGUAL = (
     "cardio-studio-specialistico",
@@ -44,6 +43,9 @@ MULTILINGUAL = (
     "chiara-portfolio-creativo",
     # Session 39 — Pixel perfection pass: full 5-locale rollout.
     "pixel-portfolio-fotografico",
+    # Session 40 — Business i18n completion pass.
+    "pragma-corporate-suite",
+    "elevate-startup-landing",
 )
 CATEGORY = {
     "pragma-corporate-suite":      "business",

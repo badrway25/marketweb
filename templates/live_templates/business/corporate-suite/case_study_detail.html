@@ -123,10 +123,10 @@
   <h1>{{ post.title }}</h1>
 
   <div class="meta-strip">
-    <div>Practice<strong>{{ post.category }}</strong></div>
-    <div>Anno<strong>{{ post.year }}</strong></div>
-    <div>Durata<strong>{{ post.duration }}</strong></div>
-    <div>Lead<strong>{{ post.lead_partner }}</strong></div>
+    <div>{{ site.case_practice_label }}<strong>{{ post.category }}</strong></div>
+    <div>{{ site.case_year_label }}<strong>{{ post.year }}</strong></div>
+    <div>{{ site.case_duration_label }}<strong>{{ post.duration }}</strong></div>
+    <div>{{ site.case_lead_label }}<strong>{{ post.lead_partner }}</strong></div>
   </div>
 
   <div class="client-code">{{ post.client_code }}</div>
@@ -151,8 +151,8 @@
   </div>
 
   <div class="team-strip">
-    <div class="item">Lead partner<strong>{{ post.lead_partner }}</strong></div>
-    <div class="item">Team & timeline<strong>{{ post.team }}</strong></div>
+    <div class="item">{{ site.case_lead_partner_label }}<strong>{{ post.lead_partner }}</strong></div>
+    <div class="item">{{ site.case_team_label }}<strong>{{ post.team }}</strong></div>
   </div>
 
   <a class="next-case" href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">

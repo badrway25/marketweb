@@ -1,5 +1,53 @@
 # Decisions Log
 
+## D-072: Pragma + Elevate i18n Completion Pass — Full 5-locale rollout for the last two IT-only published_live templates (2026-04-14, Session 40)
+
+**Decision:** `pragma-corporate-suite` and `elevate-startup-landing` are brought from IT-only to fully multilingual (5 locales + real RTL for Arabic) in a single session. The 7-template `published_live` catalog now ships **7/7 multilingual**. Three concrete changes:
+
+1. **5-locale rollout for both templates (it/en/fr/es/ar).** Eight new content modules — `template_content_pragma_{en,fr,es,ar}.py` (846 / 880 / 852 / 848 LOC) and `template_content_elevate_{en,fr,es,ar}.py` (821 / 838 / 812 / 813 LOC) — each authored by a parallel sub-agent with a strict per-template per-locale voice contract. Pragma carries the **institutional B2B advisory voice** (FT/HBR/McKinsey-Quarterly EN, Les Echos vouvoiement FR with insecable spaces, Cinco Días/Expansión peninsular usted ES, MSA boardroom AR with Latin proper names + Western digits + dropped honorifics). Elevate carries the **SaaS / growth-tech founder-facing voice** (TechCrunch/Linear/Figma direct-`you` EN with contractions, Maddyness modern SaaS FR with `tu` and anglicismes, Xataka/K Fund peninsular `tú` ES with anglicismes, Wamda modern startup MSA AR with Latin product names + Latin acronyms). Voice contrast is deliberate and binding — D-054 differentiation is preserved across every locale (verified post-rollout: institutional markers in every Pragma locale, SaaS markers in every Elevate locale).
+
+2. **9 D-047 leaks lifted from skin HTML.** Pragma corporate-suite (6 leaks): about-history narrative paragraph, services Durata/Lead-partner labels, case-study Practice/Anno/Durata/Lead/Lead-partner/Team-&-timeline labels (cross-page, lifted to `site.case_*_label`), case-study-list Practice/Timeline labels, contact office-grid Indirizzo/Zona/Telefono/Email labels. Elevate startup-saas-landing (3 leaks): pill-nav CTA fallback `{{ site.tag|default:"Inizia gratis" }}` → `{{ site.nav_cta }}` (the long-form tagline was being mis-used as a short CTA label, plus a hardcoded IT fallback); pricing CSS pseudo-element `content: 'Più scelto'` lifted to HTML `<span class="pop-badge">{{ page_data.highlight_badge }}</span>` rendered conditionally for highlight tier; contact office grid Sede/Trasporti/Modello labels.
+
+3. **RTL CSS blocks added to both business archetypes' `_base.html`.** Each follows the Session 23/29/37 pattern: conditional Arabic font load (Amiri + Noto Kufi for Pragma's serif identity; Noto Naskh + Noto Kufi for Elevate's geometric SaaS identity); `html[dir="rtl"]` core block always-applied with font-stack swap, body 17px, letter-spacing flatten on chrome labels, button arrow flip `→` → `←`, eyebrow accent margin flip; `{% if is_rtl %}` page-level block with hero / head / footer grid flips, mockup `direction: rtl`, ship-log `direction: rtl`, pricing pop-badge repositioned, comparison/stack/office grids flipped, channel CTA arrow flipped. Latin wordmarks + Latin product names (Stripe, Linear, GrowthBook, Vercel) + Latin numerics (KPI values, version numbers, prices) explicitly retained in heading font with `unicode-bidi: isolate` so they read LTR within RTL flow. New `:focus-visible` rings on primary CTAs, ghost CTAs, nav links, language pills (sober accent outline, never browser-blue).
+
+**Per-template per-locale acceptance:**
+
+| Template | IT | EN | FR | ES | AR |
+|---|---|---|---|---|---|
+| pragma-corporate-suite | 867 (auth) | 846 LOC, 0 key diffs, FT/HBR institutional | 880 LOC, 0 key diffs, vouvoiement + insecable | 852 LOC, 0 key diffs, peninsular usted | 848 LOC, 0 key diffs, MSA boardroom + Latin digits |
+| elevate-startup-landing | 836 (auth) | 821 LOC, 0 key diffs, SaaS direct-`you` | 838 LOC, 0 key diffs, modern SaaS + `tu` + insecable | 812 LOC, 0 key diffs, peninsular `tú` | 813 LOC, 0 key diffs, modern startup MSA + Latin product names |
+
+**Option space considered and rejected:**
+
+- **Option A — defer business i18n to Phase 3.** Rejected. The user explicitly demanded the 7/7 multilingual gate before any Phase 3 work resumes. Sessions 36/37/39 had already proved the recipe scales — pretending it didn't was a regression in honesty.
+- **Option B — homogenize Pragma + Elevate voice to share locale trees.** Rejected. Pragma is institutional advisory, Elevate is SaaS growth-tech — D-054 differentiation requires they stay opposite in every locale. A shared tree would erase the brand contrast that makes the 10-gate D-054 test pass. Sub-agent voice contracts explicitly enforce the contrast.
+- **Option C — sequential authoring by main session.** Rejected. ~6700 LOC of premium content × main author = many hours serial. 8 parallel sub-agents finished in ~4–8 min each; quality is auditable via shape diff (programmatic, 0 diffs across all 8 trees) + content-marker smoke + Playwright walk.
+- **Option D — skip the RTL CSS and rely on Arabic content tree alone.** Rejected. Arabic content without `dir="rtl"` + RTL-aware skin CSS reads as broken. This is exactly the level of "fallback finto" the user explicitly forbade.
+
+**Validation:**
+- `python manage.py check` — 0 issues
+- `smoke_full.py` — **282/282** routes HTTP 200 (was 226 → +56 new locale routes for pragma 6×4 + elevate 5×4)
+- `smoke_forms.py` — **35/35** form routes HTTP 200 (was 27 → +8 new locale form routes)
+- `smoke_i18n_media_hardening.py` — **45/45** hardening checks (pragma + elevate moved IT_ONLY → MULTILINGUAL)
+- Regression: smoke_chiara_perfection 76/76 · smoke_pixel_perfection 80/80 · smoke_i18n_gusto 52/52 (zero degradation)
+- Cross-tenant leak sweep: **0/40** D-047 leaks across 5 locales × 2 templates × 4 token classes
+- D-054 differentiation: institutional markers (Practice/Pratique/Práctica/الممارسات + partner/associé/socio + CSRD) present in every Pragma non-IT locale; SaaS markers (MRR, Stripe, Linear, GrowthBook, Vercel) present in every Elevate non-IT locale
+- Playwright walks: Pragma AR (Amiri body 17px, 5 pills, button arrow ←, hero "حيث تُتَّخذ القرارات التي تصنع الفرق."), Pragma AR contact form (10 fields fully Arabic), Pragma EN (FT-class CTA "Request a private call"), Elevate AR (Noto Naskh body, nav CTA "ابدأ مجاناً", pop-badge "الأكثر اختياراً" rendered from new HTML lift, v2.9 ship-log Latin Manrope), Elevate EN (TechCrunch hero "From waitlist to first MRR in fourteen days."), Cardio AR regression clean
+
+**Catalog state after D-072:** **7/7 published_live templates ship in 5 locales** (cardio, dermatologia, gusto, chiara, pixel, **pragma**, **elevate**). Phase 2g3 multilingual coverage on the public catalog is closed. Phase 3 (auth/checkout/editor/projects/commerce) remains gated on Phase 2g3.7 (all 20 templates published_live) per D-049 + D-053 — 7/20 are now `published_live`, 13/20 still draft.
+
+**Caveats (acceptable but documented):**
+- Form placeholder names + phone country codes were localized per spec (e.g., Pragma ES uses "+34 ..." and "Ej. Alejandro" placeholders). Submission still goes nowhere (no backend action) — placeholder text choice, not a routing issue.
+- Pragma's CONSOB license number (1148/2009) is preserved verbatim across locales; the wrapper text was localized ("CONSOB Independent Advisors registry no. 1148/2009" / "Inscription au registre CONSOB ..." / etc.) with the proper-noun "CONSOB" kept in Latin.
+- Elevate's copy_kit Arabic locale correctly added "AR" to the kit's languages list (`IT + EN + FR + AR` instead of `IT + EN + FR`) — sub-agent caveat noted, deemed correct since the AR audience reads its own language list.
+- Pricing format follows locale convention: "1.400 M €" ES with period thousand separator, "1,4 Md €" FR with comma decimal, "1,800" EN with US thousand separator, "1.4 B €" AR with Latin digits.
+- Pragma RTL hero grid is `1fr 1.3fr` (image left, text right at 1.3fr) — opposite of LTR's `1.3fr 1fr` (text left at 1.3fr, image right). The 1.3fr text-column ratio is preserved on the reading-side column to match the IT visual weight.
+- No new motion / forms / interactions / media infrastructure was introduced. Pure content + RTL CSS work.
+
+**Branch:** `phase-business-i18n-completion-v1`. Not committed yet.
+
+---
+
 ## D-070: Chiara Perfection Pass — Full 5-locale i18n + Editorial Imagery Replacement + Mobile Polish (2026-04-13, Session 37)
 
 **Decision:** `chiara-portfolio-creativo` is brought to gold-standard product quality on a single template (no other live template touched in this session except smoke harness + cross-template chrome). Three concrete changes:

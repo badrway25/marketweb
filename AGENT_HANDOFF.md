@@ -1,6 +1,39 @@
 # Agent Handoff
 
-Last updated: 2026-04-13 — after **Session 37 Chiara Perfection Pass**
+Last updated: 2026-04-14 — after **Session 40 Pragma + Elevate i18n Completion Pass**
+
+## Session 40 — Pragma + Elevate i18n: Read This Before Touching Any Multilingual or Business Template Work (2026-04-14)
+
+**Session 40 closed Phase 2g3.3b** — the 7-template `published_live` catalog now ships **7/7 multilingual** with real RTL for Arabic. `pragma-corporate-suite` and `elevate-startup-landing` were the last 2 IT-only live templates. Both keep their sharply distinct voices: Pragma institutional B2B advisory · Elevate SaaS growth-tech.
+
+### Catalog state
+
+- 7/7 published_live ship in 5 locales: cardio · dermatologia · gusto · chiara · pixel · **pragma** · **elevate**.
+- Multilingual coverage on the public catalog is closed. Phase 3 (auth/checkout/editor/projects/commerce) remains gated on Phase 2g3.7 (all 20 templates published_live) per D-049 + D-053. 7/20 published_live, 13/20 still draft.
+
+### What's binding (D-072)
+
+1. **Pragma + Elevate must STAY OPPOSITE in voice across every locale.** D-054 differentiation is enforced by sub-agent voice contracts. Pragma uses formal institutional registers (FT/HBR EN, vouvoiement FR, peninsular usted ES, MSA boardroom AR with dropped honorifics). Elevate uses SaaS founder-facing registers (TechCrunch/Linear EN with contractions, modern SaaS FR with `tu`, peninsular `tú` ES with anglicismes, modern startup MSA AR with Latin product names + Latin acronyms). Future content edits MUST preserve this. A regression PR that homogenizes the two templates into one voice should be rejected.
+2. **9 D-047 leaks lifted** are now `page_data.*` / `site.*` fields. Future skin edits MUST keep this — no IT labels in HTML, ever. Particular gotcha: `pricing.html` `Più scelto` was a CSS pseudo-element `content: 'Più scelto';` (CSS-generated content can't be localized via Django templates) — it was moved to HTML `<span class="pop-badge">{{ page_data.highlight_badge }}</span>` rendered conditionally. Don't revert to CSS pseudo-element badges for any locale-bound text.
+3. **Both business archetypes have full `html[dir="rtl"]` CSS blocks** with conditional Arabic font load + page-level grid flips inside `{% if is_rtl %}` + Latin wordmark / Latin product name / Latin numeric isolation via `unicode-bidi: isolate`. Skin edits that add new components MUST add their RTL-flip rules in the same commit (otherwise AR ships visually broken).
+4. **Native voice per locale, never machine translation.** Pragma EN reads as native FT/HBR. Elevate EN reads as native TechCrunch/Linear. Pragma FR uses vouvoiement + insecable spaces. Elevate FR uses `tu` + insecable spaces + anglicismes. Pragma ES uses peninsular `usted`. Elevate ES uses peninsular `tú`. Pragma AR uses MSA boardroom with dropped honorifics. Elevate AR uses modern startup MSA with Latin product names. Future content edits MUST follow these per-locale voice contracts.
+5. **Latin proper names + Latin product names + Latin acronyms preserved across all locales.** Pragma: partner Italian names (Federico Seregni, Caterina Foschini, Marco Lavezzi, Sabina Erlanger, Lorenzo Pellizzari, Giulia Antinori), Italian institutions (Bocconi, Insead, Cattolica, Politecnico, Bonelli Erede, McKinsey), CONSOB acronym, technical acronyms (CSRD, ESG, M&A, EBITDA). Elevate: founder Italian names, all SaaS product names (Stripe, Linear, Slack, Vercel, PostHog, GrowthBook, Loops, Cal.com, Plain, Resend, Cloudflare, Netlify, Next.js, React, Postgres, Prisma, Neon, Clerk, JetBrains Mono), version strings (v2.5–v3.0), all SaaS acronyms (MRR, ARR, A/B, PMF, KPI, CLI). Latin Western digits (1, 2, 3, …) used for prices/percentages/years in AR per MENA business-press convention.
+
+### Reusable recipe (now proven 5 times: Cardio · Derm · Gusto · Chiara · Pixel · **Pragma + Elevate**)
+
+The Session 23/29/37/39 recipe scales to a 2-template, 8-tree fan-out without modification. The only addition: an upfront D-047 leak sweep on BOTH skin folders before authoring (otherwise the new locale trees inherit IT-hardcoded labels). For business templates specifically, also lift any CSS pseudo-element content (`::before content: "…"`) to HTML rendered from a content field — CSS-generated content cannot be localized through Django templates.
+
+When opening any future i18n session that touches business templates, read `business_i18n_completion_session40.md` in memory before starting.
+
+### Do NOT do
+
+- Do NOT collapse Pragma + Elevate voices into one shared register — they must stay sharply distinct across every locale.
+- Do NOT use machine translation for any locale block. The quality floor is native FT/HBR/Les Echos/Cinco Días/Wamda/Maddyness editorial voice per template per locale.
+- Do NOT add CSS pseudo-element `content: '…';` for any locale-bound visible text. Lift to HTML rendered from `page_data.*` / `site.*` / `chrome.*`.
+- Do NOT touch the 5 already-multilingual templates (cardio/derm/gusto/chiara/pixel) when working on business templates. Regression smokes (76/76 chiara · 80/80 pixel · 52/52 gusto · 282/282 full sweep) are the binding gate.
+- Do NOT translate Italian page slugs (`prodotto`, `prezzi`, `demo`, `contatti`, `chi-siamo`, `competenze`, `case-studies`) to non-IT equivalents — URLs stay canonical Italian, only labels change.
+
+---
 
 ## Session 37 — Chiara Perfection: Read This Before Touching Any Locale Rollout (2026-04-13)
 

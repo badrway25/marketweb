@@ -54,6 +54,9 @@ ELEVATE_CONTENT_IT: dict[str, Any] = {
         "logo_initial": "E",
         "logo_word":    "Elevate",
         "tag":          "Conversion-first kit · per founder che spediscono",
+        # Pill nav CTA label — short, action-oriented, distinct from `tag`
+        # (which is the long-form description). Lifted from skin Session 40.
+        "nav_cta":      "Inizia gratis",
         "phone":        "hello@elevatekit.io",
         "email":        "hello@elevatekit.io",
         "address":      "Talent Garden Calabiana · Milano",
@@ -463,6 +466,10 @@ ELEVATE_CONTENT_IT: dict[str, Any] = {
             "(due mensilità in regalo sull'annuale). Quattordici giorni "
             "di trial gratuito, senza carta di credito.",
 
+        # Highlight badge label (lifted from CSS pseudo-element Session 40)
+        "highlight_badge": "Più scelto",
+        "annual_prefix":   "o",
+
         # Toggle row UI cue
         "billing_toggle_label": "Fatturazione",
         "billing_toggle_options": [
@@ -806,6 +813,11 @@ ELEVATE_CONTENT_IT: dict[str, Any] = {
                     "per startup pre-seed e partnership con accelerator.",
             },
         ],
+
+        # Office meta-row labels (lifted from skin Session 40 for i18n)
+        "office_address_label":   "Sede",
+        "office_transport_label": "Trasporti",
+        "office_model_label":     "Modello",
 
         # Studio info — async-first office
         "office_label":   "Async-first office",

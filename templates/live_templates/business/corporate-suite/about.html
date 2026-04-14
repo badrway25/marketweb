@@ -124,9 +124,7 @@
       <div class="sec-label">{{ page_data.history_label }}</div>
       <h2>{{ page_data.history_heading }}</h2>
     </div>
-    <p style="font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; max-width: 56ch;" data-lm="reveal">
-      Cinque date che hanno definito Pragma. Dietro ognuna di queste pietre miliari c'è una scelta strutturale — di indipendenza, di geografia, di pratica — che ancora oggi orienta come accettiamo i mandati.
-    </p>
+    <p style="font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; max-width: 56ch;" data-lm="reveal">{{ page_data.history_intro }}</p>
   </div>
   <div class="timeline" data-lm-stagger data-lm-stagger-delay="100">
     {% for year, title, body in page_data.history %}

@@ -75,8 +75,8 @@
           <h3>{{ post.title }}</h3>
           <p class="lead">{{ post.lead }}</p>
         </div>
-        <div class="meta">Practice<strong>{{ post.category }}</strong></div>
-        <div class="meta">Timeline<strong>{{ post.year }} · {{ post.duration }}</strong></div>
+        <div class="meta">{{ site.case_practice_label }}<strong>{{ post.category }}</strong></div>
+        <div class="meta">{{ site.case_timeline_label }}<strong>{{ post.year }} · {{ post.duration }}</strong></div>
         <span class="arrow">→</span>
       </a>
     {% endfor %}

@@ -40,8 +40,7 @@
     border-color: var(--accent);
     box-shadow: 0 0 80px -20px var(--accent);
   }
-  .sl-prc .tier.highlight:before {
-    content: 'Più scelto';
+  .sl-prc .tier .pop-badge {
     position: absolute; top: -14px; left: 32px;
     font-family: var(--body); font-size: 11px; font-weight: 800;
     letter-spacing: 0.10em; text-transform: uppercase;
@@ -188,13 +187,14 @@
   <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
     {% for tier in page_data.tiers %}
       <article class="tier{% if tier.highlight %} highlight{% endif %}" data-lm="reveal">
+        {% if tier.highlight and page_data.highlight_badge %}<span class="pop-badge">{{ page_data.highlight_badge }}</span>{% endif %}
         <div>
           <div class="name">{{ tier.name }}</div>
           <div class="tag">{{ tier.tag }}</div>
         </div>
         <div class="price-block">
           <div class="price">{{ tier.price }}<span class="period">{{ tier.period }}</span></div>
-          <div class="price-note">o {{ tier.annual }} {{ tier.annual_period }}</div>
+          <div class="price-note">{{ page_data.annual_prefix|default:"o" }} {{ tier.annual }} {{ tier.annual_period }}</div>
         </div>
         <p class="blurb">{{ tier.blurb }}</p>
         <ul>
