@@ -1,8 +1,9 @@
 """Commerce URL routes.
 
-Two namespaces mounted under the project root:
-- /shop/<storefront>/...   customer
-- /dashboard/<storefront>/...   seller
+Three namespaces mounted under the project root:
+- /shop/<storefront>/...   customer-facing storefront
+- /dashboard/...           seller dashboard (membership-scoped)
+- /commerce/webhook/...    payment provider webhooks
 """
 from django.urls import path
 
@@ -11,16 +12,22 @@ from apps.commerce.views import (
     CartView,
     CheckoutView,
     DashboardHomeView,
+    DashboardRootView,
     OrderConfirmationView,
     OrderDetailView,
+    OrderLookupView,
     OrdersListView,
+    PaymentPageView,
+    PoliciesView,
     ProductCreateView,
     ProductDeleteView,
     ProductDetailView,
     ProductUpdateView,
     ProductsListView,
     RemoveCartItemView,
+    RetryPaymentView,
     ShopView,
+    StripeWebhookView,
     UpdateCartItemView,
     VariantCreateView,
     VariantDeleteView,
@@ -76,8 +83,40 @@ urlpatterns = [
         OrderConfirmationView.as_view(),
         name="order_confirmation",
     ),
+    path(
+        "shop/<slug:storefront_slug>/order/<uuid:order_uuid>/payment/",
+        PaymentPageView.as_view(),
+        name="payment_page",
+    ),
+    path(
+        "shop/<slug:storefront_slug>/order/<uuid:order_uuid>/retry-payment/",
+        RetryPaymentView.as_view(),
+        name="retry_payment",
+    ),
+    path(
+        "shop/<slug:storefront_slug>/politiche/",
+        PoliciesView.as_view(),
+        name="policies",
+    ),
+    path(
+        "shop/<slug:storefront_slug>/ordine/",
+        OrderLookupView.as_view(),
+        name="order_lookup",
+    ),
+
+    # ── Stripe webhook ───────────────────────────────────────────────
+    path(
+        "commerce/webhook/stripe/",
+        StripeWebhookView.as_view(),
+        name="stripe_webhook",
+    ),
 
     # ── Seller dashboard ─────────────────────────────────────────────
+    path(
+        "dashboard/",
+        DashboardRootView.as_view(),
+        name="dashboard_root",
+    ),
     path(
         "dashboard/<slug:storefront_slug>/",
         DashboardHomeView.as_view(),

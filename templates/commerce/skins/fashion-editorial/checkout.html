@@ -1,37 +1,38 @@
 {% extends "commerce/skins/fashion-editorial/_base.html" %}
-{% block page_title %}Checkout maison{% endblock %}
+{% block page_title %}{{ chrome.co_heading }}{% endblock %}
 
 {% block content %}
 <main class="cx-wrap-wide">
   <section class="cx-lead">
     <div>
-      <div class="eyebrow">Checkout · direzione clienti</div>
-      <h1 style="font-style:italic; font-size:60px;">Dove <em style="color:var(--gold);">inviamo</em> i capi e come vi <em style="color:var(--gold);">scriviamo.</em></h1>
-      <p class="intro">La direzione clienti rilegge ogni ordine prima della spedizione. Confermiamo telefonicamente gli ordini maggiori di 2.500 €.</p>
+      <div class="eyebrow">{{ chrome.co_heading }}</div>
+      <h1 style="font-style:italic; font-size:60px;">{{ chrome.co_heading }} <em style="color:var(--gold);">·</em></h1>
+      <p class="intro">{{ chrome.co_contact_hint }}</p>
     </div>
   </section>
 
   <section class="cx-cart-grid">
     <form method="post" action="" class="cx-form">
       {% csrf_token %}
+      {% if locale and locale != 'it' %}<input type="hidden" name="lang" value="{{ locale }}">{% endif %}
 
       <fieldset>
-        <legend><span class="step">1</span>Signora · signore</legend>
+        <legend><span class="step">1</span>{{ chrome.co_contact_heading }}</legend>
         <div class="field-grid">
           <div class="row-2">
-            <label>Nome e cognome
+            <label>{{ chrome.f_full_name }}
               <input type="text" name="full_name" required value="{{ form.full_name.value|default:'' }}" autocomplete="name">
               {% if form.full_name.errors %}<span class="err">{{ form.full_name.errors.0 }}</span>{% endif %}
             </label>
-            <label>Email
-              <span class="hint">Per la conferma della direzione clienti entro 24 ore.</span>
+            <label>{{ chrome.f_email }}
+              <span class="hint">{{ chrome.co_contact_hint }}</span>
               <input type="email" name="email" required value="{{ form.email.value|default:'' }}" autocomplete="email" inputmode="email">
               {% if form.email.errors %}<span class="err">{{ form.email.errors.0 }}</span>{% endif %}
             </label>
           </div>
           <div class="row-2">
-            <label>Telefono
-              <span class="hint">La direzione vi chiama personalmente per gli ordini maggiori di 2.500 €.</span>
+            <label>{{ chrome.f_phone }}
+              <span class="hint">{{ chrome.f_optional_mark }}</span>
               <input type="tel" name="phone" value="{{ form.phone.value|default:'' }}" autocomplete="tel" inputmode="tel">
             </label>
             <div></div>
@@ -40,84 +41,81 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="step">2</span>Indirizzo di consegna</legend>
+        <legend><span class="step">2</span>{{ chrome.co_shipping_heading }}</legend>
         <div class="field-grid">
-          <label>Indirizzo
+          <label>{{ chrome.f_line1 }}
             <input type="text" name="line1" required value="{{ form.line1.value|default:'' }}" autocomplete="address-line1">
-            {% if form.line1.errors %}<span class="err">{{ form.line1.errors.0 }}</span>{% endif %}
           </label>
-          <label>Civico · scala · interno
-            <span class="hint">Opzionale — aiutate il corriere maison.</span>
+          <label>{{ chrome.f_line2 }}
+            <span class="hint">{{ chrome.f_optional_mark }}</span>
             <input type="text" name="line2" value="{{ form.line2.value|default:'' }}" autocomplete="address-line2">
           </label>
           <div class="row-3">
-            <label>Città
+            <label>{{ chrome.f_city }}
               <input type="text" name="city" required value="{{ form.city.value|default:'' }}" autocomplete="address-level2">
             </label>
-            <label>CAP
-              <input type="text" name="postal_code" required value="{{ form.postal_code.value|default:'' }}" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{4,5}">
+            <label>{{ chrome.f_postal_code }}
+              <input type="text" name="postal_code" required value="{{ form.postal_code.value|default:'' }}" autocomplete="postal-code" inputmode="numeric">
             </label>
-            <label>Provincia
+            <label>{{ chrome.f_region }}
               <input type="text" name="region" value="{{ form.region.value|default:'' }}" autocomplete="address-level1" maxlength="32">
             </label>
           </div>
-          <label>Paese
+          <label>{{ chrome.f_country }}
             <input type="text" name="country" value="{{ form.country.value|default:'Italia' }}" autocomplete="country-name">
           </label>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend><span class="step">3</span>Consegna maison</legend>
+        <legend><span class="step">3</span>{{ chrome.co_method_heading }}</legend>
         <div class="cx-shipping-options">
-          {% for method in shipping_methods %}
+          {% for m in shipping_methods_l10n %}
             <label class="opt" data-selected="{% if forloop.first %}1{% else %}0{% endif %}">
-              <input type="radio" name="shipping_method" value="{{ method.code }}" {% if forloop.first %}checked{% endif %}>
+              <input type="radio" name="shipping_method" value="{{ m.code }}" {% if forloop.first %}checked{% endif %}>
               <div class="body">
-                <div class="title">{{ method.title }}</div>
-                <div class="desc">{{ method.description }}{% if method.est_delivery_days %} · <strong>{{ method.est_delivery_days }}</strong>{% endif %}</div>
+                <div class="title">{{ m.title }}</div>
+                <div class="desc">{{ m.description }}{% if m.est_delivery_days %} · <strong>{{ m.est_delivery_days }}</strong>{% endif %}</div>
               </div>
-              <div class="price">{% if method.price > 0 %}€ {{ method.price|floatformat:"0g" }}{% else %}Offerta maison{% endif %}</div>
+              <div class="price">{% if m.price > 0 %}€ {{ m.price|floatformat:"0g" }}{% else %}—{% endif %}</div>
             </label>
           {% endfor %}
         </div>
       </fieldset>
 
       <fieldset>
-        <legend><span class="step">4</span>Note alla direzione</legend>
+        <legend><span class="step">4</span>{{ chrome.co_notes_heading }}</legend>
         <label class="cx-note-label">
-          Modalità di consegna particolari, appuntamento desiderato, note sull'acquisto
-          <textarea name="customer_note" rows="3" placeholder="La direzione clienti legge ogni nota prima di confermare l'ordine.">{{ form.customer_note.value|default:'' }}</textarea>
+          {{ chrome.co_notes_hint }}
+          <textarea name="customer_note" rows="3">{{ form.customer_note.value|default:'' }}</textarea>
         </label>
       </fieldset>
 
       <div class="cx-reassure">
-        <div class="item"><span class="mark">D</span><div><strong>Rilettura direzione</strong>Ogni ordine è verificato personalmente prima della spedizione.</div></div>
-        <div class="item"><span class="mark">C</span><div><strong>Consegna maison</strong>Scatola firmata, corriere dedicato, 24h Milano.</div></div>
-        <div class="item"><span class="mark">A</span><div><strong>Alta sartoria</strong>Acconto 30% alla conferma per pezzi d'atelier numerati.</div></div>
+        <div class="item"><span class="mark">S</span><div><strong>{{ chrome.cart_trust_ship_title }}</strong>{{ chrome.cart_trust_ship_body }}</div></div>
+        <div class="item"><span class="mark">R</span><div><strong>{{ chrome.cart_trust_return_title }}</strong>{{ chrome.cart_trust_return_body }}</div></div>
+        <div class="item"><span class="mark">P</span><div><strong>{{ chrome.cart_trust_pay_title }}</strong>{{ chrome.cart_trust_pay_body }}</div></div>
       </div>
 
       <div class="cx-cta-cluster" style="margin-top:24px;">
-        <button type="submit" class="cx-btn is-full">Conferma ordine maison</button>
+        <button type="submit" class="cx-btn is-full">{{ chrome.co_pay_now }}</button>
       </div>
       <p style="margin-top:14px; font-family:var(--cx-body); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--bone-faint); font-weight:500; line-height:1.7;">
-        Confermando accettate le <a href="#" style="color:var(--gold); border-bottom:1px solid currentColor;">condizioni della maison</a> e la nostra <a href="#" style="color:var(--gold); border-bottom:1px solid currentColor;">privacy</a>.
+        <a href="{% url 'commerce:policies' storefront.slug %}{{ lang_qs }}" style="color:var(--gold); border-bottom:1px solid currentColor;">{{ chrome.nav_policies }}</a>
       </p>
     </form>
 
     <aside class="cx-summary">
-      <h3>Riepilogo</h3>
+      <h3>{{ chrome.co_summary }}</h3>
       {% for item in cart.items.all %}
         <div class="row" style="font-family:var(--cx-body); font-size:13px;">
           <span>{{ item.variant.product.title }} × {{ item.quantity }}</span>
           <span>€ {{ item.line_total|floatformat:"0g" }}</span>
         </div>
       {% endfor %}
-      <div class="row"><span>Sub-totale</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
-      <div class="row total"><span>Da confermare</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
-      <div class="policy">
-        La direzione clienti rilegge ogni ordine e vi scriverà via email di conferma entro 24 ore. Per le alte sartorie è richiesto un acconto del 30%.
-      </div>
+      <div class="row"><span>{{ chrome.cart_subtotal }}</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="row total"><span>{{ chrome.cart_total_due }}</span><span>€ {{ cart.subtotal|floatformat:"0g" }}</span></div>
+      <div class="policy">{{ storefront_shipping_policy|truncatechars:180 }}</div>
     </aside>
   </section>
 </main>

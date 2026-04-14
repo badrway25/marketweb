@@ -1,0 +1,62 @@
+{% extends "commerce/skins/artisan-workshop/_base.html" %}
+{% block page_title %}{{ chrome.policy_heading }}{% endblock %}
+
+{% block content %}
+<main class="cx-wrap">
+  <section class="cx-lead">
+    <div>
+      <div class="eyebrow">{{ chrome.policy_heading }}</div>
+      <h1>{{ chrome.policy_heading }} <em style="color:var(--terra); font-style:italic;">·</em></h1>
+      <p class="intro">{{ storefront_footer_bio|truncatechars:200 }}</p>
+    </div>
+  </section>
+
+  <section style="display:grid; grid-template-columns: 1fr 1fr; gap:32px; margin-top:12px;">
+    <article style="background:var(--paper-2); border:1px dashed var(--rule-dash); padding:28px 28px;">
+      <h5 style="font-family:var(--cx-body); font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--terra); font-weight:800; margin-bottom:12px;">01</h5>
+      <h2 style="font-family:var(--cx-heading); font-size:28px; margin-bottom:14px;">{{ chrome.policy_shipping_heading }}</h2>
+      <p style="font-family:var(--cx-body); font-size:15px; color:var(--ink-mute); line-height:1.8;">{{ storefront_shipping_policy|linebreaksbr }}</p>
+    </article>
+
+    <article style="background:var(--paper-2); border:1px dashed var(--rule-dash); padding:28px 28px;">
+      <h5 style="font-family:var(--cx-body); font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--terra); font-weight:800; margin-bottom:12px;">02</h5>
+      <h2 style="font-family:var(--cx-heading); font-size:28px; margin-bottom:14px;">{{ chrome.policy_returns_heading }}</h2>
+      <p style="font-family:var(--cx-body); font-size:15px; color:var(--ink-mute); line-height:1.8;">{{ storefront_return_policy|linebreaksbr }}</p>
+    </article>
+  </section>
+
+  <section style="margin-top:28px; padding:28px 28px; background:var(--paper-3); border:1.5px solid var(--ink);">
+    <h5 style="font-family:var(--cx-body); font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--terra); font-weight:800; margin-bottom:12px;">03</h5>
+    <h2 style="font-family:var(--cx-heading); font-size:28px; margin-bottom:14px;">{{ chrome.policy_contact_heading }}</h2>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:28px; font-family:var(--cx-body); font-size:14px; color:var(--ink); line-height:1.8;">
+      <div>
+        <div style="font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--ink-mute); font-weight:700; margin-bottom:6px;">{{ chrome.f_phone }}</div>
+        <div>{{ storefront.contact_phone }}</div>
+      </div>
+      <div>
+        <div style="font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--ink-mute); font-weight:700; margin-bottom:6px;">{{ chrome.f_email }}</div>
+        <div><a href="mailto:{{ storefront.contact_email }}" style="color:var(--terra); border-bottom:1px solid currentColor;">{{ storefront.contact_email }}</a></div>
+      </div>
+      <div>
+        <div style="font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--ink-mute); font-weight:700; margin-bottom:6px;">{{ chrome.foot_studio_aw }}</div>
+        <div>Via dei Serragli 47/r<br>50124 Firenze</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cx-cta-cluster" style="margin-top:32px;">
+    <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn">{{ chrome.cart_continue|cut:'◂ ' }}</a>
+    <a href="{% url 'commerce:order_lookup' storefront.slug %}{{ lang_qs }}" class="cx-btn-ghost">{{ chrome.lookup_title }} ▸</a>
+  </div>
+</main>
+
+<style>
+  @media (max-width: 880px) {
+    main.cx-wrap section[style*="grid-template-columns: 1fr 1fr"],
+    main.cx-wrap section[style*="grid-template-columns: 1fr 1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+      gap: 18px !important;
+    }
+  }
+</style>
+{% endblock %}

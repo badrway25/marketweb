@@ -1,47 +1,71 @@
 """Forms for customer checkout + seller dashboard operations.
 
-Kept plain Django — crispy-forms is available but the commerce skins
-render premium markup manually, so the forms only contribute
-validation + field introspection.
+Labels on the customer-facing forms (CheckoutForm, OrderLookupForm)
+are chrome-driven so they render in the active locale. Seller-side
+forms stay IT-only (dashboard is not localized in v2).
 """
 from __future__ import annotations
 
 from django import forms
 
-from apps.commerce.models import Order, Product, ProductVariant
+from apps.commerce.models import Order, Product, ProductVariant, StorefrontMember
 
 
 class CheckoutForm(forms.Form):
-    """Customer-facing checkout form.
+    """Customer-facing checkout form — labels pulled from chrome."""
 
-    Single-step: shipping address + email + shipping method + optional
-    note. No billing address in v1 — shipping doubles as billing.
-    """
-
-    full_name = forms.CharField(label="Nome e cognome", max_length=200)
-    email = forms.EmailField(label="Email")
-    phone = forms.CharField(label="Telefono", max_length=40, required=False)
-    line1 = forms.CharField(label="Indirizzo", max_length=240)
-    line2 = forms.CharField(
-        label="Civico / scala / interno (opz.)", max_length=240, required=False
-    )
-    city = forms.CharField(label="Città", max_length=140)
-    postal_code = forms.CharField(label="CAP", max_length=40)
-    region = forms.CharField(label="Provincia / regione", max_length=140, required=False)
-    country = forms.CharField(label="Paese", max_length=80, initial="Italia")
-    shipping_method = forms.ChoiceField(label="Spedizione", choices=[])
+    full_name = forms.CharField(max_length=200)
+    email = forms.EmailField()
+    phone = forms.CharField(max_length=40, required=False)
+    line1 = forms.CharField(max_length=240)
+    line2 = forms.CharField(max_length=240, required=False)
+    city = forms.CharField(max_length=140)
+    postal_code = forms.CharField(max_length=40)
+    region = forms.CharField(max_length=140, required=False)
+    country = forms.CharField(max_length=80, initial="Italia")
+    shipping_method = forms.ChoiceField(choices=[])
     customer_note = forms.CharField(
-        label="Note per il venditore (opz.)",
         widget=forms.Textarea(attrs={"rows": 3}),
         required=False,
     )
 
-    def __init__(self, *args, shipping_methods=None, **kwargs):
+    def __init__(self, *args, shipping_methods=None, chrome=None, locale="it", **kwargs):
         super().__init__(*args, **kwargs)
+        c = chrome or {}
+        # Apply locale labels.
+        self.fields["full_name"].label     = c.get("f_full_name",    "Nome e cognome")
+        self.fields["email"].label         = c.get("f_email",        "Email")
+        self.fields["phone"].label         = c.get("f_phone",        "Telefono")
+        self.fields["line1"].label         = c.get("f_line1",        "Indirizzo")
+        self.fields["line2"].label         = c.get("f_line2",        "Civico / scala")
+        self.fields["city"].label          = c.get("f_city",         "Città")
+        self.fields["postal_code"].label   = c.get("f_postal_code",  "CAP")
+        self.fields["region"].label        = c.get("f_region",       "Provincia")
+        self.fields["country"].label       = c.get("f_country",      "Paese")
+        self.fields["shipping_method"].label = c.get("f_shipping_method", "Metodo")
+        self.fields["customer_note"].label = c.get("f_customer_note", "Note")
+        # Populate shipping choices using the localized title of each method.
         if shipping_methods is not None:
-            self.fields["shipping_method"].choices = [
-                (m.code, f"{m.title} — {m.price:.2f} €") for m in shipping_methods
-            ]
+            choices = []
+            for m in shipping_methods:
+                label_block = m.localized(locale)
+                title = label_block.get("title") or m.title
+                price = f"{m.price:.2f} €"
+                choices.append((m.code, f"{title} — {price}"))
+            self.fields["shipping_method"].choices = choices
+
+
+class OrderLookupForm(forms.Form):
+    """Customer self-service order lookup — reference + email."""
+
+    reference = forms.CharField(max_length=20)
+    email = forms.EmailField()
+
+    def __init__(self, *args, chrome=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        c = chrome or {}
+        self.fields["reference"].label = c.get("f_order_reference", "Numero ordine")
+        self.fields["email"].label = c.get("f_email", "Email")
 
 
 # ── Seller dashboard forms ─────────────────────────────────────────
@@ -82,3 +106,11 @@ class OrderStatusForm(forms.Form):
     tracking_number = forms.CharField(
         label="Numero tracking", max_length=140, required=False
     )
+
+
+class StorefrontMemberForm(forms.ModelForm):
+    """Add/edit a member of a storefront (admin UI)."""
+
+    class Meta:
+        model = StorefrontMember
+        fields = ["user", "role"]

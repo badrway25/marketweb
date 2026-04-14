@@ -1,0 +1,162 @@
+{% load static %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ chrome.co_pay_now }} — {{ order.reference }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% if is_rtl %}<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">{% endif %}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --ink:#1a1a23; --mute:#5a5a6a; --surface:#f7f6f3; --rule:rgba(26,26,35,0.12); --accent:#3d2abe; }
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px; line-height: 1.6;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 20px;
+  }
+  html[dir="rtl"] body { font-family: 'Noto Kufi Arabic', 'Inter', system-ui, sans-serif; }
+  .wrap { width: 100%; max-width: 520px; }
+  .brand {
+    text-align: center; margin-bottom: 28px;
+    font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--mute); font-weight: 600;
+  }
+  .card {
+    background: #fff; border: 1px solid var(--rule); border-radius: 10px;
+    padding: 32px 32px; box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  }
+  .card h1 {
+    font-size: 24px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.012em;
+  }
+  .card .sub { color: var(--mute); font-size: 13px; margin-bottom: 18px; }
+  .ref-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 14px 0; border-bottom: 1px solid var(--rule);
+  }
+  .ref-row .k { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute); font-weight: 600; }
+  .ref-row .v { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 14px; color: var(--ink); font-weight: 600; }
+  .total {
+    padding: 18px 0 8px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .total .k { font-size: 13px; font-weight: 600; }
+  .total .v { font-size: 26px; font-weight: 700; letter-spacing: -0.016em; }
+
+  #payment-element { margin: 22px 0 18px; }
+  #pay-btn {
+    width: 100%; padding: 14px 18px; background: var(--ink); color: #fff;
+    border: 0; border-radius: 8px; font-size: 15px; font-weight: 600;
+    font-family: inherit; cursor: pointer; transition: background .15s ease;
+  }
+  #pay-btn:hover { background: #000; }
+  #pay-btn:disabled { opacity: 0.6; cursor: wait; }
+  #pay-msg { margin-top: 14px; font-size: 13px; color: #c1232a; min-height: 16px; }
+
+  .fallback-card {
+    background: #fff; border: 1px solid var(--rule); border-radius: 10px;
+    padding: 28px 28px;
+  }
+  .fallback-card h2 {
+    font-size: 18px; font-weight: 600; margin-bottom: 10px;
+  }
+  .fallback-card p { color: var(--mute); margin-bottom: 18px; font-size: 14px; }
+  .fallback-card a.cta {
+    display: inline-block; padding: 12px 20px; background: var(--ink); color: #fff;
+    border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;
+  }
+  .footer-note {
+    margin-top: 18px; text-align: center; font-size: 11px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute);
+  }
+  .back {
+    margin-top: 16px; text-align: center;
+  }
+  .back a {
+    font-size: 12px; color: var(--mute); text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">{{ storefront.template.brand.brand_name }} · {{ chrome.co_payment_heading }}</div>
+
+  {% if stripe_configured %}
+  <div class="card">
+    <h1>{{ chrome.co_pay_now }}</h1>
+    <div class="sub">{{ chrome.co_payment_hint }}</div>
+
+    <div class="ref-row">
+      <span class="k">{{ chrome.ok_reference }}</span>
+      <span class="v">{{ order.reference }}</span>
+    </div>
+    <div class="total">
+      <span class="k">{{ chrome.cart_total_due }}</span>
+      <span class="v">€ {{ order.grand_total|floatformat:"2g" }}</span>
+    </div>
+
+    <form id="payment-form">
+      <div id="payment-element"></div>
+      <button id="pay-btn" type="submit">{{ chrome.co_pay_now }}</button>
+      <div id="pay-msg" role="alert"></div>
+    </form>
+  </div>
+
+  <div class="back">
+    <a href="{% url 'commerce:order_confirmation' storefront.slug order.uuid %}{{ lang_qs }}">{{ chrome.co_back_cart }}</a>
+  </div>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    (function(){
+      var cfg = {{ stripe_config_json|safe }};
+      if (!cfg.isConfigured) return;
+      var stripe = Stripe(cfg.publishableKey);
+      var elements = stripe.elements({ clientSecret: cfg.clientSecret });
+      var paymentElement = elements.create("payment", { layout: "tabs" });
+      paymentElement.mount("#payment-element");
+      var form = document.getElementById("payment-form");
+      var btn  = document.getElementById("pay-btn");
+      var msg  = document.getElementById("pay-msg");
+      form.addEventListener("submit", function(ev){
+        ev.preventDefault();
+        btn.disabled = true;
+        btn.textContent = "{{ chrome.co_pay_processing|escapejs }}";
+        msg.textContent = "";
+        stripe.confirmPayment({
+          elements: elements,
+          confirmParams: { return_url: cfg.returnUrl },
+        }).then(function(res){
+          if (res.error) {
+            msg.textContent = res.error.message || "Payment error.";
+            btn.disabled = false;
+            btn.textContent = "{{ chrome.co_pay_now|escapejs }}";
+          }
+        });
+      });
+    })();
+  </script>
+
+  {% else %}
+  <div class="fallback-card">
+    <h2>{{ chrome.co_payment_heading }}</h2>
+    <p>
+      {% if locale == 'en' %}Stripe is not configured in this environment (STRIPE_SECRET_KEY missing). The order has been registered; the stub provider auto-confirmed the payment.
+      {% elif locale == 'fr' %}Stripe n'est pas configuré dans cet environnement. La commande a été enregistrée et le paiement a été confirmé par le fournisseur de secours.
+      {% elif locale == 'es' %}Stripe no está configurado en este entorno. El pedido ha sido registrado y el pago se ha confirmado mediante el proveedor de respaldo.
+      {% elif locale == 'ar' %}لم يُهيّأ Stripe في هذه البيئة. تمّ تسجيل الطلب وتأكيد الدفع بواسطة المزوّد الاحتياطي.
+      {% else %}Stripe non è configurato in questo ambiente (manca STRIPE_SECRET_KEY). L'ordine è stato registrato e il provider di fallback ha auto-confermato il pagamento.{% endif %}
+    </p>
+    <a class="cta" href="{% url 'commerce:order_confirmation' storefront.slug order.uuid %}{{ lang_qs }}">{{ chrome.ok_open_my_order }} ▸</a>
+  </div>
+  {% endif %}
+
+  <div class="footer-note">© {{ storefront.template.brand.brand_name }}</div>
+</div>
+</body>
+</html>

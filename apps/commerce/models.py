@@ -57,7 +57,7 @@ class Storefront(TimestampedModel):
     class PaymentProvider(models.TextChoices):
         STUB = "stub", "Stub · auto-conferma (dev)"
         OFFLINE_BANK_TRANSFER = "offline_bank_transfer", "Bonifico bancario"
-        # STRIPE = "stripe", "Stripe" — extension point, not implemented v1
+        STRIPE = "stripe", "Stripe"
 
     template = models.OneToOneField(
         WebTemplate,
@@ -93,6 +93,9 @@ class Storefront(TimestampedModel):
             "operational before its /shop/ routes resolve publicly."
         ),
     )
+    # Locale-keyed overrides for storefront-level text. Seeded from
+    # apps/commerce/content.py. Shape: {locale: {field: value}}.
+    translations = models.JSONField(default=dict, blank=True)
 
     class Meta:
         ordering = ["template__name"]
@@ -108,6 +111,49 @@ class Storefront(TimestampedModel):
     def skin_path(self) -> str:
         """Directory under templates/commerce/skins/ for this storefront."""
         return self.skin
+
+    def localized_field(self, field: str, locale: str, fallback: str = "") -> str:
+        """Return a translated storefront-level string with IT fallback."""
+        block = (self.translations or {}).get(locale) or (self.translations or {}).get("it") or {}
+        value = block.get(field)
+        if value:
+            return value
+        return fallback
+
+
+# ── Seller scoping ────────────────────────────────────────────────
+
+class StorefrontMember(TimestampedModel):
+    """Binds a user to a storefront with a role.
+
+    The dashboard ACL uses this row to answer "can this user touch
+    this storefront?". A single user can be a member of N storefronts;
+    each membership carries a role. Superusers bypass membership
+    checks; everyone else must have a row.
+    """
+
+    class Role(models.TextChoices):
+        OWNER = "owner", "Owner"
+        EDITOR = "editor", "Editor"
+
+    storefront = models.ForeignKey(
+        Storefront,
+        on_delete=models.CASCADE,
+        related_name="members",
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="storefront_memberships",
+    )
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.OWNER)
+
+    class Meta:
+        unique_together = [("storefront", "user")]
+        ordering = ["storefront__template__name"]
+
+    def __str__(self) -> str:
+        return f"{self.user} · {self.storefront.slug} · {self.role}"
 
 
 # ── Catalog: Collection + Product + Variant + Image ────────────────
@@ -130,6 +176,8 @@ class Collection(TimestampedModel):
     description = models.TextField(blank=True)
     order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
+    # {locale: {"title": "…", "subtitle": "…", "description": "…"}}
+    translations = models.JSONField(default=dict, blank=True)
 
     class Meta:
         ordering = ["order", "title"]
@@ -142,6 +190,15 @@ class Collection(TimestampedModel):
         if not self.slug:
             self.slug = slugify(self.title, allow_unicode=True)
         super().save(*args, **kwargs)
+
+    def localized(self, locale: str) -> dict:
+        """Return {title, subtitle, description} localized with IT fallback."""
+        block = (self.translations or {}).get(locale) or (self.translations or {}).get("it") or {}
+        return {
+            "title":       block.get("title") or self.title,
+            "subtitle":    block.get("subtitle") or self.subtitle,
+            "description": block.get("description") or self.description,
+        }
 
 
 class Product(TimestampedModel):
@@ -215,6 +272,14 @@ class Product(TimestampedModel):
     # Freeform specs dict — rendered as a typographic table on PDP.
     # Shape: [{"label": "Materia", "value": "Cuoio del Valdarno · concia vegetale"}, ...]
     info_rows = models.JSONField(default=list, blank=True)
+    # Locale overrides for customer-facing copy. Shape:
+    # {locale: {
+    #   "title": "…", "subtitle": "…",
+    #   "short_description": "…", "long_description": "…",
+    #   "material": "…", "made_in": "…", "badge": "…",
+    #   "info_rows": [{"label": "…", "value": "…"}, ...],
+    # }}
+    translations = models.JSONField(default=dict, blank=True)
 
     class Meta:
         ordering = ["order", "-featured", "title"]
@@ -260,6 +325,25 @@ class Product(TimestampedModel):
         if lowest is not None and lowest < self.base_price:
             return lowest
         return self.base_price
+
+    def localized(self, locale: str) -> dict:
+        """Return a bundle of customer-facing text with IT fallback.
+
+        Every key is guaranteed present. Fields that were not
+        translated for `locale` fall back to the IT-native DB column
+        (or, for `info_rows`, to the DB JSON list).
+        """
+        block = (self.translations or {}).get(locale) or (self.translations or {}).get("it") or {}
+        return {
+            "title":             block.get("title") or self.title,
+            "subtitle":          block.get("subtitle") or self.subtitle,
+            "short_description": block.get("short_description") or self.short_description,
+            "long_description":  block.get("long_description") or self.long_description,
+            "material":          block.get("material") or self.material,
+            "made_in":           block.get("made_in") or self.made_in,
+            "badge":             block.get("badge") or self.badge,
+            "info_rows":         block.get("info_rows") or self.info_rows or [],
+        }
 
 
 class ProductImage(TimestampedModel):
@@ -448,6 +532,8 @@ class ShippingMethod(TimestampedModel):
     )
     is_active = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
+    # {locale: {"title": "…", "description": "…", "est_delivery_days": "…"}}
+    translations = models.JSONField(default=dict, blank=True)
 
     class Meta:
         ordering = ["order", "price"]
@@ -455,6 +541,14 @@ class ShippingMethod(TimestampedModel):
 
     def __str__(self) -> str:
         return f"{self.storefront.slug} · {self.title}"
+
+    def localized(self, locale: str) -> dict:
+        block = (self.translations or {}).get(locale) or (self.translations or {}).get("it") or {}
+        return {
+            "title":             block.get("title") or self.title,
+            "description":       block.get("description") or self.description,
+            "est_delivery_days": block.get("est_delivery_days") or self.est_delivery_days,
+        }
 
 
 # ── Orders ─────────────────────────────────────────────────────────

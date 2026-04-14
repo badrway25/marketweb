@@ -238,6 +238,9 @@
       <a href="{% url 'commerce:shop' storefront.slug %}" target="_blank">Vedi shop ↗</a>
       <a href="{% url 'catalog:live_template_home' storefront.template.category.slug storefront.template.slug %}" target="_blank">Anteprima live ↗</a>
       <a href="/admin/" target="_blank">Admin Django ↗</a>
+      <div class="nav-group">Account</div>
+      <a href="{% url 'commerce:dashboard_root' %}">Cambia storefront</a>
+      <a href="/admin/logout/?next=/">Esci</a>
     </nav>
     <div class="foot">
       Skin attiva · <strong style="color:#d4d6e5;">{{ storefront.skin }}</strong><br>

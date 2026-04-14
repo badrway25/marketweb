@@ -1,0 +1,38 @@
+{% extends "commerce/skins/artisan-workshop/_base.html" %}
+{% block page_title %}{{ chrome.lookup_title }}{% endblock %}
+
+{% block content %}
+<main class="cx-wrap" style="max-width: 640px; margin: 0 auto;">
+  <section class="cx-lead" style="border-bottom: 0;">
+    <div>
+      <div class="eyebrow">{{ chrome.lookup_title }}</div>
+      <h1>{{ chrome.lookup_title }} <em style="color:var(--terra); font-style:italic;">·</em></h1>
+      <p class="intro">{{ chrome.lookup_hint }}</p>
+    </div>
+  </section>
+
+  <form method="post" action="" class="cx-form" style="background:var(--paper-2); border:1px dashed var(--rule-dash); padding:28px 28px;">
+    {% csrf_token %}
+    {% if locale and locale != 'it' %}<input type="hidden" name="lang" value="{{ locale }}">{% endif %}
+
+    <div class="field-grid">
+      <label>{{ chrome.f_order_reference }}
+        <input type="text" name="reference" required value="{{ form.reference.value|default:'' }}" autocomplete="off" autofocus style="text-transform:uppercase; font-family:var(--cx-mono);">
+        {% if form.reference.errors %}<span class="err">{{ form.reference.errors.0 }}</span>{% endif %}
+      </label>
+      <label>{{ chrome.f_email }}
+        <input type="email" name="email" required value="{{ form.email.value|default:'' }}" autocomplete="email" inputmode="email">
+        {% if form.email.errors %}<span class="err">{{ form.email.errors.0 }}</span>{% endif %}
+      </label>
+    </div>
+
+    <div class="cx-cta-cluster" style="margin-top:22px;">
+      <button type="submit" class="cx-btn is-full">{{ chrome.lookup_submit }}</button>
+    </div>
+  </form>
+
+  <p style="margin-top:18px; font-family:var(--cx-body); font-size:13px; color:var(--ink-faint); font-style:italic; line-height:1.7; text-align:center;">
+    {{ chrome.ok_support_body }}
+  </p>
+</main>
+{% endblock %}

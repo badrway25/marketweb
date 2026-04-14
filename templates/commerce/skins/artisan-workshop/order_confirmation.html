@@ -1,24 +1,20 @@
 {% extends "commerce/skins/artisan-workshop/_base.html" %}
-{% block page_title %}Ordine {{ order.reference }}{% endblock %}
+{% block page_title %}{{ chrome.ok_title }} · {{ order.reference }}{% endblock %}
 
 {% block content %}
 <main class="cx-wrap cx-confirm">
   <section class="cx-lead" style="border-bottom:0; margin-bottom:16px;">
     <div>
-      <div class="eyebrow">Grazie · ordine registrato</div>
-      <h1>La bottega ti <em style="color:var(--terra); font-style:italic;">scriverà</em> tra poco.</h1>
-      <p class="intro">
-        Abbiamo ricevuto il tuo ordine. Lo prepariamo nei prossimi giorni e partiamo con la spedizione
-        appena è pronto. Ti aggiorniamo via email ad ogni passo.
-      </p>
+      <div class="eyebrow">{{ chrome.ok_title }}</div>
+      <h1>{{ chrome.ok_title }} <em style="color:var(--terra); font-style:italic;">·</em></h1>
+      <p class="intro">{{ chrome.ok_subtitle }}</p>
     </div>
   </section>
 
   <div class="ref-band">
     <div>
-      <div style="font-family:var(--cx-body); font-size:11px; font-weight:800; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-mute);">Riferimento ordine</div>
+      <div style="font-family:var(--cx-body); font-size:11px; font-weight:800; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-mute);">{{ chrome.ok_reference }}</div>
       <div class="ref">{{ order.reference }}</div>
-      <div style="margin-top:4px; font-family:var(--cx-body); font-size:12px; color:var(--ink-faint); font-style:italic;">Conservalo per eventuali comunicazioni.</div>
     </div>
     <div style="text-align:right;">
       <span class="status">{{ order.get_status_display }}</span>
@@ -31,7 +27,7 @@
   <div class="two-col">
     <div>
       <h3 style="font-family:var(--cx-heading); font-size:22px; border-bottom:2px dashed var(--rule-dash); padding-bottom:12px; margin-bottom:14px;">
-        I pezzi che stiamo preparando
+        {{ chrome.ok_items }}
       </h3>
       <div class="order-lines">
         {% for item in items %}
@@ -39,7 +35,7 @@
             <div class="pic" {% if item.image_url %}style="background-image:url('{{ item.image_url }}')"{% endif %}></div>
             <div>
               <div class="title">{{ item.product_title }}</div>
-              <div class="qty">{{ item.variant_title|default:"Unico" }} · {{ item.quantity }} × € {{ item.unit_price|floatformat:"0g" }}</div>
+              <div class="qty">{{ item.variant_title|default:chrome.pc_unique }} · {{ item.quantity }} × € {{ item.unit_price|floatformat:"0g" }}</div>
             </div>
             <div class="total">€ {{ item.line_total|floatformat:"0g" }}</div>
           </div>
@@ -47,17 +43,31 @@
       </div>
 
       <div style="margin-top:28px; padding:18px 22px; background:var(--paper-2); border:1px dashed var(--rule-dash);">
-        <div style="font-family:var(--cx-heading); font-size:18px; font-style:italic; color:var(--ink);">Stato pagamento: {{ order.get_payment_status_display }}</div>
+        <div style="font-family:var(--cx-heading); font-size:18px; font-style:italic; color:var(--ink);">
+          {{ chrome.ok_payment }} · {{ order.get_payment_status_display }}
+        </div>
         {% if latest_intent %}
-          {% if latest_intent.status == 'awaiting_transfer' %}
+          {% if latest_intent.status == 'succeeded' %}
+          <div style="margin-top:10px; font-family:var(--cx-body); font-size:13px; color:var(--ink-mute);">{{ chrome.ok_next_paid }}</div>
+          {% elif latest_intent.status == 'awaiting_transfer' %}
           <div style="margin-top:10px; font-family:var(--cx-body); font-size:13px; color:var(--ink-mute); line-height:1.7;">
-            {{ latest_intent.payload.instructions }}<br>
-            Causale: <strong>{{ order.reference }}</strong>
+            {{ chrome.ok_next_bank }}
+            <div style="margin-top:12px; font-family:var(--cx-mono); font-size:12px; white-space:pre-line; color:var(--ink);">{{ storefront_bank_instructions }}</div>
           </div>
-          {% elif latest_intent.status == 'succeeded' %}
-          <div style="margin-top:10px; font-family:var(--cx-body); font-size:13px; color:var(--ink-mute);">
-            Pagamento confermato in {{ latest_intent.provider|cut:"stub"|default:"sede" }}. Procederemo con la preparazione.
+          {% elif latest_intent.status == 'failed' %}
+          <div style="margin-top:10px; font-family:var(--cx-body); font-size:13px; color:#b06300;">{{ chrome.ok_next_failed }}</div>
+          <form method="post" action="{% url 'commerce:retry_payment' storefront.slug order.uuid %}" style="margin-top:12px;">
+            {% csrf_token %}
+            {% if locale and locale != 'it' %}<input type="hidden" name="lang" value="{{ locale }}">{% endif %}
+            <button type="submit" class="cx-btn">{{ chrome.ok_retry_payment }}</button>
+          </form>
+          {% else %}
+          <div style="margin-top:10px; font-family:var(--cx-body); font-size:13px; color:var(--ink-mute);">{{ chrome.ok_next_pending }}</div>
+          {% if latest_intent.provider == 'stripe' %}
+          <div style="margin-top:12px;">
+            <a href="{% url 'commerce:payment_page' storefront.slug order.uuid %}{{ lang_qs }}" class="cx-btn">{{ chrome.co_pay_now }}</a>
           </div>
+          {% endif %}
           {% endif %}
         {% endif %}
       </div>
@@ -65,14 +75,14 @@
 
     <aside>
       <div class="cx-summary" style="padding:24px 22px;">
-        <h3>Totale</h3>
-        <div class="row"><span>Subtotale</span><span>€ {{ order.subtotal|floatformat:"0g" }}</span></div>
-        <div class="row"><span>Spedizione ({{ order.shipping_method.title }})</span><span>€ {{ order.shipping_total|floatformat:"0g" }}</span></div>
-        <div class="row total"><span>Totale</span><span>€ {{ order.grand_total|floatformat:"0g" }}</span></div>
+        <h3>{{ chrome.ok_totals }}</h3>
+        <div class="row"><span>{{ chrome.cart_subtotal }}</span><span>€ {{ order.subtotal|floatformat:"0g" }}</span></div>
+        <div class="row"><span>{{ chrome.cart_shipping }} ({{ shipping_method_l10n.title|default:order.shipping_method.title }})</span><span>€ {{ order.shipping_total|floatformat:"0g" }}</span></div>
+        <div class="row total"><span>{{ chrome.cart_total_due }}</span><span>€ {{ order.grand_total|floatformat:"0g" }}</span></div>
       </div>
 
       <div style="margin-top:22px; padding:22px 22px; background:var(--paper-2); border:1.5px solid var(--ink);">
-        <h3 style="font-family:var(--cx-heading); font-size:18px; color:var(--ink); margin-bottom:10px;">Spedizione a</h3>
+        <h3 style="font-family:var(--cx-heading); font-size:18px; color:var(--ink); margin-bottom:10px;">{{ chrome.ok_shipping }}</h3>
         <div style="font-family:var(--cx-body); font-size:14px; color:var(--ink-mute); line-height:1.7;">
           {{ order.shipping_address.full_name }}<br>
           {{ order.shipping_address.line1 }}{% if order.shipping_address.line2 %} · {{ order.shipping_address.line2 }}{% endif %}<br>
@@ -84,37 +94,25 @@
 
       {% if order.customer_note %}
       <div style="margin-top:18px; padding:18px 22px; background:var(--paper-3); border:1px dashed var(--rule-dash); font-family:var(--cx-body); font-size:13px; font-style:italic; color:var(--ink-mute);">
-        <strong style="font-family:var(--cx-heading); font-style:normal; color:var(--ink);">Note per la bottega:</strong> {{ order.customer_note }}
+        <strong style="font-family:var(--cx-heading); font-style:normal; color:var(--ink);">{{ chrome.co_notes_heading }}:</strong> {{ order.customer_note }}
       </div>
       {% endif %}
     </aside>
   </div>
 
   <section class="cx-timeline">
-    <h4>Cosa succede adesso, passo per passo</h4>
+    <h4>{{ chrome.ok_next_steps }}</h4>
     <ol>
-      <li>
-        <strong>Email di conferma in arrivo</strong>
-        <p>Nei prossimi minuti ricevi un'email con il riferimento {{ order.reference }} e le istruzioni di pagamento.</p>
-      </li>
-      <li>
-        <strong>Preparazione in bottega</strong>
-        <p>Il tuo pezzo entra nella pianificazione della settimana. Le edizioni numerate richiedono qualche giorno in più.</p>
-      </li>
-      <li>
-        <strong>Spedizione tracciata</strong>
-        <p>Appena il pezzo è pronto, partiamo con corriere espresso e ti scriviamo via email e WhatsApp con il tracking.</p>
-      </li>
-      <li>
-        <strong>Consegna e garanzia</strong>
-        <p>Riponi la custodia in cuoio e l'elenco delle cure — hai due anni di garanzia riparazione direttamente in bottega.</p>
-      </li>
+      <li><strong>{{ chrome.ok_next_steps }}</strong><p>{{ chrome.ok_next_paid }}</p></li>
+      <li><strong>{{ chrome.cart_trust_ship_title }}</strong><p>{{ chrome.cart_trust_ship_body }}</p></li>
+      <li><strong>{{ chrome.cart_trust_return_title }}</strong><p>{{ chrome.cart_trust_return_body }}</p></li>
+      <li><strong>{{ chrome.ok_support }}</strong><p>{{ chrome.ok_support_body }}</p></li>
     </ol>
   </section>
 
   <div class="cx-cta-cluster" style="margin-top:32px;">
-    <a href="{% url 'commerce:shop' storefront.slug %}" class="cx-btn-secondary">Torna al catalogo</a>
-    <a href="mailto:{{ storefront.contact_email }}?subject=Ordine {{ order.reference }}" class="cx-btn-ghost">Scrivici in bottega ▸</a>
+    <a href="{% url 'commerce:shop' storefront.slug %}{{ lang_qs }}" class="cx-btn-secondary">{{ chrome.ok_back_shop }}</a>
+    <a href="mailto:{{ storefront.contact_email }}?subject={{ chrome.ok_reference }} {{ order.reference }}" class="cx-btn-ghost">{{ chrome.ok_support }} ▸</a>
   </div>
 </main>
 {% endblock %}
