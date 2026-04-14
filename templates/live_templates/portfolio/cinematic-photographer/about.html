@@ -143,6 +143,21 @@
     .cp-cta-bio { padding: 64px 32px; }
     .cp-cta-bio .wrap { grid-template-columns: 1fr; gap: 28px; }
   }
+  @media (max-width: 720px) {
+    .cp-statement { padding: 24px 20px 48px; }
+    .cp-statement h2 { font-size: 22px; }
+    .cp-statement p { font-size: 15px; line-height: 1.75; }
+    .cp-statement p:first-of-type { font-size: 18px; padding-left: 16px; }
+    .cp-kit { padding: 48px 20px; }
+    .cp-kit .card { padding: 22px; }
+    .cp-kit .card h3 { font-size: 18px; }
+    .cp-kit .card .meta { grid-template-columns: 1fr; gap: 10px; }
+    .cp-timeline { padding: 48px 20px; }
+    .cp-timeline .row { grid-template-columns: 64px 1fr; padding: 18px 0; }
+    .cp-timeline .row .event { font-size: 14px; }
+    .cp-cta-bio { padding: 48px 20px; }
+    .cp-cta-bio h2 { font-size: 26px; }
+  }
 {% endblock %}
 
 {% block content %}
@@ -176,7 +191,7 @@
           <p class="blurb">{{ blurb }}</p>
           <div class="meta">
             <span>{{ meta_label }}<strong>{{ meta_value }}</strong></span>
-            <span>Disponibile<strong>Per commissione</strong></span>
+            <span>{{ page_data.kit_availability_label }}<strong>{{ page_data.kit_availability_value }}</strong></span>
           </div>
         </article>
       {% endfor %}

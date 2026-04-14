@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endif %}
 <link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
@@ -85,10 +88,27 @@
     letter-spacing: 0.06em;
     font-feature-settings: "tnum" 1;
   }
-  /* Tabular figures on EXIF strip + filmstrip year cells */
-  .cp-strip .cell .v,
-  .cp-films .frame .yr,
-  .cp-cover-strip .cell .v {
+  /* Tabular figures — every numeric cell reads in lockstep.
+     EXIF/credit cells, year markers, filmstrip counters, timeline ledgers. */
+  .cp-exif-bar .cell,
+  .cp-exif-strip .cell,
+  .cp-foot .top-cells .cell,
+  .cp-strip .frame .year-corner,
+  .cp-strip .frame .meta .num,
+  .cp-series-gallery .serie .year-corner,
+  .cp-publications .item .yr,
+  .cp-press .card .yr,
+  .cp-exhib .row .yr,
+  .cp-exhib .row .date,
+  .cp-awards .item .yr,
+  .cp-timeline .row .yr,
+  .cp-meta-strip .item,
+  .cp-series-exif .cell,
+  .cp-hero .series-chip .num,
+  .cp-hero-card .row .yr,
+  .cp-cover .breadcrumb,
+  .cp-cover .meta .eyebrow,
+  .cp-lead .eyebrow {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1, "lnum" 1;
   }
@@ -294,6 +314,97 @@
     .cp-btn-primary, .cp-btn-ghost { transition: none; }
   }
 
+  /* A11Y — focus-visible rings on CTAs + nav + language pills + serie cards */
+  .cp-btn-primary:focus-visible,
+  .cp-btn-ghost:focus-visible,
+  .cp-nav .cta .bracket:focus-visible,
+  .cp-nav .links a:focus-visible,
+  .mp-lang a.mp-lang-pill:focus-visible,
+  .cp-strip a.frame:focus-visible,
+  .cp-series-gallery a.serie:focus-visible,
+  .cp-about-excerpt .more:focus-visible,
+  .cp-next-series:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  /* ============================================================
+     ARABIC / RTL — Naskh body + Kufi display, arrow + border flips.
+     Latin wordmarks (brand name, camera IDs, URLs) stay LTR via
+     unicode-bidi: isolate so the script mix reads correctly.
+  ============================================================ */
+  html[dir="rtl"] {
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', 'Helvetica Neue', sans-serif;
+    --body:    'Noto Naskh Arabic', '{{ theme.body_font }}', system-ui, sans-serif;
+    --mono:    'Noto Naskh Arabic', 'JetBrains Mono', ui-monospace, monospace;
+  }
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.85; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 {
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  html[dir="rtl"] em { font-style: normal; font-weight: 600; color: var(--film-2); }
+  /* Eyebrow/label rule flips to the right side */
+  html[dir="rtl"] .cp-lead .eyebrow:before,
+  html[dir="rtl"] .cp-hero .manifesto .eyebrow:before,
+  html[dir="rtl"] .cp-cover .meta .eyebrow:before {
+    margin-left: 0; margin-right: 0;
+  }
+  /* Primary bracket CTA keeps [ ] punctuation — reads the same in RTL */
+  /* Ghost/arrow chars in labels get visually flipped where they carry direction */
+  html[dir="rtl"] .cp-about-excerpt .more,
+  html[dir="rtl"] .cp-series-gallery .serie .meta .row .arrow,
+  html[dir="rtl"] .cp-next-series .arrow,
+  html[dir="rtl"] .cp-next-series .title {
+    direction: rtl;
+  }
+  html[dir="rtl"] .cp-next-series .arrow { transform: scaleX(-1); display: inline-block; }
+  /* Directional arrow glyphs (← / →) flip across RTL so they still read as
+     back/forward in their visual context. Latin `.cp-dir-arrow` only. */
+  html[dir="rtl"] .cp-dir-arrow { display: inline-block; transform: scaleX(-1); }
+  /* Nav gap flips: LTR margin-left becomes margin-right in RTL.
+     Use logical properties rather than re-writing margins per-direction. */
+  html[dir="rtl"] .cp-nav .links { margin-left: 0; margin-right: 48px; }
+  html[dir="rtl"] .cp-nav .cta { margin-left: 0; margin-right: auto; }
+  /* Border-left accent on statement quote → border-right in RTL */
+  html[dir="rtl"] .cp-statement p:first-of-type {
+    border-left: 0; border-right: 2px solid var(--accent);
+    padding-left: 0; padding-right: 24px;
+  }
+  /* Consent box left accent flips */
+  html[dir="rtl"] .cp-form .cp-consent-box {
+    border-left: 0; border-right: 3px solid var(--accent);
+  }
+  /* Dashed channel divider — keeps its role, but ch-meta grid alignment flips */
+  html[dir="rtl"] .cp-side .channel .ch-meta { text-align: right; }
+  /* Grid-column flips for LTR-right-aligned cells */
+  html[dir="rtl"] .cp-press .card:nth-child(2n) {
+    border-right: 1px solid var(--film-5); border-left: 0;
+  }
+  html[dir="rtl"] .cp-press .card:nth-child(2n+1) { border-right: 0; }
+  html[dir="rtl"] .cp-publications .item:last-child { border-right: 0; }
+  html[dir="rtl"] .cp-gallery .frame:nth-child(1) { grid-column: 3; }
+  /* Latin wordmarks + mono meta values stay LTR even under dir=rtl */
+  html[dir="rtl"] .cp-nav .wm,
+  html[dir="rtl"] .cp-foot .brand .word,
+  html[dir="rtl"] .cp-foot .body-grid .col p,
+  html[dir="rtl"] .cp-exif-bar .cell .val,
+  html[dir="rtl"] .cp-exif-strip .cell .val,
+  html[dir="rtl"] .cp-meta-strip .item strong,
+  html[dir="rtl"] .cp-series-exif .cell strong,
+  html[dir="rtl"] .cp-side .studio-card .row span,
+  html[dir="rtl"] .cp-side .channel .ch-val {
+    direction: ltr; unicode-bidi: isolate; text-align: left;
+  }
+  html[dir="rtl"] .cp-side .studio-card .row { grid-template-columns: 1fr 100px; }
+  html[dir="rtl"] .cp-side .studio-card .row strong { text-align: right; }
+  /* Breadcrumb arrow keeps its typographic [ ← ] symbol but flips in RTL */
+  html[dir="rtl"] .cp-cover .breadcrumb a { direction: rtl; }
+  /* Timeline ledger year column stays first visually in both directions —
+     Arabic readers expect time descending from right, so the grid naturally
+     places the year on the right under dir=rtl without extra rules */
+
   /* RESPONSIVE */
   @media (max-width: 1100px) {
     .cp-nav { padding: 0 32px; }
@@ -372,7 +483,7 @@
   </div>
   <div class="cta">
     <span class="pulse"><span class="dot"></span>{% if page_data.status_pulse %}{{ page_data.status_pulse }}{% else %}{{ site.tag }}{% endif %}</span>
-    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="bracket">Apri conversazione</a>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="bracket">{{ site.nav_cta }}</a>
   </div>
 </nav>
 

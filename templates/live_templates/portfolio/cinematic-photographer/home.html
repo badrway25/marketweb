@@ -271,10 +271,24 @@
     .cp-cta h2 { font-size: 36px; }
   }
   @media (max-width: 720px) {
+    .cp-hero .manifesto { left: 20px; right: 20px; bottom: 40px; }
+    .cp-hero .series-chip { left: 20px; top: 20px; padding: 8px 12px; font-size: 8px; }
+    .cp-hero .series-chip .num { font-size: 12px; }
     .cp-hero .manifesto h1 { font-size: 36px; }
+    .cp-hero .manifesto .sub { font-size: 14px; }
+    .cp-hero .manifesto .actions { margin-top: 22px; gap: 16px; flex-wrap: wrap; }
+    .cp-strip { padding: 40px 20px; }
     .cp-strip .row { grid-template-columns: 1fr; }
     .cp-strip a.frame { height: 240px; }
+    .cp-strip .heading h4 { font-size: 22px; }
+    .cp-about-excerpt { padding: 48px 20px; }
     .cp-about-excerpt h3 { font-size: 28px; }
+    .cp-publications { padding: 48px 20px; }
+    .cp-publications .row { grid-template-columns: 1fr; }
+    .cp-publications .item { padding: 24px 0; border-right: 0; }
+    .cp-cta { padding: 56px 20px; }
+    .cp-cta h2 { font-size: 28px; }
+    .cp-cta .actions { flex-direction: column; align-items: flex-start; gap: 16px; }
   }
 {% endblock %}
 
@@ -345,7 +359,7 @@
     </div>
     <div data-lm="reveal">
       <p>{{ page_data.about_excerpt }}</p>
-      <a class="more" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.about_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.about_cta }} →</a>
+      <a class="more" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.about_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.about_cta }} <span class="cp-dir-arrow">→</span></a>
     </div>
   </div>
 </section>

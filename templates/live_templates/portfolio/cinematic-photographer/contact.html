@@ -10,6 +10,17 @@
     .cp-form h2 { font-size: 22px; }
     .cp-form form { grid-template-columns: 1fr; gap: 18px; }
   }
+  @media (max-width: 720px) {
+    .cp-contact-wrap { padding: 24px 20px 64px; gap: 40px; }
+    .cp-form h2 { font-size: 20px; }
+    .cp-form .intro { font-size: 13px; }
+    .cp-side .studio-card { padding: 18px; }
+    .cp-side .studio-card .row { grid-template-columns: 84px 1fr; gap: 10px; padding: 6px 0; }
+    .cp-side .studio-card .row span { font-size: 12px; }
+    .cp-side .channel { grid-template-columns: 1fr; gap: 4px; padding: 12px 0; }
+    .cp-side .channel .ch-val { font-size: 11px; }
+    .cp-side .channel .ch-meta { font-size: 10px; }
+  }
 
   /* FORM */
   .cp-form .form-label {
@@ -184,10 +195,10 @@
       <div class="lbl">{{ page_data.studio_label }}</div>
       <h3>{{ site.logo_word }}</h3>
       <div class="studio-card">
-        <div class="row"><strong>Indirizzo</strong><span>{{ page_data.studio_address }}</span></div>
-        <div class="row"><strong>Ingresso</strong><span>{{ page_data.studio_area }}</span></div>
-        <div class="row"><strong>Metro</strong><span>{{ page_data.studio_metro }}</span></div>
-        <div class="row"><strong>Disponibile</strong><span>{{ page_data.studio_hours }}</span></div>
+        <div class="row"><strong>{{ page_data.studio_row_address_label }}</strong><span>{{ page_data.studio_address }}</span></div>
+        <div class="row"><strong>{{ page_data.studio_row_entrance_label }}</strong><span>{{ page_data.studio_area }}</span></div>
+        <div class="row"><strong>{{ page_data.studio_row_metro_label }}</strong><span>{{ page_data.studio_metro }}</span></div>
+        <div class="row"><strong>{{ page_data.studio_row_hours_label }}</strong><span>{{ page_data.studio_hours }}</span></div>
       </div>
     </div>
 
