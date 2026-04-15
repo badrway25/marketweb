@@ -1,5 +1,52 @@
 # Decisions Log
 
+## D-081: Medical Second Wave Polish — Dynamic Counter Policy, Listbox-Radius Decoupling, Chrome Key Shape (2026-04-15, Session 52)
+
+**Decision:** Session 51 shipped three medical archetypes (Salute · Benessere · Famiglia) as `published_live`, but three interaction-quality defects slipped through the Playwright walk: (1) Benessere's nav CTA rendered as **empty text** across all 5 locales because wellness `_base.html` bound to an undefined `chrome.nav_cta` key; (2) Benessere's form dropdown open state inherited the pill field-radius (`999px`), producing a barrel-shaped listbox panel; (3) Salute's hero + band stat spans (`40+ · 12 · 98%` + `1998 · 28.000 · 6 · € 0`) rendered as static text — zero animation — even though the section is a clear stats/facts band that the DNA register admits. This decision closes all three with minimal-surface fixes and binds a **Dynamic Counter Policy** that future rollouts must honor.
+
+### Concrete shape
+
+1. **Live-forms decoupled listbox-radius token (`--lf-listbox-radius`):** `static/css/live-forms.css` now resolves `.lf-select-listbox { border-radius: var(--lf-listbox-radius, 12px); }` instead of `var(--lf-radius, 0)`. Default 12px. Skins with pill inputs (`--lf-radius: 999px`) MUST override `--lf-listbox-radius` explicitly (wellness sets `14px`) to prevent a 999px panel projection. Existing skins that want the listbox to match field radius still can (set `--lf-listbox-radius: var(--lf-radius)`). `.lf-select-listbox` also gets `overflow: hidden auto` so child hover rows can't bleed outside the rounded corner.
+
+2. **Wellness nav CTA authoring — chrome is archetype-agnostic, site is template-specific:** the wellness `_base.html` CTA now reads `{{ site.nav_cta }}` (not `{{ chrome.nav_cta }}`). Rationale: the reservation-CTA copy differs per template voice ("Prenota un rituale" for wellness, "Prenota una visita" for clinic phone-CTA, family uses `site.nav_cta_wa` for WhatsApp). The chrome dict carries archetype-shared labels (marketplace bar, footer headings, form primitives); per-template conversion copy belongs in `site`. All 5 Benessere locale files now carry `site.nav_cta` ("Prenota un rituale" · "Book a ritual" · "Réserver un rituel" · "Reservar un ritual" · "احجز طقسك").
+
+3. **Dynamic Counter Policy (this decision):** "When a published_live template renders a premium stats/facts/metrics/volumes/years/visits/indicators band, the numeric value MUST animate from 0 via `data-lm="counter"` — unless the DNA tone disqualifies it (funereal editorial, brutalist manifesto, or the value is a semantically-inanimate label like a literal zero). Reduced-motion MUST be respected (live-motion.js already short-circuits via `prefers-reduced-motion: reduce`)." The `live-motion.js` counter runtime handles the numeric extraction — it preserves any non-digit prefix/suffix (`40+` · `98%` · `€ 0` · `1.4B`) and automatically detects Italian (`28.000`) or English (`28,000`) thousand separators, restoring the correct separator during mid-animation frames.
+
+4. **Optional per-stat opt-out via a 3rd tuple element:** `page_data.stats` entries accept an optional third boolean — truthy means "skip animation, render static". Default = animate. This is the authoring escape hatch when a value is a label (funding year that reads as a name rather than a quantity, a literal zero where animation is visually a no-op anyway, etc.). No existing stats were opted out in this session; the hook is available for future templates that need it.
+
+5. **Live-motion.js thousand-separator extension:** the counter duration-and-formatting logic previously supported only Italian dot-style thousand separators (`28.000` → 28000). It now ALSO supports English-style comma thousand separators (`28,000` → 28000), detected via `/^\d{1,3}(,\d{3})+$/`, and restores the correct separator character in mid-animation frames. This ensures EN/FR/ES locales can render native-formatted thousand-separators in stats bands without breaking the animation.
+
+6. **Django-comment gotcha re-iterated:** the initial Salute patch used `{# ... #}` to annotate the opt-out semantics inside a loop; Django's tokenizer leaked the entire comment block to render output (same gotcha as Session 48, D-078 key-insight #1). Session 52 re-encountered it, re-fixed it (switched to `{% comment %}…{% endcomment %}`), and binds the rule retroactively: **multi-line Django comments inside skin HTML MUST use `{% comment %}` blocks**, never `{# ... #}` on multiple lines.
+
+### Files modified
+
+- `static/css/live-forms.css` — `.lf-select-listbox` `border-radius` decoupled from field radius (new token `--lf-listbox-radius`, default 12px); `overflow: hidden auto` added. Token docs updated.
+- `static/js/live-motion.js` — counter heuristic extended to support both Italian dot-style (`28.000`) and English comma-style (`28,000`) thousand separators; `formatValue` preserves the detected separator in mid-animation frames.
+- `templates/live_templates/medical/wellness/_base.html` — nav CTA now reads `{{ site.nav_cta }}`; `--lf-listbox-radius: 14px` explicitly set to prevent 999px field-radius projection.
+- `templates/live_templates/medical/clinic/home.html` — hero `.cl-h-stats .n` and band `.cl-stats .n` spans emit `data-lm="counter"` (animation opt-out via 3rd tuple element supported). Multi-line comment converted to `{% comment %}…{% endcomment %}`.
+- `apps/catalog/template_content_benessere.py` + `_en.py` + `_fr.py` + `_es.py` + `_ar.py` — each `site` dict gains `nav_cta` with locale-native voice ("Prenota un rituale" · "Book a ritual" · "Réserver un rituel" · "Reservar un ritual" · **"احجز تجربتك"**). The AR string was refined mid-review from the first-pass `احجز طقسك` (grammatically correct, but `طقس` has a dual meaning "rite/weather" in everyday MSA that reads stilted at a nav-CTA surface) to `احجز تجربتك` ("book your experience") — standard premium-wellness register in AR markets (Aman Resorts · Six Senses · Talise Spa · Vogue Arabia). Body copy retains `طقس` for Session 51 lexical continuity; nav-CTA gets the more editorial voice.
+
+### Validation
+
+- `python manage.py check` → 0 issues.
+- Browser walk at 1440×900 + 1440×600 + AR (rtl): Benessere nav CTA renders in all 5 locales (IT/EN/FR/ES/AR); listbox panel opens at 14px radius; Salute hero stats animate 0 → `40+` / `12` / `98%` on viewport enter; band stats animate 0 → `1998` / `28.000` / `6` / `€ 0` (with IT dot-sep) and 0 → `1998` / `28,000` / `6` / `€ 0` (with EN comma-sep) on viewport enter; Famiglia phone + WhatsApp CTAs click-through to `tel:` + `https://wa.me/…`.
+- Mid-animation samples at 200 / 600 / 1000 / 1800 ms confirm easeOutCubic-shaped climb (298 → 1419 → 1892 → 1998) preserving thousand-separator character.
+
+### Trade-offs deliberati
+
+- **No per-locale chrome key added.** I deliberately did NOT extend `CHROME_I18N` with a `nav_cta` key, even though it would have worked. Nav-CTA copy is template-specific (reservation vs phone vs chat), so adding it to the archetype-shared chrome dict would have pulled inappropriate wording into templates that don't use a text CTA. The `site.nav_cta` approach keeps the authoring surface honest.
+- **No per-stat content rewrite on Salute.** Session 51 authored 4 band stats including a founding-year ("1998"). Clinical institutional tone is debatable for year-counter animation, but the user's policy text explicitly listed "anni" as a counter target. Decision: animate. The 3-tuple opt-out is available for future iterations if the tone pivots.
+- **Comma-thousand-sep in live-motion.js is a heuristic, not a locale lookup.** The JS runtime has no access to the Django `locale`; it infers from the DOM text. A value like `1,4` (French decimal) would be interpreted as decimal (comma → dot), not thousand-sep, because the regex requires `\d{1,3}(,\d{3})+` (multi-group required). Edge case: `1,234` — single group — is correctly detected as thousand-sep by the updated regex `/^\d{1,3}(,\d{3})+$/` (one or more groups). `1,4` fails the regex (2-digit trailing group) and falls through to the decimal branch. Safe.
+
+### Consequence
+
+- Medical category holds at 5/5 published_live; catalog unchanged at 16/20. This is a polish-only session.
+- Three interaction defects closed without tier churn, without DNA rewrites, without locale regressions.
+- **Dynamic Counter Policy binds retroactively and prospectively:** any future rollout (Lex · Juris · Casa · Villa) that ships a stats/facts band MUST wire `data-lm="counter"` on the numeric spans. The premium-UI reviewer adds this to the D-054 10-gate (counter-motion-when-coherent is now gate #11 for templates with numeric bands).
+- The `live-forms` listbox radius is now premium by default even when skins use 999px pill fields.
+
+---
+
 ## D-079: Agency Category Closure — Vertex + Aura Live Premium with 5 Locales + Real RTL Day One (2026-04-15, Session 49)
 
 **Decision:** `vertex-creative-agency` (`agency-creative-studio` archetype) and `aura-digital-studio` (`agency-digital-studio` archetype) flip from `tier=draft` to `tier=published_live` premium with two fully distinct multipage live skin folders (8 file kinds each), 5 locales (it/en/fr/es/ar) with real RTL for Arabic, and sharp D-054 differentiation enforced across every axis (page color, typography, hero silhouette, navbar, work presentation, services framing, process section, inquiry flow, CTA style, premium cues, imagery pool, voice register). Agency category is now 2/2 published_live; catalog floor moves from 11/20 to **13/20 published_live across 6 categories** (medical · restaurant · business · portfolio · ecommerce · **agency**). Phase 2g3.6f closed.

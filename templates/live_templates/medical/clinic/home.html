@@ -452,10 +452,11 @@
       <p class="cl-h-sub">{{ page_data.subhead }}</p>
 
       <div class="cl-h-stats" data-lm-stagger data-lm-stagger-delay="70">
-        {% for n, l in page_data.stats %}
+        {% for entry in page_data.stats %}
           <div class="cl-s">
-            <span class="n">{{ n }}</span>
-            <span class="l">{{ l }}</span>
+            {% if entry.2 %}<span class="n">{{ entry.0 }}</span>
+            {% else %}<span class="n" data-lm="counter">{{ entry.0 }}</span>{% endif %}
+            <span class="l">{{ entry.1 }}</span>
           </div>
         {% endfor %}
       </div>
@@ -541,10 +542,12 @@
   <!-- ============== STATS STRIP =============== -->
   <section class="cl-stats" data-lm="reveal">
     <div class="cl-stats-inner" data-lm-stagger data-lm-stagger-delay="80">
-      {% for n, l in page_data.stats_strip %}
+      {% for entry in page_data.stats_strip %}
         <div class="cl-stat">
-          <span class="n">{{ n }}</span>
-          <span class="l">{{ l }}</span>
+          {% comment %}3rd tuple element = optional "skip animation" flag (truthy = static, absent = animate via live-motion.js counter, respects reduced-motion).{% endcomment %}
+          {% if entry.2 %}<span class="n">{{ entry.0 }}</span>
+          {% else %}<span class="n" data-lm="counter">{{ entry.0 }}</span>{% endif %}
+          <span class="l">{{ entry.1 }}</span>
         </div>
       {% endfor %}
     </div>

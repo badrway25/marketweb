@@ -57,6 +57,9 @@
     --lf-listbox-fg:    var(--ink);
     --lf-listbox-rule:  var(--rule);
     --lf-listbox-hov:   rgba(167,196,188,0.30);
+    /* Decoupled from the 999px field-radius — pill fields open into a
+       gently-rounded panel, not another 999px pill. */
+    --lf-listbox-radius: 14px;
     --lf-submit-bg:     var(--primary);
     --lf-submit-bg-hover: #1a3128;
     --lf-submit-fg:     var(--paper);
@@ -570,7 +573,7 @@
         {% endif %}
       {% endfor %}
     </div>
-    <a class="cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.nav_cta }}</a>
+    <a class="cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ site.nav_cta }}</a>
   </nav>
 </div>
 
