@@ -67,6 +67,23 @@ def _localize_shipping_methods(methods, locale):
     ]
 
 
+def _translate_error(exc: services.CommerceError, chrome: dict) -> str:
+    """Map a service-layer CommerceError to its localized chrome message.
+
+    The error carries `code` + `params`. We look up `msg_<code>` in chrome
+    (falls back to IT via get_chrome's backfill) and format with params.
+    If the key is missing we fall back to the exception's IT string so
+    nothing renders raw Python repr text.
+    """
+    template = chrome.get(f"msg_{exc.code}") if exc.code else None
+    if not template:
+        return str(exc)
+    try:
+        return template.format(**(exc.params or {}))
+    except Exception:
+        return str(exc)
+
+
 def _localize_collections(storefront, locale):
     out = []
     for c in storefront.collections.all():
@@ -246,7 +263,7 @@ class AddToCartView(View):
         # Guard: no variant selected (first was out-of-stock, or picker broke
         # client-side). Don't 404 — return to the product with a clear message.
         if not variant_id.strip().isdigit():
-            messages.error(request, chrome.get("pdp_variants", "Scegli una variante."))
+            messages.error(request, chrome.get("msg_pick_variant", "Scegli una variante."))
             referer = request.POST.get("referer") or request.META.get("HTTP_REFERER") or \
                 reverse("commerce:shop", args=[storefront_slug])
             return redirect(referer)
@@ -254,15 +271,17 @@ class AddToCartView(View):
             pk=variant_id, product__storefront=storefront, is_active=True,
         ).first()
         if variant is None:
-            messages.error(request, chrome.get("pdp_stock_out", "Variante non disponibile."))
+            messages.error(request, chrome.get("msg_variant_unavailable",
+                                               "Variante non disponibile."))
             return redirect(reverse("commerce:shop", args=[storefront_slug]) + lang_qs)
         try:
             services.add_to_cart(cart=cart, variant=variant, quantity=quantity)
             locale = commerce_i18n.resolve_locale(request)
             title = variant.product.localized(locale).get("title") or variant.product.title
-            messages.success(request, f"{title} · {chrome['pdp_add_to_cart'].lower()} ✓")
+            tmpl = chrome.get("msg_added_to_cart", "{title} aggiunto al carrello.")
+            messages.success(request, tmpl.format(title=title))
         except services.CommerceError as exc:
-            messages.error(request, str(exc))
+            messages.error(request, _translate_error(exc, chrome))
         return redirect(reverse("commerce:cart", args=[storefront_slug]) + lang_qs)
 
 
@@ -271,11 +290,13 @@ class UpdateCartItemView(View):
         storefront = _resolve_storefront(storefront_slug)
         cart = _cart_context(request, storefront)
         quantity = int(request.POST.get("quantity", "1") or 1)
+        locale = commerce_i18n.resolve_locale(request)
+        chrome = commerce_i18n.get_chrome(locale)
         try:
             services.update_cart_item(cart=cart, item_id=item_id, quantity=quantity)
         except services.CommerceError as exc:
-            messages.error(request, str(exc))
-        qs = commerce_i18n.preserve_lang_qs(commerce_i18n.resolve_locale(request))
+            messages.error(request, _translate_error(exc, chrome))
+        qs = commerce_i18n.preserve_lang_qs(locale)
         return redirect(reverse("commerce:cart", args=[storefront_slug]) + qs)
 
 
@@ -307,7 +328,7 @@ class CheckoutView(LocaleMixin, View):
         storefront = _resolve_storefront(storefront_slug)
         cart = _cart_context(request, storefront)
         if cart.items.count() == 0:
-            messages.info(request, commerce_i18n.get_chrome(self.locale)["cart_empty_title"])
+            messages.info(request, commerce_i18n.get_chrome(self.locale)["msg_empty_cart"])
             return redirect(
                 reverse("commerce:shop", args=[storefront_slug])
                 + commerce_i18n.preserve_lang_qs(self.locale)
@@ -358,7 +379,7 @@ class CheckoutView(LocaleMixin, View):
                 cart=cart, payload=payload, user=request.user,
             )
         except services.CommerceError as exc:
-            messages.error(request, str(exc))
+            messages.error(request, _translate_error(exc, commerce_i18n.get_chrome(self.locale)))
             return render(
                 request,
                 _skin_template(storefront, "checkout"),
@@ -469,7 +490,7 @@ class RetryPaymentView(LocaleMixin, View):
         try:
             intent = services.retry_payment(order=order)
         except services.CommerceError as exc:
-            messages.error(request, str(exc))
+            messages.error(request, _translate_error(exc, commerce_i18n.get_chrome(self.locale)))
             return redirect(
                 reverse("commerce:order_confirmation", args=[storefront_slug, order_uuid])
                 + commerce_i18n.preserve_lang_qs(self.locale)

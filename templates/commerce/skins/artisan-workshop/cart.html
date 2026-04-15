@@ -20,6 +20,7 @@
       {% for line in cart_lines %}
         <form method="post" action="{% url 'commerce:cart_update' storefront.slug line.item.id %}" class="row" data-cart-row>
           {% csrf_token %}
+          {% if locale and locale != 'it' %}<input type="hidden" name="lang" value="{{ locale }}">{% endif %}
           <div class="pic" {% if line.product.hero_image_url %}style="background-image:url('{{ line.product.hero_image_url }}')"{% endif %}></div>
           <div>
             <a href="{% url 'commerce:product_detail' storefront.slug line.product.slug %}{{ lang_qs }}" class="title">{{ line.l10n.title }}</a>
@@ -39,7 +40,7 @@
           </div>
         </form>
         <form id="rm-{{ line.item.id }}" method="post" action="{% url 'commerce:cart_remove' storefront.slug line.item.id %}" style="display:none;">
-          {% csrf_token %}
+          {% csrf_token %}{% if locale and locale != 'it' %}<input type="hidden" name="lang" value="{{ locale }}">{% endif %}
         </form>
       {% endfor %}
     </div>
