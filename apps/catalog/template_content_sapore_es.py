@@ -132,7 +132,7 @@ SAPORE_CONTENT_ES: dict[str, Any] = {
                     "estirando la pasta cada mañana desde las siete. Su lema es "
                     "sencillo: «la pasta buena se nota bajo las manos, la balanza "
                     "no hace falta».",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -142,7 +142,7 @@ SAPORE_CONTENT_ES: dict[str, Any] = {
                     "horno cada tarde a las cuatro —roble del Cimino, nunca otra "
                     "cosa— y lo mantiene vivo hasta medianoche. Su Margherita "
                     "Verace la aprendió con Peppe Guida en Vico Equense, en 2008.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -153,7 +153,7 @@ SAPORE_CONTENT_ES: dict[str, Any] = {
                     "guindas cuando la temporada acompaña, maritozzi con nata "
                     "solo el sábado por la mañana. Te recibe con una sonrisa y "
                     "una jarra de agua con gas.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 
@@ -387,7 +387,7 @@ SAPORE_CONTENT_ES: dict[str, Any] = {
                     "mañana de siete a diez, luego pasa a escribir la pizarra "
                     "del día. La carbonara la hace solo ella: es un ritual "
                     "celoso.",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -398,7 +398,7 @@ SAPORE_CONTENT_ES: dict[str, Any] = {
                     "las dieciséis, hace crepitar el roble del Cimino y amasa "
                     "a mano con masa madre del 2008. La Margherita la mete "
                     "con los ojos cerrados, en sesenta segundos.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -409,7 +409,7 @@ SAPORE_CONTENT_ES: dict[str, Any] = {
                     "camarero Beppe, prepara los dulces del día y decide la "
                     "carta de vinos. Hace el mejor maritozzo al oeste del "
                     "Tíber, pero solo el sábado por la mañana.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 

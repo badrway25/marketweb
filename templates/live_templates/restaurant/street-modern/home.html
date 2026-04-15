@@ -40,7 +40,56 @@
     transform: rotate(8deg);
     box-shadow: 0 6px 0 -2px #c0a800;
     z-index: 2;
+    animation: sm-stamp-beat 3.2s ease-in-out infinite;
+    transform-origin: center;
   }
+  @keyframes sm-stamp-beat {
+    0%, 100% { transform: rotate(8deg) scale(1); box-shadow: 0 6px 0 -2px #c0a800, 0 0 0 0 rgba(255,230,0,0.45); }
+    50%      { transform: rotate(8deg) scale(1.055); box-shadow: 0 8px 0 -2px #c0a800, 0 0 0 14px rgba(255,230,0,0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sm-hero .product .price-badge { animation: none; }
+  }
+
+  /* Live indicator dot next to the first counter label (queue status) */
+  .sm-counter .cell:first-child .lbl { position: relative; padding-left: 14px; display: inline-block; }
+  .sm-counter .cell:first-child .lbl:before {
+    content: ''; position: absolute; left: 0; top: 50%;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #ff3d00; transform: translateY(-50%);
+    box-shadow: 0 0 0 0 rgba(255,61,0,0.6);
+    animation: sm-live-blink 1.8s ease-in-out infinite;
+  }
+  @keyframes sm-live-blink {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,61,0,0.6); opacity: 1; }
+    50%      { box-shadow: 0 0 0 8px rgba(255,61,0,0); opacity: 0.85; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sm-counter .cell:first-child .lbl:before { animation: none; }
+  }
+  html[dir="rtl"] .sm-counter .cell:first-child .lbl { padding-left: 0; padding-right: 14px; }
+  html[dir="rtl"] .sm-counter .cell:first-child .lbl:before { left: auto; right: 0; }
+
+  /* Stats bar — underline slide-in on reveal */
+  .sm-stats .stat .num { position: relative; display: inline-block; padding-bottom: 4px; }
+  .sm-stats .stat .num:after {
+    content: ''; position: absolute; left: 0; bottom: 0;
+    height: 4px; width: 100%; background: var(--accent);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 720ms cubic-bezier(0.22,0.61,0.36,1) 420ms;
+  }
+  .sm-stats-inner.lm-in .stat .num:after { transform: scaleX(0.58); }
+  html[dir="rtl"] .sm-stats .stat .num:after { transform-origin: right center; }
+
+  /* Menu-strip product card — sharper lift + yellow accent stripe */
+  .sm-product { position: relative; }
+  .sm-product:before {
+    content: ''; position: absolute;
+    left: 0; top: 0; width: 0; height: 4px;
+    background: var(--secondary);
+    transition: width 360ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .sm-product:hover:before { width: 100%; }
   .sm-hero .product .price-badge .price {
     font-family: var(--heading); font-weight: 900;
     font-size: 32px; line-height: 0.95; display: block;
@@ -424,24 +473,24 @@
 <div class="sm-counter" aria-label="{{ page_data.counter_label }}">
   <div class="cell">
     <span class="lbl">{{ page_data.counter_label }}</span>
-    <span class="val">{{ page_data.counter_value }}</span>
+    <span class="val" data-lm="counter">{{ page_data.counter_value }}</span>
   </div>
   <div class="cell">
     <span class="lbl">{{ page_data.counter_kitchen_label }}</span>
-    <span class="val">{{ page_data.counter_kitchen_value }}</span>
+    <span class="val" data-lm="counter">{{ page_data.counter_kitchen_value }}</span>
   </div>
   <div class="cell">
     <span class="lbl">{{ page_data.counter_last_label }}</span>
-    <span class="val">{{ page_data.counter_last_value }}</span>
+    <span class="val" data-lm="counter">{{ page_data.counter_last_value }}</span>
   </div>
 </div>
 
 {# ========== STATS BAND ========== #}
 <section class="sm-stats" data-reveal>
-  <div class="sm-stats-inner">
+  <div class="sm-stats-inner" data-lm-stagger data-lm-stagger-delay="120">
     {% for num, lbl in page_data.stats %}
-    <div class="stat" data-stagger>
-      <span class="num">{{ num }}</span>
+    <div class="stat">
+      <span class="num" data-lm="counter">{{ num }}</span>
       <span class="lbl">{{ lbl }}</span>
     </div>
     {% endfor %}

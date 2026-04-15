@@ -30,10 +30,24 @@
     color: var(--ink); padding: 10px 16px;
     border: 2px solid var(--rule);
     background: var(--bg-2);
-    transition: border-color 220ms ease, background 220ms ease, color 220ms ease;
+    cursor: pointer;
+    transition: border-color 220ms ease, background 220ms ease, color 220ms ease, transform 160ms ease;
+    font-family: inherit; font: inherit;
+    font-weight: 800; font-size: 13px; letter-spacing: 0.10em; text-transform: uppercase;
   }
   .sm-pills .pill:hover { border-color: var(--secondary); color: var(--secondary); }
+  .sm-pills .pill:active { transform: translateY(1px); }
   .sm-pills .pill.is-active { background: var(--secondary); color: #0a0a0a; border-color: var(--secondary); }
+  .sm-pills .pill:focus-visible { outline: 3px solid var(--secondary); outline-offset: 3px; }
+
+  /* Filter state — shots marked .is-filtered-out collapse out gracefully */
+  .sm-grid .shot.is-filtered-out {
+    opacity: 0; transform: scale(0.96);
+    pointer-events: none;
+    grid-row: auto !important; grid-column: auto !important;
+    width: 0; height: 0; padding: 0; margin: 0;
+    border: 0; overflow: hidden;
+  }
 
   /* ============================================================
      6-IMAGE MASONRY-ISH GRID — 2-3-2 / 3-3
@@ -51,7 +65,10 @@
     overflow: hidden;
     background: var(--bg-3);
     border: 2px solid var(--rule);
-    transition: border-color 220ms ease;
+    transition:
+      border-color 220ms ease,
+      opacity 280ms cubic-bezier(0.22,0.61,0.36,1),
+      transform 280ms cubic-bezier(0.22,0.61,0.36,1);
     min-width: 0;
   }
   .sm-grid .shot:hover { border-color: var(--secondary); }
@@ -203,17 +220,19 @@
 </section>
 
 {# ========== CATEGORY PILLS ========== #}
-<section class="sm-pills" aria-label="{{ page_data.categories_label }}">
+<section class="sm-pills" aria-label="{{ page_data.categories_label }}"
+         data-li="filter" data-li-filter-target=".shot" data-li-filter-scope=".sm-grid">
   <span class="pills-lbl">{{ page_data.categories_label }}</span>
+  <button type="button" class="pill is-active" data-li-filter="all">{{ page_data.categories_all_label }}</button>
   {% for c in page_data.categories %}
-  <span class="pill {% if forloop.first %}is-active{% endif %}">{{ c }}</span>
+  <button type="button" class="pill" data-li-filter="{{ c }}">{{ c }}</button>
   {% endfor %}
 </section>
 
 {# ========== 6-GRID ========== #}
 <section class="sm-grid" data-reveal>
   {% for shot in page_data.grid %}
-  <div class="shot" data-stagger>
+  <div class="shot" data-stagger data-filter-tag="{{ shot.tag }}">
     <img src="{{ shot.image }}" alt="{{ shot.cap }}">
     <div class="meta">
       <span class="tag">{{ shot.tag }}</span>

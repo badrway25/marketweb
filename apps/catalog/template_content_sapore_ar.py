@@ -144,7 +144,7 @@ SAPORE_CONTENT_AR: dict[str, Any] = {
                     "وبنشّابتَين. بلغت اليوم الثانية والثمانين ومازالت تمدّ العجين "
                     "كلَّ صباح منذ السابعة. قاعدتها بسيطة: «العجينة الجيّدة تعرفها "
                     "تحت يديك، ولستَ بحاجةٍ إلى ميزان».",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -154,7 +154,7 @@ SAPORE_CONTENT_AR: dict[str, Any] = {
                     "الرابعة — خشب بلّوط من Cimino، لا غير — ويُبقيه حيًّا حتّى "
                     "منتصف الليل. تعلّم Margherita verace على يد Peppe Guida في "
                     "Vico Equense عام 2008.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -164,7 +164,7 @@ SAPORE_CONTENT_AR: dict[str, Any] = {
                     "تيراميسو بمَسكَربوني Sarnelli، فطيرة الكرز الحامض في موسمه، "
                     "و«maritozzi» بالقشطة صباح السبت فقط. تستقبلكم بابتسامةٍ "
                     "وإبريقٍ من الماء الفوّار.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 
@@ -385,7 +385,7 @@ SAPORE_CONTENT_AR: dict[str, Any] = {
                     "عن ظهر قلب. تمدّ العجين كلَّ صباح من السابعة إلى العاشرة، ثمّ "
                     "تنصرف إلى كتابة لوح اليوم. وحدَها تصنع الـ Carbonara: "
                     "طقسٌ تغار عليه ولا تُفرّط فيه.",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -395,7 +395,7 @@ SAPORE_CONTENT_AR: dict[str, Any] = {
                     "بيتزا اثنَتَين وعشرين سنة. يُشعل الفرن عند الرابعة، ويطقطق "
                     "بلّوطَ Cimino، ويعجن يدويًّا بخميرةٍ حيّةٍ منذ 2008. يُدخل "
                     "Margherita إلى الفرن مُغمضَ العينين في ستّين ثانية.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -405,7 +405,7 @@ SAPORE_CONTENT_AR: dict[str, Any] = {
                     "تتولّى القاعة مع النادل Beppe، وتُحضّر حلويات اليوم، وتختار "
                     "قائمة النبيذ. تصنع أفضل maritozzo غرب نهر Tevere، لكن "
                     "صباح السبت فقط.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 

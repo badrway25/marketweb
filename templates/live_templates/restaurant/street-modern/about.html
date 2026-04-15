@@ -360,10 +360,10 @@
     <span class="sm-eyebrow">{{ page_data.kitchen_label }}</span>
     <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.kitchen_heading|safe }}</h2>
   </div>
-  <div class="grid">
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
     {% for num, lbl in page_data.kitchen_specs %}
-    <div class="spec sm-mono" data-stagger>
-      <span class="num">{{ num }}</span>
+    <div class="spec sm-mono">
+      <span class="num" data-lm="counter">{{ num }}</span>
       <span class="lbl">{{ lbl }}</span>
     </div>
     {% endfor %}

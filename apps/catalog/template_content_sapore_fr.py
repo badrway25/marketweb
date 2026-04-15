@@ -132,7 +132,7 @@ SAPORE_CONTENT_FR: dict[str, Any] = {
                     "quatre-vingt-deux ans et tire encore les pâtes chaque "
                     "matin dès sept heures. Sa devise est simple : « la bonne "
                     "pâte, tu la sens sous les mains, pas besoin de balance ».",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -143,7 +143,7 @@ SAPORE_CONTENT_FR: dict[str, Any] = {
                     "rien d’autre — et le garde vivant jusqu’à minuit. Sa "
                     "Margherita verace, il l’a apprise chez Peppe Guida à Vico "
                     "Equense en 2008.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -154,7 +154,7 @@ SAPORE_CONTENT_FR: dict[str, Any] = {
                     "aux griottes quand la saison s’y prête, maritozzi à la "
                     "crème fouettée le samedi matin seulement. Elle t’accueille "
                     "avec un sourire et une carafe d’eau pétillante.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 
@@ -387,7 +387,7 @@ SAPORE_CONTENT_FR: dict[str, Any] = {
                     "Elle tire la pâte chaque matin de sept à dix heures, puis "
                     "passe écrire l’ardoise du jour. La carbonara, c’est elle "
                     "seule qui la fait : c’est un rite jaloux.",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -399,7 +399,7 @@ SAPORE_CONTENT_FR: dict[str, Any] = {
                     "pétrit à la main avec un levain mère de 2008. La "
                     "Margherita, il l’enfourne les yeux fermés en soixante "
                     "secondes.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -410,7 +410,7 @@ SAPORE_CONTENT_FR: dict[str, Any] = {
                     "serveur Beppe, prépare les desserts du jour et décide "
                     "de la carte des vins. Elle fait le meilleur maritozzo "
                     "à l’ouest du Tibre, mais le samedi matin seulement.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 
