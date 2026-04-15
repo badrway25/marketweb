@@ -157,6 +157,36 @@
     font-family: var(--heading); font-style: italic; font-size: 16px; line-height: 1.65; color: var(--bone-mute);
   }
 
+  /* Editorial video overture — Session 47 */
+  .fe-overture {
+    padding: 0 56px; max-width: 1140px; margin: 0 auto 56px;
+  }
+  @media (max-width: 960px) { .fe-overture { padding: 0 28px; } }
+  .fe-overture .frame {
+    position: relative;
+    aspect-ratio: 16 / 7;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    background: #0a0810 center/cover no-repeat;
+    background-image: url('https://images.pexels.com/videos/4620570/pexels-photo-4620570.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=800&w=1600');
+  }
+  .fe-overture video {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center; filter: contrast(1.04) saturate(0.94);
+    display: block;
+  }
+  .fe-overture .caption {
+    margin-top: 16px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--bone-faint);
+    padding-top: 14px; border-top: 1px solid var(--rule);
+  }
+  .fe-overture .caption .gold { color: var(--gold); }
+  @media (prefers-reduced-motion: reduce) {
+    .fe-overture video { display: none; }
+  }
+
   /* Shop CTA */
   .fe-shop-cta { padding: 88px 56px; background: #050409; border-top: 1px solid var(--rule); }
   .fe-shop-cta .inner { max-width: 880px; margin: 0 auto; text-align: center; }
@@ -195,6 +225,20 @@
     {% for k, v in page_data.credits_rows %}
       <div class="row"><span class="k">{{ k }}</span><span class="v" data-latin>{{ v }}</span></div>
     {% endfor %}
+  </div>
+</section>
+
+<section class="fe-overture" data-lm="reveal" aria-label="{{ page_data.looks_label|default:'Atelier' }}">
+  <div class="frame">
+    <video autoplay muted loop playsinline preload="metadata"
+           poster="https://images.pexels.com/videos/4620570/pexels-photo-4620570.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=800&w=1600">
+      <source src="https://videos.pexels.com/video-files/4620570/4620570-sd_960_506_25fps.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="caption">
+    <span>Atelier · Sentier</span>
+    <span class="gold">Moving image · silenzio · 31 secondi</span>
+    <span>Video · Pexels · Cottonbro Studio</span>
   </div>
 </section>
 

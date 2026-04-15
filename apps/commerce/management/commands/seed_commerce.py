@@ -185,7 +185,8 @@ BOTTEGA_PRODUCTS = [
             "Una borsa rigida in cuoio naturale, formato cartolina. Cucita a sella, finita a cera "
             "d'api. Disponibile in due finiture: naturale e cognac."
         ),
-        "hero": "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1200&q=80&auto=format&fit=crop",
+        # Session 47: Pexels 11623262 — tan leather satchel (coherent with "Borsa Cartolina · Cuoio naturale").
+        "hero": "https://images.pexels.com/photos/11623262/pexels-photo-11623262.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1600&w=1200",
         "gallery": [
             "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?w=1200&q=80&auto=format&fit=crop",
         ],
@@ -286,7 +287,8 @@ BOTTEGA_PRODUCTS = [
         "featured": False,
         "short": "Coppia di tazze da caffè, tornite a mano.",
         "long": "Argilla rossa locale, cottura lenta a legna. Due pezzi ogni set, firmati.",
-        "hero": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=1200&q=80&auto=format&fit=crop",
+        # Session 47: Pexels 6611187 — artisan ceramic mugs on shelf (coherent with "Tazze Tornite").
+        "hero": "https://images.pexels.com/photos/6611187/pexels-photo-6611187.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1600&w=1200",
         "gallery": [],
         "info_rows": [
             {"label": "Materia", "value": "Argilla rossa locale"},
@@ -462,7 +464,8 @@ LUXE_PRODUCTS = [
             "con cucitura sellier oro a tre lati. Profilo lucidato a cera d'api, fondo rinforzato "
             "in cuoio Vacchetta. Prodotta in dodici esemplari numerati."
         ),
-        "hero": "https://images.unsplash.com/photo-1551803091-e20673f15770?w=1400&q=80&auto=format&fit=crop",
+        # Session 47: Pexels 35115815 — black leather handbag with gold chain (coherent with "Rack Atelier Nero · cuoio nappa · profilo gold"). Previous Unsplash photo-1551803091 served a woman in blue lace dress.
+        "hero": "https://images.pexels.com/photos/35115815/pexels-photo-35115815.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1600&w=1200",
         "gallery": [
             "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?w=1400&q=80&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=1400&q=80&auto=format&fit=crop",
@@ -495,7 +498,8 @@ LUXE_PRODUCTS = [
         "featured": False,
         "short": "Bomber corto, cady siena, ricamo oro sul cuore.",
         "long": "Bomber estivo con ricamo oro Atelier Sentier.",
-        "hero": "https://images.unsplash.com/photo-1495121605193-b116b5b9c5fe?w=1400&q=80&auto=format&fit=crop",
+        # Session 47: Pexels 15895575 — woman in camel bomber with embroidery detail (coherent with "Bomber Siena · Cady tinto a Siena · ricamo Atelier Sentier").
+        "hero": "https://images.pexels.com/photos/15895575/pexels-photo-15895575.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1600&w=1200",
         "gallery": [],
         "info_rows": [
             {"label": "Materia", "value": "Cady tinto naturale · pigmento Siena"},
@@ -518,7 +522,8 @@ LUXE_PRODUCTS = [
         "featured": False,
         "short": "Pantalone largo, crêpe di seta Como.",
         "long": "Taglio wide, cintura integrata in cuoio nappa.",
-        "hero": "https://images.unsplash.com/photo-1559563458-527698bf5295?w=1400&q=80&auto=format&fit=crop",
+        # Session 47: Pexels 31400265 — woman in beige wide-leg trouser + hat (coherent with "Pantalone Wide Crêpe · Crêpe di seta").
+        "hero": "https://images.pexels.com/photos/31400265/pexels-photo-31400265.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1600&w=1200",
         "gallery": [],
         "info_rows": [
             {"label": "Materia", "value": "Crêpe di seta · 100%"},

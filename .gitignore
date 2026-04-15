@@ -47,3 +47,9 @@ node_modules/
 .playwright-mcp/
 
 .playwright-cli/
+
+# Session 47 — throwaway helpers (must never ship)
+_pexels_helper.py
+_img_audit.html
+_verify.py
+media/pexels/

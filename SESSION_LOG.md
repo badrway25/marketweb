@@ -1,5 +1,28 @@
 # Session Log
 
+## Session 47 — Global Media Coherence & Asset Upgrade Pass (2026-04-15)
+
+**Agent:** audit visivo reale + upgrade sistematico della media coherence via Pexels API (chiave da env, mai committata), un solo video editoriale dove il DNA lo giustifica, nessuna nuova feature.
+
+**Shipped:**
+- Homepage hero: placeholder wireframe bi-icon → Pexels 4884116 (laptop minimalist, Artem Podrez)
+- 5 product heros sostituiti con Pexels IDs verificati 1:1 via Playwright (Luxe `rack-atelier-nero`/`bomber-siena`/`pantalone-wide-crepe`, Bottega `borsa-cartolina`/`tazze-tornite`)
+- Preview gallery luxe: Unsplash 1548036328 → Pexels 35115815 in tutti e 5 i locale files
+- Luxe lookbook: nuova `.fe-overture` section con Pexels video 4620570 (atelier, 31s, sd 960×506) + poster + reduced-motion fallback
+- `_pexels_helper.py` sourcing helper throwaway (gitignored) che legge `PEXELS_API_KEY` da env
+- `.gitignore`: aggiunti helper, screenshots temp, media/pexels/
+
+**Validation:**
+- `check` clean
+- Re-seed commerce idempotente (9+8 products, 16+23 variants)
+- Regression sweep 53/53 green
+- Chiave API verificata non presente in repo (`grep 3BCdNgmp` in tracked files → 0 risultati)
+- Playwright click-through su homepage, Luxe/Bottega shop, Luxe PDP rack-atelier-nero, Luxe lookbook video (readyState=4, currentTime avanza, autoplay + muted + loop)
+
+**Decision: GLOBAL MEDIA COHERENCE & ASSET UPGRADE PASS APPROVATO** (D-077).
+
+---
+
 ## Session 45 — Commerce Completion v2 (2026-04-14)
 
 **Agent:** Portare il commerce v1 a stato boutique online reale su 4 assi: (1) `/shop/` davvero multilingua 5 locales con RTL arabo, (2) Stripe integration seria env-driven con graceful fallback, (3) seller dashboard merchant-scoped via StorefrontMember, (4) customer flow completo (policies, order lookup, retry payment). Preservare livello premium Bottega/Luxe e zero regressione sui 9 preview live templates.
