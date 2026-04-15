@@ -386,7 +386,7 @@ LUXE_CONTENT_AR: dict[str, Any] = {
             "ويوقِّعها من قاعها الأتيلييه الذي صَنَعَها.",
 
         "gallery": [
-            "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1400&q=80&auto=format&fit=crop",
+            "https://images.pexels.com/photos/35115815/pexels-photo-35115815.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1800&w=1400",
             "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?w=1400&q=80&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=1400&q=80&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1400&q=80&auto=format&fit=crop",

@@ -1,5 +1,16 @@
 # TODO Next
 
+## 🟢 Session 47 — Global Media Coherence & Asset Upgrade Pass — ✅ CLOSED (2026-04-15)
+Per D-077: Pexels adottato come CDN stock primario (Unsplash legacy preservato), chiave API da env, 5 product hero swaps + homepage hero + 1 video editoriale Luxe lookbook. 53/53 regression green.
+
+**Follow-ups (non blocking):**
+- [ ] Generate `/templates/` listing PNG thumbnails — `python manage.py generate_previews --force` richiede Playwright in build-time; oggi il listing card rende placeholder grigio.
+- [ ] Consider 1 Pexels image per homepage testimonial (replacing letter avatars MR/GB/LV) — low-priority, editorial pattern valido così.
+- [ ] Valutare 1 immagine per step "Come funziona" se il flusso si sente ancora wireframe.
+- [ ] Migrate residual Unsplash product images over time (no urgency — current URLs verified coherent).
+
+---
+
 ## 🟢 Phase 3b — Commerce Completion v2 — ✅ CLOSED (Session 45, 2026-04-14)
 Per D-076, commerce è passato da foundation v1 ("poster operativo single-seller, IT-only, dev-payment") a v2 reale su 4 assi: (1) storefront `/shop/<slug>/` multilingua 5 locales (it/en/fr/es/ar) con RTL arabo reale via `COMMERCE_CHROME` + `STOREFRONT_CONTENT` + `COLLECTION_CONTENT` + LocaleMixin + translations JSONField; (2) payment provider abstraction vera con Stripe integration env-driven + idempotency_key + webhook signature verification + graceful fallback a stub se `STRIPE_SECRET_KEY` manca (`apps/commerce/payments.py`); (3) merchant-scoped dashboard via nuovo `StorefrontMember(storefront, user, role=owner|editor)` modello — `SellerRequiredMixin` ora verifica membership invece di `is_staff` global; (4) customer flow chiuso con `PoliciesView` + `OrderLookupView` (guest self-service reference+email) + `RetryPaymentView` (retry su PaymentIntent failed) + `PaymentPageView` (Stripe Elements). Validation: `check` clean, migration 0003 applied, 73/73 commerce smoke + 45/45 live preview regression + 7/7 ACL matrix green. Credenziali demo: `bottega_owner` / `commerce-v2`, `luxe_owner` / `commerce-v2`. Senza env vars: stub + offline funzionano end-to-end; con env vars + `pip install stripe`: Stripe real-mode operativo. See SESSION_LOG Session 45.
 

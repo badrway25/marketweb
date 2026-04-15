@@ -1,5 +1,40 @@
 # Decisions Log
 
+## D-077: Media Coherence — Pexels Adopted as Primary Stock-Photo CDN, Unsplash Legacy Only, One Editorial Video on Luxe Lookbook (2026-04-15, Session 47)
+
+**Decision:** all new or replacement stock imagery in the site and templates is sourced from Pexels via its official API, with the key read from `PEXELS_API_KEY` env var only — never committed, never memoized, never logged. Existing Unsplash URLs that serve semantically correct content are left alone (no churn). A single editorial video is added to the Luxe lookbook preview (not any other surface) because only that DNA pulls for moving image; every other surface keeps stills by policy.
+
+**Concrete scope:**
+
+1. **Homepage hero (pages/home.html)** — the `.mw-img-placeholder` wireframe with a `bi bi-window-desktop` icon is replaced with a real hero image: Pexels 4884116 (minimalist laptop on white desk, photographer Artem Podrez). The mockup keeps its aspect-ratio: 4/3, border-radius, and decorative floats; only the inner element is upgraded. Ships with `background-size: cover; background-position: center 45%; box-shadow: 0 30px 60px -20px rgba(15,16,32,0.35)` so the shot reads as a framed hero image rather than a raw stock photo.
+
+2. **Five product hero swaps** (seed_commerce.py):
+   - Luxe `rack-atelier-nero`: Unsplash `1551803091-e20673f15770` (woman in blue lace, wrong content for a black leather handbag) → Pexels `35115815` (black leather handbag with gold chain — matches the product's "cuoio nappa · profilo gold · cucitura sellier oro" description exactly).
+   - Luxe `bomber-siena`: Unsplash `1495121605193` (ambiguous white tile in shop grid) → Pexels `15895575` (woman in camel bomber with embroidery — matches "Cady tinto a Siena · ricamo Atelier Sentier").
+   - Luxe `pantalone-wide-crepe`: Unsplash `1559563458` (tiny weak crop) → Pexels `31400265` (woman in beige wide-leg trouser + hat — editorial).
+   - Bottega `borsa-cartolina`: Unsplash `1591561954557` (basket with produce, tangential to a leather bag) → Pexels `11623262` (tan leather satchel on wood — clean).
+   - Bottega `tazze-tornite`: Unsplash `1610701596007` (coffee with plants, doesn't show the cups themselves) → Pexels `6611187` (artisan ceramic mugs on shelf).
+
+3. **Luxe preview product gallery (template_content_luxe*.py × 5 locales)** — the 4 occurrences of Unsplash `1548036328-c9fa89d128fa` (acceptable but cropped oddly at the w=1400 size) are uniformly swapped to Pexels `35115815` (same black bag, better Pexels CDN crop behaviour).
+
+4. **Luxe lookbook editorial video overture (live_templates/ecommerce/fashion-editorial/lookbook.html)** — a new `.fe-overture` section is inserted between `.fe-credits` and `.fe-looks`. Shape: a 16:7 frame with `<video autoplay muted loop playsinline preload="metadata">` sourced from Pexels video 4620570 (atelier clothing rack, 31 seconds, 960×506 SD) and a matching poster. A small three-column caption line below credits it: "Atelier · Sentier" / "Moving image · silenzio · 31 secondi" / "Video · Pexels · Cottonbro Studio". Respects `prefers-reduced-motion: reduce` (hides the video element). No controls — this is a moving still life, not a product demo.
+
+**Rationale:** (a) Unsplash hot-linking has repeatedly served semantically wrong content — the Session 45 Rack Atelier Nero woman-in-blue-lace bug, the Session 46 Giubbotto Terra backpack-for-jacket bug — where `HEAD` returned 200 but the rendered image was catastrophically off-brief. Pexels' API + `fit=crop&h=&w=` URL parameters give more stable visual output per URL and the API returns full `alt` text and photographer attribution upfront, making 1-by-1 Playwright visual verification faster. (b) The one-video rule prevents this from becoming a "generic SaaS motion everywhere" pass; Luxe lookbook is the only surface whose DNA is editorial/campaign/moving-image (atelier backstage matches the maison voice), so the video there reads as editorial texture. Bottega DNA is typographic-led (D-074a — "no photo hero"), medical/business/portfolio are photo-premium but not motion, homepage is conversion-focused but a loop there would be decoration noise. (c) Reading the API key from env only keeps the key out of git / memory / docs / logs — a hard policy per the user's directive; the throwaway helper `_pexels_helper.py` is gitignored so nothing of the key's usage leaks into the repo.
+
+**Trade-off:** mixed CDN provenance for the catalog (Unsplash for pre-existing correct URLs, Pexels for new/replacement). Acceptable: both are free-to-use with no attribution-in-image requirement, both support hot-linking, and the URL shape (`cdn.pexels.com/photos/<id>/…` vs `images.unsplash.com/photo-<id>?…`) is parse-discoverable so future audits can tell them apart. The alternative (rewrite every Unsplash URL to Pexels) would churn ~40+ correct images for zero quality gain. Unsplash is kept as legacy; net-new URLs go Pexels first.
+
+**Consequence:** (a) 5 products across Luxe and Bottega now show semantically correct hero imagery, closing the catalog-level image coherence audit open since Session 16; (b) the homepage no longer fronts a wireframe placeholder — the laptop-on-desk hero reads as a finished product, not a dev-mode template; (c) the Luxe lookbook now has the one motion element its DNA allows, lifting the editorial feel; (d) the Pexels integration pattern is documented for future sessions; (e) 53/53 regression routes green, no catalog-tier changes (`published_live` count unchanged at 9/20).
+
+**Key insights:**
+
+1. **Stock-photo CDN coherence is API-verifiable, HEAD-200 is not.** The Pexels API returns `photographer`, `alt` (often 80+ characters of actual content description), and multiple `src.*` variants in one call. You can pre-filter by `alt` text keyword-match before even hitting the image visually. Unsplash's Source API (`images.unsplash.com/photo-<id>`) returns the bytes but no alt/metadata — you need a second call to the search API. Pexels is strictly better for audit workflows.
+
+2. **Env-only key handling is a structural habit.** Writing the key to settings.py or any tracked file is the single biggest CI/CD leak risk. Reading from `os.environ["PEXELS_API_KEY"]` inside a gitignored helper, with the value inline-injected via `PEXELS_API_KEY=xxx python _pexels_helper.py …`, keeps the key out of every persistent surface. The helper file itself is also gitignored so its usage traces leave zero git history.
+
+3. **One video, correctly placed, is premium. Two videos is decoration.** The Luxe lookbook atelier video matches DNA because "atelier backstage" is a real editorial genre the maison voice inhabits. Adding a second video (e.g., homepage, Gusto hero) would erode the signal — motion becomes background noise instead of intentional editorial texture. Future sessions MUST justify each additional video against a real DNA register, not against "it would look good".
+
+---
+
 ## D-076: Commerce v2 — /shop Multilingua, Stripe Graceful, Merchant-Scoped Dashboard, Customer Flow Chiuso (2026-04-14, Session 45)
 
 **Decision:** `apps/commerce` passa da foundation v1 (single-seller, IT-only, dev-payment) a v2 operativa su quattro assi incrociati: (a) lo storefront `/shop/<slug>/` e le sue 7 pagine (shop · collezione · product · cart · checkout · order_confirmation · policies · order_lookup + payment Stripe) sono davvero multilingua 5 locales (it/en/fr/es/ar) con RTL vero per arabo; (b) il payment dispatcher è provider-agnostico con stripe reale integrato (`apps/commerce/payments.py`, Stripe SDK lazy, PaymentIntent + webhook con signature verification, idempotency_key=order.reference, graceful fallback a stub se `STRIPE_SECRET_KEY` manca); (c) il seller dashboard passa da `is_staff` global-see-all a `StorefrontMember(storefront, user, role)` scoping reale; (d) customer flow completato con policies page, order lookup self-service (reference + email), retry payment su failed intent, stripe payment page custom con Elements.
