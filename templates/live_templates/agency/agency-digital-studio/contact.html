@@ -1,0 +1,281 @@
+{% extends "live_templates/agency/agency-digital-studio/_base.html" %}
+
+{% block extra_css %}
+  .au-lead { max-width: 1260px; margin: 40px auto 0; padding: 56px 56px 32px; }
+  .au-lead .chip {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(139,92,246,0.10); border: 1px solid rgba(139,92,246,0.32);
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+  }
+  .au-lead h1 { margin-top: 22px; font-size: 64px; letter-spacing: -0.035em; max-width: 22ch; }
+  .au-lead h1 em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-lead .standfirst { margin-top: 26px; font-size: 18px; color: var(--ink-soft); max-width: 62ch; line-height: 1.7; }
+
+  .au-inquiry {
+    max-width: 1260px; margin: 32px auto 0; padding: 32px 56px 96px;
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: start;
+  }
+  .au-steps {
+    padding: 32px; border-radius: 18px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+  }
+  .au-steps .head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 18px; border-bottom: 1px solid var(--rule); margin-bottom: 24px;
+  }
+  .au-steps .head h3 {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    color: var(--cyan); letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .au-steps .head .progress { display: flex; gap: 8px; }
+  .au-steps .head .progress .step-dot {
+    width: 36px; height: 6px; border-radius: 4px;
+    background: rgba(236,233,255,0.08);
+  }
+  .au-steps .head .progress .step-dot.done { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .au-steps .head .progress .step-dot.current {
+    background: linear-gradient(96deg, var(--accent) 0%, var(--cyan) 100%);
+  }
+
+  .au-steps .block {
+    padding: 24px 0; border-bottom: 1px dashed var(--rule);
+  }
+  .au-steps .block:last-child { border-bottom: 0; }
+  .au-steps .block .step-id {
+    font-family: var(--mono); font-size: 11px; color: var(--cyan);
+    letter-spacing: 0.14em; font-weight: 700;
+  }
+  .au-steps .block .step-title {
+    margin-top: 8px; font-family: var(--heading); font-size: 20px;
+    letter-spacing: -0.015em; color: var(--ink);
+  }
+  .au-steps .block .step-sub {
+    margin-top: 4px; font-family: var(--mono); font-size: 11px;
+    color: var(--ink-faint); letter-spacing: 0.06em;
+  }
+  .au-steps .fields {
+    margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .au-steps .field { margin-bottom: 16px; }
+  .au-steps .field.full { grid-column: span 2; }
+  .au-steps label {
+    display: block; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    color: var(--ink-faint); letter-spacing: 0.14em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .au-steps input, .au-steps textarea, .au-steps select {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    background: rgba(0,0,0,0.32); color: var(--ink);
+    border: 1px solid var(--rule); font-family: var(--body); font-size: 14px;
+    outline: none; transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .au-steps input:focus, .au-steps textarea:focus, .au-steps select:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(139,92,246,0.28);
+  }
+  .au-steps textarea { min-height: 120px; resize: vertical; }
+  .au-steps .slot-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px;
+  }
+  .au-steps .slot-grid label {
+    padding: 14px 12px; border-radius: 10px;
+    border: 1px solid var(--rule);
+    background: rgba(236,233,255,0.03);
+    font-family: var(--mono); font-size: 12px; color: var(--ink);
+    text-align: center; cursor: pointer; margin: 0;
+    letter-spacing: 0.04em; text-transform: none;
+    font-weight: 600;
+  }
+  .au-steps .slot-grid input[type="radio"] { display: none; }
+  .au-steps .slot-grid input:checked + label {
+    background: rgba(139,92,246,0.18);
+    border-color: rgba(139,92,246,0.45); color: var(--ink);
+  }
+  .au-steps .submit-row {
+    margin-top: 24px; display: flex; justify-content: space-between; align-items: center;
+    padding-top: 22px; border-top: 1px solid var(--rule);
+  }
+  .au-steps .submit-row .note { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); letter-spacing: 0.06em; }
+  .au-steps button {
+    background: linear-gradient(96deg, var(--accent) 0%, var(--violet-glow) 100%);
+    color: #fff; padding: 14px 24px; border-radius: 999px;
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    border: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+    box-shadow: 0 14px 32px rgba(139,92,246,0.42);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .au-steps button:after { content: '→'; font-size: 14px; }
+  .au-steps button:hover { transform: translateY(-1px); box-shadow: 0 18px 40px rgba(139,92,246,0.55); }
+
+  .au-aside { display: flex; flex-direction: column; gap: 20px; }
+  .au-aside .block {
+    padding: 24px; border-radius: 14px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+  }
+  .au-aside .block.highlight {
+    border-color: rgba(122,229,255,0.32);
+    background: linear-gradient(180deg, rgba(122,229,255,0.08) 0%, rgba(12,10,31,0) 100%);
+  }
+  .au-aside .lbl {
+    font-family: var(--mono); font-size: 10px; color: var(--ink-faint);
+    letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .au-aside h4 { font-size: 18px; letter-spacing: -0.015em; }
+  .au-aside h4 em { background: none; -webkit-text-fill-color: var(--cyan); color: var(--cyan); font-weight: 700; }
+  .au-aside p { margin-top: 10px; font-size: 14px; color: var(--ink-soft); line-height: 1.65; }
+  .au-aside a.val {
+    display: inline-block; margin-top: 10px;
+    font-family: var(--mono); font-size: 14px;
+    color: var(--cyan); border-bottom: 1px solid var(--cyan); padding-bottom: 2px;
+  }
+  .au-aside .rows .r {
+    display: flex; justify-content: space-between; padding: 8px 0;
+    border-bottom: 1px dotted var(--rule);
+    font-family: var(--mono); font-size: 12px;
+  }
+  .au-aside .rows .r:last-child { border-bottom: 0; }
+  .au-aside .rows .r span:first-child { color: var(--ink-faint); letter-spacing: 0.08em; text-transform: uppercase; font-size: 10px; }
+  .au-aside .rows .r span:last-child { color: var(--ink); }
+
+  .au-boot-strip {
+    max-width: 1260px; margin: 0 auto 48px; padding: 24px 56px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 12px; color: var(--ink-faint);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+    letter-spacing: 0.04em;
+  }
+  .au-boot-strip .left:before { content: '// '; color: var(--cyan); }
+  .au-boot-strip .right { color: var(--cyan); font-weight: 700; }
+
+  @media (max-width: 1100px) {
+    .au-lead { padding: 32px; }
+    .au-lead h1 { font-size: 42px; }
+    .au-inquiry { padding: 32px; grid-template-columns: 1fr; gap: 32px; }
+    .au-steps { padding: 28px; }
+    .au-steps .fields { grid-template-columns: 1fr; }
+    .au-steps .slot-grid { grid-template-columns: repeat(2, 1fr); }
+    .au-boot-strip { padding: 20px 32px; }
+  }
+  @media (max-width: 720px) {
+    .au-lead h1 { font-size: 28px; }
+    .au-steps .head { flex-direction: column; gap: 14px; align-items: flex-start; }
+    .au-steps .submit-row { flex-direction: column; gap: 18px; align-items: flex-start; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="au-lead">
+  <span class="chip">{{ page_data.chip }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="standfirst">{{ page_data.standfirst }}</p>
+</section>
+
+<section class="au-inquiry">
+  <form class="au-steps" action="#" method="post" onsubmit="return false;">
+    <div class="head">
+      <h3>{{ page_data.form_heading }}</h3>
+      <div class="progress" aria-hidden="true">
+        <span class="step-dot current"></span>
+        <span class="step-dot"></span>
+        <span class="step-dot"></span>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="step-id">{{ page_data.step1.id }}</div>
+      <div class="step-title">{{ page_data.step1.title }}</div>
+      <div class="step-sub">{{ page_data.step1.sub }}</div>
+      <div class="fields">
+        <div class="field">
+          <label>{{ page_data.labels.name }}</label>
+          <input type="text" placeholder="{{ page_data.placeholders.name }}">
+        </div>
+        <div class="field">
+          <label>{{ page_data.labels.role }}</label>
+          <input type="text" placeholder="{{ page_data.placeholders.role }}">
+        </div>
+        <div class="field">
+          <label>{{ page_data.labels.company }}</label>
+          <input type="text" placeholder="{{ page_data.placeholders.company }}">
+        </div>
+        <div class="field">
+          <label>{{ page_data.labels.email }}</label>
+          <input type="email" placeholder="{{ page_data.placeholders.email }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="step-id">{{ page_data.step2.id }}</div>
+      <div class="step-title">{{ page_data.step2.title }}</div>
+      <div class="step-sub">{{ page_data.step2.sub }}</div>
+      <div class="fields">
+        <div class="field full">
+          <label>{{ page_data.labels.scope }}</label>
+          <select>
+            {% for opt in page_data.scope_options %}<option>{{ opt }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field full">
+          <label>{{ page_data.labels.brief }}</label>
+          <textarea placeholder="{{ page_data.placeholders.brief }}"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="step-id">{{ page_data.step3.id }}</div>
+      <div class="step-title">{{ page_data.step3.title }}</div>
+      <div class="step-sub">{{ page_data.step3.sub }}</div>
+      <div class="fields">
+        <div class="field full">
+          <label>{{ page_data.labels.slot }}</label>
+          <div class="slot-grid">
+            {% for sid, sl in page_data.slots %}
+              <input type="radio" name="slot" id="s{{ forloop.counter }}"{% if forloop.first %} checked{% endif %}>
+              <label for="s{{ forloop.counter }}">{{ sl }}</label>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <span class="note">{{ page_data.form_submit_note }}</span>
+      <button type="submit">{{ page_data.form_submit_label }}</button>
+    </div>
+  </form>
+
+  <aside class="au-aside">
+    <div class="block highlight">
+      <div class="lbl">{{ page_data.async_label }}</div>
+      <h4>{{ page_data.async_heading|safe }}</h4>
+      <p>{{ page_data.async_body }}</p>
+      <a href="mailto:{{ site.email }}" class="val">{{ site.email }}</a>
+    </div>
+    <div class="block">
+      <div class="lbl">{{ page_data.studio_label }}</div>
+      <p>{{ site.address }}</p>
+      <p class="au-mono" style="font-size:13px;">{{ site.phone }}</p>
+      <p style="font-size:13px;">{{ site.hours_compact }}</p>
+    </div>
+    <div class="block">
+      <div class="lbl">{{ page_data.response_label }}</div>
+      <div class="rows">
+        {% for k, v in page_data.response_rows %}
+        <div class="r"><span>{{ k }}</span><span>{{ v }}</span></div>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+</section>
+
+<div class="au-boot-strip">
+  <span class="left">{{ page_data.boot_left }}</span>
+  <span class="right">{{ page_data.boot_right }}</span>
+</div>
+{% endblock %}

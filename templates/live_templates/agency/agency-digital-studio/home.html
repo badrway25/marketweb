@@ -1,0 +1,425 @@
+{% extends "live_templates/agency/agency-digital-studio/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     PRODUCT-CONSOLE HERO — kinetic headline + dashboard card
+  ============================================================ */
+  .au-hero {
+    max-width: 1260px; margin: 32px auto 0; padding: 64px 56px 96px;
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px;
+    align-items: center;
+  }
+  .au-hero .left .chip {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 7px 14px; border-radius: 999px;
+    background: rgba(139,92,246,0.10);
+    border: 1px solid rgba(139,92,246,0.32);
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+  }
+  .au-hero .left .chip .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cyan); box-shadow: 0 0 8px var(--cyan);
+  }
+  .au-hero .left h1 {
+    margin-top: 26px; font-size: 78px; line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+  .au-hero .left .intro {
+    margin-top: 28px; font-size: 19px; line-height: 1.65;
+    color: var(--ink-soft); max-width: 56ch;
+  }
+  .au-hero .left .actions {
+    margin-top: 40px; display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
+  }
+  .au-hero .left .metrics {
+    margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+    padding-top: 28px; border-top: 1px solid var(--rule);
+  }
+  .au-hero .metric .num {
+    font-family: var(--heading); font-size: 38px; letter-spacing: -0.035em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .au-hero .metric .num em { background: none; -webkit-text-fill-color: var(--cyan); color: var(--cyan); }
+  .au-hero .metric .lbl {
+    margin-top: 6px; font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  /* Product dashboard card */
+  .au-hero .right { position: relative; }
+  .au-console {
+    background: linear-gradient(180deg, var(--night-3) 0%, var(--night-2) 100%);
+    border: 1px solid var(--rule); border-radius: 18px;
+    box-shadow: 0 30px 80px rgba(12,10,31,0.5);
+    overflow: hidden;
+  }
+  .au-console .console-head {
+    padding: 12px 18px; display: flex; align-items: center; gap: 12px;
+    background: rgba(0,0,0,0.28); border-bottom: 1px solid var(--rule);
+  }
+  .au-console .console-head .dots { display: flex; gap: 6px; }
+  .au-console .console-head .dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(236,233,255,0.16);
+  }
+  .au-console .console-head .dots span:nth-child(1) { background: #ff5f57; }
+  .au-console .console-head .dots span:nth-child(2) { background: #febc2e; }
+  .au-console .console-head .dots span:nth-child(3) { background: #28c840; }
+  .au-console .console-head .path {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
+    margin-left: 8px;
+  }
+  .au-console .console-head .pill {
+    margin-left: auto; padding: 3px 10px; border-radius: 999px;
+    background: rgba(122,229,255,0.12); border: 1px solid rgba(122,229,255,0.32);
+    font-family: var(--mono); font-size: 10px; color: var(--cyan);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .au-console .console-head .pill .pulse { width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); }
+  .au-console .console-body { padding: 28px; }
+  .au-console .console-body .primary-metric {
+    font-family: var(--heading); font-size: 84px; letter-spacing: -0.04em; line-height: 1;
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 60%, var(--violet-glow) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-variant-numeric: tabular-nums;
+  }
+  .au-console .console-body .primary-lbl {
+    margin-top: 8px; font-family: var(--mono); font-size: 12px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .au-console .kpi-row {
+    margin-top: 26px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+  }
+  .au-console .kpi {
+    padding: 14px 16px; border-radius: 12px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+  }
+  .au-console .kpi .big {
+    font-family: var(--heading); font-size: 26px; color: var(--ink); letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .au-console .kpi .big em { background: none; -webkit-text-fill-color: var(--cyan); color: var(--cyan); }
+  .au-console .kpi .lbl { margin-top: 2px; font-family: var(--mono); font-size: 10px; color: var(--ink-faint); letter-spacing: 0.14em; text-transform: uppercase; }
+  .au-console .spark {
+    margin-top: 22px; height: 76px; padding: 0 2px;
+    background:
+      linear-gradient(180deg, rgba(139,92,246,0.18) 0%, rgba(139,92,246,0) 100%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80' preserveAspectRatio='none'><path d='M0,60 L40,55 L80,48 L120,52 L160,38 L200,42 L240,28 L280,34 L320,20 L360,26 L400,14' fill='none' stroke='%238B5CF6' stroke-width='2'/></svg>") center/100% 100% no-repeat;
+    border-radius: 10px;
+  }
+  .au-console .foot-meta {
+    margin-top: 20px; padding-top: 18px; border-top: 1px dashed var(--rule);
+    font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
+    display: flex; justify-content: space-between;
+  }
+  .au-console .foot-meta .val { color: var(--cyan); font-weight: 700; }
+
+  /* ============================================================
+     CAPABILITIES — grid-4 with mono id + glow border on hover
+  ============================================================ */
+  .au-capab .head { display: grid; grid-template-columns: 0.8fr 1fr; gap: 40px; align-items: end; margin-bottom: 48px; }
+  .au-capab .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .au-capab .card {
+    padding: 28px 22px; border-radius: 14px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+    transition: border-color .2s ease, transform .2s ease, background .2s ease;
+  }
+  .au-capab .card:hover {
+    border-color: rgba(139,92,246,0.42);
+    background: rgba(139,92,246,0.05);
+    transform: translateY(-2px);
+  }
+  .au-capab .card .id {
+    font-family: var(--mono); font-size: 11px; color: var(--cyan);
+    letter-spacing: 0.14em; font-weight: 700;
+  }
+  .au-capab .card h3 {
+    margin-top: 14px; font-size: 20px; letter-spacing: -0.018em;
+  }
+  .au-capab .card h3 em { background: none; -webkit-text-fill-color: var(--cyan); color: var(--cyan); }
+  .au-capab .card p { margin-top: 12px; font-size: 14px; color: var(--ink-soft); line-height: 1.65; }
+  .au-capab .card .tags {
+    margin-top: 18px; display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .au-capab .card .tag {
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(236,233,255,0.04); border: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 10px; color: var(--ink-mute); letter-spacing: 0.08em;
+  }
+
+  /* ============================================================
+     SPRINTS — process as sprint cards
+  ============================================================ */
+  .au-sprints .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .au-sprints .sprint-card {
+    padding: 26px 22px; border-radius: 14px;
+    background: linear-gradient(180deg, rgba(139,92,246,0.10) 0%, rgba(12,10,31,0) 100%);
+    border: 1px solid var(--rule);
+    position: relative;
+  }
+  .au-sprints .sprint-card .id {
+    font-family: var(--mono); font-size: 11px; color: var(--accent); font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+  .au-sprints .sprint-card .duration {
+    margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--ink-faint);
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .au-sprints .sprint-card h3 {
+    margin-top: 18px; font-size: 22px; line-height: 1.2; letter-spacing: -0.015em;
+  }
+  .au-sprints .sprint-card p { margin-top: 10px; font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
+  .au-sprints .sprint-card .out {
+    margin-top: 20px; padding-top: 14px; border-top: 1px dotted var(--rule);
+    font-family: var(--mono); font-size: 11px; color: var(--cyan);
+    letter-spacing: 0.06em;
+  }
+
+  /* ============================================================
+     LAVORI CARDS — screenshot-led product shots
+  ============================================================ */
+  .au-work .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .au-work .card {
+    border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--rule);
+    background: rgba(236,233,255,0.03);
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .au-work .card:hover { transform: translateY(-2px); border-color: rgba(139,92,246,0.42); }
+  .au-work .card .cover {
+    aspect-ratio: 16/10; background-size: cover; background-position: center;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .au-work .card .cover .metric-chip {
+    position: absolute; left: 14px; bottom: 14px;
+    padding: 6px 12px; border-radius: 999px;
+    background: rgba(12,10,31,0.78); border: 1px solid rgba(122,229,255,0.32);
+    font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 0.08em;
+  }
+  .au-work .card .body { padding: 20px 22px 26px; }
+  .au-work .card .body .id {
+    font-family: var(--mono); font-size: 10px; color: var(--accent);
+    letter-spacing: 0.14em; font-weight: 700;
+  }
+  .au-work .card .body h3 { margin-top: 10px; font-size: 20px; letter-spacing: -0.018em; }
+  .au-work .card .body .client { margin-top: 6px; font-size: 13px; color: var(--ink-mute); }
+  .au-work .card .body .stack {
+    margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px;
+    font-family: var(--mono); font-size: 10px; color: var(--ink-mute);
+    letter-spacing: 0.08em;
+  }
+  .au-work .card .body .stack span { padding: 4px 8px; border-radius: 999px;
+    background: rgba(236,233,255,0.04); border: 1px solid var(--rule); }
+
+  /* ============================================================
+     METRIC STRIP — velocity numbers on band
+  ============================================================ */
+  .au-metric-band {
+    margin: 48px auto 0; max-width: 1260px; padding: 48px 56px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    background: linear-gradient(180deg, rgba(139,92,246,0.05) 0%, rgba(12,10,31,0) 100%);
+  }
+  .au-metric-band .row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+  .au-metric-band .stat .num {
+    font-family: var(--heading); font-size: 56px; letter-spacing: -0.04em;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  .au-metric-band .stat .num em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-metric-band .stat .lbl {
+    margin-top: 6px; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .au-metric-band .stat .note { margin-top: 8px; font-size: 13px; color: var(--ink-soft); max-width: 24ch; }
+
+  /* ============================================================
+     BRIEF CTA — glow panel
+  ============================================================ */
+  .au-cta-panel { max-width: 1260px; margin: 48px auto 0; padding: 64px 56px; }
+  .au-cta-panel .wrap {
+    padding: 56px; border-radius: 24px;
+    background: linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(122,229,255,0.10) 100%);
+    border: 1px solid rgba(139,92,246,0.32);
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center;
+  }
+  .au-cta-panel h2 { font-size: 48px; letter-spacing: -0.03em; max-width: 20ch; }
+  .au-cta-panel p { margin-top: 18px; font-size: 17px; color: var(--ink-soft); max-width: 48ch; }
+  .au-cta-panel .side { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+  .au-cta-panel .side .chip {
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(122,229,255,0.10);
+    border: 1px solid rgba(122,229,255,0.32);
+    font-family: var(--mono); font-size: 11px; color: var(--cyan); letter-spacing: 0.12em;
+  }
+
+  @media (max-width: 1100px) {
+    .au-hero { grid-template-columns: 1fr; gap: 48px; padding: 32px 32px 64px; }
+    .au-hero .left h1 { font-size: 52px; }
+    .au-hero .left .metrics { grid-template-columns: repeat(3, 1fr); }
+    .au-capab .head { grid-template-columns: 1fr; }
+    .au-capab .grid, .au-sprints .grid, .au-work .grid { grid-template-columns: repeat(2, 1fr); }
+    .au-metric-band { padding: 32px; }
+    .au-metric-band .row { grid-template-columns: repeat(2, 1fr); }
+    .au-cta-panel .wrap { grid-template-columns: 1fr; padding: 36px; }
+    .au-cta-panel h2 { font-size: 32px; }
+  }
+  @media (max-width: 720px) {
+    .au-hero .left h1 { font-size: 34px; }
+    .au-hero .left .metrics { grid-template-columns: 1fr; gap: 16px; }
+    .au-capab .grid, .au-sprints .grid, .au-work .grid { grid-template-columns: 1fr; }
+    .au-console .console-body .primary-metric { font-size: 56px; }
+    .au-metric-band .row { grid-template-columns: 1fr; gap: 20px; }
+    .au-metric-band .stat .num { font-size: 38px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="au-hero" data-lm-group>
+  <div class="left">
+    <span class="chip"><span class="pulse"></span>{{ page_data.chip }}</span>
+    <h1 data-lm-reveal>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="au-btn-primary">{{ page_data.primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="au-btn-ghost">{{ page_data.secondary_cta }}</a>
+    </div>
+    <div class="metrics">
+      {% for num, lbl in page_data.hero_metrics %}
+      <div class="metric">
+        <div class="num">{{ num|safe }}</div>
+        <div class="lbl">{{ lbl }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="right">
+    <div class="au-console" data-lm-reveal>
+      <div class="console-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span class="path au-mono">{{ page_data.console.path }}</span>
+        <span class="pill"><span class="pulse"></span>{{ page_data.console.status_chip }}</span>
+      </div>
+      <div class="console-body">
+        <div class="primary-metric">{{ page_data.console.primary_metric }}</div>
+        <div class="primary-lbl">{{ page_data.console.primary_label }}</div>
+        <div class="kpi-row">
+          {% for big, lbl in page_data.console.kpi %}
+          <div class="kpi">
+            <div class="big">{{ big|safe }}</div>
+            <div class="lbl">{{ lbl }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="spark"></div>
+        <div class="foot-meta">
+          <span>{{ page_data.console.meta_label }}</span>
+          <span class="val">{{ page_data.console.meta_value }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="au-section au-capab" data-lm-group>
+  <div class="head">
+    <div>
+      <div class="sec-label">{{ page_data.capab_label }}</div>
+      <h2>{{ page_data.capab_heading|safe }}</h2>
+    </div>
+    <p class="sec-intro">{{ page_data.capab_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for card in page_data.capab_cards %}
+    <div class="card" data-lm-reveal>
+      <div class="id">{{ card.id }}</div>
+      <h3>{{ card.title|safe }}</h3>
+      <p>{{ card.body }}</p>
+      <div class="tags">
+        {% for t in card.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="au-section au-sprints" data-lm-group>
+  <div class="head">
+    <div>
+      <div class="sec-label">{{ page_data.sprint_label }}</div>
+      <h2>{{ page_data.sprint_heading|safe }}</h2>
+    </div>
+    <p class="sec-intro">{{ page_data.sprint_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for s in page_data.sprints %}
+    <div class="sprint-card" data-lm-reveal>
+      <div class="id">{{ s.id }}</div>
+      <div class="duration">{{ s.duration }}</div>
+      <h3>{{ s.title|safe }}</h3>
+      <p>{{ s.body }}</p>
+      <div class="out">{{ s.output }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="au-section au-work" data-lm-group>
+  <div class="head">
+    <div>
+      <div class="sec-label">{{ page_data.work_label }}</div>
+      <h2>{{ page_data.work_heading|safe }}</h2>
+    </div>
+    <p class="sec-intro">{{ page_data.work_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for w in page_data.work_cards %}
+    <a class="card" href="{% url 'catalog:live_template_post' template.category.slug template.slug page_data.work_page_slug w.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm-reveal>
+      <div class="cover" style="background-image: url('{{ w.cover }}')">
+        <span class="metric-chip">{{ w.metric_chip }}</span>
+      </div>
+      <div class="body">
+        <div class="id">{{ w.id }}</div>
+        <h3>{{ w.title }}</h3>
+        <div class="client">{{ w.client }}</div>
+        <div class="stack">
+          {% for s in w.stack %}<span>{{ s }}</span>{% endfor %}
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<div class="au-metric-band">
+  <div class="row">
+    {% for num, lbl, note in page_data.metric_strip %}
+    <div class="stat" data-lm-reveal>
+      <div class="num">{{ num|safe }}</div>
+      <div class="lbl">{{ lbl }}</div>
+      <div class="note">{{ note }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<section class="au-cta-panel">
+  <div class="wrap" data-lm-reveal>
+    <div>
+      <div class="sec-label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading|safe }}</h2>
+      <p>{{ page_data.cta_sub }}</p>
+    </div>
+    <div class="side">
+      <span class="chip">{{ page_data.cta_chip }}</span>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.inquiry_page_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="au-btn-primary">{{ page_data.cta_primary }}</a>
+      <a href="mailto:{{ site.email }}" class="au-btn-ghost">{{ site.email }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

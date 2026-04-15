@@ -1,0 +1,204 @@
+{% extends "live_templates/agency/agency-creative-studio/_base.html" %}
+
+{% block extra_css %}
+  .vx-dossier { max-width: 1200px; margin: 0 auto; padding: 72px 56px 48px; }
+  .vx-dossier .crumb {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .vx-dossier .crumb a { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; }
+  .vx-dossier .crumb .sep { color: var(--ink-mute); }
+  .vx-dossier h1 {
+    margin-top: 28px; font-size: 72px; line-height: 1.04;
+    letter-spacing: -0.03em; max-width: 20ch;
+  }
+  .vx-dossier h1 em {
+    font-family: var(--serif-italic); font-style: italic; font-weight: 500;
+  }
+  .vx-dossier .standfirst {
+    margin-top: 24px; font-family: var(--serif-italic); font-style: italic;
+    font-size: 22px; line-height: 1.55; color: var(--ink-2); max-width: 58ch;
+  }
+  .vx-dossier .dossier-meta {
+    margin-top: 40px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+    padding: 26px 0; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink);
+  }
+  .vx-dossier .dossier-meta .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px;
+  }
+  .vx-dossier .dossier-meta .val {
+    font-family: var(--heading); font-size: 18px; color: var(--ink); font-weight: 600;
+  }
+  .vx-dossier .dossier-meta .val.vx-mono { font-family: var(--mono); color: var(--accent); font-size: 16px; }
+
+  .vx-cover { max-width: 1200px; margin: 0 auto; padding: 0 56px; }
+  .vx-cover .frame {
+    aspect-ratio: 16/9; background-size: cover; background-position: center;
+    border: 1px solid var(--rule);
+  }
+
+  .vx-chapters { max-width: 880px; margin: 0 auto; padding: 96px 56px 72px; }
+  .vx-chapters section { margin-bottom: 56px; }
+  .vx-chapters .ch-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .vx-chapters h2 { margin-top: 12px; font-size: 36px; letter-spacing: -0.02em; max-width: 22ch; }
+  .vx-chapters p { margin-top: 20px; font-size: 17px; line-height: 1.75; color: var(--ink-2); }
+  .vx-chapters p em { color: var(--ink); }
+  .vx-chapters .pullquote {
+    margin: 40px 0; padding: 16px 0 16px 24px;
+    border-left: 2px solid var(--accent);
+    font-family: var(--serif-italic); font-style: italic; font-size: 26px;
+    line-height: 1.45; color: var(--ink);
+  }
+
+  .vx-deliverables { max-width: 1200px; margin: 0 auto; padding: 72px 56px; }
+  .vx-deliverables .head { display: grid; grid-template-columns: 0.8fr 1fr; gap: 48px; align-items: end; margin-bottom: 48px; }
+  .vx-deliverables .head .sec-label { color: var(--accent); font-family: var(--body); font-size: 10px;
+    font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; }
+  .vx-deliverables .head h2 { margin-top: 12px; font-size: 40px; letter-spacing: -0.025em; }
+  .vx-deliverables .head p { font-family: var(--serif-italic); font-style: italic; font-size: 18px; color: var(--ink-2); }
+  .vx-deliverables .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .vx-deliverables .item {
+    padding-top: 22px; border-top: 1.5px solid var(--ink);
+  }
+  .vx-deliverables .item .num { font-family: var(--mono); font-size: 12px;
+    color: var(--accent); font-weight: 700; }
+  .vx-deliverables .item h4 { margin-top: 14px; font-size: 19px; letter-spacing: -0.015em; }
+  .vx-deliverables .item p { margin-top: 12px; font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
+
+  .vx-press-quote { background: var(--ink); color: var(--on-dark); padding: 96px 56px; }
+  .vx-press-quote .wrap { max-width: 880px; margin: 0 auto; text-align: center; }
+  .vx-press-quote blockquote {
+    font-family: var(--serif-italic); font-style: italic; font-weight: 500;
+    font-size: 34px; line-height: 1.35; color: var(--on-dark); max-width: 28ch; margin: 0 auto;
+  }
+  .vx-press-quote blockquote:before { content: '“'; display: block; font-size: 72px;
+    color: var(--accent); line-height: 0.3; margin-bottom: 24px; }
+  .vx-press-quote .cite { margin-top: 36px; font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--on-dark-2); }
+  .vx-press-quote .cite em { font-family: var(--serif-italic); font-style: italic;
+    text-transform: none; letter-spacing: 0; color: var(--accent); font-size: 14px; }
+
+  .vx-next { max-width: 1200px; margin: 0 auto; padding: 72px 56px 112px; display: grid;
+    grid-template-columns: 1fr 1fr; gap: 56px; align-items: end;
+    border-top: 1px solid var(--rule); }
+  .vx-next .side .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .vx-next .side a {
+    display: block; margin-top: 18px; font-family: var(--heading);
+    font-size: 28px; letter-spacing: -0.02em; color: var(--ink);
+  }
+  .vx-next .side a em { font-family: var(--serif-italic); font-style: italic;
+    font-weight: 500; color: var(--accent); }
+
+  @media (max-width: 1100px) {
+    .vx-dossier { padding: 56px 32px 40px; }
+    .vx-dossier h1 { font-size: 48px; }
+    .vx-dossier .dossier-meta { grid-template-columns: repeat(2, 1fr); }
+    .vx-cover { padding: 0 32px; }
+    .vx-chapters { padding: 64px 32px 48px; }
+    .vx-deliverables { padding: 48px 32px; }
+    .vx-deliverables .head { grid-template-columns: 1fr; }
+    .vx-deliverables .grid { grid-template-columns: 1fr; }
+    .vx-press-quote { padding: 64px 32px; }
+    .vx-press-quote blockquote { font-size: 24px; }
+    .vx-next { padding: 48px 32px 72px; grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .vx-dossier h1 { font-size: 32px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vx-dossier">
+  <div class="crumb">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.blog_back_all_prefix }} {{ page.label|lower }}</a>
+    <span class="sep">/</span>
+    <span>{{ post.index }} · {{ post.discipline }}</span>
+  </div>
+  <h1>{{ post.title|safe }}</h1>
+  <p class="standfirst">{{ post.standfirst }}</p>
+  <div class="dossier-meta">
+    <div>
+      <div class="lbl">{{ post.meta_label_client }}</div>
+      <div class="val">{{ post.client }}</div>
+    </div>
+    <div>
+      <div class="lbl">{{ post.meta_label_discipline }}</div>
+      <div class="val">{{ post.discipline }}</div>
+    </div>
+    <div>
+      <div class="lbl">{{ post.meta_label_year }}</div>
+      <div class="val vx-mono">{{ post.year }}</div>
+    </div>
+    <div>
+      <div class="lbl">{{ post.meta_label_team }}</div>
+      <div class="val">{{ post.team }}</div>
+    </div>
+  </div>
+</section>
+
+<section class="vx-cover">
+  <div class="frame" style="background-image: url('{{ post.cover_image }}')"></div>
+</section>
+
+<article class="vx-chapters" data-lm-group>
+  {% for chapter in post.chapters %}
+  <section data-lm-reveal>
+    <div class="ch-label">{{ chapter.label }}</div>
+    <h2>{{ chapter.title|safe }}</h2>
+    {% for para in chapter.paragraphs %}
+      <p>{{ para|safe }}</p>
+    {% endfor %}
+    {% if chapter.pullquote %}
+    <blockquote class="pullquote">{{ chapter.pullquote }}</blockquote>
+    {% endif %}
+  </section>
+  {% endfor %}
+</article>
+
+<section class="vx-deliverables" data-lm-group>
+  <div class="head">
+    <div>
+      <div class="sec-label">{{ post.deliverables_label }}</div>
+      <h2>{{ post.deliverables_heading|safe }}</h2>
+    </div>
+    <p>{{ post.deliverables_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for num, title, body in post.deliverables %}
+    <div class="item" data-lm-reveal>
+      <div class="num">{{ num }}</div>
+      <h4>{{ title }}</h4>
+      <p>{{ body }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% if post.press_quote %}
+<section class="vx-press-quote">
+  <div class="wrap">
+    <blockquote>{{ post.press_quote }}</blockquote>
+    <div class="cite">{{ post.press_source }} · <em>{{ post.press_journalist }}</em></div>
+  </div>
+</section>
+{% endif %}
+
+<section class="vx-next">
+  <div class="side">
+    <span class="lbl">{{ post.next_label }}</span>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ post.next_heading|safe }}</a>
+  </div>
+  <div class="side" style="text-align: right;">
+    <span class="lbl">{{ post.cta_label }}</span>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.inquiry_page_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ post.cta_heading|safe }}</a>
+  </div>
+</section>
+{% endblock %}

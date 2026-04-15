@@ -68,6 +68,9 @@ LAYOUT_ARCHETYPES: dict[str, str] = {
     # Portfolio hardening wave (Phase 2g2x)
     "editorial-designer-grid": "Independent designer / art director studio — cream paper page with typographic drama, NO big hero photo, numbered project ledger in a 4-column index and clients/sector ribbon. Systemic, editorial, case-study driven.",
     "cinematic-photographer":  "Photographer / visual storyteller portfolio — fully dark page with a dominant fullbleed image hero carrying EXIF credit meta, image-first filmstrip gallery, series counter and a minimal ghost CTA. Atmospheric, cinematic, gallery-led.",
+    # Agency live rollout (Phase 2g3.6f)
+    "agency-creative-studio":  "Independent creative agency / brand studio — editorial ink page with oversized serif italic pull-quote hero, selected-work cover tile, press ribbon and indexed case-study ledger. Concept-led, curatorial, strategy-driven.",
+    "agency-digital-studio":   "Digital / product / growth studio — midnight-violet page with product-dashboard hero, sprint telemetry chips, capability grid and live ship-log. Momentum-led, product-minded, delivery-driven.",
 }
 
 HERO_STYLES: dict[str, str] = {
@@ -82,6 +85,8 @@ HERO_STYLES: dict[str, str] = {
     "centered-manifesto-product": "Centered typographic manifesto with feature pills + product-mockup dashboard card overlapping the hero bottom. No big hero photo.",
     "typographic-index-ledger":  "Huge display headline over a cream page with a numbered project index on the right — NO big hero photo, project names and numbers are the hero.",
     "fullbleed-exif":            "Fullbleed dominant photo with a film-style EXIF credit bar along the bottom edge — no text over image except a small series counter and ghost CTA.",
+    "editorial-quote-cover":     "Oversized serif italic pull-quote left + a framed selected-work cover tile right with editorial credit strip — no product UI, press ribbon below.",
+    "product-console-hero":      "Bold sans-serif kinetic headline left + dashboard-chrome product card right with live metric + a delivery-cadence status chip pinned bottom-left.",
 }
 
 NAVBAR_STYLES: dict[str, str] = {
@@ -96,6 +101,8 @@ NAVBAR_STYLES: dict[str, str] = {
     "pill-floating-glow":  "Floating rounded pill nav with glowing primary CTA button and launch-date badge.",
     "index-rule":          "Hairline rule navbar — wordmark left + uppercase index-letters navigation + quiet status pill on the right.",
     "fullbleed-dark":      "Transparent dark navbar with small uppercase wordmark, minimal link row and a tiny quiet ghost CTA on the right.",
+    "serif-index-asterisk": "Ink page hairline navbar with serif wordmark + asterisk glyph + uppercase alpha-index links and a ghost dossier CTA on the right.",
+    "pill-sprint-chip":     "Floating dark violet pill navbar with geometric wordmark + glow primary CTA and a tiny mono sprint chip beside it.",
 }
 
 FOOTER_STYLES: dict[str, str] = {
@@ -110,6 +117,8 @@ FOOTER_STYLES: dict[str, str] = {
     "shiplog-countdown": "Live ship-log list + next-release countdown chip (startup changelog vibe).",
     "clients-ribbon":    "Hairline rule over a horizontal ribbon of editorial clients/publications + studio coordinates on the right.",
     "exif-credits":      "Film-style EXIF credit bar: camera body, lens, location, year — monospaced, tiny uppercase, split in 4 cells.",
+    "colophon-press":    "Editorial colophon footer: three-column credit block (studio, recognition, coordinates) with press ribbon above and a small standfirst quote.",
+    "shiplog-console":   "Live console-style footer with ship-log row, current sprint chip, stack logo marquee and a boot-line telemetry string at the bottom.",
 }
 
 CARD_STYLES: dict[str, str] = {
@@ -124,6 +133,8 @@ CARD_STYLES: dict[str, str] = {
     "feature-glow":       "Feature pills + glowing product mockup card with metric readout.",
     "indexed-case-study": "Numbered row entries in a case-study ledger: index · project name · category · year, with a hover rule between rows.",
     "filmstrip-series":   "Horizontal filmstrip of series stills with series counter badges and a hairline divider between frames.",
+    "editorial-index-dossier":"Editorial oversized numbered case-study rows (01/ 02/) with serif project name + italic client + year + discipline tag, clickable into a dossier.",
+    "sprint-console":         "Dark violet sprint card: mono sprint ID + capability chip + deliverable metric + accent glow CTA, product-telemetry feel.",
 }
 
 BUTTON_STYLES: dict[str, str] = {
@@ -138,6 +149,8 @@ BUTTON_STYLES: dict[str, str] = {
     "glow-pill":           "Solid glowing rounded pill with subtle drop-glow, startup/SaaS conversion button.",
     "ghost-sans-rule":     "Uppercase sans label with a thin rule underneath, no fill — quiet editorial CTA for designer portfolios.",
     "ghost-mono-bracket":  "Monospaced uppercase label wrapped in [ square brackets ] — cinematographer CTA, minimal and technical.",
+    "ghost-serif-dossier": "Italic serif underline label with a small right-arrow — editorial agency CTA, invitational.",
+    "glow-sprint-arrow":   "Solid violet glowing pill with arrow — digital-studio primary CTA, startup-energetic but premium.",
 }
 
 DENSITY_PROFILES: dict[str, str] = {
@@ -159,6 +172,8 @@ TONES: dict[str, str] = {
     "growth-tech":    "Diretto, energico, product-led, orientato alla conversione.",
     "editorial-designer":   "Tipografico, sistemico, di studio — voce da direttore artistico, first-person plural, progettuale.",
     "cinematic-authorial":  "Autoriale, silenziosa, cinematografica — voce da autore di immagini, tempi lenti, ossessione per la luce.",
+    "editorial-agency":     "Curatoriale, strategica, di brand — voce da art director / direttore creativo, first-person plural, manifesti e principi.",
+    "digital-sprint":       "Digitale, diretta, di delivery — voce da product partner / head of digital, imperative leggero, sprint e metrica.",
 }
 
 CONVERSION_PATTERNS: dict[str, str] = {
@@ -173,6 +188,8 @@ CONVERSION_PATTERNS: dict[str, str] = {
     "free-trial-glow":        "Glowing primary 'Inizia gratis' CTA + secondary 'Guarda la demo' + pricing teaser card.",
     "case-study-request":     "Ghost 'Richiedi il portfolio completo' CTA + studio email + open-commission status strip.",
     "series-brief":           "Ghost 'Apri la serie completa' CTA + quiet 'Disponibile per commissioni' status pulse.",
+    "dossier-request":        "Ghost serif 'Richiedi il dossier' CTA + single editorial contact email + slow reply-time promise.",
+    "discovery-call":         "Glowing pill 'Prenota la call di discovery' CTA + next-sprint chip + 3-step brief intake.",
 }
 
 IMAGERY_DIRECTIONS: dict[str, str] = {
@@ -187,6 +204,8 @@ IMAGERY_DIRECTIONS: dict[str, str] = {
     "product-dashboard":    "Laptop screens with dashboards, product UIs, code editors, open-plan tech offices.",
     "design-workspace":     "Designer desk, sketchbooks, paper prototypes, studio work-in-progress — artifacts over portraits.",
     "cinematic-photostill":  "Moody, low-key photographic stills — reportage, still life, portrait — as if framed from a film.",
+    "editorial-agency-craft":"Studio print/type close-ups, brand books on desks, art-direction contact sheets, gallery install shots — no team-lineup stock.",
+    "digital-product-console":"Product UI close-ups, screen-in-screen reviews, dark IDE, sprint board detail, modern studio with monitors — momentum energy.",
 }
 
 
@@ -195,6 +214,61 @@ IMAGERY_DIRECTIONS: dict[str, str] = {
 # ---------------------------------------------------------------------------
 
 TEMPLATE_DNA: dict[str, dict[str, Any]] = {
+
+    # ─────────────────────────────────────────────────────────────
+    # Agency live rollout (Phase 2g3.6f) — 2 distinct archetypes
+    # (agency-creative-studio · agency-digital-studio)
+    #
+    # Session 49 closes the Phase 2g2x.1 agency identity-crash by
+    # splitting Vertex + Aura onto distinct DNAs. Vertex goes
+    # editorial-studio (concept-led, brand/identity/curation). Aura
+    # goes product-studio (delivery-led, digital/product/growth). They
+    # never collapse into recolors of each other — the hero silhouette,
+    # typography axis, case-study treatment, process section, CTA
+    # language and imagery pool are all distinct.
+    # ─────────────────────────────────────────────────────────────
+
+    # ── A1) CREATIVE-STUDIO — Vertex, brand/identity editorial ───
+    "vertex-creative-agency": {
+        "archetype":          "agency-creative-studio",
+        "hero_style":         "editorial-quote-cover",
+        "navbar_style":       "serif-index-asterisk",
+        "footer_style":       "colophon-press",
+        "section_order":      ["serif-nav", "quote-hero", "selected-work", "capacita", "press-ribbon", "manifesto", "colophon"],
+        "card_style":         "editorial-index-dossier",
+        "button_style":       "ghost-serif-dossier",
+        "density":            "very-airy",
+        "tone":               "editorial-agency",
+        "imagery_direction":  "editorial-agency-craft",
+        "imagery_key":        "agency-creative",
+        "conversion_pattern": "dossier-request",
+        "font_pairing":       ("Space Grotesk", "Inter"),
+        "content": {
+            "eyebrow":    "Independent creative studio · Milano",
+            "headline":   "Brand che <em>pesano</em>, <em>tengono</em>, <em>durano</em>.",
+        },
+    },
+
+    # ── A2) DIGITAL-STUDIO — Aura, digital/product/growth ────────
+    "aura-digital-studio": {
+        "archetype":          "agency-digital-studio",
+        "hero_style":         "product-console-hero",
+        "navbar_style":       "pill-sprint-chip",
+        "footer_style":       "shiplog-console",
+        "section_order":      ["pill-nav", "console-hero", "capabilities-grid", "sprints", "lavori-cards", "metric-strip", "shiplog"],
+        "card_style":         "sprint-console",
+        "button_style":       "glow-sprint-arrow",
+        "density":            "medium",
+        "tone":               "digital-sprint",
+        "imagery_direction":  "digital-product-console",
+        "imagery_key":        "agency-digital",
+        "conversion_pattern": "discovery-call",
+        "font_pairing":       ("Plus Jakarta Sans", "Inter"),
+        "content": {
+            "eyebrow":    "Digital · product · growth studio",
+            "headline":   "Dalla <em>call di discovery</em> al <em>primo KPI</em>.",
+        },
+    },
 
     # ─────────────────────────────────────────────────────────────
     # Medical pilot — 4 distinct archetypes

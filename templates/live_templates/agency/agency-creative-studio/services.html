@@ -1,0 +1,154 @@
+{% extends "live_templates/agency/agency-creative-studio/_base.html" %}
+
+{% block extra_css %}
+  .vx-lead { max-width: 1360px; margin: 0 auto; padding: 96px 56px 56px; }
+  .vx-lead .eyebrow { display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); }
+  .vx-lead .eyebrow:before { content: ''; width: 40px; height: 1.5px; background: var(--ink); }
+  .vx-lead h1 { margin-top: 28px; font-size: 68px; letter-spacing: -0.03em; max-width: 22ch; }
+  .vx-lead h1 em { font-family: var(--serif-italic); font-style: italic; font-weight: 500; }
+  .vx-lead .standfirst { margin-top: 26px; font-size: 18px; line-height: 1.7; color: var(--ink-2); max-width: 62ch; }
+
+  .vx-disciplines { max-width: 1360px; margin: 0 auto; padding: 72px 56px; }
+  .vx-disciplines .card {
+    display: grid; grid-template-columns: 120px 1fr 1fr; gap: 36px;
+    padding: 40px 0; border-top: 1.5px solid var(--ink);
+    align-items: start;
+  }
+  .vx-disciplines .card:last-child { border-bottom: 1.5px solid var(--ink); }
+  .vx-disciplines .card .num { font-family: var(--mono); font-size: 15px;
+    color: var(--accent); font-weight: 700; letter-spacing: 0.04em; }
+  .vx-disciplines .card .head h2 {
+    font-size: 36px; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1;
+  }
+  .vx-disciplines .card .head h2 em {
+    font-family: var(--serif-italic); font-style: italic; font-weight: 500; color: var(--accent);
+  }
+  .vx-disciplines .card .head .tagline {
+    margin-top: 14px; font-family: var(--serif-italic); font-style: italic;
+    font-size: 17px; color: var(--ink-2); max-width: 42ch;
+  }
+  .vx-disciplines .card .body p {
+    font-size: 15px; line-height: 1.7; color: var(--ink-2);
+  }
+  .vx-disciplines .card .body .scope {
+    margin-top: 22px; border-top: 1px solid var(--rule); padding-top: 18px;
+  }
+  .vx-disciplines .card .body .scope .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .vx-disciplines .card .body .scope ul {
+    list-style: none; margin-top: 12px;
+  }
+  .vx-disciplines .card .body .scope li {
+    position: relative; padding-left: 20px; padding-bottom: 6px;
+    font-size: 14px; color: var(--ink-2);
+  }
+  .vx-disciplines .card .body .scope li:before {
+    content: '—'; position: absolute; left: 0; color: var(--accent);
+  }
+
+  .vx-engagement { background: var(--ink); color: var(--on-dark);
+    padding: 96px 56px; }
+  .vx-engagement .wrap { max-width: 1360px; margin: 0 auto; }
+  .vx-engagement .sec-label { color: var(--accent); }
+  .vx-engagement h2 { margin-top: 14px; color: var(--on-dark); font-size: 44px; max-width: 22ch; }
+  .vx-engagement h2 em { color: var(--accent); font-family: var(--serif-italic); font-style: italic; }
+  .vx-engagement .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .vx-engagement .tile {
+    padding: 32px 28px; border: 1px solid rgba(244,240,232,0.16);
+    background: rgba(244,240,232,0.02);
+  }
+  .vx-engagement .tile h3 { font-size: 22px; color: var(--on-dark); margin-bottom: 10px; }
+  .vx-engagement .tile h3 em {
+    font-family: var(--serif-italic); font-style: italic; color: var(--accent);
+  }
+  .vx-engagement .tile .price {
+    margin-top: 10px; font-family: var(--mono);
+    font-size: 14px; color: var(--on-dark-2);
+  }
+  .vx-engagement .tile p { margin-top: 14px; font-size: 14px; color: var(--on-dark-2); line-height: 1.65; }
+  .vx-engagement .tile ul { list-style: none; margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(244,240,232,0.14); }
+  .vx-engagement .tile li { padding: 5px 0; font-size: 13px; color: var(--on-dark-2); }
+  .vx-engagement .tile li:before { content: '· '; color: var(--accent); }
+
+  .vx-cta-band { max-width: 1360px; margin: 0 auto; padding: 80px 56px; text-align: center; }
+  .vx-cta-band .sec-label { color: var(--accent); }
+  .vx-cta-band h2 { margin-top: 14px; font-size: 52px; letter-spacing: -0.028em; max-width: 20ch; margin-inline: auto; }
+  .vx-cta-band h2 em { font-family: var(--serif-italic); font-style: italic; font-weight: 500; }
+  .vx-cta-band .actions { margin-top: 38px; display: inline-flex; gap: 36px; align-items: center; }
+
+  @media (max-width: 1100px) {
+    .vx-lead { padding: 72px 32px 40px; }
+    .vx-lead h1 { font-size: 44px; }
+    .vx-disciplines { padding: 48px 32px; }
+    .vx-disciplines .card { grid-template-columns: 1fr; gap: 16px; padding: 28px 0; }
+    .vx-engagement { padding: 64px 32px; }
+    .vx-engagement .grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .vx-lead h1 { font-size: 30px; }
+    .vx-cta-band h2 { font-size: 30px; }
+    .vx-cta-band .actions { flex-direction: column; gap: 20px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vx-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="standfirst">{{ page_data.standfirst }}</p>
+</section>
+
+<section class="vx-disciplines" data-lm-group>
+  {% for item in page_data.disciplines %}
+  <div class="card" data-lm-reveal>
+    <div class="num">{{ item.num }}</div>
+    <div class="head">
+      <h2>{{ item.title|safe }}</h2>
+      <p class="tagline">{{ item.tagline }}</p>
+    </div>
+    <div class="body">
+      <p>{{ item.body }}</p>
+      <div class="scope">
+        <div class="lbl">{{ item.scope_label }}</div>
+        <ul>
+          {% for s in item.scope %}<li>{{ s }}</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="vx-engagement" data-lm-group>
+  <div class="wrap">
+    <div class="sec-label">{{ page_data.engagement_label }}</div>
+    <h2>{{ page_data.engagement_heading|safe }}</h2>
+    <p class="sec-intro" style="color: var(--on-dark-2); margin-top:18px;">{{ page_data.engagement_intro }}</p>
+    <div class="grid">
+      {% for tile in page_data.engagement_tiles %}
+      <div class="tile" data-lm-reveal>
+        <h3>{{ tile.title|safe }}</h3>
+        <div class="price">{{ tile.range }}</div>
+        <p>{{ tile.body }}</p>
+        <ul>
+          {% for line in tile.includes %}<li>{{ line }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="vx-cta-band">
+  <div class="sec-label">{{ page_data.cta_label }}</div>
+  <h2>{{ page_data.cta_heading|safe }}</h2>
+  <div class="actions">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.inquiry_page_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="vx-btn-primary">{{ page_data.cta_primary }}</a>
+    <a href="mailto:{{ site.email }}" class="vx-btn-ghost">{{ site.email }}</a>
+  </div>
+</section>
+{% endblock %}

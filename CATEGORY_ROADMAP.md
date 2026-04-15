@@ -6,7 +6,7 @@
 
 | Priority | Category    | Slug         | Description                              | Templates / Archetypes | **Audit severity** |
 |----------|-------------|--------------|------------------------------------------|-----------------|--------------------|
-| 1        | Agency      | agency       | Digital/creative agencies                | 2 (no DNA) — vertex + aura share `agency.html` with 6 fake case-study literals  | **CRITICO** (identity crash) |
+| 1        | Agency      | agency       | Digital/creative agencies                | 2 / 2 ✅ all live (Session 49) — agency-creative-studio (Vertex editorial) + agency-digital-studio (Aura midnight-violet product), all 5-locale + RTL, sharp D-054 differentiation | **CHIUSA** (Phase 2g3.6f closed Session 49 — Vertex + Aura flipped to published_live, agency 2/2 live) |
 | 2        | Business    | business     | General business, corporate              | 2 (no DNA) — pragma + elevate share `business.html` with hardcoded `"Hanno scelto Pragma"` label + Marco Bianchi testimonial | **CRITICO** (identity crash) |
 | 3        | Restaurant  | restaurant | Restaurants, cafés, food delivery       | 3 / 3 ✅ all live (Session 48) — fine-dining + trattoria-warm + street-modern, all 5-locale + RTL, sharp D-054 differentiation | **CHIUSA** (Phase 2g3.6 closed Session 48 — Sapore + Brace flipped to published_live, restaurant 3/3 live) |
 | 4        | Medical     | medical      | Clinics, doctors, health practices       | 5 / 4 ✅ DNA pilot — clinic + family + specialist ×2 + wellness (specialist hosts cardio + dermatologia-elite-roma) | **MEDIO** (cardio+derm share specialist hero imagery which is from lawyer pool 5/6 overlap; `medical-family` pool 100% overlaps with `medical` pool; latent single-tenant leak in `medical/family.html` preview comp) |
@@ -15,9 +15,9 @@
 | 7        | Portfolio   | portfolio    | Freelancers, designers, photographers    | 2 (no DNA) — chiara + pixel share `portfolio.html` hardcoding "Sono una designer indipendente" | **CRITICO** (identity crash — Pixel photographer renders Chiara's designer identity) |
 | 8        | eCommerce   | ecommerce    | Online stores, product showcases         | 2 / 2 ✅ DNA pilot — luxe (fashion-editorial) + bottega (artisan-workshop), Session 15 macro-tone split | **MEDIO** (latent — `fashion-editorial.html` has 12+ Luxe literals; `artisan-workshop.html` has 10+ Bottega literals. Will detonate on Phase 2f.2 reuse) |
 
-**Completeness coverage (preview vs full multi-page) — updated Session 48:**
-- **Full multi-page websites:** **11 of 20 templates** (cardio, dermatologia-elite-roma via specialist reuse, gusto-fine-dining, pragma-corporate-suite, elevate-startup-landing, chiara-portfolio-creativo, pixel-portfolio-fotografico, bottega-shop-artigianale, luxe-fashion-store, **sapore-trattoria-pizzeria, brace-street-food-lab**) — all 11/11 multilingual (5 locales + RTL).
-- **Preview-PNG-only templates:** 9 of 20. Marketplace shows the 11 live templates only; the other 9 are `tier=draft` and hidden from the public catalog per D-055/D-057.
+**Completeness coverage (preview vs full multi-page) — updated Session 49:**
+- **Full multi-page websites:** **13 of 20 templates** (cardio, dermatologia-elite-roma via specialist reuse, gusto-fine-dining, pragma-corporate-suite, elevate-startup-landing, chiara-portfolio-creativo, pixel-portfolio-fotografico, bottega-shop-artigianale, luxe-fashion-store, sapore-trattoria-pizzeria, brace-street-food-lab, **vertex-creative-agency, aura-digital-studio**) — all 13/13 multilingual (5 locales + RTL).
+- **Preview-PNG-only templates:** 7 of 20. Marketplace shows the 13 live templates only; the other 7 are `tier=draft` and hidden from the public catalog per D-055/D-057.
 
 ### DNA migration order (Phase 2f)
 1. ✅ Medical — done (Session 7 — clinic / family / specialist / wellness)

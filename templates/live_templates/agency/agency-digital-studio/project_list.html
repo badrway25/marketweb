@@ -1,0 +1,173 @@
+{% extends "live_templates/agency/agency-digital-studio/_base.html" %}
+
+{% block extra_css %}
+  .au-lead { max-width: 1260px; margin: 40px auto 0; padding: 56px 56px 32px; }
+  .au-lead .chip {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(139,92,246,0.10); border: 1px solid rgba(139,92,246,0.32);
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+  }
+  .au-lead h1 { margin-top: 22px; font-size: 64px; letter-spacing: -0.035em; max-width: 22ch; }
+  .au-lead h1 em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-lead .standfirst { margin-top: 22px; font-size: 18px; color: var(--ink-soft); max-width: 58ch; line-height: 1.7; }
+
+  .au-tabs { max-width: 1260px; margin: 32px auto 0; padding: 0 56px;
+    display: flex; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--rule); padding-bottom: 22px; }
+  .au-tabs .tab {
+    padding: 8px 16px; border-radius: 999px; border: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .au-tabs .tab.is-active { background: rgba(139,92,246,0.18); color: var(--ink); border-color: rgba(139,92,246,0.42); }
+  .au-tabs .stats { margin-left: auto; display: flex; gap: 22px; align-items: center; color: var(--ink-faint);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; }
+
+  .au-catalog { max-width: 1260px; margin: 48px auto; padding: 0 56px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  .au-catalog .card {
+    padding: 0; border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--rule); background: rgba(236,233,255,0.03);
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .au-catalog .card:hover { transform: translateY(-2px); border-color: rgba(139,92,246,0.42); }
+  .au-catalog .card .cover {
+    aspect-ratio: 16/9; background-size: cover; background-position: center;
+    position: relative; border-bottom: 1px solid var(--rule);
+  }
+  .au-catalog .card .cover .id {
+    position: absolute; top: 14px; left: 14px;
+    padding: 5px 10px; border-radius: 999px;
+    background: rgba(12,10,31,0.78); color: var(--accent);
+    font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  }
+  .au-catalog .card .cover .discipline {
+    position: absolute; top: 14px; right: 14px;
+    padding: 5px 12px; border-radius: 999px;
+    background: rgba(122,229,255,0.12); border: 1px solid rgba(122,229,255,0.32);
+    color: var(--cyan); font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+  }
+  .au-catalog .card .body { padding: 26px; }
+  .au-catalog .card .body h3 { font-size: 24px; letter-spacing: -0.02em; }
+  .au-catalog .card .body .client {
+    margin-top: 4px; font-size: 13px; color: var(--ink-mute);
+  }
+  .au-catalog .card .body .blurb {
+    margin-top: 16px; font-size: 14px; color: var(--ink-soft); line-height: 1.65;
+  }
+  .au-catalog .card .body .kpi-row {
+    margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--rule);
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  .au-catalog .card .body .kpi {
+    font-family: var(--mono); font-size: 11px;
+  }
+  .au-catalog .card .body .kpi .big {
+    font-family: var(--heading); font-size: 22px; letter-spacing: -0.02em; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .au-catalog .card .body .kpi .big em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-catalog .card .body .kpi .lbl { margin-top: 4px; color: var(--ink-faint); letter-spacing: 0.1em; text-transform: uppercase; font-size: 10px; }
+
+  .au-bottom { max-width: 1260px; margin: 0 auto; padding: 72px 56px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
+    border-top: 1px solid var(--rule); }
+  .au-bottom .note .sec-label { color: var(--cyan); }
+  .au-bottom .note h3 { margin-top: 14px; font-size: 28px; max-width: 20ch; letter-spacing: -0.02em; }
+  .au-bottom .note p { margin-top: 14px; font-size: 15px; color: var(--ink-soft); max-width: 48ch; line-height: 1.65; }
+  .au-bottom .velocity { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .au-bottom .velocity .stat {
+    padding: 24px; border-radius: 14px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+  }
+  .au-bottom .velocity .stat .big {
+    font-family: var(--heading); font-size: 38px; letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .au-bottom .velocity .stat .big em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-bottom .velocity .stat .lbl {
+    margin-top: 6px; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint);
+  }
+
+  @media (max-width: 1100px) {
+    .au-lead { padding: 32px; }
+    .au-lead h1 { font-size: 42px; }
+    .au-tabs { padding: 0 32px 22px; }
+    .au-catalog { grid-template-columns: 1fr; padding: 0 32px; }
+    .au-bottom { padding: 48px 32px; grid-template-columns: 1fr; }
+    .au-bottom .velocity { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .au-lead h1 { font-size: 30px; }
+    .au-catalog .card .body .kpi-row { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="au-lead">
+  <span class="chip">{{ page_data.chip }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="standfirst">{{ page_data.standfirst }}</p>
+</section>
+
+<div class="au-tabs" aria-hidden="true">
+  {% for t in page_data.tabs %}
+  <span class="tab{% if forloop.first %} is-active{% endif %}">{{ t }}</span>
+  {% endfor %}
+  <div class="stats">
+    <span>{{ page_data.tabs_count_label }}</span>
+    <span class="au-mono" style="color: var(--cyan); font-weight: 700;">{{ page_data.tabs_count_value }}</span>
+  </div>
+</div>
+
+<section class="au-catalog" data-lm-group>
+  {% for project in page_data.projects %}
+  <a class="card" href="{% url 'catalog:live_template_post' template.category.slug template.slug page.slug project.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm-reveal>
+    <div class="cover" style="background-image: url('{{ project.cover }}')">
+      <span class="id">{{ project.id }}</span>
+      <span class="discipline">{{ project.discipline }}</span>
+    </div>
+    <div class="body">
+      <h3>{{ project.title }}</h3>
+      <div class="client">{{ project.client }} · {{ project.year }}</div>
+      <p class="blurb">{{ project.blurb }}</p>
+      <div class="kpi-row">
+        {% for big, lbl in project.kpi %}
+        <div class="kpi">
+          <div class="big">{{ big|safe }}</div>
+          <div class="lbl">{{ lbl }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</section>
+
+<section class="au-bottom">
+  <div class="note">
+    <div class="sec-label">{{ page_data.velocity_label }}</div>
+    <h3>{{ page_data.velocity_heading|safe }}</h3>
+    <p>{{ page_data.velocity_body }}</p>
+  </div>
+  <div class="velocity">
+    {% for big, lbl in page_data.velocity_stats %}
+    <div class="stat">
+      <div class="big">{{ big|safe }}</div>
+      <div class="lbl">{{ lbl }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

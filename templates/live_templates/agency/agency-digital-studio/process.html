@@ -1,0 +1,189 @@
+{% extends "live_templates/agency/agency-digital-studio/_base.html" %}
+
+{% block extra_css %}
+  .au-lead { max-width: 1260px; margin: 40px auto 0; padding: 56px 56px 32px; }
+  .au-lead .chip {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(139,92,246,0.10); border: 1px solid rgba(139,92,246,0.32);
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+  }
+  .au-lead h1 { margin-top: 22px; font-size: 64px; letter-spacing: -0.035em; max-width: 22ch; }
+  .au-lead h1 em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-lead .standfirst { margin-top: 26px; font-size: 18px; color: var(--ink-soft); max-width: 62ch; line-height: 1.7; }
+
+  .au-sprint-rows { max-width: 1260px; margin: 48px auto; padding: 0 56px; }
+  .au-sprint-rows .row {
+    padding: 32px 0; border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 140px 0.9fr 1.2fr; gap: 32px; align-items: start;
+  }
+  .au-sprint-rows .row:last-child { border-bottom: 1px solid var(--rule); }
+  .au-sprint-rows .row .id {
+    font-family: var(--mono); font-size: 14px; color: var(--accent); font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  .au-sprint-rows .row .dur {
+    margin-top: 8px; font-family: var(--mono); font-size: 11px;
+    color: var(--ink-faint); letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .au-sprint-rows .row h3 { font-size: 28px; letter-spacing: -0.024em; line-height: 1.15; }
+  .au-sprint-rows .row h3 em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-sprint-rows .row .tagline {
+    margin-top: 12px; font-family: var(--mono); font-size: 12px;
+    color: var(--cyan); letter-spacing: 0.06em;
+  }
+  .au-sprint-rows .row p { font-size: 15px; color: var(--ink-soft); line-height: 1.7; }
+  .au-sprint-rows .row .deliverables {
+    margin-top: 20px; padding: 18px; border-radius: 12px;
+    background: rgba(139,92,246,0.05); border: 1px solid rgba(139,92,246,0.22);
+  }
+  .au-sprint-rows .row .deliverables .dl {
+    font-family: var(--mono); font-size: 10px; color: var(--cyan);
+    letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .au-sprint-rows .row .deliverables ul {
+    list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px;
+  }
+  .au-sprint-rows .row .deliverables li {
+    position: relative; padding-left: 16px; font-size: 13px; color: var(--ink-soft);
+  }
+  .au-sprint-rows .row .deliverables li:before {
+    content: '◆'; position: absolute; left: 0; color: var(--accent); font-size: 8px; top: 5px;
+  }
+
+  .au-mindset {
+    max-width: 1260px; margin: 0 auto; padding: 72px 56px;
+    background: linear-gradient(180deg, rgba(139,92,246,0.08) 0%, rgba(12,10,31,0) 100%);
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .au-mindset .head { margin-bottom: 40px; }
+  .au-mindset .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .au-mindset .card {
+    padding: 28px; border-radius: 14px;
+    background: rgba(12,10,31,0.54); border: 1px solid var(--rule);
+  }
+  .au-mindset .card .id {
+    font-family: var(--mono); font-size: 11px; color: var(--cyan);
+    letter-spacing: 0.14em; font-weight: 700;
+  }
+  .au-mindset .card h3 { margin-top: 14px; font-size: 22px; letter-spacing: -0.018em; }
+  .au-mindset .card h3 em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-mindset .card p { margin-top: 12px; font-size: 14px; color: var(--ink-soft); line-height: 1.65; }
+
+  .au-stack {
+    max-width: 1260px; margin: 0 auto; padding: 72px 56px;
+  }
+  .au-stack .head { margin-bottom: 32px; display: grid; grid-template-columns: 0.8fr 1fr; gap: 40px; align-items: end; }
+  .au-stack .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .au-stack .tile {
+    padding: 20px; border-radius: 12px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+  }
+  .au-stack .tile .category {
+    font-family: var(--mono); font-size: 10px; color: var(--cyan);
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .au-stack .tile .list {
+    margin-top: 14px; font-family: var(--mono); font-size: 13px;
+    color: var(--ink); line-height: 1.8;
+  }
+  .au-stack .tile .list span { color: var(--ink-soft); }
+  .au-stack .tile .list strong {
+    color: var(--ink); font-weight: 700;
+    padding: 2px 8px; border-radius: 6px;
+    background: rgba(139,92,246,0.14);
+  }
+
+  @media (max-width: 1100px) {
+    .au-lead { padding: 32px; }
+    .au-lead h1 { font-size: 42px; }
+    .au-sprint-rows { padding: 0 32px; }
+    .au-sprint-rows .row { grid-template-columns: 1fr; gap: 18px; padding: 24px 0; }
+    .au-mindset { padding: 48px 32px; }
+    .au-mindset .grid { grid-template-columns: 1fr; }
+    .au-stack { padding: 48px 32px; }
+    .au-stack .head { grid-template-columns: 1fr; }
+    .au-stack .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .au-lead h1 { font-size: 28px; }
+    .au-sprint-rows .row .deliverables ul { grid-template-columns: 1fr; }
+    .au-stack .grid { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="au-lead">
+  <span class="chip">{{ page_data.chip }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="standfirst">{{ page_data.standfirst }}</p>
+</section>
+
+<section class="au-sprint-rows" data-lm-group>
+  {% for s in page_data.sprints %}
+  <div class="row" data-lm-reveal>
+    <div>
+      <div class="id">{{ s.id }}</div>
+      <div class="dur">{{ s.duration }}</div>
+    </div>
+    <div>
+      <h3>{{ s.title|safe }}</h3>
+      <p class="tagline">{{ s.tagline }}</p>
+    </div>
+    <div>
+      <p>{{ s.body }}</p>
+      <div class="deliverables">
+        <div class="dl">{{ s.deliverables_label }}</div>
+        <ul>
+          {% for d in s.deliverables %}<li>{{ d }}</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="au-mindset" data-lm-group>
+  <div class="head">
+    <div class="sec-label">{{ page_data.mindset_label }}</div>
+    <h2 style="margin-top:14px; font-size: 40px;">{{ page_data.mindset_heading|safe }}</h2>
+  </div>
+  <div class="grid">
+    {% for card in page_data.mindset_cards %}
+    <div class="card" data-lm-reveal>
+      <div class="id">{{ card.id }}</div>
+      <h3>{{ card.title|safe }}</h3>
+      <p>{{ card.body }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="au-stack" data-lm-group>
+  <div class="head">
+    <div>
+      <div class="sec-label">{{ page_data.stack_label }}</div>
+      <h2 style="margin-top:14px; font-size: 36px;">{{ page_data.stack_heading|safe }}</h2>
+    </div>
+    <p class="sec-intro">{{ page_data.stack_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for tile in page_data.stack_tiles %}
+    <div class="tile" data-lm-reveal>
+      <div class="category">{{ tile.category }}</div>
+      <div class="list">{{ tile.list|safe }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

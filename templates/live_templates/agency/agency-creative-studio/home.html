@@ -1,0 +1,395 @@
+{% extends "live_templates/agency/agency-creative-studio/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     EDITORIAL QUOTE HERO — oversized serif italic + cover tile
+  ============================================================ */
+  .vx-hero {
+    max-width: 1400px; margin: 0 auto; padding: 96px 56px 104px;
+    display: grid; grid-template-columns: 1.15fr 1fr; gap: 72px;
+    align-items: end;
+  }
+  .vx-hero .left .eyebrow {
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .vx-hero .left .eyebrow:before {
+    content: ''; width: 40px; height: 1.5px; background: var(--ink);
+  }
+  .vx-hero .left h1 {
+    margin-top: 28px; font-size: 86px; line-height: 1.0;
+    letter-spacing: -0.035em; color: var(--ink);
+  }
+  .vx-hero .left h1 em {
+    font-family: var(--serif-italic); font-style: italic;
+    font-weight: 500; color: var(--ink);
+  }
+  .vx-hero .left .pull-quote {
+    margin-top: 36px; font-family: var(--serif-italic); font-style: italic;
+    font-weight: 500; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 42ch;
+    padding-left: 22px; border-left: 2px solid var(--accent);
+  }
+  .vx-hero .left .intro {
+    margin-top: 30px; max-width: 58ch;
+    font-size: 17px; line-height: 1.7; color: var(--ink-2);
+  }
+  .vx-hero .left .actions {
+    margin-top: 42px; display: flex; flex-wrap: wrap; gap: 36px; align-items: center;
+  }
+
+  .vx-hero .right {
+    position: relative; display: flex; flex-direction: column; gap: 16px;
+  }
+  .vx-hero .cover {
+    position: relative; aspect-ratio: 4/5;
+    border: 1px solid var(--rule); background-size: cover; background-position: center;
+    overflow: hidden;
+  }
+  .vx-hero .cover:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(13,13,13,0) 50%, rgba(13,13,13,0.68));
+  }
+  .vx-hero .cover .badge {
+    position: absolute; top: 18px; left: 18px; z-index: 2;
+    background: var(--accent); color: var(--ink);
+    padding: 7px 12px; font-family: var(--body);
+    font-size: 10px; font-weight: 700; letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  .vx-hero .cover .caption {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+    padding: 22px 24px 24px; color: var(--on-dark);
+  }
+  .vx-hero .cover .caption .ci {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--on-dark-2);
+  }
+  .vx-hero .cover .caption h3 {
+    margin-top: 10px; font-size: 24px; line-height: 1.15;
+    color: var(--on-dark); letter-spacing: -0.01em;
+  }
+  .vx-hero .cover .caption h3 em {
+    color: var(--accent); font-family: var(--serif-italic); font-style: italic;
+  }
+  .vx-hero .cover .caption .meta {
+    margin-top: 14px; font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.06em; color: var(--on-dark-2);
+    display: flex; gap: 16px;
+  }
+  .vx-hero .credits {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px 32px;
+    padding: 18px 4px 0; border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 12px;
+  }
+  .vx-hero .credits .lbl {
+    color: var(--ink-soft); letter-spacing: 0.14em;
+    text-transform: uppercase; font-weight: 700; font-size: 10px;
+    margin-bottom: 3px;
+  }
+  .vx-hero .credits .val {
+    font-family: var(--heading); font-size: 14px; color: var(--ink);
+    font-weight: 600;
+  }
+  .vx-hero .yr { font-family: var(--mono); color: var(--accent); }
+
+  /* ============================================================
+     SELECTED WORK LEDGER — indexed case-study rows
+  ============================================================ */
+  .vx-ledger { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .vx-ledger .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 36px 8px 22px; border-bottom: 1px solid var(--rule);
+  }
+  .vx-ledger .head h2 { font-size: 40px; letter-spacing: -0.025em; }
+  .vx-ledger .head .lnk {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .vx-ledger .head .lnk:hover { color: var(--accent); }
+  .vx-ledger .row {
+    display: grid; grid-template-columns: 64px 1.4fr 1fr 0.6fr 40px;
+    gap: 24px; padding: 26px 8px;
+    border-bottom: 1px solid var(--rule);
+    align-items: center; transition: background .2s ease;
+  }
+  .vx-ledger .row:hover { background: var(--paper-2); }
+  .vx-ledger .row:last-child { border-bottom: 0; }
+  .vx-ledger .num {
+    font-family: var(--mono); font-size: 14px; color: var(--accent);
+    font-weight: 700;
+  }
+  .vx-ledger .title {
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    letter-spacing: -0.015em; color: var(--ink);
+  }
+  .vx-ledger .title em {
+    color: var(--ink-soft); font-family: var(--serif-italic);
+    font-style: italic; font-weight: 500;
+  }
+  .vx-ledger .cat {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .vx-ledger .yr {
+    font-family: var(--mono); font-size: 13px; color: var(--ink-soft);
+  }
+  .vx-ledger .arrow {
+    font-family: var(--body); font-size: 18px; color: var(--ink);
+    text-align: right; transition: transform .2s ease, color .2s ease;
+  }
+  .vx-ledger .row:hover .arrow { transform: translateX(6px); color: var(--accent); }
+
+  /* ============================================================
+     CAPACITA — 4-up pillar grid
+  ============================================================ */
+  .vx-capab .head {
+    display: grid; grid-template-columns: 0.9fr 1fr; gap: 48px;
+    align-items: end; margin-bottom: 56px;
+  }
+  .vx-capab .head h2 { max-width: 16ch; }
+  .vx-capab .head .sec-intro { max-width: 54ch; }
+  .vx-capab .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
+  .vx-capab .item {
+    padding: 24px 0 0;
+    border-top: 1.5px solid var(--ink);
+  }
+  .vx-capab .item .num {
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    letter-spacing: 0.06em; font-weight: 700;
+  }
+  .vx-capab .item h3 {
+    margin-top: 16px; font-size: 22px; line-height: 1.2;
+    letter-spacing: -0.015em; color: var(--ink);
+  }
+  .vx-capab .item p {
+    margin-top: 14px; font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+  }
+  .vx-capab .item .tags {
+    margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .vx-capab .item .tags span { border-bottom: 1px dotted var(--ink-mute); padding-bottom: 1px; }
+
+  /* ============================================================
+     PRESS RIBBON — publications recognition
+  ============================================================ */
+  .vx-press .ribbon-head {
+    display: grid; grid-template-columns: 0.8fr 1fr; align-items: end;
+    gap: 40px; padding-bottom: 28px; border-bottom: 1px solid var(--rule);
+  }
+  .vx-press .ribbon-head h3 {
+    font-size: 32px; letter-spacing: -0.02em;
+  }
+  .vx-press .ribbon-head p {
+    font-family: var(--serif-italic); font-style: italic;
+    font-size: 18px; color: var(--ink-2); max-width: 44ch;
+  }
+  .vx-press .pubs {
+    display: flex; flex-wrap: wrap; gap: 40px 56px;
+    padding: 32px 0 12px;
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: var(--ink); letter-spacing: 0.04em;
+  }
+  .vx-press .pubs span:nth-child(even) { color: var(--accent); font-family: var(--serif-italic); font-style: italic; font-weight: 500; }
+
+  /* ============================================================
+     MANIFESTO — ink band, drop-cap intro + principles 4-up
+  ============================================================ */
+  .vx-manifesto .lead {
+    display: grid; grid-template-columns: 0.8fr 1fr; gap: 56px; margin-bottom: 56px;
+  }
+  .vx-manifesto .lead h2 { font-size: 52px; max-width: 18ch; }
+  .vx-manifesto .lead p {
+    font-size: 17px; line-height: 1.7;
+  }
+  .vx-manifesto .lead p .drop-cap {
+    float: left; font-family: var(--serif-italic); font-style: italic;
+    font-weight: 700; font-size: 76px; line-height: 0.88;
+    padding: 4px 14px 0 0; color: var(--accent);
+  }
+  .vx-principles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+  .vx-principles .item { }
+  .vx-principles .item .num {
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    letter-spacing: 0.06em; font-weight: 700;
+  }
+  .vx-principles .item h3 {
+    margin-top: 16px; font-size: 19px; line-height: 1.25;
+    color: var(--on-dark);
+  }
+  .vx-principles .item h3 em {
+    font-family: var(--serif-italic); font-style: italic;
+    font-weight: 500; color: var(--accent);
+  }
+  .vx-principles .item p {
+    margin-top: 10px; font-size: 14px; color: var(--on-dark-2); line-height: 1.55;
+  }
+
+  /* ============================================================
+     INQUIRY CTA — editorial ask, large serif italic, ghost link
+  ============================================================ */
+  .vx-inquiry {
+    max-width: 1360px; margin: 0 auto; padding: 120px 56px;
+    text-align: center;
+  }
+  .vx-inquiry .sec-label { color: var(--accent); }
+  .vx-inquiry h2 {
+    margin-top: 18px; font-size: 68px; line-height: 1.05;
+    max-width: 16ch; margin-inline: auto; letter-spacing: -0.03em;
+  }
+  .vx-inquiry h2 em {
+    font-family: var(--serif-italic); font-style: italic; font-weight: 500;
+  }
+  .vx-inquiry .sub {
+    margin-top: 22px; font-family: var(--serif-italic); font-style: italic;
+    font-size: 20px; color: var(--ink-2); max-width: 48ch; margin-inline: auto;
+  }
+  .vx-inquiry .actions {
+    margin-top: 44px; display: inline-flex; gap: 36px; align-items: center;
+  }
+
+  @media (max-width: 1100px) {
+    .vx-hero { grid-template-columns: 1fr; padding: 64px 32px 72px; gap: 48px; }
+    .vx-hero .left h1 { font-size: 56px; }
+    .vx-ledger .head h2 { font-size: 30px; }
+    .vx-ledger .row { grid-template-columns: 48px 1fr 0.8fr; gap: 12px; }
+    .vx-ledger .yr, .vx-ledger .arrow { display: none; }
+    .vx-capab .head, .vx-manifesto .lead { grid-template-columns: 1fr; }
+    .vx-capab .grid, .vx-principles { grid-template-columns: repeat(2, 1fr); }
+    .vx-inquiry h2 { font-size: 44px; }
+    .vx-press .ribbon-head { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .vx-hero .left h1 { font-size: 38px; }
+    .vx-ledger .row { grid-template-columns: 32px 1fr; gap: 10px; padding: 18px 6px; }
+    .vx-ledger .cat { display: none; }
+    .vx-ledger .title { font-size: 17px; }
+    .vx-capab .grid, .vx-principles { grid-template-columns: 1fr; }
+    .vx-inquiry { padding: 72px 20px; }
+    .vx-inquiry h2 { font-size: 30px; }
+    .vx-press .pubs { font-size: 16px; gap: 18px 28px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vx-hero" data-lm-group>
+  <div class="left">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1 data-lm-reveal>{{ page_data.headline|safe }}</h1>
+    <blockquote class="pull-quote" data-lm-reveal>{{ page_data.pull_quote }}</blockquote>
+    <p class="intro">{{ page_data.intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="vx-btn-primary">{{ page_data.primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="vx-btn-ghost">{{ page_data.secondary_cta }}</a>
+    </div>
+  </div>
+  <div class="right">
+    <div class="cover" style="background-image: url('{{ page_data.cover.image }}')" data-lm-reveal>
+      <span class="badge">{{ page_data.cover.badge }}</span>
+      <div class="caption">
+        <div class="ci">{{ page_data.cover.client_name }}</div>
+        <h3>{{ page_data.cover.title|safe }}</h3>
+        <div class="meta">
+          <span class="vx-mono">{{ page_data.cover.discipline }}</span>
+          <span class="vx-mono">{{ page_data.cover.year }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="credits">
+      <div>
+        <div class="lbl">{{ page_data.cover.credit_left_label }}</div>
+        <div class="val">{{ page_data.cover.credit_left_value }}</div>
+      </div>
+      <div>
+        <div class="lbl">{{ page_data.cover.credit_right_label }}</div>
+        <div class="val yr">{{ page_data.cover.credit_right_value }}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vx-section" style="padding-top:0;">
+  <div class="vx-ledger" data-lm-group>
+    <div class="head">
+      <h2>{{ page_data.ledger_heading|safe }}</h2>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.ledger_page_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="lnk">{{ page_data.ledger_link }}</a>
+    </div>
+    {% for idx, title, client_italic, category, year, slug in page_data.ledger_rows %}
+    <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug page_data.ledger_page_slug slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm-reveal>
+      <span class="num">{{ idx }}</span>
+      <span class="title">{{ title }} <em>· {{ client_italic }}</em></span>
+      <span class="cat">{{ category }}</span>
+      <span class="yr">{{ year }}</span>
+      <span class="arrow">→</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vx-section vx-capab" data-lm-group>
+  <div class="head">
+    <div>
+      <div class="sec-label">{{ page_data.capab_label }}</div>
+      <h2>{{ page_data.capab_heading|safe }}</h2>
+    </div>
+    <p class="sec-intro">{{ page_data.capab_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for num, title, description, tags in page_data.capab_items %}
+    <div class="item" data-lm-reveal>
+      <div class="num">{{ num }}</div>
+      <h3>{{ title }}</h3>
+      <p>{{ description }}</p>
+      <div class="tags">
+        {% for t in tags %}<span>{{ t }}</span>{% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vx-section vx-press" style="padding-top:0;">
+  <div class="ribbon-head">
+    <h3>{{ page_data.press_heading|safe }}</h3>
+    <p>{{ page_data.press_intro }}</p>
+  </div>
+  <div class="pubs">
+    {% for pub in page_data.press_publications %}<span>{{ pub }}</span>{% endfor %}
+  </div>
+</section>
+
+<section class="vx-section ink vx-manifesto" data-lm-group>
+  <div class="lead">
+    <div>
+      <div class="sec-label">{{ page_data.manifesto_label }}</div>
+      <h2>{{ page_data.manifesto_heading|safe }}</h2>
+    </div>
+    <p>
+      <span class="drop-cap">{{ page_data.manifesto_drop_cap }}</span>
+      {{ page_data.manifesto_body }}
+    </p>
+  </div>
+  <div class="vx-principles">
+    {% for num, title, body in page_data.manifesto_principles %}
+    <div class="item" data-lm-reveal>
+      <div class="num">{{ num }}</div>
+      <h3>{{ title|safe }}</h3>
+      <p>{{ body }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vx-inquiry" data-lm-group>
+  <div class="sec-label">{{ page_data.cta_label }}</div>
+  <h2 data-lm-reveal>{{ page_data.cta_heading|safe }}</h2>
+  <p class="sub">{{ page_data.cta_sub }}</p>
+  <div class="actions">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.inquiry_page_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="vx-btn-primary">{{ page_data.cta_primary }}</a>
+    <a href="mailto:{{ site.email }}" class="vx-btn-ghost">{{ site.email }}</a>
+  </div>
+</section>
+{% endblock %}
