@@ -1,0 +1,564 @@
+{% extends "live_templates/restaurant/street-modern/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     HERO — product-cutout · headline left · big tilted product right
+  ============================================================ */
+  .sm-hero {
+    padding: 64px 32px 88px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px;
+    align-items: center;
+  }
+  .sm-hero .text { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+  .sm-hero .text h1 { max-width: 11ch; }
+  .sm-hero .text .actions {
+    display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+  }
+  .sm-hero .product {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: var(--bg-2);
+    border: 2px solid var(--rule);
+    overflow: hidden;
+    transform: rotate(-2deg);
+    transition: transform 600ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .sm-hero .product:hover { transform: rotate(0deg); }
+  .sm-hero .product img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    filter: contrast(1.1) saturate(1.05);
+    transition: transform 900ms cubic-bezier(0.33,1.0,0.68,1);
+  }
+  .sm-hero .product:hover img { transform: scale(1.06); }
+  .sm-hero .product .price-badge {
+    position: absolute; top: 28px; right: 28px;
+    background: var(--secondary); color: #0a0a0a;
+    padding: 18px 22px;
+    text-align: center;
+    transform: rotate(8deg);
+    box-shadow: 0 6px 0 -2px #c0a800;
+    z-index: 2;
+  }
+  .sm-hero .product .price-badge .price {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 32px; line-height: 0.95; display: block;
+  }
+  .sm-hero .product .price-badge .label {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; margin-top: 4px; display: block;
+    color: rgba(10,10,10,0.78);
+  }
+  .sm-hero .product .top-tag {
+    position: absolute; top: 28px; left: 28px;
+    background: var(--accent); color: var(--ink);
+    padding: 6px 12px;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    z-index: 2;
+  }
+
+  /* ============================================================
+     STAT BAND — 4 numbers on alt block
+  ============================================================ */
+  .sm-stats {
+    background: var(--bg-2);
+    padding: 48px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-stats-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+  }
+  .sm-stats .stat { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .sm-stats .stat .num {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 56px; line-height: 0.9; color: var(--secondary);
+    letter-spacing: -0.02em;
+  }
+  .sm-stats .stat .lbl {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* ============================================================
+     MENU STRIP — product-grid teaser · 6 cards with photo + price + tag
+  ============================================================ */
+  .sm-menu-strip {
+    padding: 96px 32px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sm-menu-strip .head {
+    display: grid; grid-template-columns: 1fr auto; gap: 32px;
+    align-items: end; margin-bottom: 48px;
+  }
+  .sm-menu-strip .head .meta { display: flex; flex-direction: column; gap: 16px; max-width: 60ch; min-width: 0; }
+  .sm-menu-strip .head .head-cta {
+    align-self: end;
+    font-family: var(--heading); font-weight: 800;
+    font-size: 14px; letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--secondary);
+    border-bottom: 2px solid var(--secondary);
+    padding-bottom: 4px;
+  }
+  .sm-menu-strip .head .head-cta:after { content: '  →'; }
+
+  .sm-menu-strip .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .sm-product {
+    background: var(--bg-2);
+    border: 2px solid var(--rule);
+    display: flex; flex-direction: column;
+    transition: border-color 220ms ease, transform 220ms ease;
+    min-width: 0;
+  }
+  .sm-product:hover { border-color: var(--secondary); transform: translateY(-4px); }
+  .sm-product .img {
+    aspect-ratio: 4/3;
+    background: var(--bg-3);
+    overflow: hidden;
+    position: relative;
+  }
+  .sm-product .img img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 600ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .sm-product:hover .img img { transform: scale(1.05); }
+  .sm-product .img .tag {
+    position: absolute; top: 14px; left: 14px;
+  }
+  .sm-product .body {
+    padding: 22px 22px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    flex-grow: 1;
+  }
+  .sm-product .body .name {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 22px; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink);
+  }
+  .sm-product .body .desc {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+    line-height: 1.55; min-height: 3.1em;
+  }
+  .sm-product .body .row {
+    margin-top: 8px;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding-top: 14px; border-top: 1px dashed var(--rule);
+  }
+  .sm-product .body .row .price {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 22px; color: var(--secondary); letter-spacing: 0;
+  }
+  .sm-product .body .row .add {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 13px; letter-spacing: 0.10em; text-transform: uppercase;
+    background: var(--secondary); color: #0a0a0a;
+    padding: 8px 14px;
+    border: 2px solid var(--secondary);
+    transition: background 200ms ease, color 200ms ease;
+  }
+  .sm-product .body .row .add:hover { background: #0a0a0a; color: var(--secondary); }
+
+  /* ============================================================
+     DELIVERY MARQUEE — 4 partner pills with ETA + min order
+  ============================================================ */
+  .sm-delivery {
+    background: var(--bg-2);
+    padding: 64px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-delivery-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 2fr; gap: 56px; align-items: center;
+  }
+  .sm-delivery .meta { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .sm-delivery .meta .lbl {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-delivery .meta h3 {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 36px; letter-spacing: -0.01em; text-transform: uppercase; line-height: 0.95;
+    color: var(--ink);
+  }
+  .sm-delivery .meta .sub {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.10em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .sm-delivery .partners {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  }
+  .sm-delivery .partner {
+    border: 2px solid var(--rule);
+    padding: 18px 22px;
+    display: flex; flex-direction: column; gap: 8px;
+    background: #0a0a0a;
+    transition: border-color 220ms ease;
+  }
+  .sm-delivery .partner:hover { border-color: var(--secondary); }
+  .sm-delivery .partner .name {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 22px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink);
+  }
+  .sm-delivery .partner .row {
+    display: flex; gap: 16px; align-items: center;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-delivery .partner .row span:nth-child(2) { color: var(--ink-soft); }
+
+  /* ============================================================
+     MANIFESTO BAND — 3 short bold paragraphs
+  ============================================================ */
+  .sm-manifesto {
+    padding: 96px 32px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.5fr; gap: 80px;
+  }
+  .sm-manifesto .head { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .sm-manifesto .head h2 {
+    font-family: var(--heading); font-weight: 900;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 0.92; letter-spacing: -0.025em; text-transform: uppercase;
+  }
+  .sm-manifesto .body { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .sm-manifesto .body p {
+    font-family: var(--body); font-weight: 500;
+    font-size: 19px; line-height: 1.5; color: var(--ink);
+  }
+  .sm-manifesto .body p:first-of-type {
+    font-weight: 700; font-size: 22px;
+    color: var(--ink); border-left: 4px solid var(--secondary); padding-left: 24px;
+  }
+
+  /* ============================================================
+     CREW BAND — 3 portraits + role + quote
+  ============================================================ */
+  .sm-crew {
+    background: var(--bg-2);
+    padding: 96px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-crew-inner {
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sm-crew .head { display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 48px; min-width: 0; }
+  .sm-crew .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  }
+  .sm-crew .card {
+    display: flex; flex-direction: column; gap: 16px; min-width: 0;
+  }
+  .sm-crew .card .portrait {
+    aspect-ratio: 4/5;
+    background: var(--bg-3);
+    overflow: hidden;
+    position: relative;
+    border-bottom: 4px solid var(--secondary);
+  }
+  .sm-crew .card .portrait img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(20%) contrast(1.05);
+    transition: transform 800ms cubic-bezier(0.22,0.61,0.36,1), filter 600ms ease;
+  }
+  .sm-crew .card:hover .portrait img { transform: scale(1.04); filter: grayscale(0%); }
+  .sm-crew .card .name {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 24px; text-transform: uppercase; letter-spacing: 0.02em;
+  }
+  .sm-crew .card .role {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-crew .card .quote {
+    font-family: var(--body); font-style: italic; font-size: 15px;
+    line-height: 1.5; color: var(--ink-soft);
+  }
+
+  /* ============================================================
+     ATMO STRIP — 3 atmosphere photos with caption
+  ============================================================ */
+  .sm-atmo {
+    padding: 96px 32px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sm-atmo .head { display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 40px; min-width: 0; }
+  .sm-atmo .grid {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px;
+  }
+  .sm-atmo .img {
+    aspect-ratio: 4/5;
+    background: var(--bg-3);
+    overflow: hidden;
+    position: relative;
+    min-width: 0;
+  }
+  .sm-atmo .img img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 800ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .sm-atmo .img:hover img { transform: scale(1.05); }
+  .sm-atmo .img .cap {
+    position: absolute; left: 18px; right: 18px; bottom: 18px;
+    color: var(--ink);
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    background: rgba(10,10,10,0.78); padding: 8px 12px;
+    backdrop-filter: blur(6px);
+  }
+
+  /* ============================================================
+     FINAL CTA BAND — neon yellow band with phone + order CTA
+  ============================================================ */
+  .sm-final {
+    background: var(--secondary); color: #0a0a0a;
+    padding: 96px 32px;
+    border-top: 4px solid #0a0a0a;
+  }
+  .sm-final-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: end;
+  }
+  .sm-final .text { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .sm-final .text .lbl {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: rgba(10,10,10,0.66);
+  }
+  .sm-final .text h2 {
+    font-family: var(--heading); font-weight: 900;
+    font-size: clamp(56px, 7vw, 100px); line-height: 0.9; letter-spacing: -0.03em;
+    color: #0a0a0a; text-transform: uppercase;
+  }
+  .sm-final .text h2 em { color: #0a0a0a; background: #0a0a0a; color: var(--secondary); padding: 0 12px; font-style: normal; }
+  .sm-final .text p {
+    font-family: var(--body); font-weight: 600; font-size: 18px;
+    color: rgba(10,10,10,0.85); max-width: 50ch; line-height: 1.5;
+  }
+  .sm-final .actions {
+    display: flex; flex-direction: column; gap: 14px; min-width: 0;
+  }
+  .sm-final .actions .order {
+    background: #0a0a0a; color: var(--secondary);
+    padding: 22px 32px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 22px; letter-spacing: 0.06em; text-transform: uppercase;
+    display: inline-flex; justify-content: space-between; align-items: center; gap: 18px;
+    border: 2px solid #0a0a0a;
+  }
+  .sm-final .actions .order:after { content: '→'; }
+  .sm-final .actions .phone {
+    background: transparent; color: #0a0a0a;
+    padding: 18px 32px;
+    font-family: var(--mono); font-weight: 700;
+    font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase;
+    border: 2px solid #0a0a0a;
+    display: inline-flex; justify-content: space-between; align-items: center; gap: 14px;
+  }
+  .sm-final .actions .phone:hover { background: #0a0a0a; color: var(--secondary); }
+
+  /* ============================================================
+     RTL — page-level overrides
+  ============================================================ */
+  html[dir="rtl"] .sm-hero { grid-template-columns: 1.05fr 1fr; }
+  html[dir="rtl"] .sm-hero .product { transform: rotate(2deg); }
+  html[dir="rtl"] .sm-hero .product .price-badge { left: 28px; right: auto; transform: rotate(-8deg); }
+  html[dir="rtl"] .sm-hero .product .top-tag { right: 28px; left: auto; }
+  html[dir="rtl"] .sm-menu-strip .head .head-cta:after { content: '  ←'; }
+  html[dir="rtl"] .sm-manifesto .body p:first-of-type { border-left: 0; border-right: 4px solid var(--secondary); padding-left: 0; padding-right: 24px; }
+  html[dir="rtl"] .sm-final .actions .order:after { content: '←'; }
+
+  /* ============================================================
+     MOBILE BREAKPOINT — single-column collapse
+  ============================================================ */
+  @media (max-width: 720px) {
+    .sm-hero { grid-template-columns: 1fr; padding: 36px 18px 56px; gap: 32px; }
+    .sm-hero .text h1 { font-size: 56px; max-width: none; }
+    .sm-hero .product { transform: rotate(0deg); }
+    .sm-hero .product .price-badge { padding: 14px 16px; transform: rotate(4deg); }
+    .sm-hero .product .price-badge .price { font-size: 24px; }
+    .sm-stats-inner { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .sm-stats .stat .num { font-size: 38px; }
+    .sm-menu-strip { padding: 56px 18px; }
+    .sm-menu-strip .head { grid-template-columns: 1fr; gap: 18px; }
+    .sm-menu-strip .grid { grid-template-columns: 1fr; gap: 18px; }
+    .sm-delivery { padding: 48px 18px; }
+    .sm-delivery-inner { grid-template-columns: 1fr; gap: 32px; }
+    .sm-delivery .partners { grid-template-columns: 1fr; gap: 12px; }
+    .sm-manifesto { grid-template-columns: 1fr; padding: 56px 18px; gap: 32px; }
+    .sm-crew { padding: 56px 18px; }
+    .sm-crew .grid { grid-template-columns: 1fr; gap: 28px; }
+    .sm-atmo { padding: 56px 18px; }
+    .sm-atmo .grid { grid-template-columns: 1fr; gap: 12px; }
+    .sm-final { padding: 56px 18px; }
+    .sm-final-inner { grid-template-columns: 1fr; gap: 36px; }
+    .sm-final .text h2 { font-size: 48px; }
+  }
+{% endblock %}
+
+{% block content %}
+{# ========== HERO — product-cutout with price badge ========== #}
+<section class="sm-hero" data-reveal>
+  <div class="text">
+    <span class="sm-eyebrow">{{ page_data.eyebrow }}</span>
+    <h1 class="sm-display">{{ page_data.headline|safe }}</h1>
+    <p class="sm-intro">{{ page_data.intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sm-btn-primary">{{ page_data.primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sm-btn-ghost">{{ page_data.secondary_cta }}</a>
+    </div>
+  </div>
+  <div class="product">
+    <img src="{{ page_data.hero_image }}" alt="{{ page_data.hero_alt }}">
+    {% if page_data.hero_badge_tag %}<span class="top-tag">{{ page_data.hero_badge_tag }}</span>{% endif %}
+    <div class="price-badge">
+      <span class="price">{{ page_data.hero_badge_price }}</span>
+      <span class="label">{{ page_data.hero_badge_label }}</span>
+    </div>
+  </div>
+</section>
+
+{# ========== COUNTER STATUS BAND ========== #}
+<div class="sm-counter" aria-label="{{ page_data.counter_label }}">
+  <div class="cell">
+    <span class="lbl">{{ page_data.counter_label }}</span>
+    <span class="val">{{ page_data.counter_value }}</span>
+  </div>
+  <div class="cell">
+    <span class="lbl">{{ page_data.counter_kitchen_label }}</span>
+    <span class="val">{{ page_data.counter_kitchen_value }}</span>
+  </div>
+  <div class="cell">
+    <span class="lbl">{{ page_data.counter_last_label }}</span>
+    <span class="val">{{ page_data.counter_last_value }}</span>
+  </div>
+</div>
+
+{# ========== STATS BAND ========== #}
+<section class="sm-stats" data-reveal>
+  <div class="sm-stats-inner">
+    {% for num, lbl in page_data.stats %}
+    <div class="stat" data-stagger>
+      <span class="num">{{ num }}</span>
+      <span class="lbl">{{ lbl }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ========== MENU STRIP — 6 product cards ========== #}
+<section class="sm-menu-strip" data-reveal>
+  <div class="head">
+    <div class="meta">
+      <span class="sm-eyebrow">{{ page_data.menu_strip_label }}</span>
+      <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.menu_strip_heading|safe }}</h2>
+      <p class="sm-intro">{{ page_data.menu_strip_intro }}</p>
+    </div>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.menu_strip_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="head-cta">{{ page_data.menu_strip_cta }}</a>
+  </div>
+  <div class="grid">
+    {% for item in page_data.menu_strip_items %}
+    <article class="sm-product" data-stagger>
+      <div class="img">
+        <img src="{{ item.image }}" alt="{{ item.name }}">
+        {% if item.tag %}<span class="sm-tag {% if item.tag == 'TOP' %}is-top{% elif item.tag == 'NEW' %}is-new{% elif item.tag == 'VEG' %}is-veg{% elif item.tag == 'PICCANTE' %}is-piccante{% endif %} tag">{{ item.tag }}</span>{% endif %}
+      </div>
+      <div class="body">
+        <h3 class="name">{{ item.name }}</h3>
+        <p class="desc">{{ item.desc }}</p>
+        <div class="row">
+          <span class="price">{{ item.price }}</span>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'ordina' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="add">{{ chrome.form_submit }}</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+{# ========== DELIVERY BAND — partners with ETA + min order ========== #}
+<section class="sm-delivery" data-reveal>
+  <div class="sm-delivery-inner">
+    <div class="meta">
+      <span class="lbl">{{ page_data.delivery_label }}</span>
+      <h3>{{ page_data.delivery_subtitle }}</h3>
+    </div>
+    <div class="partners">
+      {% for name, eta, mn in page_data.delivery_partners %}
+      <div class="partner" data-stagger>
+        <span class="name">{{ name }}</span>
+        <div class="row">
+          <span>{{ eta }}</span>
+          <span>{{ mn }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ========== MANIFESTO ========== #}
+<section class="sm-manifesto" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.manifesto_label }}</span>
+    <h2>{{ page_data.manifesto_heading|safe }}</h2>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.manifesto_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sm-btn-ghost">{{ page_data.manifesto_cta }}</a>
+  </div>
+  <div class="body">
+    {% for p in page_data.manifesto_paragraphs %}<p>{{ p }}</p>{% endfor %}
+  </div>
+</section>
+
+{# ========== CREW BAND ========== #}
+<section class="sm-crew" data-reveal>
+  <div class="sm-crew-inner">
+    <div class="head">
+      <span class="sm-eyebrow">{{ page_data.crew_label }}</span>
+      <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.crew_heading|safe }}</h2>
+    </div>
+    <div class="grid">
+      {% for c in page_data.crew %}
+      <article class="card" data-stagger>
+        <div class="portrait"><img src="{{ c.portrait }}" alt="{{ c.name }}"></div>
+        <h3 class="name">{{ c.name }}</h3>
+        <span class="role">{{ c.role }}</span>
+        <p class="quote">{{ c.quote }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ========== ATMO STRIP ========== #}
+<section class="sm-atmo" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.atmo_label }}</span>
+    <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.atmo_heading|safe }}</h2>
+  </div>
+  <div class="grid">
+    {% for shot in page_data.atmo_strip %}
+    <div class="img" data-stagger>
+      <img src="{{ shot.image }}" alt="{{ shot.cap }}">
+      <span class="cap">{{ shot.cap }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ========== FINAL CTA BAND ========== #}
+<section class="sm-final">
+  <div class="sm-final-inner">
+    <div class="text">
+      <span class="lbl">{{ page_data.final_label }}</span>
+      <h2>{{ page_data.final_heading|safe }}</h2>
+      <p>{{ page_data.final_intro }}</p>
+    </div>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.final_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="order">{{ page_data.final_primary_cta }}</a>
+      <a href="tel:{{ page_data.final_phone_href }}" class="phone sm-mono">{{ page_data.final_phone_cta }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

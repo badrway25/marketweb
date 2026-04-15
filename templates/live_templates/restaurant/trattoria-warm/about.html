@@ -1,0 +1,241 @@
+{% extends "live_templates/restaurant/trattoria-warm/_base.html" %}
+
+{% block extra_css %}
+  .tw-lead { padding: 72px 56px 48px; max-width: 980px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 22px; }
+  .tw-lead h1 { max-width: 14ch; }
+
+  /* STORY — 4 paragraphs in single column */
+  .tw-story { padding: 24px 56px 72px; max-width: 760px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 26px; }
+  .tw-story p {
+    font-family: var(--heading); font-weight: 400;
+    font-size: 19px; line-height: 1.7; color: var(--ink);
+  }
+  .tw-story p:first-child:first-letter {
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    font-size: 86px; line-height: 0.8;
+    color: var(--accent);
+    float: left; padding: 8px 16px 0 0;
+  }
+
+  /* TIMELINE — 3 horizontal steps */
+  .tw-timeline {
+    background: var(--bg-2);
+    padding: 96px 56px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .tw-timeline-inner { max-width: 1200px; margin: 0 auto; }
+  .tw-timeline .head { display: flex; flex-direction: column; gap: 14px; }
+  .tw-timeline .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px;
+    position: relative;
+  }
+  .tw-timeline .grid:before {
+    content: ''; position: absolute;
+    top: 38px; left: 6%; right: 6%;
+    border-top: 2px dashed var(--rule);
+    z-index: 0;
+  }
+  .tw-timeline .step {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; gap: 14px;
+    min-width: 0;
+  }
+  .tw-timeline .step .year {
+    display: inline-block;
+    width: 76px; height: 76px; border-radius: 50%;
+    background: var(--accent); color: #fff6e6;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    font-size: 18px; letter-spacing: 0;
+    box-shadow: 0 6px 0 0 #8a2318;
+  }
+  .tw-timeline .step h3 {
+    font-family: var(--script); font-weight: 700;
+    font-size: 32px; color: var(--primary); line-height: 1;
+  }
+  .tw-timeline .step p {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 16px; line-height: 1.55; color: var(--ink-soft);
+  }
+
+  /* FAMILY — reused from home shape but more compact */
+  .tw-family-about {
+    padding: 96px 56px;
+    max-width: 1300px; margin: 0 auto;
+  }
+  .tw-family-about .head { display: flex; flex-direction: column; gap: 14px; max-width: 54ch; }
+  .tw-family-about .grid {
+    margin-top: 56px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px;
+  }
+  .tw-family-about .card {
+    background: #fff6e6;
+    padding: 24px 24px 32px;
+    border-radius: 4px;
+    box-shadow: 0 14px 28px -18px rgba(74,44,42,0.3);
+    display: flex; flex-direction: column; gap: 18px;
+    min-width: 0;
+  }
+  .tw-family-about .card .portrait {
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    border-left: 5px solid var(--accent);
+  }
+  .tw-family-about .card .portrait img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 900ms cubic-bezier(0.33,1.0,0.68,1);
+  }
+  .tw-family-about .card:hover .portrait img { transform: scale(1.04); }
+  .tw-family-about .card .name {
+    font-family: var(--script); font-weight: 700;
+    font-size: 32px; color: var(--primary); line-height: 1;
+  }
+  .tw-family-about .card .role {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .tw-family-about .card .blurb {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 15px; line-height: 1.6; color: var(--ink-soft);
+  }
+
+  /* VALUES — 4 cream cards with hand-lettered title */
+  .tw-values {
+    background: var(--bg-3);
+    padding: 96px 56px;
+    border-top: 1px solid var(--rule);
+  }
+  .tw-values-inner { max-width: 1200px; margin: 0 auto; }
+  .tw-values .head { display: flex; flex-direction: column; gap: 14px; max-width: 54ch; }
+  .tw-values .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px;
+  }
+  .tw-values .v {
+    background: #fff6e6;
+    border-left: 5px solid var(--accent);
+    padding: 28px 30px;
+    border-radius: 0 4px 4px 0;
+    min-width: 0;
+  }
+  .tw-values .v h4 {
+    font-family: var(--script); font-weight: 700;
+    font-size: 30px; color: var(--primary); line-height: 1;
+    margin-bottom: 10px;
+  }
+  .tw-values .v p {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 16px; line-height: 1.55; color: var(--ink-soft);
+  }
+
+  /* BIG PHOTO */
+  .tw-photo {
+    padding: 72px 56px 96px;
+    max-width: 1300px; margin: 0 auto;
+  }
+  .tw-photo .frame {
+    aspect-ratio: 16/9; overflow: hidden; position: relative;
+    border-radius: 4px;
+    box-shadow: 0 30px 60px -40px rgba(74,44,42,0.5);
+  }
+  .tw-photo .frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 900ms cubic-bezier(0.33,1.0,0.68,1);
+  }
+  .tw-photo .frame:hover img { transform: scale(1.03); }
+  .tw-photo .frame .cap {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 18px 28px;
+    background: linear-gradient(0deg, rgba(43,31,26,0.75) 0%, transparent 100%);
+    font-family: var(--script); font-size: 22px; color: #fff6e6;
+  }
+
+  @media (max-width: 720px) {
+    .tw-lead { padding: 48px 18px 24px; }
+    .tw-story { padding: 12px 18px 48px; gap: 20px; }
+    .tw-story p { font-size: 17px; line-height: 1.6; }
+    .tw-timeline { padding: 56px 18px; }
+    .tw-timeline .grid { grid-template-columns: 1fr; gap: 32px; }
+    .tw-timeline .grid:before { display: none; }
+    .tw-family-about { padding: 56px 18px; }
+    .tw-family-about .grid { grid-template-columns: 1fr; gap: 22px; }
+    .tw-values { padding: 56px 18px; }
+    .tw-values .grid { grid-template-columns: 1fr; gap: 18px; }
+    .tw-photo { padding: 36px 18px 56px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="tw-lead">
+  <span class="tw-eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</span>
+  <h1 class="tw-display" data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+  <p class="tw-intro" data-lm="reveal">{{ page_data.intro }}</p>
+</section>
+
+<section class="tw-story" data-lm-stagger data-lm-stagger-delay="120">
+  {% for para in page_data.story %}
+    <p>{{ para }}</p>
+  {% endfor %}
+</section>
+
+<section class="tw-timeline">
+  <div class="tw-timeline-inner">
+    <div class="head">
+      <span class="tw-eyebrow" data-lm="reveal">{{ page_data.timeline_label }}</span>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="140">
+      {% for s in page_data.timeline %}
+        <div class="step">
+          <span class="year">{{ s.year }}</span>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="tw-family-about">
+  <div class="head">
+    <span class="tw-eyebrow" data-lm="reveal">{{ page_data.family_label }}</span>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for m in page_data.family %}
+      <div class="card">
+        <div class="portrait"><img src="{{ m.portrait }}" alt="{{ m.name }}"></div>
+        <span class="name">{{ m.name }}</span>
+        <span class="role">{{ m.role }}</span>
+        <p class="blurb">{{ m.blurb }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="tw-values">
+  <div class="tw-values-inner">
+    <div class="head">
+      <span class="tw-eyebrow" data-lm="reveal">{{ page_data.values_label }}</span>
+      <h2 class="tw-display" data-lm="reveal-lg">{{ page_data.values_heading|safe }}</h2>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+      {% for v in page_data.values %}
+        <div class="v">
+          <h4>{{ v.title }}</h4>
+          <p>{{ v.desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="tw-photo">
+  <div class="frame" data-lm="reveal-soft">
+    <img src="{{ page_data.photo_image }}" alt="{{ page_data.photo_caption }}">
+    <div class="cap">{{ page_data.photo_caption }}</div>
+  </div>
+</section>
+{% endblock %}

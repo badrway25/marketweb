@@ -2464,6 +2464,22 @@ from apps.catalog.template_content_luxe_fr import LUXE_CONTENT_FR  # noqa: E402
 from apps.catalog.template_content_luxe_es import LUXE_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_luxe_ar import LUXE_CONTENT_AR  # noqa: E402  # noqa
 
+# Phase 2g3.6 — Restaurant live-completion (Session 48, 2026-04-15).
+# Sapore (trattoria-warm archetype) + Brace (street-modern archetype) flip
+# from `tier=draft` to `tier=published_live` premium with 5 locales each
+# (it/en/fr/es/ar) and real RTL for Arabic. Voices stay sharply distinct:
+# Sapore = warm Roman family register · Brace = Bologna street-food imperative.
+from apps.catalog.template_content_sapore import SAPORE_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_sapore_en import SAPORE_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_sapore_fr import SAPORE_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_sapore_es import SAPORE_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_sapore_ar import SAPORE_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_brace import BRACE_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_brace_en import BRACE_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_brace_fr import BRACE_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_brace_es import BRACE_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_brace_ar import BRACE_CONTENT_AR  # noqa: E402
+
 
 TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     "cardio-studio-specialistico": {
@@ -2528,6 +2544,20 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": LUXE_CONTENT_FR,
         "es": LUXE_CONTENT_ES,
         "ar": LUXE_CONTENT_AR,
+    },
+    "sapore-trattoria-pizzeria": {
+        "it": SAPORE_CONTENT_IT,
+        "en": SAPORE_CONTENT_EN,
+        "fr": SAPORE_CONTENT_FR,
+        "es": SAPORE_CONTENT_ES,
+        "ar": SAPORE_CONTENT_AR,
+    },
+    "brace-street-food-lab": {
+        "it": BRACE_CONTENT_IT,
+        "en": BRACE_CONTENT_EN,
+        "fr": BRACE_CONTENT_FR,
+        "es": BRACE_CONTENT_ES,
+        "ar": BRACE_CONTENT_AR,
     },
 }
 

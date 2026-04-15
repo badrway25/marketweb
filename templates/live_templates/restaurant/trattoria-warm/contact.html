@@ -1,0 +1,299 @@
+{% extends "live_templates/restaurant/trattoria-warm/_base.html" %}
+
+{% block extra_css %}
+  .tw-lead { padding: 72px 56px 48px; max-width: 1000px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 22px; }
+  .tw-lead h1 { max-width: 17ch; }
+
+  /* TOP-LINE CARDS — address / hours / contacts */
+  .tw-cards {
+    padding: 24px 56px 48px;
+    max-width: 1300px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 28px;
+  }
+  .tw-cards .card {
+    background: #fff6e6;
+    padding: 32px 32px;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    box-shadow: 0 14px 28px -20px rgba(74,44,42,0.3);
+    display: flex; flex-direction: column; gap: 14px;
+    min-width: 0;
+  }
+  .tw-cards .card .label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .tw-cards .card h3 {
+    font-family: var(--script); font-weight: 700;
+    font-size: 30px; color: var(--primary); line-height: 1;
+  }
+  .tw-cards .card p {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 16px; line-height: 1.55; color: var(--ink-soft);
+  }
+  .tw-cards .card .city {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  /* HOURS TABLE */
+  .tw-cards .hours-table { display: flex; flex-direction: column; margin-top: 4px; }
+  .tw-cards .hours-table .hr-row {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 16px; padding: 10px 0;
+    border-bottom: 1px dashed var(--rule-2);
+    align-items: baseline;
+  }
+  .tw-cards .hours-table .hr-row:last-child { border-bottom: none; }
+  .tw-cards .hours-table .hr-day {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.08em; color: var(--primary);
+  }
+  .tw-cards .hours-table .hr-time {
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    font-size: 18px; color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .tw-cards .hours-table .hr-note {
+    grid-column: 1 / -1;
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 13px; color: var(--ink-soft);
+  }
+
+  /* CONTACT CARD LINES */
+  .tw-cards .contact-line {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 10px 0; border-top: 1px dashed var(--rule-2);
+  }
+  .tw-cards .contact-line:first-of-type { border-top: none; padding-top: 0; }
+  .tw-cards .contact-line .cl-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .tw-cards .contact-line .cl-value {
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    font-size: 20px; color: var(--accent);
+  }
+  .tw-cards .contact-line .cl-hint {
+    font-family: var(--body); font-size: 12px; color: var(--ink-soft);
+  }
+
+  /* RESERVATION FORM BAND */
+  .tw-form-band {
+    padding: 80px 56px;
+    max-width: 980px; margin: 0 auto;
+  }
+  .tw-form-band .head { display: flex; flex-direction: column; gap: 14px; max-width: 56ch; }
+  .tw-form-band form {
+    margin-top: 36px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px 28px;
+  }
+
+  /* MAP + TRANSPORT BAND */
+  .tw-map {
+    padding: 80px 56px;
+    max-width: 1300px; margin: 0 auto;
+  }
+  .tw-map .head { display: flex; flex-direction: column; gap: 14px; }
+  .tw-map .frame {
+    margin-top: 32px;
+    aspect-ratio: 16/9;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    box-shadow: 0 22px 42px -28px rgba(74,44,42,0.4);
+  }
+  .tw-map .frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .tw-map .map-link {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 16px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent); padding-bottom: 3px;
+    transition: gap 260ms ease;
+  }
+  .tw-map .map-link:after { content: '→'; }
+  .tw-map .map-link:hover { gap: 14px; }
+
+  .tw-transport {
+    padding: 40px 56px 104px;
+    max-width: 1300px; margin: 0 auto;
+  }
+  .tw-transport .head { display: flex; flex-direction: column; gap: 14px; max-width: 56ch; }
+  .tw-transport .grid {
+    margin-top: 40px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  .tw-transport .t {
+    background: var(--bg-3);
+    padding: 24px 26px;
+    border-top: 3px solid var(--accent);
+    border-radius: 0 0 4px 4px;
+    display: flex; flex-direction: column; gap: 8px;
+    min-width: 0;
+  }
+  .tw-transport .t .mode {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .tw-transport .t .line {
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    font-size: 19px; color: var(--primary); line-height: 1.2;
+  }
+  .tw-transport .t .note {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 14px; line-height: 1.5; color: var(--ink-soft);
+  }
+
+  @media (max-width: 720px) {
+    .tw-lead { padding: 48px 18px 24px; }
+    .tw-cards { padding: 12px 18px 36px; grid-template-columns: 1fr; gap: 18px; }
+    .tw-cards .card { padding: 24px 22px; }
+    .tw-form-band { padding: 56px 18px; }
+    .tw-form-band form { grid-template-columns: 1fr; gap: 18px; }
+    .tw-map { padding: 56px 18px; }
+    .tw-transport { padding: 20px 18px 72px; }
+    .tw-transport .grid { grid-template-columns: 1fr; gap: 14px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="tw-lead">
+  <span class="tw-eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</span>
+  <h1 class="tw-display" data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+  <p class="tw-intro" data-lm="reveal">{{ page_data.intro }}</p>
+</section>
+
+<section class="tw-cards" data-lm-stagger data-lm-stagger-delay="120">
+  <div class="card">
+    <span class="label">{{ page_data.address_label }}</span>
+    <h3>{{ page_data.address_heading }}</h3>
+    <p>{{ page_data.address_text }}</p>
+    <span class="city">{{ page_data.address_city }}</span>
+  </div>
+
+  <div class="card">
+    <span class="label">{{ page_data.hours_label }}</span>
+    <h3>{{ page_data.hours_heading|safe }}</h3>
+    <div class="hours-table">
+      {% for day, time, note in page_data.hours_table %}
+        <div class="hr-row">
+          <span class="hr-day">{{ day }}</span>
+          <span class="hr-time">{{ time }}</span>
+          <span class="hr-note">{{ note }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="label">{{ page_data.contact_label }}</span>
+    <h3>{{ page_data.contact_heading|safe }}</h3>
+    <div class="contact-line">
+      <span class="cl-label">{{ page_data.contact_phone_label }}</span>
+      <span class="cl-value">{{ page_data.contact_phone_value }}</span>
+      <span class="cl-hint">{{ page_data.contact_phone_hours }}</span>
+    </div>
+    <div class="contact-line">
+      <span class="cl-label">{{ page_data.contact_whatsapp_label }}</span>
+      <span class="cl-value">{{ page_data.contact_whatsapp_value }}</span>
+      <span class="cl-hint">{{ page_data.contact_whatsapp_hours }}</span>
+    </div>
+    <div class="contact-line">
+      <span class="cl-label">{{ page_data.contact_email_label }}</span>
+      <span class="cl-value">{{ page_data.contact_email_value }}</span>
+      <span class="cl-hint">{{ page_data.contact_email_hours }}</span>
+    </div>
+  </div>
+</section>
+
+<section class="tw-form-band">
+  <div class="head">
+    <span class="tw-eyebrow" data-lm="reveal">{{ page_data.form_label }}</span>
+    <h2 class="tw-display" data-lm="reveal-lg">{{ page_data.form_heading|safe }}</h2>
+    <p class="tw-intro" data-lm="reveal">{{ page_data.form_intro }}</p>
+  </div>
+  <form novalidate>
+    {% for s in page_data.form_sections %}
+      <div class="lf-section">
+        <div class="lf-section-head">
+          <span class="lf-section-num">{{ s.num }} · {{ page_data.form_sections|length }}</span>
+          <span class="lf-section-title">{{ s.title }}</span>
+          {% if s.meta %}<span class="lf-section-meta">{{ s.meta }}</span>{% endif %}
+        </div>
+        {% for fname in s.fields %}
+          {% for f in page_data.form_fields %}{% if f.name == fname %}
+            <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+              <label class="lf-label" for="tw-{{ f.name }}">{{ f.label }}{% if not f.required %}<span class="lf-opt">{{ chrome.form_optional }}</span>{% endif %}</label>
+              {% if f.type == "select" %}
+                <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                  <select id="tw-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                    <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                    {% for opt in page_data.occasion_options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                  </select>
+                </div>
+              {% elif f.type == "textarea" %}
+                <textarea class="lf-control" id="tw-{{ f.name }}" name="{{ f.name }}" rows="5" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}></textarea>
+              {% else %}
+                <input class="lf-control" type="{{ f.type }}" id="tw-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}>
+              {% endif %}
+              {% if f.helper %}<p class="lf-helper">{{ f.helper }}</p>{% endif %}
+            </div>
+          {% endif %}{% endfor %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <label class="lf-check lf-full" style="grid-column: 1 / -1;">
+      <input type="checkbox" name="consent" required>
+      <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+      <span class="lf-check-text">{{ page_data.consent }}</span>
+    </label>
+
+    <div class="lf-submit-bar">
+      <button type="submit" class="lf-submit-primary">
+        <span>{{ page_data.form_submit }}</span>
+        <span class="lf-submit-arrow" aria-hidden="true">→</span>
+      </button>
+      {% if page_data.form_submit_note %}
+      <span class="lf-submit-note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+        {{ page_data.form_submit_note }}
+      </span>
+      {% endif %}
+    </div>
+  </form>
+</section>
+
+<section class="tw-map">
+  <div class="head">
+    <span class="tw-eyebrow" data-lm="reveal">{{ page_data.map_label }}</span>
+    <h2 class="tw-display" data-lm="reveal-lg">{{ page_data.map_heading }}</h2>
+  </div>
+  <div class="frame" data-lm="reveal-soft">
+    <iframe src="{{ page_data.map_embed }}" loading="lazy" title="{{ page_data.map_heading }}"></iframe>
+  </div>
+  <a href="{{ page_data.map_link_href }}" target="_blank" rel="noopener" class="map-link">{{ page_data.map_link }}</a>
+</section>
+
+<section class="tw-transport">
+  <div class="head">
+    <span class="tw-eyebrow" data-lm="reveal">{{ page_data.transport_label }}</span>
+    <h2 class="tw-display" data-lm="reveal-lg">{{ page_data.transport_heading|safe }}</h2>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for t in page_data.transport %}
+      <div class="t">
+        <span class="mode">{{ t.mode }}</span>
+        <span class="line">{{ t.line }}</span>
+        <span class="note">{{ t.note }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

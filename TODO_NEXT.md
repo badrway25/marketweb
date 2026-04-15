@@ -1,5 +1,25 @@
 # TODO Next
 
+## 🟢 Phase 2g3.6 — Restaurant Live Completion Premium — ✅ CLOSED (Session 48, 2026-04-15)
+
+Per D-078, `sapore-trattoria-pizzeria` (trattoria-warm) and `brace-street-food-lab` (street-modern) flipped from `tier=draft` to `tier=published_live` premium with full multipage live skins (6 page routes each: Sapore = home/menu/storia/forno/eventi/contatti · Brace = home/menu/lab/moments/ordina/contatti), 5 locales fin da subito (it/en/fr/es/ar) with real RTL for Arabic via Amiri+Noto-Kufi conditional font load, and sharp D-054 differentiation enforced both vs each other and vs Gusto fine-dining. Three concrete deliverables: (a) 2 new skin folders (~6,842 LOC HTML) at `templates/live_templates/restaurant/{trattoria-warm,street-modern}/` with full RTL CSS + 720px mobile breakpoint + `:focus-visible` rings; (b) 2 IT content registries (~1,799 LOC) + 8 locale trees (~6,500 LOC) authored by 8 parallel sub-agents — Sapore warm Roman family voice (Bon Appétit EN, Le Fooding `tu` FR, El País Gastro `tú` ES, Brownbook cultural-publishing AR) vs Brace Bologna street-food brutalist (Eater EN, Le Fooding street `tu` FR, Time Out Madrid `tú` ES, Wamda urban-imperative AR); (c) D-047 chrome-cleanliness from line one (zero IT literals across 14 HTML files, verified 0 leaks across 480 cross-locale checks). Validation: `check` clean, **443/443 full sweep** (was 363), **55/55 form sweep** (was 45), **69/69 hardening sweep** (was 57), 194/194 ecommerce regression, 52/52 gusto i18n regression, 0 IT leaks. **Restaurant category 3/3 published_live. Catalog now 11/20 across 5 categories.** See SESSION_LOG Session 48.
+
+**Catalog state after Session 48: 11/20 published_live, 11/11 multilingual.** 9/20 still draft.
+- Live: cardio · derm · gusto · pragma · elevate · chiara · pixel · bottega · luxe · **sapore** · **brace**
+- Draft: salute · benessere · famiglia (medical Phase 2g3.2c) · vertex · aura (agency Phase 2g3.6f) · lex · juris (lawyer Phase 2g3.6d) · casa · villa (real-estate Phase 2g3.6e)
+
+**Follow-ups (non blocking):**
+- [ ] **Pexels media swap on Sapore + Brace.** When `PEXELS_API_KEY` is provided in env, replace ~5 hero/section image URLs per template with Pexels-curated equivalents per D-077 protocol. Current Unsplash URLs are visually verified semantically correct but Pexels CDN gives more stable crop output. Format: `https://images.pexels.com/photos/<id>/pexels-photo-<id>.jpeg?auto=compress&cs=tinysrgb&w=<w>&h=<h>&fit=crop` — hot-link-public, no API key needed at render time. Budget ~30min per template via the Session 47 helper pattern.
+- [ ] **Generate static listing PNG previews** for Sapore + Brace via `python manage.py generate_previews --force --slug sapore-trattoria-pizzeria --slug brace-street-food-lab`. Today the listing card shows the gray placeholder. Same Phase-2g2x.3 leftover from Session 47 — non-blocking because the live preview at `/templates/restaurant/<slug>/preview/` is the primary surface.
+- [ ] **Lift legacy preview compositions** at `templates/preview_compositions/restaurant/{trattoria-warm,street-modern}.html` may carry IT literals from Session 16 — cosmetic for the static listing PNG only, low priority.
+- [ ] **Inline-styled grid mobile audit on Sapore + Brace** at 390×844. The skin folders use explicit `min-width: 0` on grid children at 720px breakpoint per Session 37 lesson, but a deep audit per the smoke `smoke_chiara_perfection.py` extension would lock down the +5pt mobile coherence. ~30min budget.
+- [ ] **Phase 2g3.6c — Medical second wave (salute / benessere / famiglia).** Next public-catalog promotion gate. DNA + preview compositions exist, blocked on per-archetype skin authoring at `templates/live_templates/medical/{clinic,wellness,family}/`. Per Session 32+34+41+48 recipe — a green path now. Budget ~3-4h end-to-end via parallel agents.
+- [ ] **Phase 2g3.6d — Lawyer (lex / juris).** Identity-crash siblings per Session 16 audit (no DNA, both render Lex's 60-year heritage). Need full DNA split (classic-gold + modern-transparent) + skin authoring + content + 5 locales.
+- [ ] **Phase 2g3.6e — Real-estate (casa / villa).** Same identity-crash blocker. Need DNA split (mass-market + ultra-luxury-cinematic) + skin + content + 5 locales.
+- [ ] **Phase 2g3.6f — Agency (vertex / aura).** Same identity-crash blocker. Need DNA split (bold-grid + editorial-quiet) + skin + content + 5 locales.
+
+---
+
 ## 🟢 Session 47 — Global Media Coherence & Asset Upgrade Pass — ✅ CLOSED (2026-04-15)
 Per D-077: Pexels adottato come CDN stock primario (Unsplash legacy preservato), chiave API da env, 5 product hero swaps + homepage hero + 1 video editoriale Luxe lookbook. 53/53 regression green.
 

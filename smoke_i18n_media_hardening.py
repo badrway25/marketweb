@@ -49,6 +49,9 @@ MULTILINGUAL = (
     # Session 41 — eCommerce live rollout (Phase 2g3.5).
     "bottega-shop-artigianale",
     "luxe-fashion-store",
+    # Session 48 — Restaurant live-completion (Phase 2g3.6).
+    "sapore-trattoria-pizzeria",
+    "brace-street-food-lab",
 )
 CATEGORY = {
     "pragma-corporate-suite":      "business",
@@ -60,6 +63,8 @@ CATEGORY = {
     "gusto-fine-dining":           "restaurant",
     "bottega-shop-artigianale":    "ecommerce",
     "luxe-fashion-store":          "ecommerce",
+    "sapore-trattoria-pizzeria":   "restaurant",
+    "brace-street-food-lab":       "restaurant",
 }
 
 FORBIDDEN_MEDIA_TOKENS = (

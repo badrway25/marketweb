@@ -1,0 +1,204 @@
+{% extends "live_templates/restaurant/trattoria-warm/_base.html" %}
+
+{% block extra_css %}
+  .tw-lead { padding: 72px 56px 48px; max-width: 1000px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 22px; }
+  .tw-lead h1 { max-width: 16ch; }
+
+  /* 3 EXPERIENCES — stacked large cards with numeral + meta */
+  .tw-exp {
+    padding: 40px 56px 88px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .tw-exp .head { display: flex; flex-direction: column; gap: 14px; }
+  .tw-exp .stack {
+    margin-top: 44px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .tw-exp .card {
+    background: #fff6e6;
+    border: 1px solid var(--rule);
+    border-left: 6px solid var(--accent);
+    padding: 36px 40px;
+    border-radius: 0 6px 6px 0;
+    box-shadow: 0 14px 26px -18px rgba(74,44,42,0.28);
+    display: grid; grid-template-columns: 80px 1.5fr 1fr;
+    gap: 36px; align-items: start;
+    min-width: 0;
+    transition: transform 260ms ease;
+  }
+  .tw-exp .card:hover { transform: translateX(6px); }
+  .tw-exp .card .n {
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    font-size: 54px; color: var(--accent); line-height: 1;
+  }
+  .tw-exp .card .body { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .tw-exp .card .title {
+    font-family: var(--script); font-weight: 700;
+    font-size: 36px; color: var(--primary); line-height: 1;
+  }
+  .tw-exp .card .persons {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .tw-exp .card .desc {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 16px; line-height: 1.55; color: var(--ink-soft);
+  }
+  .tw-exp .card .meta {
+    display: flex; flex-direction: column; gap: 10px;
+    min-width: 0;
+    padding-left: 24px; border-left: 1px dashed var(--rule);
+  }
+  .tw-exp .card .meta .m-lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .tw-exp .card .meta .m-val {
+    font-family: var(--heading); font-weight: 700;
+    font-size: 17px; color: var(--primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* BIRTHDAY BAND */
+  .tw-bday {
+    background: var(--bg-2);
+    padding: 96px 56px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .tw-bday-inner {
+    max-width: 1300px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px;
+    align-items: center;
+  }
+  .tw-bday .img { aspect-ratio: 4/5; overflow: hidden; min-width: 0; border-radius: 4px; }
+  .tw-bday .img img { width: 100%; height: 100%; object-fit: cover;
+    transition: transform 900ms cubic-bezier(0.33,1.0,0.68,1); }
+  .tw-bday .img:hover img { transform: scale(1.04); }
+  .tw-bday .img .cap { display: none; }
+  .tw-bday .text { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .tw-bday .text h2 { max-width: 15ch; }
+  .tw-bday .text p {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 19px; line-height: 1.6; color: var(--ink-soft);
+    max-width: 52ch;
+  }
+  .tw-bday .text .caption {
+    font-family: var(--script); font-size: 22px; color: var(--accent);
+    margin-top: 6px;
+  }
+
+  /* CONTACT CARD */
+  .tw-ec {
+    padding: 96px 56px;
+    max-width: 900px; margin: 0 auto;
+    text-align: center;
+  }
+  .tw-ec .card {
+    background: #fff6e6;
+    border: 1px solid var(--rule);
+    padding: 48px 44px;
+    border-radius: 6px;
+    display: flex; flex-direction: column; gap: 20px; align-items: center;
+    box-shadow: 0 16px 30px -20px rgba(74,44,42,0.3);
+  }
+  .tw-ec .card h2 { max-width: 18ch; text-align: center; }
+  .tw-ec .card p {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 18px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 52ch;
+  }
+  .tw-ec .lines {
+    display: grid; grid-template-columns: repeat(3, auto); gap: 28px;
+    justify-content: center;
+    padding: 20px 0;
+  }
+  .tw-ec .lines span {
+    font-family: var(--body); font-size: 13px;
+    color: var(--ink-soft); font-weight: 600;
+  }
+  .tw-ec .lines strong {
+    display: block; margin-top: 4px;
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    font-size: 20px; color: var(--accent);
+  }
+
+  @media (max-width: 720px) {
+    .tw-lead { padding: 48px 18px 24px; }
+    .tw-exp { padding: 24px 18px 56px; }
+    .tw-exp .card { grid-template-columns: 56px 1fr; gap: 16px; padding: 24px; }
+    .tw-exp .card .meta { grid-column: 1 / -1; padding-left: 0; padding-top: 14px;
+      border-left: none; border-top: 1px dashed var(--rule); margin-top: 6px; }
+    .tw-bday { padding: 56px 18px; }
+    .tw-bday-inner { grid-template-columns: 1fr; gap: 32px; }
+    .tw-ec { padding: 56px 18px; }
+    .tw-ec .card { padding: 32px 22px; }
+    .tw-ec .lines { grid-template-columns: 1fr; gap: 14px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="tw-lead">
+  <span class="tw-eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</span>
+  <h1 class="tw-display" data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+  <p class="tw-intro" data-lm="reveal">{{ page_data.intro }}</p>
+</section>
+
+<section class="tw-exp">
+  <div class="head">
+    <span class="tw-eyebrow" data-lm="reveal">{{ page_data.experiences_label }}</span>
+  </div>
+  <div class="stack" data-lm-stagger data-lm-stagger-delay="140">
+    {% for e in page_data.experiences %}
+      <div class="card">
+        <span class="n">{{ e.n }}</span>
+        <div class="body">
+          <span class="persons">{{ e.persons }}</span>
+          <h3 class="title">{{ e.title }}</h3>
+          <p class="desc">{{ e.desc }}</p>
+        </div>
+        <div class="meta">
+          <div>
+            <span class="m-lbl">{{ page_data.meta_menu_label }}</span>
+            <span class="m-val">{{ e.menu }}</span>
+          </div>
+          <div>
+            <span class="m-lbl">{{ page_data.meta_wine_label }}</span>
+            <span class="m-val">{{ e.wine }}</span>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="tw-bday">
+  <div class="tw-bday-inner">
+    <div class="img" data-lm="reveal-soft">
+      <img src="{{ page_data.birthday_image }}" alt="{{ page_data.birthday_caption }}">
+    </div>
+    <div class="text">
+      <span class="tw-eyebrow" data-lm="reveal">{{ page_data.birthday_label }}</span>
+      <h2 class="tw-display" data-lm="reveal-lg">{{ page_data.birthday_heading|safe }}</h2>
+      <p data-lm="reveal">{{ page_data.birthday_text }}</p>
+      <div class="caption">{{ page_data.birthday_caption }}</div>
+    </div>
+  </div>
+</section>
+
+<section class="tw-ec">
+  <div class="card" data-lm="reveal-soft">
+    <span class="tw-eyebrow">{{ page_data.contact_label }}</span>
+    <h2 class="tw-display">{{ page_data.contact_heading|safe }}</h2>
+    <p>{{ page_data.contact_text }}</p>
+    <div class="lines">
+      <span>{{ chrome.fd_phone_label }}<strong>{{ page_data.contact_phone }}</strong></span>
+      <span>WhatsApp<strong>{{ page_data.contact_whatsapp }}</strong></span>
+      <span>{{ chrome.fd_email_label }}<strong>{{ page_data.contact_email }}</strong></span>
+    </div>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.contact_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="tw-btn-primary">{{ page_data.contact_cta }}</a>
+  </div>
+</section>
+{% endblock %}

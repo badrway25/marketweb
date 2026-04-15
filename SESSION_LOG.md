@@ -1,5 +1,112 @@
 # Session Log
 
+## Session 48 — Restaurant Live Completion Premium (Phase 2g3.6 close · 2026-04-15)
+
+**Agent:** chiudere la categoria restaurant a 3/3 live portando `sapore-trattoria-pizzeria` (trattoria-warm) e `brace-street-food-lab` (street-modern) da `tier=draft` a `tier=published_live` premium con 5 lingue vere fin da subito + RTL serio per arabo, mantenendo Gusto fine-dining intoccato e zero regressione sugli altri 9 live. Niente nuove categorie, niente nuove macro-feature.
+
+### Shipped
+
+**Sapore — Trattoria Da Nonna Rosa (trattoria-warm archetype):**
+- Skin folder `templates/live_templates/restaurant/trattoria-warm/` — 7 file (~3014 LOC): `_base.html` (cream paper `#f8efde` + Libre Baskerville/Source Sans 3/Caveat + RTL block + Amiri+Noto-Kufi conditional + 720px breakpoint + `:focus-visible`), `home.html`, `menu.html`, `about.html`, `signature.html`, `events.html`, `contact.html`
+- Content registry IT `apps/catalog/template_content_sapore.py` (~855 LOC) — 6 page kinds (home/menu/storia/forno/eventi/contatti), Roman family-trattoria voice, 9 distinct Unsplash IDs from `restaurant-trattoria` pool + IT-curated additions
+- 4 locale trees autorate da sub-agent paralleli (~856 LOC each):
+  - `_en.py` (Bon Appétit / NYT Food / Saveur Roman-trattoria reportage)
+  - `_fr.py` (Le Fooding / Atabula `tu` warm-trattoria)
+  - `_es.py` (El País Gastro / 7 Caníbales peninsular `tú`)
+  - `_ar.py` (Brownbook cultural-publishing MSA, Latin proper names + Latin Western digits)
+- D-047 chrome-cleanliness from line one (zero IT literals in HTML)
+
+**Brace — Brace Street Lab (street-modern archetype):**
+- Skin folder `templates/live_templates/restaurant/street-modern/` — 7 file (~3828 LOC): `_base.html` (near-black `#0a0a0a` + neon-yellow `#FFE600` + flame-red `#FF3D00` + Big Shoulders Display 800/900 + Inter + JetBrains Mono + RTL block + 720px breakpoint), `home.html`, `menu.html`, `about.html`, `gallery.html`, `order.html`, `contact.html`
+- Content registry IT `apps/catalog/template_content_brace.py` (~944 LOC) — 6 page kinds (home/menu/lab/moments/ordina/contatti), Bologna street-food brutalist UPPERCASE imperative voice, 24 distinct Unsplash IDs from `restaurant-street` pool + urban-additions
+- 4 locale trees autorate da sub-agent paralleli (~627-955 LOC each):
+  - `_en.py` (Eater / Vice Munchies street-food UPPERCASE `you`)
+  - `_fr.py` (Le Fooding street / Trax / Time Out Paris `tu` urban-imperative + anglicismes)
+  - `_es.py` (Time Out Madrid peninsular `tú` urban + `currar`/`pillar`)
+  - `_ar.py` (Wamda lifestyle / Vice Arabia urban-imperative MSA, Latin proper names)
+- D-047 chrome-cleanliness from line one
+
+**Wiring:**
+- `apps/catalog/template_content.py` — 10 new imports + 2 new TEMPLATE_CONTENT entries
+- `TEMPLATE_REGISTRY.json` — 2 rows flipped from `tier=draft` to `tier=published_live`, version bumped to 0.11.0
+- `python manage.py sync_template_tiers` — 2 templates promoted, catalog now 11/20 published_live
+
+**Smoke harness extensions:**
+- `smoke_full.py` — 2 new templates × 5 locales added (now 443/443, was 363)
+- `smoke_forms.py` — 2 new contact forms × 5 locales added (now 55/55, was 45)
+- `smoke_i18n_media_hardening.py` — 2 templates added to MULTILINGUAL set (now 69/69, was 57)
+
+### Validation
+
+- `python manage.py check` → 0 issues
+- **443/443 full route sweep** (was 363, +90 from new 2 templates × 5 locales × ~9 surfaces avg incl. detail+home+5-6 inner pages)
+- **55/55 form sweep** (was 45, +10 from new 2 contact forms × 5 locales)
+- **69/69 hardening sweep** (was 57, +12 from new 2 MULTILINGUAL templates × 6 checks each)
+- **194/194 ecommerce regression** — green (no cross-impact)
+- **52/52 gusto i18n regression** — green (Gusto untouched per directive)
+- **0 IT leaks** across 48 non-IT pages × 10 forbidden-phrase patterns = 480 cross-locale leak checks
+
+**Browser click-through validation (Playwright @ localhost:8904):**
+- Sapore IT/EN/FR/ES/AR home + menu + contatti — render correctly, RTL flip on AR works (logo right, photo right, eyebrow right, headline anchored right)
+- Brace IT/EN/FR/ES/AR home + menu — product-cutout hero + neon-yellow stamp + price badge in correct position per direction
+- 5 language pills (IT/EN/FR/ES/AR) on every page, hrefs correct, `?lang=` preserved on inner-page navigation
+- Phone CTA `Chiama: 06 581 4488` → `tel:+390658144880` (Sapore)
+- WhatsApp link `https://wa.me/390658144880` (Sapore) and `https://wa.me/390512345566` (Brace)
+- "Prenota un tavolo" / "ORDINA ORA" → respective contact/order pages
+- Catalog listing `/templates/restaurant/` shows all 3 cards (Brace · Sapore · Gusto) with NEW badges
+- Homepage and other category listings unaffected
+
+### Differentiation locked (D-054 retroactive · 10/10 vs both siblings)
+
+**Sapore vs Gusto:**
+- Page background: warm cream `#f8efde` paper · vs · charcoal `#0b0907` editorial dark
+- Hero: tilted polaroid photo-frame with rosso "Dal 1987" stamp + handwritten Caveat caption · vs · full-bleed plate photo + corner Michelin star tag + italic credit ribbon
+- Type: Libre Baskerville bold + red `<em>` accent + Caveat script garnish · vs · Playfair italic + gold `<em>` editorial drop cap
+- Conversion: phone + WhatsApp + chalkboard daily specials + reservation form · vs · concierge tile + ghost-gold ricerca privata + private appointment register
+- Voice: warm Roman family register ("come a casa vostra") · vs · aulico editorial-chef-sommelier register ("una serata in otto atti")
+
+**Sapore vs Brace:**
+- Page background: warm cream paper · vs · near-black with neon-yellow signal
+- Type: structural Libre Baskerville with handwritten Caveat moments · vs · brutalist Big Shoulders Display 900 condensed UPPERCASE
+- Hero: photo-frame polaroid + family caption · vs · product-cutout cube tilted -2deg + stamped neon `€ 9.50` price badge
+- Cards: chalkboard daily-specials + family portraits · vs · product-grid with "AGGIUNGI" CTAs + flame-red TOP/NEW/VEG tags
+- Footer: cream + warm-rosso phone CTA · vs · neon-yellow on black + JetBrains Mono technical specs
+
+**Brace vs Gusto:**
+- Page background: near-black with neon-yellow + flame-red signal · vs · charcoal editorial with gold accents
+- Type: brutalist Big Shoulders Display 900 UPPERCASE · vs · Playfair italic 500 with editorial drop caps
+- Hero: tilted product-cutout square with stamped neon price-badge · vs · full-bleed plate photo with serif star-tag
+- Conversion: real-time queue counter strip + AGGIUNGI buttons + GLOVO/DELIVEROO marquee · vs · concierge tile + reservation-only flow
+- Voice: imperative second-person Bologna street-register ("ordina ora", "non aspettare") + mono spec chips · vs · third-person editorial sommelier register
+
+### Pexels media constraint
+
+`PEXELS_API_KEY` env var was not present at session start. Per session directive ("usa Pexels come sorgente primaria"), the API integration was skipped — the helper `_pexels_helper.py` is gitignored and the key is never written to repo per D-077. Used existing curated Unsplash IDs from `restaurant-trattoria` + `restaurant-street` pools (verified visually in Sessions 31/47) plus IT-curated additions for trattoria/street-food coherence. No catastrophic mismatches detected via curl HEAD + visual review on the 3 Playwright walks. Pexels swap is documented as a Phase-2g3.6 follow-up in TODO_NEXT for when key is available — the URL format `https://images.pexels.com/photos/<id>/pexels-photo-<id>.jpeg?auto=compress&cs=tinysrgb&w=<w>&h=<h>&fit=crop` is hot-link-public, so future swap is one-line per slot.
+
+### Files modified / created
+
+**Created (16):**
+- `templates/live_templates/restaurant/trattoria-warm/{_base,home,menu,about,signature,events,contact}.html` (7)
+- `templates/live_templates/restaurant/street-modern/{_base,home,menu,about,gallery,order,contact}.html` (7)
+- `apps/catalog/template_content_sapore.py` (1)
+- `apps/catalog/template_content_brace.py` (1)
+- `apps/catalog/template_content_sapore_{en,fr,es,ar}.py` (4)
+- `apps/catalog/template_content_brace_{en,fr,es,ar}.py` (4)
+- Memory: `restaurant_live_completion_session48.md`
+
+**Modified (5):**
+- `apps/catalog/template_content.py` (+10 imports + 2 TEMPLATE_CONTENT entries)
+- `TEMPLATE_REGISTRY.json` (2 tier flips + 2 metadata expansions, version 0.10.0 → 0.11.0)
+- `smoke_full.py` (+2 templates in LOCALES + CATEGORY)
+- `smoke_forms.py` (+2 PAGES + 2 LOCALES_BY_TEMPLATE)
+- `smoke_i18n_media_hardening.py` (+2 templates in MULTILINGUAL + CATEGORY)
+
+### Decision: RESTAURANT LIVE COMPLETION PREMIUM APPROVATO (D-078).
+
+Restaurant category goes 3/3 live. Catalog 11/20 published_live across 5 categories. The trattoria-warm and street-modern skin folders are now reusable archetypes available for future restaurant siblings. Phase 2g3 progresses to 2g3.6c follow-ups (Pexels swap, listing PNG generation) and the next gated phase is 2g3.6c (medical 2g3.2 → salute/benessere/famiglia), 2g3.6d (lawyer 2g3.6 → lex/juris), 2g3.6e (real-estate → casa/villa), 2g3.6f (agency → vertex/aura).
+
+---
+
 ## Session 47 — Global Media Coherence & Asset Upgrade Pass (2026-04-15)
 
 **Agent:** audit visivo reale + upgrade sistematico della media coherence via Pexels API (chiave da env, mai committata), un solo video editoriale dove il DNA lo giustifica, nessuna nuova feature.

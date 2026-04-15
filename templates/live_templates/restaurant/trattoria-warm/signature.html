@@ -1,0 +1,248 @@
+{% extends "live_templates/restaurant/trattoria-warm/_base.html" %}
+
+{% block extra_css %}
+  .tw-lead { padding: 72px 56px 48px; max-width: 1000px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 22px; }
+  .tw-lead h1 { max-width: 18ch; }
+
+  /* SIGNATURES BAND — numbered cards for pizza + pasta */
+  .tw-sig {
+    padding: 40px 56px 72px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .tw-sig .head { display: flex; flex-direction: column; gap: 12px; max-width: 58ch; }
+  .tw-sig .grid {
+    margin-top: 44px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px;
+  }
+  .tw-sig .card {
+    background: #fff6e6;
+    padding: 32px 32px;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    box-shadow: 0 14px 26px -18px rgba(74,44,42,0.28);
+    display: grid; grid-template-columns: 54px 1fr auto;
+    gap: 18px; align-items: baseline;
+    min-width: 0;
+    transition: transform 280ms ease, box-shadow 280ms ease;
+  }
+  .tw-sig .card:hover { transform: translateY(-4px); box-shadow: 0 22px 34px -22px rgba(74,44,42,0.4); }
+  .tw-sig .card .n {
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    font-size: 34px; color: var(--accent); line-height: 1;
+  }
+  .tw-sig .card .body {
+    display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  }
+  .tw-sig .card .name {
+    font-family: var(--heading); font-weight: 700;
+    font-size: 22px; color: var(--primary); line-height: 1.2;
+  }
+  .tw-sig .card .desc {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 15px; line-height: 1.5; color: var(--ink-soft);
+  }
+  .tw-sig .card .price {
+    font-family: var(--heading); font-style: italic; font-weight: 700;
+    font-size: 22px; color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Forno story split */
+  .tw-forno-story {
+    background: var(--primary); color: #fff6e6;
+    padding: 104px 56px;
+  }
+  .tw-forno-story-inner {
+    max-width: 1300px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.05fr 1fr; gap: 64px;
+    align-items: center;
+  }
+  .tw-forno-story .img {
+    aspect-ratio: 4/5; overflow: hidden; min-width: 0;
+    border-radius: 4px;
+    box-shadow: 0 20px 40px -20px rgba(0,0,0,0.6);
+  }
+  .tw-forno-story .img img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: saturate(1.1) contrast(1.08);
+    transition: transform 900ms cubic-bezier(0.33,1.0,0.68,1);
+  }
+  .tw-forno-story .img:hover img { transform: scale(1.04); }
+  .tw-forno-story .img .cap { display: none; }
+  .tw-forno-story .text { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+  .tw-forno-story .text .eb {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--secondary);
+  }
+  .tw-forno-story .text h2 {
+    color: #fff6e6;
+    font-size: clamp(40px, 5vw, 64px);
+    max-width: 14ch;
+  }
+  .tw-forno-story .text h2 em { color: var(--secondary); }
+  .tw-forno-story .text p {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 19px; line-height: 1.65;
+    color: rgba(255,246,230,0.85); max-width: 52ch;
+  }
+  .tw-forno-story .caption {
+    font-family: var(--script); font-size: 22px; color: var(--secondary);
+    margin-top: 4px;
+  }
+
+  /* PRODUCERS BAND */
+  .tw-producers {
+    padding: 96px 56px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .tw-producers .head { display: flex; flex-direction: column; gap: 14px; max-width: 56ch; }
+  .tw-producers .list {
+    margin-top: 44px;
+    display: flex; flex-direction: column;
+  }
+  .tw-producers .row {
+    display: grid; grid-template-columns: 1.4fr 1fr 2fr;
+    gap: 32px; align-items: baseline;
+    padding: 24px 0;
+    border-top: 1px solid var(--rule);
+    min-width: 0;
+  }
+  .tw-producers .row:last-child { border-bottom: 1px solid var(--rule); }
+  .tw-producers .row .name {
+    font-family: var(--heading); font-weight: 700;
+    font-size: 20px; color: var(--primary);
+  }
+  .tw-producers .row .place {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .tw-producers .row .ingredient {
+    font-family: var(--heading); font-style: italic; font-weight: 400;
+    font-size: 16px; line-height: 1.5; color: var(--ink-soft);
+  }
+
+  /* DOUGH PHOTO */
+  .tw-dough {
+    padding: 24px 56px 96px;
+    max-width: 1300px; margin: 0 auto;
+  }
+  .tw-dough .frame {
+    aspect-ratio: 16/9; overflow: hidden; position: relative;
+    border-radius: 4px;
+    box-shadow: 0 30px 60px -40px rgba(74,44,42,0.5);
+  }
+  .tw-dough .frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 900ms cubic-bezier(0.33,1.0,0.68,1);
+  }
+  .tw-dough .frame:hover img { transform: scale(1.03); }
+  .tw-dough .frame .cap {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 18px 28px;
+    background: linear-gradient(0deg, rgba(43,31,26,0.75) 0%, transparent 100%);
+    font-family: var(--script); font-size: 22px; color: #fff6e6;
+  }
+
+  @media (max-width: 720px) {
+    .tw-lead { padding: 48px 18px 24px; }
+    .tw-sig { padding: 28px 18px 48px; }
+    .tw-sig .grid { grid-template-columns: 1fr; gap: 16px; }
+    .tw-sig .card { padding: 22px 22px; gap: 12px; }
+    .tw-sig .card .name { font-size: 19px; }
+    .tw-forno-story { padding: 56px 18px; }
+    .tw-forno-story-inner { grid-template-columns: 1fr; gap: 32px; }
+    .tw-producers { padding: 56px 18px; }
+    .tw-producers .row { grid-template-columns: 1fr; gap: 6px; padding: 18px 0; }
+    .tw-dough { padding: 16px 18px 56px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="tw-lead">
+  <span class="tw-eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</span>
+  <h1 class="tw-display" data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+  <p class="tw-intro" data-lm="reveal">{{ page_data.intro }}</p>
+</section>
+
+<section class="tw-sig">
+  <div class="head">
+    <span class="tw-eyebrow" data-lm="reveal">{{ page_data.pizza_label }}</span>
+    <h2 class="tw-display" data-lm="reveal-lg">{{ page_data.pizza_heading|safe }}</h2>
+    <p class="tw-intro" data-lm="reveal">{{ page_data.pizza_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for p in page_data.pizza_signatures %}
+      <div class="card">
+        <span class="n">{{ p.n }}</span>
+        <div class="body">
+          <span class="name">{{ p.name }}</span>
+          <span class="desc">{{ p.desc }}</span>
+        </div>
+        <span class="price">{{ p.price }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="tw-sig">
+  <div class="head">
+    <span class="tw-eyebrow" data-lm="reveal">{{ page_data.pasta_label }}</span>
+    <h2 class="tw-display" data-lm="reveal-lg">{{ page_data.pasta_heading|safe }}</h2>
+    <p class="tw-intro" data-lm="reveal">{{ page_data.pasta_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for p in page_data.pasta_signatures %}
+      <div class="card">
+        <span class="n">{{ p.n }}</span>
+        <div class="body">
+          <span class="name">{{ p.name }}</span>
+          <span class="desc">{{ p.desc }}</span>
+        </div>
+        <span class="price">{{ p.price }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="tw-forno-story">
+  <div class="tw-forno-story-inner">
+    <div class="img" data-lm="reveal-soft">
+      <img src="{{ page_data.forno_story_image }}" alt="{{ page_data.forno_story_caption }}">
+    </div>
+    <div class="text">
+      <span class="eb">{{ page_data.forno_story_label }}</span>
+      <h2 data-lm="reveal-lg">{{ page_data.forno_story_heading|safe }}</h2>
+      <p data-lm="reveal">{{ page_data.forno_story_text_1 }}</p>
+      <p data-lm="reveal">{{ page_data.forno_story_text_2 }}</p>
+      <div class="caption">{{ page_data.forno_story_caption }}</div>
+    </div>
+  </div>
+</section>
+
+<section class="tw-producers">
+  <div class="head">
+    <span class="tw-eyebrow" data-lm="reveal">{{ page_data.producers_label }}</span>
+    <h2 class="tw-display" data-lm="reveal-lg">{{ page_data.producers_heading|safe }}</h2>
+  </div>
+  <div class="list" data-lm-stagger data-lm-stagger-delay="80">
+    {% for p in page_data.producers %}
+      <div class="row">
+        <span class="name">{{ p.name }}</span>
+        <span class="place">{{ p.place }}</span>
+        <span class="ingredient">{{ p.ingredient }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="tw-dough">
+  <div class="frame" data-lm="reveal-soft">
+    <img src="{{ page_data.dough_image }}" alt="{{ page_data.dough_caption }}">
+    <div class="cap">{{ page_data.dough_caption }}</div>
+  </div>
+</section>
+{% endblock %}

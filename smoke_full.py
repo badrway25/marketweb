@@ -22,6 +22,9 @@ LOCALES = {
     # Phase 2g3.5 — eCommerce live rollout (Session 41)
     "bottega-shop-artigianale":    ["it", "en", "fr", "es", "ar"],
     "luxe-fashion-store":          ["it", "en", "fr", "es", "ar"],
+    # Phase 2g3.6 — Restaurant live-completion (Session 48)
+    "sapore-trattoria-pizzeria":   ["it", "en", "fr", "es", "ar"],
+    "brace-street-food-lab":       ["it", "en", "fr", "es", "ar"],
 }
 
 CATEGORY = {
@@ -34,6 +37,8 @@ CATEGORY = {
     "pixel-portfolio-fotografico": "portfolio",
     "bottega-shop-artigianale":    "ecommerce",
     "luxe-fashion-store":          "ecommerce",
+    "sapore-trattoria-pizzeria":   "restaurant",
+    "brace-street-food-lab":       "restaurant",
 }
 
 @override_settings(ALLOWED_HOSTS=["*"])

@@ -30,6 +30,9 @@ PAGES = [
     # Phase 2g3.5 — eCommerce contact forms
     ("bottega-shop-artigianale",       "ecommerce",  "contatti",     "aw-form"),
     ("luxe-fashion-store",             "ecommerce",  "contatti",     "fe-form"),
+    # Phase 2g3.6 — Restaurant live-completion (Sapore + Brace contact forms)
+    ("sapore-trattoria-pizzeria",      "restaurant", "contatti",     "tw-form"),
+    ("brace-street-food-lab",          "restaurant", "contatti",     "sm-form"),
 ]
 
 LOCALES_BY_TEMPLATE = {
@@ -40,6 +43,8 @@ LOCALES_BY_TEMPLATE = {
     "elevate-startup-landing":        ["it", "en", "fr", "es", "ar"],
     "bottega-shop-artigianale":       ["it", "en", "fr", "es", "ar"],
     "luxe-fashion-store":             ["it", "en", "fr", "es", "ar"],
+    "sapore-trattoria-pizzeria":      ["it", "en", "fr", "es", "ar"],
+    "brace-street-food-lab":          ["it", "en", "fr", "es", "ar"],
 }
 
 # Features the new polish must expose
