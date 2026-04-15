@@ -1,0 +1,405 @@
+{% extends "live_templates/restaurant/street-modern/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     LEAD
+  ============================================================ */
+  .sm-lead {
+    padding: 80px 32px 32px;
+    max-width: 1400px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .sm-lead .sm-display { font-size: clamp(56px, 7vw, 110px); max-width: 14ch; }
+
+  /* ============================================================
+     ADDRESS + MAP — split layout
+  ============================================================ */
+  .sm-map {
+    padding: 32px 32px 80px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.6fr; gap: 32px;
+  }
+  .sm-map .info { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .sm-map .info .lbl {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-map .info .addr {
+    font-family: var(--heading); font-weight: 900;
+    font-size: clamp(28px, 3vw, 40px); line-height: 1.05; text-transform: uppercase; letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .sm-map .info .note {
+    font-family: var(--body); font-size: 14px; color: var(--ink-soft); line-height: 1.6;
+  }
+  .sm-map .frame {
+    aspect-ratio: 4/3;
+    background: var(--bg-3);
+    border: 2px solid var(--rule);
+    overflow: hidden;
+    position: relative;
+  }
+  .sm-map .frame iframe { width: 100%; height: 100%; border: 0; filter: invert(1) hue-rotate(180deg) saturate(0.7); }
+
+  /* ============================================================
+     CHANNELS GRID — phone / whatsapp / email
+  ============================================================ */
+  .sm-chan {
+    background: var(--bg-2);
+    padding: 80px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-chan-inner { max-width: 1400px; margin: 0 auto; }
+  .sm-chan .head { display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 40px; min-width: 0; }
+  .sm-chan .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+  }
+  .sm-chan .card {
+    background: #0a0a0a;
+    border: 2px solid var(--rule);
+    padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 14px; min-width: 0;
+    transition: border-color 220ms ease, transform 220ms ease;
+    text-decoration: none;
+  }
+  .sm-chan .card:hover { border-color: var(--secondary); transform: translateY(-4px); }
+  .sm-chan .card .ic {
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--secondary); color: #0a0a0a;
+    font-family: var(--heading); font-weight: 900; font-size: 22px;
+    text-transform: uppercase;
+  }
+  .sm-chan .card .lbl {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-chan .card .val {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 26px; color: var(--ink); text-transform: uppercase; letter-spacing: 0.01em;
+  }
+  .sm-chan .card .note {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft); line-height: 1.5;
+  }
+
+  /* ============================================================
+     HOURS GRID
+  ============================================================ */
+  .sm-hours-grid {
+    padding: 80px 32px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: start;
+  }
+  .sm-hours-grid .head { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .sm-hours-grid table {
+    width: 100%; border-collapse: collapse; font-family: var(--mono);
+  }
+  .sm-hours-grid table tr { border-bottom: 1px dashed var(--rule); }
+  .sm-hours-grid table td {
+    padding: 16px 0; font-size: 16px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .sm-hours-grid table td:first-child { color: var(--secondary); width: 160px; }
+  .sm-hours-grid table td:last-child { color: var(--ink); text-align: right; }
+  .sm-hours-grid .note { margin-top: 24px; font-family: var(--body); font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+
+  /* ============================================================
+     TRANSPORT BAND — bus / treno / parcheggio / bici
+  ============================================================ */
+  .sm-transport {
+    background: var(--bg-2);
+    padding: 64px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-transport-inner { max-width: 1400px; margin: 0 auto; }
+  .sm-transport .lbl-row {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--secondary);
+    margin-bottom: 24px;
+  }
+  .sm-transport .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  }
+  .sm-transport .item {
+    border-top: 4px solid var(--secondary);
+    padding: 20px 0 0; min-width: 0;
+  }
+  .sm-transport .item .key {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 22px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .sm-transport .item .val {
+    font-family: var(--body); font-size: 14px; color: var(--ink-soft); line-height: 1.55;
+  }
+
+  /* ============================================================
+     JOBS BAND
+  ============================================================ */
+  .sm-jobs {
+    padding: 96px 32px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items: start;
+  }
+  .sm-jobs .head { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .sm-jobs .head h2 {
+    font-family: var(--heading); font-weight: 900;
+    font-size: clamp(40px, 5vw, 72px); line-height: 0.92; text-transform: uppercase; letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .sm-jobs .head p { font-family: var(--body); font-size: 16px; color: var(--ink-soft); line-height: 1.6; max-width: 50ch; }
+  .sm-jobs .head .cta {
+    margin-top: 12px;
+    background: var(--secondary); color: #0a0a0a;
+    padding: 16px 24px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase;
+    border: 2px solid var(--secondary);
+    align-self: flex-start;
+    transition: background 200ms ease, color 200ms ease;
+  }
+  .sm-jobs .head .cta:after { content: '  →'; }
+  .sm-jobs .head .cta:hover { background: #0a0a0a; color: var(--secondary); }
+  .sm-jobs .list {
+    display: flex; flex-direction: column;
+  }
+  .sm-jobs .list .row {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 22px; align-items: center;
+    padding: 22px 0;
+    border-top: 1px solid var(--rule);
+    font-family: var(--heading); font-weight: 800;
+    text-transform: uppercase;
+  }
+  .sm-jobs .list .row:last-child { border-bottom: 1px solid var(--rule); }
+  .sm-jobs .list .row .role { font-size: 22px; color: var(--ink); letter-spacing: 0.01em; }
+  .sm-jobs .list .row .type { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: var(--secondary); }
+  .sm-jobs .list .row .city { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: var(--ink-soft); }
+
+  /* ============================================================
+     SOCIAL BAND
+  ============================================================ */
+  .sm-social {
+    background: var(--bg-2);
+    padding: 64px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-social-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 220px 1fr; gap: 32px; align-items: center;
+  }
+  .sm-social .lbl {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-social .links {
+    display: flex; flex-wrap: wrap; gap: 14px;
+  }
+  .sm-social .links a {
+    background: #0a0a0a;
+    border: 2px solid var(--rule);
+    padding: 14px 22px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink);
+    display: inline-flex; align-items: center; gap: 12px;
+    transition: border-color 220ms ease, color 220ms ease;
+  }
+  .sm-social .links a:hover { border-color: var(--secondary); color: var(--secondary); }
+  .sm-social .links a .platform { color: var(--secondary); }
+
+  /* ============================================================
+     FORM — sectioned · uses .lf-* primitives
+  ============================================================ */
+  .sm-form {
+    padding: 96px 32px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .sm-form .head { display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 40px; min-width: 0; }
+  .sm-form .lf-form .lf-section { padding-top: 0; border-top: 0; }
+  .sm-form .lf-form .lf-grid { gap: 22px; }
+  .sm-form .lf-submit-note { color: var(--ink-soft); }
+
+  /* RTL */
+  html[dir="rtl"] .sm-jobs { grid-template-columns: 1.4fr 1fr; }
+  html[dir="rtl"] .sm-jobs .list .row { grid-template-columns: auto auto 1fr; }
+  html[dir="rtl"] .sm-social-inner { grid-template-columns: 1fr 220px; }
+  html[dir="rtl"] .sm-jobs .head .cta:after { content: '  ←'; }
+  html[dir="rtl"] .sm-hours-grid table td:last-child { text-align: left; }
+
+  /* MOBILE */
+  @media (max-width: 720px) {
+    .sm-lead { padding: 36px 18px 18px; }
+    .sm-lead .sm-display { font-size: 48px; }
+    .sm-map { grid-template-columns: 1fr; padding: 18px 18px 56px; gap: 20px; }
+    .sm-chan { padding: 56px 18px; }
+    .sm-chan .grid { grid-template-columns: 1fr; gap: 14px; }
+    .sm-chan .card { padding: 22px 18px; }
+    .sm-chan .card .val { font-size: 20px; }
+    .sm-hours-grid { grid-template-columns: 1fr; padding: 56px 18px; gap: 24px; }
+    .sm-hours-grid table td { font-size: 14px; padding: 12px 0; }
+    .sm-transport { padding: 48px 18px; }
+    .sm-transport .grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    .sm-jobs { grid-template-columns: 1fr; padding: 56px 18px; gap: 32px; }
+    .sm-jobs .list .row { grid-template-columns: 1fr; gap: 6px; padding: 16px 0; }
+    .sm-jobs .list .row .role { font-size: 18px; }
+    .sm-social { padding: 48px 18px; }
+    .sm-social-inner { grid-template-columns: 1fr; gap: 16px; }
+    .sm-form { padding: 56px 18px; }
+  }
+{% endblock %}
+
+{% block content %}
+{# ========== LEAD ========== #}
+<section class="sm-lead" data-reveal>
+  <span class="sm-eyebrow">{{ page_data.eyebrow }}</span>
+  <h1 class="sm-display">{{ page_data.headline|safe }}</h1>
+  <p class="sm-intro">{{ page_data.intro }}</p>
+</section>
+
+{# ========== ADDRESS + MAP ========== #}
+<section class="sm-map" data-reveal>
+  <div class="info">
+    <span class="lbl">{{ page_data.address_label }}</span>
+    <h2 class="addr">{{ page_data.address_value }}</h2>
+    <p class="note">{{ page_data.address_note }}</p>
+  </div>
+  <div class="frame">
+    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=11.336%2C44.490%2C11.349%2C44.500&amp;layer=mapnik&amp;marker={{ page_data.map_lat }}%2C{{ page_data.map_lon }}"
+            title="{{ page_data.map_label }}" loading="lazy"></iframe>
+  </div>
+</section>
+
+{# ========== CHANNELS ========== #}
+<section class="sm-chan" data-reveal>
+  <div class="sm-chan-inner">
+    <div class="head">
+      <span class="sm-eyebrow">{{ page_data.channels_label }}</span>
+    </div>
+    <div class="grid">
+      {% for c in page_data.channels %}
+        {% if c.kind == 'tel' %}
+          <a href="tel:{{ c.href }}" class="card" data-stagger>
+            <div class="ic">{{ c.icon|slice:":1"|upper }}</div>
+            <span class="lbl">{{ c.label }}</span>
+            <span class="val sm-mono">{{ c.value }}</span>
+            <p class="note">{{ c.note }}</p>
+          </a>
+        {% elif c.kind == 'mail' %}
+          <a href="mailto:{{ c.href }}" class="card" data-stagger>
+            <div class="ic">{{ c.icon|slice:":1"|upper }}</div>
+            <span class="lbl">{{ c.label }}</span>
+            <span class="val">{{ c.value }}</span>
+            <p class="note">{{ c.note }}</p>
+          </a>
+        {% else %}
+          <a href="{{ c.href }}" target="_blank" rel="noopener" class="card" data-stagger>
+            <div class="ic">{{ c.icon|slice:":1"|upper }}</div>
+            <span class="lbl">{{ c.label }}</span>
+            <span class="val sm-mono">{{ c.value }}</span>
+            <p class="note">{{ c.note }}</p>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ========== HOURS GRID ========== #}
+<section class="sm-hours-grid" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.hours_label }}</span>
+  </div>
+  <div>
+    <table>
+      {% for day, hours in page_data.hours_rows %}
+      <tr><td>{{ day }}</td><td>{{ hours }}</td></tr>
+      {% endfor %}
+    </table>
+    <p class="note">{{ page_data.hours_note }}</p>
+  </div>
+</section>
+
+{# ========== TRANSPORT ========== #}
+<section class="sm-transport" data-reveal>
+  <div class="sm-transport-inner">
+    <div class="lbl-row">{{ page_data.transport_label }}</div>
+    <div class="grid">
+      {% for k, v in page_data.transport_rows %}
+      <div class="item" data-stagger>
+        <div class="key">{{ k }}</div>
+        <div class="val">{{ v }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ========== JOBS ========== #}
+<section class="sm-jobs" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.jobs_label }}</span>
+    <h2>{{ page_data.jobs_heading|safe }}</h2>
+    <p>{{ page_data.jobs_intro }}</p>
+    <a href="mailto:{{ page_data.jobs_cta_href }}" class="cta">{{ page_data.jobs_cta_label }}</a>
+  </div>
+  <div class="list">
+    {% for j in page_data.jobs %}
+    <div class="row" data-stagger>
+      <span class="role">{{ j.role }}</span>
+      <span class="type">{{ j.type }}</span>
+      <span class="city">{{ j.city }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ========== SOCIAL ========== #}
+<section class="sm-social" data-reveal>
+  <div class="sm-social-inner">
+    <span class="lbl">{{ page_data.social_label }}</span>
+    <div class="links">
+      {% for s in page_data.social %}
+      <a href="{{ s.href }}" target="_blank" rel="noopener">
+        <span class="platform">{{ s.platform }}</span>
+        <span>{{ s.handle }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ========== FORM — sectioned, uses .lf-* primitives ========== #}
+<section class="sm-form" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.form_label }}</span>
+    <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.form_heading|safe }}</h2>
+    <p class="sm-intro">{{ page_data.form_intro }}</p>
+  </div>
+  <form class="lf-form" novalidate>
+    <fieldset class="lf-section">
+      <div class="lf-grid lf-grid-2">
+        <div class="lf-field">
+          <label class="lf-label" for="sm-name">{{ page_data.form_field_name }}<span class="lf-required" aria-label="{{ chrome.form_required }}"> *</span></label>
+          <input class="lf-control" id="sm-name" name="name" type="text" required autocomplete="name">
+        </div>
+        <div class="lf-field">
+          <label class="lf-label" for="sm-email">{{ page_data.form_field_email }}<span class="lf-required" aria-label="{{ chrome.form_required }}"> *</span></label>
+          <input class="lf-control" id="sm-email" name="email" type="email" required autocomplete="email">
+        </div>
+        <div class="lf-field">
+          <label class="lf-label" for="sm-phone">{{ page_data.form_field_phone }} <span class="lf-optional">{{ chrome.form_optional }}</span></label>
+          <input class="lf-control" id="sm-phone" name="phone" type="tel" autocomplete="tel">
+        </div>
+        <div class="lf-field lf-field-wide">
+          <label class="lf-label" for="sm-msg">{{ page_data.form_field_message }}<span class="lf-required" aria-label="{{ chrome.form_required }}"> *</span></label>
+          <textarea class="lf-control lf-textarea" id="sm-msg" name="message" rows="5" placeholder="{{ page_data.form_field_message_placeholder }}" required></textarea>
+        </div>
+      </div>
+    </fieldset>
+    <div class="lf-actions">
+      <button class="lf-submit" type="submit">{{ page_data.form_submit_label }}</button>
+      <p class="lf-submit-note">{{ page_data.form_submit_note }}</p>
+    </div>
+  </form>
+</section>
+{% endblock %}

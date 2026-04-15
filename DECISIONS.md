@@ -1,5 +1,70 @@
 # Decisions Log
 
+## D-078: Restaurant Category Closure — Sapore + Brace Live Premium with 5 Locales + Real RTL Day One (2026-04-15, Session 48)
+
+**Decision:** `sapore-trattoria-pizzeria` (trattoria-warm archetype) and `brace-street-food-lab` (street-modern archetype) flip from `tier=draft` to `tier=published_live` premium with full multipage live skins (6 page routes each), 5 locales (it/en/fr/es/ar) with real RTL for Arabic, and sharp D-054 differentiation enforced both vs each other and vs the existing Gusto fine-dining template. Restaurant category is now 3/3 published_live; catalog floor moves from 9/20 to **11/20 published_live across 5 categories** (medical · restaurant · business · portfolio · ecommerce). Phase 2g3.6 closed.
+
+**Concrete shape:**
+
+1. **Two new skin folders authored from line one (~6,842 LOC HTML):**
+   - `templates/live_templates/restaurant/trattoria-warm/` — 7 files. Cream paper `#f8efde` page color, Libre Baskerville body + Caveat script accent (NOT the DNA's `Caveat` as a structural face — Caveat is a 1-2-spot script garnish on chalkboard daily-specials, "Buon appetito!" stamp, footer wordmark; Libre Baskerville does the structural typography work). Photo-frame hero (`.tw-hero .frame` rotated -1.2deg with rosso accent stamp + handwritten caption). Chalkboard daily-specials band on dark wood panel. Family band with portraits. Hours strip. Tavolata band. Phone+WhatsApp CTA pattern (no cart, no checkout, no delivery).
+   - `templates/live_templates/restaurant/street-modern/` — 7 files. Near-black `#0a0a0a` page color, Big Shoulders Display 800/900 condensed UPPERCASE headlines + Inter body + JetBrains Mono technical chips. Tilted product-cutout hero (`.sm-hero .cutout` rotated -2deg with stamped neon `€ 9.50` price-badge). Product-grid menu cards with "AGGIUNGI" CTAs. Real-time queue counter strip ("CODA AL BANCO ≈ 4 MIN" / "ULTIMO ORDINE 23:30 KITCHEN OPEN UNTIL"). GLOVO/DELIVEROO/JUST EAT/UBER EATS marquee. Order-now flow (Al Banco / Takeaway / Delivery 3-route hub).
+   - Both skins: full RTL CSS block scoped to `html[dir="rtl"]` on `.tw-*` and `.sm-*` selectors; conditional Amiri+Noto-Kufi font load `{% if is_rtl %}`; Latin proper names + Latin Western digits + Latin currency preserved via `unicode-bidi: isolate` (Sapore) or selector-based isolation (Brace, no `data-latin` per-attribute marker, only RTL CSS rules); 720px mobile breakpoint; `:focus-visible` rings on every CTA; D-047 chrome-cleanliness from line one (zero IT literals in HTML).
+
+2. **Two IT content registries (~1,799 LOC) + 8 locale trees (~6,500 LOC) authored by 8 parallel sub-agents:**
+   - Sapore IT: `template_content_sapore.py` ~855 LOC, voice = warm Roman family register, "Da Nonna Rosa, come a casa vostra" register, dishes (Cacio e pepe / Bucatini all'amatriciana / Coda alla vaccinara / Margherita Verace / Cesanese del Lazio), 6 page kinds (home/menu/storia/forno/eventi/contatti), 392 deep-keys.
+   - Sapore EN/FR/ES/AR: ~856 LOC each. Voice contracts: Bon Appétit/NYT-Food (EN), Le Fooding/Atabula `tu` (FR), El País Gastro/7 Caníbales `tú` peninsular (ES), Brownbook/cultural-publishing MSA (AR). 0 missing/extra keys per locale, deep-walk parity verified.
+   - Brace IT: `template_content_brace.py` ~944 LOC, voice = Bologna street-food brutalist UPPERCASE imperative, "Bruciato al fuoco vivo, servito al volo" register, products (DOPPIO BRACE / SMASH CLASICO / FRITTO MISTO / Pizza al taglio / Mortadella e pistacchio), delivery brands LATIN, 6 page kinds (home/menu/lab/moments/ordina/contatti), 548 deep-keys (different shape than Sapore due to product-grid vs menu-list).
+   - Brace EN/FR/ES/AR: ~627-955 LOC each. Voice contracts: Eater/Vice Munchies UPPERCASE (EN), Le Fooding street/Trax `tu` urban-imperative + anglicismes (FR), Time Out Madrid `tú` peninsular + `currar` (ES), Wamda lifestyle/Vice Arabia urban-imperative MSA + Latin product names (AR). 0 missing/extra keys per locale.
+
+3. **Stub-then-replace bootstrap pattern** (Session 41 recipe). 8 stub locale files (`template_content_<slug>_<loc>.py`) created BEFORE wiring imports, each re-exporting `..._CONTENT_IT as ..._CONTENT_<LOC>`. The TEMPLATE_CONTENT dict is wired with all 10 entries (2 IT + 8 locale-pointers). Imports stay green throughout. The 8 parallel sub-agents overwrite each stub with their full locale tree. The validation chain is green at every step.
+
+4. **TEMPLATE_REGISTRY.json updates** (version 0.10.0 → 0.11.0): both rows flipped `tier: draft → published_live`, `dna_phase: "2g3.6"`, `session_closed: 48`, `live_pages` array authored, `locales: ["it","en","fr","es","ar"]`, `rtl: true`, `tier_reason` string with full audit trail. `python manage.py sync_template_tiers` promotes both in the DB.
+
+5. **Smoke harness extensions:**
+   - `smoke_full.py`: +2 templates in LOCALES + CATEGORY → **443/443** routes (was 363, +80 inner pages + +10 detail/listing surfaces).
+   - `smoke_forms.py`: +2 PAGES (Sapore contatti + Brace contatti) + 2 LOCALES_BY_TEMPLATE entries → **55/55** form routes (was 45).
+   - `smoke_i18n_media_hardening.py`: +2 templates in MULTILINGUAL + CATEGORY → **69/69** hardening checks (was 57).
+
+**Rationale:** restaurant category was the smallest gap to close on the public-catalog floor (1/3 → 3/3 in a single session), and the user directive was explicit: "non aprire nuove categorie", "non rifare commerce o editor", "portare la categoria restaurant a 3/3 live". The DNA + preview compositions for both templates already existed from Session 16 catalog audit and prior phase-2f work, so the work was concentrated on (a) skin authoring with sharp visual differentiation, (b) IT content with realistic Roman trattoria + Bologna street-food voice, (c) 5-locale rollout via the now-stable parallel-agent recipe (proven 7 times). The two new skin folders also add reusable archetypes to the catalog: any future warm-family restaurant reuses `trattoria-warm`; any future fast-casual urban food brand reuses `street-modern`. Only when a third sibling is semantically as far from BOTH existing siblings as Sapore is from Brace should a new archetype be split (D-050/D-051 default applies retroactively to restaurant).
+
+**Trade-off deliberati:**
+- **Pexels API integration deferred.** `PEXELS_API_KEY` env var not present at session start. Per D-077's env-only key handling rule (the key is never written to repo, memory, docs, or commits) and the session's "non scrivere la chiave nei file" directive, the Pexels search-API integration was skipped for this session. Existing curated Unsplash IDs from `restaurant-trattoria` + `restaurant-street` pools (verified visually in Sessions 31/47) were used instead, plus IT-curated additions for trattoria/street-food coherence. No catastrophic visual mismatches detected in Playwright walks. Pexels CDN swap is documented as a Phase-2g3.6c follow-up in TODO_NEXT for when the key is available — the URL format is hot-link-public, so future swap is one-line per slot. The trade-off: no new editorial video shipped this session (D-077's "one video per DNA register" rule means restaurant DNA would need an explicit motion case, which trattoria-warm doesn't pull for and street-modern only marginally does — late-night DJ booth or grill action could fit but requires real footage; not blocking).
+- **Two skin folders, not one merged "restaurant-modern" archetype.** Sapore and Brace are visually opposite enough that merging them would have flattened both into recolors of one skeleton (Session 16's catalog-audit BLOCKING finding for the agency/lawyer/real-estate/medical sibling pairs). The 7-file × 2 = 14 HTML files is intentional debt — same shape as Bottega+Luxe (Phase 2g3.5).
+- **Page kinds chosen per template, not standardized.** Sapore: home/menu/about/signature/events/contact. Brace: home/menu/about/gallery/order/contact. The `signature` (forno-a-legna pizza+pasta showcase) and `events` (tavolata) kinds are Sapore-only; `gallery` (urban moments) and `order` (3-route delivery hub) are Brace-only. Each kind maps to a real customer surface, not a generic placeholder. Future restaurant siblings reusing these archetypes inherit the kind per template.
+- **Differentiation contracts encoded as cross-leak guards.** D-054 retroactively binds: Sapore-only tokens (`mattarello`, `Nonna Rosa`, `Trastevere`, `forno a legna`, `tavolata`, `Cesanese del Lazio`, `tirata`) must NOT appear on Brace pages; Brace-only tokens (`smashburger`, `scottona`, `CODA AL BANCO`, `GLOVO`, `DELIVEROO`, `Bologna`, `Big Shoulders`, `late-night`) must NOT appear on Sapore pages. Verified: 0 leaks across 480 cross-locale × 10-phrase checks.
+
+**Consequence:** (a) restaurant category closes 3/3 published_live with sharp differentiation; (b) catalog floor advances from 9/20 to 11/20 across 5 categories — the public-catalog "next promotion" target shifts to medical (Phase 2g3.2: salute / benessere / famiglia, 3 templates); (c) the trattoria-warm and street-modern archetypes are reusable for future siblings; (d) the parallel-agent recipe (proven 8 times now) scales to 2-template/8-tree fan-out without modification; (e) zero regressions across the 9 pre-existing live templates (363/363 was, 363/363 still — the +80 routes are all from the new templates).
+
+**Validation:**
+- `python manage.py check` → 0 issues
+- `sync_template_tiers` → 11 promoted, 0 missing
+- Full sweep: **443/443 HTTP 200** (was 363, +80)
+- Forms: **55/55 HTTP 200** + .lf-* primitives present (was 45, +10)
+- Hardening: **69/69 OK** (was 57, +12)
+- Ecommerce regression: **194/194** (no impact)
+- Gusto i18n regression: **52/52** (no impact)
+- 0 IT leaks across 480 cross-locale checks
+- Browser click-through validated: 5 language pills routes correct, RTL flip on AR works, phone/WhatsApp CTAs use correct `tel:` and `wa.me` schemes, internal nav preserves `?lang=` parameter
+- Listing `/templates/restaurant/` shows all 3 cards
+- D-053 Live Preview Law gate green on both templates
+- D-054 Premium Differentiation 10/10 vs both siblings (and vs Gusto)
+- D-047 chrome-authoring contract clean from line one
+
+**Key insights:**
+
+1. **Multi-line `{# … #}` Django comments leak to render output.** A multi-line comment like `{# foo\n   bar baz #}` does NOT close on the first inner newline — Django's tokenizer sees the opening `{#` and the closing `#}` (potentially many lines later), and the inner text bleeds into the rendered HTML when there's no proper close on the same line. Use `{% comment %}…{% endcomment %}` for any multi-line documentation. Caught at first Brace/Sapore render — debug "Big Shoulders Display [display condensed (UPPERCASE)..." string visible at top of every page; fixed by switching to `{% comment %}` block. Future skin authoring MUST use `{% comment %}` for multi-line docs.
+
+2. **Apostrophe-in-single-quoted-Python-string is a recurring trap in IT content.** First Brace IT registry had `'TRE GESTI. <em>NIENT'ALTRO.</em>'` — the `NIENT'ALTRO` apostrophe terminated the string mid-value and triggered `SyntaxError: unterminated string literal`. Convention for future content registries: default to **double-quoted Python strings** when content can contain apostrophes (`"…NIENT'ALTRO…"`). Sub-agent prompts now mention this explicitly.
+
+3. **The parallel-agent recipe scales without modification to 8-fan-out.** 4 IT-builder agents (1 per template × 2 templates) followed by 8 locale agents (4 locales × 2 templates) ran in parallel. Each agent had a self-contained prompt with explicit voice contract + differentiation guards + dish-name preservation rules + structural-parity validation step. 0 cross-agent conflicts (each writes a distinct file). 0 quality regressions vs solo authoring. Total wall-clock: ~9 minutes per locale agent, ~15 minutes per IT-builder agent — agents in flight in parallel.
+
+4. **`runserver --noreload` does NOT pick up template OR Python changes between requests on Windows.** Even with `DEBUG=True`. Each template/Python edit needs a server bounce on a fresh port. Same gotcha as Session 19, 23, 42. Future sessions: always restart on a fresh port (8901 → 8902 → 8903 → 8904 in this session).
+
+5. **Playwright `fullPage: true` screenshots can capture mid-fade or pre-fade state when `live-motion.js` IntersectionObserver hasn't fired.** Sections appear blank in the fullpage thumbnail but render correctly when viewed live. Workaround for visual QA: `page.evaluate(() => { document.querySelectorAll('[data-lm]').forEach(el => el.style.opacity = '1'); })` before screenshot. Document this in AGENT_HANDOFF for future visual-validation sessions.
+
+---
+
 ## D-077: Media Coherence — Pexels Adopted as Primary Stock-Photo CDN, Unsplash Legacy Only, One Editorial Video on Luxe Lookbook (2026-04-15, Session 47)
 
 **Decision:** all new or replacement stock imagery in the site and templates is sourced from Pexels via its official API, with the key read from `PEXELS_API_KEY` env var only — never committed, never memoized, never logged. Existing Unsplash URLs that serve semantically correct content are left alone (no churn). A single editorial video is added to the Luxe lookbook preview (not any other surface) because only that DNA pulls for moving image; every other surface keeps stills by policy.

@@ -1,6 +1,73 @@
 # Agent Handoff
 
-Last updated: 2026-04-14 — after **Session 45 Commerce Completion v2**
+Last updated: 2026-04-15 — after **Session 48 Restaurant Live Completion Premium**
+
+## Session 48 — Restaurant Live Completion Premium: Read This Before Touching Any Restaurant, Sapore/Brace, or Trattoria-Warm/Street-Modern Skin Work (2026-04-15)
+
+**What changed in Session 48.** The restaurant category is now **3/3 published_live**. Sapore (`sapore-trattoria-pizzeria`, trattoria-warm archetype) and Brace (`brace-street-food-lab`, street-modern archetype) have been authored from line one with full multipage live skins (6 page routes each), 5 locales (it/en/fr/es/ar) with real RTL for Arabic, and sharp D-054 differentiation enforced both vs each other and vs Gusto fine-dining.
+
+### What's binding (D-078)
+
+1. **Sapore + Brace + Gusto must STAY DISTINCT in voice across every locale.** D-054 differentiation is enforced by 0 IT-leak smoke (480 cross-locale checks). Voice contracts:
+   - **Sapore** (warm Roman family-trattoria): "Da Nonna Rosa, come a casa vostra" register · phone+WhatsApp + reservation form · chalkboard daily-specials · family band · forno-a-legna · tavolata · Cesanese del Lazio · mattarello · tirata. Bon Appétit/NYT-Food (EN), Le Fooding `tu` (FR), El País Gastro `tú` peninsular (ES), Brownbook MSA (AR).
+   - **Brace** (Bologna street-food brutalist): "Bruciato al fuoco vivo, servito al volo" UPPERCASE register · order-now (al banco/takeaway/delivery) · GLOVO/DELIVEROO/JUST EAT/UBER EATS · counter status mono chips · late-night DJ moments · smashburger · scottona · Big Shoulders Display 900. Eater (EN), Le Fooding street `tu` + anglicismes (FR), Time Out Madrid `tú` peninsular + `currar` (ES), Wamda urban-imperative MSA (AR).
+   - **Gusto** (editorial fine-dining concierge): "Una serata in otto atti" register · concierge tile · sommelier · Michelin · 14 coperti · Playfair italic · Cormorant. Untouched in Session 48 — DO NOT modify.
+
+2. **Both new skin folders are now reusable archetype templates.** Future restaurant siblings:
+   - Warm-family register → reuse `templates/live_templates/restaurant/trattoria-warm/`. Drop in a new content registry, point the WebTemplate.archetype at `trattoria-warm`, swap palette tokens per the `--primary/--secondary/--accent` contract.
+   - Fast-casual urban brand → reuse `templates/live_templates/restaurant/street-modern/`. Same pattern.
+   - Only when a third sibling is semantically as far from BOTH existing siblings as Sapore is from Brace should a new archetype be split (D-050/D-051 default applies retroactively to restaurant).
+
+3. **D-047 chrome-cleanliness from line one.** All 14 new HTML files (7 per skin) carry zero IT literals — every visible string flows from `page_data.*` / `site.*` / `chrome.*`. Future skin edits MUST keep this.
+
+4. **`html[dir="rtl"]` CSS block + conditional Amiri/Noto-Kufi font load on both bases.** Sapore uses Amiri body + Noto Kufi Arabic display (warm classical for the family-trattoria voice). Brace uses Amiri + Noto Kufi (urban-brutalist register). Latin proper names (Trattoria Da Nonna Rosa, Rosa Trezzi, Marco Trezzi, Giulia Trezzi, Trastevere, Roma, Via dei Salumi, Lazio, Amatrice / Brace Street Lab, Bologna, Via Indipendenza, Tortellini), prices (€ 9.50, € 12.00), phone numbers, hours (12:00 – 24:00), Latin Western digits all stay Latin via `unicode-bidi: isolate` (Sapore) or RTL CSS rules (Brace).
+
+5. **Native voice per locale, never machine translation.** Sapore EN reads as native NYT Food; Brace EN reads as native Eater. Sapore FR uses `tu` warm-trattoria; Brace FR uses `tu` urban-imperative — DIFFERENT registers despite both being tutoyer. Same delineation for ES/AR.
+
+6. **Italian dish/proper names preserved across all locales.** Cacio e pepe, Carbonara, Bucatini all'amatriciana, Coda alla vaccinara, Tonnarelli, Margherita Verace, Cesanese del Lazio, Saltimbocca alla romana / Margherita, Diavola, Mortadella di Bologna, Pizza Rossa, San Marzano DOP, scottona piemontese, Tiramisù — all stay Italian across EN/FR/ES/AR.
+
+7. **Page slugs stay Italian (URL-canonical).** Sapore: home, menu, storia, forno, eventi, contatti. Brace: home, menu, lab, moments, ordina, contatti. Only `label` fields change per locale. Slugs are IT — never translate.
+
+### Reusable recipe (now proven 8 times)
+
+Cardio · Derm · Gusto · Chiara · Pixel · Pragma+Elevate · Bottega+Luxe · **Sapore+Brace**:
+
+1. Audit DNA + skin folder + content registry state for both templates
+2. Author IT skin folder via parallel sub-agent (1 per template) — explicit DNA contract, palette tokens, font stack, chrome-key list (D-047), RTL block, 720px breakpoint, `:focus-visible`
+3. Author IT content registry per template (~500-900 LOC each)
+4. Stub locale modules (re-export IT) so imports stay green during bootstrap
+5. Wire into TEMPLATE_CONTENT
+6. Flip `tier` in TEMPLATE_REGISTRY.json + `python manage.py sync_template_tiers`
+7. IT-only smoke (12/12 routes for 2 templates × 6 pages)
+8. Dispatch 8 parallel locale sub-agents (4 locales × 2 templates) with explicit voice contracts + differentiation guards + dish-name preservation rules + structural-parity validation step
+9. When agents return: parse-validate, key-parity check vs IT, live-route check at `?lang=xx`, IT-leak sweep
+10. Update `smoke_full.py` + `smoke_forms.py` + `smoke_i18n_media_hardening.py` to include new templates
+11. Browser click-through validation across all 5 locales
+12. Update memory + DECISIONS + SESSION_LOG + TODO_NEXT + AGENT_HANDOFF + CATEGORY_ROADMAP + TEMPLATE_REGISTRY in single follow-up commit
+
+### Do NOT do
+
+- Do NOT collapse Sapore + Brace voices into one shared register — they must stay sharply distinct across every locale.
+- Do NOT add chalkboard/family-band/Caveat-script Sapore-only patterns to Brace, or order-now/AGGIUNGI/counter-status/neon-yellow Brace-only patterns to Sapore. The cross-leak smoke enforces this.
+- Do NOT touch Gusto fine-dining — it's the third leg of the restaurant category and was untouched per directive. 52/52 gusto i18n regression is the binding gate.
+- Do NOT use machine translation for any locale block. The quality floor is native Bon Appétit/Le Fooding/El País Gastro/Brownbook (Sapore) and native Eater/Trax/Time Out Madrid/Wamda (Brace) editorial voice per template per locale.
+- Do NOT translate Italian page slugs. Sapore stays `home/menu/storia/forno/eventi/contatti`. Brace stays `home/menu/lab/moments/ordina/contatti`. Only labels change per locale.
+- Do NOT introduce a real cart/checkout/payment flow on either template. Conversion patterns are deliberate demos: phone-and-whatsapp + reservation form (Sapore) and order-now hub with simulated counter status + delivery partners marquee (Brace). A real commerce engine for restaurants is a Phase 4+ topic, out of scope.
+- Do NOT touch the 9 already-multilingual templates (cardio/derm/gusto/chiara/pixel/pragma/elevate/bottega/luxe) when working on Sapore+Brace. Regression smokes (363/363 was, 363/363 still) are the binding gate. The hardening smoke (69/69 OK) verifies 11/11 multilingual coverage.
+- Do NOT add Big Shoulders Display or JetBrains Mono to Sapore. Sapore is Libre Baskerville + Source Sans 3 + Caveat (script accent only).
+- Do NOT add Libre Baskerville or Caveat to Brace. Brace is Big Shoulders Display + Inter + JetBrains Mono.
+- Do NOT use multi-line `{# … #}` Django comments in any new skin file. Use `{% comment %}…{% endcomment %}`. The `{# foo\n   bar #}` form leaks inner text to render output (caught at first Brace/Sapore render in Session 48; both fixed).
+
+### Gotchas (Session 48)
+
+- **Multi-line `{# … #}` Django comments leak.** Caught at first Brace/Sapore render — debug "Big Shoulders Display [display condensed (UPPERCASE)..." string visible at top of every page; fixed by switching to `{% comment %}` block. Future skin authoring MUST use `{% comment %}` for multi-line docs.
+- **Apostrophe-in-single-quoted-Python-string IT content.** First Brace IT registry had `'TRE GESTI. <em>NIENT'ALTRO.</em>'` — the apostrophe terminated the string mid-value. Convention: default to **double-quoted Python strings** when content can contain apostrophes. Sub-agent prompts now mention this explicitly.
+- **`runserver --noreload` does NOT pick up template OR Python changes between requests on Windows.** Even with `DEBUG=True`. Each template/Python edit needs a server bounce on a fresh port (8901 → 8902 → 8903 → 8904 in this session). Same gotcha as Session 19, 23, 42.
+- **Playwright `fullPage: true` screenshots can capture mid-fade or pre-fade state.** When `live-motion.js` IntersectionObserver hasn't fired on a section yet, that section appears blank in the thumbnail but renders correctly when scrolled into view. Workaround: `page.evaluate(() => { document.querySelectorAll('[data-lm]').forEach(el => el.style.opacity = '1'); })` before screenshot.
+- **PEXELS_API_KEY env var was NOT present at session start.** Used existing curated Unsplash IDs from `restaurant-trattoria` + `restaurant-street` pools (Sessions 31/47 verified). Pexels CDN swap is a Phase-2g3.6c follow-up — the URL format `https://images.pexels.com/photos/<id>/pexels-photo-<id>.jpeg?auto=compress&cs=tinysrgb&w=<w>&h=<h>&fit=crop` is hot-link-public so future swap is one-line per slot when key is provided.
+- **`Caveat` font in DNA registry is NOT the structural face.** Sapore DNA declares `font_pairing = ("Caveat", "Inter")` but the actual structural typography is **Libre Baskerville + Source Sans 3** (with Caveat as a 1-2-spot script garnish on chalkboard daily-specials, "Buon appetito!" stamp, footer wordmark). The skin's `_base.html` hardcodes the Google Fonts link to load all 3 families — DO NOT rely on `theme.heading_font` for primary type on Sapore; the DNA's Caveat declaration is the script-accent contract.
+
+---
 
 ## Session 45 — Commerce Completion v2: Read This Before Touching Any /shop/, /dashboard/, Payment, i18n, or Merchant Work (2026-04-14)
 

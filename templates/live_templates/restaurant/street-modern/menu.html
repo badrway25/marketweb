@@ -1,0 +1,307 @@
+{% extends "live_templates/restaurant/street-modern/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     LEAD — page eyebrow + display headline + intro
+  ============================================================ */
+  .sm-lead {
+    padding: 80px 32px 48px;
+    max-width: 1400px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .sm-lead .sm-display { font-size: clamp(56px, 7vw, 110px); max-width: 14ch; }
+
+  /* ============================================================
+     MENU SECTION — section number + title + items grid
+  ============================================================ */
+  .sm-menu-section {
+    padding: 56px 32px 80px;
+    max-width: 1400px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .sm-menu-section .head {
+    display: grid; grid-template-columns: 110px 1fr; gap: 32px; align-items: end;
+    margin-bottom: 36px;
+  }
+  .sm-menu-section .head .num {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 88px; color: var(--secondary); line-height: 0.85;
+    letter-spacing: -0.02em;
+  }
+  .sm-menu-section .head .meta {
+    display: flex; flex-direction: column; gap: 10px; min-width: 0;
+  }
+  .sm-menu-section .head .meta h2 {
+    font-family: var(--heading); font-weight: 900;
+    font-size: clamp(40px, 5vw, 64px);
+    text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.95;
+    color: var(--ink);
+  }
+  .sm-menu-section .head .meta .desc {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--secondary);
+  }
+
+  .sm-menu-section .grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px;
+  }
+
+  .sm-menu-card {
+    background: var(--bg-2);
+    border: 2px solid var(--rule);
+    display: grid; grid-template-columns: 200px 1fr;
+    transition: border-color 220ms ease, transform 220ms ease;
+    min-width: 0;
+  }
+  .sm-menu-card:hover { border-color: var(--secondary); transform: translateY(-3px); }
+  .sm-menu-card .img {
+    aspect-ratio: 1/1;
+    background: var(--bg-3);
+    overflow: hidden;
+    position: relative;
+  }
+  .sm-menu-card .img img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 700ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .sm-menu-card:hover .img img { transform: scale(1.06); }
+  .sm-menu-card .img .tag {
+    position: absolute; top: 12px; left: 12px;
+  }
+  .sm-menu-card .body {
+    padding: 22px 22px 22px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-width: 0;
+  }
+  .sm-menu-card .body .name {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 22px; letter-spacing: 0.01em; text-transform: uppercase; color: var(--ink);
+    line-height: 1;
+  }
+  .sm-menu-card .body .desc {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+    line-height: 1.55; flex-grow: 1;
+  }
+  .sm-menu-card .body .row {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    padding-top: 12px; border-top: 1px dashed var(--rule);
+  }
+  .sm-menu-card .body .row .price {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 22px; color: var(--secondary);
+  }
+  .sm-menu-card .body .row .add {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 13px; letter-spacing: 0.10em; text-transform: uppercase;
+    background: var(--secondary); color: #0a0a0a;
+    padding: 8px 14px;
+    border: 2px solid var(--secondary);
+    transition: background 200ms ease, color 200ms ease;
+  }
+  .sm-menu-card .body .row .add:hover { background: #0a0a0a; color: var(--secondary); }
+
+  /* ============================================================
+     ALLERGEN BAND
+  ============================================================ */
+  .sm-allergen {
+    background: var(--bg-2);
+    padding: 32px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-allergen-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 220px 1fr; gap: 32px; align-items: start;
+  }
+  .sm-allergen .lbl {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-allergen p {
+    font-family: var(--body); font-size: 14px; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* ============================================================
+     PRODUCERS BAND — 3 names with city
+  ============================================================ */
+  .sm-producers {
+    padding: 96px 32px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sm-producers .head {
+    display: flex; flex-direction: column; gap: 16px; max-width: 60ch; margin-bottom: 48px; min-width: 0;
+  }
+  .sm-producers .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .sm-producers .card {
+    border-top: 4px solid var(--secondary);
+    padding: 24px 0 0; min-width: 0;
+  }
+  .sm-producers .card .name {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 24px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .sm-producers .card .city {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--secondary);
+    margin-bottom: 16px;
+  }
+  .sm-producers .card .role {
+    font-family: var(--body); font-size: 14px; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* ============================================================
+     FINAL CTA
+  ============================================================ */
+  .sm-end {
+    background: var(--secondary); color: #0a0a0a;
+    padding: 80px 32px;
+    border-top: 4px solid #0a0a0a;
+  }
+  .sm-end-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: end;
+  }
+  .sm-end .text { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .sm-end .text .lbl {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: rgba(10,10,10,0.66);
+  }
+  .sm-end .text h2 {
+    font-family: var(--heading); font-weight: 900;
+    font-size: clamp(48px, 6vw, 88px); line-height: 0.9; letter-spacing: -0.02em;
+    color: #0a0a0a; text-transform: uppercase;
+  }
+  .sm-end .text h2 em { background: #0a0a0a; color: var(--secondary); padding: 0 12px; font-style: normal; }
+  .sm-end .actions {
+    display: flex; flex-direction: column; gap: 12px; min-width: 0;
+  }
+  .sm-end .actions .pri {
+    background: #0a0a0a; color: var(--secondary);
+    padding: 18px 28px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 12px; justify-content: space-between;
+    border: 2px solid #0a0a0a;
+  }
+  .sm-end .actions .pri:after { content: '→'; }
+  .sm-end .actions .sec {
+    background: transparent; color: #0a0a0a;
+    padding: 16px 28px;
+    font-family: var(--heading); font-weight: 800;
+    font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase;
+    border: 2px solid #0a0a0a;
+    display: inline-flex; align-items: center; gap: 12px; justify-content: space-between;
+  }
+  .sm-end .actions .sec:hover { background: #0a0a0a; color: var(--secondary); }
+
+  /* RTL */
+  html[dir="rtl"] .sm-menu-section .head { grid-template-columns: 1fr 110px; }
+  html[dir="rtl"] .sm-menu-card { grid-template-columns: 1fr 200px; }
+  html[dir="rtl"] .sm-menu-card .img .tag { right: 12px; left: auto; }
+  html[dir="rtl"] .sm-end .actions .pri:after { content: '←'; }
+
+  /* MOBILE */
+  @media (max-width: 720px) {
+    .sm-lead { padding: 36px 18px 24px; }
+    .sm-lead .sm-display { font-size: 48px; }
+    .sm-menu-section { padding: 36px 18px 56px; }
+    .sm-menu-section .head { grid-template-columns: 64px 1fr; gap: 18px; }
+    .sm-menu-section .head .num { font-size: 56px; }
+    .sm-menu-section .head .meta h2 { font-size: 32px; }
+    .sm-menu-section .grid { grid-template-columns: 1fr; gap: 14px; }
+    .sm-menu-card { grid-template-columns: 110px 1fr; }
+    .sm-menu-card .body { padding: 14px 14px 14px 16px; gap: 8px; }
+    .sm-menu-card .body .name { font-size: 17px; }
+    .sm-menu-card .body .desc { font-size: 12px; }
+    .sm-menu-card .body .row .price { font-size: 18px; }
+    .sm-allergen { padding: 22px 18px; }
+    .sm-allergen-inner { grid-template-columns: 1fr; gap: 14px; }
+    .sm-producers { padding: 56px 18px; }
+    .sm-producers .grid { grid-template-columns: 1fr; gap: 22px; }
+    .sm-end { padding: 56px 18px; }
+    .sm-end-inner { grid-template-columns: 1fr; gap: 28px; }
+    .sm-end .text h2 { font-size: 40px; }
+  }
+{% endblock %}
+
+{% block content %}
+{# ========== LEAD ========== #}
+<section class="sm-lead" data-reveal>
+  <span class="sm-eyebrow">{{ page_data.eyebrow }}</span>
+  <h1 class="sm-display">{{ page_data.headline|safe }}</h1>
+  <p class="sm-intro">{{ page_data.intro }}</p>
+</section>
+
+{# ========== MENU SECTIONS — 5 ========== #}
+{% for sec in page_data.sections %}
+<section class="sm-menu-section" id="sec-{{ sec.id }}" data-reveal>
+  <div class="head">
+    <span class="num">{{ sec.label }}</span>
+    <div class="meta">
+      <h2>{{ sec.title }}</h2>
+      <span class="desc">{{ sec.desc }}</span>
+    </div>
+  </div>
+  <div class="grid">
+    {% for item in sec.items %}
+    <article class="sm-menu-card" data-stagger>
+      <div class="img">
+        <img src="{{ item.image }}" alt="{{ item.name }}">
+        {% if item.tag %}<span class="sm-tag {% if item.tag == 'TOP' %}is-top{% elif item.tag == 'NEW' %}is-new{% elif item.tag == 'VEG' %}is-veg{% elif item.tag == 'PICCANTE' %}is-piccante{% endif %} tag">{{ item.tag }}</span>{% endif %}
+      </div>
+      <div class="body">
+        <h3 class="name">{{ item.name }}</h3>
+        <p class="desc">{{ item.desc }}</p>
+        <div class="row">
+          <span class="price">{{ item.price }}</span>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'ordina' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="add">{{ chrome.form_submit }}</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endfor %}
+
+{# ========== ALLERGEN ========== #}
+<section class="sm-allergen" data-reveal>
+  <div class="sm-allergen-inner">
+    <span class="lbl">{{ page_data.allergen_label }}</span>
+    <p>{{ page_data.allergen_text }}</p>
+  </div>
+</section>
+
+{# ========== PRODUCERS ========== #}
+<section class="sm-producers" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.producers_label }}</span>
+    <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.producers_heading|safe }}</h2>
+    <p class="sm-intro">{{ page_data.producers_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for p in page_data.producers %}
+    <div class="card" data-stagger>
+      <h3 class="name">{{ p.name }}</h3>
+      <span class="city">{{ p.city }}</span>
+      <p class="role">{{ p.role }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ========== FINAL CTA ========== #}
+<section class="sm-end">
+  <div class="sm-end-inner">
+    <div class="text">
+      <span class="lbl">{{ page_data.final_label }}</span>
+      <h2>{{ page_data.final_heading|safe }}</h2>
+    </div>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.final_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="pri">{{ page_data.final_primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.final_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sec">{{ page_data.final_secondary_cta }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,547 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale }}" dir="{{ html_dir }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+{% comment %}
+Street-modern hard-coded font stack: Big Shoulders Display (display
+condensed UPPERCASE), Inter (body), JetBrains Mono (technical labels:
+queue time, ETA, kitchen specs). Theme.heading_font value is also
+"Big Shoulders Display" but we hardcode for safety + weight axis.
+{% endcomment %}
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Noto+Kufi+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet">
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
+<style>
+  :root {
+    --primary:   {{ theme.primary }};      /* #0F0F0F near-black */
+    --secondary: {{ theme.secondary }};    /* #FFE600 neon yellow */
+    --accent:    {{ theme.accent }};       /* #FF3D00 flame red */
+    --ink:       #f5f5f5;
+    --ink-soft:  rgba(245,245,245,0.72);
+    --ink-dim:   rgba(245,245,245,0.44);
+    --bg:        #0a0a0a;
+    --bg-2:      #161616;
+    --bg-3:      #202020;
+    --rule:      rgba(255,230,0,0.18);
+    --rule-2:    rgba(255,230,0,0.10);
+    --heading:   'Big Shoulders Display', 'Anton', system-ui, sans-serif;
+    --body:      'Inter', system-ui, sans-serif;
+    --mono:      'JetBrains Mono', ui-monospace, monospace;
+
+    /* Premium forms (street-modern · neon yellow on near-black chrome) */
+    --lf-bg:            transparent;
+    --lf-bg-autofill:   #1a1a1a;
+    --lf-bg-soft:       rgba(255,230,0,0.04);
+    --lf-bg-icon:       rgba(255,230,0,0.15);
+    --lf-bg-chip:       rgba(255,230,0,0.10);
+    --lf-border:        rgba(255,230,0,0.28);
+    --lf-border-hover:  rgba(255,230,0,0.55);
+    --lf-border-focus:  var(--secondary);
+    --lf-ring:          rgba(255,230,0,0.18);
+    --lf-ring-size:     3px;
+    --lf-radius:        0;
+    --lf-pad-y:         16px;
+    --lf-pad-x:         14px;
+    --lf-label-color:   rgba(245,245,245,0.62);
+    --lf-label-size:    10px;
+    --lf-label-track:   0.22em;
+    --lf-label-weight:  800;
+    --lf-helper-color:  rgba(245,245,245,0.55);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   rgba(245,245,245,0.32);
+    --lf-section-rule:  rgba(255,230,0,0.18);
+    --lf-section-title-color: var(--secondary);
+    --lf-caret:         var(--secondary);
+    --lf-listbox-bg:    #1a1a1a;
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  rgba(255,230,0,0.18);
+    --lf-listbox-hov:   rgba(255,230,0,0.10);
+    --lf-submit-bg:     var(--secondary);
+    --lf-submit-bg-hover: #fff200;
+    --lf-submit-fg:     #0a0a0a;
+    --lf-submit-arrow:  #0a0a0a;
+    --lf-submit-radius: 0;
+    --lf-submit-underline: 0;
+    --on-accent:        #0a0a0a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1,h2,h3,h4,h5 {
+    font-family: var(--heading); font-weight: 800; line-height: 0.92;
+    color: var(--ink); letter-spacing: -0.025em; text-transform: uppercase;
+  }
+  em {
+    font-style: normal; color: var(--secondary); font-weight: 800;
+  }
+  /* Mono-tone chips: technical labels (queue time, ETA, kitchen specs). */
+  .sm-mono { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: 0; text-transform: none; }
+
+  :focus-visible {
+    outline: 3px solid var(--secondary);
+    outline-offset: 3px;
+    border-radius: 0;
+  }
+
+  /* ============================================================
+     MARKETPLACE BAR — black stripe with neon-yellow accents
+  ============================================================ */
+  .mp-bar {
+    background: #050505; color: var(--ink); font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--rule);
+    gap: 24px;
+  }
+  .mp-bar .mp-back {
+    color: var(--secondary); border-bottom: 1px solid var(--secondary);
+    padding-bottom: 1px; font-weight: 800;
+    transition: color 240ms ease, letter-spacing 240ms ease;
+    white-space: nowrap;
+  }
+  .mp-bar .mp-back:hover { letter-spacing: 0.20em; }
+  .mp-bar .mp-name { color: var(--ink-dim); }
+  .mp-lang { display: flex; gap: 6px; align-items: center; }
+  .mp-lang .pill {
+    display: inline-block;
+    padding: 4px 9px;
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.12em; font-weight: 700;
+    color: var(--ink-dim);
+    border: 1px solid var(--rule);
+    transition: color 220ms ease, border-color 220ms ease, background 220ms ease;
+  }
+  .mp-lang .pill:hover { color: var(--secondary); border-color: var(--secondary); }
+  .mp-lang .pill.is-current {
+    color: #0a0a0a;
+    border-color: var(--secondary);
+    background: var(--secondary);
+  }
+
+  /* ============================================================
+     SITE NAV — bold-pill · floating black pill nav, neon CTA right
+  ============================================================ */
+  .sm-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+    gap: 32px;
+    padding: 16px 32px;
+    background: rgba(10,10,10,0.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .sm-nav .brand {
+    display: inline-flex; align-items: center; gap: 12px;
+    min-width: 0;
+  }
+  .sm-nav .brand .mark {
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--secondary); color: #0a0a0a;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 24px; line-height: 1;
+  }
+  .sm-nav .brand .word {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 18px; letter-spacing: 0.02em;
+    color: var(--ink); text-transform: uppercase; line-height: 1;
+  }
+  .sm-nav .links {
+    display: flex; gap: 28px; flex-wrap: wrap; justify-content: center;
+    font-family: var(--heading); font-weight: 700;
+    font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-soft); min-width: 0;
+  }
+  .sm-nav .links a {
+    position: relative; padding-bottom: 4px;
+    transition: color 220ms ease;
+  }
+  .sm-nav .links a:after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+    height: 3px; background: var(--secondary);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 320ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .sm-nav .links a:hover { color: var(--ink); }
+  .sm-nav .links a:hover:after { transform: scaleX(1); }
+  .sm-nav .links a.is-current { color: var(--secondary); }
+  .sm-nav .links a.is-current:after { transform: scaleX(1); }
+
+  /* Order CTA — block-bold · neon yellow on black · square corners */
+  .sm-cta-order {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--secondary); color: #0a0a0a;
+    padding: 14px 22px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase;
+    border: 2px solid var(--secondary);
+    transition: background 220ms ease, color 220ms ease, transform 180ms ease;
+    white-space: nowrap;
+  }
+  .sm-cta-order:hover {
+    background: #0a0a0a; color: var(--secondary);
+  }
+  .sm-cta-order:active { transform: translateY(2px); }
+  .sm-cta-order:after { content: '→'; font-weight: 900; }
+
+  /* ============================================================
+     SECTION HELPERS · eyebrow + display headlines
+  ============================================================ */
+  .sm-eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-eyebrow:before { content: ''; width: 28px; height: 3px; background: var(--secondary); }
+  .sm-display {
+    font-family: var(--heading); font-weight: 900;
+    font-size: clamp(56px, 8vw, 128px);
+    line-height: 0.88; letter-spacing: -0.03em; text-transform: uppercase;
+    color: var(--ink);
+    max-width: 14ch;
+  }
+  .sm-display em {
+    font-style: normal; color: var(--secondary);
+  }
+  .sm-intro {
+    font-family: var(--body); font-weight: 500;
+    font-size: clamp(16px, 1.5vw, 19px); line-height: 1.55;
+    color: var(--ink-soft); max-width: 56ch;
+  }
+
+  /* Block-bold buttons — square neon CTA + ghost outline */
+  .sm-btn-primary {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--secondary); color: #0a0a0a;
+    padding: 18px 32px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase;
+    border: 2px solid var(--secondary);
+    transition: background 220ms ease, color 220ms ease, transform 180ms ease;
+  }
+  .sm-btn-primary:after { content: '→'; font-weight: 900; }
+  .sm-btn-primary:hover { background: #0a0a0a; color: var(--secondary); }
+  .sm-btn-primary:active { transform: translateY(2px); }
+
+  .sm-btn-ghost {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: transparent; color: var(--ink);
+    padding: 16px 28px;
+    font-family: var(--heading); font-weight: 800;
+    font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase;
+    border: 2px solid var(--ink-soft);
+    transition: border-color 220ms ease, color 220ms ease, background 220ms ease;
+  }
+  .sm-btn-ghost:hover {
+    border-color: var(--secondary); color: var(--secondary);
+  }
+  .sm-btn-ghost:after { content: '→'; font-weight: 900; }
+
+  .sm-btn-accent {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: var(--ink);
+    padding: 14px 24px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase;
+    border: 2px solid var(--accent);
+    transition: background 220ms ease, transform 180ms ease;
+  }
+  .sm-btn-accent:hover { background: #ff5a26; }
+  .sm-btn-accent:active { transform: translateY(2px); }
+
+  /* Tag chips — TOP / NEW / VEG / PICCANTE */
+  .sm-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    background: var(--secondary); color: #0a0a0a;
+    border: none;
+  }
+  .sm-tag.is-top { background: var(--secondary); color: #0a0a0a; }
+  .sm-tag.is-new { background: var(--accent); color: var(--ink); }
+  .sm-tag.is-veg { background: #4caf50; color: #0a0a0a; }
+  .sm-tag.is-piccante { background: #ff3d00; color: var(--ink); }
+
+  /* ============================================================
+     COUNTER STATUS BAND — real-time queue / kitchen / last order
+  ============================================================ */
+  .sm-counter {
+    background: var(--secondary); color: #0a0a0a;
+    padding: 14px 32px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; align-items: center;
+    border-bottom: 2px solid #0a0a0a;
+    font-family: var(--mono);
+  }
+  .sm-counter .cell {
+    display: flex; flex-direction: column; gap: 4px;
+    text-align: left;
+  }
+  .sm-counter .cell .lbl {
+    font-size: 10px; letter-spacing: 0.20em; font-weight: 700; text-transform: uppercase;
+    color: rgba(10,10,10,0.66);
+  }
+  .sm-counter .cell .val {
+    font-family: var(--heading);
+    font-size: 22px; font-weight: 900; line-height: 1;
+    color: #0a0a0a; letter-spacing: 0.02em; text-transform: uppercase;
+  }
+
+  /* ============================================================
+     FOOTER — delivery-strip · partners marquee + counter status
+  ============================================================ */
+  .sm-foot {
+    background: #050505; color: var(--ink);
+    padding: 56px 32px 32px;
+    font-family: var(--body); font-size: 13px;
+    border-top: 2px solid var(--rule);
+  }
+  .sm-foot .partners-strip {
+    background: var(--secondary); color: #0a0a0a;
+    padding: 14px 24px;
+    display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; align-items: center;
+    font-family: var(--heading); font-weight: 900; font-size: 18px; letter-spacing: 0.10em;
+    text-transform: uppercase;
+    margin: -56px -32px 48px -32px;
+    border-bottom: 2px solid #0a0a0a;
+  }
+  .sm-foot .partners-strip .sep {
+    width: 6px; height: 6px; background: #0a0a0a; border-radius: 0; transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+  .sm-foot .top {
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px;
+    padding-bottom: 40px; border-bottom: 1px solid var(--rule);
+    max-width: 1300px; margin: 0 auto;
+  }
+  .sm-foot .top h5 {
+    color: var(--secondary); font-family: var(--heading);
+    font-size: 14px; letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 800; margin-bottom: 14px;
+  }
+  .sm-foot .brand .mark {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .sm-foot .brand .mark .sq {
+    width: 32px; height: 32px;
+    background: var(--secondary); color: #0a0a0a;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-weight: 900; font-size: 20px;
+  }
+  .sm-foot .brand .mark .word {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 18px; letter-spacing: 0.02em; color: var(--ink); text-transform: uppercase;
+  }
+  .sm-foot .brand p {
+    color: var(--ink-soft); max-width: 36ch;
+    line-height: 1.6; font-size: 13px;
+  }
+  .sm-foot .col p, .sm-foot .col a {
+    color: var(--ink-soft); display: block;
+    padding: 3px 0; min-width: 0;
+  }
+  .sm-foot .col a { transition: color 220ms ease; }
+  .sm-foot .col a:hover { color: var(--secondary); }
+  .sm-foot .col p.sm-mono { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); }
+  .sm-foot .bot {
+    max-width: 1300px; margin: 24px auto 0;
+    padding-top: 22px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 11px; color: var(--ink-dim);
+    letter-spacing: 0.10em; text-transform: uppercase;
+    font-family: var(--mono);
+  }
+  .sm-foot .bot a { transition: color 220ms ease; }
+  .sm-foot .bot a:hover { color: var(--secondary); }
+
+  /* ============================================================
+     RTL OVERRIDES — Arabic · flip nav / mp-bar / arrows / counter cells
+  ============================================================ */
+  html[dir="rtl"] body {
+    font-family: 'Noto Kufi Arabic', 'Amiri', 'Inter', system-ui, sans-serif;
+    font-size: 17px; line-height: 1.85;
+  }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 {
+    font-family: 'Amiri', 'Noto Kufi Arabic', 'Big Shoulders Display', sans-serif;
+    letter-spacing: 0; text-transform: none;
+  }
+  html[dir="rtl"] .sm-nav .brand .word,
+  html[dir="rtl"] .sm-foot .brand .mark .word {
+    /* Latin wordmark stays Latin — "BRACE STREET LAB" keeps the condensed display face. */
+    font-family: 'Big Shoulders Display', sans-serif;
+  }
+  /* Uppercase tracking doesn't apply to Arabic — flatten to readable spacing. */
+  html[dir="rtl"] .sm-nav .links,
+  html[dir="rtl"] .sm-eyebrow,
+  html[dir="rtl"] .sm-cta-order, html[dir="rtl"] .sm-btn-primary,
+  html[dir="rtl"] .sm-btn-ghost, html[dir="rtl"] .sm-btn-accent,
+  html[dir="rtl"] .sm-foot .top h5, html[dir="rtl"] .sm-foot .bot,
+  html[dir="rtl"] .mp-bar, html[dir="rtl"] .mp-lang .pill,
+  html[dir="rtl"] .sm-counter .cell .lbl,
+  html[dir="rtl"] .sm-counter .cell .val,
+  html[dir="rtl"] .sm-tag {
+    letter-spacing: 0.04em;
+  }
+  /* Nav grid: brand/cta swap visual sides via RTL flip; underline sweep flips origin. */
+  html[dir="rtl"] .sm-nav .links a:after { transform-origin: right center; }
+  html[dir="rtl"] .sm-eyebrow:before { display: none; }
+  html[dir="rtl"] .sm-eyebrow:after {
+    content: ''; width: 28px; height: 3px; background: var(--secondary);
+  }
+  /* Block CTA arrows flip direction. */
+  html[dir="rtl"] .sm-cta-order:after,
+  html[dir="rtl"] .sm-btn-primary:after,
+  html[dir="rtl"] .sm-btn-ghost:after { content: '←'; }
+  html[dir="rtl"] .mp-bar { flex-direction: row-reverse; }
+  /* Counter strip — keep mono numbers LTR by isolating direction. */
+  html[dir="rtl"] .sm-counter { direction: rtl; }
+  html[dir="rtl"] .sm-counter .cell .val { direction: ltr; unicode-bidi: isolate; text-align: right; }
+  /* Footer partners strip stays centered, flips ordering. */
+  html[dir="rtl"] .sm-foot .partners-strip { flex-direction: row-reverse; }
+
+{% block extra_css %}{% endblock %}
+
+  /* ============================================================
+     MOBILE BREAKPOINT — 720px · single-column collapse · safe min-width:0
+  ============================================================ */
+  @media (max-width: 720px) {
+    .mp-bar { padding: 8px 14px; font-size: 10px; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .mp-lang { order: 2; }
+    .sm-nav {
+      grid-template-columns: 1fr auto; gap: 12px;
+      padding: 12px 14px;
+    }
+    .sm-nav .links {
+      grid-column: 1 / -1; gap: 14px; justify-content: flex-start;
+      font-size: 14px; letter-spacing: 0.06em;
+      padding-top: 12px; border-top: 1px dashed var(--rule);
+      overflow-x: auto;
+    }
+    .sm-nav .brand .word { font-size: 16px; }
+    .sm-nav .brand .mark { width: 32px; height: 32px; font-size: 20px; }
+    .sm-cta-order { padding: 10px 14px; font-size: 13px; letter-spacing: 0.04em; }
+    .sm-counter {
+      grid-template-columns: 1fr; gap: 10px;
+      padding: 12px 18px;
+    }
+    .sm-counter .cell .val { font-size: 18px; }
+    .sm-foot {
+      padding: 40px 18px 24px;
+    }
+    .sm-foot .partners-strip {
+      margin: -40px -18px 32px -18px;
+      font-size: 14px; gap: 16px; padding: 12px 14px;
+    }
+    .sm-foot .top {
+      grid-template-columns: 1fr; gap: 28px;
+    }
+    .sm-foot .top > * { min-width: 0; }
+    .sm-foot .bot { flex-direction: column; gap: 10px; text-align: left; }
+  }
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  {% if locale_switcher %}
+  <nav class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    {% for entry in locale_switcher %}
+      {% if page.slug == "home" %}
+        <a class="pill {% if entry.is_current %}is-current{% endif %}"
+           href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           {% if entry.code == 'ar' %}lang="ar" dir="rtl"{% endif %}>{{ entry.badge }}</a>
+      {% else %}
+        <a class="pill {% if entry.is_current %}is-current{% endif %}"
+           href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           {% if entry.code == 'ar' %}lang="ar" dir="rtl"{% endif %}>{{ entry.badge }}</a>
+      {% endif %}
+    {% endfor %}
+  </nav>
+  {% endif %}
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_restaurant }}</a>
+</div>
+
+<nav class="sm-nav" aria-label="{{ site.logo_word }}">
+  <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="brand">
+    <span class="mark">{{ site.logo_initial }}</span>
+    <span class="word">{{ site.logo_word }}</span>
+  </a>
+  <div class="links">
+    {% for p in pages %}
+      {% if p.slug == "home" %}
+        <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+      {% else %}
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.nav_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sm-cta-order">{{ site.nav_cta }}</a>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="sm-foot">
+  <div class="partners-strip" aria-label="{{ chrome.foot_services }}">
+    <span>GLOVO</span><span class="sep"></span>
+    <span>DELIVEROO</span><span class="sep"></span>
+    <span>JUST EAT</span><span class="sep"></span>
+    <span>UBER EATS</span>
+  </div>
+  <div class="top">
+    <div class="brand">
+      <h5>{{ chrome.foot_restaurant }}</h5>
+      <div class="mark">
+        <span class="sq">{{ site.logo_initial }}</span>
+        <span class="word">{{ site.logo_word }}</span>
+      </div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ chrome.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ chrome.foot_concierge }}</h5>
+      <p>{{ site.address }}</p>
+      <p class="sm-mono">{{ site.phone }}</p>
+      <p>{{ site.email }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ chrome.foot_services }}</h5>
+      <p class="sm-mono">{{ site.hours_compact }}</p>
+      {% for row in site.hours_footer_rows %}<p class="sm-mono">{{ row }}</p>{% endfor %}
+      <p>{{ site.license }}</p>
+    </div>
+  </div>
+  <div class="bot">
+    <span>{{ site.copyright }}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-interactions.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
+</body>
+</html>

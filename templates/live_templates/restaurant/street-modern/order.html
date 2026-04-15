@@ -1,0 +1,423 @@
+{% extends "live_templates/restaurant/street-modern/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     LEAD
+  ============================================================ */
+  .sm-lead {
+    padding: 80px 32px 32px;
+    max-width: 1400px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .sm-lead .sm-display { font-size: clamp(56px, 7vw, 110px); max-width: 14ch; }
+
+  /* ============================================================
+     COUNTER STATUS BAND — already in _base for home, repeating here
+  ============================================================ */
+  .sm-counter-strip {
+    background: var(--secondary); color: #0a0a0a;
+    padding: 18px 32px;
+    margin: 12px 0 32px;
+    display: grid; grid-template-columns: 220px repeat(3, 1fr);
+    gap: 24px; align-items: center;
+    border-top: 2px solid #0a0a0a;
+    border-bottom: 2px solid #0a0a0a;
+  }
+  .sm-counter-strip .lbl-strip {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 14px; letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .sm-counter-strip .cell {
+    display: flex; flex-direction: column; gap: 4px;
+    text-align: left;
+    font-family: var(--mono);
+  }
+  .sm-counter-strip .cell .lbl {
+    font-size: 10px; letter-spacing: 0.18em; font-weight: 700; text-transform: uppercase;
+    color: rgba(10,10,10,0.66);
+  }
+  .sm-counter-strip .cell .val {
+    font-family: var(--heading);
+    font-size: 22px; font-weight: 900; line-height: 1; text-transform: uppercase;
+    color: #0a0a0a; letter-spacing: 0.02em;
+  }
+
+  /* ============================================================
+     ROUTES — 3-route grid · counter / takeaway / delivery
+  ============================================================ */
+  .sm-routes {
+    padding: 56px 32px 96px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sm-routes .head { display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 48px; min-width: 0; }
+  .sm-routes .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+  }
+  .sm-route {
+    background: var(--bg-2);
+    border: 2px solid var(--rule);
+    padding: 36px 28px 32px;
+    display: flex; flex-direction: column; gap: 18px; min-width: 0;
+    transition: border-color 220ms ease, transform 220ms ease;
+  }
+  .sm-route:hover { border-color: var(--secondary); transform: translateY(-4px); }
+  .sm-route .num {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 56px; line-height: 0.85; color: var(--secondary);
+  }
+  .sm-route .ttl {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 32px; text-transform: uppercase; letter-spacing: 0.01em; color: var(--ink); line-height: 1;
+  }
+  .sm-route .sub {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-route .desc {
+    font-family: var(--body); font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+  }
+  .sm-route .lines {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 16px 0; border-top: 1px dashed var(--rule); border-bottom: 1px dashed var(--rule);
+  }
+  .sm-route .lines .line {
+    display: grid; grid-template-columns: 110px 1fr; gap: 12px; align-items: baseline;
+    font-family: var(--mono); font-size: 12px;
+  }
+  .sm-route .lines .line .lbl {
+    font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-route .lines .line .val {
+    color: var(--ink); font-weight: 500;
+  }
+  .sm-route .cta {
+    margin-top: auto;
+    background: var(--secondary); color: #0a0a0a;
+    padding: 16px 22px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase;
+    display: inline-flex; align-items: center; justify-content: space-between; gap: 14px;
+    border: 2px solid var(--secondary);
+    transition: background 200ms ease, color 200ms ease;
+  }
+  .sm-route .cta:after { content: '→'; }
+  .sm-route .cta:hover { background: #0a0a0a; color: var(--secondary); }
+
+  /* ============================================================
+     PARTNERS (anchor target #partners) — 4-up
+  ============================================================ */
+  .sm-partners {
+    background: var(--bg-2);
+    padding: 96px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-partners-inner { max-width: 1400px; margin: 0 auto; }
+  .sm-partners .head { display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 40px; min-width: 0; }
+  .sm-partners .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .sm-partners .partner {
+    background: #0a0a0a;
+    border: 2px solid var(--rule);
+    padding: 24px 22px;
+    display: flex; flex-direction: column; gap: 14px; min-width: 0;
+    transition: border-color 220ms ease;
+  }
+  .sm-partners .partner:hover { border-color: var(--secondary); }
+  .sm-partners .partner .name {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 24px; text-transform: uppercase; color: var(--ink); letter-spacing: 0.04em; line-height: 1;
+  }
+  .sm-partners .partner .row {
+    display: flex; flex-direction: column; gap: 6px;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .sm-partners .partner .row .eta { color: var(--secondary); }
+  .sm-partners .partner .row .min { color: var(--ink); }
+  .sm-partners .partner .row .zone { color: var(--ink-soft); }
+
+  /* ============================================================
+     HOURS TABLE — late-night opening table
+  ============================================================ */
+  .sm-hours {
+    padding: 96px 32px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items: start;
+  }
+  .sm-hours .head { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .sm-hours table {
+    width: 100%; border-collapse: collapse;
+    font-family: var(--mono);
+  }
+  .sm-hours table tr {
+    border-bottom: 1px dashed var(--rule);
+  }
+  .sm-hours table td {
+    padding: 18px 0;
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .sm-hours table td:first-child {
+    color: var(--secondary); width: 120px;
+  }
+  .sm-hours table td:last-child {
+    color: var(--ink); text-align: right;
+  }
+  .sm-hours .note {
+    margin-top: 24px;
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* ============================================================
+     ALLERGEN BAND
+  ============================================================ */
+  .sm-allergen {
+    background: var(--bg-2);
+    padding: 32px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-allergen-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 220px 1fr; gap: 32px; align-items: start;
+  }
+  .sm-allergen .lbl {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-allergen p {
+    font-family: var(--body); font-size: 14px; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* ============================================================
+     PHONE CTA BAND
+  ============================================================ */
+  .sm-phone {
+    background: #0a0a0a;
+    padding: 96px 32px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .sm-phone-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: end;
+  }
+  .sm-phone .text { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .sm-phone h2 {
+    font-family: var(--heading); font-weight: 900;
+    font-size: clamp(48px, 6vw, 96px); line-height: 0.9; letter-spacing: -0.02em;
+    color: var(--ink); text-transform: uppercase;
+  }
+  .sm-phone p { font-family: var(--body); font-size: 16px; color: var(--ink-soft); max-width: 50ch; }
+  .sm-phone .big-cta {
+    background: var(--secondary); color: #0a0a0a;
+    padding: 28px 44px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 26px; letter-spacing: 0.06em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 18px;
+    border: 2px solid var(--secondary);
+    transition: background 200ms ease, color 200ms ease, transform 180ms ease;
+  }
+  .sm-phone .big-cta:after { content: '→'; }
+  .sm-phone .big-cta:hover { background: #0a0a0a; color: var(--secondary); }
+  .sm-phone .big-cta:active { transform: translateY(2px); }
+
+  /* ============================================================
+     FAQ ACCORDION
+  ============================================================ */
+  .sm-faq {
+    padding: 96px 32px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .sm-faq .head { display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 40px; min-width: 0; }
+  .sm-faq .item {
+    border-top: 2px solid var(--rule);
+    padding: 22px 0;
+    cursor: pointer;
+  }
+  .sm-faq .item:last-child { border-bottom: 2px solid var(--rule); }
+  .sm-faq .item summary {
+    list-style: none;
+    display: grid; grid-template-columns: 1fr 32px; gap: 18px; align-items: center;
+    font-family: var(--heading); font-weight: 800;
+    font-size: 22px; text-transform: uppercase; letter-spacing: 0.01em;
+    color: var(--ink);
+    transition: color 220ms ease;
+  }
+  .sm-faq .item summary::-webkit-details-marker { display: none; }
+  .sm-faq .item summary:hover { color: var(--secondary); }
+  .sm-faq .item summary .arrow {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-weight: 900; font-size: 26px;
+    color: var(--secondary);
+    transition: transform 320ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .sm-faq .item[open] summary .arrow { transform: rotate(45deg); }
+  .sm-faq .item .a {
+    margin-top: 16px;
+    font-family: var(--body); font-size: 15px; line-height: 1.65; color: var(--ink-soft);
+    max-width: 70ch;
+  }
+
+  /* RTL */
+  html[dir="rtl"] .sm-route .lines .line { grid-template-columns: 1fr 110px; }
+  html[dir="rtl"] .sm-hours { grid-template-columns: 1.4fr 1fr; }
+  html[dir="rtl"] .sm-hours table td:last-child { text-align: left; }
+  html[dir="rtl"] .sm-route .cta:after { content: '←'; }
+  html[dir="rtl"] .sm-phone .big-cta:after { content: '←'; }
+
+  /* MOBILE */
+  @media (max-width: 720px) {
+    .sm-lead { padding: 36px 18px 18px; }
+    .sm-lead .sm-display { font-size: 48px; }
+    .sm-counter-strip {
+      grid-template-columns: 1fr; gap: 12px; padding: 14px 18px; margin: 10px 0 24px;
+    }
+    .sm-counter-strip .cell .val { font-size: 18px; }
+    .sm-routes { padding: 32px 18px 56px; }
+    .sm-routes .grid { grid-template-columns: 1fr; gap: 18px; }
+    .sm-route { padding: 24px 18px 22px; gap: 14px; }
+    .sm-route .ttl { font-size: 26px; }
+    .sm-partners { padding: 56px 18px; }
+    .sm-partners .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .sm-partners .partner { padding: 18px 16px; }
+    .sm-hours { grid-template-columns: 1fr; padding: 56px 18px; gap: 32px; }
+    .sm-hours table td { font-size: 14px; padding: 12px 0; }
+    .sm-allergen { padding: 22px 18px; }
+    .sm-allergen-inner { grid-template-columns: 1fr; gap: 14px; }
+    .sm-phone { padding: 56px 18px; }
+    .sm-phone-inner { grid-template-columns: 1fr; gap: 28px; }
+    .sm-phone h2 { font-size: 40px; }
+    .sm-phone .big-cta { padding: 18px 24px; font-size: 18px; }
+    .sm-faq { padding: 56px 18px; }
+    .sm-faq .item summary { font-size: 16px; }
+  }
+{% endblock %}
+
+{% block content %}
+{# ========== LEAD ========== #}
+<section class="sm-lead" data-reveal>
+  <span class="sm-eyebrow">{{ page_data.eyebrow }}</span>
+  <h1 class="sm-display">{{ page_data.headline|safe }}</h1>
+  <p class="sm-intro">{{ page_data.intro }}</p>
+</section>
+
+{# ========== COUNTER STATUS STRIP ========== #}
+<div class="sm-counter-strip" aria-label="{{ page_data.counter_status_label }}">
+  <span class="lbl-strip">{{ page_data.counter_status_label }}</span>
+  <div class="cell">
+    <span class="lbl">{{ page_data.counter_queue_label }}</span>
+    <span class="val">{{ page_data.counter_queue_value }}</span>
+  </div>
+  <div class="cell">
+    <span class="lbl">{{ page_data.counter_kitchen_label }}</span>
+    <span class="val">{{ page_data.counter_kitchen_value }}</span>
+  </div>
+  <div class="cell">
+    <span class="lbl">{{ page_data.counter_last_label }}</span>
+    <span class="val">{{ page_data.counter_last_value }}</span>
+  </div>
+</div>
+
+{# ========== ROUTES ========== #}
+<section class="sm-routes" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.routes_label }}</span>
+    <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.routes_heading|safe }}</h2>
+  </div>
+  <div class="grid">
+    {% for r in page_data.routes %}
+    <article class="sm-route" data-stagger>
+      <span class="num">{{ r.id }}</span>
+      <h3 class="ttl">{{ r.title }}</h3>
+      <span class="sub">{{ r.subtitle }}</span>
+      <p class="desc">{{ r.desc }}</p>
+      <div class="lines">
+        {% for lbl, val in r.lines %}
+        <div class="line"><span class="lbl">{{ lbl }}</span><span class="val">{{ val }}</span></div>
+        {% endfor %}
+      </div>
+      {% if r.cta_kind == 'tel' %}
+        <a href="tel:{{ r.cta_href }}" class="cta">{{ r.cta_label }}</a>
+      {% elif r.cta_kind == 'external' %}
+        <a href="{{ r.cta_href }}" target="_blank" rel="noopener" class="cta">{{ r.cta_label }}</a>
+      {% else %}
+        <a href="{{ r.cta_href }}" class="cta">{{ r.cta_label }}</a>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+{# ========== PARTNERS ========== #}
+<section class="sm-partners" id="partners" data-reveal>
+  <div class="sm-partners-inner">
+    <div class="head">
+      <span class="sm-eyebrow">{{ page_data.partners_label }}</span>
+      <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.partners_heading|safe }}</h2>
+    </div>
+    <div class="grid">
+      {% for p in page_data.partners %}
+      <div class="partner" data-stagger>
+        <h3 class="name">{{ p.name }}</h3>
+        <div class="row">
+          <span class="eta">{{ p.eta }}</span>
+          <span class="min">{{ p.min }}</span>
+          <span class="zone">{{ p.zone }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ========== HOURS TABLE ========== #}
+<section class="sm-hours" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.hours_label }}</span>
+    <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.hours_heading|safe }}</h2>
+  </div>
+  <div>
+    <table>
+      {% for day, hours in page_data.hours_rows %}
+      <tr><td>{{ day }}</td><td>{{ hours }}</td></tr>
+      {% endfor %}
+    </table>
+    <p class="note">{{ page_data.hours_note }}</p>
+  </div>
+</section>
+
+{# ========== ALLERGEN ========== #}
+<section class="sm-allergen" data-reveal>
+  <div class="sm-allergen-inner">
+    <span class="lbl">{{ page_data.allergen_label }}</span>
+    <p>{{ page_data.allergen_text }}</p>
+  </div>
+</section>
+
+{# ========== PHONE CTA ========== #}
+<section class="sm-phone">
+  <div class="sm-phone-inner">
+    <div class="text">
+      <span class="sm-eyebrow">{{ page_data.phone_label }}</span>
+      <h2>{{ page_data.phone_heading|safe }}</h2>
+      <p>{{ page_data.phone_intro }}</p>
+    </div>
+    <a href="tel:{{ page_data.phone_cta_href }}" class="big-cta sm-mono">{{ page_data.phone_cta_label }}</a>
+  </div>
+</section>
+
+{# ========== FAQ ACCORDION ========== #}
+<section class="sm-faq" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.faq_label }}</span>
+    <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.faq_heading|safe }}</h2>
+  </div>
+  {% for f in page_data.faq %}
+  <details class="item" data-stagger>
+    <summary>{{ f.q }}<span class="arrow">+</span></summary>
+    <p class="a">{{ f.a }}</p>
+  </details>
+  {% endfor %}
+</section>
+{% endblock %}

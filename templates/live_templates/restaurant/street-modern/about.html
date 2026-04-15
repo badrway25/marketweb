@@ -1,0 +1,387 @@
+{% extends "live_templates/restaurant/street-modern/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     LEAD
+  ============================================================ */
+  .sm-lead {
+    padding: 80px 32px 48px;
+    max-width: 1400px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .sm-lead .sm-display { font-size: clamp(56px, 7vw, 110px); max-width: 14ch; }
+
+  /* ============================================================
+     HERO INTERIOR PHOTO
+  ============================================================ */
+  .sm-bigphoto {
+    padding: 24px 32px 48px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sm-bigphoto .frame {
+    aspect-ratio: 21/9;
+    background: var(--bg-3);
+    overflow: hidden;
+    position: relative;
+    border: 2px solid var(--rule);
+  }
+  .sm-bigphoto .frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: contrast(1.1) saturate(1.0);
+    transition: transform 1000ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .sm-bigphoto .frame:hover img { transform: scale(1.04); }
+  .sm-bigphoto .frame .cap {
+    position: absolute; left: 24px; bottom: 24px; right: 24px;
+    color: var(--ink);
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    background: rgba(10,10,10,0.72); padding: 10px 14px;
+    backdrop-filter: blur(6px);
+  }
+
+  /* ============================================================
+     MANIFESTO — 4 numbered paragraphs
+  ============================================================ */
+  .sm-manifesto-full {
+    padding: 96px 32px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  }
+  .sm-manifesto-full .item {
+    padding: 32px 0 36px;
+    border-top: 4px solid var(--secondary);
+    display: flex; flex-direction: column; gap: 12px; min-width: 0;
+  }
+  .sm-manifesto-full .item .ttl {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 28px; text-transform: uppercase; letter-spacing: 0.01em; color: var(--ink);
+  }
+  .sm-manifesto-full .item .txt {
+    font-family: var(--body); font-weight: 500; font-size: 16px;
+    line-height: 1.65; color: var(--ink-soft);
+  }
+
+  /* ============================================================
+     PROCESS — 3-step
+  ============================================================ */
+  .sm-process {
+    background: var(--bg-2);
+    padding: 96px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-process-inner {
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sm-process .head {
+    display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 48px; min-width: 0;
+  }
+  .sm-process .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .sm-process .step {
+    border-top: 4px solid var(--secondary);
+    padding: 28px 0 0; min-width: 0;
+  }
+  .sm-process .step .num {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 88px; line-height: 0.85; color: var(--secondary);
+    margin-bottom: 16px;
+  }
+  .sm-process .step .ttl {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 28px; text-transform: uppercase; letter-spacing: 0.01em; color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .sm-process .step .desc {
+    font-family: var(--body); font-size: 14px; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* ============================================================
+     CREW — 4 portraits
+  ============================================================ */
+  .sm-crew-full {
+    padding: 96px 32px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sm-crew-full .head {
+    display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 48px; min-width: 0;
+  }
+  .sm-crew-full .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+  }
+  .sm-crew-full .card {
+    display: flex; flex-direction: column; gap: 14px; min-width: 0;
+  }
+  .sm-crew-full .card .portrait {
+    aspect-ratio: 4/5;
+    background: var(--bg-3);
+    overflow: hidden;
+    position: relative;
+    border-bottom: 4px solid var(--secondary);
+  }
+  .sm-crew-full .card .portrait img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: grayscale(20%) contrast(1.05);
+    transition: transform 800ms cubic-bezier(0.22,0.61,0.36,1), filter 600ms ease;
+  }
+  .sm-crew-full .card:hover .portrait img { transform: scale(1.04); filter: grayscale(0%); }
+  .sm-crew-full .card .name {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 20px; text-transform: uppercase; letter-spacing: 0.01em;
+  }
+  .sm-crew-full .card .role {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-crew-full .card .quote {
+    font-family: var(--body); font-style: italic; font-size: 13px;
+    line-height: 1.5; color: var(--ink-soft);
+  }
+
+  /* ============================================================
+     VALUES — 4 cards
+  ============================================================ */
+  .sm-values {
+    background: var(--bg-2);
+    padding: 96px 32px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .sm-values-inner { max-width: 1400px; margin: 0 auto; }
+  .sm-values .head { display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 48px; min-width: 0; }
+  .sm-values .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  }
+  .sm-values .card {
+    background: #0a0a0a;
+    border: 2px solid var(--rule);
+    padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 14px; min-width: 0;
+    transition: border-color 220ms ease, transform 220ms ease;
+  }
+  .sm-values .card:hover { border-color: var(--secondary); transform: translateY(-4px); }
+  .sm-values .card .ttl {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 28px; text-transform: uppercase; color: var(--ink);
+  }
+  .sm-values .card .tag {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary);
+  }
+  .sm-values .card .desc {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft); line-height: 1.55;
+  }
+
+  /* ============================================================
+     KITCHEN-ENERGY BAND — 6 spec chips
+  ============================================================ */
+  .sm-kitchen {
+    padding: 96px 32px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .sm-kitchen .head { display: flex; flex-direction: column; gap: 14px; max-width: 60ch; margin-bottom: 40px; min-width: 0; }
+  .sm-kitchen .grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px;
+  }
+  .sm-kitchen .spec {
+    border: 2px solid var(--rule);
+    padding: 22px 18px;
+    display: flex; flex-direction: column; gap: 6px; min-width: 0;
+    text-align: center;
+    transition: border-color 220ms ease, background 220ms ease;
+  }
+  .sm-kitchen .spec:hover { border-color: var(--secondary); background: var(--bg-2); }
+  .sm-kitchen .spec .num {
+    font-family: var(--heading); font-weight: 900;
+    font-size: 32px; line-height: 0.95; color: var(--secondary); letter-spacing: -0.01em;
+  }
+  .sm-kitchen .spec .lbl {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  /* ============================================================
+     FINAL CTA
+  ============================================================ */
+  .sm-end {
+    background: var(--secondary); color: #0a0a0a;
+    padding: 80px 32px;
+    border-top: 4px solid #0a0a0a;
+  }
+  .sm-end-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: end;
+  }
+  .sm-end .text { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .sm-end .text .lbl {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: rgba(10,10,10,0.66);
+  }
+  .sm-end .text h2 {
+    font-family: var(--heading); font-weight: 900;
+    font-size: clamp(48px, 6vw, 88px); line-height: 0.9; letter-spacing: -0.02em;
+    color: #0a0a0a; text-transform: uppercase;
+  }
+  .sm-end .text h2 em { background: #0a0a0a; color: var(--secondary); padding: 0 12px; font-style: normal; }
+  .sm-end .text p {
+    font-family: var(--body); font-weight: 600; font-size: 16px;
+    color: rgba(10,10,10,0.85); max-width: 50ch;
+  }
+  .sm-end .actions { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .sm-end .actions .pri {
+    background: #0a0a0a; color: var(--secondary);
+    padding: 18px 28px;
+    font-family: var(--heading); font-weight: 900;
+    font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase;
+    display: inline-flex; justify-content: space-between; align-items: center; gap: 14px;
+    border: 2px solid #0a0a0a;
+  }
+  .sm-end .actions .pri:after { content: '→'; }
+  .sm-end .actions .sec {
+    background: transparent; color: #0a0a0a;
+    padding: 16px 28px;
+    font-family: var(--heading); font-weight: 800;
+    font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase;
+    border: 2px solid #0a0a0a;
+    display: inline-flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .sm-end .actions .sec:hover { background: #0a0a0a; color: var(--secondary); }
+
+  /* RTL */
+  html[dir="rtl"] .sm-end .actions .pri:after { content: '←'; }
+
+  /* MOBILE */
+  @media (max-width: 720px) {
+    .sm-lead { padding: 36px 18px 24px; }
+    .sm-lead .sm-display { font-size: 48px; }
+    .sm-bigphoto { padding: 12px 18px 32px; }
+    .sm-bigphoto .frame { aspect-ratio: 4/3; }
+    .sm-manifesto-full { grid-template-columns: 1fr; padding: 56px 18px; gap: 18px; }
+    .sm-process { padding: 56px 18px; }
+    .sm-process .grid { grid-template-columns: 1fr; gap: 22px; }
+    .sm-crew-full { padding: 56px 18px; }
+    .sm-crew-full .grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .sm-values { padding: 56px 18px; }
+    .sm-values .grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    .sm-values .card { padding: 22px 18px; }
+    .sm-kitchen { padding: 56px 18px; }
+    .sm-kitchen .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .sm-end { padding: 56px 18px; }
+    .sm-end-inner { grid-template-columns: 1fr; gap: 28px; }
+    .sm-end .text h2 { font-size: 40px; }
+  }
+{% endblock %}
+
+{% block content %}
+{# ========== LEAD ========== #}
+<section class="sm-lead" data-reveal>
+  <span class="sm-eyebrow">{{ page_data.eyebrow }}</span>
+  <h1 class="sm-display">{{ page_data.headline|safe }}</h1>
+  <p class="sm-intro">{{ page_data.intro }}</p>
+</section>
+
+{# ========== BIG PHOTO ========== #}
+<section class="sm-bigphoto" data-reveal>
+  <div class="frame">
+    <img src="{{ page_data.hero_image }}" alt="{{ page_data.hero_caption }}">
+    <span class="cap">{{ page_data.hero_caption }}</span>
+  </div>
+</section>
+
+{# ========== MANIFESTO ========== #}
+<section class="sm-manifesto-full" data-reveal>
+  {% for p in page_data.manifesto_paragraphs %}
+  <article class="item" data-stagger>
+    <h3 class="ttl">{{ p.title }}</h3>
+    <p class="txt">{{ p.text }}</p>
+  </article>
+  {% endfor %}
+</section>
+
+{# ========== PROCESS ========== #}
+<section class="sm-process" data-reveal>
+  <div class="sm-process-inner">
+    <div class="head">
+      <span class="sm-eyebrow">{{ page_data.process_label }}</span>
+      <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.process_heading|safe }}</h2>
+    </div>
+    <div class="grid">
+      {% for s in page_data.process %}
+      <div class="step" data-stagger>
+        <span class="num">{{ s.num }}</span>
+        <h3 class="ttl">{{ s.title }}</h3>
+        <p class="desc">{{ s.desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ========== CREW (4) ========== #}
+<section class="sm-crew-full" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.crew_label }}</span>
+    <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.crew_heading|safe }}</h2>
+  </div>
+  <div class="grid">
+    {% for c in page_data.crew %}
+    <article class="card" data-stagger>
+      <div class="portrait"><img src="{{ c.portrait }}" alt="{{ c.name }}"></div>
+      <h3 class="name">{{ c.name }}</h3>
+      <span class="role">{{ c.role }}</span>
+      <p class="quote">{{ c.quote }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+{# ========== VALUES (4) ========== #}
+<section class="sm-values" data-reveal>
+  <div class="sm-values-inner">
+    <div class="head">
+      <span class="sm-eyebrow">{{ page_data.values_label }}</span>
+      <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.values_heading|safe }}</h2>
+    </div>
+    <div class="grid">
+      {% for v in page_data.values %}
+      <div class="card" data-stagger>
+        <span class="tag">{{ v.tag }}</span>
+        <h3 class="ttl">{{ v.title }}</h3>
+        <p class="desc">{{ v.desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ========== KITCHEN ENERGY ========== #}
+<section class="sm-kitchen" data-reveal>
+  <div class="head">
+    <span class="sm-eyebrow">{{ page_data.kitchen_label }}</span>
+    <h2 class="sm-display" style="font-size: clamp(40px, 5vw, 72px);">{{ page_data.kitchen_heading|safe }}</h2>
+  </div>
+  <div class="grid">
+    {% for num, lbl in page_data.kitchen_specs %}
+    <div class="spec sm-mono" data-stagger>
+      <span class="num">{{ num }}</span>
+      <span class="lbl">{{ lbl }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ========== FINAL CTA ========== #}
+<section class="sm-end">
+  <div class="sm-end-inner">
+    <div class="text">
+      <span class="lbl">{{ page_data.final_label }}</span>
+      <h2>{{ page_data.final_heading|safe }}</h2>
+      <p>{{ page_data.final_intro }}</p>
+    </div>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.final_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="pri">{{ page_data.final_primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.final_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="sec">{{ page_data.final_secondary_cta }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
