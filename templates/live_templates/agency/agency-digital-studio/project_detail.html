@@ -1,0 +1,233 @@
+{% extends "live_templates/agency/agency-digital-studio/_base.html" %}
+
+{% block extra_css %}
+  .au-dossier { max-width: 1160px; margin: 40px auto 0; padding: 40px 56px 32px; }
+  .au-dossier .crumb {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 12px; border-radius: 999px;
+    background: rgba(236,233,255,0.04); border: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 11px; color: var(--ink-soft);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .au-dossier .crumb a { color: var(--cyan); border-bottom: 1px solid var(--cyan); padding-bottom: 1px; }
+  .au-dossier h1 { margin-top: 24px; font-size: 64px; letter-spacing: -0.035em; max-width: 20ch; }
+  .au-dossier h1 em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-dossier .standfirst { margin-top: 24px; font-size: 19px; color: var(--ink-soft); max-width: 60ch; line-height: 1.7; }
+  .au-dossier .meta {
+    margin-top: 36px; padding: 20px 24px; border-radius: 14px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  .au-dossier .meta .lbl {
+    font-family: var(--mono); font-size: 10px; color: var(--ink-faint);
+    letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .au-dossier .meta .val { font-family: var(--heading); font-size: 16px; color: var(--ink); font-weight: 600; }
+  .au-dossier .meta .val.au-mono {
+    font-family: var(--mono); color: var(--cyan); font-size: 14px;
+  }
+
+  .au-cover { max-width: 1160px; margin: 0 auto; padding: 0 56px; }
+  .au-cover .frame {
+    aspect-ratio: 16/9; background-size: cover; background-position: center;
+    border-radius: 16px; border: 1px solid var(--rule);
+    box-shadow: 0 20px 60px rgba(12,10,31,0.5);
+  }
+
+  .au-problem-solution {
+    max-width: 1160px; margin: 56px auto 0; padding: 0 56px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .au-problem-solution .panel {
+    padding: 32px; border-radius: 14px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+  }
+  .au-problem-solution .panel.solution {
+    background: linear-gradient(180deg, rgba(139,92,246,0.08) 0%, rgba(12,10,31,0) 100%);
+    border-color: rgba(139,92,246,0.32);
+  }
+  .au-problem-solution .panel .id {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; color: var(--ink-faint);
+  }
+  .au-problem-solution .panel.solution .id { color: var(--accent); }
+  .au-problem-solution .panel h3 { margin-top: 14px; font-size: 28px; letter-spacing: -0.024em; }
+  .au-problem-solution .panel p { margin-top: 14px; font-size: 15px; color: var(--ink-soft); line-height: 1.7; }
+
+  .au-timeline { max-width: 1160px; margin: 56px auto 0; padding: 0 56px; }
+  .au-timeline .head { display: grid; grid-template-columns: 0.8fr 1fr; gap: 40px; margin-bottom: 40px; align-items: end; }
+  .au-timeline .wrap { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .au-timeline .step {
+    padding: 22px 16px; border-radius: 12px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+    position: relative;
+  }
+  .au-timeline .step .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 12px var(--accent); margin-bottom: 14px;
+  }
+  .au-timeline .step .id { font-family: var(--mono); font-size: 10px; color: var(--cyan); font-weight: 700; letter-spacing: 0.14em; }
+  .au-timeline .step .dur { margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--ink-faint); letter-spacing: 0.08em; }
+  .au-timeline .step h4 { margin-top: 12px; font-size: 15px; letter-spacing: -0.012em; line-height: 1.3; }
+  .au-timeline .step p { margin-top: 10px; font-size: 12px; color: var(--ink-soft); line-height: 1.55; }
+
+  .au-results {
+    max-width: 1160px; margin: 56px auto 0; padding: 40px 56px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    background: linear-gradient(180deg, rgba(122,229,255,0.04), rgba(12,10,31,0));
+  }
+  .au-results .head { margin-bottom: 32px; }
+  .au-results .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .au-results .stat .big {
+    font-family: var(--heading); font-size: 56px; letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .au-results .stat .big em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-results .stat .lbl { margin-top: 6px; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  .au-results .stat .note { margin-top: 6px; font-size: 13px; color: var(--ink-soft); }
+
+  .au-quote { max-width: 900px; margin: 56px auto; padding: 40px 56px; text-align: center; }
+  .au-quote blockquote {
+    font-family: var(--heading); font-size: 28px; line-height: 1.4;
+    color: var(--ink); max-width: 32ch; margin: 0 auto; letter-spacing: -0.02em;
+  }
+  .au-quote blockquote:before { content: '"'; display: block; font-size: 80px; color: var(--accent); line-height: 0.3; margin-bottom: 24px; opacity: 0.8; }
+  .au-quote .cite {
+    margin-top: 24px; font-family: var(--mono); font-size: 12px;
+    color: var(--ink-soft); letter-spacing: 0.08em;
+  }
+  .au-quote .cite em { color: var(--cyan); background: none; -webkit-text-fill-color: var(--cyan); font-weight: 700; }
+
+  .au-next { max-width: 1160px; margin: 0 auto; padding: 56px 56px 96px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .au-next .card {
+    padding: 32px; border-radius: 14px;
+    border: 1px solid var(--rule); background: rgba(236,233,255,0.03);
+  }
+  .au-next .card .lbl {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-faint);
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .au-next .card a {
+    display: block; margin-top: 12px; font-family: var(--heading);
+    font-size: 24px; letter-spacing: -0.02em; color: var(--ink);
+  }
+  .au-next .card a em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  @media (max-width: 1100px) {
+    .au-dossier { padding: 32px; }
+    .au-dossier h1 { font-size: 42px; }
+    .au-dossier .meta { grid-template-columns: repeat(2, 1fr); }
+    .au-cover { padding: 0 32px; }
+    .au-problem-solution { grid-template-columns: 1fr; padding: 0 32px; }
+    .au-timeline { padding: 0 32px; }
+    .au-timeline .head { grid-template-columns: 1fr; }
+    .au-timeline .wrap { grid-template-columns: 1fr 1fr; }
+    .au-results { padding: 32px; }
+    .au-results .grid { grid-template-columns: 1fr 1fr; }
+    .au-next { padding: 32px 32px 64px; grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .au-dossier h1 { font-size: 30px; }
+    .au-timeline .wrap { grid-template-columns: 1fr; }
+    .au-results .grid { grid-template-columns: 1fr; }
+    .au-results .stat .big { font-size: 40px; }
+    .au-quote blockquote { font-size: 20px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="au-dossier">
+  <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="crumb">← {{ page.label }} / {{ post.id }}</a>
+  <h1>{{ post.title|safe }}</h1>
+  <p class="standfirst">{{ post.standfirst }}</p>
+  <div class="meta">
+    <div><div class="lbl">{{ post.meta_client_label }}</div><div class="val">{{ post.client }}</div></div>
+    <div><div class="lbl">{{ post.meta_discipline_label }}</div><div class="val">{{ post.discipline }}</div></div>
+    <div><div class="lbl">{{ post.meta_duration_label }}</div><div class="val au-mono">{{ post.duration }}</div></div>
+    <div><div class="lbl">{{ post.meta_year_label }}</div><div class="val au-mono">{{ post.year }}</div></div>
+  </div>
+</section>
+
+<section class="au-cover">
+  <div class="frame" style="background-image: url('{{ post.cover_image }}')"></div>
+</section>
+
+<section class="au-problem-solution" data-lm-group>
+  <div class="panel" data-lm-reveal>
+    <div class="id">{{ post.problem_label }}</div>
+    <h3>{{ post.problem_heading|safe }}</h3>
+    {% for para in post.problem_paragraphs %}<p>{{ para|safe }}</p>{% endfor %}
+  </div>
+  <div class="panel solution" data-lm-reveal>
+    <div class="id">{{ post.solution_label }}</div>
+    <h3>{{ post.solution_heading|safe }}</h3>
+    {% for para in post.solution_paragraphs %}<p>{{ para|safe }}</p>{% endfor %}
+  </div>
+</section>
+
+<section class="au-timeline" data-lm-group>
+  <div class="head">
+    <div>
+      <div class="sec-label" style="color: var(--cyan);">{{ post.timeline_label }}</div>
+      <h2 style="margin-top:12px; font-size: 36px;">{{ post.timeline_heading|safe }}</h2>
+    </div>
+    <p class="sec-intro" style="color: var(--ink-soft);">{{ post.timeline_intro }}</p>
+  </div>
+  <div class="wrap">
+    {% for step in post.timeline_steps %}
+    <div class="step" data-lm-reveal>
+      <div class="dot"></div>
+      <div class="id">{{ step.id }}</div>
+      <div class="dur">{{ step.duration }}</div>
+      <h4>{{ step.title|safe }}</h4>
+      <p>{{ step.body }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="au-results">
+  <div class="head">
+    <div class="sec-label">{{ post.results_label }}</div>
+    <h2 style="margin-top:12px; font-size: 36px;">{{ post.results_heading|safe }}</h2>
+  </div>
+  <div class="grid">
+    {% for big, lbl, note in post.results_stats %}
+    <div class="stat" data-lm-reveal>
+      <div class="big">{{ big|safe }}</div>
+      <div class="lbl">{{ lbl }}</div>
+      <div class="note">{{ note }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% if post.quote %}
+<section class="au-quote">
+  <blockquote>{{ post.quote }}</blockquote>
+  <div class="cite">{{ post.quote_author }} · <em>{{ post.quote_role }}</em></div>
+</section>
+{% endif %}
+
+<section class="au-next">
+  <div class="card">
+    <div class="lbl">{{ post.next_label }}</div>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ post.next_heading|safe }}</a>
+  </div>
+  <div class="card">
+    <div class="lbl">{{ post.cta_label }}</div>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.inquiry_page_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ post.cta_heading|safe }}</a>
+  </div>
+</section>
+{% endblock %}

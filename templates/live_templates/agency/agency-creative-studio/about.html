@@ -1,0 +1,144 @@
+{% extends "live_templates/agency/agency-creative-studio/_base.html" %}
+
+{% block extra_css %}
+  .vx-lead { max-width: 1360px; margin: 0 auto; padding: 96px 56px 48px; }
+  .vx-lead .eyebrow { display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); }
+  .vx-lead .eyebrow:before { content: ''; width: 40px; height: 1.5px; background: var(--ink); }
+  .vx-lead h1 { margin-top: 28px; font-size: 72px; letter-spacing: -0.03em; max-width: 20ch; }
+  .vx-lead h1 em { font-family: var(--serif-italic); font-style: italic; font-weight: 500; }
+  .vx-lead .standfirst { margin-top: 28px; font-family: var(--serif-italic); font-style: italic;
+    font-size: 22px; line-height: 1.55; color: var(--ink-2); max-width: 56ch; }
+
+  .vx-facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px;
+    padding: 48px 56px; max-width: 1360px; margin: 0 auto;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .vx-facts .item .num { font-family: var(--heading); font-size: 56px;
+    letter-spacing: -0.035em; color: var(--ink); }
+  .vx-facts .item .num em { font-family: var(--serif-italic); font-style: italic; color: var(--accent); }
+  .vx-facts .item .lbl { margin-top: 10px; font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); }
+  .vx-facts .item .note { margin-top: 8px; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+
+  .vx-essay { max-width: 880px; margin: 0 auto; padding: 96px 56px; }
+  .vx-essay .sec-label { font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); }
+  .vx-essay h2 { margin-top: 14px; font-size: 44px; max-width: 22ch; letter-spacing: -0.025em; }
+  .vx-essay p { margin-top: 24px; font-size: 18px; line-height: 1.75; color: var(--ink-2); }
+  .vx-essay p em { color: var(--ink); }
+  .vx-essay .pullquote { margin: 36px 0; padding: 12px 0 12px 24px;
+    border-left: 2px solid var(--accent);
+    font-family: var(--serif-italic); font-style: italic; font-size: 24px;
+    line-height: 1.5; color: var(--ink); }
+
+  .vx-partners .head { margin-bottom: 48px; }
+  .vx-partners .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+  .vx-partners .card { border-top: 1.5px solid var(--ink); padding-top: 26px; }
+  .vx-partners .card .portrait { aspect-ratio: 4/5; background-size: cover; background-position: center;
+    border: 1px solid var(--rule); margin-bottom: 22px; filter: grayscale(0.15); }
+  .vx-partners .card .name { font-family: var(--heading); font-size: 22px;
+    letter-spacing: -0.015em; color: var(--ink); }
+  .vx-partners .card .role { font-family: var(--serif-italic); font-style: italic;
+    font-size: 15px; color: var(--accent); margin-top: 6px; }
+  .vx-partners .card .bio { margin-top: 14px; font-size: 14px; line-height: 1.65; color: var(--ink-soft); }
+  .vx-partners .card .creds { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 10px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); }
+  .vx-partners .card .creds span { border-bottom: 1px dotted var(--ink-mute); padding-bottom: 1px; }
+
+  .vx-timeline .row { display: grid; grid-template-columns: 100px 1fr; gap: 36px;
+    padding: 22px 8px; border-top: 1px solid var(--rule); }
+  .vx-timeline .row:last-child { border-bottom: 1px solid var(--rule); }
+  .vx-timeline .yr { font-family: var(--mono); font-size: 14px; color: var(--accent); font-weight: 700; }
+  .vx-timeline .event h4 { font-size: 19px; letter-spacing: -0.01em; color: var(--ink); }
+  .vx-timeline .event p { margin-top: 8px; font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
+
+  @media (max-width: 1100px) {
+    .vx-lead { padding: 72px 32px 32px; }
+    .vx-lead h1 { font-size: 48px; }
+    .vx-facts { grid-template-columns: repeat(2, 1fr); padding: 32px; }
+    .vx-facts .item .num { font-size: 42px; }
+    .vx-essay { padding: 64px 32px; }
+    .vx-partners .grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  }
+  @media (max-width: 720px) {
+    .vx-lead h1 { font-size: 32px; }
+    .vx-facts { grid-template-columns: 1fr; }
+    .vx-partners .grid { grid-template-columns: 1fr; }
+    .vx-timeline .row { grid-template-columns: 1fr; gap: 8px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vx-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="standfirst">{{ page_data.standfirst }}</p>
+</section>
+
+<div class="vx-facts">
+  {% for num, label, note in page_data.facts %}
+  <div class="item" data-lm-reveal>
+    <div class="num">{{ num|safe }}</div>
+    <div class="lbl">{{ label }}</div>
+    <div class="note">{{ note }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<article class="vx-essay" data-lm-group>
+  <div class="sec-label">{{ page_data.essay_label }}</div>
+  <h2>{{ page_data.essay_heading|safe }}</h2>
+  {% for para in page_data.essay_paragraphs %}
+    <p>{{ para|safe }}</p>
+  {% endfor %}
+  {% if page_data.essay_pullquote %}
+  <blockquote class="pullquote">{{ page_data.essay_pullquote }}</blockquote>
+  {% endif %}
+  {% for para in page_data.essay_tail_paragraphs %}
+    <p>{{ para|safe }}</p>
+  {% endfor %}
+</article>
+
+<section class="vx-section vx-partners" data-lm-group>
+  <div class="head">
+    <div class="sec-label">{{ page_data.partners_label }}</div>
+    <h2>{{ page_data.partners_heading|safe }}</h2>
+    <p class="sec-intro">{{ page_data.partners_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for partner in page_data.partners %}
+    <div class="card" data-lm-reveal>
+      <div class="portrait" style="background-image: url('{{ partner.portrait }}')"></div>
+      <div class="name">{{ partner.name }}</div>
+      <div class="role">{{ partner.role }}</div>
+      <p class="bio">{{ partner.bio }}</p>
+      {% if partner.creds %}
+      <div class="creds">
+        {% for c in partner.creds %}<span>{{ c }}</span>{% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vx-section vx-timeline" data-lm-group>
+  <div class="head">
+    <div class="sec-label">{{ page_data.timeline_label }}</div>
+    <h2>{{ page_data.timeline_heading|safe }}</h2>
+  </div>
+  <div style="margin-top:44px;">
+    {% for year, title, body in page_data.timeline_rows %}
+    <div class="row" data-lm-reveal>
+      <span class="yr">{{ year }}</span>
+      <div class="event">
+        <h4>{{ title }}</h4>
+        <p>{{ body }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

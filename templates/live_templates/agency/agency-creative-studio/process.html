@@ -1,0 +1,154 @@
+{% extends "live_templates/agency/agency-creative-studio/_base.html" %}
+
+{% block extra_css %}
+  .vx-lead { max-width: 1360px; margin: 0 auto; padding: 96px 56px 56px; }
+  .vx-lead .eyebrow { display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); }
+  .vx-lead .eyebrow:before { content: ''; width: 40px; height: 1.5px; background: var(--ink); }
+  .vx-lead h1 { margin-top: 28px; font-size: 72px; letter-spacing: -0.03em; max-width: 22ch; }
+  .vx-lead h1 em { font-family: var(--serif-italic); font-style: italic; font-weight: 500; }
+  .vx-lead .standfirst { margin-top: 28px; font-family: var(--serif-italic); font-style: italic;
+    font-size: 22px; line-height: 1.55; color: var(--ink-2); max-width: 56ch; }
+
+  .vx-phases { max-width: 1360px; margin: 0 auto; padding: 48px 56px; }
+  .vx-phases .row {
+    display: grid; grid-template-columns: 120px 0.9fr 1.4fr; gap: 36px;
+    padding: 40px 0; border-top: 1.5px solid var(--ink);
+    align-items: start;
+  }
+  .vx-phases .row:last-child { border-bottom: 1.5px solid var(--ink); }
+  .vx-phases .row .num {
+    font-family: var(--mono); font-size: 15px; color: var(--accent); font-weight: 700;
+  }
+  .vx-phases .row .duration {
+    margin-top: 16px; font-family: var(--body); font-size: 10px;
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .vx-phases .row h3 { font-size: 30px; letter-spacing: -0.02em; line-height: 1.1; }
+  .vx-phases .row h3 em { font-family: var(--serif-italic); font-style: italic;
+    font-weight: 500; color: var(--accent); }
+  .vx-phases .row .tagline { margin-top: 12px; font-family: var(--serif-italic); font-style: italic;
+    font-size: 17px; color: var(--ink-2); max-width: 42ch; }
+  .vx-phases .row p { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
+  .vx-phases .row .deliverables { margin-top: 20px; border-top: 1px solid var(--rule); padding-top: 18px; }
+  .vx-phases .row .deliverables .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .vx-phases .row .deliverables ul { list-style: none; margin-top: 12px; }
+  .vx-phases .row .deliverables li {
+    position: relative; padding-left: 20px; padding-bottom: 6px;
+    font-size: 14px; color: var(--ink-2);
+  }
+  .vx-phases .row .deliverables li:before {
+    content: '—'; position: absolute; left: 0; color: var(--accent);
+  }
+
+  .vx-principles { background: var(--ink); color: var(--on-dark);
+    padding: 96px 56px; }
+  .vx-principles .wrap { max-width: 1360px; margin: 0 auto; }
+  .vx-principles .sec-label { color: var(--accent); font-family: var(--body); font-size: 10px;
+    font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; }
+  .vx-principles h2 { margin-top: 14px; color: var(--on-dark); font-size: 48px; max-width: 22ch; }
+  .vx-principles h2 em { color: var(--accent); font-family: var(--serif-italic); font-style: italic; }
+  .vx-principles .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .vx-principles .item .num {
+    font-family: var(--mono); font-size: 12px; color: var(--accent); font-weight: 700;
+  }
+  .vx-principles .item h3 { margin-top: 14px; font-size: 22px; color: var(--on-dark); line-height: 1.2; }
+  .vx-principles .item h3 em { color: var(--accent); font-family: var(--serif-italic); font-style: italic; }
+  .vx-principles .item p { margin-top: 12px; font-size: 14px; color: var(--on-dark-2); line-height: 1.65; }
+
+  .vx-promise { max-width: 1360px; margin: 0 auto; padding: 96px 56px; }
+  .vx-promise h2 { font-size: 44px; letter-spacing: -0.025em; max-width: 20ch; }
+  .vx-promise h2 em { font-family: var(--serif-italic); font-style: italic; font-weight: 500; color: var(--accent); }
+  .vx-promise .grid { margin-top: 48px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+  .vx-promise .tile { padding-top: 22px; border-top: 1.5px solid var(--ink); }
+  .vx-promise .tile .big {
+    font-family: var(--heading); font-size: 44px; letter-spacing: -0.03em; color: var(--ink);
+  }
+  .vx-promise .tile .big em { font-family: var(--serif-italic); font-style: italic; color: var(--accent); }
+  .vx-promise .tile .lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft);
+    margin-top: 10px;
+  }
+  .vx-promise .tile p { margin-top: 12px; font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
+
+  @media (max-width: 1100px) {
+    .vx-lead { padding: 72px 32px 40px; }
+    .vx-lead h1 { font-size: 48px; }
+    .vx-phases { padding: 32px; }
+    .vx-phases .row { grid-template-columns: 1fr; gap: 18px; padding: 28px 0; }
+    .vx-principles { padding: 64px 32px; }
+    .vx-principles .grid { grid-template-columns: 1fr; }
+    .vx-promise { padding: 64px 32px; }
+    .vx-promise .grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .vx-lead h1 { font-size: 32px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vx-lead">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="standfirst">{{ page_data.standfirst }}</p>
+</section>
+
+<section class="vx-phases" data-lm-group>
+  {% for phase in page_data.phases %}
+  <div class="row" data-lm-reveal>
+    <div>
+      <div class="num">{{ phase.num }}</div>
+      <div class="duration">{{ phase.duration }}</div>
+    </div>
+    <div>
+      <h3>{{ phase.title|safe }}</h3>
+      <p class="tagline">{{ phase.tagline }}</p>
+    </div>
+    <div>
+      <p>{{ phase.body }}</p>
+      <div class="deliverables">
+        <div class="lbl">{{ phase.deliverables_label }}</div>
+        <ul>
+          {% for d in phase.deliverables %}<li>{{ d }}</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="vx-principles" data-lm-group>
+  <div class="wrap">
+    <div class="sec-label">{{ page_data.principles_label }}</div>
+    <h2>{{ page_data.principles_heading|safe }}</h2>
+    <div class="grid">
+      {% for num, title, body in page_data.principles %}
+      <div class="item" data-lm-reveal>
+        <div class="num">{{ num }}</div>
+        <h3>{{ title|safe }}</h3>
+        <p>{{ body }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="vx-promise">
+  <div class="sec-label" style="color: var(--accent); font-family: var(--body); font-size: 10px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase;">{{ page_data.promise_label }}</div>
+  <h2 style="margin-top:14px;">{{ page_data.promise_heading|safe }}</h2>
+  <div class="grid">
+    {% for big, label, note in page_data.promise_stats %}
+    <div class="tile" data-lm-reveal>
+      <div class="big">{{ big|safe }}</div>
+      <div class="lbl">{{ label }}</div>
+      <p>{{ note }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

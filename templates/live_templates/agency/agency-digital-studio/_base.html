@@ -1,0 +1,500 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:wght@400;500;600;700;800&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
+<style>
+  :root {
+    --primary:     {{ theme.primary }};
+    --secondary:   {{ theme.secondary }};
+    --accent:      {{ theme.accent }};
+    --night:       #0c0a1f;
+    --night-2:     #14122d;
+    --night-3:     #1a1839;
+    --rise:        #201f3f;
+    --violet:      {{ theme.accent }};
+    --violet-glow: color-mix(in oklab, {{ theme.accent }} 62%, #ffffff 38%);
+    --violet-soft: color-mix(in oklab, {{ theme.accent }} 28%, {{ theme.primary }} 72%);
+    --cyan:        #7ae5ff;
+    --ink:         #ece9ff;
+    --ink-soft:    rgba(236,233,255,0.76);
+    --ink-mute:    rgba(236,233,255,0.54);
+    --ink-faint:   rgba(236,233,255,0.34);
+    --rule:        rgba(236,233,255,0.10);
+    --rule-soft:   rgba(236,233,255,0.06);
+    --surface:     rgba(12,10,31,0.72);
+    --surface-2:   rgba(236,233,255,0.03);
+    --heading:     '{{ theme.heading_font }}', system-ui, sans-serif;
+    --body:        '{{ theme.body_font }}', system-ui, sans-serif;
+    --mono:        'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /* Premium forms (digital · glass dark, violet glow focus) */
+    --lf-bg:            rgba(0,0,0,0.32);
+    --lf-bg-autofill:   rgba(0,0,0,0.6);
+    --lf-bg-soft:       rgba(236,233,255,0.03);
+    --lf-bg-icon:       rgba(139,92,246,0.14);
+    --lf-bg-chip:       rgba(139,92,246,0.10);
+    --lf-border:        var(--rule);
+    --lf-border-hover:  rgba(236,233,255,0.24);
+    --lf-border-focus:  var(--accent);
+    --lf-ring:          rgba(139,92,246,0.28);
+    --lf-ring-size:     3px;
+    --lf-radius:        14px;
+    --lf-pad-y:         13px;
+    --lf-pad-x:         16px;
+    --lf-label-color:   var(--ink-faint);
+    --lf-label-size:    10px;
+    --lf-label-track:   0.16em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  var(--ink-mute);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   var(--ink-faint);
+    --lf-section-rule:  var(--rule);
+    --lf-section-title-color: var(--ink);
+    --lf-caret:         var(--accent);
+    --lf-listbox-bg:    #12102c;
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  var(--rule);
+    --lf-listbox-hov:   rgba(139,92,246,0.10);
+    --lf-submit-bg:     var(--accent);
+    --lf-submit-bg-hover: var(--violet-glow);
+    --lf-submit-fg:     #ffffff;
+    --lf-submit-arrow:  #ffffff;
+    --lf-submit-radius: 999px;
+    --lf-submit-underline: 0;
+    --on-accent:        #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.62;
+    background: var(--night);
+    background-image:
+      radial-gradient(circle at 12% 108%, color-mix(in oklab, var(--violet) 32%, var(--night) 68%) 0%, transparent 52%),
+      radial-gradient(circle at 92% -18%, color-mix(in oklab, var(--cyan) 22%, var(--night) 78%) 0%, transparent 50%);
+    min-height: 100vh;
+    position: relative;
+  }
+  body:before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: radial-gradient(rgba(236,233,255,0.06) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--heading); font-weight: 800; line-height: 1.05;
+    letter-spacing: -0.03em; color: var(--ink);
+  }
+  em {
+    font-style: normal; font-weight: 800;
+    background: linear-gradient(96deg, var(--accent) 0%, var(--violet-glow) 60%, var(--cyan) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+  .au-mono {
+    font-family: var(--mono); letter-spacing: 0.01em;
+    font-feature-settings: "tnum" 1, "zero" 1;
+  }
+
+  /* Marketplace bar */
+  .mp-bar {
+    background: rgba(0,0,0,0.55); color: var(--ink); font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+    position: relative; z-index: 8;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .mp-bar .mp-back { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; font-weight: 600; }
+  .mp-bar .mp-name { color: var(--ink-mute); }
+  .mp-lang { display: flex; align-items: center; gap: 14px; }
+  .mp-lang .mp-lang-label { font-size: 10px; letter-spacing: 0.22em; color: var(--ink-faint); font-weight: 700; }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; color: var(--ink-mute);
+    border: 1px solid var(--rule); border-radius: 999px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover { color: var(--accent); border-color: rgba(236,233,255,0.32); }
+  .mp-lang a.mp-lang-pill.is-current { color: var(--ink); border-color: var(--accent); background: rgba(139,92,246,0.12); }
+
+  /* ============================================================
+     PILL-SPRINT-CHIP NAV — floating midnight pill with glow CTA
+  ============================================================ */
+  .au-nav {
+    position: sticky; top: 18px; z-index: 50;
+    margin: 18px auto 0; max-width: 1260px;
+    padding: 0 18px 0 26px;
+    height: 64px;
+    display: flex; align-items: center; gap: 22px;
+    background: rgba(12,10,31,0.72);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 18px 48px rgba(12,10,31,0.4);
+  }
+  .au-nav .wm {
+    font-family: var(--heading); font-weight: 800; font-size: 19px;
+    letter-spacing: -0.035em; color: var(--ink);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .au-nav .wm .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--cyan));
+    box-shadow: 0 0 14px 3px rgba(139,92,246,0.55);
+  }
+  .au-nav .sprint {
+    margin-left: 4px; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--rule); background: rgba(139,92,246,0.06);
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--ink-soft);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .au-nav .sprint .chip {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--cyan);
+  }
+  .au-nav .links {
+    display: flex; gap: 24px; margin-left: auto;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .au-nav .links a { transition: color .15s ease; padding: 6px 2px; }
+  .au-nav .links a:hover { color: var(--ink); }
+  .au-nav .links a.is-current {
+    color: var(--ink); border-bottom: 1.5px solid var(--accent);
+  }
+  .au-nav .right { display: inline-flex; align-items: center; }
+  .au-nav .cta {
+    background: linear-gradient(96deg, var(--accent) 0%, var(--violet-glow) 100%);
+    color: #fff; padding: 10px 18px; border-radius: 999px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 8px;
+    box-shadow: 0 10px 26px rgba(139,92,246,0.42);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .au-nav .cta:after { content: '→'; font-size: 13px; }
+  .au-nav .cta:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(139,92,246,0.55); }
+
+  /* ============================================================
+     BUTTON LANGUAGE — glow-sprint-arrow
+  ============================================================ */
+  .au-btn-primary {
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+    color: #fff; padding: 14px 22px; border-radius: 999px;
+    background: linear-gradient(96deg, var(--accent) 0%, var(--violet-glow) 100%);
+    display: inline-flex; align-items: center; gap: 10px;
+    box-shadow: 0 14px 32px rgba(139,92,246,0.42);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .au-btn-primary:after { content: '→'; font-size: 15px; transition: transform .2s ease; }
+  .au-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 18px 40px rgba(139,92,246,0.55); }
+  .au-btn-primary:hover:after { transform: translateX(4px); }
+  .au-btn-ghost {
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink-soft); padding: 12px 18px; border-radius: 999px;
+    border: 1px solid var(--rule);
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .au-btn-ghost:hover { color: var(--ink); border-color: rgba(236,233,255,0.32); }
+  .au-btn-primary:focus-visible,
+  .au-btn-ghost:focus-visible {
+    outline: 2px solid var(--cyan); outline-offset: 4px;
+  }
+
+  /* ============================================================
+     SECTION HELPERS — dense product-studio rhythm
+  ============================================================ */
+  .au-section { padding: 96px 56px; max-width: 1260px; margin: 0 auto; }
+  .au-section .sec-label {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .au-section .sec-label:before {
+    content: ''; width: 24px; height: 1px; background: var(--cyan); opacity: 0.6;
+  }
+  .au-section h2 {
+    margin-top: 18px; font-size: 52px; line-height: 1.05;
+    max-width: 22ch; letter-spacing: -0.028em;
+  }
+  .au-section .sec-intro {
+    margin-top: 24px; max-width: 62ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.72; color: var(--ink-soft);
+  }
+  .au-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  .au-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .au-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+
+  /* ============================================================
+     SHIPLOG-CONSOLE FOOTER — telemetry feel
+  ============================================================ */
+  .au-foot {
+    margin-top: 48px;
+    padding: 72px 56px 24px;
+    background: linear-gradient(180deg, rgba(236,233,255,0) 0%, rgba(139,92,246,0.06) 100%);
+    border-top: 1px solid var(--rule);
+  }
+  .au-foot .shiplog {
+    padding-bottom: 36px; border-bottom: 1px solid var(--rule);
+  }
+  .au-foot .shiplog .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--ink-faint); margin-bottom: 18px;
+  }
+  .au-foot .shiplog .head .chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 12px; background: rgba(139,92,246,0.10);
+    border: 1px solid rgba(139,92,246,0.32); border-radius: 999px;
+    color: var(--ink); font-size: 10px; font-weight: 600;
+  }
+  .au-foot .shiplog .head .chip .pulse {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+  }
+  .au-foot .shiplog .rows { display: grid; gap: 8px; font-family: var(--mono); font-size: 13px; }
+  .au-foot .shiplog .row { display: grid; grid-template-columns: 120px 80px 1fr; gap: 18px;
+    padding: 8px 0; border-bottom: 1px dotted var(--rule-soft); color: var(--ink-soft); }
+  .au-foot .shiplog .row:last-child { border-bottom: 0; }
+  .au-foot .shiplog .row .dt { color: var(--ink-faint); }
+  .au-foot .shiplog .row .ver { color: var(--accent); font-weight: 700; }
+  .au-foot .shiplog .row .txt { color: var(--ink); }
+  .au-foot .marquee {
+    margin-top: 32px; padding: 20px 0; overflow: hidden;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint);
+    display: flex; gap: 48px; white-space: nowrap;
+  }
+  .au-foot .marquee .cell:before {
+    content: '◆ '; color: var(--accent); margin-right: 6px;
+  }
+  .au-foot .top {
+    margin-top: 40px;
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 36px; border-bottom: 1px solid var(--rule);
+  }
+  .au-foot .top h5 {
+    color: var(--ink-faint); font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 600; margin-bottom: 16px;
+  }
+  .au-foot .brand .word {
+    font-family: var(--heading); font-size: 24px; color: var(--ink); margin-bottom: 12px;
+  }
+  .au-foot .brand p { color: var(--ink-soft); max-width: 38ch; line-height: 1.55; font-size: 13px; }
+  .au-foot .col p, .au-foot .col a { color: var(--ink-soft); display: block; padding: 4px 0; font-size: 13px; }
+  .au-foot .col a:hover { color: var(--accent); }
+  .au-foot .boot {
+    padding-top: 20px; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.04em; color: var(--ink-faint);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .au-foot .boot .core { color: var(--ink-soft); }
+  .au-foot .boot .core:before { content: '// '; color: var(--cyan); }
+
+  /* ============================================================
+     MOTION — digital momentum, snappier
+  ============================================================ */
+  :root {
+    --lm-rise:     14px;
+    --lm-rise-lg:  22px;
+    --lm-dur-slow: 520ms;
+  }
+
+  /* ============================================================
+     ARABIC / RTL
+  ============================================================ */
+  html[dir="rtl"] {
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', system-ui, sans-serif;
+    --body:    'Noto Naskh Arabic', '{{ theme.body_font }}', system-ui, sans-serif;
+    --mono:    'Noto Naskh Arabic', 'JetBrains Mono', monospace;
+  }
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.9; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 { letter-spacing: 0; line-height: 1.2; }
+  html[dir="rtl"] em { background: transparent; -webkit-text-fill-color: var(--cyan); color: var(--cyan); font-weight: 700; }
+  html[dir="rtl"] .au-nav .sprint,
+  html[dir="rtl"] .au-section .sec-label,
+  html[dir="rtl"] .au-foot h5,
+  html[dir="rtl"] .au-foot .shiplog .head,
+  html[dir="rtl"] .au-foot .marquee,
+  html[dir="rtl"] .au-foot .boot {
+    letter-spacing: 0;
+  }
+  html[dir="rtl"] .au-btn-primary:after { content: '←'; }
+  html[dir="rtl"] .au-btn-primary:hover:after { transform: translateX(-4px); }
+  html[dir="rtl"] .au-nav .cta:after { content: '←'; }
+  html[dir="rtl"] .au-nav .wm,
+  html[dir="rtl"] .au-foot .brand .word {
+    font-family: '{{ theme.heading_font }}', system-ui, sans-serif;
+  }
+  /* Latin numeric runs stay Latin */
+  html[dir="rtl"] .au-mono,
+  html[dir="rtl"] .au-nav .sprint,
+  html[dir="rtl"] .au-hero .metric .num,
+  html[dir="rtl"] .au-capab .card .id,
+  html[dir="rtl"] .au-sprints .sprint-card .id,
+  html[dir="rtl"] .au-work .card .id,
+  html[dir="rtl"] .au-metric-band .stat .num,
+  html[dir="rtl"] .au-foot .shiplog .row .ver,
+  html[dir="rtl"] .au-foot .shiplog .row .dt {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  {% if is_rtl %}
+  .au-hero { grid-template-columns: 1fr 1.1fr; }
+  .au-foot .top { grid-template-columns: 1fr 1fr 1fr 1.4fr; }
+  {% endif %}
+
+  /* ============================================================
+     RESPONSIVE
+  ============================================================ */
+  @media (max-width: 1100px) {
+    .au-nav { padding: 0 14px 0 20px; gap: 14px; }
+    .au-nav .links { gap: 18px; }
+    .au-section { padding: 72px 32px; }
+    .au-section h2 { font-size: 38px; }
+    .au-grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .au-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .au-foot { padding: 56px 32px 20px; }
+    .au-foot .top { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 720px) {
+    .au-nav { padding: 0 10px 0 18px; height: 54px; }
+    .au-nav .links, .au-nav .sprint { display: none; }
+    .au-nav .cta { padding: 8px 14px; font-size: 11px; }
+    .au-section { padding: 56px 20px; }
+    .au-section h2 { font-size: 28px; }
+    .au-grid-2, .au-grid-3, .au-grid-4 { grid-template-columns: 1fr; gap: 20px; }
+    .au-foot .top { grid-template-columns: 1fr; }
+    .au-foot .shiplog .row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+  {% if locale_switcher %}
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_agency|default:chrome.mp_other }}</a>
+</div>
+
+<nav class="au-nav">
+  <div class="wm">
+    <span class="dot"></span>
+    <span>{{ site.logo_word }}</span>
+  </div>
+  <span class="sprint"><span class="chip"></span>{{ site.sprint_chip }}</span>
+  <div class="links">
+    {% for p in pages %}
+      {% if p.slug == "home" %}
+        <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}"
+           class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+      {% else %}
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}"
+           class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="right">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.inquiry_page_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cta">{{ site.nav_cta }}</a>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="au-foot">
+  <div class="shiplog">
+    <div class="head">
+      <span>{{ site.foot_shiplog_label }}</span>
+      <span class="chip"><span class="pulse"></span>{{ site.foot_current_sprint }}</span>
+    </div>
+    <div class="rows">
+      {% for dt, ver, txt in site.foot_shiplog_rows %}
+      <div class="row"><span class="dt">{{ dt }}</span><span class="ver">{{ ver }}</span><span class="txt">{{ txt }}</span></div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="marquee">
+    {% for c in site.foot_stack_marquee %}<span class="cell">{{ c }}</span>{% endfor %}
+    {% for c in site.foot_stack_marquee %}<span class="cell">{{ c }}</span>{% endfor %}
+  </div>
+  <div class="top">
+    <div class="brand">
+      <h5>{{ site.foot_studio_label }}</h5>
+      <div class="word">{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ chrome.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ chrome.foot_contact }}</h5>
+      <p>{{ site.address }}</p>
+      <p>{{ site.phone }}</p>
+      <p>{{ site.email }}</p>
+      <p>{{ site.hours_compact }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_stack_label }}</h5>
+      {% for item in site.foot_stack_rows %}
+        <p>{{ item }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="boot">
+    <span class="core">{{ site.foot_boot_line }}</span>
+    <span>© 2026 {{ site.logo_word }} · <a href="#">{{ chrome.foot_privacy }}</a> · <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-interactions.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
+</body>
+</html>

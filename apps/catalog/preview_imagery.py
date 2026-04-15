@@ -181,6 +181,52 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80&auto=format&fit=crop",
     ],
+    # ─────────────────────────────────────────────────────────────
+    # Per-archetype agency pools — Session 49 agency live rollout.
+    # Fully distinct URL sets so Vertex (creative-studio) and Aura
+    # (digital-studio) never render the same image. Every URL is
+    # verified on a proven pool (reused from portfolio-designer /
+    # business-startup / business-corporate where imagery already
+    # passed visual audit in Sessions 31/38/47).
+    #
+    # agency-creative: editorial studio craft — type specimens on
+    #     paper, brand-book hero shot, gallery install, designer desk,
+    #     contact sheets. Concept-led, ink/charcoal mood.
+    # agency-digital:  product-console momentum — dashboard UI,
+    #     modern studio with monitors, dark IDE, product-design
+    #     close-up, open-plan tech studio. Delivery energy, violet
+    #     ambient light.
+    # ─────────────────────────────────────────────────────────────
+    "agency-creative": [
+        # 0: hero — editorial studio desk with type specimens
+        "https://images.unsplash.com/photo-1561070791-2526d30994b8?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — brand book on desk (design-workspace)
+        "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: case-study craft shots
+        # gallery install / wall exhibit
+        "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=900&q=80&auto=format&fit=crop",
+        # paper prototypes / type specimens
+        "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=900&q=80&auto=format&fit=crop",
+        # packaging / editorial still life
+        "https://images.unsplash.com/photo-1481487196290-c152efe083f5?w=900&q=80&auto=format&fit=crop",
+        # studio portrait (art-director at desk)
+        "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=900&q=80&auto=format&fit=crop",
+    ],
+    "agency-digital": [
+        # 0: hero — product dashboard screen close-up (reused business-startup 0)
+        "https://images.unsplash.com/photo-1551434678-e076c223a692?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — modern studio with monitors + violet ambient
+        "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&q=80&auto=format&fit=crop",
+        # 2-5: delivery / product / sprint imagery
+        # dark IDE / code editor
+        "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=900&q=80&auto=format&fit=crop",
+        # product design detail on screen
+        "https://images.unsplash.com/photo-1559028012-481c04fa702d?w=900&q=80&auto=format&fit=crop",
+        # sprint board / post-its (open studio)
+        "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=900&q=80&auto=format&fit=crop",
+        # dashboard detail / analytics
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=80&auto=format&fit=crop",
+    ],
     "business": [
         # LEGACY pool, kept as fallback for any template that might still
         # resolve through `preview_compositions/business.html`. Phase 2g2x

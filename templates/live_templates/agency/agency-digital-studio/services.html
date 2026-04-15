@@ -1,0 +1,171 @@
+{% extends "live_templates/agency/agency-digital-studio/_base.html" %}
+
+{% block extra_css %}
+  .au-lead { max-width: 1260px; margin: 40px auto 0; padding: 56px 56px 32px; }
+  .au-lead .chip {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(139,92,246,0.10); border: 1px solid rgba(139,92,246,0.32);
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink);
+  }
+  .au-lead h1 { margin-top: 22px; font-size: 64px; letter-spacing: -0.035em; max-width: 22ch; }
+  .au-lead .standfirst { margin-top: 26px; font-size: 18px; color: var(--ink-soft); max-width: 62ch; line-height: 1.7; }
+
+  .au-capab-full { max-width: 1260px; margin: 0 auto; padding: 72px 56px; }
+  .au-capab-full .card {
+    margin-bottom: 24px; padding: 36px; border-radius: 16px;
+    background: rgba(236,233,255,0.03); border: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px;
+  }
+  .au-capab-full .card .head .id {
+    font-family: var(--mono); font-size: 11px; color: var(--cyan);
+    letter-spacing: 0.14em; font-weight: 700;
+  }
+  .au-capab-full .card .head h2 {
+    margin-top: 14px; font-size: 32px; letter-spacing: -0.024em; line-height: 1.15;
+  }
+  .au-capab-full .card .head h2 em {
+    background: linear-gradient(96deg, var(--cyan) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .au-capab-full .card .head .tagline {
+    margin-top: 12px; font-family: var(--mono); font-size: 12px;
+    color: var(--ink-mute); letter-spacing: 0.06em;
+  }
+  .au-capab-full .card .body p {
+    font-size: 15px; color: var(--ink-soft); line-height: 1.7;
+  }
+  .au-capab-full .card .body .scope-head {
+    margin-top: 22px; padding-top: 20px; border-top: 1px dashed var(--rule);
+    font-family: var(--mono); font-size: 11px; color: var(--cyan);
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .au-capab-full .card .body .scope-list {
+    margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px;
+    list-style: none;
+  }
+  .au-capab-full .card .body .scope-list li {
+    position: relative; padding-left: 18px; font-size: 14px; color: var(--ink-soft);
+  }
+  .au-capab-full .card .body .scope-list li:before {
+    content: '◆'; position: absolute; left: 0; color: var(--accent); font-size: 8px; top: 6px;
+  }
+  .au-capab-full .card .body .stack-row {
+    margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .au-capab-full .card .body .stack-row span {
+    padding: 5px 12px; border-radius: 999px;
+    background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.28);
+    font-family: var(--mono); font-size: 11px; color: var(--ink); letter-spacing: 0.08em;
+  }
+
+  .au-engagements { max-width: 1260px; margin: 0 auto; padding: 72px 56px; }
+  .au-engagements .head { margin-bottom: 40px; }
+  .au-engagements .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .au-engagements .tile {
+    padding: 32px 28px; border-radius: 16px;
+    border: 1px solid var(--rule);
+    background: linear-gradient(180deg, rgba(139,92,246,0.08) 0%, rgba(12,10,31,0) 100%);
+  }
+  .au-engagements .tile.featured {
+    border-color: rgba(122,229,255,0.42);
+    background: linear-gradient(180deg, rgba(122,229,255,0.10) 0%, rgba(139,92,246,0.06) 100%);
+  }
+  .au-engagements .tile .id {
+    font-family: var(--mono); font-size: 11px; color: var(--accent); font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+  .au-engagements .tile.featured .id { color: var(--cyan); }
+  .au-engagements .tile h3 { margin-top: 14px; font-size: 24px; letter-spacing: -0.02em; }
+  .au-engagements .tile .price {
+    margin-top: 8px; font-family: var(--mono); font-size: 14px; color: var(--ink-soft);
+  }
+  .au-engagements .tile p { margin-top: 14px; font-size: 14px; color: var(--ink-soft); line-height: 1.65; }
+  .au-engagements .tile ul {
+    list-style: none; margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--rule);
+  }
+  .au-engagements .tile li {
+    padding: 6px 0; font-size: 13px; color: var(--ink-soft);
+  }
+  .au-engagements .tile li:before { content: '◆ '; color: var(--accent); font-size: 9px; }
+
+  .au-cta-band { max-width: 1260px; margin: 0 auto; padding: 72px 56px; text-align: center; }
+  .au-cta-band h2 { font-size: 44px; letter-spacing: -0.03em; max-width: 22ch; margin-inline: auto; }
+  .au-cta-band .actions { margin-top: 32px; display: inline-flex; gap: 14px; }
+
+  @media (max-width: 1100px) {
+    .au-lead { padding: 32px; }
+    .au-lead h1 { font-size: 42px; }
+    .au-capab-full { padding: 48px 32px; }
+    .au-capab-full .card { grid-template-columns: 1fr; padding: 28px; }
+    .au-engagements { padding: 48px 32px; }
+    .au-engagements .grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .au-lead h1 { font-size: 28px; }
+    .au-capab-full .card .body .scope-list { grid-template-columns: 1fr; }
+    .au-cta-band h2 { font-size: 28px; }
+    .au-cta-band .actions { flex-direction: column; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="au-lead">
+  <span class="chip">{{ page_data.chip }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="standfirst">{{ page_data.standfirst }}</p>
+</section>
+
+<section class="au-capab-full" data-lm-group>
+  {% for cap in page_data.capabilities %}
+  <div class="card" data-lm-reveal>
+    <div class="head">
+      <div class="id">{{ cap.id }}</div>
+      <h2>{{ cap.title|safe }}</h2>
+      <div class="tagline">{{ cap.tagline }}</div>
+    </div>
+    <div class="body">
+      <p>{{ cap.body }}</p>
+      <div class="scope-head">{{ cap.scope_label }}</div>
+      <ul class="scope-list">
+        {% for s in cap.scope %}<li>{{ s }}</li>{% endfor %}
+      </ul>
+      <div class="stack-row">
+        {% for st in cap.stack %}<span>{{ st }}</span>{% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+<section class="au-engagements" data-lm-group>
+  <div class="head">
+    <div class="sec-label">{{ page_data.engagement_label }}</div>
+    <h2>{{ page_data.engagement_heading|safe }}</h2>
+    <p class="sec-intro">{{ page_data.engagement_intro }}</p>
+  </div>
+  <div class="grid">
+    {% for tile in page_data.engagement_tiles %}
+    <div class="tile{% if tile.featured %} featured{% endif %}" data-lm-reveal>
+      <div class="id">{{ tile.id }}</div>
+      <h3>{{ tile.title|safe }}</h3>
+      <div class="price">{{ tile.range }}</div>
+      <p>{{ tile.body }}</p>
+      <ul>
+        {% for line in tile.includes %}<li>{{ line }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="au-cta-band">
+  <div class="sec-label">{{ page_data.cta_label }}</div>
+  <h2 style="margin-top:14px;">{{ page_data.cta_heading|safe }}</h2>
+  <div class="actions">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.inquiry_page_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="au-btn-primary">{{ page_data.cta_primary }}</a>
+    <a href="mailto:{{ site.email }}" class="au-btn-ghost">{{ site.email }}</a>
+  </div>
+</section>
+{% endblock %}

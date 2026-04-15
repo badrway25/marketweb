@@ -1,5 +1,34 @@
 # Decisions Log
 
+## D-079: Agency Category Closure — Vertex + Aura Live Premium with 5 Locales + Real RTL Day One (2026-04-15, Session 49)
+
+**Decision:** `vertex-creative-agency` (`agency-creative-studio` archetype) and `aura-digital-studio` (`agency-digital-studio` archetype) flip from `tier=draft` to `tier=published_live` premium with two fully distinct multipage live skin folders (8 file kinds each), 5 locales (it/en/fr/es/ar) with real RTL for Arabic, and sharp D-054 differentiation enforced across every axis (page color, typography, hero silhouette, navbar, work presentation, services framing, process section, inquiry flow, CTA style, premium cues, imagery pool, voice register). Agency category is now 2/2 published_live; catalog floor moves from 11/20 to **13/20 published_live across 6 categories** (medical · restaurant · business · portfolio · ecommerce · **agency**). Phase 2g3.6f closed.
+
+**Concrete shape:**
+- Two new DNA archetypes added (`agency-creative-studio` + `agency-digital-studio`) with full vocabulary entries (hero/navbar/footer/card/button/density/tone/conversion/imagery/font_pairing).
+- Two skin folders (~7,800 LOC HTML, 8 files each) authored from line one with D-047 chrome-cleanliness, RTL CSS scoped to `.vx-*` / `.au-*` selectors, conditional Arabic font load, 720px mobile breakpoint, `:focus-visible` on every CTA.
+- Two IT content registries (~2,700 LOC) + 8 locale trees (~9,800 LOC) authored by 4 parallel sub-agents (one per locale, producing both Vertex + Aura). Voice contracts: Creative Review/Monocle for Vertex EN, TechCrunch/Linear for Aura EN; Libération/M-M Paris for Vertex FR, Maddyness for Aura FR; Apartamento for Vertex ES, Xataka for Aura ES; Brownbook curatorial MSA for Vertex AR, Wamda product MSA for Aura AR. Latin proper names + Latin digits + Latin stack names preserved per D-063.
+- Two new per-archetype imagery pools (`agency-creative` editorial-craft + `agency-digital` product-console) using verified Unsplash IDs from `portfolio-designer` / `business-startup` precedents (Pexels deferred per D-077 fallback — `PEXELS_API_KEY` env var not present at session start).
+- Chrome i18n extended with `mp_other_agency` key in 5 locales.
+- Differentiation matrix (D-054 axis-by-axis): page color (cream paper vs midnight-violet), typography (Space Grotesk + Fraunces italic vs Plus Jakarta + JetBrains Mono), hero silhouette (editorial pull-quote + cover tile vs product-console + dashboard tile), navbar (serif-asterisk + alpha-index vs glow-pill + sprint chip), work presentation (indexed ledger vs metric-card grid), services (4 disciplines manuali vs 4 capabilities deliverable), process (manifesto + 6 principles vs sprint + 3 mindset), inquiry (long-form dossier brief vs 3-step slot picker), CTA (ghost serif italic vs glow violet pill), premium cues (press ribbon vs ship-log + sparkline), imagery (editorial craft vs product UI), voice (curatorial editorial Italian vs growth-tech direct Italian). Two products, not two recolors.
+- TEMPLATE_REGISTRY.json bumped to v0.12.0 with full DNA metadata + tier flips + new `phase_2g3_6f_agency_live` block.
+- `smoke_full.py` extended (+87 routes net): **530/530 green** post-rollout.
+- One in-flight bug caught + fixed during Playwright AR audit: Aura `chip` field carried literal `<span class="pulse"></span>` markup in the data string that Django auto-escaped to visible text. Stripped from all 5 Aura locale files (template provides static pulse). Re-validated in browser. Lesson: AR view catches mixed-script bugs that LTR-only audits miss — always click through AR with a fresh eye.
+
+**Rationale:** agency was the next-largest gap on the public-catalog floor after restaurant (Session 48 closed restaurant 3/3). User directive was explicit: "non aprire nuove categorie", "portare la categoria agency a 2/2 live", "Vertex e Aura devono sembrare 2 prodotti diversi". Session 16's catalog audit had flagged agency as CRITICO sibling-collapse (both templates rendering through shared `agency.html` with hardcoded "Independent design & tech studio" copy). This session closes that gap at the source — by splitting the DNA into two materially different archetypes and by enforcing the differentiation contract from the first authoring pass, not as a post-hoc recolor.
+
+**Trade-off deliberati:**
+- **Pexels API integration deferred** — same as Session 48 (D-077 fallback path), TODO follow-up tracked.
+- **Two skin folders, not one merged archetype** — same shape as every prior 2g3 rollout (Bottega+Luxe, Pragma+Elevate, Sapore+Brace). Intentional debt.
+- **No video on either template** — a curatorial creative studio cannot ship with stock B-roll, a delivery-focused digital studio cannot ship with a generic product-loop. Right video would need commissioned footage. Out of scope.
+- **Page kinds chosen per-template** — Vertex `manifesto` (editorial principles essay) vs Aura `sprint` (telemetry process); Vertex `contatti` (long-form brief with discipline + budget bands) vs Aura `brief` (3-step structured intake with slot picker). Each kind fits the brand register, not a generic placeholder.
+
+**Consequence:** (a) agency 2/2 published_live with sharp differentiation; (b) catalog 13/20 across 6 categories; (c) `agency-creative-studio` and `agency-digital-studio` archetypes reusable for future siblings; (d) parallel-agent recipe scales to 2×8 fan-out without modification (now proven 10 times); (e) zero regressions on 11 pre-existing live templates.
+
+**Validation:** `check` clean, sync_template_tiers → 13/7, **530/530 smoke green**, full Playwright walk on 8 routes (Vertex+Aura × home+lavori×2+detail+AR+EN/FR/ES locale spot-checks).
+
+---
+
 ## D-078: Restaurant Category Closure — Sapore + Brace Live Premium with 5 Locales + Real RTL Day One (2026-04-15, Session 48)
 
 **Decision:** `sapore-trattoria-pizzeria` (trattoria-warm archetype) and `brace-street-food-lab` (street-modern archetype) flip from `tier=draft` to `tier=published_live` premium with full multipage live skins (6 page routes each), 5 locales (it/en/fr/es/ar) with real RTL for Arabic, and sharp D-054 differentiation enforced both vs each other and vs the existing Gusto fine-dining template. Restaurant category is now 3/3 published_live; catalog floor moves from 9/20 to **11/20 published_live across 5 categories** (medical · restaurant · business · portfolio · ecommerce). Phase 2g3.6 closed.

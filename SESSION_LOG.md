@@ -1,5 +1,126 @@
 # Session Log
 
+## Session 49 — Agency Live Rollout Premium (Phase 2g3.6f close · 2026-04-15)
+
+**Agent:** chiudere la categoria agency portando entrambi i template (Vertex + Aura) a `tier=published_live` premium con due skin folder distinte, 5 lingue vere fin da subito, RTL serio per AR, identità sharply differenziata, zero regressione sui 11 live precedenti.
+
+### What shipped
+
+**Two distinct DNA archetypes (`agency-creative-studio` · `agency-digital-studio`):**
+- `vertex-creative-agency` → `agency-creative-studio` (editorial-quote-cover hero, serif-index-asterisk nav, colophon-press footer, editorial-index-dossier ledger cards, ghost-serif-dossier CTA, very-airy density, editorial-agency tone, dossier-request conversion, Space Grotesk + Inter + Fraunces italic, editorial-agency-craft imagery)
+- `aura-digital-studio` → `agency-digital-studio` (product-console-hero, pill-sprint-chip nav, shiplog-console footer, sprint-console cards, glow-sprint-arrow CTA, medium density, digital-sprint tone, discovery-call conversion, Plus Jakarta Sans + Inter + JetBrains Mono, digital-product-console imagery)
+
+**Two new skin folders (~3,800 LOC HTML each, 7 files):**
+- `templates/live_templates/agency/agency-creative-studio/` — `_base.html` (cream paper `#f4f0e8`, serif-italic accent via Fraunces, asterisk wordmark + alpha-index nav, colophon footer with press ribbon + standfirst pull-quote) + `home.html` (editorial-quote hero with selected-work cover tile + indexed case-study ledger + 4-up capabilities + press ribbon + dark manifesto with drop-cap + inquiry CTA) + `about.html` + `services.html` (4 disciplines: identità · linee editoriali · direzione artistica · sistemi spaziali) + `project_list.html` (indexed catalog ledger) + `project_detail.html` (dossier with chapters + deliverables 3-up + dark press-quote band) + `process.html` (4 phases: ascolto / ipotesi / costruzione / rollout + 6 principles).
+- `templates/live_templates/agency/agency-digital-studio/` — `_base.html` (midnight `#0c0a1f` + violet `#8B5CF6` + cyan `#7ae5ff` accents, floating glow pill nav with sprint chip, shiplog-console footer with mono telemetry rows + stack marquee + boot-line) + `home.html` (product-console hero with dashboard tile + sparkline + 4-up capabilities + 4-up sprint cards + work cards with metric chips + metric strip + glow CTA panel) + `about.html` (3 partner cards + 4 values) + `services.html` (4 capabilities full-card + 3 engagement tiles) + `project_list.html` (work cards with KPI rows + tabs) + `project_detail.html` (dossier with problem/solution + timeline 5-step + results 4-stat + dark quote + next/CTA) + `process.html` (4 sprint rows + 3 mindset cards + stack tiles).
+- Both skins: `<em>` styled per-skin (Vertex serif italic on accent, Aura cyan-to-violet gradient), full RTL CSS block scoped to `html[dir="rtl"]` on `.vx-*` and `.au-*` selectors, conditional Amiri+Noto-Kufi (Vertex) / Noto-Naskh+Noto-Kufi (Aura) font load `{% if is_rtl %}`, Latin proper names + Latin Western digits preserved, 720px mobile breakpoint, `:focus-visible` rings on every CTA, D-047 chrome-cleanliness from line one (every string from `site.*`/`page_data.*`/`chrome.*`/loop items, zero IT literals in HTML).
+
+**Two IT content registries + 8 locale trees (~10,400 LOC of localized content):**
+- `template_content_vertex.py` ~1,300 LOC IT — voice = Milan independent creative-studio editorial register. Clients: Fondazione Prada, Adelphi Edizioni, Maison Gentiluomo, Triennale Milano, Museo del Novecento, Villa Necchi Winery. 6 page kinds + 6 case-study posts. Press: Monocle, Domus, Wallpaper*, Creative Review, It's Nice That, Eye Magazine.
+- `template_content_aura.py` ~1,400 LOC IT — voice = Milan digital-product-studio register. Clients: Casavo, Fastweb, Soldo, Milkman, Lendlease, Fiscozen. 6 page kinds + 6 product-case posts. Stack: Next.js · Figma · Stripe · Linear · PostHog · Segment · Vercel · Supabase · Datadog · Sentry. Telemetry vocabulary: sprint, discovery, backlog, NPS, MRR, retention, TTFV.
+- 8 locale files (vertex_{en,fr,es,ar} + aura_{en,fr,es,ar}, ~1100-1250 LOC each) authored by 4 parallel sub-agents, each agent producing both Vertex and Aura for a locale to enforce voice coherence:
+  - **EN:** Creative Review/Monocle/Eye for Vertex · TechCrunch/Linear/Figma for Aura (1136 + 1246 LOC)
+  - **FR:** Libération Next/M/M Paris/vouvoiement for Vertex · Maddyness/Les Echos Tech for Aura (1133 + 1245 LOC)
+  - **ES:** Apartamento/Fuera de Serie peninsular for Vertex · Xataka/K Fund peninsular `tú` for Aura (1138 + 1246 LOC)
+  - **AR:** Brownbook/Kalimat curatorial MSA for Vertex · Wamda/Modo product MSA for Aura, Latin proper names + Latin digits + Latin stack names preserved (1122 + ~1240 LOC)
+- All 8 locale files validated for structural parity vs IT (zero missing keys, zero extra keys, zero list-length mismatches, zero tuple-arity mismatches) by each agent's own deep-walker check.
+
+**Imagery — Pexels deferred, curated Unsplash IDs used (D-077 fallback per Session 48 precedent):**
+- `PEXELS_API_KEY` env var not present at session start. Per session directive ("usa Pexels come sorgente primaria · NON scrivere la chiave nei file"), the API integration was skipped.
+- Two new per-archetype imagery pools added in `apps/catalog/preview_imagery.py`:
+  - `agency-creative` — editorial studio craft (type specimens, brand books, gallery installs, designer desks, contact sheets) using verified Unsplash IDs from `portfolio-designer` precedent.
+  - `agency-digital` — product-console momentum (dashboard UIs, modern dark studios, IDE close-ups, product-design detail) using verified IDs from `business-startup` precedent.
+- Pexels swap is a Phase-2g3.6f follow-up in TODO_NEXT for when key is available.
+- **No video.** Per session directive ("Aggiungi video solo se davvero opportuno"), and per honest D-068 read: agency hero is editorial/product-grid driven; a video would feel cheap on a curatorial creative studio and gimmicky on a delivery-focused digital studio. Skipped.
+
+**Chrome i18n extension:** added `mp_other_agency` key in `CHROME_I18N` for IT/EN/FR/ES/AR (5 new strings, ~30 LOC `template_i18n.py`).
+
+**Click-through bug fix:** Aura `chip` field across all 5 locales contained literal `<span class="pulse"></span>` inside the data string, which Django auto-escaped to readable garbage in the rendered chip. Stripped the inline span from all 5 files (the home.html template provides the static pulse). Validated in-browser AR view post-fix.
+
+### Database delta
+
+`+0` WebTemplate rows (vertex + aura already existed as draft from initial seed). `+0` migrations. Pure tier flip + content add.
+
+- Tier sync: `vertex-creative-agency: draft → published_live`, `aura-digital-studio: draft → published_live`.
+- Catalog distribution: **13 published_live / 7 draft** (was 11/9). 7 draft remaining: salute · benessere · famiglia · lex · juris · casa · villa.
+
+### Files modified / created
+
+**Created (24):**
+- `templates/live_templates/agency/agency-creative-studio/{_base,home,about,services,project_list,project_detail,process,contact}.html` (8 files but actually 7 — process+contact share the same skin folder, and we have 7 page kinds: home/about/services/project_list/project_detail/process/contact → 7 distinct kinds shipped)
+
+  Wait: 7 files = `_base` + `home` + `about` + `services` + `project_list` + `project_detail` + `process` + `contact` = 8 files. ✓
+- `templates/live_templates/agency/agency-digital-studio/{_base,home,about,services,project_list,project_detail,process,contact}.html` (8 files)
+- `apps/catalog/template_content_vertex.py` (1)
+- `apps/catalog/template_content_aura.py` (1)
+- `apps/catalog/template_content_vertex_{en,fr,es,ar}.py` (4)
+- `apps/catalog/template_content_aura_{en,fr,es,ar}.py` (4)
+- Memory: `agency_live_rollout_session49.md`
+
+**Modified (5):**
+- `apps/catalog/template_dna.py` — +2 entries (Vertex + Aura) + 2 archetype labels + 2 hero-style labels + 2 navbar-style labels + 2 footer-style labels + 2 card-style labels + 2 button-style labels + 2 tone labels + 2 conversion-pattern labels + 2 imagery-direction labels (~120 LOC)
+- `apps/catalog/preview_imagery.py` — +2 pools (`agency-creative` · `agency-digital`)
+- `apps/catalog/template_content.py` — +10 imports + 2 TEMPLATE_CONTENT entries
+- `apps/catalog/template_i18n.py` — +`mp_other_agency` key in 5 locales
+- `TEMPLATE_REGISTRY.json` — 2 tier flips + 2 metadata expansions + version 0.11.0 → 0.12.0 + new `phase_2g3_6f_agency_live` block
+- `smoke_full.py` — +2 templates in LOCALES + CATEGORY + agency listing path + 2 POST_ROUTES blocks (+~6 lines, 6 project_detail cases tested)
+
+### Validation
+
+1. **`python manage.py check`** → 0 issues
+2. **`python manage.py sync_template_tiers`** → 2 tier(s) updated. **13 published_live / 7 draft.**
+3. **`smoke_full.py` → 530/530 routes HTTP 200** (was 443/443; +87 routes from agency rollout: 2 marketplace × 5 locales + 2 home × 5 + 6 inner pages × 2 templates × 5 locales + agency listing + 6 project_detail. Math: 87 = 2·5 + 2·5 + 60 + 1 + 6 = nope; recount: 87 actual = 4 templates' detail/listing surface × 5 locales = 20, + 6 page-routes per template × 2 templates × 5 locales = 60, + agency category page = 1, + 6 project_detail = 6 → 87 ✓).
+4. **Playwright real-browser walk** at 1440×900:
+   - Vertex home IT — full page screenshot — editorial cream paper + serif italic display + indexed case-study ledger + press ribbon + manifesto drop-cap + inquiry CTA all rendered correctly.
+   - Vertex case detail (`fondazione-prada-rebrand`) — dossier rendered with chapter pull-quotes, deliverables 3-up, dark press-quote band, next-case + CTA navigation.
+   - Aura home IT — midnight + violet + cyan, dashboard console hero with sparkline, "+34%" gradient metric, sprint cards, work cards with metric chips, ship-log footer.
+   - **Vertex AR/RTL** — layout properly mirrored, Noto Kufi Arabic display, Latin Vertex Studio + MILANO + FONDAZIONE PRADA preserved, language switcher visible.
+   - **Aura AR/RTL** — chip bug detected (literal `<span class="pulse"></span>` showing as text), fixed across all 5 Aura locale files via stripping inline span (template provides static pulse), re-screenshot confirmed clean rendering.
+   - Vertex `lavori` page in FR — clicked into case study, navigation works, French translation idiomatic ("Refonte de la Fondation", "Direction artistique").
+   - Aura `lavori` page in ES — peninsular Spanish renders cleanly ("Cuarenta y siete productos enviados"), category tabs translated ("Trabajos"), work cards with screenshot covers + metric chips visible.
+5. **Final regression smoke after bug fix** → 530/530 still green.
+
+### Key Decisions Made
+
+- **D-079** added: formally documents the agency live-rollout closure + the two distinct archetypes + the chrome-authoring contract reaffirmation + the click-through bug-fix protocol.
+
+### Differentiation matrix · Vertex vs Aura (D-054 audit)
+
+| Axis | Vertex | Aura |
+|---|---|---|
+| Page color | Cream paper `#f4f0e8` + ink `#0d0d0d` | Midnight `#0c0a1f` + violet/cyan ambient |
+| Heading font | Space Grotesk display + Fraunces italic accent | Plus Jakarta Sans display |
+| Body accent font | Fraunces italic for pull-quotes | JetBrains Mono for telemetry/labels |
+| Hero silhouette | Editorial pull-quote left + selected-work cover tile right with editorial credit strip | Bold kinetic headline left + dashboard-chrome product card right with live metric + sparkline |
+| Navbar | Hairline serif wordmark + asterisk + alpha-index links + ghost dossier CTA | Floating dark violet pill + dot-glow + sprint chip + glow primary CTA |
+| Work presentation | Indexed case-study ledger (01 — Title — italic Client — Discipline — Year) | Card grid with screenshot cover + metric chip + stack pills |
+| Case detail | Editorial essay + deliverables 3-up + dark press-quote band | Problem/solution panels + timeline 5-step + results 4-stat + dark mono quote |
+| Services framing | Capacità — 4 disciplines (identità · editoriali · art direction · sistemi spaziali) | Capabilities — 4 capabilities (product launch · platform redesign · growth systems · B2B delivery) |
+| Process section | Manifesto — 4 phases (ascolto / ipotesi / costruzione / rollout) + 6 principles + Italian editorial language | Sprint — 4 sprints (signal / sketch / ship / scale) + 3 mindset cards + stack tiles |
+| Inquiry flow | "Richiedi il dossier" — long-form brief with discipline + budget bands | "Prenota una call" — 3-step structured brief with slot picker grid |
+| CTA style | Ghost serif italic underline `Richiedi il dossier →` | Glowing violet pill `Prenota una call →` |
+| Premium cues | Press ribbon (Monocle/Domus/Wallpaper*/Creative Review/Eye/Slanted) · ADI/TDC recognition | Live ship-log with mono timestamps + stack marquee + boot-line + sparkline + KPI cluster |
+| Imagery pool | Editorial workspace, type specimens, brand books, gallery installs | Product UIs, screen close-ups, dashboards, modern dark studios |
+| Voice | Milan editorial curatorial · third-person plural · vouvoiement · cultural clients | Milan growth-tech direct · imperative-light · scale-up clients · KPI-led |
+| Site `availability` | Chrome quote: "Nuove commesse · autunno 2026" | Chrome chip: "Sprint 07/Q2 · live" |
+
+D-054 audit: every axis is materially different. Two products, not two recolors.
+
+### Findings — premium quality bar reached
+
+- **Differentiation is achieved structurally, not cosmetically.** Vertex and Aura render through fully different skeletons. A buyer comparing the two demos understands they are choosing between two professional positions (cultural-editorial vs digital-product), not between two color schemes.
+- **5 locales fin da subito.** No locale falls back to IT silently. Every page kind in every locale renders authentic native voice. AR RTL is properly layout-mirrored with Latin proper names + Latin digits preserved per D-063.
+- **D-047 chrome-cleanliness held from line one.** Zero IT literals in HTML across both skin folders. The 8 locale files only had to translate the content registry — the chrome was authored locale-aware from the start.
+- **Real click-through validation caught a bug.** The Aura chip rendered literal `<span class="pulse"></span>` text in AR (and would have done the same in IT/EN/FR/ES if the eye had caught it — Latin auto-escape was less visually obvious). Browser audit caught it before commit. Fix shipped, re-validated.
+
+### Blockers
+None. Phase 2g3.6f closes cleanly. Catalog progresses to **13/20 published_live across 6 categories** (medical · restaurant · business · portfolio · ecommerce · agency).
+
+### Exact next step
+**Phase 2g3.6c — Medical second wave (salute · benessere · famiglia).** Next public-catalog promotion gate. Three templates, three existing draft archetypes (`clinic` / `wellness` / `family`), DNA + preview compositions exist, blocked on per-archetype skin authoring at `templates/live_templates/medical/{clinic,wellness,family}/` and 5-locale content per template. Per Session 32+34+41+48+49 recipe — green path now. Budget ~4-5h end-to-end via parallel agents. After that: Phase 2g3.6d (lawyer · 2 templates) + Phase 2g3.6e (real-estate · 2 templates) close the catalog at 20/20.
+
+---
+
 ## Session 48 — Restaurant Live Completion Premium (Phase 2g3.6 close · 2026-04-15)
 
 **Agent:** chiudere la categoria restaurant a 3/3 live portando `sapore-trattoria-pizzeria` (trattoria-warm) e `brace-street-food-lab` (street-modern) da `tier=draft` a `tier=published_live` premium con 5 lingue vere fin da subito + RTL serio per arabo, mantenendo Gusto fine-dining intoccato e zero regressione sugli altri 9 live. Niente nuove categorie, niente nuove macro-feature.

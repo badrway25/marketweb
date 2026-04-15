@@ -2479,6 +2479,17 @@ from apps.catalog.template_content_brace_en import BRACE_CONTENT_EN  # noqa: E40
 from apps.catalog.template_content_brace_fr import BRACE_CONTENT_FR  # noqa: E402
 from apps.catalog.template_content_brace_es import BRACE_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_brace_ar import BRACE_CONTENT_AR  # noqa: E402
+# Agency live rollout (Phase 2g3.6f, Session 49)
+from apps.catalog.template_content_vertex import VERTEX_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_vertex_en import VERTEX_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_vertex_fr import VERTEX_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_vertex_es import VERTEX_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_vertex_ar import VERTEX_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_aura import AURA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_aura_en import AURA_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_aura_fr import AURA_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_aura_es import AURA_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_aura_ar import AURA_CONTENT_AR  # noqa: E402
 
 
 TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
@@ -2558,6 +2569,21 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": BRACE_CONTENT_FR,
         "es": BRACE_CONTENT_ES,
         "ar": BRACE_CONTENT_AR,
+    },
+    # Agency live rollout (Phase 2g3.6f, Session 49)
+    "vertex-creative-agency": {
+        "it": VERTEX_CONTENT_IT,
+        "en": VERTEX_CONTENT_EN,
+        "fr": VERTEX_CONTENT_FR,
+        "es": VERTEX_CONTENT_ES,
+        "ar": VERTEX_CONTENT_AR,
+    },
+    "aura-digital-studio": {
+        "it": AURA_CONTENT_IT,
+        "en": AURA_CONTENT_EN,
+        "fr": AURA_CONTENT_FR,
+        "es": AURA_CONTENT_ES,
+        "ar": AURA_CONTENT_AR,
     },
 }
 

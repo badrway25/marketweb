@@ -25,6 +25,9 @@ LOCALES = {
     # Phase 2g3.6 — Restaurant live-completion (Session 48)
     "sapore-trattoria-pizzeria":   ["it", "en", "fr", "es", "ar"],
     "brace-street-food-lab":       ["it", "en", "fr", "es", "ar"],
+    # Phase 2g3.6f — Agency live rollout (Session 49)
+    "vertex-creative-agency":      ["it", "en", "fr", "es", "ar"],
+    "aura-digital-studio":         ["it", "en", "fr", "es", "ar"],
 }
 
 CATEGORY = {
@@ -39,6 +42,8 @@ CATEGORY = {
     "luxe-fashion-store":          "ecommerce",
     "sapore-trattoria-pizzeria":   "restaurant",
     "brace-street-food-lab":       "restaurant",
+    "vertex-creative-agency":      "agency",
+    "aura-digital-studio":         "agency",
 }
 
 @override_settings(ALLOWED_HOSTS=["*"])
@@ -72,7 +77,7 @@ def run():
                 if r.status_code == 200: ok += 1
                 else: failed.append((url+q, r.status_code))
     # Catalog surfaces
-    for path in ["/", "/templates/", "/templates/medical/", "/templates/restaurant/", "/templates/business/", "/templates/portfolio/", "/templates/ecommerce/"]:
+    for path in ["/", "/templates/", "/templates/medical/", "/templates/restaurant/", "/templates/business/", "/templates/portfolio/", "/templates/ecommerce/", "/templates/agency/"]:
         total += 1
         r = client.get(path)
         if r.status_code == 200: ok += 1
@@ -83,6 +88,11 @@ def run():
          ["triennale-milano-catalogo-2025", "adelphi-collana-carta-bianca", "querini-stampalia-segnaletica"]),
         ("/templates/portfolio/pixel-portfolio-fotografico/preview/serie/",
          ["porto-vecchio-trieste", "case-di-pietra-puglia", "ritratti-del-po"]),
+        # Agency project_detail routes (Session 49)
+        ("/templates/agency/vertex-creative-agency/preview/lavori/",
+         ["fondazione-prada-rebrand", "adelphi-collana-narrativa", "maison-gentiluomo-manuale"]),
+        ("/templates/agency/aura-digital-studio/preview/lavori/",
+         ["casavo-retention-rework", "fastweb-plus-dashboard", "soldo-corporate-onboarding"]),
     ]
     for parent, slugs in POST_ROUTES:
         for s in slugs:
