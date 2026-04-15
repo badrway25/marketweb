@@ -24,6 +24,52 @@
     setupTabs();
     setupCompare();
     setupAnchorNav();
+    setupFilterPills();
+  }
+
+  // --- 7. FILTER PILLS -------------------------------------------------------
+  // Parent: [data-li="filter"]. Pills: [data-li-filter="<tag>"] (or `all`).
+  // Targets: descendants of the parent's `data-li-filter-target` selector that
+  // carry `data-filter-tag="<tag>"`. Clicking a pill toggles .is-active on the
+  // pressed pill (clearing siblings), then filters visible items. Keyboard
+  // friendly: Enter/Space activate. Zero-match fallback shows every item.
+  function setupFilterPills() {
+    var groups = document.querySelectorAll('[data-li="filter"]');
+    if (!groups.length) return;
+    groups.forEach(function (group) {
+      var targetSel = group.getAttribute('data-li-filter-target');
+      if (!targetSel) return;
+      var scope = document;
+      var scopeSel = group.getAttribute('data-li-filter-scope');
+      if (scopeSel) scope = document.querySelector(scopeSel) || document;
+      var pills = group.querySelectorAll('[data-li-filter]');
+      var items = scope.querySelectorAll(targetSel);
+      function apply(tag) {
+        items.forEach(function (it) {
+          var raw = (it.getAttribute('data-filter-tag') || '').trim();
+          // Support multi-tag items via comma separation (e.g. "CREW,LATE NIGHT").
+          // Fall back to exact-string match when no comma is present.
+          var tags = raw.indexOf(',') === -1 ? [raw] : raw.split(',').map(function (s) { return s.trim(); });
+          var match = tag === 'all' || tags.indexOf(tag) !== -1;
+          it.classList.toggle('is-filtered-out', !match);
+        });
+      }
+      pills.forEach(function (pill) {
+        if (!pill.hasAttribute('tabindex')) pill.setAttribute('tabindex', '0');
+        if (!pill.hasAttribute('role')) pill.setAttribute('role', 'button');
+        pill.setAttribute('aria-pressed', pill.classList.contains('is-active') ? 'true' : 'false');
+        function activate() {
+          pills.forEach(function (p) { p.classList.remove('is-active'); p.setAttribute('aria-pressed', 'false'); });
+          pill.classList.add('is-active');
+          pill.setAttribute('aria-pressed', 'true');
+          apply(pill.getAttribute('data-li-filter'));
+        }
+        pill.addEventListener('click', activate);
+        pill.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+        });
+      });
+    });
   }
 
   // --- 1. ACCORDIONS ---------------------------------------------------------

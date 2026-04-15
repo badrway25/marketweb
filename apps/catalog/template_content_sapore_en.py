@@ -134,7 +134,7 @@ SAPORE_CONTENT_EN: dict[str, Any] = {
                     "rolls the pasta every morning from seven onwards. Her motto is "
                     "simple: \"you can feel good pasta under your hands — you don't "
                     "need a scale.\"",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -144,7 +144,7 @@ SAPORE_CONTENT_EN: dict[str, Any] = {
                     "oven every afternoon at four — Cimino oak, nothing else — and "
                     "keeps it burning until midnight. His Margherita Verace was "
                     "learned from Peppe Guida in Vico Equense in 2008.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -155,7 +155,7 @@ SAPORE_CONTENT_EN: dict[str, Any] = {
                     "cherry crostata when the season allows, maritozzi with whipped "
                     "cream only on Saturday mornings. She'll greet you with a smile "
                     "and a jug of sparkling water.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 
@@ -379,7 +379,7 @@ SAPORE_CONTENT_EN: dict[str, Any] = {
                     "mattarello she knows by heart. She rolls the pasta every morning "
                     "from seven to ten, then moves on to chalk up the board of the "
                     "day. Only she makes the carbonara: it's a jealous little ritual.",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -390,7 +390,7 @@ SAPORE_CONTENT_EN: dict[str, Any] = {
                     "afternoon, gets the Cimino oak crackling, and mixes the dough "
                     "by hand with a mother starter from 2008. He slides the "
                     "Margherita in with his eyes closed — sixty seconds.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -401,7 +401,7 @@ SAPORE_CONTENT_EN: dict[str, Any] = {
                     "waiter, makes the desserts of the day, and writes the wine "
                     "list. She turns out the best maritozzo west of the Tiber — "
                     "but only on Saturday mornings.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 

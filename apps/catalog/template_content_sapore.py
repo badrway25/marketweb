@@ -132,7 +132,7 @@ SAPORE_CONTENT_IT: dict[str, Any] = {
                     "e due mattarelli. Oggi ha ottantadue anni e tira ancora la pasta "
                     "ogni mattina dalle sette. Il suo motto è semplice: «la pasta "
                     "buona la senti sotto le mani, non ti serve la bilancia».",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -142,7 +142,7 @@ SAPORE_CONTENT_IT: dict[str, Any] = {
                     "ogni pomeriggio alle quattro — quercia del Cimino, mai altro — e "
                     "lo tiene vivo fino a mezzanotte. La sua Margherita verace è "
                     "imparata da Peppe Guida a Vico Equense nel 2008.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -152,7 +152,7 @@ SAPORE_CONTENT_IT: dict[str, Any] = {
                     "Tiramisù con mascarpone di Sarnelli, crostata di visciole quando "
                     "la stagione c'è, maritozzi con la panna solo il sabato mattina. "
                     "Vi accoglie con un sorriso e una caraffa d'acqua frizzante.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 
@@ -377,7 +377,7 @@ SAPORE_CONTENT_IT: dict[str, Any] = {
                     "mattarello che conosce a memoria. Tira la pasta ogni mattina "
                     "dalle sette alle dieci, poi passa a scrivere la lavagna del "
                     "giorno. La carbonara la fa solo lei: è un rito geloso.",
-                "portrait": "https://images.unsplash.com/photo-1604908554027-b6e7c2c5db1f?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.pexels.com/photos/2050990/pexels-photo-2050990.jpeg?auto=compress&cs=tinysrgb&w=600&h=750&fit=crop",
             },
             {
                 "name":   "Marco Trezzi",
@@ -388,7 +388,7 @@ SAPORE_CONTENT_IT: dict[str, Any] = {
                     "fa scoppiettare la quercia del Cimino, e impasta a mano "
                     "con lievito madre del 2008. La Margherita la infila a "
                     "occhi chiusi in sessanta secondi.",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "Giulia Trezzi",
@@ -399,7 +399,7 @@ SAPORE_CONTENT_IT: dict[str, Any] = {
                     "Beppe, prepara i dolci del giorno e decide la carta "
                     "dei vini. Fa il miglior maritozzo a ovest del Tevere, "
                     "ma solo il sabato mattina.",
-                "portrait": "https://images.unsplash.com/photo-1547573854-74d2a71d0826?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop",
             },
         ],
 

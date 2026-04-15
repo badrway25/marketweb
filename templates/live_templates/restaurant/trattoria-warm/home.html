@@ -49,7 +49,49 @@
     transform: rotate(8deg);
     box-shadow: 0 8px 0 -2px #8a2318;
     text-align: center; line-height: 1.1;
+    animation: tw-stamp-pulse 4.2s ease-in-out infinite;
+    transform-origin: center;
   }
+  @keyframes tw-stamp-pulse {
+    0%, 100% { transform: rotate(8deg) scale(1); box-shadow: 0 8px 0 -2px #8a2318; }
+    50%      { transform: rotate(7deg) scale(1.035); box-shadow: 0 10px 0 -2px #8a2318; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tw-hero .frame .stamp { animation: none; }
+  }
+
+  /* Chalkboard: subtle handwritten shimmer on the "Buon appetito!" line */
+  .tw-chalk-board .buongiorno {
+    animation: tw-sign-bob 6s ease-in-out infinite;
+    transform-origin: right bottom;
+  }
+  @keyframes tw-sign-bob {
+    0%, 100% { transform: rotate(-2deg) translateY(0); }
+    50%      { transform: rotate(-2.8deg) translateY(-3px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tw-chalk-board .buongiorno { animation: none; }
+  }
+
+  /* Family portraits — warm lift on hover (incremental over _base hover) */
+  .tw-family .card { transition: transform 420ms cubic-bezier(0.22,0.61,0.36,1),
+                                 box-shadow 420ms cubic-bezier(0.22,0.61,0.36,1); }
+  .tw-family .card:hover {
+    transform: translateY(-6px) rotate(0deg) !important;
+    box-shadow: 0 22px 44px -22px rgba(74,44,42,0.5);
+  }
+
+  /* Facts counter band — warm underline grows under each number */
+  .tw-facts .fact .num { position: relative; display: inline-block; }
+  .tw-facts .fact .num:after {
+    content: ''; position: absolute;
+    left: 0; right: 0; bottom: -6px;
+    height: 3px; background: var(--accent);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform 860ms cubic-bezier(0.22,0.61,0.36,1) 400ms;
+  }
+  .tw-facts-inner.lm-in .fact .num:after { transform: scaleX(0.72); }
+  html[dir="rtl"] .tw-facts .fact .num:after { transform-origin: right center; }
   .tw-hero .text { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
   .tw-hero .text h1 { max-width: 13ch; }
   .tw-hero .text .actions {
@@ -448,9 +490,9 @@
 </section>
 
 <section class="tw-facts">
-  <div class="tw-facts-inner" data-lm-stagger data-lm-stagger-delay="100">
+  <div class="tw-facts-inner" data-lm-stagger data-lm-stagger-delay="120">
     {% for num, lbl in page_data.facts %}
-      <div class="fact"><span class="num">{{ num }}</span><span class="lbl">{{ lbl }}</span></div>
+      <div class="fact"><span class="num" data-lm="counter">{{ num }}</span><span class="lbl">{{ lbl }}</span></div>
     {% endfor %}
   </div>
 </section>

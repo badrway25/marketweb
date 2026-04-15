@@ -64,10 +64,31 @@
 
     body.classList.add('lm-ready');
 
+    normalizeAliases();
     setupReveals();
     setupStaggers();
     setupCounters();
     setupMarquees();
+  }
+
+  // --- 0. Alias normalization --------------------------------------------------
+  // Some archetypes (street-modern / Brace) were authored with `data-reveal`
+  // and `data-stagger` shorthand. Normalize them to the canonical `data-lm`
+  // contract so reveals + cascade fades actually fire. Idempotent.
+  function normalizeAliases() {
+    document.querySelectorAll('[data-reveal]').forEach(function (el) {
+      if (!el.hasAttribute('data-lm')) el.setAttribute('data-lm', 'reveal');
+      el.removeAttribute('data-reveal');
+    });
+    // Children marked `data-stagger` → lift to parent as `data-lm-stagger`,
+    // then strip the child marker so the stagger CSS targets the correct level.
+    document.querySelectorAll('[data-stagger]').forEach(function (el) {
+      var parent = el.parentElement;
+      if (parent && !parent.hasAttribute('data-lm-stagger')) {
+        parent.setAttribute('data-lm-stagger', '');
+      }
+      el.removeAttribute('data-stagger');
+    });
   }
 
   // --- 1. Reveals -----------------------------------------------------------

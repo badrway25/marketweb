@@ -220,7 +220,7 @@ BRACE_CONTENT_AR: dict[str, Any] = {
                 "name":   "AMINA BERETTA",
                 "role":   "صانعة البيتزا · فرن الحطب",
                 "quote":  "«الفرن يطلب انتباهاً كل دقيقتين. لذلك لا أنظر إلى الهاتف.»",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1554727242-741c14fa561c?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "LUKA HOXHA",
@@ -235,7 +235,7 @@ BRACE_CONTENT_AR: dict[str, Any] = {
         "atmo_heading": 'بار. نيون. <em>طابور.</em>',
         "atmo_strip": [
             {
-                "image": "https://images.unsplash.com/photo-1485962398834-fef83cc41e4f?w=900&q=80&auto=format&fit=crop",
+                "image": "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=900&q=80&auto=format&fit=crop",
                 "cap":   "طابور على البار · ليلة سبت 19:40",
             },
             {
@@ -560,7 +560,7 @@ BRACE_CONTENT_AR: dict[str, Any] = {
                 "name":   "AMINA BERETTA",
                 "role":   "صانعة البيتزا · فرن الحطب",
                 "quote":  "«الفرن يطلب انتباهاً كل دقيقتين. لذلك لا أنظر إلى الهاتف.»",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1554727242-741c14fa561c?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "LUKA HOXHA",
@@ -620,6 +620,7 @@ BRACE_CONTENT_AR: dict[str, Any] = {
 
         # Category pills
         "categories_label": "تصفية",
+        "categories_all_label": "الكل",
         "categories": [
             "DJ NIGHTS",
             "طابور البار",
@@ -632,7 +633,7 @@ BRACE_CONTENT_AR: dict[str, Any] = {
         # 6-image grid
         "grid": [
             {
-                "image":    "https://images.unsplash.com/photo-1485962398834-fef83cc41e4f?w=900&q=80&auto=format&fit=crop",
+                "image":    "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=900&q=80&auto=format&fit=crop",
                 "filename": "MO-001",
                 "cap":      "طابور البار · سبت 23:14 · ثمانون شخصاً في Via Indipendenza",
                 "tag":      "طابور البار",

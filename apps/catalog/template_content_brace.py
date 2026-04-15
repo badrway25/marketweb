@@ -220,7 +220,7 @@ BRACE_CONTENT_IT: dict[str, Any] = {
                 "name":   "AMINA BERETTA",
                 "role":   "PIZZAIOLA · FORNO A LEGNA",
                 "quote":  "«Il forno chiede attenzione ogni due minuti. Per questo non guardo il telefono.»",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1554727242-741c14fa561c?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "LUKA HOXHA",
@@ -235,7 +235,7 @@ BRACE_CONTENT_IT: dict[str, Any] = {
         "atmo_heading": 'BANCO. NEON. <em>CODA.</em>',
         "atmo_strip": [
             {
-                "image": "https://images.unsplash.com/photo-1485962398834-fef83cc41e4f?w=900&q=80&auto=format&fit=crop",
+                "image": "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=900&q=80&auto=format&fit=crop",
                 "cap":   "Coda al banco · 19:40 di un sabato sera",
             },
             {
@@ -560,7 +560,7 @@ BRACE_CONTENT_IT: dict[str, Any] = {
                 "name":   "AMINA BERETTA",
                 "role":   "PIZZAIOLA · FORNO A LEGNA",
                 "quote":  "«Il forno chiede attenzione ogni due minuti. Per questo non guardo il telefono.»",
-                "portrait": "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=80&auto=format&fit=crop",
+                "portrait": "https://images.unsplash.com/photo-1554727242-741c14fa561c?w=600&q=80&auto=format&fit=crop",
             },
             {
                 "name":   "LUKA HOXHA",
@@ -620,6 +620,7 @@ BRACE_CONTENT_IT: dict[str, Any] = {
 
         # Category pills
         "categories_label": "FILTRA",
+        "categories_all_label": "TUTTI",
         "categories": [
             "DJ NIGHTS",
             "COUNTER QUEUE",
@@ -632,7 +633,7 @@ BRACE_CONTENT_IT: dict[str, Any] = {
         # 6-image grid
         "grid": [
             {
-                "image":    "https://images.unsplash.com/photo-1485962398834-fef83cc41e4f?w=900&q=80&auto=format&fit=crop",
+                "image":    "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=900&q=80&auto=format&fit=crop",
                 "filename": "MO-001",
                 "cap":      "Coda al banco · sabato 23:14 · ottanta persone in via Indipendenza",
                 "tag":      "COUNTER QUEUE",
