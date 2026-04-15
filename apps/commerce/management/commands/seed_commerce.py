@@ -147,10 +147,13 @@ BOTTEGA_PRODUCTS = [
             "di pigmento naturale terra di Siena: ogni pezzo prende il colore in modo leggermente diverso "
             "e nessuno è mai uguale al precedente."
         ),
-        "hero": "https://images.unsplash.com/photo-1547949003-9792a18a2601?w=1200&q=80&auto=format&fit=crop",
+        # Hero: black leather moto jacket (verified visually 2026-04-14,
+        # Session 46). Original `1547949003-9792a18a2601` rendered a
+        # backpack and was semantically wrong for a "giubbotto".
+        "hero": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=1200&q=80&auto=format&fit=crop",
         "gallery": [
-            "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?w=1200&q=80&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&q=80&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?w=1200&q=80&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1520975916090-3105956dac38?w=1200&q=80&auto=format&fit=crop",
         ],
         "info_rows": [
             {"label": "Materia", "value": "Cuoio del Valdarno · concia vegetale"},
