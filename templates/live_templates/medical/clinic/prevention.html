@@ -1,0 +1,221 @@
+{% extends "live_templates/medical/clinic/_base.html" %}
+
+{% block extra_css %}
+  .cl-pack { padding: 0 56px 80px; max-width: 1360px; margin: 0 auto; }
+  .cl-pack .cl-pack-grid {
+    margin-top: 40px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+  }
+  .cl-pack .cl-pack-card {
+    background: #FFFFFF;
+    border: 1px solid var(--rule); border-radius: 20px;
+    padding: 32px 30px;
+    display: flex; flex-direction: column; gap: 16px;
+    position: relative;
+  }
+  .cl-pack .cl-pack-card.is-popular {
+    background: linear-gradient(180deg, var(--bg-band) 0%, #FFFFFF 100%);
+    border-color: var(--secondary);
+    box-shadow: 0 20px 48px rgba(1,186,239,0.16);
+  }
+  .cl-pack .cl-pack-card.is-popular:before {
+    content: attr(data-popular);
+    position: absolute; top: -14px; left: 30px;
+    padding: 6px 14px;
+    background: var(--secondary); color: var(--primary);
+    font-family: var(--body); font-size: 10px; font-weight: 800;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    border-radius: 999px;
+  }
+  html[dir="rtl"] .cl-pack .cl-pack-card.is-popular:before { left: auto; right: 30px; }
+  .cl-pack .cl-pack-card .cl-pack-eye {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--secondary);
+  }
+  .cl-pack .cl-pack-card h3 {
+    font-family: var(--heading); font-size: 28px; font-weight: 800;
+    color: var(--primary); line-height: 1.15; letter-spacing: -0.02em;
+  }
+  .cl-pack .cl-pack-card .cl-pack-desc {
+    font-family: var(--body); font-size: 15px; line-height: 1.6; color: var(--ink-soft);
+  }
+  .cl-pack .cl-pack-card .cl-pack-price {
+    display: flex; align-items: baseline; gap: 12px;
+    padding: 14px 0; border-top: 1px solid var(--rule-soft); border-bottom: 1px solid var(--rule-soft);
+  }
+  .cl-pack .cl-pack-card .cl-pack-price .amount {
+    font-family: var(--heading); font-size: 42px; font-weight: 800; color: var(--primary);
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+  }
+  .cl-pack .cl-pack-card .cl-pack-price .meta {
+    font-family: var(--body); font-size: 12px; color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+  .cl-pack .cl-pack-card .cl-pack-meta-row {
+    display: flex; gap: 16px;
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+  }
+  .cl-pack .cl-pack-card .cl-pack-meta-row strong {
+    display: block;
+    font-family: var(--heading); font-size: 16px; font-weight: 800;
+    color: var(--primary);
+  }
+  .cl-pack .cl-pack-card .cl-pack-includes {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .cl-pack .cl-pack-card .cl-pack-includes li {
+    position: relative; padding-left: 28px;
+    font-family: var(--body); font-size: 14px; color: var(--ink-body); line-height: 1.55;
+  }
+  .cl-pack .cl-pack-card .cl-pack-includes li:before {
+    content: ''; position: absolute; left: 0; top: 4px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(32,191,85,0.12);
+  }
+  .cl-pack .cl-pack-card .cl-pack-includes li:after {
+    content: ''; position: absolute; left: 5px; top: 9px;
+    width: 8px; height: 4px;
+    border-left: 2px solid var(--green); border-bottom: 2px solid var(--green);
+    transform: rotate(-45deg);
+  }
+  html[dir="rtl"] .cl-pack .cl-pack-card .cl-pack-includes li { padding-left: 0; padding-right: 28px; }
+  html[dir="rtl"] .cl-pack .cl-pack-card .cl-pack-includes li:before { left: auto; right: 0; }
+  html[dir="rtl"] .cl-pack .cl-pack-card .cl-pack-includes li:after { left: auto; right: 5px; }
+  .cl-pack .cl-pack-card .cl-btn { margin-top: auto; align-self: stretch; justify-content: center; }
+
+  .cl-how {
+    background: var(--bg-soft);
+    padding: 80px 56px;
+  }
+  .cl-how .cl-how-inner { max-width: 1360px; margin: 0 auto; }
+  .cl-how .cl-how-grid {
+    margin-top: 40px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    position: relative;
+  }
+  .cl-how .cl-how-grid:before {
+    content: ''; position: absolute; top: 22px; left: 4%; right: 4%; height: 2px;
+    background: repeating-linear-gradient(90deg, var(--secondary) 0 6px, transparent 6px 12px);
+    opacity: 0.45;
+  }
+  .cl-how .cl-how-step { position: relative; }
+  .cl-how .cl-how-num {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #FFFFFF; border: 2px solid var(--secondary);
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-size: 15px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    position: relative; z-index: 1;
+  }
+  .cl-how .cl-how-step h4 {
+    margin-top: 18px;
+    font-family: var(--heading); font-size: 18px; font-weight: 700; color: var(--primary);
+  }
+  .cl-how .cl-how-step p {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+    max-width: 30ch;
+  }
+
+  .cl-cta-band {
+    background: linear-gradient(135deg, var(--primary) 0%, #09425a 100%);
+    color: #EAF4F8; padding: 72px 56px; text-align: center; position: relative; overflow: hidden;
+  }
+  .cl-cta-band:before {
+    content: ''; position: absolute; top: -40%; right: -10%;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(1,186,239,0.18) 0%, transparent 60%);
+  }
+  .cl-cta-band .cl-cta-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+  .cl-cta-band h2 { color: #FFFFFF; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .cl-cta-band p { margin-top: 16px; color: rgba(234,244,248,0.78); font-size: 17px; line-height: 1.55; }
+  .cl-cta-band .cl-cta-actions { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+
+  @media (max-width: 1100px) {
+    .cl-pack { padding: 0 22px 56px; }
+    .cl-pack .cl-pack-grid { grid-template-columns: 1fr; }
+    .cl-how { padding: 56px 22px; }
+    .cl-how .cl-how-grid { grid-template-columns: 1fr 1fr; gap: 18px; }
+    .cl-how .cl-how-grid:before { display: none; }
+    .cl-cta-band { padding: 56px 22px; }
+    .cl-cta-band h2 { font-size: 28px; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="cl-lead">
+    <span class="cl-eyebrow">{{ page_data.eyebrow }}</span>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="cl-intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="cl-pack" data-lm="reveal">
+    <span class="cl-sec-label">{{ page_data.pack_label }}</span>
+    <h2 style="margin-top:14px;font-size:36px;font-weight:800;line-height:1.12;letter-spacing:-0.02em;max-width:24ch;">{{ page_data.pack_heading|safe }}</h2>
+    <div class="cl-pack-grid" data-lm-stagger data-lm-stagger-delay="110">
+      {% for p in page_data.packages %}
+        <article class="cl-pack-card{% if p.is_popular %} is-popular{% endif %}"{% if p.is_popular %} data-popular="{{ p.popular_label }}"{% endif %}>
+          <span class="cl-pack-eye">{{ p.eyebrow }}</span>
+          <h3>{{ p.title }}</h3>
+          <p class="cl-pack-desc">{{ p.desc }}</p>
+          <div class="cl-pack-price">
+            <span class="amount">{{ p.price }}</span>
+            <span class="meta">{{ p.price_meta }}</span>
+          </div>
+          <div class="cl-pack-meta-row">
+            <div>
+              <span>{{ page_data.duration_label }}</span>
+              <strong>{{ p.duration }}</strong>
+            </div>
+            <div>
+              <span>{{ page_data.exams_label }}</span>
+              <strong>{{ p.exams_count }}</strong>
+            </div>
+          </div>
+          <ul class="cl-pack-includes">
+            {% for item in p.includes %}<li>{{ item }}</li>{% endfor %}
+          </ul>
+          <a class="cl-btn cl-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+            {{ p.cta }}
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="cl-how" data-lm="reveal">
+    <div class="cl-how-inner">
+      <span class="cl-sec-label">{{ page_data.how_label }}</span>
+      <h2 style="margin-top:14px;font-size:34px;font-weight:800;line-height:1.12;letter-spacing:-0.02em;max-width:22ch;">{{ page_data.how_heading|safe }}</h2>
+      <div class="cl-how-grid" data-lm-stagger data-lm-stagger-delay="110">
+        {% for step in page_data.how_steps %}
+          <div class="cl-how-step">
+            <div class="cl-how-num">{{ step.num }}</div>
+            <h4>{{ step.title }}</h4>
+            <p>{{ step.body }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="cl-cta-band" data-lm="reveal">
+    <div class="cl-cta-inner">
+      <h2>{{ page_data.cta_band.heading }}</h2>
+      <p>{{ page_data.cta_band.body }}</p>
+      <div class="cl-cta-actions">
+        <a class="cl-btn cl-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+          {{ page_data.cta_band.primary_cta }}
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a class="cl-btn cl-btn-ghost-light" href="tel:{{ site.phone_tel|default:site.phone }}">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          {{ page_data.cta_band.secondary_cta }}
+        </a>
+      </div>
+    </div>
+  </section>
+{% endblock %}

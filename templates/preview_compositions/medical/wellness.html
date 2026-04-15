@@ -161,8 +161,8 @@
 
   <div class="we-pricelist">
     <div class="head">
-      <h2>Listino trattamenti</h2>
-      <span class="sub">Aggiornato al {% now "j F Y" %}  ·  {{ dna.content.phone }}</span>
+      <h2>{{ dna.content.pricelist_title }}</h2>
+      <span class="sub">{{ dna.content.pricelist_sub_prefix }} {% now "j F Y" %}  ·  {{ dna.content.phone }}</span>
     </div>
     {% for name, desc, price in dna.content.treatments %}
       <div class="row">
@@ -174,7 +174,7 @@
   </div>
 
   <div class="we-therapists">
-    <div class="label">Operatori &nbsp;&nbsp; · &nbsp;&nbsp; iscritti albo</div>
+    <div class="label">{{ dna.content.therapists_label }}</div>
     {% for name, role in dna.content.therapists %}
       <div class="card">
         <div class="av" style="background-image:url('{{ imagery|at:forloop.counter|default:imagery.1 }}')"></div>

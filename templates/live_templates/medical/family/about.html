@@ -1,0 +1,191 @@
+{% extends "live_templates/medical/family/_base.html" %}
+
+{% block extra_css %}
+  .fm-values {
+    padding: 24px 8vw 64px;
+    max-width: 1320px; margin: 0 auto;
+  }
+  .fm-values-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  }
+  .fm-values .v {
+    background: var(--paper-2); border-radius: 22px; padding: 26px;
+    border: 1px solid var(--rule);
+    transition: box-shadow .25s ease, transform .25s ease;
+  }
+  .fm-values .v:hover { box-shadow: 0 18px 32px rgba(74,46,42,0.08); transform: translateY(-2px); }
+  .fm-values .v .ico {
+    width: 48px; height: 48px; border-radius: 16px;
+    background: var(--peach-tint); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .fm-values .v .ico svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .fm-values .v h4 {
+    font-family: var(--heading); font-size: 19px; font-weight: 700;
+    color: var(--primary); line-height: 1.25;
+  }
+  .fm-values .v p {
+    margin-top: 10px; font-family: var(--body);
+    font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+  }
+
+  .fm-studio-photo {
+    padding: 32px 8vw 72px; max-width: 1320px; margin: 0 auto;
+  }
+  .fm-studio-photo .card {
+    position: relative;
+    border-radius: 32px; overflow: hidden;
+    aspect-ratio: 21/9;
+    box-shadow: 0 32px 64px rgba(74,46,42,0.12);
+  }
+  .fm-studio-photo .card img { width: 100%; height: 100%; object-fit: cover; }
+  .fm-studio-photo .card .cap {
+    position: absolute; left: 24px; bottom: 22px;
+    padding: 10px 20px; border-radius: 999px;
+    background: rgba(255,255,255,0.96); color: var(--primary);
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+  }
+
+  .fm-history {
+    padding: 72px 8vw;
+    background: var(--paper-2);
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .fm-history-inner { max-width: 1100px; margin: 0 auto; }
+  .fm-history-rows { margin-top: 40px; }
+  .fm-history .row {
+    display: grid; grid-template-columns: 140px 1fr; gap: 48px;
+    padding: 28px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .fm-history .row:first-child { border-top: 0; padding-top: 0; }
+  .fm-history .row:last-child { padding-bottom: 0; }
+  .fm-history .year {
+    font-family: var(--heading); font-size: 42px; font-weight: 700;
+    color: var(--accent); line-height: 1; letter-spacing: -0.01em;
+  }
+  .fm-history .text {
+    font-family: var(--body); font-size: 16px; line-height: 1.7;
+    color: var(--ink); max-width: 68ch; padding-top: 6px;
+  }
+
+  .fm-promise {
+    padding: 80px 8vw;
+    max-width: 1320px; margin: 0 auto;
+  }
+  .fm-promise-wrap {
+    background: var(--primary); color: var(--paper);
+    border-radius: 32px; padding: 56px;
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px;
+    align-items: center;
+  }
+  .fm-promise-wrap h3 {
+    font-family: var(--heading); font-size: 38px; font-weight: 600;
+    line-height: 1.18; color: var(--paper); max-width: 20ch;
+  }
+  .fm-promise-wrap h3 em { color: var(--secondary); font-weight: 700; }
+  .fm-promise-wrap p {
+    margin-top: 16px; font-family: var(--body);
+    font-size: 17px; line-height: 1.65; color: rgba(253,247,241,0.82);
+    max-width: 52ch;
+  }
+  .fm-promise-wrap .actions {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .fm-promise-wrap .actions a {
+    padding: 16px 24px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 10px; justify-content: space-between;
+    font-family: var(--body); font-size: 15px; font-weight: 700;
+  }
+  .fm-promise-wrap .actions a.primary {
+    background: var(--accent); color: #FFFFFF;
+  }
+  .fm-promise-wrap .actions a.primary:hover { background: var(--secondary); color: var(--primary); }
+  .fm-promise-wrap .actions a.ghost {
+    background: transparent; color: var(--paper); border: 1.5px solid rgba(253,247,241,0.3);
+  }
+  .fm-promise-wrap .actions a.ghost:hover { border-color: var(--secondary); color: var(--secondary); }
+
+  @media (max-width: 920px) {
+    .fm-values-grid { grid-template-columns: 1fr 1fr; }
+    .fm-studio-photo .card { aspect-ratio: 4/3; }
+    .fm-history .row { grid-template-columns: 90px 1fr; gap: 20px; }
+    .fm-history .year { font-size: 28px; }
+    .fm-promise-wrap { grid-template-columns: 1fr; padding: 36px 28px; gap: 28px; }
+    .fm-promise-wrap h3 { font-size: 26px; }
+  }
+{% endblock %}
+
+{% block content %}
+{% with p=page_data %}
+
+<section class="fm-lead">
+  <div class="eyebrow">{{ p.eyebrow }}</div>
+  <h1>{{ p.headline|safe }}</h1>
+  <p class="intro">{{ p.intro }}</p>
+</section>
+
+<section class="fm-values">
+  <div class="fm-values-grid" data-lm-stagger data-lm-stagger-delay="80">
+    {% for v in p.values %}
+      <div class="v" data-lm="reveal">
+        <div class="ico">
+          {% if v.icon == 'clock' %}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          {% elif v.icon == 'ear' %}<svg viewBox="0 0 24 24"><path d="M6 8.5a6.5 6.5 0 0 1 13 0c0 6-6 6-6 10a3.5 3.5 0 0 1-7 0"/><path d="M15 8.5a2.5 2.5 0 0 0-5 0"/></svg>
+          {% elif v.icon == 'home' %}<svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          {% else %}<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>{% endif %}
+        </div>
+        <h4>{{ v.title }}</h4>
+        <p>{{ v.desc }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% if p.studio_image %}
+<section class="fm-studio-photo" data-lm="reveal-soft">
+  <div class="card">
+    <img src="{{ p.studio_image }}" alt="{{ p.studio_image_caption }}" loading="lazy">
+    <span class="cap">{{ p.studio_image_caption }}</span>
+  </div>
+</section>
+{% endif %}
+
+<section class="fm-history">
+  <div class="fm-history-inner">
+    <div class="sec-label" data-lm="reveal">{{ p.history_label }}</div>
+    <h2 data-lm="reveal">{{ p.history_heading|safe }}</h2>
+    <p class="sec-intro" data-lm="reveal">{{ p.history_intro }}</p>
+    <div class="fm-history-rows" data-lm-stagger data-lm-stagger-delay="90">
+      {% for y, text in p.history %}
+        <div class="row" data-lm="reveal">
+          <span class="year">{{ y }}</span>
+          <p class="text">{{ text }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="fm-promise">
+  <div class="fm-promise-wrap" data-lm="reveal">
+    <div>
+      <h3>{{ p.cta_heading|safe }}</h3>
+      <p>{{ p.cta_lead }}</p>
+    </div>
+    <div class="actions">
+      <a href="tel:{{ site.phone_tel }}" class="primary">
+        <span>{{ p.cta_primary_label }}</span>
+        <span>→</span>
+      </a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'pediatre' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="ghost">
+        <span>{{ p.cta_secondary_label }}</span>
+        <span>→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endwith %}
+{% endblock %}

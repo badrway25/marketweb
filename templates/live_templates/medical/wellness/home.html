@@ -1,0 +1,490 @@
+{% extends "live_templates/medical/wellness/_base.html" %}
+
+{% block extra_css %}
+  /* ========================================================
+     HERO — full-bleed manifesto
+     Wide spa photo + gradient overlay, text centered-left
+     over negative space, Cormorant italic 96px headline.
+  ======================================================== */
+  .we-hero {
+    position: relative; min-height: 100vh;
+    margin-top: -84px; /* pull under sticky transparent nav */
+    display: flex; align-items: center;
+    overflow: hidden;
+  }
+  .we-hero .figure {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    filter: saturate(0.92) brightness(0.78);
+  }
+  .we-hero .figure:after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(31,46,39,0.55) 0%, rgba(31,46,39,0.25) 40%, rgba(31,46,39,0.65) 100%),
+      linear-gradient(90deg, rgba(31,46,39,0.55) 0%, rgba(31,46,39,0) 60%);
+  }
+  .we-hero .inner {
+    position: relative; z-index: 2;
+    padding: 180px 8vw 140px;
+    max-width: 820px;
+    color: var(--paper);
+  }
+  .we-hero .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--accent);
+  }
+  .we-hero .eyebrow:before { content: ''; width: 44px; height: 1px; background: var(--accent); }
+  .we-hero h1 {
+    margin-top: 36px;
+    font-family: var(--heading); font-style: italic;
+    font-size: 96px; font-weight: 400; line-height: 1.02;
+    letter-spacing: -0.025em; color: var(--paper);
+    max-width: 14ch;
+  }
+  .we-hero h1 em { color: var(--accent); font-style: italic; font-weight: 500; }
+  .we-hero .subhead {
+    margin-top: 36px; max-width: 54ch;
+    font-family: var(--body); font-size: 20px; line-height: 1.75;
+    color: rgba(245,239,230,0.88); font-weight: 300;
+  }
+  .we-hero .actions { margin-top: 52px; display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
+  .we-hero .we-btn-primary { color: var(--paper); border-color: var(--paper); }
+  .we-hero .we-btn-primary:hover { background: var(--accent); border-color: var(--accent); color: var(--primary); }
+  .we-hero .we-btn-ghost {
+    color: rgba(245,239,230,0.82); border-bottom-color: rgba(245,239,230,0.30);
+  }
+  .we-hero .we-btn-ghost:hover { color: var(--paper); border-bottom-color: var(--accent); }
+
+  .we-hero .meta {
+    position: absolute; left: 8vw; bottom: 40px; z-index: 2;
+    display: flex; gap: 32px; flex-wrap: wrap;
+    color: rgba(245,239,230,0.68);
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.26em; text-transform: uppercase;
+  }
+  .we-hero .meta span { display: inline-flex; align-items: center; gap: 10px; }
+  .we-hero .meta span:before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+
+  @media (max-width: 980px) {
+    .we-hero { min-height: auto; margin-top: -60px; }
+    .we-hero .inner { padding: 140px 24px 120px; }
+    .we-hero h1 { font-size: 56px; }
+    .we-hero .subhead { font-size: 17px; }
+    .we-hero .meta { position: static; padding: 0 24px 24px; }
+  }
+
+  /* ========================================================
+     MANIFESTO — single wide column, drop-cap anchored left
+  ======================================================== */
+  .we-manifesto {
+    padding: 140px 90px; max-width: 1100px; margin: 0 auto;
+    position: relative;
+  }
+  .we-manifesto:before {
+    content: ''; position: absolute;
+    top: 90px; left: 90px; width: 56px; height: 1px; background: var(--accent);
+  }
+  .we-manifesto .label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent);
+    margin-left: 78px; margin-bottom: 48px;
+  }
+  .we-manifesto .body {
+    font-family: var(--heading); font-style: italic;
+    font-size: 26px; line-height: 1.6; color: var(--ink);
+    font-weight: 400; max-width: 640px;
+  }
+  .we-manifesto .body:first-letter {
+    font-family: var(--heading); font-style: italic;
+    font-size: 140px; font-weight: 400;
+    float: left; line-height: 0.86;
+    color: var(--accent);
+    padding: 12px 22px 0 0; margin-top: 6px;
+  }
+  .we-manifesto .signature {
+    margin-top: 40px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  @media (max-width: 980px) {
+    .we-manifesto { padding: 80px 24px; }
+    .we-manifesto:before { top: 56px; left: 24px; width: 36px; }
+    .we-manifesto .label { margin-left: 52px; margin-bottom: 28px; }
+    .we-manifesto .body { font-size: 20px; }
+    .we-manifesto .body:first-letter { font-size: 80px; padding-right: 14px; }
+  }
+
+  /* ========================================================
+     BENEFITS TRIO — 3 airy columns with hairline rule top
+  ======================================================== */
+  .we-benefits { padding: 110px 90px; max-width: 1280px; margin: 0 auto; }
+  .we-benefits .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 64px;
+  }
+  .we-benefits .b {
+    padding-top: 28px; border-top: 1px solid var(--accent);
+  }
+  .we-benefits .b .key {
+    font-family: var(--heading); font-style: italic;
+    font-size: 46px; font-weight: 500; color: var(--primary);
+    letter-spacing: -0.01em; line-height: 1.05;
+  }
+  .we-benefits .b .desc {
+    margin-top: 20px; max-width: 32ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.7;
+    color: var(--ink-soft); font-weight: 300;
+  }
+  @media (max-width: 980px) {
+    .we-benefits { padding: 72px 24px; }
+    .we-benefits .grid { grid-template-columns: 1fr; gap: 40px; }
+    .we-benefits .b .key { font-size: 34px; }
+  }
+
+  /* ========================================================
+     AMBIENTI STRIP — 5 large captioned photos
+  ======================================================== */
+  .we-ambients { padding: 110px 0; background: var(--paper-2); }
+  .we-ambients .sec-head { max-width: 1280px; margin: 0 auto 56px; padding: 0 90px; }
+  .we-ambients .sec-head .label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent);
+  }
+  .we-ambients .sec-head h2 {
+    margin-top: 18px;
+    font-size: 52px; font-style: italic; font-weight: 400; line-height: 1.08;
+    max-width: 18ch;
+  }
+  .we-ambients .sec-head .intro {
+    margin-top: 20px; max-width: 50ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.7;
+    color: var(--ink-soft); font-weight: 300;
+  }
+  .we-ambients .strip {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 18px;
+    padding: 0 40px;
+    max-width: 1440px; margin: 0 auto;
+  }
+  .we-ambients .strip .cell {
+    position: relative; overflow: hidden;
+    aspect-ratio: 3/4;
+    isolation: isolate;
+  }
+  .we-ambients .strip .cell .bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    filter: saturate(0.9) brightness(0.92);
+    transition: transform 900ms cubic-bezier(0.33, 1.00, 0.68, 1),
+                filter 900ms cubic-bezier(0.33, 1.00, 0.68, 1);
+    z-index: 0;
+  }
+  .we-ambients .strip .cell:hover .bg {
+    transform: scale(1.04);
+    filter: saturate(1) brightness(0.96);
+  }
+  .we-ambients .strip .cell:after {
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(180deg, rgba(31,46,39,0) 50%, rgba(31,46,39,0.65) 100%);
+    pointer-events: none;
+  }
+  .we-ambients .strip .cell .cap {
+    position: absolute; left: 20px; right: 20px; bottom: 20px; z-index: 2;
+    color: var(--paper);
+    font-family: var(--heading); font-style: italic; font-size: 17px;
+    line-height: 1.4;
+  }
+  .we-ambients .strip .cell .cap small {
+    display: block; margin-top: 6px;
+    font-family: var(--body); font-style: normal; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  @media (max-width: 980px) {
+    .we-ambients { padding: 72px 0; }
+    .we-ambients .sec-head { padding: 0 24px; }
+    .we-ambients .sec-head h2 { font-size: 34px; }
+    .we-ambients .strip { grid-template-columns: 1fr 1fr; padding: 0 24px; }
+  }
+
+  /* ========================================================
+     THERAPIST TRIO — portrait + italic name + role + bio
+  ======================================================== */
+  .we-therapists { padding: 110px 90px; max-width: 1280px; margin: 0 auto; }
+  .we-therapists .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px;
+  }
+  .we-therapists .t .portrait {
+    aspect-ratio: 3/4;
+    background-size: cover; background-position: center;
+    filter: saturate(0.90) brightness(0.96);
+    transition: filter 900ms cubic-bezier(0.33, 1.00, 0.68, 1);
+  }
+  .we-therapists .t .portrait:hover { filter: saturate(1.0) brightness(1); }
+  .we-therapists .t .name {
+    margin-top: 24px;
+    font-family: var(--heading); font-style: italic; font-size: 32px;
+    font-weight: 500; color: var(--primary); line-height: 1.1;
+  }
+  .we-therapists .t .role {
+    margin-top: 8px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .we-therapists .t .bio {
+    margin-top: 16px; max-width: 34ch;
+    font-family: var(--body); font-size: 14px; line-height: 1.7;
+    color: var(--ink-soft); font-weight: 300;
+  }
+  @media (max-width: 980px) {
+    .we-therapists { padding: 72px 24px; }
+    .we-therapists .grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+
+  /* ========================================================
+     SENSORY JOURNEY — 4 step vertical ladder with rule line
+  ======================================================== */
+  .we-journey { padding: 110px 90px; max-width: 1000px; margin: 0 auto; }
+  .we-journey .steps {
+    position: relative;
+    display: grid; grid-template-columns: 60px 1fr; column-gap: 36px; row-gap: 52px;
+  }
+  .we-journey .steps:before {
+    content: ''; position: absolute;
+    top: 22px; bottom: 22px; left: 29px;
+    width: 1px; background: var(--accent);
+  }
+  .we-journey .step .icon {
+    width: 60px; height: 60px; border-radius: 50%;
+    border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center;
+    background: var(--paper);
+    position: relative; z-index: 1;
+  }
+  .we-journey .step .icon svg {
+    width: 24px; height: 24px; stroke: var(--accent); fill: none;
+    stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .we-journey .step .num {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .we-journey .step h4 {
+    margin-top: 8px;
+    font-family: var(--heading); font-style: italic; font-size: 28px;
+    font-weight: 500; line-height: 1.1; color: var(--primary);
+  }
+  .we-journey .step p {
+    margin-top: 14px; max-width: 48ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.75;
+    color: var(--ink-soft); font-weight: 300;
+  }
+  @media (max-width: 980px) {
+    .we-journey { padding: 72px 24px; }
+    .we-journey .steps { column-gap: 20px; }
+    .we-journey .step h4 { font-size: 22px; }
+  }
+
+  /* ========================================================
+     PRESS BAND — soft sage, serif italic
+  ======================================================== */
+  .we-press { padding: 72px 90px; background: var(--paper-2); }
+  .we-press .inner {
+    max-width: 1280px; margin: 0 auto; text-align: center;
+  }
+  .we-press .label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 28px;
+  }
+  .we-press .row {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 48px 60px;
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    color: var(--ink-soft); font-weight: 400;
+  }
+  @media (max-width: 980px) {
+    .we-press { padding: 56px 24px; }
+    .we-press .row { gap: 20px 28px; font-size: 16px; }
+  }
+
+  /* Pricelist section uses the we-section shell; extra bits */
+  .we-ritual-section h2 {
+    margin-bottom: 16px;
+  }
+{% endblock %}
+
+{% block content %}
+  {# ===================== HERO ===================== #}
+  <section class="we-hero">
+    <div class="figure" style="background-image: url('{{ page_data.hero_image }}');"></div>
+    <div class="inner">
+      <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+      <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+      <p class="subhead" data-lm="reveal">{{ page_data.subhead }}</p>
+      <div class="actions" data-lm="reveal">
+        <a class="we-btn we-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.primary_cta }}</a>
+        <a class="we-btn we-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'rituali' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.secondary_cta }}</a>
+      </div>
+    </div>
+    <div class="meta" data-lm="reveal">
+      {% for m in page_data.hero_meta %}<span>{{ m }}</span>{% endfor %}
+    </div>
+  </section>
+
+  {# ===================== MANIFESTO ===================== #}
+  <section class="we-manifesto">
+    <div class="label" data-lm="reveal">{{ page_data.manifesto_label }}</div>
+    <p class="body" data-lm="reveal-lg">{{ page_data.manifesto }}</p>
+    <div class="signature" data-lm="reveal">{{ page_data.manifesto_signature }}</div>
+  </section>
+
+  {# ===================== RITUALI PRICELIST ===================== #}
+  <section class="we-section we-ritual-section">
+    <div class="we-sec-head">
+      <div>
+        <span class="label" data-lm="reveal">{{ page_data.rituali_label }}</span>
+      </div>
+      <div>
+        <h2 data-lm="reveal-lg">{{ page_data.rituali_heading|safe }}</h2>
+        <p class="intro" data-lm="reveal">{{ page_data.rituali_intro }}</p>
+      </div>
+    </div>
+    <div class="we-pricelist" data-lm-stagger data-lm-stagger-delay="80">
+      {% for name, meta, price in page_data.rituali %}
+        <div class="it">
+          <span class="name">{{ name }}</span>
+          <span class="leader"></span>
+          <span class="price">{{ price }}</span>
+          <span class="meta">{{ meta }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# ===================== BENEFITS TRIO ===================== #}
+  <section class="we-benefits we-section" style="padding:110px 90px;">
+    <div class="we-sec-head">
+      <div><span class="label" data-lm="reveal">{{ page_data.benefits_label }}</span></div>
+      <div>
+        <h2 data-lm="reveal-lg">{{ page_data.benefits_heading|safe }}</h2>
+        <p class="intro" data-lm="reveal">{{ page_data.benefits_intro }}</p>
+      </div>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+      {% for key, desc in page_data.benefits %}
+        <div class="b">
+          <div class="key">{{ key }}</div>
+          <p class="desc">{{ desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# ===================== AMBIENTI ===================== #}
+  <section class="we-ambients">
+    <div class="sec-head">
+      <span class="label" data-lm="reveal">{{ page_data.ambients_label }}</span>
+      <h2 data-lm="reveal-lg">{{ page_data.ambients_heading|safe }}</h2>
+      <p class="intro" data-lm="reveal">{{ page_data.ambients_intro }}</p>
+    </div>
+    <div class="strip" data-lm-stagger data-lm-stagger-delay="90">
+      {% for img, title, sub in page_data.ambients %}
+        <div class="cell">
+          <div class="bg" style="background-image: url('{{ img }}');"></div>
+          <div class="cap">{{ title }}<small>{{ sub }}</small></div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# ===================== THERAPIST TRIO ===================== #}
+  <section class="we-therapists">
+    <div class="we-sec-head">
+      <div><span class="label" data-lm="reveal">{{ page_data.therapists_label }}</span></div>
+      <div>
+        <h2 data-lm="reveal-lg">{{ page_data.therapists_heading|safe }}</h2>
+        <p class="intro" data-lm="reveal">{{ page_data.therapists_intro }}</p>
+      </div>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="110">
+      {% for t in page_data.therapists_trio %}
+        <div class="t">
+          <div class="portrait" style="background-image: url('{{ t.portrait }}');"></div>
+          <div class="name">{{ t.name }}</div>
+          <div class="role">{{ t.role }}</div>
+          <p class="bio">{{ t.bio }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# ===================== SENSORY JOURNEY ===================== #}
+  <section class="we-section sage" style="padding:110px 90px;">
+    <div class="we-sec-head">
+      <div><span class="label" data-lm="reveal">{{ page_data.journey_label }}</span></div>
+      <div>
+        <h2 data-lm="reveal-lg">{{ page_data.journey_heading|safe }}</h2>
+        <p class="intro" data-lm="reveal">{{ page_data.journey_intro }}</p>
+      </div>
+    </div>
+    <div class="we-journey" style="padding:0;max-width:1000px;margin:0 auto;">
+      <div class="steps" data-lm-stagger data-lm-stagger-delay="120">
+        {% for step in page_data.journey %}
+          <div class="step icon">
+            {% if forloop.counter == 1 %}
+              <svg viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M12 3v18"/><circle cx="12" cy="12" r="8"/></svg>
+            {% elif forloop.counter == 2 %}
+              <svg viewBox="0 0 24 24"><path d="M12 2C9 7 9 13 12 22c3-9 3-15 0-20z"/><path d="M5 12c2 3 5 4 7 4s5-1 7-4"/></svg>
+            {% elif forloop.counter == 3 %}
+              <svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            {% elif forloop.counter == 4 %}
+              <svg viewBox="0 0 24 24"><path d="M6 10c0-3 2-7 6-7s6 4 6 7c0 2-1 4-3 5v4a3 3 0 0 1-6 0v-4c-2-1-3-3-3-5z"/><path d="M9 19h6"/></svg>
+            {% endif %}
+          </div>
+          <div class="step">
+            <span class="num">{{ step.num }}</span>
+            <h4>{{ step.title }}</h4>
+            <p>{{ step.body }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {# ===================== CTA BAND con calendar-spot ===================== #}
+  <section class="we-section deep" style="padding:110px 90px;">
+    <div style="max-width:1280px;margin:0 auto;text-align:center;">
+      <span class="label" style="font-family:var(--body);font-size:11px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:var(--accent);" data-lm="reveal">{{ page_data.calendar_label }}</span>
+      <h2 style="margin-top:20px;font-size:56px;font-style:italic;font-weight:400;line-height:1.1;color:var(--paper);max-width:20ch;margin-left:auto;margin-right:auto;" data-lm="reveal-lg">{{ page_data.calendar_heading|safe }}</h2>
+      <p style="margin-top:22px;font-family:var(--body);font-size:17px;line-height:1.7;color:rgba(245,239,230,0.72);max-width:52ch;margin-left:auto;margin-right:auto;font-weight:300;" data-lm="reveal">{{ page_data.calendar_intro }}</p>
+      <div style="margin-top:56px;">
+        <div class="we-calendar" data-lm-stagger data-lm-stagger-delay="70">
+          {% for d in page_data.calendar %}
+            <div class="day{% if d.has_slots %} has-slots{% endif %}{% if d.soldout %} soldout{% endif %}">
+              <div class="d-day">{{ d.day }}</div>
+              <div class="d-num">{{ d.num }}</div>
+              <div class="d-month">{{ d.month }}</div>
+              <div class="slots">
+                {% for s in d.slots %}<span class="slot">{{ s }}</span>{% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div style="margin-top:52px;" data-lm="reveal">
+        <a class="we-btn we-btn-primary" style="color:var(--paper);border-color:var(--paper);" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.calendar_cta }}</a>
+      </div>
+    </div>
+  </section>
+
+  {# ===================== PRESS BAND ===================== #}
+  {% if page_data.press %}
+  <section class="we-press">
+    <div class="inner" data-lm="reveal">
+      <div class="label">{{ page_data.press_label }}</div>
+      <div class="row">
+        {% for p in page_data.press %}<span>{{ p }}</span>{% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "live_templates/medical/wellness/_base.html" %}
+
+{% block extra_css %}
+  /* Three pillars row with drop-cap initials */
+  .we-pillars { padding: 40px 90px 120px; max-width: 1280px; margin: 0 auto; }
+  .we-pillars .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 72px;
+  }
+  .we-pillars .p {
+    padding-top: 32px; border-top: 1px solid var(--accent);
+  }
+  .we-pillars .p .init {
+    font-family: var(--heading); font-style: italic;
+    font-size: 96px; font-weight: 500; color: var(--accent);
+    line-height: 0.9; letter-spacing: -0.02em;
+  }
+  .we-pillars .p h3 {
+    margin-top: 18px;
+    font-family: var(--heading); font-style: italic;
+    font-size: 36px; font-weight: 500; line-height: 1.08;
+    color: var(--primary);
+  }
+  .we-pillars .p p {
+    margin-top: 20px; max-width: 34ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.75;
+    color: var(--ink-soft); font-weight: 300;
+  }
+
+  /* Hero photo band with floating caption */
+  .we-photo-band { padding: 0 40px; max-width: 1440px; margin: 0 auto 120px; }
+  .we-photo-band .frame {
+    position: relative; overflow: hidden;
+    aspect-ratio: 21/9;
+  }
+  .we-photo-band .frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    filter: saturate(0.92) brightness(0.92);
+    transition: filter 900ms cubic-bezier(0.33, 1.00, 0.68, 1), transform 1200ms cubic-bezier(0.33, 1.00, 0.68, 1);
+    transform: scale(1.001);
+  }
+  .we-photo-band .frame:hover img { filter: saturate(1.0) brightness(0.96); transform: scale(1.03); }
+  .we-photo-band .frame:after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(31,46,39,0) 45%, rgba(31,46,39,0.55) 100%);
+  }
+  .we-photo-band .cap {
+    position: absolute; left: 32px; bottom: 24px; z-index: 2;
+    color: var(--paper);
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    max-width: 36ch;
+  }
+  .we-photo-band .cap small {
+    display: block; margin-top: 6px;
+    font-family: var(--body); font-style: normal; font-size: 10px;
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* Timeline: year italic left, text italic right */
+  .we-timeline { padding: 0 90px 120px; max-width: 1100px; margin: 0 auto; }
+  .we-timeline .row {
+    display: grid; grid-template-columns: 220px 1fr; gap: 64px;
+    padding: 40px 0; border-top: 1px solid var(--rule);
+  }
+  .we-timeline .row:last-child { border-bottom: 1px solid var(--rule); }
+  .we-timeline .row .year {
+    font-family: var(--heading); font-style: italic; font-size: 56px;
+    font-weight: 500; color: var(--accent); line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+  .we-timeline .row .text {
+    font-family: var(--body); font-size: 17px; line-height: 1.75;
+    color: var(--ink); padding-top: 14px; max-width: 56ch;
+    font-weight: 300;
+  }
+  .we-timeline .row .text strong {
+    display: block; margin-bottom: 8px;
+    font-family: var(--heading); font-style: italic; font-size: 22px;
+    font-weight: 500; color: var(--primary);
+  }
+
+  @media (max-width: 980px) {
+    .we-pillars { padding: 24px 24px 72px; }
+    .we-pillars .grid { grid-template-columns: 1fr; gap: 40px; }
+    .we-photo-band { padding: 0 24px; margin-bottom: 72px; }
+    .we-timeline { padding: 0 24px 72px; }
+    .we-timeline .row { grid-template-columns: 1fr; gap: 20px; }
+    .we-timeline .row .year { font-size: 36px; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="we-lead">
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
+  </section>
+
+  {# Three pillars: Respiro · Rituale · Natura #}
+  <section class="we-pillars">
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="110">
+      {% for p in page_data.pillars %}
+        <div class="p">
+          <span class="init">{{ p.init }}</span>
+          <h3>{{ p.title }}</h3>
+          <p>{{ p.body }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# Hero photo band with caption #}
+  <section class="we-photo-band" data-lm="reveal-soft">
+    <div class="frame">
+      <img src="{{ page_data.photo_image }}" alt="{{ page_data.photo_caption }}" loading="lazy">
+      <div class="cap">{{ page_data.photo_caption }}<small>{{ page_data.photo_sub }}</small></div>
+    </div>
+  </section>
+
+  {# Timeline #}
+  <section class="we-timeline">
+    <div style="margin-bottom:48px;" data-lm="reveal">
+      <span style="font-family:var(--body);font-size:10px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:var(--accent);">{{ page_data.timeline_label }}</span>
+      <h2 style="margin-top:16px;font-size:44px;font-style:italic;font-weight:400;line-height:1.1;letter-spacing:-0.015em;max-width:24ch;">{{ page_data.timeline_heading|safe }}</h2>
+    </div>
+    {% for row in page_data.timeline %}
+      <div class="row" data-lm="reveal">
+        <span class="year">{{ row.year }}</span>
+        <div class="text">
+          <strong>{{ row.title }}</strong>
+          {{ row.body }}
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+
+  {# CTA band #}
+  <section class="we-cta-band">
+    <div class="eyebrow">{{ page_data.cta_label }}</div>
+    <h2>{{ page_data.cta_heading|safe }}</h2>
+    <p class="sub">{{ page_data.cta_sub }}</p>
+    <div class="actions">
+      <a class="we-btn we-btn-solid" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary }}</a>
+      <a class="we-btn we-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'rituali' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_secondary }}</a>
+    </div>
+  </section>
+{% endblock %}

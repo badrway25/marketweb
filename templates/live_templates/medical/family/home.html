@@ -1,0 +1,644 @@
+{% extends "live_templates/medical/family/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     HERO — centered-soft: text left, rounded photo card right
+  ============================================================ */
+  .fm-hero {
+    display: grid; grid-template-columns: 1.2fr 1fr;
+    gap: 64px; align-items: center;
+    padding: 72px 8vw 96px;
+    max-width: 1440px; margin: 0 auto;
+    position: relative;
+  }
+  .fm-hero:before {
+    content: ''; position: absolute;
+    top: 30%; left: 2vw;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: rgba(251,217,181,0.38);
+    filter: blur(8px); z-index: 0;
+    pointer-events: none;
+  }
+  .fm-hero .left { position: relative; z-index: 2; }
+  .fm-hero .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 18px; border-radius: 999px;
+    background: #FFFFFF; border: 1px solid var(--peach-ring);
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.04em; color: var(--accent);
+  }
+  .fm-hero .eyebrow:before {
+    content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+  }
+  .fm-hero h1 {
+    margin-top: 28px;
+    font-size: 68px; font-weight: 600; line-height: 1.08;
+    letter-spacing: -0.018em; color: var(--primary);
+    max-width: 14ch;
+  }
+  .fm-hero h1 em { color: var(--accent); font-weight: 700; }
+  .fm-hero .subhead {
+    margin-top: 26px; max-width: 52ch;
+    font-family: var(--body); font-size: 19px;
+    line-height: 1.65; color: var(--ink-soft);
+  }
+  .fm-hero .actions { margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .fm-hero .trust-row {
+    margin-top: 38px; display: flex; gap: 28px; flex-wrap: wrap;
+    padding-top: 24px; border-top: 1px dashed var(--rule);
+  }
+  .fm-hero .trust-row .t {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+  }
+  .fm-hero .trust-row .t .ico {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--peach-tint);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent); flex-shrink: 0;
+  }
+  .fm-hero .trust-row .t .ico svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  .fm-hero .photo-card {
+    position: relative; z-index: 1;
+    aspect-ratio: 4/5;
+    border-radius: 32px; overflow: hidden;
+    background: var(--paper-3);
+    box-shadow: 0 40px 80px rgba(74,46,42,0.10);
+  }
+  .fm-hero .photo-card img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .fm-hero .photo-card .stamp {
+    position: absolute; left: -22px; bottom: 40px;
+    padding: 16px 22px; border-radius: 20px;
+    background: #FFFFFF;
+    box-shadow: 0 18px 36px rgba(74,46,42,0.12);
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 12px; color: var(--ink-soft);
+    line-height: 1.45;
+  }
+  .fm-hero .photo-card .stamp strong {
+    display: block; font-family: var(--heading);
+    font-size: 14px; color: var(--primary); font-weight: 700;
+  }
+  .fm-hero .photo-card .stamp .av {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--peach-tint); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 0 3px var(--peach-ring);
+  }
+  .fm-hero .photo-card .ribbon {
+    position: absolute; top: 22px; right: -10px;
+    background: var(--secondary); color: var(--primary);
+    padding: 9px 18px; border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em;
+    box-shadow: 0 10px 22px rgba(74,46,42,0.12);
+  }
+
+  /* ============================================================
+     INTRO TRIO — age groups (Neonato / Bambino / Adolescente)
+  ============================================================ */
+  .fm-trio {
+    padding: 48px 8vw 84px;
+    max-width: 1320px; margin: 0 auto;
+  }
+  .fm-trio-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .fm-trio .card {
+    background: var(--paper-2);
+    border-radius: 24px; padding: 32px;
+    border: 1px solid var(--rule);
+    transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
+  }
+  .fm-trio .card:hover {
+    box-shadow: 0 24px 44px rgba(74,46,42,0.08);
+    transform: translateY(-2px);
+    border-color: var(--peach-ring);
+  }
+  .fm-trio .card .ico {
+    width: 58px; height: 58px; border-radius: 20px;
+    background: var(--peach-tint); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+  }
+  .fm-trio .card .ico svg { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+  .fm-trio .card .age-range {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; color: var(--accent); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .fm-trio .card h3 {
+    font-family: var(--heading); font-size: 24px; font-weight: 700;
+    color: var(--primary); line-height: 1.2;
+  }
+  .fm-trio .card p {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 15px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .fm-trio .card .items {
+    margin-top: 18px; padding-top: 18px;
+    border-top: 1px dashed var(--rule);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .fm-trio .card .items span {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fm-trio .card .items span:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+  }
+
+  /* ============================================================
+     PEDIATRE PORTRAIT STACK — big rounded portraits
+  ============================================================ */
+  .fm-team {
+    padding: 84px 8vw;
+    max-width: 1320px; margin: 0 auto;
+  }
+  .fm-team-grid {
+    margin-top: 40px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  .fm-team .card {
+    background: var(--paper-2);
+    border-radius: 24px; overflow: hidden;
+    border: 1px solid var(--rule);
+    transition: box-shadow .25s ease, transform .25s ease;
+  }
+  .fm-team .card:hover {
+    box-shadow: 0 24px 44px rgba(74,46,42,0.10);
+    transform: translateY(-3px);
+  }
+  .fm-team .card .portrait {
+    aspect-ratio: 3/4;
+    background-size: cover; background-position: center;
+    background-color: var(--paper-3);
+    position: relative;
+  }
+  .fm-team .card .portrait:after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(74,46,42,0) 60%, rgba(74,46,42,0.35) 100%);
+  }
+  .fm-team .card .body { padding: 22px 24px 24px; }
+  .fm-team .card h4 {
+    font-family: var(--heading); font-size: 20px; font-weight: 700;
+    color: var(--primary); line-height: 1.2;
+  }
+  .fm-team .card .role {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.06em; color: var(--accent); text-transform: uppercase;
+  }
+  .fm-team .card .spec {
+    display: inline-flex; margin-top: 14px;
+    padding: 6px 14px; border-radius: 999px;
+    background: var(--peach-tint); color: var(--accent);
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+  }
+  .fm-team .card .wa {
+    margin-top: 14px;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    color: var(--primary);
+  }
+  .fm-team .card .wa:hover { color: var(--accent); }
+  .fm-team .card .wa svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  .fm-team .team-note {
+    margin-top: 36px; padding: 22px 28px;
+    background: var(--paper-2); border-radius: 20px;
+    border-left: 4px solid var(--accent);
+    font-family: var(--body); font-size: 15px; line-height: 1.65;
+    color: var(--ink-soft); max-width: 80ch;
+  }
+
+  /* ============================================================
+     PERCORSO CRESCITA — 5-step timeline with dotted connector
+  ============================================================ */
+  .fm-journey {
+    padding: 84px 8vw;
+    background: var(--paper-2);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .fm-journey-inner { max-width: 1320px; margin: 0 auto; }
+  .fm-journey-steps {
+    margin-top: 48px; position: relative;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px;
+  }
+  .fm-journey-steps:before {
+    content: ''; position: absolute;
+    top: 28px; left: 10%; right: 10%;
+    height: 0; border-top: 2px dashed var(--peach-ring);
+    z-index: 0;
+  }
+  .fm-journey .step { position: relative; z-index: 1; text-align: center; }
+  .fm-journey .step .dot {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #FFFFFF; border: 2px solid var(--accent);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px;
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(233,123,92,0.18);
+  }
+  .fm-journey .step .age {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; color: var(--accent); text-transform: uppercase;
+  }
+  .fm-journey .step h4 {
+    margin-top: 6px; font-family: var(--heading);
+    font-size: 18px; font-weight: 700; color: var(--primary);
+  }
+  .fm-journey .step p {
+    margin-top: 10px; font-family: var(--body);
+    font-size: 14px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 22ch; margin-inline: auto;
+  }
+
+  /* ============================================================
+     FAQ ACCORDION — parents FAQ
+  ============================================================ */
+  .fm-faq {
+    padding: 84px 8vw;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .fm-faq .items { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; }
+  .fm-faq .li-accordion-item {
+    background: #FFFFFF;
+    border-radius: 18px;
+    border: 1px solid var(--rule);
+    overflow: hidden;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .fm-faq .li-accordion-item[open] {
+    border-left: 4px solid var(--accent);
+    box-shadow: 0 16px 32px rgba(74,46,42,0.06);
+  }
+  .fm-faq .li-accordion-item summary {
+    list-style: none;
+    padding: 22px 26px;
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    color: var(--primary); cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; gap: 18px;
+  }
+  .fm-faq .li-accordion-item summary::-webkit-details-marker { display: none; }
+  .fm-faq .li-accordion-item summary .plus {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--peach-tint); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-weight: 700; font-size: 18px;
+    flex-shrink: 0; transition: transform .25s ease, background .2s ease;
+  }
+  .fm-faq .li-accordion-item[open] summary .plus {
+    transform: rotate(45deg); background: var(--accent); color: #FFFFFF;
+  }
+  .fm-faq .li-accordion-item .panel {
+    padding: 0 26px 24px;
+    font-family: var(--body); font-size: 15px; line-height: 1.7;
+    color: var(--ink-soft); max-width: 72ch;
+  }
+
+  /* ============================================================
+     GALLERY — child-friendly studio photos (masonry 2-row)
+  ============================================================ */
+  .fm-gallery { padding: 84px 8vw; max-width: 1320px; margin: 0 auto; }
+  .fm-gallery-grid {
+    margin-top: 36px;
+    display: grid; grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: 180px; gap: 16px;
+  }
+  .fm-gallery-grid .tile {
+    border-radius: 20px; overflow: hidden;
+    background-size: cover; background-position: center;
+    background-color: var(--paper-3);
+    position: relative; cursor: pointer;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .fm-gallery-grid .tile:hover { transform: translateY(-2px); box-shadow: 0 20px 40px rgba(74,46,42,0.10); }
+  .fm-gallery-grid .tile .cap {
+    position: absolute; left: 16px; bottom: 14px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(255,255,255,0.94);
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    color: var(--primary);
+  }
+  .fm-gallery-grid .tile.t1 { grid-column: span 5; grid-row: span 2; }
+  .fm-gallery-grid .tile.t2 { grid-column: span 4; grid-row: span 1; }
+  .fm-gallery-grid .tile.t3 { grid-column: span 3; grid-row: span 1; }
+  .fm-gallery-grid .tile.t4 { grid-column: span 4; grid-row: span 1; }
+  .fm-gallery-grid .tile.t5 { grid-column: span 3; grid-row: span 1; }
+
+  /* ============================================================
+     ORARI BAND — peach pale secondary
+  ============================================================ */
+  .fm-hours-band {
+    padding: 64px 8vw; max-width: 1320px; margin: 0 auto;
+  }
+  .fm-hours-band .wrap {
+    background: var(--secondary);
+    border-radius: 32px; padding: 48px 56px;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px;
+    align-items: center;
+    box-shadow: 0 24px 48px rgba(74,46,42,0.10);
+  }
+  .fm-hours-band .days h3 {
+    font-family: var(--heading); font-size: 32px; font-weight: 700;
+    color: var(--primary); margin-bottom: 20px;
+  }
+  .fm-hours-band .days .row {
+    display: grid; grid-template-columns: 130px 1fr; gap: 16px;
+    padding: 12px 0; border-top: 1px solid rgba(74,46,42,0.14);
+    font-family: var(--body); font-size: 15px;
+  }
+  .fm-hours-band .days .row:first-of-type { border-top: 0; padding-top: 0; }
+  .fm-hours-band .days .row .d { font-weight: 700; color: var(--primary); }
+  .fm-hours-band .days .row .h { color: var(--ink); }
+  .fm-hours-band .urgency {
+    background: #FFFFFF; border-radius: 20px; padding: 28px;
+  }
+  .fm-hours-band .urgency .lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase;
+  }
+  .fm-hours-band .urgency h4 {
+    margin-top: 8px; font-family: var(--heading);
+    font-size: 22px; font-weight: 700; color: var(--primary);
+    line-height: 1.2;
+  }
+  .fm-hours-band .urgency p {
+    margin-top: 10px; font-family: var(--body);
+    font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+  }
+  .fm-hours-band .urgency .phone-big {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 16px; padding: 12px 22px; border-radius: 999px;
+    background: var(--accent); color: #FFFFFF;
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+  }
+  .fm-hours-band .urgency .phone-big svg { width: 16px; height: 16px; stroke: #FFFFFF; fill: none; stroke-width: 2; }
+
+  /* ============================================================
+     CTA BAND — dark primary brown, phone + WhatsApp
+  ============================================================ */
+  .fm-cta-band {
+    background: var(--primary); color: var(--paper);
+    padding: 84px 8vw;
+  }
+  .fm-cta-inner {
+    max-width: 1320px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 56px;
+    align-items: center;
+  }
+  .fm-cta-band h2 {
+    font-family: var(--heading); font-size: 48px; font-weight: 600;
+    line-height: 1.14; color: var(--paper); max-width: 20ch;
+  }
+  .fm-cta-band h2 em { color: var(--secondary); font-style: normal; font-weight: 700; }
+  .fm-cta-band .lead {
+    margin-top: 18px; font-family: var(--body);
+    font-size: 18px; line-height: 1.65; color: rgba(253,247,241,0.82);
+    max-width: 54ch;
+  }
+  .fm-cta-band .right {
+    background: rgba(253,247,241,0.06);
+    border: 1px solid rgba(253,247,241,0.18);
+    border-radius: 28px; padding: 36px;
+  }
+  .fm-cta-band .right .lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; color: var(--secondary); text-transform: uppercase;
+  }
+  .fm-cta-band .right .phone-huge {
+    display: block; margin-top: 12px;
+    font-family: var(--heading); font-size: 36px; font-weight: 700;
+    color: var(--paper); letter-spacing: 0;
+  }
+  .fm-cta-band .right .phone-huge:hover { color: var(--secondary); }
+  .fm-cta-band .right .or {
+    margin: 18px 0; display: flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; color: rgba(253,247,241,0.6); text-transform: uppercase;
+  }
+  .fm-cta-band .right .or:before, .fm-cta-band .right .or:after {
+    content: ''; flex: 1; height: 1px; background: rgba(253,247,241,0.18);
+  }
+  .fm-cta-band .right .wa-big {
+    display: inline-flex; align-items: center; gap: 10px; width: 100%;
+    justify-content: center;
+    padding: 16px 28px; border-radius: 999px;
+    background: var(--accent); color: #FFFFFF;
+    font-family: var(--body); font-size: 15px; font-weight: 700;
+    transition: background .2s ease, transform .2s ease;
+  }
+  .fm-cta-band .right .wa-big:hover { background: var(--secondary); color: var(--primary); transform: translateY(-1px); }
+  .fm-cta-band .right .wa-big svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  /* ============================================================
+     RESPONSIVE
+  ============================================================ */
+  @media (max-width: 980px) {
+    .fm-hero { grid-template-columns: 1fr; gap: 40px; padding: 48px 6vw 64px; }
+    .fm-hero h1 { font-size: 44px; }
+    .fm-hero .photo-card .stamp { left: 12px; bottom: 16px; }
+    .fm-hero .photo-card .ribbon { top: 16px; right: 16px; }
+    .fm-trio-grid { grid-template-columns: 1fr; }
+    .fm-team-grid { grid-template-columns: repeat(2, 1fr); }
+    .fm-journey-steps { grid-template-columns: 1fr 1fr; gap: 20px; }
+    .fm-journey-steps:before { display: none; }
+    .fm-gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 180px; }
+    .fm-gallery-grid .tile.t1, .fm-gallery-grid .tile.t2,
+    .fm-gallery-grid .tile.t3, .fm-gallery-grid .tile.t4,
+    .fm-gallery-grid .tile.t5 { grid-column: span 1; grid-row: span 1; }
+    .fm-hours-band .wrap { grid-template-columns: 1fr; padding: 32px 28px; gap: 28px; }
+    .fm-cta-band { padding: 56px 6vw; }
+    .fm-cta-band h2 { font-size: 32px; }
+    .fm-cta-inner { grid-template-columns: 1fr; gap: 32px; }
+  }
+{% endblock %}
+
+{% block content %}
+{% with h=page_data %}
+
+<section class="fm-hero">
+  <div class="left">
+    <div class="eyebrow">{{ h.eyebrow }}</div>
+    <h1>{{ h.headline|safe }}</h1>
+    <p class="subhead">{{ h.subhead }}</p>
+    <div class="actions">
+      <a href="tel:{{ site.phone_tel }}" class="fm-btn-primary">
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        {{ h.primary_cta }}
+      </a>
+      <a href="{{ site.whatsapp_link }}" class="fm-btn-ghost" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        {{ h.secondary_cta }}
+      </a>
+    </div>
+    <div class="trust-row">
+      {% for item in h.trust_items %}
+        <div class="t">
+          <span class="ico">
+            {% if item.icon == 'shield' %}<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            {% elif item.icon == 'clock' %}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            {% else %}<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>{% endif %}
+          </span>
+          <span>{{ item.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="photo-card" data-lm="reveal-soft">
+    <img src="{{ h.hero_image }}" alt="{{ h.hero_image_alt }}" loading="eager">
+    <span class="ribbon">{{ h.hero_ribbon }}</span>
+    <div class="stamp">
+      <div class="av">{{ h.hero_stamp_initial }}</div>
+      <div>
+        <strong>{{ h.hero_stamp_name }}</strong>
+        {{ h.hero_stamp_meta }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="fm-trio">
+  <div class="fm-trio-grid" data-lm-stagger data-lm-stagger-delay="90">
+    {% for c in h.age_groups %}
+      <div class="card" data-lm="reveal">
+        <div class="ico">
+          {% if c.icon == 'baby' %}<svg viewBox="0 0 24 24"><path d="M9 12a3 3 0 0 0 6 0M8 9h.01M16 9h.01"/><path d="M12 2a10 10 0 1 0 10 10"/></svg>
+          {% elif c.icon == 'child' %}<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/></svg>
+          {% else %}<svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>{% endif %}
+        </div>
+        <div class="age-range">{{ c.range }}</div>
+        <h3>{{ c.title }}</h3>
+        <p>{{ c.blurb }}</p>
+        <div class="items">
+          {% for it in c.items %}<span>{{ it }}</span>{% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fm-team">
+  <div class="sec-label" data-lm="reveal">{{ h.team_label }}</div>
+  <h2 data-lm="reveal">{{ h.team_heading|safe }}</h2>
+  <p class="sec-intro" data-lm="reveal">{{ h.team_intro }}</p>
+  <div class="fm-team-grid" data-lm-stagger data-lm-stagger-delay="80">
+    {% for d in h.doctors %}
+      <div class="card" data-lm="reveal">
+        <div class="portrait" style="background-image: url('{{ d.portrait }}');"></div>
+        <div class="body">
+          <h4>{{ d.name }}</h4>
+          <div class="role">{{ d.role }}</div>
+          <span class="spec">{{ d.spec }}</span>
+          {% if d.wa_label %}
+          <a href="{{ site.whatsapp_link }}" class="wa" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            {{ d.wa_label }}
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if h.team_note %}<div class="team-note">{{ h.team_note }}</div>{% endif %}
+</section>
+
+<section class="fm-journey">
+  <div class="fm-journey-inner">
+    <div class="sec-label" data-lm="reveal">{{ h.journey_label }}</div>
+    <h2 data-lm="reveal">{{ h.journey_heading|safe }}</h2>
+    <p class="sec-intro" data-lm="reveal">{{ h.journey_intro }}</p>
+    <div class="fm-journey-steps" data-lm-stagger data-lm-stagger-delay="90">
+      {% for s in h.journey_steps %}
+        <div class="step" data-lm="reveal">
+          <div class="dot">{{ forloop.counter }}</div>
+          <div class="age">{{ s.age }}</div>
+          <h4>{{ s.title }}</h4>
+          <p>{{ s.desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="fm-faq">
+  <div class="sec-label" data-lm="reveal">{{ h.faq_label }}</div>
+  <h2 data-lm="reveal">{{ h.faq_heading|safe }}</h2>
+  <p class="sec-intro" data-lm="reveal">{{ h.faq_intro }}</p>
+  <div class="items" data-lm-stagger data-lm-stagger-delay="60">
+    {% for q, a in h.faq %}
+      <details class="li-accordion-item" data-lm="reveal"{% if forloop.counter == 1 %} open{% endif %}>
+        <summary>
+          <span>{{ q }}</span>
+          <span class="plus" aria-hidden="true">+</span>
+        </summary>
+        <div class="panel">{{ a }}</div>
+      </details>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fm-gallery">
+  <div class="sec-label" data-lm="reveal">{{ h.gallery_label }}</div>
+  <h2 data-lm="reveal">{{ h.gallery_heading|safe }}</h2>
+  <p class="sec-intro" data-lm="reveal">{{ h.gallery_intro }}</p>
+  <div class="fm-gallery-grid" data-lm-stagger data-lm-stagger-delay="70">
+    {% for t in h.gallery %}
+      <div class="tile t{{ forloop.counter }}" style="background-image: url('{{ t.src }}');" data-lm="reveal">
+        <span class="cap">{{ t.cap }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="fm-hours-band">
+  <div class="wrap" data-lm="reveal">
+    <div class="days">
+      <h3>{{ h.hours_heading }}</h3>
+      {% for d, hrs in h.hours %}
+        <div class="row"><span class="d">{{ d }}</span><span class="h">{{ hrs }}</span></div>
+      {% endfor %}
+    </div>
+    <div class="urgency">
+      <div class="lbl">{{ h.urgency_label }}</div>
+      <h4>{{ h.urgency_title }}</h4>
+      <p>{{ h.urgency_text }}</p>
+      <a href="tel:{{ site.emergency_tel }}" class="phone-big">
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        {{ h.urgency_phone }}
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="fm-cta-band">
+  <div class="fm-cta-inner">
+    <div>
+      <h2 data-lm="reveal">{{ h.cta_heading|safe }}</h2>
+      <p class="lead" data-lm="reveal">{{ h.cta_lead }}</p>
+    </div>
+    <div class="right" data-lm="reveal">
+      <div class="lbl">{{ h.cta_phone_label }}</div>
+      <a href="tel:{{ site.phone_tel }}" class="phone-huge">{{ site.phone }}</a>
+      <div class="or">{{ h.cta_or }}</div>
+      <a href="{{ site.whatsapp_link }}" class="wa-big" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        {{ h.cta_wa_label }}
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endwith %}
+{% endblock %}

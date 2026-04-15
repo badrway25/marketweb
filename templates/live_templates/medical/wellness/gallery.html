@@ -1,0 +1,100 @@
+{% extends "live_templates/medical/wellness/_base.html" %}
+
+{% block extra_css %}
+  /* Ambienti gallery: large rooms 6-8, each with italic caption + micro-desc */
+  .we-gal { padding: 24px 40px 96px; max-width: 1440px; margin: 0 auto; }
+  .we-gal .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 420px 300px 420px 300px;
+    gap: 20px;
+  }
+  .we-gal .cell {
+    position: relative; overflow: hidden;
+    isolation: isolate;
+  }
+  .we-gal .cell .bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    filter: saturate(0.90) brightness(0.90);
+    transition: transform 1000ms cubic-bezier(0.33, 1.00, 0.68, 1),
+                filter 900ms cubic-bezier(0.33, 1.00, 0.68, 1);
+    transform: scale(1.001);
+    z-index: 0;
+  }
+  .we-gal .cell:hover .bg { transform: scale(1.04); filter: saturate(1.0) brightness(0.94); }
+  .we-gal .cell:after {
+    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(180deg, rgba(31,46,39,0) 40%, rgba(31,46,39,0.72) 100%);
+  }
+  .we-gal .cell .cap {
+    position: absolute; left: 24px; right: 24px; bottom: 22px; z-index: 2;
+    color: var(--paper);
+  }
+  .we-gal .cell .cap .title {
+    font-family: var(--heading); font-style: italic; font-size: 24px;
+    line-height: 1.2; font-weight: 500;
+  }
+  .we-gal .cell .cap .sub {
+    margin-top: 8px;
+    font-family: var(--body); font-size: 12px; font-weight: 500;
+    line-height: 1.5; color: rgba(245,239,230,0.80);
+    max-width: 44ch; font-weight: 300;
+  }
+  .we-gal .cell .cap .tag {
+    display: inline-block; margin-bottom: 10px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  /* Cell spans */
+  .we-gal .a { grid-column: span 4; grid-row: span 1; }
+  .we-gal .b { grid-column: span 2; grid-row: span 1; }
+  .we-gal .c { grid-column: span 2; grid-row: span 1; }
+  .we-gal .d { grid-column: span 2; grid-row: span 1; }
+  .we-gal .e { grid-column: span 2; grid-row: span 1; }
+  .we-gal .f { grid-column: span 3; grid-row: span 1; }
+  .we-gal .g { grid-column: span 3; grid-row: span 1; }
+  .we-gal .h { grid-column: span 2; grid-row: span 1; }
+
+  @media (max-width: 980px) {
+    .we-gal { padding: 16px 24px 72px; }
+    .we-gal .grid { grid-template-columns: 1fr; grid-template-rows: none; gap: 14px; }
+    .we-gal .a, .we-gal .b, .we-gal .c, .we-gal .d,
+    .we-gal .e, .we-gal .f, .we-gal .g, .we-gal .h {
+      grid-column: 1 / -1; aspect-ratio: 4/3;
+    }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="we-lead">
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="we-gal">
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="90">
+      {% for cell in page_data.rooms %}
+        <div class="cell {{ cell.span }}" data-li="lightbox-trigger" data-li-src="{{ cell.image }}" data-li-caption="{{ cell.title }} · {{ cell.sub }}" data-li-group="we-gallery">
+          <div class="bg" style="background-image: url('{{ cell.image }}');"></div>
+          <div class="cap">
+            <span class="tag">{{ cell.tag }}</span>
+            <div class="title">{{ cell.title }}</div>
+            <div class="sub">{{ cell.sub }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="we-cta-band">
+    <div class="eyebrow">{{ page_data.cta_label }}</div>
+    <h2>{{ page_data.cta_heading|safe }}</h2>
+    <p class="sub">{{ page_data.cta_sub }}</p>
+    <div class="actions">
+      <a class="we-btn we-btn-solid" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary }}</a>
+      <a class="we-btn we-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'rituali' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_secondary }}</a>
+    </div>
+  </section>
+{% endblock %}

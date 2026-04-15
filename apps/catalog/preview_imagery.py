@@ -88,31 +88,42 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=800&q=80&auto=format&fit=crop",
     ],
+    # Salute — clinic institutional (Pexels, Session medical-second-wave)
+    # Pool tone: bright modern reception, teal/cyan, patient consultations,
+    # professional but warm (not editorial-specialist like cardio/derm).
     "medical": [
-        # 0: hero - bright modern clinic
-        "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?w=1600&q=80&auto=format&fit=crop",
-        # 1: feature - doctor with patient
-        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&q=80&auto=format&fit=crop",
-        # 2-5: services / staff
-        "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=800&q=80&auto=format&fit=crop",
+        # 0: hero wide — modern teal-accent clinic reception (Pavel Danilyuk)
+        "https://images.pexels.com/photos/7108324/pexels-photo-7108324.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — female doctor consulting patient, bright modern office (cottonbro)
+        "https://images.pexels.com/photos/7579823/pexels-photo-7579823.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2: healthcare patient discussion (RDNE Stock)
+        "https://images.pexels.com/photos/6129441/pexels-photo-6129441.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 3: bright waiting room (Los Muertos Crew)
+        "https://images.pexels.com/photos/8459996/pexels-photo-8459996.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 4: clinic reception staff welcoming (Pavel Danilyuk)
+        "https://images.pexels.com/photos/7108325/pexels-photo-7108325.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 5: doctor patient consultation (CDC)
+        "https://images.pexels.com/photos/3992806/pexels-photo-3992806.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
     ],
     # Per-archetype medical pools — see apps/catalog/template_dna.py.
-    # All URLs reuse photos already proven to download from Unsplash so
-    # the pilot run is offline-safe after a single warm cache. Two
-    # templates in the same category never share the same image set.
+    # Each pool is curated on Pexels (Session medical-second-wave) to enforce
+    # D-054 visual differentiation: clinic vs family vs wellness must read as
+    # three different products, not recolored siblings.
+    #
+    # Famiglia — pediatric warm (peach/coral, child-friendly but not cartoon)
     "medical-family": [
-        # 0: hero - warm doctor + patient (bright, soft lighting)
-        "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=1600&q=80&auto=format&fit=crop",
-        # 1: feature - friendly clinician
-        "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1200&q=80&auto=format&fit=crop",
-        # 2-5: portraits + cards
-        "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1631815587646-b85a1bb027e1?w=800&q=80&auto=format&fit=crop",
+        # 0: hero — pediatric check-up girl bright clinic (Gustavo Fring)
+        "https://images.pexels.com/photos/7447009/pexels-photo-7447009.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — mother joyfully holding baby, warm indoor (Polina Tankilevitch)
+        "https://images.pexels.com/photos/3875229/pexels-photo-3875229.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2: child stethoscope check (Gustavo Fring)
+        "https://images.pexels.com/photos/7447002/pexels-photo-7447002.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 3: cheerful child yellow dress pediatric clinic (Los Muertos Crew)
+        "https://images.pexels.com/photos/8460043/pexels-photo-8460043.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 4: medical practitioner newborn (Jonathan Borba)
+        "https://images.pexels.com/photos/19357678/pexels-photo-19357678.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 5: pediatric doctor stethoscope back check cozy (cottonbro)
+        "https://images.pexels.com/photos/5867700/pexels-photo-5867700.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
     ],
     "medical-specialist": [
         # 0: hero - low-key portrait (lawyer pool — serious editorial energy)
@@ -148,16 +159,20 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=80&auto=format&fit=crop",
     ],
+    # Benessere — holistic serene (sage green, candle light, ritual objects)
     "medical-wellness": [
-        # 0: hero - bright airy interior (real-estate pool — closest to spa)
-        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80&auto=format&fit=crop",
-        # 1: feature - editorial portrait studio (portfolio pool)
-        "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1200&q=80&auto=format&fit=crop",
-        # 2-5: tactile / quiet imagery
-        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80&auto=format&fit=crop",
+        # 0: hero — tranquil massage room natural light (Anna Tarazevich)
+        "https://images.pexels.com/photos/6560308/pexels-photo-6560308.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — spa aromatherapy wooden table (Anna Tarazevich)
+        "https://images.pexels.com/photos/6560252/pexels-photo-6560252.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2: herbal tea lavender flat-lay (Ray Piedra)
+        "https://images.pexels.com/photos/2752031/pexels-photo-2752031.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 3: lit candle spa ceramic towels (Tima Miroshnichenko)
+        "https://images.pexels.com/photos/6186740/pexels-photo-6186740.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 4: crystals incense singing bowl ritual (Katrin Bolovtsova)
+        "https://images.pexels.com/photos/6766585/pexels-photo-6766585.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 5: yoga meditation studio natural light (Yan Krukau)
+        "https://images.pexels.com/photos/8436719/pexels-photo-8436719.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
     ],
     "lawyer": [
         # 0: hero - law office / columns

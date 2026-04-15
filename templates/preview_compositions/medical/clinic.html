@@ -111,8 +111,8 @@
 
   <div class="m-services">
     <div class="head">
-      <h2>I nostri servizi specialistici</h2>
-      <span class="lnk">Vedi tutti i 40+ servizi  →</span>
+      <h2>{{ dna.content.services_title }}</h2>
+      <span class="lnk">{{ dna.content.services_link_all }}</span>
     </div>
     <div class="m-grid">
       {% for sp_name, sp_blurb in dna.content.specialties %}
@@ -122,7 +122,7 @@
             <div class="icon">+</div>
             <h4>{{ sp_name }}</h4>
             <p>{{ sp_blurb }}</p>
-            <div class="cta">Prenota →</div>
+            <div class="cta">{{ dna.content.card_cta }}</div>
           </div>
         </div>
       {% endfor %}

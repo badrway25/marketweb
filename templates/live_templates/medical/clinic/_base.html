@@ -1,0 +1,510 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:wght@400;500;600;700;800;900&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700;800&display=swap" rel="stylesheet">
+{% endif %}
+<style>
+  :root {
+    --primary:     {{ theme.primary }};
+    --secondary:   {{ theme.secondary }};
+    --accent:      {{ theme.accent }};
+    --bg:          #FBFDFE;
+    --bg-soft:     #F1F7FA;
+    --bg-band:     #EAF4F8;
+    --ink:         #0B4F6C;
+    --ink-body:    #2F4858;
+    --ink-soft:    #5F748B;
+    --ink-muted:   #8FA3B8;
+    --rule:        rgba(11,79,108,0.12);
+    --rule-soft:   rgba(11,79,108,0.06);
+    --green:       {{ theme.accent }};
+    --heading:     '{{ theme.heading_font }}', 'Segoe UI', system-ui, sans-serif;
+    --body:        '{{ theme.body_font }}', system-ui, sans-serif;
+
+    /* Premium forms — clinical institutional profile (rounded, teal ring, green submit) */
+    --lf-bg:            #FFFFFF;
+    --lf-bg-autofill:   #F1F7FA;
+    --lf-bg-soft:       #F7FBFC;
+    --lf-bg-icon:       rgba(1,186,239,0.12);
+    --lf-bg-chip:       rgba(11,79,108,0.06);
+    --lf-border:        rgba(11,79,108,0.18);
+    --lf-border-hover:  rgba(11,79,108,0.38);
+    --lf-border-focus:  var(--secondary);
+    --lf-ring:          rgba(1,186,239,0.22);
+    --lf-ring-size:     4px;
+    --lf-radius:        10px;
+    --lf-pad-y:         14px;
+    --lf-pad-x:         16px;
+    --lf-label-color:   var(--ink);
+    --lf-label-size:    11px;
+    --lf-label-track:   0.14em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  var(--ink-soft);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   rgba(95,116,139,0.55);
+    --lf-section-rule:  var(--rule);
+    --lf-section-title-color: var(--primary);
+    --lf-caret:         var(--secondary);
+    --lf-listbox-bg:    #FFFFFF;
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  var(--rule);
+    --lf-listbox-hov:   rgba(1,186,239,0.08);
+    --lf-submit-bg:     var(--green);
+    --lf-submit-bg-hover: #19a648;
+    --lf-submit-fg:     #FFFFFF;
+    --lf-submit-arrow:  #FFFFFF;
+    --lf-submit-radius: 10px;
+    --lf-submit-underline: none;
+    --on-accent:        #FFFFFF;
+  }
+  {% if is_rtl %}
+  :root {
+    /* Arabic font stack: Naskh for readable body headings, Kufi for UI chrome.
+       Clinic tone stays institutional-accessible, not editorial. */
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', system-ui, sans-serif;
+    --body:    'Noto Naskh Arabic', '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  {% endif %}
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { background: var(--bg); color: var(--ink-body); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1,h2,h3,h4,h5 {
+    font-family: var(--heading); font-weight: 700; line-height: 1.12; letter-spacing: -0.018em;
+    color: var(--primary);
+  }
+  h1 em, h2 em, h3 em { color: var(--secondary); font-style: normal; font-weight: 800; }
+  em { color: var(--secondary); font-style: normal; font-weight: 700; }
+
+  /* ============================================================
+     MARKETPLACE BAR — thin teal strip, lighter than specialist
+  ============================================================ */
+  .mp-bar {
+    background: var(--primary); color: #EAF4F8; font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    flex-wrap: wrap;
+  }
+  .mp-bar .mp-back { color: var(--secondary); border-bottom: 1px solid var(--secondary); padding-bottom: 1px; font-weight: 700; }
+  .mp-bar .mp-name { color: rgba(234,244,248,0.6); }
+
+  .mp-lang { display: flex; align-items: center; gap: 14px; font-family: var(--body); }
+  .mp-lang .mp-lang-label {
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(234,244,248,0.5); font-weight: 700;
+  }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: rgba(234,244,248,0.6);
+    border: 1px solid rgba(234,244,248,0.20);
+    border-radius: 999px;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover {
+    color: #FFFFFF; border-color: rgba(234,244,248,0.45);
+  }
+  .mp-lang a.mp-lang-pill.is-current {
+    color: var(--primary); border-color: var(--secondary); background: var(--secondary);
+  }
+  .mp-lang a.mp-lang-pill.ar-pill { letter-spacing: 0; font-size: 11px; }
+
+  /* ============================================================
+     SITE NAV — white solid, 72px height, phone CTA right
+     D-054 #4: solid-phone chrome (not rule-hairline specialist)
+  ============================================================ */
+  .cl-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+    gap: 40px;
+    padding: 14px 48px;
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--rule);
+    box-shadow: 0 1px 0 rgba(11,79,108,0.02), 0 6px 24px rgba(11,79,108,0.04);
+    min-height: 72px;
+  }
+  .cl-nav .cl-logo { display: flex; align-items: center; gap: 12px; }
+  .cl-nav .cl-logo .cl-crest {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #FFFFFF; font-family: var(--heading); font-weight: 800; font-size: 18px;
+    letter-spacing: -0.02em;
+    box-shadow: 0 4px 12px rgba(11,79,108,0.18);
+  }
+  .cl-nav .cl-logo .cl-word {
+    font-family: var(--heading); font-size: 20px; font-weight: 800;
+    color: var(--primary); letter-spacing: -0.015em;
+  }
+  .cl-nav .cl-logo .cl-tag {
+    display: block; margin-top: 1px;
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .cl-nav .cl-links {
+    display: flex; gap: 32px; justify-content: center;
+    font-family: var(--body); font-size: 14px; font-weight: 600;
+    color: var(--ink-body);
+  }
+  .cl-nav .cl-links a {
+    padding: 6px 2px; border-bottom: 2px solid transparent;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .cl-nav .cl-links a:hover { color: var(--primary); }
+  .cl-nav .cl-links a.is-current {
+    color: var(--primary); border-bottom-color: var(--secondary);
+  }
+  .cl-nav .cl-phone {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 10px 20px;
+    background: var(--bg-band); border-radius: 999px;
+    color: var(--primary); font-family: var(--body);
+    line-height: 1.1;
+  }
+  .cl-nav .cl-phone .cl-phone-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--green); color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .cl-nav .cl-phone .cl-phone-icon svg {
+    width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .cl-nav .cl-phone .cl-phone-txt { display: flex; flex-direction: column; }
+  .cl-nav .cl-phone .cl-phone-lbl {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .cl-nav .cl-phone .cl-phone-num {
+    font-size: 17px; font-weight: 800; color: var(--primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+  }
+
+  /* ============================================================
+     PAGE LEAD — clean, institutional (not editorial serif)
+  ============================================================ */
+  .cl-lead {
+    padding: 72px 56px 48px; max-width: 1360px; margin: 0 auto;
+  }
+  .cl-lead .cl-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    background: var(--bg-band); border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary);
+  }
+  .cl-lead .cl-eyebrow:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+  }
+  .cl-lead h1 {
+    margin-top: 24px; font-size: 62px; font-weight: 800; line-height: 1.04;
+    letter-spacing: -0.025em; color: var(--primary); max-width: 16ch;
+  }
+  .cl-lead .cl-intro {
+    margin-top: 22px; max-width: 62ch;
+    font-family: var(--body); font-size: 19px;
+    line-height: 1.55; color: var(--ink-soft); font-weight: 400;
+  }
+
+  /* ============================================================
+     SECTION UTILITIES
+  ============================================================ */
+  .cl-section { padding: 80px 56px; max-width: 1360px; margin: 0 auto; }
+  .cl-section.cl-band { background: var(--bg-band); max-width: none; padding: 80px 56px; }
+  .cl-section.cl-band-dark { background: var(--primary); color: #EAF4F8; max-width: none; padding: 80px 56px; }
+  .cl-section.cl-band-dark h2,
+  .cl-section.cl-band-dark h3,
+  .cl-section.cl-band-dark h4 { color: #FFFFFF; }
+  .cl-section.cl-band-dark em { color: var(--secondary); }
+  .cl-section .cl-sec-inner { max-width: 1360px; margin: 0 auto; }
+
+  .cl-sec-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--secondary);
+  }
+  .cl-sec-label:before {
+    content: ''; width: 28px; height: 2px; background: var(--secondary);
+  }
+  .cl-section h2 {
+    margin-top: 14px; font-size: 42px; font-weight: 800; line-height: 1.1;
+    letter-spacing: -0.02em; max-width: 22ch;
+  }
+  .cl-sec-intro {
+    margin-top: 16px; max-width: 60ch;
+    font-family: var(--body); font-size: 18px;
+    line-height: 1.6; color: var(--ink-soft);
+  }
+  .cl-section.cl-band-dark .cl-sec-intro { color: rgba(234,244,248,0.78); }
+  .cl-section.cl-band-dark .cl-sec-label { color: var(--secondary); }
+
+  /* ============================================================
+     BUTTONS — rounded-solid teal pill (D-054 #9)
+  ============================================================ */
+  .cl-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 26px;
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+    letter-spacing: 0.01em;
+    border-radius: 10px; border: 0; cursor: pointer;
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease, color .18s ease;
+  }
+  .cl-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .cl-btn.cl-btn-primary {
+    background: var(--green); color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(32,191,85,0.28);
+  }
+  .cl-btn.cl-btn-primary:hover {
+    background: #19a648;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(32,191,85,0.36);
+  }
+  .cl-btn.cl-btn-teal {
+    background: var(--primary); color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(11,79,108,0.22);
+  }
+  .cl-btn.cl-btn-teal:hover { background: #09425a; transform: translateY(-1px); }
+  .cl-btn.cl-btn-outline {
+    background: transparent; color: var(--primary);
+    border: 1.5px solid var(--primary);
+  }
+  .cl-btn.cl-btn-outline:hover { background: var(--primary); color: #FFFFFF; }
+  .cl-btn.cl-btn-ghost-light {
+    background: transparent; color: #FFFFFF;
+    border: 1.5px solid rgba(234,244,248,0.40);
+  }
+  .cl-btn.cl-btn-ghost-light:hover { border-color: #FFFFFF; background: rgba(255,255,255,0.08); }
+
+  /* ============================================================
+     FOOTER — corporate-4col solid teal (D-054 #1 section order)
+  ============================================================ */
+  .cl-foot {
+    background: var(--primary); color: #EAF4F8;
+    padding: 64px 56px 28px; font-family: var(--body); font-size: 14px;
+  }
+  .cl-foot .cl-foot-top {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 40px; border-bottom: 1px solid rgba(234,244,248,0.18);
+    max-width: 1360px; margin: 0 auto;
+  }
+  .cl-foot h5 {
+    color: var(--secondary); font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 16px;
+  }
+  .cl-foot .cl-foot-brand .cl-foot-word {
+    font-family: var(--heading); font-size: 22px; font-weight: 800; color: #FFFFFF;
+    margin-bottom: 10px;
+  }
+  .cl-foot .cl-foot-brand p {
+    color: rgba(234,244,248,0.68); max-width: 34ch; line-height: 1.6;
+    font-size: 13px;
+  }
+  .cl-foot .cl-foot-col p, .cl-foot .cl-foot-col a {
+    color: rgba(234,244,248,0.72); display: block; padding: 4px 0;
+    font-size: 13px;
+  }
+  .cl-foot .cl-foot-col a:hover { color: var(--secondary); }
+  .cl-foot .cl-foot-bot {
+    padding-top: 24px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 11px; color: rgba(234,244,248,0.5);
+    letter-spacing: 0.10em; text-transform: uppercase;
+    max-width: 1360px; margin: 0 auto;
+  }
+  .cl-foot .cl-foot-bot a:hover { color: var(--secondary); }
+
+  /* ============================================================
+     RTL adjustments
+  ============================================================ */
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.85; }
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4,
+  html[dir="rtl"] h5 { letter-spacing: 0; }
+  html[dir="rtl"] .cl-lead .cl-eyebrow,
+  html[dir="rtl"] .cl-sec-label,
+  html[dir="rtl"] .mp-bar,
+  html[dir="rtl"] .mp-lang .mp-lang-label,
+  html[dir="rtl"] .cl-nav .cl-phone .cl-phone-lbl,
+  html[dir="rtl"] .cl-foot h5,
+  html[dir="rtl"] .cl-foot .cl-foot-bot { letter-spacing: 0.04em; }
+  html[dir="rtl"] .cl-sec-label:before { display: none; }
+  html[dir="rtl"] .cl-sec-label:after {
+    content: ''; width: 28px; height: 2px; background: var(--secondary);
+  }
+  html[dir="rtl"] .cl-nav { grid-template-columns: auto 1fr auto; }
+  html[dir="rtl"] .cl-btn svg { transform: scaleX(-1); }
+  html[dir="rtl"] .cl-nav .cl-phone { flex-direction: row-reverse; }
+
+  /* ============================================================
+     MOTION PROFILE — clinic is subtle, snappy
+     (discrete rise, snappier duration than specialist)
+  ============================================================ */
+  :root {
+    --lm-rise:     8px;
+    --lm-rise-lg:  14px;
+    --lm-dur-slow: 620ms;
+  }
+  .cl-btn { will-change: transform; }
+
+  /* ============================================================
+     RESPONSIVE — mobile hardening
+  ============================================================ */
+  @media (max-width: 960px) {
+    .cl-nav { grid-template-columns: auto 1fr; padding: 12px 20px; gap: 16px; }
+    .cl-nav .cl-links { display: none; }
+    .cl-nav .cl-phone { padding: 8px 12px; }
+    .cl-nav .cl-phone .cl-phone-txt { display: none; }
+    .cl-lead { padding: 48px 22px 32px; }
+    .cl-lead h1 { font-size: 40px; }
+    .cl-lead .cl-intro { font-size: 16px; }
+    .cl-section { padding: 56px 22px; }
+    .cl-section h2 { font-size: 30px; }
+    .cl-foot { padding: 48px 22px 24px; }
+    .cl-foot .cl-foot-top { grid-template-columns: 1fr 1fr; gap: 28px; }
+  }
+
+  /* Focus rings — accessibility */
+  .cl-btn:focus-visible,
+  .cl-nav a:focus-visible,
+  .cl-nav .cl-phone:focus-visible,
+  .mp-lang a:focus-visible {
+    outline: 3px solid var(--secondary); outline-offset: 3px;
+  }
+
+  /* Page-specific extension hook */
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  {% if locale_switcher %}
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}{% if entry.code == 'ar' %} ar-pill{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other }}</a>
+</div>
+
+<nav class="cl-nav">
+  <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cl-logo">
+    <span class="cl-crest">{{ site.logo_initial }}</span>
+    <span>
+      <span class="cl-word">{{ site.logo_word }}</span>
+      <span class="cl-tag">{{ site.tag }}</span>
+    </span>
+  </a>
+  <div class="cl-links">
+    {% for p in pages %}
+      {% if p.slug != "prenota" %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </div>
+  <a href="tel:{{ site.phone_tel|default:site.phone }}" class="cl-phone" aria-label="{{ site.phone_label }} {{ site.phone }}">
+    <span class="cl-phone-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </span>
+    <span class="cl-phone-txt">
+      <span class="cl-phone-lbl">{{ site.phone_label }}</span>
+      <span class="cl-phone-num">{{ site.phone }}</span>
+    </span>
+  </a>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="cl-foot">
+  <div class="cl-foot-top">
+    <div class="cl-foot-brand">
+      <h5>{{ chrome.foot_studio }}</h5>
+      <div class="cl-foot-word">{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="cl-foot-col">
+      <h5>{{ chrome.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="cl-foot-col">
+      <h5>{{ chrome.foot_contact }}</h5>
+      <p>{{ site.address }}</p>
+      <p><a href="tel:{{ site.phone_tel|default:site.phone }}">{{ site.phone_label }} {{ site.phone }}</a></p>
+      <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+    </div>
+    <div class="cl-foot-col">
+      <h5>{{ chrome.foot_hours }}</h5>
+      <p>{{ site.hours_compact }}</p>
+      {% for row in site.hours_footer_rows %}
+        <p>{{ row }}</p>
+      {% endfor %}
+    </div>
+    <div class="cl-foot-col">
+      <h5>{{ site.foot_extra_label }}</h5>
+      {% for item in site.foot_extra_rows %}
+        <p>{{ item }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="cl-foot-bot">
+    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-interactions.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
+</body>
+</html>

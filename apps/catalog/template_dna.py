@@ -371,11 +371,14 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "font_pairing":       ("Nunito Sans", "Inter"),
         "content": {
             "eyebrow":       "Poliambulatorio · Milano Centrale",
-            "headline":      'La tua salute, la nostra <em>missione</em>',
+            "headline":      'La tua salute, il nostro <em>lavoro quotidiano</em>',
             "subhead":       "Oltre 40 specialisti, percorsi diagnostici integrati e un'esperienza paziente pensata per metterti a tuo agio dal primo contatto.",
             "primary_cta":   "Prenota una visita",
             "secondary_cta": "Tutti i servizi",
             "phone":         "Numero verde 800 123 456",
+            "services_title": "I nostri reparti specialistici",
+            "services_link_all": "Vedi tutti i 40+ servizi  →",
+            "card_cta": "Prenota →",
             "stats": [
                 ("40+", "Specialisti"),
                 ("12",  "Reparti"),
@@ -428,6 +431,9 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
                 ("Riequilibrio Energetico", "60 min · pranoterapia e respiro",  "€ 95"),
                 ("Idroterapia Alpina",      "75 min · acque sorgive",           "€ 110"),
             ],
+            "pricelist_title": "Listino rituali",
+            "pricelist_sub_prefix": "Aggiornato al",
+            "therapists_label": "Operatori  ·  iscritti albo",
             "therapists": [
                 ("Sara Conti",  "Naturopata · 12 anni"),
                 ("Davide Lai",  "Osteopata D.O."),
@@ -469,6 +475,10 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
                 ("Dr.ssa Marta Greco",     "Pediatra · Allergologa",    "Asma e dermatiti"),
                 ("Dr.ssa Lucia Sferra",    "Pediatra · Endocrinologa",  "Crescita e pubertà"),
             ],
+            "hero_ribbon":     "Convenzionato SSN",
+            "hero_pebble_name": "Dr.ssa Rambaldi",
+            "hero_pebble_note": "oggi disponibile",
+            "hours_label":     "Orari di apertura",
             "hours": [
                 ("Lun – Ven", "8:30 – 12:30  ·  15:00 – 19:00"),
                 ("Sabato",     "9:00 – 12:00  · solo urgenze"),

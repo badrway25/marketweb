@@ -1,0 +1,642 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family={{ theme.body_font|urlencode }}:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endif %}
+<style>
+  :root {
+    --primary:   {{ theme.primary }};      /* deep sage */
+    --secondary: {{ theme.secondary }};    /* sage pale */
+    --accent:    {{ theme.accent }};       /* warm sand gold */
+    --paper:     #F5EFE6;                  /* warm cream */
+    --paper-2:   #EEF3EF;                  /* sage pale band */
+    --paper-deep:#E8DFD0;                  /* deeper cream for cta bands */
+    --ink:       #1f2e27;                  /* dark sage-ink */
+    --ink-soft:  #5f6f66;                  /* muted sage */
+    --rule:      rgba(45,74,62,0.14);
+    --rule-soft: rgba(45,74,62,0.07);
+    --heading: '{{ theme.heading_font }}', Georgia, serif;
+    --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+
+    /* Premium forms (spa · airy) — pill radius, sand gold accent */
+    --lf-bg:            transparent;
+    --lf-bg-autofill:   rgba(167,196,188,0.18);
+    --lf-bg-soft:       rgba(45,74,62,0.025);
+    --lf-bg-icon:       rgba(212,165,116,0.14);
+    --lf-bg-chip:       rgba(45,74,62,0.05);
+    --lf-border:        rgba(45,74,62,0.18);
+    --lf-border-hover:  var(--primary);
+    --lf-border-focus:  var(--accent);
+    --lf-ring:          rgba(212,165,116,0.22);
+    --lf-ring-size:     4px;
+    --lf-radius:        999px;
+    --lf-pad-y:         14px;
+    --lf-pad-x:         22px;
+    --lf-label-color:   rgba(45,74,62,0.70);
+    --lf-label-size:    10px;
+    --lf-label-track:   0.28em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  rgba(95,111,102,0.90);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   rgba(95,111,102,0.45);
+    --lf-section-rule:  var(--rule);
+    --lf-section-title-color: var(--primary);
+    --lf-caret:         var(--accent);
+    --lf-listbox-bg:    #FBF7F0;
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  var(--rule);
+    --lf-listbox-hov:   rgba(167,196,188,0.30);
+    --lf-submit-bg:     var(--primary);
+    --lf-submit-bg-hover: #1a3128;
+    --lf-submit-fg:     var(--paper);
+    --lf-submit-arrow:  var(--accent);
+    --lf-submit-radius: 999px;
+    --lf-submit-underline: none;
+    --on-accent:        var(--primary);
+  }
+  {% if is_rtl %}
+  :root {
+    --heading: 'Noto Naskh Arabic', '{{ theme.heading_font }}', Georgia, serif;
+    --body:    'Noto Kufi Arabic', '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  {% endif %}
+
+  /* ============================================================
+     AIRY MOTION PROFILE — softer rise, longer durations
+  ============================================================ */
+  :root {
+    --lm-rise:     16px;
+    --lm-rise-lg:  24px;
+    --lm-dur-slow: 760ms;
+    --lm-dur-xslow: 1080ms;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.65; font-weight: 400; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1,h2,h3,h4,h5 {
+    font-family: var(--heading); font-weight: 500; line-height: 1.05;
+    letter-spacing: -0.018em; color: var(--primary);
+    font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
+  }
+  h1 em, h2 em, h3 em {
+    font-style: italic; font-weight: 500; color: var(--accent);
+    letter-spacing: -0.008em;
+  }
+  em { font-style: italic; color: var(--accent); font-weight: 500; }
+
+  /* ============================================================
+     MARKETPLACE BAR
+  ============================================================ */
+  .mp-bar {
+    background: #1a2620; color: #F5EFE6; font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    flex-wrap: wrap;
+  }
+  .mp-bar .mp-back { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; font-weight: 600; }
+  .mp-bar .mp-name { color: rgba(245,239,230,0.55); }
+
+  .mp-lang { display: flex; align-items: center; gap: 14px; font-family: var(--body); }
+  .mp-lang .mp-lang-label {
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(245,239,230,0.45); font-weight: 700;
+  }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(245,239,230,0.55);
+    border: 1px solid rgba(245,239,230,0.18);
+    border-radius: 999px;
+    transition: color .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover {
+    color: var(--accent); border-color: rgba(245,239,230,0.40);
+  }
+  .mp-lang a.mp-lang-pill.is-current {
+    color: var(--accent); border-color: var(--accent); background: rgba(212,165,116,0.12);
+  }
+  .mp-lang a.mp-lang-pill.ar-pill { letter-spacing: 0; font-size: 11px; }
+
+  /* ============================================================
+     SITE NAV — pill-floating
+     Starts transparent over hero. On scroll snaps to a floating
+     cream pill with backdrop blur, rounded 999px, soft shadow.
+  ============================================================ */
+  .we-nav-wrap {
+    position: sticky; top: 0; z-index: 50;
+    padding: 16px 40px 0;
+    pointer-events: none;
+    transition: padding var(--lm-dur-fast, 360ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+  }
+  .we-nav {
+    pointer-events: auto;
+    max-width: 1340px; margin: 0 auto;
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+    gap: 48px;
+    padding: 14px 22px 14px 28px;
+    border-radius: 999px;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: background var(--lm-dur-fast, 360ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+                border-color var(--lm-dur-fast, 360ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+                box-shadow var(--lm-dur-fast, 360ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+                backdrop-filter var(--lm-dur-fast, 360ms) var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+  }
+  .we-nav.is-scrolled {
+    background: rgba(245,239,230,0.85);
+    border-color: rgba(45,74,62,0.10);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    box-shadow: 0 10px 40px -20px rgba(45,74,62,0.30);
+  }
+  /* When page has no hero overlay (interior pages), render nav on cream by default */
+  .we-nav.is-static { background: rgba(245,239,230,0.85); border-color: rgba(45,74,62,0.10); backdrop-filter: blur(14px) saturate(1.1); -webkit-backdrop-filter: blur(14px) saturate(1.1); box-shadow: 0 10px 40px -20px rgba(45,74,62,0.30); }
+
+  .we-nav .logo { display: flex; align-items: center; gap: 12px; }
+  .we-nav .logo .crest {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center;
+    color: var(--accent); font-family: var(--heading); font-style: italic;
+    font-weight: 500; font-size: 18px;
+  }
+  .we-nav .logo .word { font-family: var(--heading); font-size: 22px; font-weight: 500; letter-spacing: 0.005em; color: var(--primary); }
+
+  .we-nav .links {
+    display: flex; justify-content: center; gap: 32px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .we-nav .links a { transition: color .2s ease; padding: 4px 0; border-bottom: 1px solid transparent; }
+  .we-nav .links a:hover { color: var(--primary); }
+  .we-nav .links a.is-current { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .we-nav .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 11px 22px; border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--primary);
+    border: 1px solid var(--accent);
+    background: transparent;
+    transition: background .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .we-nav .cta:hover { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+
+  /* Over-hero variant uses paper-tint text so it's legible on photo */
+  .we-nav:not(.is-scrolled):not(.is-static) .logo .word,
+  .we-nav:not(.is-scrolled):not(.is-static) .links a,
+  .we-nav:not(.is-scrolled):not(.is-static) .cta { color: var(--paper); }
+  .we-nav:not(.is-scrolled):not(.is-static) .links a.is-current { color: var(--accent); border-bottom-color: var(--accent); }
+  .we-nav:not(.is-scrolled):not(.is-static) .logo .crest { border-color: var(--paper); color: var(--paper); }
+  .we-nav:not(.is-scrolled):not(.is-static) .cta { border-color: rgba(245,239,230,0.55); }
+  .we-nav:not(.is-scrolled):not(.is-static) .cta:hover { background: var(--accent); border-color: var(--accent); color: var(--primary); }
+
+  /* ============================================================
+     PAGE LEAD — eyebrow + serif italic headline + intro
+  ============================================================ */
+  .we-lead { padding: 110px 90px 64px; max-width: 1280px; margin: 0 auto; }
+  .we-lead .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent);
+  }
+  .we-lead .eyebrow:before { content: ''; width: 36px; height: 1px; background: var(--accent); }
+  .we-lead h1 {
+    margin-top: 32px;
+    font-size: 84px; font-style: italic; font-weight: 400; line-height: 1.02;
+    letter-spacing: -0.02em; color: var(--primary); max-width: 14ch;
+  }
+  .we-lead h1 em { color: var(--accent); }
+  .we-lead .intro {
+    margin-top: 32px; max-width: 58ch;
+    font-family: var(--body); font-size: 19px; line-height: 1.7; color: var(--ink-soft);
+    font-weight: 300;
+  }
+
+  /* ============================================================
+     SECTIONS
+  ============================================================ */
+  .we-section { padding: 110px 90px; max-width: 1280px; margin: 0 auto; }
+  .we-section.full { max-width: none; padding: 110px 90px; }
+  .we-section.sage { background: var(--paper-2); max-width: none; padding: 110px 90px; }
+  .we-section.deep { background: var(--primary); color: var(--paper); max-width: none; padding: 110px 90px; }
+  .we-section.deep h2, .we-section.deep h3, .we-section.deep h4 { color: var(--paper); }
+  .we-section.deep em { color: var(--accent); }
+
+  .we-sec-head { display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items: baseline; margin-bottom: 56px; }
+  .we-sec-head .label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent);
+  }
+  .we-sec-head h2 {
+    font-size: 52px; font-style: italic; font-weight: 400; line-height: 1.08;
+    letter-spacing: -0.018em; max-width: 18ch;
+  }
+  .we-sec-head .intro {
+    font-family: var(--body); font-size: 17px; line-height: 1.7;
+    color: var(--ink-soft); max-width: 52ch; font-weight: 300;
+  }
+
+  /* ============================================================
+     BUTTONS — pill-soft
+  ============================================================ */
+  .we-btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 14px 28px; border-radius: 999px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    transition: all .25s ease;
+    cursor: pointer;
+  }
+  .we-btn-primary {
+    color: var(--primary); border: 1px solid var(--accent); background: transparent;
+  }
+  .we-btn-primary:hover { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .we-btn-primary:after { content: '→'; font-family: var(--heading); font-style: italic; font-size: 16px; transition: transform .25s ease; }
+  .we-btn-primary:hover:after { transform: translateX(4px); }
+
+  .we-btn-ghost {
+    color: var(--ink-soft); border: none; background: transparent;
+    padding: 14px 0; border-bottom: 1px solid var(--rule);
+    border-radius: 0;
+  }
+  .we-btn-ghost:hover { color: var(--primary); border-bottom-color: var(--accent); }
+
+  .we-btn-solid {
+    color: var(--paper); background: var(--primary); border: 1px solid var(--primary);
+  }
+  .we-btn-solid:hover { background: var(--accent); border-color: var(--accent); color: var(--primary); }
+  .we-btn-solid:after { content: '→'; font-family: var(--heading); font-style: italic; font-size: 16px; transition: transform .25s ease; }
+  .we-btn-solid:hover:after { transform: translateX(4px); }
+
+  /* ============================================================
+     FOOTER — spa-social
+  ============================================================ */
+  .we-foot {
+    background: var(--primary); color: var(--paper);
+    padding: 80px 90px 32px; font-family: var(--body); font-size: 14px;
+  }
+  .we-foot .top {
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 64px;
+    padding-bottom: 56px; border-bottom: 1px solid rgba(245,239,230,0.15);
+  }
+  .we-foot .brand h5 { display: none; }
+  .we-foot .brand .word {
+    font-family: var(--heading); font-size: 34px; font-weight: 500; font-style: italic;
+    color: var(--paper); margin-bottom: 18px;
+  }
+  .we-foot .brand p {
+    color: rgba(245,239,230,0.70); max-width: 36ch; line-height: 1.7;
+    font-weight: 300;
+  }
+  .we-foot .brand .socials {
+    margin-top: 28px; display: flex; gap: 14px;
+  }
+  .we-foot .brand .socials a {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid rgba(245,239,230,0.22);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--paper); font-size: 13px;
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
+  }
+  .we-foot .brand .socials a:hover { background: var(--accent); border-color: var(--accent); color: var(--primary); }
+  .we-foot .col h5 {
+    font-family: var(--body); font-size: 10px; letter-spacing: 0.26em;
+    text-transform: uppercase; color: var(--accent); font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .we-foot .col p, .we-foot .col a {
+    color: rgba(245,239,230,0.72); display: block; padding: 4px 0;
+    font-weight: 300;
+  }
+  .we-foot .col a:hover { color: var(--accent); }
+  .we-foot .bot {
+    padding-top: 28px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 11px; color: rgba(245,239,230,0.45);
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .we-foot .bot a:hover { color: var(--accent); }
+
+  /* ============================================================
+     PRICELIST — dotted leader + price right
+  ============================================================ */
+  .we-pricelist { display: flex; flex-direction: column; }
+  .we-pricelist .it {
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 20px; align-items: baseline;
+    padding: 28px 0; border-top: 1px solid var(--rule);
+  }
+  .we-pricelist .it:last-child { border-bottom: 1px solid var(--rule); }
+  .we-pricelist .it .name {
+    font-family: var(--heading); font-size: 28px; font-weight: 500;
+    font-style: italic; color: var(--primary); line-height: 1.1;
+  }
+  .we-pricelist .it .leader {
+    align-self: end;
+    border-bottom: 1px dotted rgba(45,74,62,0.30);
+    height: 8px; transform: translateY(-4px);
+  }
+  .we-pricelist .it .price {
+    font-family: var(--heading); font-size: 24px; font-weight: 500;
+    color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  .we-pricelist .it .meta {
+    grid-column: 1 / -1; margin-top: 6px;
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .we-pricelist .it:hover .name { color: var(--accent); }
+
+  /* ============================================================
+     CTA BAND
+  ============================================================ */
+  .we-cta-band {
+    background: var(--paper-deep);
+    padding: 96px 90px; text-align: center;
+  }
+  .we-cta-band .eyebrow {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .we-cta-band h2 {
+    font-size: 60px; font-style: italic; font-weight: 400; line-height: 1.08;
+    max-width: 22ch; margin: 0 auto;
+  }
+  .we-cta-band h2 em { color: var(--accent); }
+  .we-cta-band .sub {
+    margin-top: 22px;
+    font-family: var(--body); font-size: 17px; line-height: 1.7;
+    color: var(--ink-soft); max-width: 54ch; margin-left: auto; margin-right: auto;
+    font-weight: 300;
+  }
+  .we-cta-band .actions { margin-top: 44px; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+
+  /* ============================================================
+     CALENDAR-SPOT WIDGET — 7 day pill grid + slot pills
+  ============================================================ */
+  .we-calendar {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px;
+    max-width: 1000px; margin: 0 auto;
+  }
+  .we-calendar .day {
+    padding: 22px 10px; border-radius: 24px;
+    background: rgba(245,239,230,0.08);
+    border: 1px solid rgba(245,239,230,0.16);
+    text-align: center;
+    transition: border-color .25s ease, background .25s ease;
+  }
+  .we-calendar .day.has-slots { border-color: var(--accent); }
+  .we-calendar .day.soldout { opacity: 0.42; }
+  .we-calendar .day .d-day {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(245,239,230,0.55); margin-bottom: 6px;
+  }
+  .we-calendar .day.has-slots .d-day { color: var(--accent); }
+  .we-calendar .day .d-num {
+    font-family: var(--heading); font-size: 34px; font-weight: 500;
+    color: var(--paper); line-height: 1;
+  }
+  .we-calendar .day .d-month {
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(245,239,230,0.55); margin-top: 6px;
+  }
+  .we-calendar .day .slots {
+    margin-top: 14px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .we-calendar .day .slots .slot {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; padding: 6px 0; border-radius: 999px;
+    background: rgba(245,239,230,0.08); color: var(--paper);
+    font-variant-numeric: tabular-nums;
+  }
+  .we-calendar .day.has-slots .slots .slot { background: rgba(212,165,116,0.18); color: var(--accent); }
+  .we-calendar .day.soldout .slot { background: transparent; color: rgba(245,239,230,0.35); text-decoration: line-through; }
+
+  /* ============================================================
+     RESPONSIVE
+  ============================================================ */
+  @media (max-width: 980px) {
+    .we-nav-wrap { padding: 10px 16px 0; }
+    .we-nav { grid-template-columns: auto 1fr; gap: 16px; padding: 10px 14px 10px 18px; }
+    .we-nav .links { display: none; }
+    .we-lead { padding: 80px 24px 48px; }
+    .we-lead h1 { font-size: 54px; }
+    .we-section { padding: 72px 24px; }
+    .we-section.sage, .we-section.deep, .we-section.full { padding: 72px 24px; }
+    .we-sec-head { grid-template-columns: 1fr; gap: 20px; margin-bottom: 40px; }
+    .we-sec-head h2 { font-size: 38px; }
+    .we-cta-band { padding: 72px 24px; }
+    .we-cta-band h2 { font-size: 40px; }
+    .we-foot { padding: 56px 24px 28px; }
+    .we-foot .top { grid-template-columns: 1fr; gap: 32px; }
+    .we-calendar { grid-template-columns: repeat(3, 1fr); }
+    .we-pricelist .it { grid-template-columns: 1fr auto; }
+    .we-pricelist .it .leader { display: none; }
+    .we-pricelist .it .name { font-size: 22px; }
+    .we-pricelist .it .price { font-size: 20px; }
+  }
+
+  /* ============================================================
+     RTL — mirror directional accents, drop negative tracking
+  ============================================================ */
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.85; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, html[dir="rtl"] h4, html[dir="rtl"] h5 { letter-spacing: 0; }
+  html[dir="rtl"] .we-lead .eyebrow, html[dir="rtl"] .we-sec-head .label,
+  html[dir="rtl"] .we-nav .links, html[dir="rtl"] .we-nav .cta,
+  html[dir="rtl"] .mp-bar, html[dir="rtl"] .mp-lang .mp-lang-label,
+  html[dir="rtl"] .mp-lang a.mp-lang-pill, html[dir="rtl"] .we-foot .col h5,
+  html[dir="rtl"] .we-foot .bot, html[dir="rtl"] .we-btn { letter-spacing: 0.06em; }
+  html[dir="rtl"] .we-lead .eyebrow:before { display: none; }
+  html[dir="rtl"] .we-lead .eyebrow:after {
+    content: ''; width: 36px; height: 1px; background: var(--accent); margin-right: 6px;
+  }
+  html[dir="rtl"] .we-btn-primary:after,
+  html[dir="rtl"] .we-btn-solid:after { content: '←'; }
+
+  /* ============================================================
+     FORM DARK-BAND OVERRIDES for .we-form-band
+  ============================================================ */
+  .we-form-band .lf-label { color: rgba(245,239,230,0.60); }
+  .we-form-band .lf-helper { color: rgba(245,239,230,0.60); }
+  .we-form-band .lf-control,
+  .we-form-band .lf-select-trigger,
+  .we-form-band .lf-select:not(.is-enhanced) > select {
+    color: var(--paper); border-color: rgba(245,239,230,0.22);
+    background: rgba(245,239,230,0.04);
+  }
+  .we-form-band .lf-control::placeholder { color: rgba(245,239,230,0.40); }
+  .we-form-band .lf-control:hover,
+  .we-form-band .lf-select-trigger:hover { border-color: rgba(245,239,230,0.50); }
+  .we-form-band .lf-control:focus,
+  .we-form-band .lf-select-trigger:focus,
+  .we-form-band .lf-select.is-open > .lf-select-trigger {
+    border-color: var(--accent); box-shadow: 0 0 0 4px rgba(212,165,116,0.25);
+  }
+  .we-form-band .lf-section > .lf-section-head { border-top-color: rgba(245,239,230,0.14); }
+  .we-form-band .lf-section-head .lf-section-num { color: var(--accent); }
+  .we-form-band .lf-section-head .lf-section-title { color: var(--paper); }
+  .we-form-band .lf-section-head .lf-section-meta { color: rgba(245,239,230,0.55); }
+  .we-form-band .lf-select-listbox {
+    background: #1a3128; color: var(--paper);
+    border-color: rgba(245,239,230,0.15);
+  }
+  .we-form-band .lf-select-listbox li { color: var(--paper); }
+  .we-form-band .lf-select-listbox li.is-active,
+  .we-form-band .lf-select-listbox li:hover { background: rgba(245,239,230,0.08); }
+  .we-form-band .lf-select-listbox li[aria-selected="true"] { color: var(--accent); }
+  .we-form-band .lf-check { color: rgba(245,239,230,0.65); }
+  .we-form-band .lf-check-box { border-color: rgba(245,239,230,0.30); background: rgba(245,239,230,0.04); }
+  .we-form-band .lf-submit-bar .lf-submit-primary {
+    background: var(--accent); color: var(--primary); border-radius: 999px;
+  }
+  .we-form-band .lf-submit-bar .lf-submit-primary:hover { background: var(--paper); color: var(--primary); }
+  .we-form-band .lf-submit-bar .lf-submit-primary .lf-submit-arrow { color: var(--primary); }
+  .we-form-band .lf-submit-note { color: rgba(245,239,230,0.55); }
+  .we-form-band .lf-submit-note svg { stroke: var(--accent); }
+  .we-form-band .lf-submit-secondary { color: rgba(245,239,230,0.55); }
+  .we-form-band .lf-submit-secondary a { color: var(--accent); border-bottom-color: var(--accent); }
+
+  html[dir="rtl"] .lf-select-trigger .lf-select-caret { margin-inline-start: 0; margin-inline-end: 12px; }
+  html[dir="rtl"] .lf-label { letter-spacing: 0.06em; }
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  {% if locale_switcher %}
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}{% if entry.code == 'ar' %} ar-pill{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other }}</a>
+</div>
+
+<div class="we-nav-wrap">
+  <nav class="we-nav{% if page.slug != 'home' %} is-static{% endif %}" data-we-nav>
+    <div class="logo">
+      <span class="crest">{{ site.logo_initial }}</span>
+      <span class="word">{{ site.logo_word }}</span>
+    </div>
+    <div class="links">
+      {% for p in pages %}
+        {% if p.slug != 'prenota' %}
+          {% if p.slug == "home" %}
+            <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+          {% else %}
+            <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    <a class="cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.nav_cta }}</a>
+  </nav>
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="we-foot">
+  <div class="top">
+    <div class="brand">
+      <h5>{{ chrome.foot_studio }}</h5>
+      <div class="word">{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+      {% if site.socials %}
+      <div class="socials">
+        {% for label, href in site.socials %}
+          <a href="{{ href }}" aria-label="{{ label }}">{{ label|slice:":2" }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    <div class="col">
+      <h5>{{ chrome.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ chrome.foot_contact }}</h5>
+      <p>{{ site.address }}</p>
+      <p>{{ site.phone }}</p>
+      <p>{{ site.email }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ chrome.foot_hours }}</h5>
+      <p>{{ site.hours_compact }}</p>
+      {% for row in site.hours_footer_rows %}
+        <p>{{ row }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="bot">
+    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script>
+  // Pill-floating nav: add .is-scrolled when the user scrolls past 40px.
+  (function() {
+    var nav = document.querySelector('[data-we-nav]');
+    if (!nav) return;
+    // Interior pages use .is-static and don't need the scroll toggle.
+    if (nav.classList.contains('is-static')) return;
+    var onScroll = function() {
+      if (window.scrollY > 40) nav.classList.add('is-scrolled');
+      else nav.classList.remove('is-scrolled');
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+</script>
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-interactions.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
+</body>
+</html>

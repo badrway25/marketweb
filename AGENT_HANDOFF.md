@@ -1,5 +1,50 @@
 # Agent Handoff
 
+Last updated: 2026-04-15 — after **Session 51 Medical Second Wave Live Rollout**
+
+## Session 51 — Medical Second Wave Live Rollout: Read This Before Touching Any Medical Skin, Salute/Benessere/Famiglia Content, or the `medical`/`medical-wellness`/`medical-family` Pexels Pools (2026-04-15)
+
+**What changed in Session 51.** The medical category is now **5/5 published_live**. Salute (`salute-studio-medico`, clinic archetype — SaluteVita Clinic, Milano Centrale institutional poliambulatorio), Benessere (`benessere-centro-olistico`, wellness archetype — Studio Armonia, Bergamo Alta olistico), and Famiglia (`famiglia-pediatria`, family archetype — Pediatria Famiglia Plus, Torino Crocetta pediatric) have been authored from line one with full multipage live skins (6-7 page routes each), 5 locales (it/en/fr/es/ar) with real RTL for Arabic, Pexels-curated imagery pools, and sharp D-054 differentiation enforced both vs each other AND vs Cardio/Derm specialist.
+
+### What's binding (D-080)
+
+1. **Salute + Benessere + Famiglia + Cardio + Derm must STAY DISTINCT across every locale.** 90 D-054 gate checks (9 pairs × 10 gates) pass. Voice contracts:
+   - **Salute** (clinic institutional poliambulatorio): "La tua salute, il nostro lavoro quotidiano" register · split-booking widget hero · solid-phone nav · icon-grid 4-up SVG cards · medium density · 7-page (home/studio/servizi/prevenzione/medici/contatti/prenota). NHS/BUPA (EN), Ramsay Santé/Doctolib `vous` (FR), Sanitas peninsular `usted` (ES), MSA hospital-institutional (AR).
+   - **Benessere** (wellness serene olistico): "Un respiro è la misura del nostro tempo" register · full-bleed-manifesto hero + gradient · pill-floating nav · dotted-leader pricelist rituali · calendar-spot CTA · Cormorant Garamond italic 96px · airy density · 7-page (home/filosofia/rituali/ambienti/professionisti/contatti/prenota). Goop/Tatler (EN), Marie Claire Bien-Être/Cinq Mondes (FR), Mía Wellness/Six Senses (ES), Vogue Arabia Living/Kinfolk (AR).
+   - **Famiglia** (family warm pediatric): "Cresciamo insieme ai vostri bambini" register · centered-soft rounded photo card hero + SSN ribbon + pediatra pebble · soft-pastel rounded-pill nav · portrait-stack pediatre · phone-and-chat CTA (NO booking form) · Quicksand rounded friendly · airy density · 6-page (home/studio/visite/crescita/pediatre/contatti). BabyCentre UK/NCT (EN), Doctissimo Enfant/Magicmaman `vous` (FR), Guía Infantil `usted` (ES), MSA parenting-magazine (AR).
+   - **Cardio + Derm** (specialist prestigious editorial): untouched in Session 51 — DO NOT modify.
+
+2. **Three new skin folders are reusable archetype templates.** Future medical siblings:
+   - Clinic generalist → reuse `templates/live_templates/medical/clinic/`. Drop content registry + DNA entry pointing archetype to `clinic`, swap palette tokens.
+   - Wellness holistic → reuse `templates/live_templates/medical/wellness/`. Same pattern.
+   - Family pediatric → reuse `templates/live_templates/medical/family/`. Same pattern.
+   - Specialist consultive → reuse `templates/live_templates/medical/specialist/` (Cardio + Derm precedent since Session 14).
+   - A hypothetical 6th medical sibling (`poliambulatorio-napoli`, `terme-ischia`, `pediatria-milano`) can ship with ONLY a seed row + DNA entry + content block + locale trees. **Zero new HTML needed** per archetype.
+
+3. **D-047 chrome-cleanliness from line one.** All 23 new HTML files carry zero IT literals — every visible string flows from `page_data.*` / `site.*` / `chrome.*` / `{% for %}`. Future skin edits MUST keep this. Also: 10 preview-composition literals lifted into DNA `content` dict keys (`services_title`, `services_link_all`, `card_cta`, `pricelist_title`, `pricelist_sub_prefix`, `therapists_label`, `hero_ribbon`, `hero_pebble_name`, `hero_pebble_note`, `hours_label`) — preview compositions for medical are now clean too.
+
+4. **`html[dir="rtl"]` CSS block + conditional Noto Naskh/Kufi Arabic font load on all 3 bases.** Each skin's `_base.html` carries a RTL token override block + Arabic font stack import conditional on `{% if is_rtl %}`. Latin proper names (SaluteVita Clinic, Studio Armonia, Pediatria Famiglia Plus, Elisa Conti, Sara Conti, Rambaldi, Via Galvani, Via Arena, Corso Galileo Ferraris, Sant'Anna, Regina Margherita, Gaslini, Palazzo Bonomi Suardi, etc.), prices (€ 85, € 320, € 920), phone numbers (+39 035 412 998, 011 549 21 88, 800 123 456), hours, all Latin Western digits stay Latin — `unicode-bidi: isolate` handled by RTL CSS rules.
+
+5. **Native voice per locale, never machine translation.** Salute EN reads as native NHS; Benessere FR as native Marie Claire Bien-Être; Famiglia ES as native Guía Infantil. Structural parity: same key paths at every level across all 5 locales (verified via `diff`-style walk).
+
+6. **Italian proper names (people/places/institutions) preserved verbatim across all locales.** Brand names, doctor names, neighbourhoods, insurance schemes (Inail, Unisalute, Generali Welion, RBM Salute, Previmedical, Caspie, MioDottore), Italian institutions (Gaslini, Sant'Anna, Regina Margherita, San Raffaele, Einaudi Ragazzi, OMCeO) — stay Italian across EN/FR/ES/AR. For AR, they appear in Latin script inside Arabic text (not transliterated).
+
+7. **Page slugs stay Italian (URL-canonical).** Salute: home, studio, servizi, prevenzione, medici, contatti, prenota. Benessere: home, filosofia, rituali, ambienti, professionisti, contatti, prenota. Famiglia: home, studio, visite, crescita, pediatre, contatti. Only `label` fields change per locale.
+
+8. **Pexels primary imagery with 3 disjoint pools** — `medical` (bright clinical teal), `medical-wellness` (sage serene), `medical-family` (peach warm pediatric). URLs are hot-linkable Pexels CDN with explicit `fit=crop` sizing. No video in this wave (medical register favors still photography + micro-motion over reel-style video).
+
+9. **Stub-files-first pattern for locale wiring.** Before spawning translator sub-agents, create 12 locale stub files that `import X_CONTENT_IT as X_CONTENT_LOC`. This lets `sync_template_tiers` + smoke run immediately. Translator agents then overwrite stubs with native voice. Same pattern is recommended for future rollouts.
+
+### Do NOT do in a follow-up session without revisiting D-080 + CLAUDE.md + this handoff
+
+- **Do NOT add a 6th medical template without checking which archetype it belongs to.** If it's "just like Salute but for Napoli", reuse `clinic/` skin. If it's "just like Famiglia but for Milano", reuse `family/` skin. NEVER duplicate a skin folder; extend the content registry.
+- **Do NOT machine-translate medical terminology.** Use the native register per locale (e.g., IT "bilancio di salute" → EN "well-child check-up" → FR "bilan de santé" → ES "revisión pediátrica" → AR "فحص طبي دوري"). Machine translation will break the D-080 voice contract.
+- **Do NOT add blog_list/blog_detail to the 3 new medical templates** unless there's explicit business evidence. The current baselines per CATEGORY_ROADMAP D-053 cover them without blog.
+- **Do NOT collapse the 3 Pexels pools back into one `medical` pool.** The per-archetype separation is D-054 enforcement infrastructure.
+- **Do NOT touch specialist skin.** Cardio + Derm are untouched in Session 51; any regression there would be a D-060 violation.
+
+---
+
 Last updated: 2026-04-15 — after **Session 48 Restaurant Live Completion Premium**
 
 ## Session 48 — Restaurant Live Completion Premium: Read This Before Touching Any Restaurant, Sapore/Brace, or Trattoria-Warm/Street-Modern Skin Work (2026-04-15)

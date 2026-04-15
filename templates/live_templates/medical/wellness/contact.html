@@ -1,0 +1,226 @@
+{% extends "live_templates/medical/wellness/_base.html" %}
+
+{% block extra_css %}
+  .we-contact { padding: 24px 90px 96px; max-width: 1280px; margin: 0 auto; }
+  .we-contact .grid {
+    display: grid; grid-template-columns: 1fr 1.1fr; gap: 80px;
+    align-items: start;
+  }
+
+  /* Left: map card + addr blocks */
+  .we-contact .map-card {
+    background: var(--paper-2); padding: 40px 40px;
+    border-radius: 4px;
+  }
+  .we-contact .map-card .frame {
+    aspect-ratio: 4/3; background-size: cover; background-position: center;
+    filter: saturate(0.85) brightness(0.94); border-radius: 4px;
+    background-color: var(--paper-deep);
+  }
+  .we-contact .map-card .blocks {
+    margin-top: 32px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px;
+  }
+  .we-contact .map-card .b .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent);
+  }
+  .we-contact .map-card .b .val {
+    margin-top: 10px;
+    font-family: var(--heading); font-style: italic;
+    font-size: 22px; font-weight: 500; color: var(--primary); line-height: 1.15;
+  }
+  .we-contact .map-card .b .sub {
+    margin-top: 6px;
+    font-family: var(--body); font-size: 13px; line-height: 1.6;
+    color: var(--ink-soft); font-weight: 300;
+  }
+
+  .we-contact .access {
+    margin-top: 32px;
+    padding-top: 28px; border-top: 1px solid var(--rule);
+  }
+  .we-contact .access h4 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .we-contact .access .a-row {
+    display: grid; grid-template-columns: 90px 1fr; gap: 14px;
+    padding: 10px 0; border-bottom: 1px dashed var(--rule-soft);
+    font-family: var(--body); font-size: 14px; color: var(--ink); font-weight: 300;
+  }
+  .we-contact .access .a-row strong {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+  }
+
+  /* Right: form */
+  .we-form h2 {
+    font-family: var(--heading); font-style: italic;
+    font-size: 48px; font-weight: 400; line-height: 1.1; color: var(--primary);
+  }
+  .we-form .form-intro {
+    margin-top: 18px; max-width: 52ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.75;
+    color: var(--ink-soft); font-weight: 300;
+  }
+  .we-form form {
+    margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px 28px;
+  }
+  .we-form form .lf-full { grid-column: 1 / -1; }
+
+  /* Hours card */
+  .we-hours {
+    padding: 110px 90px; background: var(--paper-2);
+    border-top: 1px solid var(--rule);
+  }
+  .we-hours .inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.6fr; gap: 80px; align-items: start;
+  }
+  .we-hours h3 {
+    font-family: var(--heading); font-style: italic; font-size: 44px;
+    font-weight: 400; line-height: 1.1; max-width: 10ch;
+  }
+  .we-hours .h-row {
+    display: grid; grid-template-columns: 180px 1fr;
+    padding: 18px 0; border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 16px;
+  }
+  .we-hours .h-row:last-child { border-bottom: 1px solid var(--rule); }
+  .we-hours .h-row .day {
+    font-weight: 700; color: var(--primary); letter-spacing: 0.04em;
+  }
+  .we-hours .h-row .val {
+    color: var(--ink-soft); font-weight: 300;
+    font-variant-numeric: tabular-nums;
+  }
+  .we-hours .note {
+    margin-top: 24px;
+    font-family: var(--heading); font-style: italic; font-size: 18px;
+    line-height: 1.6; color: var(--ink-soft); max-width: 42ch;
+    padding-top: 18px; border-top: 1px solid var(--rule);
+  }
+
+  @media (max-width: 980px) {
+    .we-contact { padding: 16px 24px 72px; }
+    .we-contact .grid { grid-template-columns: 1fr; gap: 48px; }
+    .we-contact .map-card { padding: 28px 24px; }
+    .we-contact .map-card .blocks { grid-template-columns: 1fr; gap: 20px; }
+    .we-form form { grid-template-columns: 1fr; gap: 20px; }
+    .we-form h2 { font-size: 32px; }
+    .we-hours { padding: 72px 24px; }
+    .we-hours .inner { grid-template-columns: 1fr; gap: 32px; }
+    .we-hours .h-row { grid-template-columns: 1fr 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="we-lead">
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="we-contact">
+    <div class="grid">
+      <aside class="map-card" data-lm="reveal">
+        <div class="frame" style="background-image: url('{{ page_data.map_image }}');"></div>
+        <div class="blocks" data-lm-stagger data-lm-stagger-delay="90">
+          {% for b in page_data.blocks %}
+            <div class="b">
+              <div class="lbl">{{ b.label }}</div>
+              <div class="val">{{ b.value }}</div>
+              {% if b.sub %}<div class="sub">{{ b.sub }}</div>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="access">
+          <h4>{{ page_data.access_label }}</h4>
+          {% for a in page_data.access %}
+            <div class="a-row">
+              <strong>{{ a.mode }}</strong>
+              <span>{{ a.text }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </aside>
+
+      <div class="we-form" data-lm="reveal">
+        <h2>{{ page_data.form_title }}</h2>
+        <p class="form-intro">{{ page_data.form_intro }}</p>
+        {% with ph=page_data.form_placeholders h=page_data.form_helpers %}
+        <form novalidate>
+          <div class="lf-field">
+            <label class="lf-label" for="we-ct-name">{{ chrome.form_name }}</label>
+            <input class="lf-control" type="text" id="we-ct-name" name="name" placeholder="{{ ph.name }}" autocomplete="name">
+            {% if h.name %}<p class="lf-helper">{{ h.name }}</p>{% endif %}
+          </div>
+          <div class="lf-field">
+            <label class="lf-label" for="we-ct-email">{{ chrome.form_email }}</label>
+            <input class="lf-control" type="email" id="we-ct-email" name="email" placeholder="{{ ph.email }}" autocomplete="email">
+            {% if h.email %}<p class="lf-helper">{{ h.email }}</p>{% endif %}
+          </div>
+          <div class="lf-field">
+            <label class="lf-label" for="we-ct-phone">{{ chrome.form_phone }}<span class="lf-opt">{{ chrome.form_optional }}</span></label>
+            <input class="lf-control" type="tel" id="we-ct-phone" name="phone" placeholder="{{ ph.phone }}" autocomplete="tel">
+            {% if h.phone %}<p class="lf-helper">{{ h.phone }}</p>{% endif %}
+          </div>
+          <div class="lf-field">
+            <label class="lf-label" for="we-ct-interest">{{ page_data.form_fields.interest_label }}</label>
+            <div class="lf-select" data-lf-label="{{ page_data.form_fields.interest_label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+              <select id="we-ct-interest" name="interest">
+                <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                {% for opt in page_data.form_fields.interest_options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+              </select>
+            </div>
+            {% if h.interest %}<p class="lf-helper">{{ h.interest }}</p>{% endif %}
+          </div>
+          <div class="lf-field lf-full">
+            <label class="lf-label" for="we-ct-message">{{ chrome.form_message }}</label>
+            <textarea class="lf-control" id="we-ct-message" name="message" rows="5" placeholder="{{ ph.message }}"></textarea>
+            {% if h.message %}<p class="lf-helper">{{ h.message }}</p>{% endif %}
+          </div>
+          <label class="lf-check lf-full">
+            <input type="checkbox" name="consent" required>
+            <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+            <span class="lf-check-text">{{ page_data.form_consent }}</span>
+          </label>
+          <div class="lf-submit-bar lf-full">
+            <button type="submit" class="lf-submit-primary">
+              <span>{{ chrome.form_submit }}</span>
+              <span class="lf-submit-arrow" aria-hidden="true">→</span>
+            </button>
+            {% if page_data.form_submit_note %}
+            <span class="lf-submit-note">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+              {{ page_data.form_submit_note }}
+            </span>
+            {% endif %}
+          </div>
+        </form>
+        {% endwith %}
+      </div>
+    </div>
+  </section>
+
+  <section class="we-hours">
+    <div class="inner">
+      <div>
+        <span style="font-family:var(--body);font-size:10px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:var(--accent);" data-lm="reveal">{{ page_data.hours_label }}</span>
+        <h3 style="margin-top:16px;" data-lm="reveal">{{ page_data.hours_heading|safe }}</h3>
+        <p class="note" data-lm="reveal">{{ page_data.hours_note }}</p>
+      </div>
+      <div data-lm-stagger data-lm-stagger-delay="60">
+        {% for h in page_data.hours %}
+          <div class="h-row">
+            <span class="day">{{ h.day }}</span>
+            <span class="val">{{ h.value }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

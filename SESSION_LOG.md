@@ -3780,3 +3780,94 @@ None. Phase 2g.2 closes cleanly. The specialist archetype is now truly reusable.
 **Phase 2f continuation — add a second fine-dining template (e.g. `tartufo-truffle-house`) under the Gusto chrome and repeat the same leak-audit sweep on the `templates/live_templates/restaurant/fine-dining/` chrome.** Expect the same class of leaks there — brand-name strings, hardcoded Unsplash URLs for the chef portrait and dish photos, possibly hardcoded menu course counts or wine region labels in the `menu.html` file. Apply the exact same abstraction pattern: extend the content registry with structured fields, move every literal out of the HTML, re-run the 25-route sweep, re-run the leak sweep. When that closes, the archetype-reuse validation officially extends to both specialist AND fine-dining — and the pattern is proven general.
 
 After that, resume Phase 2f DNA rollout: Agency → Lawyer → Real Estate archetype splits, applying **all three** lessons from the session arc: Session 10's imagery-distinctness rule, Session 11's content-registry-as-registry rule, Session 13's leak-audit-with-rendering-grep rule, and Session 14's chrome-authoring-contract rule (D-047) from the first authoring pass of every new skin.
+
+
+---
+## Session 51 — Medical Second Wave Live Rollout (Phase 2g3.2, 2026-04-15)
+
+### TL;DR
+**Phase 2g3.2 CLOSED.** Salute (`salute-studio-medico` → clinic archetype), Benessere (`benessere-centro-olistico` → wellness archetype), Famiglia (`famiglia-pediatria` → family archetype) flipped from `tier=draft` to `tier=published_live`. All three ship full multi-page live skins + 5-locale content trees + real RTL for Arabic + Pexels imagery pools. Medical category now 5/5 live. Catalog at 16/20.
+
+**D-080** records the medical-second-wave contract. Branch: `phase-medical-second-wave-v1`.
+
+### What shipped (~9,900 LOC new skin+IT content; ~11,000 LOC new locale content)
+
+**Skin folders** (templates/live_templates/medical/):
+- `clinic/` — 8 HTML files (2,417 LOC). Class prefix `.cl-*`. Hero split-booking widget right, stats strip, icon-grid specialty cards, 4-step patient journey, 3 prevenzione check-up packages, 8-avatar team ribbon, partners convenzioni marquee, teal CTA band. Page kinds: home, about, services, **prevention** (new), team, contact, appointment.
+- `wellness/` — 8 HTML files (2,174 LOC). Class prefix `.we-*`. Hero full-bleed-manifesto with gradient overlay, drop-cap manifesto, dotted-leader pricelist rituali, benefits trio, ambienti masonry lightbox, therapist trio, sensory journey 4-step, calendar-spot 7-day CTA. Page kinds: home, about (filosofia), services (rituali), **gallery** (ambienti, new), team (professionisti), contact, appointment.
+- `family/` — 7 HTML files (2,144 LOC). Class prefix `.fm-*`. Hero centered-soft with rounded photo card + SSN ribbon + pediatra pebble, intro-trio età, portrait-stack pediatre, 5-step growth journey, 8-FAQ accordion genitori, child-friendly gallery, hours peach band, phone-and-chat CTA band. Page kinds: home, about (studio), services (visite), **faq** (crescita, new), team (pediatre), contact. (NO appointment — pattern is phone-and-chat, not booking form.)
+
+**Content registries (IT):**
+- `template_content_salute.py` (957 LOC) — SaluteVita Clinic, Milano Centrale, numero verde 800 123 456, 6 specialisti, 8 reparti con SVG icons, 3 check-up prevenzione (€ 280/320/420), 7 convenzioni, 13-field booking form.
+- `template_content_benessere.py` (1,061 LOC) — Studio Armonia, Bergamo Alta, 5 operatori con certificazioni, 10 rituali (€ 85–150), 2 pacchetti week-end.
+- `template_content_famiglia.py` (1,149 LOC) — Pediatria Famiglia Plus, Torino Crocetta, 4 pediatre, 8 tipi di visita, 16 FAQ genitori tematiche, 5 milestone crescita.
+
+**Locale content** (12 files in `template_content_<slug>_{en,fr,es,ar}.py`):
+- EN: NHS/BUPA (Salute) · Goop/Tatler (Benessere) · BabyCentre UK (Famiglia)
+- FR: Ramsay Santé/Doctolib (Salute) · Marie Claire Bien-Être (Benessere) · Doctissimo Enfant (Famiglia)
+- ES: Sanitas peninsular (Salute) · Mía Wellness (Benessere) · Guía Infantil (Famiglia)
+- AR: MSA hospital-institutional (Salute) · MSA lifestyle-luxe/Vogue Arabia (Benessere) · MSA parenting-magazine (Famiglia)
+
+Italian proper names preserved verbatim across all non-IT locales. Latin digits (0–9) used across all locales including AR for dates, prices, phone numbers.
+
+**Pexels imagery pools** — replaced 3 legacy Unsplash keys in `apps/catalog/preview_imagery.py`:
+- `medical` → bright clinical teal institutional pool
+- `medical-wellness` → sage olistico serene pool
+- `medical-family` → peach warm pediatric pool
+
+PEXELS_API_KEY read from env, never committed.
+
+**DNA content extensions** — 10 new keys added to `template_dna.py` content blocks to lift D-047 preview composition leaks (`services_title`, `services_link_all`, `card_cta`, `pricelist_title`, `pricelist_sub_prefix`, `therapists_label`, `hero_ribbon`, `hero_pebble_name`, `hero_pebble_note`, `hours_label`). Preview compositions `templates/preview_compositions/medical/{clinic,wellness,family}.html` now D-047 clean.
+
+**Preview PNGs regenerated** under `template_assets/2026/04/`.
+
+**Wiring:**
+- `template_content.py` — 15 new imports + 3 new TEMPLATE_CONTENT entries
+- `TEMPLATE_REGISTRY.json` — 3 entries flipped with full D-054 tier_reason notes
+- `smoke_full.py` — 3 new LOCALES + 3 new CATEGORY entries
+
+### Differentiation — D-054 10-gate matrix passes on every pair
+
+**Salute (clinic) vs Cardio/Derm (specialist):** split-booking widget vs editorial serif · white clinical vs cream editorial · institutional vs prestigious · solid-phone vs minimal-serif · icon-grid 4-up vs editorial-large quote · booking-widget vs private-request · medium vs very-airy · Nunito Sans vs Cormorant italic · teal pill vs gold-underline · Milano poliambulatorio vs Parioli prestigious.
+
+**Benessere (wellness) vs specialist:** full-bleed-manifesto photo vs editorial serif pull-quote · warm wood tone vs editorial cream · pill-floating vs minimal-serif · dotted-leader pricelist vs editorial-large cards · calendar-spot 7-day vs private-request email · Cormorant italic 96px poetic vs clinical.
+
+**Famiglia (family) vs specialist:** centered-soft rounded photo card vs editorial pull-quote · warm peach vs cream · soft-pastel pill vs minimal-serif · Quicksand rounded vs Cormorant italic · portrait-stack pediatre vs editorial-large quote · phone-and-chat (NO appointment) vs private-request.
+
+**3 new medical siblings internally:** 3 disjoint palettes · 3 distinct heroes · 3 distinct navbar silhouettes · 3 distinct card paradigms · 3 distinct CTA patterns · 3 distinct voices.
+
+### Validation
+
+1. `python manage.py check` — clean.
+2. `python manage.py migrate` + `seed_categories` + `seed_templates` + `sync_template_tiers` — 16 published_live / 4 draft.
+3. `generate_previews --force --only <slug>` — 3 PNGs rendered.
+4. **Full smoke: `python smoke_full.py` → 660/660 HTTP 200** (baseline 530 + 130 new). Zero regression on 13 live.
+5. **Browser walk via Playwright MCP (1440×900):**
+   - Salute IT split-booking hero + stats + teal nav ✓
+   - Salute AR RTL flipped, booking widget left, "صحتك، عملنا اليومي" ✓
+   - Salute IT `/prenota/` multi-section form + sidebar ✓
+   - Benessere IT full-bleed "Un respiro è la misura del nostro tempo" ✓
+   - Benessere FR `/rituali/` "Dix rituels, aucune voie rapide" ✓
+   - Benessere ES `/prenota/` "El ritual comienza en cuanto usted cruza el umbral" ✓
+   - Famiglia IT warm peach + rounded photo + pediatra pebble + phone+WhatsApp ✓
+   - Famiglia EN `/pediatre/` "Four signatures, one family record" ✓
+   - Famiglia AR RTL "ننمو إلى جانب أطفالكم" + proper names Latin inside Arabic ✓
+   - Category `/templates/medical/` — 5 distinct templates visible, no recolor siblings ✓
+
+### D-047 chrome-authoring contract — zero leak confirmed
+23 new skin files: zero user-facing Italian brand literals. Only hits are CSS selector comments. Skins reusable for hypothetical second siblings.
+
+### Lessons
+1. **Pexels > Unsplash for medical imagery.** Larger curated pools, easier per-archetype separation.
+2. **3 archetypes × 3 macro-tones × 3 silhouettes = no visual-twin risk.** Authoring from DNA contracts from line one > retroactive lift.
+3. **Parallel sub-agents scale authoring.** 3 skin+IT agents × 3 i18n agents in parallel compressed ~16h sequential work to ~4h wall.
+4. **Stub-files-first pattern unblocks DB sync.** Locale stubs `import X_CONTENT_IT as X_CONTENT_LOC` let `sync_template_tiers` run immediately; translators overwrite with native voice.
+5. **DNA.content preview-composition keys are cheap.** Lift literals on first authoring, never retroactively.
+
+### Blockers
+None.
+
+### Exact next step
+**Phase 2g3.6 final wave — lawyer + real-estate.** 4 remaining draft templates (lex / juris / casa / villa). Both categories CRITICO identity-crash. Rollout recipe: DNA split → 4 new skin folders → 4 IT + 16 locale content files → Pexels pools → preview comps → tier flip → 800+ smoke + browser walk. When this closes, catalog hits 20/20 `published_live` and Phase 3 unblocks.
+
+Companion: extend smoke_full.py to D-047 leak enforcement (programmatic grep for brand literals across rendered HTML).

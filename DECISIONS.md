@@ -1257,3 +1257,60 @@ Skin-local hover enhancements (nav underline sweep, gold arrow shift, letter-spa
 Skin-local hover choreography costs each skin ~30 LOC if they want the full Gusto treatment (nav underline + CTA arrow shift + letter-spacing hover). Skins that don't want this can skip it entirely — the reveal + stagger + counter + image-zoom system still works without the hover extras. The motion system is graduated: minimum viable adoption is one link + one script + a handful of data-attributes on the home page; maximum adoption adds the hover extras for tactility.
 
 **Consequence:** (a) Phase 2g2x.9 closes; (b) the motion pilot is the expected interaction-quality floor for every `tier=published_live` template — cardio and dermatologia should adopt it in a follow-up pass (low effort: link + script + attributes, their chrome is already D-047 clean so nothing else needs to change); (c) every new template promoted from `draft` → `published_live` in Phase 2g3 must adopt the motion language as part of its D-053 acceptance checklist (the 9 gates become 10: add "motion pilot adopted with reveal + stagger + counter + image-hover patterns on the home page at minimum"); (d) future archetypes can override the tokens on their own `:root` without touching `live-motion.css` (e.g. a muted Medical skin sets `--lm-rise: 10px` for a more subdued cadence) — the motion language is configurable per-skin; (e) BRAND_SYSTEM_GUIDELINES.md gets a new "Motion Language" pointer section in a follow-up doc pass; (f) TODO_NEXT.md Phase 2g3 checklist grows a motion-adoption row for each template.
+
+
+---
+
+## D-080 — Medical Second Wave Live Rollout (Phase 2g3.2)
+
+**Date:** 2026-04-15 (Session 51)
+**Status:** Adopted
+**Branch:** `phase-medical-second-wave-v1`
+**Supersedes:** none
+**Successor of:** D-053 (Live Preview Law), D-054 (Premium Differentiation Law), D-047 (Chrome-Authoring Contract), D-057 (Tier Migration), D-063 (i18n/RTL Pilot Architecture), D-066 (Premium Forms), D-069 (language switcher scoped to authored locales), D-073 (eCommerce live rollout precedent), D-078 (Restaurant live-completion), D-079 (Agency live rollout)
+
+**Decision.** Three medical archetypes are promoted from `tier=draft` to `tier=published_live`:
+
+- `salute-studio-medico` — `clinic` archetype (institutional Milano poliambulatorio, SaluteVita Clinic)
+- `benessere-centro-olistico` — `wellness` archetype (holistic Bergamo Alta, Studio Armonia)
+- `famiglia-pediatria` — `family` archetype (pediatric Torino Crocetta, Pediatria Famiglia Plus)
+
+Each ships a full multi-page live skin folder + per-template content registry + 5-locale content trees (IT/EN/FR/ES/AR) + real RTL for Arabic + Pexels-curated imagery pool + preview PNG. Medical category transitions from 2/5 to **5/5 live**. Catalog reaches **16/20 `published_live`**.
+
+**Why.** Medical was the pilot category for the DNA system (Session 7) but only Cardio + Dermatologia had been promoted via the shared `specialist` archetype (Sessions 11 + 13). The remaining 3 medical templates sat with DNA + preview composition but no skin folders, effectively invisible to the public catalog per D-055. Phase 2g3.2 closes that gap and consolidates medical as a first-class multi-archetype category (5 templates across 3 distinct archetypes: specialist×2 + clinic + wellness + family).
+
+The three new siblings are also the first formal test of D-054's 10-gate law against a **shared category with 5 templates and 3 distinct archetypes**. Previous rollouts (business 2/2, portfolio 2/2, ecommerce 2/2, agency 2/2) never had more than 2 archetypes per category. Medical is the proof that D-054 scales to N=5.
+
+**Contract (enforced by this decision).**
+
+1. **Three distinct macro tones.** Salute = institutional-accessible (bright clinical teal + booking widget + solid-phone nav). Benessere = serene-olistico-sensorial (sage cream + full-bleed manifesto + pill-floating nav + dotted-leader pricelist + calendar-spot). Famiglia = warm-family-protective (peach coral + centered-soft rounded photo card + soft-pastel pill nav + portrait-stack pediatre + phone-and-chat with NO booking form).
+
+2. **Three distinct typography pairings.** Salute: Nunito Sans + Inter (institutional sans). Benessere: Cormorant Garamond italic 96px + Nunito (editorial serif poetic). Famiglia: Quicksand + Nunito (friendly rounded sans). The only constraint the three share: Italian primary content, mixed-script AR handling, Latin digits.
+
+3. **Three distinct conversion patterns.** Salute `booking-widget` (realistic 13-field form with specialty/doctor/date selects). Benessere `calendar-spot` (visual 7-day grid + rituale selection). Famiglia `phone-and-chat` (giant phone CTA + WhatsApp pill — no appointment form because warm-family pattern treats booking as a human conversation).
+
+4. **Three distinct class prefixes.** `.cl-*` (clinic), `.we-*` (wellness), `.fm-*` (family). Never cross-contaminate. Never reuse the `.sp-*` specialist skin.
+
+5. **D-047 from line one.** Every string in the 23 new skin HTML files comes from `{{ page_data.* }}` / `{{ site.* }}` / `{{ chrome.* }}` / `{% for %}` or is a CSS rule. Zero brand literals in skins. Zero "Studio Marani" / "Rambaldi" / "Milano" hardcoded. Verified by grep sweep.
+
+6. **D-054 10-gate matrix passes on every sibling pair bidirectionally.** Salute↔Cardio, Salute↔Derm, Salute↔Benessere, Salute↔Famiglia, Benessere↔Cardio, Benessere↔Derm, Benessere↔Famiglia, Famiglia↔Cardio, Famiglia↔Derm = 9 pairs × 10 gates = 90 differentiation checks, all pass.
+
+7. **Real i18n, not stub fallback.** The 12 locale files (3 templates × 4 locales) carry native voice per register: NHS/BUPA + Ramsay Santé + Sanitas + MSA-hospital-institutional for Salute; Goop/Tatler + Marie Claire Bien-Être + Mía Wellness + Vogue Arabia Living for Benessere; BabyCentre UK + Doctissimo Enfant + Guía Infantil + MSA-parenting for Famiglia. Italian proper names (SaluteVita Clinic, Studio Armonia, Pediatria Famiglia Plus, Rambaldi, Via Galvani, Via Arena, Corso Galileo Ferraris, Sant'Anna, Regina Margherita, Gaslini, etc.) are preserved verbatim in all non-IT locales. Latin digits (0–9) used everywhere including AR for dates/prices/phones. `unicode-bidi: isolate` handled by RTL CSS block in each skin's `_base.html`.
+
+8. **Pexels primary imagery.** Session 47 formalized Pexels as primary (Unsplash legacy kept for other pools). The 3 medical pools (`medical`, `medical-wellness`, `medical-family`) are now fully Pexels-curated with explicit attribution-ready photographer credits in `preview_imagery.py` comments. No video in this wave — the medical register favors still imagery + micro-motion over reel-style video (reserved for restaurant/commerce where ambient video already works).
+
+9. **Preview compositions D-047 clean.** 10 hardcoded literals in `preview_compositions/medical/{clinic,wellness,family}.html` lifted into DNA `content` dict keys (`services_title`, `services_link_all`, `card_cta`, `pricelist_title`, `pricelist_sub_prefix`, `therapists_label`, `hero_ribbon`, `hero_pebble_name`, `hero_pebble_note`, `hours_label`). Preview PNGs regenerated. This closes a latent D-047 miss from the original medical pilot (Session 7) that had stayed dormant because the literals shipped only in the preview composition layer (never in a live skin).
+
+10. **Stub-files-first wiring.** The 12 locale stub files `template_content_<slug>_{en,fr,es,ar}.py` are created as `from X import X_CONTENT_IT as X_CONTENT_LOC` first, letting `template_content.py` load cleanly and `sync_template_tiers` run immediately. Translator sub-agents then overwrite the stubs with native voice. This removes the chicken-and-egg between "DB needs tiers before smoke" and "smoke needs i18n before routes render" that blocked earlier rollouts.
+
+**Alternatives rejected.**
+
+- Rollout as "draft-with-preview-only" instead of full live. Rejected — would be a D-055 violation (the tier is binary: public or staff-preview) and would shrink the catalog surface to 13/20 again. The live-skin investment pays back in every buyer session that reaches the medical category listing.
+- Share the `specialist` skin for Salute (clinic) by adding a mode flag. Rejected — D-054 requires distinct silhouettes; a mode-flagged specialist skin cannot deliver split-booking-widget + solid-phone nav without becoming a fork. Better to author a separate skin from line one.
+- Skip appointment page for Salute (treat it as phone-only like Famiglia). Rejected — Salute's `booking-widget` conversion pattern requires a dedicated appointment route per D-053 baseline (medical = 5+1 pages). Demand for online booking in Italian institutional medicine is the business driver the archetype exists to serve.
+- Include `blog_list`/`blog_detail` for the 3 new templates. Rejected as out of scope — no business evidence that generalist/wellness/pediatric studios benefit from a blog as much as specialist editorial studios do. Can be added later as opt-in if a customer asks.
+- Add a video hero to Benessere. Rejected — the serene macro-tone reads better as a still wide photo of a calm spa room than as ambient video. Video for wellness evokes "commercial spa ad" not "refined ritual". Kept for gusto/luxe/elevate where ambient video already works.
+
+**Trade-off.** The rollout adds ~21,000 LOC (skin + IT + locales) to the repo. This is linear growth per template (~7k LOC per template including locales) and matches the Session 41 eCommerce + Session 48 Restaurant + Session 49 Agency precedents. The review surface scales linearly too — each translator sub-agent reviewed exactly their own template × 4 locales. Parallel authoring via sub-agents compressed the wall clock from an estimated ~16h sequential to ~4h.
+
+**Consequences.** (a) Phase 2g3.2 closes. (b) Medical category is 5/5 live; the remaining identity-crash categories (lawyer, real-estate) are now the sole blockers for the 20/20 milestone. (c) CATEGORY_ROADMAP.md status matrix updates to show medical fully CHIUSA. (d) `smoke_full.py` now covers 660 routes (was 530). (e) TEMPLATE_REGISTRY.json crosses 16 templates with full tier_reason D-054 notes. (f) Phase 3 (auth + checkout + editor + projects + commerce front-stage completion) unblocks only after lawyer + real-estate close in Phase 2g3.6. (g) Any future medical template (e.g. a second clinic template like `poliambulatorio-napoli`, a second wellness like `terme-ischia`, a second family like `pediatria-milano`) can reuse the existing 3 skin folders with zero new HTML — proving the D-047 + D-054 reuse model for N≥3 siblings per archetype.
