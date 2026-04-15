@@ -1,0 +1,298 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: mass-market
+   FOR     : accessible neighborhood real-estate agencies (Casa)
+   HERO    : cover photo + translucent search widget overlay
+   NAVBAR  : transparent over cover with wordmark + orange CTA
+   CARDS   : property-tile-specs (price/title/addr/specs/badge)
+   STATS   : 4-cell counter band
+
+   D-054 differentiation vs ultra-luxury-cinematic (Villa):
+   - daylight cover + search widget vs golden-hour fullbleed editorial
+   - Poppins navy + emerald + orange vs Cormorant black + champagne
+   - 4-up tile grid vs 2-up dossier
+   - "Richiedi visita" CTA vs "Private viewing"
+   - urban Italian neighborhoods vs Continental destinations
+============================================================ #}
+{% block extra_css %}
+  /* Cover hero — full-bleed photo with daylight gradient */
+  .re-hero {
+    position: absolute; top: 0; left: 0; right: 0; height: 600px;
+    background-image: linear-gradient(180deg, rgba(27,40,56,0.20) 0%, rgba(27,40,56,0.55) 70%, rgba(27,40,56,0.78) 100%),
+                      url('{{ imagery.0 }}');
+    background-size: cover; background-position: center;
+    color: #fff; overflow: hidden;
+  }
+  .re-hero .re-hero-inner {
+    position: absolute; top: 110px; left: 64px; right: 64px;
+    display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: start;
+  }
+  .re-hero .re-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    background: rgba(46,204,113,0.20); border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #fff;
+    border: 1px solid rgba(46,204,113,0.40);
+  }
+  .re-hero .re-eyebrow:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--secondary);
+  }
+  .re-hero h1 {
+    margin-top: 22px; font-size: 56px; font-weight: 700; line-height: 1.04;
+    letter-spacing: -0.022em; color: #fff; max-width: 16ch;
+  }
+  .re-hero h1 em { color: var(--accent); font-style: normal; font-weight: 800; }
+  .re-hero p {
+    margin-top: 20px; max-width: 50ch;
+    font-family: var(--body); font-size: 16px;
+    line-height: 1.6; color: rgba(255,255,255,0.86);
+  }
+  .re-hero .re-actions { margin-top: 28px; display: flex; gap: 14px; }
+  .re-hero .re-actions .pv-btn {
+    background: var(--accent); color: #fff;
+    padding: 14px 26px; border-radius: 999px;
+    font-weight: 700; font-size: 13px;
+  }
+  .re-hero .re-actions .pv-btn.outline {
+    background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.5);
+  }
+
+  /* SEARCH WIDGET — translucent overlay card, right column */
+  .re-search {
+    background: rgba(255,255,255,0.96);
+    border-radius: 18px; padding: 26px 26px 22px;
+    box-shadow: 0 28px 70px rgba(13,20,32,0.34);
+    border: 1px solid rgba(255,255,255,0.5);
+    color: var(--primary);
+  }
+  .re-search .re-search-lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+  }
+  .re-search h3 {
+    margin-top: 6px; font-family: var(--heading);
+    font-size: 20px; font-weight: 700; color: var(--primary);
+    letter-spacing: -0.012em; padding-bottom: 14px;
+    border-bottom: 1px solid rgba(15,23,42,0.10);
+  }
+  .re-search .re-grid {
+    margin-top: 16px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .re-search .re-cell {
+    padding: 12px 14px;
+    background: #f7f9fc; border-radius: 10px;
+    border: 1px solid rgba(15,23,42,0.10);
+  }
+  .re-search .re-cell .re-cell-lbl {
+    font-family: var(--body); font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: #64748b;
+  }
+  .re-search .re-cell .re-cell-val {
+    margin-top: 6px;
+    font-family: var(--heading); font-size: 14px; font-weight: 600;
+    color: var(--primary);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .re-search .re-cell .re-cell-val:after {
+    content: '⌄'; color: #94a3b8; font-size: 13px; font-weight: 800;
+  }
+  .re-search .re-search-cta {
+    margin-top: 16px;
+    display: block; padding: 13px 0; border-radius: 10px;
+    background: var(--secondary); color: #fff;
+    font-family: var(--body); font-weight: 700; font-size: 13px;
+    text-align: center; letter-spacing: 0.02em;
+  }
+
+  /* NAV — transparent over cover */
+  .pv-nav.is-on-cover {
+    background: linear-gradient(180deg, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0) 100%);
+  }
+  .pv-nav.is-on-cover .pv-cta .btn {
+    background: var(--accent); color: #fff; border-radius: 999px;
+    padding: 12px 24px; font-weight: 700;
+  }
+  .pv-nav.is-on-cover .pv-logo .pv-mark {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+  }
+
+  /* FEATURED LISTINGS — 4-up tile grid below hero */
+  .re-listings {
+    position: absolute; top: 640px; left: 64px; right: 64px;
+  }
+  .re-listings .re-list-head {
+    display: flex; justify-content: space-between; align-items: end;
+    margin-bottom: 18px;
+  }
+  .re-listings .re-list-head .re-list-eyebrow {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+  }
+  .re-listings .re-list-head h2 {
+    margin-top: 4px; font-size: 26px; color: var(--primary);
+    letter-spacing: -0.018em; font-weight: 700;
+  }
+  .re-listings .re-list-head .re-list-link {
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    color: var(--accent); border-bottom: 2px solid var(--accent);
+    padding-bottom: 3px;
+  }
+  .re-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  }
+  .re-tile {
+    background: #fff; border-radius: 12px; overflow: hidden;
+    border: 1px solid rgba(15,23,42,0.10);
+  }
+  .re-tile .re-tile-frame {
+    aspect-ratio: 4 / 3; background-size: cover; background-position: center;
+    position: relative;
+  }
+  .re-tile .re-badge {
+    position: absolute; top: 10px; left: 10px;
+    padding: 4px 10px; border-radius: 999px;
+    background: #fff; color: var(--primary);
+    font-family: var(--body); font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .re-tile .re-badge.is-esclusiva { background: var(--primary); color: var(--accent); }
+  .re-tile .re-badge.is-nuova { background: var(--secondary); color: #fff; }
+  .re-tile .re-tile-body { padding: 14px 16px 16px; }
+  .re-tile .re-price {
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    color: var(--primary); font-variant-numeric: tabular-nums;
+  }
+  .re-tile h4 {
+    margin-top: 6px;
+    font-family: var(--heading); font-size: 13.5px; font-weight: 600;
+    color: var(--primary); line-height: 1.3; letter-spacing: -0.01em;
+  }
+  .re-tile .re-addr {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 11px; color: #64748b; font-weight: 500;
+  }
+  .re-tile .re-addr:before {
+    content: '●'; color: var(--secondary); margin-right: 6px;
+    font-size: 6px; vertical-align: middle;
+  }
+  .re-tile .re-specs {
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid rgba(15,23,42,0.06);
+    display: flex; gap: 12px;
+    font-family: var(--body); font-size: 10px;
+    color: #64748b; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .re-tile .re-specs strong { color: var(--primary); margin-right: 3px; }
+
+  /* STATS BAND — 4-cell counter strip */
+  .re-stats {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: var(--primary);
+    padding: 22px 64px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    color: #fff; align-items: center;
+  }
+  .re-stats .re-stat .re-stat-num {
+    font-family: var(--heading); font-size: 28px; font-weight: 700;
+    color: var(--accent); letter-spacing: -0.02em; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .re-stats .re-stat .re-stat-lbl {
+    margin-top: 6px;
+    font-family: var(--body); font-size: 11px; color: rgba(255,255,255,0.75);
+  }
+{% endblock %}
+
+{% block body %}
+  <div class="re-hero">
+    <div class="re-hero-inner">
+      <div>
+        <span class="re-eyebrow">{{ dna.content.eyebrow }}</span>
+        <h1>{{ dna.content.headline|safe }}</h1>
+        <p>{{ dna.content.subhead }}</p>
+        <div class="re-actions">
+          <span class="pv-btn">{{ dna.content.primary_cta }}</span>
+          <span class="pv-btn outline">{{ dna.content.secondary_cta }}</span>
+        </div>
+      </div>
+      <aside class="re-search">
+        <div class="re-search-lbl">{{ dna.content.search_widget.label }}</div>
+        <h3>{{ dna.content.eyebrow }}</h3>
+        <div class="re-grid">
+          <div class="re-cell">
+            <div class="re-cell-lbl">{{ dna.content.search_widget.label }}</div>
+            <div class="re-cell-val">{{ dna.content.search_widget.location }}</div>
+          </div>
+          <div class="re-cell">
+            <div class="re-cell-lbl">{{ dna.content.nav_links.0 }}</div>
+            <div class="re-cell-val">{{ dna.content.search_widget.type }}</div>
+          </div>
+          <div class="re-cell">
+            <div class="re-cell-lbl">{{ dna.content.valuation_label }}</div>
+            <div class="re-cell-val">{{ dna.content.search_widget.price }}</div>
+          </div>
+          <div class="re-cell">
+            <div class="re-cell-lbl">{{ dna.content.nav_links.2 }}</div>
+            <div class="re-cell-val">{{ dna.content.search_widget.rooms }}</div>
+          </div>
+        </div>
+        <div class="re-search-cta">{{ dna.content.search_widget.cta }}</div>
+      </aside>
+    </div>
+  </div>
+
+  <nav class="pv-nav is-on-cover">
+    <div class="pv-logo"><span class="pv-mark">{{ brand_name|first }}</span> {{ brand_name }}</div>
+    <div class="pv-links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <div class="pv-cta">
+      <span style="opacity:0.85; font-size:13px;">{{ dna.content.phone }}</span>
+      <span class="btn">{{ dna.content.primary_cta }}</span>
+    </div>
+  </nav>
+
+  <div class="re-listings">
+    <div class="re-list-head">
+      <div>
+        <div class="re-list-eyebrow">{{ dna.content.listings_label }}</div>
+        <h2>{{ dna.content.listings_label }}</h2>
+      </div>
+      <span class="re-list-link">{{ dna.content.listings_link }}</span>
+    </div>
+    <div class="re-grid">
+      {% for price, title, area, rooms, surface, baths, badge in dna.content.listings %}
+        <div class="re-tile">
+          <div class="re-tile-frame" style="background-image:url('{{ imagery|at:forloop.counter }}');">
+            <span class="re-badge {% if badge == 'Esclusiva' %}is-esclusiva{% elif badge == 'Nuova' %}is-nuova{% endif %}">{{ badge }}</span>
+          </div>
+          <div class="re-tile-body">
+            <div class="re-price">{{ price }}</div>
+            <h4>{{ title }}</h4>
+            <div class="re-addr">{{ area }}</div>
+            <div class="re-specs">
+              <span><strong>{{ rooms }}</strong>🛏</span>
+              <span><strong>{{ surface }}</strong>m²</span>
+              <span><strong>{{ baths }}</strong>🛁</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="re-stats" data-lm-stagger data-lm-stagger-delay="100">
+    {% for num, lbl in dna.content.stats %}
+      <div class="re-stat">
+        <div class="re-stat-num" data-lm="counter">{{ num }}</div>
+        <div class="re-stat-lbl">{{ lbl }}</div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

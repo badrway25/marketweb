@@ -1,0 +1,143 @@
+{% extends "live_templates/lawyer/classic-gold/_base.html" %}
+
+{% block extra_css %}
+  /* Services ledger — 12 numbered practice areas */
+  .lx-services { padding: 72px 72px 100px; max-width: 1400px; margin: 0 auto; }
+  .lx-services .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  .lx-services .card {
+    padding: 36px 36px 32px;
+    border-top: 2px solid var(--primary);
+    background: var(--paper-3);
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  .lx-services .card .num {
+    font-family: var(--heading); font-size: 15px; font-weight: 500;
+    color: var(--secondary); letter-spacing: 0.04em;
+  }
+  .lx-services .card h3 { font-size: 28px; line-height: 1.15; font-weight: 500; }
+  .lx-services .card .blurb { font-family: var(--body); font-size: 15px; line-height: 1.72; color: var(--ink-soft); }
+  .lx-services .card .scope {
+    list-style: none;
+    padding: 18px 0;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .lx-services .card .scope li {
+    padding: 7px 0;
+    font-family: var(--body); font-size: 13px; color: var(--ink);
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .lx-services .card .scope li:before {
+    content: '→'; color: var(--secondary); font-weight: 700; flex-shrink: 0;
+  }
+  .lx-services .card .meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+    padding-top: 4px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .lx-services .card .meta strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 14px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 500;
+    font-style: italic;
+  }
+
+  /* Process strip — 4 numbered steps on dark ink */
+  .lx-process {
+    background: var(--primary); color: var(--on-dark);
+    padding: 100px 72px; max-width: none;
+    border-top: 1px solid rgba(197,165,90,0.18);
+  }
+  .lx-process .wrap { max-width: 1400px; margin: 0 auto; }
+  .lx-process .head { padding-bottom: 48px; border-bottom: 1px solid rgba(197,165,90,0.24); }
+  .lx-process .head .sec-label { color: var(--secondary); font-family: var(--body); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700; }
+  .lx-process .head h2 { color: var(--on-dark); font-size: 48px; max-width: 18ch; margin-top: 16px; font-weight: 500; }
+  .lx-process .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
+  .lx-process .step {
+    padding: 28px 0 0;
+    border-top: 2px solid var(--secondary);
+  }
+  .lx-process .step .num {
+    font-family: var(--heading); font-size: 52px; font-weight: 500;
+    color: var(--secondary); letter-spacing: -0.02em;
+  }
+  .lx-process .step h4 {
+    margin-top: 14px; color: var(--on-dark); font-size: 20px; font-weight: 500;
+  }
+  .lx-process .step p {
+    margin-top: 16px; font-family: var(--body); font-size: 14px;
+    line-height: 1.72; color: var(--on-dark-2);
+  }
+
+  /* Final CTA */
+  .lx-cta-svc { padding: 100px 72px; max-width: 1400px; margin: 0 auto; text-align: center; }
+  .lx-cta-svc h2 { font-size: 52px; line-height: 1.04; max-width: 22ch; margin: 0 auto; font-weight: 500; }
+  .lx-cta-svc em { color: var(--accent); }
+  .lx-cta-svc .intro { margin: 24px auto 0; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.72; }
+  .lx-cta-svc .actions { margin-top: 40px; display: flex; justify-content: center; gap: 24px; }
+
+  @media (max-width: 880px) {
+    .lx-services, .lx-process, .lx-cta-svc { padding: 60px 22px; }
+    .lx-services .grid { grid-template-columns: 1fr; gap: 28px; }
+    .lx-process .grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+    .lx-services .card .meta { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="lx-lead">
+  <div class="inner">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </div>
+</section>
+
+<section class="lx-services">
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="90">
+    {% for svc in page_data.services %}
+      <article class="card" data-lm="reveal">
+        <div>
+          <div class="num">{{ svc.num }} / {{ page_data.services|length }}</div>
+          <h3>{{ svc.title }}</h3>
+        </div>
+        <p class="blurb">{{ svc.blurb }}</p>
+        <ul class="scope">
+          {% for item in svc.scope %}<li>{{ item }}</li>{% endfor %}
+        </ul>
+        <div class="meta">
+          <div>{{ page_data.svc_lead_label }}<strong>{{ svc.lead }}</strong></div>
+          <div>{{ page_data.svc_jurisdiction_label }}<strong>{{ svc.jurisdiction }}</strong></div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="lx-process">
+  <div class="wrap">
+    <div class="head" data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.process_label }}</div>
+      <h2>{{ page_data.process_heading }}</h2>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+      {% for num, title, desc in page_data.process %}
+        <div class="step" data-lm="reveal">
+          <div class="num">{{ num }}</div>
+          <h4>{{ title }}</h4>
+          <p>{{ desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="lx-cta-svc">
+  <h2 data-lm="reveal-lg">{{ page_data.cta_heading }}</h2>
+  <p class="intro" data-lm="reveal">{{ page_data.cta_intro }}</p>
+  <div class="actions" data-lm="reveal">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="lx-btn-primary">{{ page_data.cta_primary }}</a>
+  </div>
+</section>
+{% endblock %}

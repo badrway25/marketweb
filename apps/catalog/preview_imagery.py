@@ -185,6 +185,36 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1591025207163-942350e47db2?w=800&q=80&auto=format&fit=crop",
     ],
+    # ─────────────────────────────────────────────────────────────
+    # Per-archetype lawyer pools — Session 53 lawyer live rollout.
+    # Zero URL overlap with each other and zero overlap with legacy
+    # `lawyer` pool. Lex (classic-gold) renders ink-dark heritage
+    # imagery (codici, leather-bound books, gavel portrait). Juris
+    # (modern-transparent) renders bright advisory imagery (modern
+    # meeting rooms, diverse professionals, glass offices).
+    # ─────────────────────────────────────────────────────────────
+    "lawyer-classic": [
+        # 0: hero — leather-bound Corpus Juris & brass scale, warm ink library
+        "https://images.pexels.com/photos/5668772/pexels-photo-5668772.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — senior lawyer reviewing contract at mahogany desk
+        "https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2-5: heritage practice imagery — libraries, gavel, robes, ink
+        "https://images.pexels.com/photos/5668473/pexels-photo-5668473.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/5669602/pexels-photo-5669602.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/5668854/pexels-photo-5668854.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/1181345/pexels-photo-1181345.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+    ],
+    "lawyer-modern": [
+        # 0: hero — bright modern advisory meeting, natural light, diverse team
+        "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — professional with laptop and documents, glass office
+        "https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2-5: modern consulting - laptop case, collaborative meeting, calendar
+        "https://images.pexels.com/photos/3184433/pexels-photo-3184433.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/5439381/pexels-photo-5439381.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+    ],
     "agency": [
         # 0: hero - dark creative workspace
         "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&auto=format&fit=crop",
@@ -313,6 +343,36 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80&auto=format&fit=crop",
+    ],
+    # ─────────────────────────────────────────────────────────────
+    # Per-archetype real-estate pools — Session 53 live rollout.
+    # Zero URL overlap with each other and zero overlap with legacy
+    # `real-estate` pool. Casa (mass-market) renders bright urban
+    # apartments and attainable family homes. Villa (ultra-luxury)
+    # renders cinematic editorial estates at golden hour and
+    # architectural details.
+    # ─────────────────────────────────────────────────────────────
+    "realestate-casa": [
+        # 0: hero — bright urban apartment building with balconies, daylight
+        "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — modern light living room, attainable family home
+        "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2-5: listing tiles — kitchens, bedrooms, studios, family homes
+        "https://images.pexels.com/photos/2724749/pexels-photo-2724749.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/2079249/pexels-photo-2079249.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+    ],
+    "realestate-villa": [
+        # 0: hero — cinematic luxury villa infinity pool at golden hour
+        "https://images.pexels.com/photos/2351649/pexels-photo-2351649.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — editorial villa interior, double-height salon
+        "https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2-5: luxury property editorial — terrace, architectural detail, pool, library
+        "https://images.pexels.com/photos/1438834/pexels-photo-1438834.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/2029694/pexels-photo-2029694.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        "https://images.pexels.com/photos/2462015/pexels-photo-2462015.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
     ],
     "portfolio": [
         # LEGACY pool, kept as fallback for any template that might still

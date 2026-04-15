@@ -1,0 +1,172 @@
+{% extends "live_templates/lawyer/classic-gold/_base.html" %}
+
+{% block extra_css %}
+  /* Studio history — vertical timeline */
+  .lx-history { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  .lx-history .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--rule); }
+  .lx-history .head .sec-label { color: var(--secondary); font-family: var(--body); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700; }
+  .lx-history .head h2 { margin-top: 16px; font-size: 48px; max-width: 14ch; }
+  .lx-history .head .intro { font-family: var(--body); font-size: 17px; line-height: 1.72; color: var(--ink-soft); max-width: 56ch; }
+  .lx-history .timeline { margin-top: 56px; display: grid; grid-template-columns: 160px 1fr; gap: 0 48px; }
+  .lx-history .timeline .step { display: contents; }
+  .lx-history .timeline .year-cell {
+    padding: 36px 0; border-top: 1px solid var(--rule);
+    font-family: var(--heading); font-size: 30px; font-weight: 500;
+    color: var(--secondary); letter-spacing: -0.01em;
+  }
+  .lx-history .timeline .body-cell {
+    padding: 36px 0 36px 32px;
+    border-top: 1px solid var(--rule); border-left: 1px solid var(--rule);
+    position: relative;
+  }
+  .lx-history .timeline .body-cell:before {
+    content: ''; position: absolute; left: -7px; top: 44px;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--secondary);
+  }
+  .lx-history .timeline .body-cell h3 {
+    font-size: 24px; font-weight: 500;
+  }
+  .lx-history .timeline .body-cell p {
+    margin-top: 16px; font-family: var(--body); font-size: 15px;
+    color: var(--ink-soft); line-height: 1.74; max-width: 64ch;
+  }
+
+  /* Method / values — 4 numbered principles */
+  .lx-values { background: var(--paper-2); padding: 100px 72px; max-width: none; border-top: 1px solid var(--rule); }
+  .lx-values .wrap { max-width: 1400px; margin: 0 auto; }
+  .lx-values .head { padding-bottom: 48px; border-bottom: 1px solid var(--rule); }
+  .lx-values .head .sec-label { color: var(--secondary); font-family: var(--body); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700; }
+  .lx-values .head h2 { margin-top: 16px; font-size: 56px; max-width: 18ch; }
+  .lx-values .head h2 em { color: var(--accent); }
+  .lx-values .head .intro { margin-top: 24px; max-width: 64ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.72; }
+  .lx-values .grid { margin-top: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+  .lx-values .item {
+    padding-top: 28px; border-top: 2px solid var(--primary);
+  }
+  .lx-values .item .num {
+    font-family: var(--heading); font-size: 15px; font-weight: 500;
+    color: var(--secondary); letter-spacing: 0.04em;
+  }
+  .lx-values .item h3 { margin-top: 14px; font-size: 26px; line-height: 1.18; font-weight: 500; }
+  .lx-values .item p { margin-top: 20px; font-family: var(--body); font-size: 15px; line-height: 1.74; color: var(--ink-soft); }
+
+  /* Coordinates band — 2 sedi on dark ink */
+  .lx-coords {
+    background: var(--primary); color: var(--on-dark);
+    padding: 80px 72px; max-width: none;
+    border-top: 1px solid rgba(197,165,90,0.18);
+  }
+  .lx-coords .wrap { max-width: 1400px; margin: 0 auto; }
+  .lx-coords .label {
+    color: var(--secondary);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+  }
+  .lx-coords .grid {
+    margin-top: 32px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 48px;
+    border-top: 1px solid rgba(197,165,90,0.24); padding-top: 32px;
+  }
+  .lx-coords .item .city {
+    font-family: var(--heading); font-size: 32px; color: var(--on-dark);
+    font-weight: 500;
+  }
+  .lx-coords .item .addr {
+    margin-top: 12px; font-family: var(--body); font-size: 14px;
+    color: var(--on-dark-2); line-height: 1.7;
+  }
+
+  /* Page-level CTA */
+  .lx-cta-band {
+    padding: 100px 72px; max-width: 1400px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 0.6fr; gap: 80px; align-items: end;
+  }
+  .lx-cta-band h2 { font-size: 48px; line-height: 1.04; max-width: 18ch; font-weight: 500; }
+  .lx-cta-band em { color: var(--accent); }
+  .lx-cta-band .intro { margin-top: 20px; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.72; }
+
+  @media (max-width: 880px) {
+    .lx-history, .lx-values, .lx-coords, .lx-cta-band { padding: 60px 22px; }
+    .lx-history .head, .lx-cta-band { grid-template-columns: 1fr; gap: 28px; }
+    .lx-history .timeline { grid-template-columns: 1fr; gap: 0; }
+    .lx-history .timeline .body-cell { border-left: 0; padding-left: 0; }
+    .lx-history .timeline .body-cell:before { display: none; }
+    .lx-values .grid { grid-template-columns: 1fr; gap: 36px; }
+    .lx-coords .grid { grid-template-columns: 1fr; gap: 28px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="lx-lead">
+  <div class="inner">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </div>
+</section>
+
+<section class="lx-history">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.history_label }}</div>
+      <h2>{{ page_data.history_heading }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.history_intro }}</p>
+  </div>
+  <div class="timeline" data-lm-stagger data-lm-stagger-delay="100">
+    {% for year, title, body in page_data.history %}
+      <div class="step">
+        <div class="year-cell" data-lm="reveal">{{ year }}</div>
+        <div class="body-cell" data-lm="reveal">
+          <h3>{{ title }}</h3>
+          <p>{{ body }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="lx-values">
+  <div class="wrap">
+    <div class="head" data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.values_label }}</div>
+      <h2>{{ page_data.values_heading|safe }}</h2>
+      <p class="intro">{{ page_data.values_intro }}</p>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+      {% for num, title, body in page_data.values %}
+        <article class="item" data-lm="reveal">
+          <div class="num">{{ num }}</div>
+          <h3>{{ title }}</h3>
+          <p>{{ body }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="lx-coords">
+  <div class="wrap">
+    <div class="label">{{ page_data.coordinates_label }}</div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+      {% for city, addr in page_data.coordinates %}
+        <div class="item" data-lm="reveal">
+          <div class="city">{{ city }}</div>
+          <div class="addr">{{ addr }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="lx-cta-band">
+  <div data-lm="reveal-lg">
+    <h2>{{ page_data.cta_heading }}</h2>
+    <p class="intro">{{ page_data.cta_intro }}</p>
+  </div>
+  <div data-lm="reveal">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="lx-btn-primary">{{ page_data.cta_primary }}</a>
+  </div>
+</section>
+{% endblock %}

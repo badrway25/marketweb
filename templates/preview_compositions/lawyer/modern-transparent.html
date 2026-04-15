@@ -1,0 +1,240 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: modern-transparent   (lawyer DNA — Phase 2g3.7)
+   FOR     : modern advisory boutique for startups, PMI, tech
+   MOOD    : light slate page + confident blue actions +
+             gold-yellow accent — kinetic sans, zero serif drama
+   HERO    : centered-advisory-manifesto — NO big hero photo,
+             eyebrow + kinetic headline + subhead are the hero
+   NAVBAR  : floating pill with wordmark + links + blue CTA
+   CARDS   : 6-cell sector pill grid + 4-cell outcome metric strip
+   CHIP    : bottom-pinned strategy-call "prossimo slot" chip
+
+   D-054 differentiation vs Lex (classic-gold):
+   - Light slate bg          (vs Lex ink cream + bordeaux)
+   - Confident blue CTA      (vs Lex gold underline + bordeaux btn)
+   - Kinetic sans serif      (vs Lex transitional serif)
+   - No hero photo           (vs Lex split ledger + portrait)
+   - Sector pill grid        (vs Lex numbered practice-area ledger)
+   - Outcome counter strip   (vs Lex heritage anniversary stats)
+   - Strategy-call chip      (vs Lex dossier-reservato ghost link)
+
+   D-047 chrome-authoring contract:
+   - Zero literal brand strings. Everything flows from dna.content.*
+   - No hardcoded image URLs. The composition is photo-light on
+     purpose — the archetype DOES NOT ship with a big hero photo.
+     Imagery.N could appear in a future iteration as a small aside
+     but is intentionally absent here to differentiate from Lex.
+   - No literal sector names, partner names, or client references.
+============================================================ #}
+{% block extra_css %}
+  body { background: #F7FAFC; color: #1A202C; }
+  .pv-frame { background: #F7FAFC; }
+
+  /* === FLOATING PILL NAV === */
+  .jr-nav {
+    position: absolute; top: 36px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 0;
+    padding: 10px 12px 10px 28px;
+    background: #FFFFFF;
+    border: 1px solid rgba(26,32,44,0.10);
+    border-radius: 999px;
+    box-shadow: 0 20px 44px -22px rgba(26,32,44,0.22), 0 4px 10px -4px rgba(26,32,44,0.06);
+    z-index: 10;
+  }
+  .jr-nav .wm {
+    font-family: var(--heading); font-weight: 800; font-size: 18px;
+    color: #1A202C; letter-spacing: -0.02em;
+    padding-right: 26px; margin-right: 26px;
+    border-right: 1px solid rgba(26,32,44,0.10);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .jr-nav .wm .crest {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--primary); color: var(--accent);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-weight: 800; font-size: 14px;
+  }
+  .jr-nav .links {
+    display: flex; gap: 28px;
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: rgba(26,32,44,0.62);
+  }
+  .jr-nav .cta {
+    margin-left: 28px;
+    padding: 11px 24px; border-radius: 999px;
+    background: var(--secondary); color: #FFFFFF;
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.005em;
+    box-shadow: 0 12px 26px -10px rgba(66,153,225,0.55);
+  }
+
+  /* === CENTERED ADVISORY MANIFESTO HERO === */
+  .jr-hero {
+    position: absolute; top: 128px; left: 0; right: 0; height: 360px;
+    text-align: center; padding: 0 160px;
+  }
+  .jr-hero .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 9px 20px; border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid rgba(26,32,44,0.12);
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em;
+    color: rgba(26,32,44,0.65);
+  }
+  .jr-hero .eyebrow:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--secondary);
+  }
+  .jr-hero h1 {
+    margin-top: 28px;
+    font-family: var(--heading); font-size: 88px; font-weight: 800;
+    line-height: 0.98; letter-spacing: -0.04em;
+    color: #1A202C; max-width: 1100px; margin-left: auto; margin-right: auto;
+  }
+  .jr-hero h1 em {
+    font-style: normal; font-weight: 800;
+    color: var(--secondary);
+  }
+  .jr-hero .sub {
+    margin-top: 26px; max-width: 640px; margin-left: auto; margin-right: auto;
+    font-family: var(--body); font-size: 17px; line-height: 1.58;
+    color: rgba(26,32,44,0.62);
+  }
+  .jr-hero .cta-row {
+    margin-top: 30px; display: inline-flex; align-items: center; gap: 22px;
+  }
+  .jr-hero .cta-row .primary {
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+    color: #FFFFFF;
+    background: var(--secondary);
+    padding: 15px 32px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 12px;
+    box-shadow: 0 14px 34px -12px rgba(66,153,225,0.55);
+  }
+  .jr-hero .cta-row .primary:after {
+    content: '→'; font-family: var(--heading); font-size: 17px;
+  }
+  .jr-hero .cta-row .secondary {
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: rgba(26,32,44,0.78);
+    border-bottom: 1px solid rgba(26,32,44,0.22); padding-bottom: 3px;
+  }
+
+  /* === 6-CELL SECTOR GRID === */
+  .jr-sectors {
+    position: absolute; top: 538px; left: 64px; right: 64px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .jr-sectors .card {
+    background: #FFFFFF;
+    border: 1px solid rgba(26,32,44,0.10);
+    border-radius: 18px;
+    padding: 22px 22px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 110px;
+  }
+  .jr-sectors .card .num {
+    font-family: var(--heading); font-size: 11px; font-weight: 800;
+    letter-spacing: 0.18em; color: var(--secondary);
+  }
+  .jr-sectors .card h3 {
+    font-family: var(--heading); font-size: 17px; font-weight: 700;
+    color: #1A202C; letter-spacing: -0.01em;
+  }
+  .jr-sectors .card p {
+    font-family: var(--body); font-size: 11.5px; line-height: 1.45;
+    color: rgba(26,32,44,0.58);
+  }
+
+  /* === OUTCOME METRIC STRIP (bottom) === */
+  .jr-metrics {
+    position: absolute; bottom: 82px; left: 64px; right: 64px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .jr-metrics .stat {
+    text-align: center;
+    padding: 18px 10px;
+    background: #FFFFFF;
+    border: 1px solid rgba(26,32,44,0.10);
+    border-radius: 16px;
+  }
+  .jr-metrics .stat .num {
+    font-family: var(--heading); font-size: 38px; font-weight: 800;
+    color: #1A202C; letter-spacing: -0.025em; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .jr-metrics .stat .lbl {
+    display: block; margin-top: 8px;
+    font-family: var(--body); font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.08em; color: rgba(26,32,44,0.55);
+  }
+
+  /* === SPRINT CHIP (bottom-right pinned) === */
+  .jr-sprint-chip {
+    position: absolute; bottom: 20px; right: 64px;
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 12px 22px; border-radius: 999px;
+    background: var(--primary); color: #F7FAFC;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: 0 16px 40px -16px rgba(26,32,44,0.50);
+    z-index: 11;
+  }
+  .jr-sprint-chip .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(236,201,75,0.25);
+  }
+  .jr-sprint-chip .cta {
+    color: var(--accent); font-weight: 700;
+    border-left: 1px solid rgba(247,250,252,0.15); padding-left: 12px;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="jr-nav">
+    <div class="wm"><span class="crest">{{ brand_name|slice:":1" }}</span>{{ brand_name }}</div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <span class="cta">{{ dna.content.primary_cta }}</span>
+  </nav>
+
+  <section class="jr-hero">
+    <span class="eyebrow">{{ dna.content.eyebrow }}</span>
+    <h1>{{ dna.content.headline|safe }}</h1>
+    <p class="sub">{{ dna.content.subhead }}</p>
+    <div class="cta-row">
+      <span class="primary">{{ dna.content.primary_cta }}</span>
+      <span class="secondary">{{ dna.content.secondary_cta }} →</span>
+    </div>
+  </section>
+
+  <div class="jr-sectors">
+    {% for num, title, blurb in dna.content.sectors %}
+      <article class="card">
+        <span class="num">{{ num }}</span>
+        <h3>{{ title }}</h3>
+        <p>{{ blurb }}</p>
+      </article>
+    {% endfor %}
+  </div>
+
+  <div class="jr-metrics">
+    {% for num, label in dna.content.metric_strip %}
+      <div class="stat">
+        <div class="num" data-lm="counter">{{ num }}</div>
+        <span class="lbl">{{ label }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="jr-sprint-chip">
+    <span class="dot"></span>
+    <span>{{ dna.content.sprint_chip }}</span>
+  </div>
+{% endblock %}

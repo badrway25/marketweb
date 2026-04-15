@@ -1,0 +1,284 @@
+{% extends "live_templates/real-estate/mass-market/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     FILTER & SORT BAR — sticky-ish row above the listings grid
+  ============================================================ */
+  .dm-filter-bar {
+    padding: 0 48px 32px; max-width: 1360px; margin: 0 auto;
+    display: flex; gap: 24px; flex-wrap: wrap; align-items: center;
+  }
+  .dm-filter-bar .dm-filter-group {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .dm-filter-bar .dm-filter-lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .dm-filter-bar .dm-filter-pill {
+    padding: 8px 16px; border-radius: 999px;
+    background: #FFFFFF; color: var(--navy);
+    border: 1px solid var(--rule);
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .dm-filter-bar .dm-filter-pill:hover {
+    border-color: var(--orange); color: var(--orange);
+  }
+  .dm-filter-bar .dm-filter-pill.is-on {
+    background: var(--navy); color: #FFFFFF; border-color: var(--navy);
+  }
+  .dm-filter-bar .dm-sort-select {
+    margin-left: auto;
+    padding: 8px 16px; border-radius: 999px;
+    background: #FFFFFF; border: 1px solid var(--rule);
+    color: var(--navy);
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ============================================================
+     LISTINGS GRID — 12 property tiles, 3-up
+  ============================================================ */
+  .dm-listings {
+    padding: 0 48px 64px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-listings .dm-listings-meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 14px 0 24px;
+    border-top: 2px solid var(--navy);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 32px;
+  }
+  .dm-listings .dm-listings-count {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange);
+  }
+  .dm-listings .dm-listings-intro {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+    font-style: italic; max-width: 56ch; line-height: 1.55;
+    text-align: right;
+  }
+  .dm-listings .dm-listings-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+  }
+
+  /* ============================================================
+     MAP STRIP — placeholder coverage band
+  ============================================================ */
+  .dm-map {
+    background: var(--paper-2); padding: 88px 48px;
+  }
+  .dm-map .dm-map-inner { max-width: 1360px; margin: 0 auto; }
+  .dm-map .dm-map-head {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;
+    margin-bottom: 36px;
+  }
+  .dm-map .dm-map-card {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color: #FFFFFF; border-radius: 18px;
+    padding: 48px 48px;
+    overflow: hidden; position: relative;
+  }
+  .dm-map .dm-map-card:before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(46,204,113,0.20) 0%, transparent 20%),
+      radial-gradient(circle at 70% 20%, rgba(230,126,34,0.18) 0%, transparent 18%),
+      radial-gradient(circle at 40% 70%, rgba(46,204,113,0.16) 0%, transparent 16%),
+      radial-gradient(circle at 80% 80%, rgba(230,126,34,0.16) 0%, transparent 14%),
+      radial-gradient(circle at 25% 85%, rgba(46,204,113,0.14) 0%, transparent 12%);
+  }
+  .dm-map .dm-map-card .dm-map-content { position: relative; z-index: 1; }
+  .dm-map .dm-map-card .dm-map-cells {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px;
+  }
+  .dm-map .dm-map-cell {
+    padding: 18px 20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 12px;
+  }
+  .dm-map .dm-map-cell .dm-map-cell-name {
+    font-family: var(--heading); font-size: 15px; font-weight: 700;
+    color: #FFFFFF; letter-spacing: -0.012em;
+  }
+  .dm-map .dm-map-cell .dm-map-cell-count {
+    margin-top: 6px;
+    font-family: var(--body); font-size: 12px; color: var(--orange);
+    font-weight: 600; font-variant-numeric: tabular-nums;
+  }
+  .dm-map .dm-map-note {
+    margin-top: 28px;
+    font-family: var(--body); font-size: 13px;
+    color: rgba(255,255,255,0.6); font-style: italic;
+    max-width: 64ch;
+  }
+
+  /* ============================================================
+     CTA BAND — orange split panel "non trovi?" close
+  ============================================================ */
+  .dm-cta-final {
+    padding: 96px 48px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-cta-final .dm-cta-final-card {
+    background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+    color: #FFFFFF; border-radius: 22px;
+    padding: 56px 56px;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: center;
+    overflow: hidden; position: relative;
+  }
+  .dm-cta-final .dm-cta-final-card:before {
+    content: ''; position: absolute; left: -120px; bottom: -120px;
+    width: 380px; height: 380px; border-radius: 50%;
+    background: radial-gradient(circle, var(--navy) 0%, transparent 70%);
+    opacity: 0.32;
+  }
+  .dm-cta-final .dm-cta-final-card .dm-cta-final-text { position: relative; z-index: 1; }
+  .dm-cta-final .dm-cta-final-card .dm-cta-final-label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.9);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .dm-cta-final .dm-cta-final-card .dm-cta-final-label:before {
+    content: ''; width: 28px; height: 2px; background: #FFFFFF;
+  }
+  .dm-cta-final .dm-cta-final-card h2 {
+    margin-top: 16px;
+    font-family: var(--heading); font-size: 44px; font-weight: 700;
+    color: #FFFFFF; line-height: 1.06; letter-spacing: -0.02em;
+  }
+  .dm-cta-final .dm-cta-final-card h2 em { color: var(--navy); font-style: normal; }
+  .dm-cta-final .dm-cta-final-card .dm-cta-final-intro {
+    margin-top: 18px; max-width: 56ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.65;
+    color: rgba(255,255,255,0.92);
+  }
+  .dm-cta-final .dm-cta-final-card .dm-cta-final-actions {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; gap: 14px; align-items: stretch;
+  }
+  .dm-cta-final .dm-cta-final-card .dm-btn { justify-content: center; }
+  .dm-cta-final .dm-cta-final-card .dm-btn.dm-btn-navy { background: var(--navy); }
+
+  @media (max-width: 1100px) {
+    .dm-filter-bar, .dm-listings, .dm-cta-final { padding-left: 24px; padding-right: 24px; }
+    .dm-listings .dm-listings-grid { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .dm-listings .dm-listings-meta { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .dm-listings .dm-listings-intro { text-align: left; }
+    .dm-map { padding: 64px 24px; }
+    .dm-map .dm-map-head { grid-template-columns: 1fr; gap: 24px; }
+    .dm-map .dm-map-card { padding: 32px 28px; }
+    .dm-map .dm-map-card .dm-map-cells { grid-template-columns: repeat(2, 1fr); }
+    .dm-cta-final { padding: 64px 24px; }
+    .dm-cta-final .dm-cta-final-card { grid-template-columns: 1fr; gap: 28px; padding: 40px 32px; }
+    .dm-cta-final .dm-cta-final-card h2 { font-size: 32px; }
+  }
+  @media (max-width: 880px) {
+    .dm-filter-bar { gap: 16px; padding-bottom: 24px; }
+    .dm-filter-bar .dm-sort-select { margin-left: 0; }
+    .dm-listings .dm-listings-grid { grid-template-columns: 1fr; }
+    .dm-map .dm-map-card .dm-map-cells { grid-template-columns: 1fr; }
+    .dm-cta-final .dm-cta-final-card { padding: 32px 22px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="dm-lead">
+  <span class="dm-eyebrow">{{ page_data.eyebrow }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="dm-intro">{{ page_data.intro }}</p>
+</section>
+
+<div class="dm-filter-bar" data-lm="reveal">
+  <div class="dm-filter-group">
+    <span class="dm-filter-lbl">{{ page_data.filter_label }}</span>
+    {% for filter in page_data.filters %}
+      <span class="dm-filter-pill {% if forloop.first %}is-on{% endif %}">{{ filter }}</span>
+    {% endfor %}
+  </div>
+  <select class="dm-sort-select" aria-label="{{ page_data.sort_label }}">
+    {% for opt in page_data.sort_options %}
+      <option>{{ opt }}</option>
+    {% endfor %}
+  </select>
+</div>
+
+<section class="dm-listings">
+  <div class="dm-listings-meta">
+    <span class="dm-listings-count">{{ page_data.ledger_label }} · {{ posts|length }}+</span>
+    <span class="dm-listings-intro">{{ page_data.ledger_intro }}</span>
+  </div>
+  <div class="dm-listings-grid" data-lm-stagger data-lm-stagger-delay="60">
+    {% for post in posts %}
+      <a class="dm-tile" href="{% url 'catalog:live_template_post' template.category.slug template.slug page.slug post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <div class="dm-tile-frame">
+          <img src="https://images.pexels.com/photos/{% cycle '1571460' '1438834' '2079249' '1571463' '2351649' '1396132' '1732414' '2029694' '2724749' '1643383' '323780' '2462015' as imgid %}/pexels-photo-{{ imgid }}.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop" alt="{{ post.title }}" loading="lazy">
+          <span class="dm-tile-badge {% if post.badge == 'Esclusiva' %}dm-tile-badge-esclusiva{% elif post.badge == 'Nuova' %}dm-tile-badge-nuova{% endif %}">{{ post.badge }}</span>
+          <span class="dm-tile-ref">{{ site.tile_reference_label }} {{ post.reference }}</span>
+        </div>
+        <div class="dm-tile-body">
+          <div class="dm-tile-price">{{ post.price }}</div>
+          <div class="dm-tile-title">{{ post.title }}</div>
+          <div class="dm-tile-addr">{{ post.area }}</div>
+          <div class="dm-tile-specs">
+            <span><strong>{{ post.rooms }}</strong>{{ site.tile_rooms_label|lower }}</span>
+            <span><strong>{{ post.surface }}</strong>{{ site.tile_surface_unit }}</span>
+            <span><strong>{{ post.bathrooms }}</strong>{{ site.tile_bathrooms_label|lower }}</span>
+          </div>
+          <span class="dm-tile-cta">
+            {{ site.tile_visit_cta }}
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="dm-map">
+  <div class="dm-map-inner">
+    <div class="dm-map-head">
+      <div data-lm="reveal-lg">
+        <div class="dm-sec-label">{{ page_data.map_label }}</div>
+        <h2>{{ page_data.map_heading|safe }}</h2>
+        <p class="dm-sec-intro">{{ page_data.map_intro }}</p>
+      </div>
+    </div>
+    <div class="dm-map-card" data-lm="reveal">
+      <div class="dm-map-content">
+        <div class="dm-map-cells">
+          {% for name, count in page_data.map_cells %}
+            <div class="dm-map-cell">
+              <div class="dm-map-cell-name">{{ name }}</div>
+              <div class="dm-map-cell-count">{{ count }}</div>
+            </div>
+          {% endfor %}
+        </div>
+        <p class="dm-map-note">{{ page_data.map_note }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dm-cta-final">
+  <div class="dm-cta-final-card" data-lm="reveal">
+    <div class="dm-cta-final-text">
+      <div class="dm-cta-final-label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading|safe }}</h2>
+      <p class="dm-cta-final-intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div class="dm-cta-final-actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-navy">
+        <span>{{ page_data.cta_primary }}</span>
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-ghost-light">
+        <span>{{ page_data.cta_secondary }}</span>
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends "live_templates/lawyer/modern-transparent/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     TOPICS BAR — filter pills (static)
+  ============================================================ */
+  .jr-topics {
+    margin-top: -16px; padding: 24px 32px;
+    max-width: 1240px; margin-left: auto; margin-right: auto;
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  }
+  .jr-topics .pill {
+    padding: 8px 16px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--rule);
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: var(--ink-mute);
+    transition: border-color .2s ease, color .2s ease;
+  }
+  .jr-topics .pill:hover { border-color: var(--secondary); color: var(--secondary); }
+  .jr-topics .pill.active { background: var(--secondary); color: var(--on-blue); border-color: var(--secondary); }
+
+  /* ============================================================
+     POSTS GRID — 2 columns, editorial cards
+  ============================================================ */
+  .jr-posts {
+    padding: 32px 32px 80px;
+    max-width: 1240px; margin: 0 auto;
+  }
+  .jr-posts .intro-row { margin-bottom: 48px; }
+  .jr-posts .intro-row p {
+    max-width: 62ch; margin: 0 auto;
+    font-family: var(--body); font-size: 15px; line-height: 1.65;
+    color: var(--ink-mute); text-align: center;
+  }
+  .jr-posts .grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px;
+  }
+  .jr-posts .card {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 22px; padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 16px;
+    transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  .jr-posts .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--secondary);
+    box-shadow: 0 18px 40px -20px rgba(66,153,225,0.24);
+  }
+  .jr-posts .card .head {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .jr-posts .card .topic {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; color: var(--secondary);
+    padding: 5px 12px; background: rgba(66,153,225,0.08);
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+  .jr-posts .card .date {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
+    letter-spacing: 0.04em;
+  }
+  .jr-posts .card h3 {
+    font-size: 24px; line-height: 1.22;
+  }
+  .jr-posts .card .lead {
+    font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: var(--ink-mute);
+  }
+  .jr-posts .card .meta {
+    margin-top: auto; padding-top: 16px; border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 14px;
+  }
+  .jr-posts .card .meta .author {
+    font-family: var(--body); font-size: 12px; font-weight: 600; color: var(--ink-soft);
+  }
+  .jr-posts .card .meta .reading {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-faint);
+  }
+  .jr-posts .card .arrow {
+    color: var(--secondary); font-weight: 700; font-size: 14px;
+  }
+  .jr-posts .card .arrow:after { content: '→'; margin-left: 6px; }
+  @media (max-width: 880px) {
+    .jr-posts .grid { grid-template-columns: 1fr; }
+  }
+
+  /* Page CTA reuse */
+  .jr-page-cta {
+    padding: 72px 32px; max-width: 1100px; margin: 0 auto; text-align: center;
+  }
+  .jr-page-cta .panel {
+    padding: 50px 40px; border-radius: 24px;
+    background: var(--panel); border: 1px solid var(--rule);
+    box-shadow: 0 24px 60px -28px rgba(26,32,44,0.18);
+  }
+  .jr-page-cta h2 { font-size: 36px; line-height: 1.08; max-width: 22ch; margin: 0 auto; }
+  .jr-page-cta .intro {
+    margin-top: 18px; max-width: 56ch; margin-left: auto; margin-right: auto;
+    font-family: var(--body); font-size: 16px; line-height: 1.62;
+    color: var(--ink-mute);
+  }
+  .jr-page-cta .actions { margin-top: 28px; display: inline-flex; gap: 18px; }
+{% endblock %}
+
+{% block content %}
+<section class="jr-lead">
+  <span class="eyebrow">{{ page_data.eyebrow }}</span>
+  <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+  <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
+</section>
+
+<nav class="jr-topics" aria-label="{{ page_data.topics_label }}" data-lm="reveal">
+  {% for t in page_data.topics %}
+    <span class="pill{% if forloop.first %} active{% endif %}">{{ t }}</span>
+  {% endfor %}
+</nav>
+
+<section class="jr-posts">
+  <div class="intro-row" data-lm="reveal">
+    <p>{{ page_data.posts_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for post in posts %}
+      <a href="{% url 'catalog:live_template_post' template.category.slug template.slug page.slug post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="card" data-lm="reveal">
+        <div class="head">
+          <span class="topic">{{ post.topic }}</span>
+          <span class="date">{{ post.date }}</span>
+        </div>
+        <h3>{{ post.title }}</h3>
+        <p class="lead">{{ post.lead }}</p>
+        <div class="meta">
+          <div>
+            <span class="author">{{ post.author }}</span>
+            <span class="reading jr-mono"> · {{ post.reading }}</span>
+          </div>
+          <span class="arrow">{{ chrome.post_read_more|default:"Leggi" }}</span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="jr-page-cta">
+  <div class="panel" data-lm="reveal">
+    <h2>{{ page_data.cta_heading }}</h2>
+    <p class="intro">{{ page_data.cta_intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="jr-btn">{{ page_data.cta_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

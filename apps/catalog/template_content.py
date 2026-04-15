@@ -2513,6 +2513,51 @@ from apps.catalog.template_content_famiglia_fr import FAMIGLIA_CONTENT_FR  # noq
 from apps.catalog.template_content_famiglia_es import FAMIGLIA_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_famiglia_ar import FAMIGLIA_CONTENT_AR  # noqa: E402
 
+# Phase 2g3.7 — Lawyer live rollout (Session 53).
+# Lex (classic-gold archetype) flips from tier=draft to tier=published_live
+# with 5 locales (it/en/fr/es/ar). EN/FR/ES/AR currently stub to the IT
+# tree — parallel sub-agents in the same session will author the real
+# translations following the D-072 pattern (distinct register per locale).
+from apps.catalog.template_content_lex import LEX_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_lex_en import LEX_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_lex_fr import LEX_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_lex_es import LEX_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_lex_ar import LEX_CONTENT_AR  # noqa: E402
+# Juris (modern-transparent archetype) is Lex's D-054 sibling — sans DM Sans,
+# slate + blue + yellow, strategy-call conversion, 2018 founded, advisory-modern
+# tone. Must stay opposite to Lex across every axis (see template_content_juris
+# header for the 10-gate differentiation).
+from apps.catalog.template_content_juris import JURIS_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_juris_en import JURIS_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_juris_fr import JURIS_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_juris_es import JURIS_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_juris_ar import JURIS_CONTENT_AR  # noqa: E402
+
+# Real estate live rollout (Phase 2g3.7, Session 53).
+# Casa (mass-market archetype) flips from tier=draft to tier=published_live
+# with 5 locales (it/en/fr/es/ar). EN/FR/ES/AR currently stub to the IT
+# tree per D-068 — the locale switcher stays scoped to IT until a full
+# per-locale authoring pass replaces the re-export with a real dict.
+from apps.catalog.template_content_casa import CASA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_casa_en import CASA_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_casa_fr import CASA_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_casa_es import CASA_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_casa_ar import CASA_CONTENT_AR  # noqa: E402
+# Villa (ultra-luxury-cinematic archetype) is Casa's D-054 sibling — fullbleed
+# editorial cover hero + Cormorant italic drama + champagne/black palette +
+# 2-col property-dossier cards + private-viewing concierge CTA + Continental
+# Portofino/Saint-Tropez/Chianti territory. Must stay opposite to Casa across
+# every axis (search vs fullbleed · tile-grid vs dossier-cards · Poppins
+# geometric vs Cormorant serif · €420K-€1.25M visible vs prezzi invisibili ·
+# Milano/Torino urban vs Continental Portofino/Chianti · visit-request vs
+# private-viewing NDA). See template_content_villa header for the 10-gate
+# differentiation vs Casa AND vs Luxe.
+from apps.catalog.template_content_villa import VILLA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_villa_en import VILLA_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_villa_fr import VILLA_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_villa_es import VILLA_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_villa_ar import VILLA_CONTENT_AR  # noqa: E402
+
 
 TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     "cardio-studio-specialistico": {
@@ -2628,6 +2673,36 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": FAMIGLIA_CONTENT_FR,
         "es": FAMIGLIA_CONTENT_ES,
         "ar": FAMIGLIA_CONTENT_AR,
+    },
+    # Lawyer live rollout (Phase 2g3.7, Session 53)
+    "lex-studio-legale": {
+        "it": LEX_CONTENT_IT,
+        "en": LEX_CONTENT_EN,
+        "fr": LEX_CONTENT_FR,
+        "es": LEX_CONTENT_ES,
+        "ar": LEX_CONTENT_AR,
+    },
+    "juris-avvocato-moderno": {
+        "it": JURIS_CONTENT_IT,
+        "en": JURIS_CONTENT_EN,
+        "fr": JURIS_CONTENT_FR,
+        "es": JURIS_CONTENT_ES,
+        "ar": JURIS_CONTENT_AR,
+    },
+    # Real estate live rollout (Phase 2g3.7, Session 53)
+    "casa-agenzia-immobiliare": {
+        "it": CASA_CONTENT_IT,
+        "en": CASA_CONTENT_EN,
+        "fr": CASA_CONTENT_FR,
+        "es": CASA_CONTENT_ES,
+        "ar": CASA_CONTENT_AR,
+    },
+    "villa-immobili-lusso": {
+        "it": VILLA_CONTENT_IT,
+        "en": VILLA_CONTENT_EN,
+        "fr": VILLA_CONTENT_FR,
+        "es": VILLA_CONTENT_ES,
+        "ar": VILLA_CONTENT_AR,
     },
 }
 

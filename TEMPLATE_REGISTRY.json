@@ -353,8 +353,8 @@
       "price": 69,
       "featured": true,
       "status": "published",
-      "tier": "draft",
-      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, shared lawyer.html with Juris hardcoding `Studio legale dal 1962`). Phase 2g3.6 will author the classic-gold skin after 2g2x.1 closes."
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.7 · Session 53 · classic-gold archetype (split-ledger-monogram hero, practice-area ledger, private-consultation CTA). 5 locales + real RTL (initial stubs, translations in parallel sub-agents). D-054 10/10 vs Juris (serif gold vs sans blue · ledger vs sprint · consultation vs strategy-call)."
     },
     {
       "slug": "juris-avvocato-moderno",
@@ -368,8 +368,8 @@
       "price": 59,
       "featured": false,
       "status": "published",
-      "tier": "draft",
-      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, shared lawyer.html with Lex rendering Lex's 60-year heritage on Juris). Phase 2g3.6 will author the modern-transparent skin after 2g2x.1 closes."
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.7 · Session 53 · modern-transparent archetype (centered-advisory-manifesto hero, sector grid, process sprint, outcome metrics, strategy-call conversion). 5 locales + real RTL. D-054 10/10 vs Lex (sans blue vs serif gold · sprint vs ledger · strategy-call vs consultation)."
     },
     {
       "slug": "casa-agenzia-immobiliare",
@@ -380,11 +380,20 @@
       "palette": {"primary": "#1B2838", "secondary": "#2ECC71", "accent": "#E67E22"},
       "typography": "Poppins + Inter",
       "personality": "aspirazionale, affidabile, elegante",
+      "archetype": "mass-market",
+      "imagery_key": "realestate-casa",
+      "font_pairing": "Poppins + Inter",
+      "dna_phase": "2g3.7",
+      "session_closed": 53,
+      "live_preview": true,
+      "live_pages": ["home", "immobili", "immobili/<post>", "quartieri", "agenzia", "valutazione", "contatti"],
+      "locales": ["it", "en", "fr", "es", "ar"],
+      "rtl": true,
       "price": 79,
       "featured": false,
       "status": "published",
-      "tier": "draft",
-      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, shared real-estate.html with Villa hardcoding `600+ immobili · €500K–€1.2M` mass-market search box). Phase 2g3.6 will author the mass-market skin after 2g2x.1 closes."
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.7 · Session 53 · mass-market archetype (search-listings-grid hero, property-tile-specs cards, viewing-request CTA, daylight imagery). 5 locales + real RTL. D-054 10/10 vs Villa (Poppins navy emerald vs Cormorant black champagne · tile grid vs dossier · visit vs private viewing · urban IT vs Continental)."
     },
     {
       "slug": "villa-immobili-lusso",
@@ -398,8 +407,8 @@
       "price": 99,
       "featured": false,
       "status": "published",
-      "tier": "draft",
-      "tier_reason": "Phase 2g2x.1 CRITICO identity crash (no DNA, ultra-luxury template rendering mass-market copy from shared real-estate.html). Phase 2g3.6 will author the ultra-luxury-cinematic skin after 2g2x.1 closes."
+      "tier": "published_live",
+      "tier_reason": "Phase 2g3.7 · Session 53 · ultra-luxury-cinematic archetype (fullbleed-editorial-cover hero, property-dossier cards, private-viewing CTA, champagne/black palette, Continental territory). 5 locales + real RTL. D-054 10/10 vs Casa (editorial vs tile · fullbleed vs search · Cormorant vs Poppins · concierge vs visit · Continental vs Italian-urban) and 10/10 vs Luxe (real-estate dossier vs fashion lookbook · private viewing vs atelier request · no cart)."
     },
     {
       "slug": "chiara-portfolio-creativo",

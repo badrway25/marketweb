@@ -1,0 +1,548 @@
+{% extends "live_templates/real-estate/ultra-luxury-cinematic/_base.html" %}
+{% block extra_css %}
+  /* ========================================================
+     Fullbleed editorial cover hero — this IS the opposite of
+     Casa's search-widget daylight grid. Cinematic dark dominant
+     photo + champagne wordmark + serif drama headline.
+  ======================================================== */
+  .vp-hero {
+    position: relative;
+    min-height: 860px;
+    margin-top: -74px; /* pull under sticky transparent nav */
+    padding: 140px 56px 120px;
+    background: var(--ink) center/cover;
+    color: var(--bone);
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .vp-hero .vp-hero-cover {
+    position: absolute; inset: 0; z-index: -2;
+    background: var(--ink) center/cover;
+    filter: grayscale(10%) contrast(1.08) brightness(0.72);
+    will-change: transform;
+  }
+  .vp-hero::after {
+    content: ''; position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(10,10,10,0.48) 0%, rgba(10,10,10,0.12) 26%, rgba(10,10,10,0.18) 64%, rgba(10,10,10,0.90) 100%),
+      linear-gradient(90deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0) 38%, rgba(10,10,10,0) 100%);
+  }
+
+  /* Wordmark + location eyebrow · top-left corner */
+  .vp-hero .ledger {
+    position: absolute; top: 122px; left: 56px;
+    display: flex; flex-direction: column; gap: 18px;
+    max-width: 520px;
+  }
+  .vp-hero .ledger .wm-big {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 62px; letter-spacing: 0.08em; color: var(--bone);
+    line-height: 1;
+  }
+  .vp-hero .ledger .location {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.34em; text-transform: uppercase; color: var(--champagne);
+    padding-top: 16px; border-top: 1px solid var(--champagne-soft);
+  }
+
+  /* Counter chip · top-right corner · discreet stat */
+  .vp-hero .chip {
+    position: absolute; top: 122px; right: 56px;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px;
+    background: rgba(10,10,10,0.62);
+    border: 1px solid var(--champagne-mute);
+    backdrop-filter: blur(6px);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--bone-soft);
+  }
+  .vp-hero .chip .val {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 17px; color: var(--champagne); letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* Serif drama headline · bottom-left editorial */
+  .vp-hero .manifesto {
+    position: absolute; left: 56px; right: 56px; bottom: 180px;
+    max-width: 960px;
+    z-index: 2;
+  }
+  .vp-hero .manifesto .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--champagne);
+    margin-bottom: 26px;
+  }
+  .vp-hero .manifesto .eyebrow:before {
+    content: ''; width: 36px; height: 1px; background: var(--champagne);
+  }
+  .vp-hero .manifesto h1 {
+    font-family: var(--heading); font-size: 96px; font-weight: 500;
+    font-style: italic; line-height: 0.96; letter-spacing: -0.030em;
+    color: var(--bone); max-width: 14ch;
+  }
+  .vp-hero .manifesto .sub {
+    margin-top: 32px; max-width: 640px;
+    font-family: var(--body); font-size: 17px; line-height: 1.7;
+    color: var(--bone-soft);
+  }
+  .vp-hero .manifesto .actions {
+    margin-top: 40px; display: flex; align-items: center; gap: 32px;
+    flex-wrap: wrap;
+  }
+  .vp-hero .manifesto .series-note {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--bone-faint);
+  }
+  .vp-hero .manifesto .series-note strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 18px; color: var(--champagne);
+    letter-spacing: 0; text-transform: none;
+  }
+
+  /* Editorial credit cells · bottom strip · 4-up */
+  .vp-hero-cells {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: rgba(10,10,10,0.86);
+    border-top: 1px solid var(--champagne-mute);
+  }
+  .vp-hero-cells .cell {
+    padding: 20px 28px;
+    border-right: 1px solid var(--rule);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--bone-faint);
+  }
+  .vp-hero-cells .cell:last-child { border-right: 0; }
+  .vp-hero-cells .cell .val {
+    display: block; margin-top: 7px;
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 16px; color: var(--bone);
+    letter-spacing: 0; text-transform: none;
+  }
+
+  /* ========================================================
+     Signature properties strip — 4 dossier cards
+     2-up editorial grid (deliberate opposite of Casa 4-up tile)
+  ======================================================== */
+  .vp-signature { padding: 120px 56px; max-width: 1280px; margin: 0 auto; border-bottom: 1px solid var(--rule); }
+  .vp-signature .head {
+    display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end;
+    margin-bottom: 56px;
+  }
+  @media (max-width: 880px) { .vp-signature .head { grid-template-columns: 1fr; } }
+  .vp-signature .head .sec-label {
+    display: inline-flex; align-items: center; gap: 16px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-signature .head .sec-label:before {
+    content: ''; width: 32px; height: 1px; background: var(--champagne);
+  }
+  .vp-signature .head h2 {
+    margin-top: 22px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; line-height: 1.02; letter-spacing: -0.022em; color: var(--bone);
+    max-width: 20ch;
+  }
+  .vp-signature .head .intro {
+    margin-top: 20px; max-width: 60ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--bone-mute);
+  }
+
+  .vp-dossier-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px;
+  }
+  @media (max-width: 1000px) { .vp-dossier-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+  /* 2-col editorial property-dossier card */
+  .vp-dossier {
+    display: grid; grid-template-columns: 1fr; gap: 0;
+    border: 1px solid var(--rule);
+    background: var(--ink-2);
+    position: relative; isolation: isolate; overflow: hidden;
+  }
+  .vp-dossier .cover {
+    aspect-ratio: 3 / 2;
+    background: var(--ink-3) center/cover;
+    filter: grayscale(12%) contrast(1.08) brightness(0.90);
+  }
+  .vp-dossier .body { padding: 32px 32px 36px; }
+  .vp-dossier .body .idx {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-dossier .body .title {
+    margin-top: 14px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 36px; line-height: 1.05; letter-spacing: -0.012em; color: var(--bone);
+  }
+  .vp-dossier .body .meta {
+    margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 120px 1fr; gap: 10px 18px;
+    font-family: var(--body); font-size: 12px; color: var(--bone-mute);
+  }
+  .vp-dossier .body .meta .k {
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--bone-faint); font-size: 9px; padding-top: 2px;
+  }
+  .vp-dossier .body .meta .v {
+    font-family: var(--heading); font-style: italic; font-size: 15px;
+    color: var(--bone); letter-spacing: 0;
+  }
+  .vp-dossier .body .foot {
+    margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .vp-dossier .body .foot .avail {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-dossier .body .foot .price {
+    font-family: var(--heading); font-style: italic; font-size: 15px;
+    color: var(--bone-mute);
+  }
+
+  .vp-signature .see-all {
+    margin-top: 56px; display: flex; justify-content: flex-end;
+  }
+
+  /* ========================================================
+     Territory ribbon — champagne pills, continental destinations
+  ======================================================== */
+  .vp-territory {
+    padding: 64px 56px; max-width: 1400px; margin: 0 auto;
+    border-bottom: 1px solid var(--rule);
+  }
+  .vp-territory .lbl {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+    margin-bottom: 22px;
+  }
+  .vp-territory .lbl:before {
+    content: ''; width: 28px; height: 1px; background: var(--champagne);
+  }
+  .vp-territory .row {
+    display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+  }
+  .vp-territory .pill {
+    display: inline-flex; align-items: center;
+    padding: 10px 18px;
+    border: 1px solid var(--rule);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--bone-mute);
+    cursor: default;
+  }
+
+  /* ========================================================
+     Private advisor — director portrait + bio + CTA
+  ======================================================== */
+  .vp-advisor {
+    padding: 120px 56px; max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 380px 1fr; gap: 80px; align-items: center;
+    border-bottom: 1px solid var(--rule);
+  }
+  @media (max-width: 1000px) { .vp-advisor { grid-template-columns: 1fr; gap: 48px; } }
+  .vp-advisor .portrait {
+    width: 380px; height: 500px;
+    background: var(--ink-2) center/cover;
+    filter: grayscale(14%) contrast(1.10) brightness(0.92);
+    border: 1px solid var(--rule);
+  }
+  @media (max-width: 1000px) { .vp-advisor .portrait { width: 100%; height: 440px; } }
+  .vp-advisor .text .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-advisor .text h2 {
+    margin-top: 22px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 52px; line-height: 1.04; letter-spacing: -0.02em; color: var(--bone);
+    max-width: 18ch;
+  }
+  .vp-advisor .text .intro {
+    margin-top: 28px; max-width: 58ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.7; color: var(--bone-mute);
+  }
+  .vp-advisor .text .name-block {
+    margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--rule);
+  }
+  .vp-advisor .text .name-block .name {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 28px;
+    color: var(--champagne);
+  }
+  .vp-advisor .text .name-block .role {
+    margin-top: 6px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-advisor .text .name-block .bio {
+    margin-top: 18px; max-width: 58ch;
+    font-family: var(--heading); font-style: italic; font-size: 15px; line-height: 1.65;
+    color: var(--bone-soft);
+  }
+  .vp-advisor .text .actions { margin-top: 36px; }
+
+  /* ========================================================
+     Numbers band — discreet stats, counters allowed per D-081
+  ======================================================== */
+  .vp-numbers {
+    padding: 120px 56px; max-width: 1280px; margin: 0 auto;
+    border-bottom: 1px solid var(--rule);
+  }
+  .vp-numbers .head { max-width: 720px; margin-bottom: 56px; }
+  .vp-numbers .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-numbers .head .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-numbers .head h2 {
+    margin-top: 26px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 48px; line-height: 1.05; color: var(--bone); max-width: 20ch;
+  }
+  .vp-numbers .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--rule); border-left: 1px solid var(--rule);
+  }
+  @media (max-width: 720px) { .vp-numbers .grid { grid-template-columns: repeat(2, 1fr); } }
+  .vp-numbers .stat {
+    border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule);
+    padding: 36px 32px;
+  }
+  .vp-numbers .stat .v {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 60px;
+    color: var(--champagne); line-height: 1; letter-spacing: -0.022em;
+  }
+  .vp-numbers .stat .l {
+    margin-top: 14px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-numbers .note {
+    margin-top: 36px; max-width: 64ch;
+    font-family: var(--heading); font-style: italic; font-size: 15px; line-height: 1.6;
+    color: var(--bone-mute);
+  }
+
+  /* ========================================================
+     Press ribbon — editorial italic serif
+  ======================================================== */
+  .vp-press {
+    padding: 72px 56px; max-width: 1400px; margin: 0 auto;
+    border-bottom: 1px solid var(--rule);
+    display: flex; flex-wrap: wrap; gap: 40px; align-items: center;
+    justify-content: space-between;
+  }
+  .vp-press .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-press .row {
+    display: flex; flex-wrap: wrap; gap: 44px; align-items: center; flex: 1;
+    min-width: 0; justify-content: center;
+  }
+  .vp-press .row span {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 22px;
+    color: var(--bone); letter-spacing: 0.02em;
+  }
+
+  /* ========================================================
+     Private viewing CTA · closing editorial band
+  ======================================================== */
+  .vp-private {
+    padding: 140px 56px; background: #060606;
+    border-top: 1px solid var(--rule); text-align: center;
+  }
+  .vp-private .inner { max-width: 1100px; margin: 0 auto; }
+  .vp-private .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-private h2 {
+    margin-top: 26px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 64px; line-height: 1.04; letter-spacing: -0.025em; color: var(--bone);
+    max-width: 22ch; margin-left: auto; margin-right: auto;
+  }
+  .vp-private .intro {
+    margin-top: 28px; max-width: 58ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.7; color: var(--bone-mute);
+    margin-left: auto; margin-right: auto;
+  }
+  .vp-private .actions {
+    margin-top: 44px; display: flex; align-items: center; justify-content: center;
+    gap: 32px; flex-wrap: wrap;
+  }
+
+  /* Home-specific RTL flips */
+  html[dir="rtl"] .vp-hero .ledger { left: auto; right: 56px; }
+  html[dir="rtl"] .vp-hero .chip { right: auto; left: 56px; }
+  html[dir="rtl"] .vp-hero .manifesto .eyebrow:before { width: 36px; }
+
+  /* Hero mobile */
+  @media (max-width: 1000px) {
+    .vp-hero { min-height: 780px; padding: 110px 32px 100px; }
+    .vp-hero .ledger { top: 100px; left: 32px; }
+    .vp-hero .ledger .wm-big { font-size: 46px; }
+    .vp-hero .chip { top: 100px; right: 32px; }
+    .vp-hero .manifesto { left: 32px; right: 32px; bottom: 140px; }
+    .vp-hero .manifesto h1 { font-size: 66px; }
+    .vp-hero-cells { grid-template-columns: repeat(2, 1fr); }
+    .vp-hero-cells .cell:nth-child(2n) { border-right: 0; }
+    .vp-signature { padding: 72px 32px; }
+    .vp-advisor { padding: 72px 32px; }
+    .vp-numbers { padding: 72px 32px; }
+    .vp-press { padding: 48px 32px; }
+    .vp-private { padding: 96px 32px; }
+  }
+  @media (max-width: 720px) {
+    .vp-hero { padding: 90px 20px 80px; min-height: 680px; }
+    .vp-hero .ledger { top: 84px; left: 20px; max-width: 70%; }
+    .vp-hero .ledger .wm-big { font-size: 34px; }
+    .vp-hero .chip { top: 84px; right: 20px; padding: 8px 12px; font-size: 8px; letter-spacing: 0.18em; }
+    .vp-hero .chip .val { font-size: 14px; }
+    .vp-hero .manifesto { left: 20px; right: 20px; bottom: 120px; }
+    .vp-hero .manifesto h1 { font-size: 42px; }
+    .vp-hero .manifesto .sub { font-size: 15px; }
+    .vp-hero-cells { grid-template-columns: 1fr; }
+    .vp-hero-cells .cell { border-right: 0; border-bottom: 1px solid var(--rule); padding: 14px 20px; }
+    .vp-signature .head h2 { font-size: 38px; }
+    .vp-dossier .body { padding: 24px 24px 28px; }
+    .vp-dossier .body .title { font-size: 28px; }
+    .vp-advisor .text h2 { font-size: 36px; }
+    .vp-numbers .head h2 { font-size: 34px; }
+    .vp-numbers .stat { padding: 28px 22px; }
+    .vp-numbers .stat .v { font-size: 44px; }
+    .vp-private h2 { font-size: 40px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vp-hero">
+  <div class="vp-hero-cover" style="background-image:url('{{ page_data.cover_image }}')"></div>
+
+  <div class="ledger" data-lm="reveal-soft">
+    <div class="wm-big" data-latin>{{ page_data.hero_wordmark }}</div>
+    <div class="location" data-latin>{{ page_data.hero_location }}</div>
+  </div>
+
+  <div class="chip" data-lm="reveal-soft">
+    <span>{{ page_data.hero_counter_label }}</span>
+    <span class="val vp-tabular" data-latin>{{ page_data.hero_counter_value }}</span>
+  </div>
+
+  <div class="manifesto" data-lm="reveal-soft">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="sub">{{ page_data.sub }}</p>
+    <div class="actions">
+      <a class="vp-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.primary_cta }}</a>
+      <div class="series-note">
+        {{ page_data.hero_series_label }}
+        <strong>{{ page_data.hero_series_title }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="vp-hero-cells">
+    {% for label, value in page_data.hero_credit_cells %}
+      <div class="cell">{{ label }}<span class="val vp-tabular" data-latin>{{ value }}</span></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vp-signature">
+  <div class="head" data-lm="reveal">
+    <div>
+      <span class="sec-label">{{ page_data.signature_label }}</span>
+      <h2>{{ page_data.signature_heading|safe }}</h2>
+      <p class="intro">{{ page_data.signature_intro }}</p>
+    </div>
+  </div>
+  <div class="vp-dossier-grid" data-lm-stagger data-lm-stagger-delay="220">
+    {% for d in page_data.signature %}
+      <a class="vp-dossier" href="{% url 'catalog:live_template_post' template.category.slug template.slug blog_parent_slug d.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <div class="cover" style="background-image:url('{{ d.image }}')"></div>
+        <div class="body">
+          <div class="idx vp-tabular">{{ d.index }} · {{ site.dossier_label }}</div>
+          <div class="title" data-latin>{{ d.title }}</div>
+          <div class="meta">
+            <span class="k">{{ site.territorio_label }}</span><span class="v" data-latin>{{ d.territorio }}</span>
+            <span class="k">{{ site.superficie_label }}</span><span class="v">{{ d.superficie }}</span>
+            <span class="k">{{ site.provenance_label }}</span><span class="v">{{ d.provenance }}</span>
+          </div>
+          <div class="foot">
+            <span class="avail">{{ d.availability }}</span>
+            <span class="price">{{ site.price_note }}</span>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+  <div class="see-all">
+    <a class="vp-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.signature_link_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.signature_link_all }}</a>
+  </div>
+</section>
+
+<section class="vp-territory" data-lm="reveal">
+  <div class="lbl">{{ page_data.territory_label }}</div>
+  <div class="row">
+    {% for t in page_data.territory %}
+      <span class="pill" data-latin>{{ t }}</span>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vp-advisor" data-lm="reveal">
+  <div class="portrait" style="background-image:url('{{ page_data.advisor_portrait }}')"></div>
+  <div class="text">
+    <div class="lbl">{{ page_data.advisor_label }}</div>
+    <h2>{{ page_data.advisor_heading|safe }}</h2>
+    <p class="intro">{{ page_data.advisor_intro }}</p>
+    <div class="name-block">
+      <div class="name" data-latin>{{ page_data.advisor_name }}</div>
+      <div class="role">{{ page_data.advisor_role }}</div>
+      <p class="bio">{{ page_data.advisor_bio }}</p>
+    </div>
+    <div class="actions">
+      <a class="vp-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.advisor_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.advisor_cta }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="vp-numbers">
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ page_data.numbers_label }}</div>
+    <h2>{{ page_data.numbers_heading|safe }}</h2>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="200">
+    {% for k, v in page_data.numbers %}
+      <div class="stat" data-lm="reveal">
+        <div class="v vp-tabular" data-latin data-lm="counter" data-lm-to="{{ k }}">{{ k }}</div>
+        <div class="l">{{ v }}</div>
+      </div>
+    {% endfor %}
+  </div>
+  <p class="note">{{ page_data.numbers_note }}</p>
+</section>
+
+<section class="vp-press" data-lm="reveal">
+  <span class="lbl">{{ page_data.press_label }} · {{ page_data.press_intro }}</span>
+  <div class="row">
+    {% for p in page_data.press_items %}<span data-latin>{{ p }}</span>{% endfor %}
+  </div>
+</section>
+
+<section class="vp-private" data-lm="reveal">
+  <div class="inner">
+    <div class="lbl">{{ page_data.private_label }}</div>
+    <h2>{{ page_data.private_heading|safe }}</h2>
+    <p class="intro">{{ page_data.private_intro }}</p>
+    <div class="actions">
+      <a class="vp-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.private_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.private_primary }}</a>
+      <a class="vp-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.private_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.private_secondary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

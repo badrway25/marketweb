@@ -1,0 +1,337 @@
+{% extends "live_templates/lawyer/modern-transparent/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     MANIFESTO — 4 principle cards
+  ============================================================ */
+  .jr-manifesto .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px;
+  }
+  .jr-manifesto .card {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 20px; padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 16px;
+    transition: border-color .2s ease, transform .2s ease;
+    text-align: left;
+  }
+  .jr-manifesto .card:hover { border-color: var(--secondary); transform: translateY(-2px); }
+  .jr-manifesto .card .num {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; color: var(--secondary);
+    padding: 6px 12px; background: rgba(66,153,225,0.08);
+    border-radius: 999px; align-self: flex-start;
+  }
+  .jr-manifesto .card h3 { font-size: 22px; line-height: 1.15; }
+  .jr-manifesto .card p {
+    font-family: var(--body); font-size: 14px; line-height: 1.7;
+    color: var(--ink-mute);
+  }
+
+  /* ============================================================
+     STORY — timeline, vertical
+  ============================================================ */
+  .jr-story { background: var(--primary); color: var(--on-primary); max-width: none; }
+  .jr-story .wrap { max-width: 1100px; margin: 0 auto; }
+  .jr-story h2 { color: var(--on-primary); }
+  .jr-story .timeline {
+    margin-top: 48px; display: flex; flex-direction: column; gap: 0;
+    border-top: 1px solid rgba(247,250,252,0.10);
+  }
+  .jr-story .row {
+    display: grid; grid-template-columns: 120px 180px 1fr; gap: 32px;
+    padding: 24px 0; border-bottom: 1px solid rgba(247,250,252,0.10);
+    align-items: baseline;
+  }
+  .jr-story .row .yr {
+    font-family: var(--heading); font-size: 28px; font-weight: 800;
+    color: var(--accent); letter-spacing: -0.02em;
+  }
+  .jr-story .row .ttl {
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    color: var(--on-primary);
+  }
+  .jr-story .row .desc {
+    font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: rgba(247,250,252,0.72);
+  }
+  @media (max-width: 880px) {
+    .jr-story .row { grid-template-columns: 1fr; gap: 8px; padding: 18px 0; }
+  }
+
+  /* ============================================================
+     DASHBOARD panel — screenshot-like card with features
+  ============================================================ */
+  .jr-dash .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+  }
+  .jr-dash .preview {
+    background: var(--page-2);
+    border: 1px solid var(--rule);
+    border-radius: 22px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .jr-dash .preview .chrome {
+    display: flex; align-items: center; gap: 6px;
+    padding-bottom: 14px; border-bottom: 1px solid var(--rule);
+  }
+  .jr-dash .preview .chrome .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--rule-strong);
+  }
+  .jr-dash .preview .chrome .url {
+    margin-left: 14px;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--ink-mute);
+  }
+  .jr-dash .preview .body {
+    padding: 22px 0 8px;
+    display: grid; grid-template-columns: 110px 1fr; gap: 18px;
+  }
+  .jr-dash .preview .sidebar {
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 10px 12px;
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 12px;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
+  }
+  .jr-dash .preview .sidebar span { padding: 6px 8px; border-radius: 6px; }
+  .jr-dash .preview .sidebar .act { background: rgba(66,153,225,0.12); color: var(--secondary); }
+  .jr-dash .preview .kanban {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+  .jr-dash .preview .kanban .col-k {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 12px; padding: 10px 10px 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 140px;
+  }
+  .jr-dash .preview .kanban .col-k .h {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .jr-dash .preview .kanban .col-k .t {
+    padding: 8px 10px; background: var(--panel-2); border-radius: 8px;
+    font-family: var(--body); font-size: 11px; color: var(--ink);
+    border-left: 2px solid var(--secondary);
+  }
+  .jr-dash .preview .kanban .col-k .t.gold { border-left-color: var(--accent); }
+  .jr-dash .feat-list {
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .jr-dash .feat-list .row {
+    display: grid; grid-template-columns: 200px 1fr; gap: 20px;
+    padding: 16px 0; border-top: 1px solid var(--rule);
+  }
+  .jr-dash .feat-list .row:last-child { border-bottom: 1px solid var(--rule); }
+  .jr-dash .feat-list .row .lbl {
+    font-family: var(--heading); font-size: 14px; font-weight: 700;
+    color: var(--ink);
+  }
+  .jr-dash .feat-list .row .val {
+    font-family: var(--body); font-size: 13px; line-height: 1.6;
+    color: var(--ink-mute);
+  }
+  @media (max-width: 880px) {
+    .jr-dash .grid { grid-template-columns: 1fr; gap: 28px; }
+    .jr-dash .preview .body { grid-template-columns: 1fr; }
+    .jr-dash .preview .sidebar { display: none; }
+  }
+
+  /* ============================================================
+     FOUNDERS — 2 cards
+  ============================================================ */
+  .jr-founders .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+  }
+  .jr-founders .card {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 20px; padding: 32px 28px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .jr-founders .card .role {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--secondary);
+  }
+  .jr-founders .card h3 { font-size: 24px; }
+  .jr-founders .card .bio {
+    font-family: var(--body); font-size: 14px; line-height: 1.7;
+    color: var(--ink-mute);
+  }
+  .jr-founders .card .creds {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .jr-founders .card .creds span {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.03em; color: var(--ink-soft);
+    padding: 6px 12px; background: var(--panel-2);
+    border: 1px solid var(--rule); border-radius: 999px;
+  }
+  @media (max-width: 880px) { .jr-founders .grid { grid-template-columns: 1fr; } }
+
+  /* ============================================================
+     OFFICES STRIP — 3 cards
+  ============================================================ */
+  .jr-offices .grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .jr-offices .card {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 18px; padding: 28px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .jr-offices .card h3 { font-size: 22px; }
+  .jr-offices .card .addr {
+    font-family: var(--body); font-size: 13px;
+    color: var(--ink-soft); letter-spacing: 0.02em;
+  }
+  .jr-offices .card .role {
+    font-family: var(--body); font-size: 12px; color: var(--ink-mute);
+    margin-top: 6px;
+  }
+  @media (max-width: 880px) { .jr-offices .grid { grid-template-columns: 1fr; } }
+
+  /* ============================================================
+     PAGE CTA
+  ============================================================ */
+  .jr-page-cta {
+    padding: 72px 32px; max-width: 1100px; margin: 0 auto; text-align: center;
+  }
+  .jr-page-cta .panel {
+    padding: 50px 40px; border-radius: 24px;
+    background: var(--panel); border: 1px solid var(--rule);
+    box-shadow: 0 24px 60px -28px rgba(26,32,44,0.18);
+  }
+  .jr-page-cta h2 { font-size: 36px; line-height: 1.08; max-width: 22ch; margin: 0 auto; }
+  .jr-page-cta .intro {
+    margin-top: 18px; max-width: 56ch; margin-left: auto; margin-right: auto;
+    font-family: var(--body); font-size: 16px; line-height: 1.62;
+    color: var(--ink-mute);
+  }
+  .jr-page-cta .actions {
+    margin-top: 28px; display: inline-flex; gap: 18px;
+  }
+{% endblock %}
+
+{% block content %}
+<section class="jr-lead">
+  <span class="eyebrow">{{ page_data.eyebrow }}</span>
+  <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+  <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
+</section>
+
+<section class="jr-section jr-manifesto">
+  <span class="sec-label">{{ page_data.manifesto_label }}</span>
+  <h2>{{ page_data.manifesto_heading|safe }}</h2>
+  <p class="sec-intro">{{ page_data.manifesto_intro }}</p>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for num, title, body in page_data.manifesto %}
+      <article class="card" data-lm="reveal">
+        <span class="num">{{ num }}</span>
+        <h3>{{ title }}</h3>
+        <p>{{ body }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="jr-section jr-story dark">
+  <div class="wrap">
+    <span class="sec-label">{{ page_data.story_label }}</span>
+    <h2>{{ page_data.story_heading }}</h2>
+    <div class="timeline" data-lm-stagger data-lm-stagger-delay="80">
+      {% for yr, ttl, desc in page_data.story %}
+        <div class="row" data-lm="reveal">
+          <span class="yr">{{ yr }}</span>
+          <span class="ttl">{{ ttl }}</span>
+          <span class="desc">{{ desc }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="jr-section jr-dash">
+  <span class="sec-label">{{ page_data.dashboard_label }}</span>
+  <h2>{{ page_data.dashboard_heading|safe }}</h2>
+  <p class="sec-intro">{{ page_data.dashboard_intro }}</p>
+  <div class="grid">
+    <div class="preview" data-lm="reveal-lg" aria-hidden="true">
+      <div class="chrome">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="url jr-mono">{{ page_data.dashboard_mock.url }}</span>
+      </div>
+      <div class="body">
+        <div class="sidebar">
+          {% for item in page_data.dashboard_mock.sidebar %}
+            <span class="{% if forloop.counter0 == page_data.dashboard_mock.sidebar_active_index %}act{% endif %}">{{ item }}</span>
+          {% endfor %}
+        </div>
+        <div class="kanban">
+          {% for col in page_data.dashboard_mock.columns %}
+            <div class="col-k">
+              <span class="h">{{ col.label }}</span>
+              {% for card in col.cards %}<span class="t{% if card.accent %} gold{% endif %}">{{ card.title }}</span>{% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="feat-list">
+      {% for lbl, val in page_data.dashboard_features %}
+        <div class="row" data-lm="reveal">
+          <span class="lbl">{{ lbl }}</span>
+          <span class="val">{{ val }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="jr-section jr-founders">
+  <span class="sec-label">{{ page_data.founders_label }}</span>
+  <h2>{{ page_data.founders_heading|safe }}</h2>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for f in page_data.founders %}
+      <article class="card" data-lm="reveal">
+        <span class="role">{{ f.role }}</span>
+        <h3>{{ f.name }}</h3>
+        <p class="bio">{{ f.bio }}</p>
+        <div class="creds">
+          {% for c in f.credentials %}<span class="jr-mono">{{ c }}</span>{% endfor %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="jr-section jr-offices">
+  <span class="sec-label">{{ page_data.offices_label }}</span>
+  <h2>{{ chrome.office_heading|default:"Le sedi" }}</h2>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="80">
+    {% for city, addr, role in page_data.offices %}
+      <article class="card" data-lm="reveal">
+        <h3>{{ city }}</h3>
+        <span class="addr">{{ addr }}</span>
+        <span class="role">{{ role }}</span>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="jr-page-cta">
+  <div class="panel" data-lm="reveal">
+    <h2>{{ page_data.cta_heading }}</h2>
+    <p class="intro">{{ page_data.cta_intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="jr-btn">{{ page_data.cta_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,729 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:wght@400;500;600;700;800&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700;800&display=swap" rel="stylesheet">
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-interactions.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
+<style>
+  :root {
+    --primary:     {{ theme.primary }};
+    --secondary:   {{ theme.secondary }};
+    --accent:      {{ theme.accent }};
+    --navy:        {{ theme.primary }};
+    --navy-2:      #2a3a4f;
+    --navy-3:      #3d536f;
+    --emerald:     {{ theme.secondary }};
+    --emerald-2:   #26b15e;
+    --emerald-3:   #1f8a49;
+    --orange:      {{ theme.accent }};
+    --orange-2:    #d9711e;
+    --paper:       #F7F9FC;
+    --paper-2:     #EDF2F7;
+    --paper-3:     #FFFFFF;
+    --ink:         var(--navy);
+    --ink-body:    #3C4A5E;
+    --ink-soft:    #687892;
+    --ink-mute:    #9BA7B8;
+    --rule:        rgba(27,40,56,0.12);
+    --rule-soft:   rgba(27,40,56,0.06);
+    --heading:     '{{ theme.heading_font }}', 'Segoe UI', system-ui, sans-serif;
+    --body:        '{{ theme.body_font }}', system-ui, sans-serif;
+
+    /* Premium forms — market-approachable profile
+       (rounded 10px, emerald submit, orange caret, navy ink) */
+    --lf-bg:            #FFFFFF;
+    --lf-bg-autofill:   #F7F9FC;
+    --lf-bg-soft:       #F7F9FC;
+    --lf-bg-icon:       rgba(46,204,113,0.12);
+    --lf-bg-chip:       rgba(27,40,56,0.06);
+    --lf-border:        rgba(27,40,56,0.16);
+    --lf-border-hover:  rgba(27,40,56,0.34);
+    --lf-border-focus:  var(--emerald);
+    --lf-ring:          rgba(46,204,113,0.22);
+    --lf-ring-size:     4px;
+    --lf-radius:        10px;
+    --lf-listbox-radius: 10px;
+    --lf-pad-y:         14px;
+    --lf-pad-x:         16px;
+    --lf-label-color:   var(--navy);
+    --lf-label-size:    11px;
+    --lf-label-track:   0.12em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  var(--ink-soft);
+    --lf-control-color: var(--navy);
+    --lf-placeholder:   rgba(104,120,146,0.55);
+    --lf-section-rule:  var(--rule);
+    --lf-section-title-color: var(--navy);
+    --lf-caret:         var(--orange);
+    --lf-listbox-bg:    #FFFFFF;
+    --lf-listbox-fg:    var(--navy);
+    --lf-listbox-rule:  var(--rule);
+    --lf-listbox-hov:   rgba(46,204,113,0.08);
+    --lf-submit-bg:     var(--emerald);
+    --lf-submit-bg-hover: var(--emerald-2);
+    --lf-submit-fg:     #FFFFFF;
+    --lf-submit-arrow:  #FFFFFF;
+    --lf-submit-radius: 10px;
+    --lf-submit-underline: none;
+    --on-accent:        #FFFFFF;
+  }
+  {% if is_rtl %}
+  :root {
+    /* Arabic stack: Naskh for readable body, Kufi for chrome.
+       Market tone stays accessible-friendly, not editorial. */
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', system-ui, sans-serif;
+    --body:    'Noto Naskh Arabic', '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  {% endif %}
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    background: var(--paper); color: var(--ink-body);
+    font-family: var(--body); font-size: 16px; line-height: 1.6;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--heading); font-weight: 700;
+    line-height: 1.14; letter-spacing: -0.018em;
+    color: var(--navy);
+  }
+  h1 em, h2 em, h3 em {
+    color: var(--emerald); font-style: normal; font-weight: 800;
+  }
+  em { color: var(--emerald); font-style: normal; font-weight: 700; }
+
+  /* ============================================================
+     MARKETPLACE BAR — subtle navy strip
+  ============================================================ */
+  .mp-bar {
+    background: var(--navy); color: #EAEEF5; font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .mp-bar .mp-back {
+    color: var(--orange); border-bottom: 1px solid var(--orange);
+    padding-bottom: 1px; font-weight: 700;
+  }
+  .mp-bar .mp-name { color: rgba(234,238,245,0.6); }
+  .mp-lang { display: flex; align-items: center; gap: 14px; font-family: var(--body); }
+  .mp-lang .mp-lang-label {
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(234,238,245,0.5); font-weight: 700;
+  }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: rgba(234,238,245,0.6);
+    border: 1px solid rgba(234,238,245,0.20);
+    border-radius: 999px;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .mp-lang a.mp-lang-pill:hover {
+    color: #FFFFFF; border-color: rgba(234,238,245,0.45);
+  }
+  .mp-lang a.mp-lang-pill.is-current {
+    color: var(--navy); border-color: var(--orange); background: var(--orange);
+  }
+  .mp-lang a.mp-lang-pill.ar-pill { letter-spacing: 0; font-size: 11px; }
+
+  /* ============================================================
+     SITE NAV — Domus (.dm-nav) · white solid, 76px, phone pill +
+     orange "Richiedi visita" CTA. Differentiates from Villa (dark
+     cinematic transparent) via daylight-white + orange accent.
+  ============================================================ */
+  .dm-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: grid; grid-template-columns: auto 1fr auto auto; align-items: center;
+    gap: 28px;
+    padding: 14px 48px;
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--rule);
+    box-shadow: 0 1px 0 rgba(27,40,56,0.02), 0 6px 24px rgba(27,40,56,0.04);
+    min-height: 76px;
+  }
+  .dm-nav .dm-logo { display: flex; align-items: center; gap: 14px; }
+  .dm-nav .dm-logo .dm-crest {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--emerald) 110%);
+    display: flex; align-items: center; justify-content: center;
+    color: #FFFFFF; font-family: var(--heading); font-weight: 800; font-size: 18px;
+    letter-spacing: -0.02em;
+    box-shadow: 0 6px 16px rgba(27,40,56,0.18);
+  }
+  .dm-nav .dm-logo .dm-word {
+    font-family: var(--heading); font-size: 19px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  .dm-nav .dm-logo .dm-tag {
+    display: block; margin-top: 2px;
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .dm-nav .dm-links {
+    display: flex; gap: 28px; justify-content: center;
+    font-family: var(--body); font-size: 14px; font-weight: 600;
+    color: var(--ink-body);
+  }
+  .dm-nav .dm-links a {
+    padding: 6px 2px; border-bottom: 2px solid transparent;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .dm-nav .dm-links a:hover { color: var(--navy); }
+  .dm-nav .dm-links a.is-current {
+    color: var(--navy); border-bottom-color: var(--orange);
+  }
+  .dm-nav .dm-phone {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 9px 16px 9px 10px;
+    background: var(--paper-2); border-radius: 999px;
+    color: var(--navy); font-family: var(--body);
+    line-height: 1.1;
+  }
+  .dm-nav .dm-phone .dm-phone-icon {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--emerald); color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .dm-nav .dm-phone .dm-phone-icon svg {
+    width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .dm-nav .dm-phone .dm-phone-txt { display: flex; flex-direction: column; }
+  .dm-nav .dm-phone .dm-phone-lbl {
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .dm-nav .dm-phone .dm-phone-num {
+    font-size: 15px; font-weight: 700; color: var(--navy);
+    font-variant-numeric: tabular-nums;
+  }
+  .dm-nav .dm-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 22px; border-radius: 999px;
+    background: var(--orange); color: #FFFFFF;
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.02em;
+    box-shadow: 0 8px 20px rgba(230,126,34,0.26);
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+  .dm-nav .dm-cta svg {
+    width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .dm-nav .dm-cta:hover {
+    background: var(--orange-2);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px rgba(230,126,34,0.36);
+  }
+
+  /* ============================================================
+     PAGE LEAD — eyebrow pill + display headline + intro
+  ============================================================ */
+  .dm-lead {
+    padding: 72px 48px 40px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-lead .dm-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    background: rgba(46,204,113,0.10); border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--emerald-3);
+  }
+  .dm-lead .dm-eyebrow:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--emerald);
+  }
+  .dm-lead h1 {
+    margin-top: 24px; font-size: 58px; font-weight: 700; line-height: 1.06;
+    letter-spacing: -0.022em; color: var(--navy); max-width: 18ch;
+  }
+  .dm-lead .dm-intro {
+    margin-top: 22px; max-width: 62ch;
+    font-family: var(--body); font-size: 18px;
+    line-height: 1.6; color: var(--ink-soft); font-weight: 400;
+  }
+
+  /* ============================================================
+     SECTION UTILITIES
+  ============================================================ */
+  .dm-section {
+    padding: 80px 48px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-section.dm-band {
+    background: var(--paper-2); max-width: none;
+    padding: 80px 48px;
+  }
+  .dm-section.dm-band-navy {
+    background: var(--navy); color: #EAEEF5; max-width: none;
+    padding: 80px 48px;
+  }
+  .dm-section.dm-band-navy h2,
+  .dm-section.dm-band-navy h3,
+  .dm-section.dm-band-navy h4 { color: #FFFFFF; }
+  .dm-section.dm-band-navy em { color: var(--orange); }
+  .dm-section .dm-sec-inner { max-width: 1360px; margin: 0 auto; }
+  .dm-sec-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange);
+  }
+  .dm-sec-label:before {
+    content: ''; width: 28px; height: 2px; background: var(--orange);
+  }
+  .dm-section h2 {
+    margin-top: 14px; font-size: 44px; font-weight: 700; line-height: 1.1;
+    letter-spacing: -0.02em; max-width: 22ch;
+  }
+  .dm-sec-intro {
+    margin-top: 16px; max-width: 64ch;
+    font-family: var(--body); font-size: 17px;
+    line-height: 1.65; color: var(--ink-soft);
+  }
+  .dm-section.dm-band-navy .dm-sec-intro { color: rgba(234,238,245,0.78); }
+  .dm-section.dm-band-navy .dm-sec-label { color: var(--orange); }
+
+  /* ============================================================
+     BUTTONS — block-visit-primary (orange pill) + outline ghost
+  ============================================================ */
+  .dm-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 26px;
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+    letter-spacing: 0.02em;
+    border-radius: 999px; border: 0; cursor: pointer;
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .dm-btn svg {
+    width: 16px; height: 16px; stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .dm-btn.dm-btn-primary {
+    background: var(--orange); color: #FFFFFF;
+    box-shadow: 0 8px 22px rgba(230,126,34,0.26);
+  }
+  .dm-btn.dm-btn-primary:hover {
+    background: var(--orange-2);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(230,126,34,0.36);
+  }
+  .dm-btn.dm-btn-emerald {
+    background: var(--emerald); color: #FFFFFF;
+    box-shadow: 0 8px 22px rgba(46,204,113,0.26);
+  }
+  .dm-btn.dm-btn-emerald:hover {
+    background: var(--emerald-2);
+    transform: translateY(-1px);
+  }
+  .dm-btn.dm-btn-navy {
+    background: var(--navy); color: #FFFFFF;
+    box-shadow: 0 8px 22px rgba(27,40,56,0.22);
+  }
+  .dm-btn.dm-btn-navy:hover { background: var(--navy-2); transform: translateY(-1px); }
+  .dm-btn.dm-btn-outline {
+    background: transparent; color: var(--navy);
+    border: 1.5px solid var(--navy);
+  }
+  .dm-btn.dm-btn-outline:hover { background: var(--navy); color: #FFFFFF; }
+  .dm-btn.dm-btn-ghost-light {
+    background: transparent; color: #FFFFFF;
+    border: 1.5px solid rgba(255,255,255,0.45);
+  }
+  .dm-btn.dm-btn-ghost-light:hover { border-color: #FFFFFF; background: rgba(255,255,255,0.08); }
+  .dm-btn.dm-btn-ghost-dark {
+    background: transparent; color: var(--navy);
+    border: 1.5px solid rgba(27,40,56,0.25);
+  }
+  .dm-btn.dm-btn-ghost-dark:hover {
+    border-color: var(--navy); background: rgba(27,40,56,0.05);
+  }
+
+  /* ============================================================
+     WHATSAPP STRIP — floating emerald pill above footer
+  ============================================================ */
+  .dm-whatsapp-strip {
+    background: var(--emerald); color: #FFFFFF;
+    padding: 22px 48px;
+    display: flex; justify-content: center; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 15px; font-weight: 600;
+    flex-wrap: wrap;
+  }
+  .dm-whatsapp-strip .dm-wa-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #FFFFFF; display: inline-block;
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.2);
+  }
+  .dm-whatsapp-strip .dm-wa-phone {
+    font-weight: 800; letter-spacing: 0.02em;
+    border-bottom: 1.5px solid rgba(255,255,255,0.6); padding-bottom: 2px;
+  }
+  .dm-whatsapp-strip .dm-wa-note {
+    color: rgba(255,255,255,0.78); font-size: 13px;
+    padding-left: 12px; border-left: 1px solid rgba(255,255,255,0.3);
+  }
+
+  /* ============================================================
+     FOOTER — 5-col navy with office cards + emerald accent
+  ============================================================ */
+  .dm-foot {
+    background: var(--navy); color: #EAEEF5;
+    padding: 64px 48px 28px;
+    font-family: var(--body); font-size: 14px;
+  }
+  .dm-foot .dm-foot-top {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 40px; border-bottom: 1px solid rgba(234,238,245,0.18);
+    max-width: 1360px; margin: 0 auto;
+  }
+  .dm-foot h5 {
+    color: var(--orange); font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 16px;
+  }
+  .dm-foot .dm-foot-brand .dm-foot-word {
+    font-family: var(--heading); font-size: 22px; font-weight: 700; color: #FFFFFF;
+    margin-bottom: 10px;
+  }
+  .dm-foot .dm-foot-brand p {
+    color: rgba(234,238,245,0.68); max-width: 34ch; line-height: 1.6;
+    font-size: 13px;
+  }
+  .dm-foot .dm-foot-col p,
+  .dm-foot .dm-foot-col a {
+    color: rgba(234,238,245,0.72); display: block; padding: 4px 0;
+    font-size: 13px;
+  }
+  .dm-foot .dm-foot-col a:hover { color: var(--orange); }
+  .dm-foot .dm-foot-bot {
+    padding-top: 24px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 11px; color: rgba(234,238,245,0.5);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    max-width: 1360px; margin: 0 auto;
+  }
+  .dm-foot .dm-foot-bot a:hover { color: var(--orange); }
+
+  /* ============================================================
+     PROPERTY TILE — reused across home, listings, detail-related rows
+     Signature card: cover photo + price + title + addr + specs row +
+     badge. Tile grid: 3-4 col on desktop.
+  ============================================================ */
+  .dm-tile {
+    background: #FFFFFF; border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--rule); display: flex; flex-direction: column;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .dm-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(27,40,56,0.10);
+    border-color: rgba(230,126,34,0.35);
+  }
+  .dm-tile .dm-tile-frame {
+    position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+    background: var(--paper-2);
+  }
+  .dm-tile .dm-tile-frame img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 640ms cubic-bezier(0.22,0.61,0.36,1);
+  }
+  .dm-tile:hover .dm-tile-frame img { transform: scale(1.04); }
+  .dm-tile .dm-tile-badge {
+    position: absolute; top: 14px; left: 14px;
+    padding: 5px 12px;
+    background: #FFFFFF; color: var(--navy);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    border-radius: 999px;
+  }
+  .dm-tile .dm-tile-badge.dm-tile-badge-esclusiva {
+    background: var(--navy); color: var(--orange);
+  }
+  .dm-tile .dm-tile-badge.dm-tile-badge-nuova {
+    background: var(--emerald); color: #FFFFFF;
+  }
+  .dm-tile .dm-tile-ref {
+    position: absolute; top: 14px; right: 14px;
+    padding: 4px 10px;
+    background: rgba(27,40,56,0.78); color: #FFFFFF;
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; border-radius: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+  .dm-tile .dm-tile-body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 12px; }
+  .dm-tile .dm-tile-price {
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .dm-tile .dm-tile-title {
+    font-family: var(--heading); font-size: 17px; font-weight: 600;
+    color: var(--navy); line-height: 1.3; letter-spacing: -0.012em;
+  }
+  .dm-tile .dm-tile-addr {
+    font-family: var(--body); font-size: 13px; font-weight: 500;
+    color: var(--ink-soft);
+  }
+  .dm-tile .dm-tile-addr:before {
+    content: ''; display: inline-block;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--emerald); margin-right: 8px;
+    vertical-align: middle;
+  }
+  .dm-tile .dm-tile-specs {
+    display: flex; gap: 18px; padding-top: 12px;
+    border-top: 1px solid var(--rule-soft);
+    font-family: var(--body); font-size: 12px;
+    color: var(--ink-soft); font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .dm-tile .dm-tile-specs strong {
+    color: var(--navy); font-weight: 700;
+    margin-right: 4px;
+  }
+  .dm-tile .dm-tile-cta {
+    margin-top: 4px;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 0 0;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--orange);
+  }
+  .dm-tile .dm-tile-cta svg {
+    width: 14px; height: 14px; stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    transition: transform .2s ease;
+  }
+  .dm-tile:hover .dm-tile-cta svg { transform: translateX(4px); }
+
+  /* ============================================================
+     RTL adjustments (always loaded; page flips guarded via is_rtl)
+  ============================================================ */
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.85; }
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4,
+  html[dir="rtl"] h5 { letter-spacing: 0; }
+  html[dir="rtl"] .dm-sec-label,
+  html[dir="rtl"] .dm-lead .dm-eyebrow,
+  html[dir="rtl"] .mp-bar,
+  html[dir="rtl"] .mp-lang .mp-lang-label,
+  html[dir="rtl"] .dm-nav .dm-phone .dm-phone-lbl,
+  html[dir="rtl"] .dm-foot h5,
+  html[dir="rtl"] .dm-tile .dm-tile-cta,
+  html[dir="rtl"] .dm-tile .dm-tile-badge,
+  html[dir="rtl"] .dm-foot .dm-foot-bot { letter-spacing: 0.04em; }
+  html[dir="rtl"] .dm-sec-label:before { display: none; }
+  html[dir="rtl"] .dm-sec-label:after {
+    content: ''; width: 28px; height: 2px; background: var(--orange);
+  }
+  html[dir="rtl"] .dm-btn svg,
+  html[dir="rtl"] .dm-tile .dm-tile-cta svg { transform: scaleX(-1); }
+  html[dir="rtl"] .dm-tile:hover .dm-tile-cta svg { transform: scaleX(-1) translateX(4px); }
+  html[dir="rtl"] .dm-nav .dm-phone { flex-direction: row-reverse; }
+  html[dir="rtl"] .dm-tile .dm-tile-addr:before {
+    margin-right: 0; margin-left: 8px;
+  }
+  html[dir="rtl"] .dm-whatsapp-strip .dm-wa-note {
+    padding-left: 0; padding-right: 12px;
+    border-left: 0; border-right: 1px solid rgba(255,255,255,0.3);
+  }
+
+  /* ============================================================
+     MOTION PROFILE — market-approachable is upbeat, snappy
+     (small rise, medium duration, hero zoom on covers)
+  ============================================================ */
+  :root {
+    --lm-rise:     10px;
+    --lm-rise-lg:  16px;
+    --lm-dur-slow: 640ms;
+  }
+  .dm-btn, .dm-tile { will-change: transform; }
+
+  /* ============================================================
+     FOCUS RINGS — orange, accessible
+  ============================================================ */
+  .dm-btn:focus-visible,
+  .dm-nav a:focus-visible,
+  .dm-nav .dm-phone:focus-visible,
+  .dm-nav .dm-cta:focus-visible,
+  .dm-tile:focus-within,
+  .mp-lang a:focus-visible,
+  .dm-foot a:focus-visible {
+    outline: 3px solid var(--orange); outline-offset: 3px;
+  }
+
+  /* ============================================================
+     RESPONSIVE — mobile 880 px collapse
+  ============================================================ */
+  @media (max-width: 1100px) {
+    .dm-nav { padding: 12px 24px; gap: 18px; grid-template-columns: auto 1fr auto; }
+    .dm-nav .dm-links { display: none; }
+    .dm-nav .dm-phone { padding: 8px 14px 8px 8px; }
+    .dm-nav .dm-phone .dm-phone-txt { display: none; }
+    .dm-nav .dm-cta { padding: 10px 16px; font-size: 12px; }
+    .dm-lead { padding: 56px 24px 32px; }
+    .dm-lead h1 { font-size: 44px; }
+    .dm-section { padding: 64px 24px; }
+    .dm-section h2 { font-size: 34px; }
+    .dm-foot { padding: 48px 24px 24px; }
+    .dm-foot .dm-foot-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  }
+  @media (max-width: 880px) {
+    .dm-nav { padding: 10px 16px; min-height: 64px; grid-template-columns: auto 1fr auto; gap: 10px; }
+    .dm-nav .dm-logo .dm-tag { display: none; }
+    .dm-nav .dm-logo .dm-word { font-size: 16px; }
+    .dm-nav .dm-phone { display: none; }
+    .dm-nav .dm-cta { padding: 9px 14px; font-size: 11px; letter-spacing: 0.02em; }
+    .dm-lead { padding: 40px 18px 24px; }
+    .dm-lead h1 { font-size: 34px; }
+    .dm-lead .dm-intro { font-size: 15px; }
+    .dm-section { padding: 48px 18px; }
+    .dm-section h2 { font-size: 28px; }
+    .dm-foot { padding: 40px 18px 22px; }
+    .dm-foot .dm-foot-top { grid-template-columns: 1fr; gap: 28px; }
+    .dm-whatsapp-strip { padding: 18px 18px; font-size: 13px; text-align: center; }
+    .dm-whatsapp-strip .dm-wa-note { border-left: 0; padding-left: 0; font-size: 12px; }
+  }
+
+  /* Page-specific extension hook */
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  {% if locale_switcher %}
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}{% if entry.code == 'ar' %} ar-pill{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_realestate }}</a>
+</div>
+
+<nav class="dm-nav">
+  <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-logo">
+    <span class="dm-crest">{{ site.logo_initial }}</span>
+    <span>
+      <span class="dm-word">{{ site.logo_word }}</span>
+      <span class="dm-tag">{{ site.tag }}</span>
+    </span>
+  </a>
+  <div class="dm-links">
+    {% for p in pages %}
+      {% if p.slug == "home" %}
+        <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+      {% else %}
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <a href="tel:{{ site.phone_tel|default:site.phone }}" class="dm-phone" aria-label="{{ site.phone_label }} {{ site.phone }}">
+    <span class="dm-phone-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </span>
+    <span class="dm-phone-txt">
+      <span class="dm-phone-lbl">{{ site.phone_label }}</span>
+      <span class="dm-phone-num">{{ site.phone }}</span>
+    </span>
+  </a>
+  <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.nav_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-cta">
+    <span>{{ site.nav_cta }}</span>
+    <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+</nav>
+
+{% block content %}{% endblock %}
+
+<div class="dm-whatsapp-strip" data-lm="reveal">
+  <span class="dm-wa-dot" aria-hidden="true"></span>
+  <span>{{ site.nav_cta }}</span>
+  <a href="{{ site.whatsapp_link }}" class="dm-wa-phone" target="_blank" rel="noopener">{{ site.whatsapp }}</a>
+  <span class="dm-wa-note">{{ site.whatsapp_note }}</span>
+</div>
+
+<footer class="dm-foot">
+  <div class="dm-foot-top">
+    <div class="dm-foot-brand">
+      <h5>{{ site.foot_studio }}</h5>
+      <div class="dm-foot-word">{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="dm-foot-col">
+      <h5>{{ site.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="dm-foot-col">
+      <h5>{{ site.foot_contact }}</h5>
+      <p>{{ site.address }}</p>
+      <p><a href="tel:{{ site.phone_tel|default:site.phone }}">{{ site.phone_label }} {{ site.phone }}</a></p>
+      <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+      <p>{{ site.hours_compact }}</p>
+    </div>
+    <div class="dm-foot-col">
+      <h5>{{ chrome.foot_hours }}</h5>
+      {% for row in site.hours_footer_rows %}
+        <p>{{ row }}</p>
+      {% endfor %}
+    </div>
+    <div class="dm-foot-col">
+      <h5>{{ site.foot_offices }}</h5>
+      {% for office in site.offices_footer_rows %}
+        <p>{{ office }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="dm-foot-bot">
+    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-interactions.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
+</body>
+</html>

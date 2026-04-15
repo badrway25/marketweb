@@ -1,0 +1,543 @@
+{% load static %}{% spaceless %}<!DOCTYPE html>
+<html lang="{{ locale|default:'it' }}" dir="{{ html_dir|default:'ltr' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<meta name="description" content="{{ brand.tagline }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family={{ theme.heading_font|urlencode }}:wght@400;500;600;700;800&family={{ theme.body_font|urlencode }}:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+{% if is_rtl %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/live-motion.css' %}">
+<link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
+<style>
+  :root {
+    --primary:    {{ theme.primary }};     /* slate #2D3748 */
+    --primary-2:  #1A202C;
+    --secondary:  {{ theme.secondary }};   /* confident blue #4299E1 */
+    --accent:     {{ theme.accent }};      /* gold-yellow #ECC94B */
+
+    /* Advisory-modern palette — light page, slate ink, blue actions */
+    --page:       #F7FAFC;    /* light page (not ink like Lex) */
+    --page-2:     #EDF2F7;
+    --panel:      #FFFFFF;
+    --panel-2:    #F8FAFC;
+    --ink:        #1A202C;
+    --ink-soft:   #2D3748;
+    --ink-mute:   #4A5568;
+    --ink-faint:  #718096;
+    --rule:       rgba(26,32,44,0.10);
+    --rule-soft:  rgba(26,32,44,0.05);
+    --rule-strong:rgba(26,32,44,0.18);
+    --on-primary: #F7FAFC;
+    --on-blue:    #FFFFFF;
+
+    --heading: '{{ theme.heading_font }}', 'Inter', system-ui, sans-serif;
+    --body:    '{{ theme.body_font }}', system-ui, sans-serif;
+    --mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    /* Premium forms (advisory-modern · light panel, blue focus ring) */
+    --lf-bg:            #FFFFFF;
+    --lf-bg-autofill:   #FFFFFF;
+    --lf-bg-soft:       var(--panel-2);
+    --lf-bg-icon:       rgba(66,153,225,0.10);
+    --lf-bg-chip:       rgba(66,153,225,0.08);
+    --lf-border:        var(--rule);
+    --lf-border-hover:  rgba(26,32,44,0.22);
+    --lf-border-focus:  var(--secondary);
+    --lf-ring:          rgba(66,153,225,0.22);
+    --lf-ring-size:     3px;
+    --lf-radius:        12px;
+    --lf-listbox-radius:12px;
+    --lf-pad-y:         13px;
+    --lf-pad-x:         16px;
+    --lf-label-color:   var(--ink-faint);
+    --lf-label-size:    10px;
+    --lf-label-track:   0.18em;
+    --lf-label-weight:  700;
+    --lf-helper-color:  var(--ink-mute);
+    --lf-control-color: var(--ink);
+    --lf-placeholder:   #A0AEC0;
+    --lf-section-rule:  var(--rule);
+    --lf-section-title-color: var(--ink);
+    --lf-caret:         var(--secondary);
+    --lf-listbox-bg:    #FFFFFF;
+    --lf-listbox-fg:    var(--ink);
+    --lf-listbox-rule:  var(--rule);
+    --lf-listbox-hov:   var(--panel-2);
+    --lf-submit-bg:     var(--secondary);
+    --lf-submit-bg-hover: #3182CE;
+    --lf-submit-fg:     #FFFFFF;
+    --lf-submit-arrow:  #FFFFFF;
+    --lf-submit-radius: 999px;
+    --lf-submit-underline: 0;
+    --on-accent:        var(--primary);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    color: var(--ink); font-family: var(--body);
+    font-size: 16px; line-height: 1.65;
+    background: var(--page);
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4, h5 {
+    font-family: var(--heading); font-weight: 700; line-height: 1.08;
+    letter-spacing: -0.025em; color: var(--ink);
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
+  }
+  h1 { letter-spacing: -0.038em; font-weight: 800; }
+  em {
+    font-style: normal; font-weight: 800;
+    color: var(--secondary);
+  }
+  /* Tabular numerals on KPI counters */
+  .jr-metric-band .stat .num,
+  .jr-counter,
+  .jr-dash .row .val {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .jr-mono { font-family: var(--mono); font-feature-settings: "tnum" 1; letter-spacing: 0.02em; }
+
+  /* Marketplace bar */
+  .mp-bar {
+    background: #1A202C; color: #F7FAFC; font-family: var(--body);
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 10px 32px; display: flex; justify-content: space-between;
+    align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .mp-bar .mp-back { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; font-weight: 600; }
+  .mp-bar .mp-name { color: rgba(247,250,252,0.55); }
+  .mp-lang { display: flex; align-items: center; gap: 14px; }
+  .mp-lang .mp-lang-label { font-size: 10px; letter-spacing: 0.22em; color: rgba(247,250,252,0.45); font-weight: 700; }
+  .mp-lang .mp-lang-list { display: flex; gap: 4px; }
+  .mp-lang a.mp-lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 8px; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; color: rgba(247,250,252,0.55);
+    border: 1px solid rgba(247,250,252,0.15);
+    transition: color .15s ease, border-color .15s ease;
+    border-radius: 999px;
+  }
+  .mp-lang a.mp-lang-pill:hover { color: var(--accent); border-color: rgba(247,250,252,0.32); }
+  .mp-lang a.mp-lang-pill.is-current { color: var(--accent); border-color: var(--accent); }
+
+  /* ============================================================
+     FLOATING PILL NAV — light, blue confident CTA on right
+  ============================================================ */
+  .jr-nav-wrap {
+    position: sticky; top: 0; z-index: 50;
+    padding: 20px 32px; display: flex; justify-content: center;
+    background: linear-gradient(180deg, var(--page) 0%, rgba(247,250,252,0.88) 80%, rgba(247,250,252,0) 100%);
+  }
+  .jr-nav {
+    display: inline-flex; align-items: center; gap: 0;
+    padding: 8px 10px 8px 24px;
+    background: #FFFFFF;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    box-shadow: 0 12px 32px -18px rgba(26,32,44,0.20), 0 2px 6px -2px rgba(26,32,44,0.05);
+    max-width: 100%;
+  }
+  .jr-nav .wm {
+    font-family: var(--heading); font-weight: 800; font-size: 16px;
+    color: var(--ink); letter-spacing: -0.02em;
+    padding-right: 22px; margin-right: 22px;
+    border-right: 1px solid var(--rule);
+    display: flex; align-items: center; gap: 10px;
+    white-space: nowrap;
+  }
+  .jr-nav .wm .dot {
+    width: 26px; height: 26px; border-radius: 8px;
+    background: var(--primary); color: var(--accent);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-size: 13px; font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .jr-nav .links {
+    display: flex; gap: 22px;
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink-mute);
+  }
+  .jr-nav .links a { transition: color .15s ease; padding: 4px 0; }
+  .jr-nav .links a:hover { color: var(--ink); }
+  .jr-nav .links a.is-current { color: var(--secondary); }
+  .jr-nav .cta {
+    margin-left: 24px;
+    padding: 11px 22px; border-radius: 999px;
+    background: var(--secondary); color: var(--on-blue);
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.005em;
+    box-shadow: 0 10px 24px -8px rgba(66,153,225,0.45);
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    white-space: nowrap;
+  }
+  .jr-nav .cta:hover {
+    transform: translateY(-1px);
+    background: #3182CE;
+    box-shadow: 0 14px 32px -8px rgba(66,153,225,0.55);
+  }
+
+  /* ============================================================
+     PAGE LEAD — advisory manifesto eyebrow + headline + intro
+  ============================================================ */
+  .jr-lead {
+    padding: 72px 32px 56px; max-width: 1100px; margin: 0 auto;
+    text-align: center;
+  }
+  .jr-lead .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 9px 18px; border-radius: 999px;
+    background: var(--panel); border: 1px solid var(--rule);
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; color: var(--ink-mute);
+  }
+  .jr-lead .eyebrow:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--secondary);
+  }
+  .jr-lead h1 {
+    margin-top: 26px; font-size: 72px; line-height: 0.98;
+    letter-spacing: -0.038em; max-width: 20ch; margin-left: auto; margin-right: auto;
+  }
+  .jr-lead .intro {
+    margin-top: 26px; max-width: 62ch; margin-left: auto; margin-right: auto;
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    color: var(--ink-mute);
+  }
+  .jr-lead .actions {
+    margin-top: 34px; display: inline-flex; align-items: center; gap: 20px;
+    flex-wrap: wrap; justify-content: center;
+  }
+
+  /* ============================================================
+     BUTTONS — confident blue primary pill + ghost link + gold accent pill
+  ============================================================ */
+  .jr-btn {
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+    color: var(--on-blue); background: var(--secondary);
+    padding: 14px 28px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 12px;
+    box-shadow: 0 12px 28px -10px rgba(66,153,225,0.50);
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    border: none; cursor: pointer;
+  }
+  .jr-btn:after { content: '→'; font-family: var(--heading); font-size: 16px; }
+  .jr-btn:hover {
+    transform: translateY(-2px);
+    background: #3182CE;
+    box-shadow: 0 18px 38px -10px rgba(66,153,225,0.60);
+  }
+  .jr-btn.ghost {
+    background: transparent; color: var(--ink-soft);
+    border: 1px solid var(--rule-strong);
+    box-shadow: none;
+  }
+  .jr-btn.ghost:hover {
+    border-color: var(--secondary); color: var(--secondary);
+    background: rgba(66,153,225,0.05);
+  }
+  .jr-btn.gold {
+    background: var(--accent); color: var(--primary);
+    box-shadow: 0 10px 24px -10px rgba(236,201,75,0.55);
+  }
+  .jr-btn.gold:hover { background: #D69E2E; }
+  .jr-link {
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink-soft);
+    display: inline-flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--rule-strong); padding-bottom: 3px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .jr-link:hover { color: var(--secondary); border-color: var(--secondary); }
+  .jr-link:after { content: '→'; color: var(--secondary); }
+  /* Accessible focus rings — confident blue */
+  .jr-btn:focus-visible,
+  .jr-btn.ghost:focus-visible,
+  .jr-btn.gold:focus-visible,
+  .jr-link:focus-visible,
+  .jr-nav .cta:focus-visible,
+  .jr-nav .links a:focus-visible,
+  .mp-lang a.mp-lang-pill:focus-visible,
+  .jr-sector .card:focus-visible,
+  .jr-sprint-chip:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 3px;
+    border-radius: 999px;
+  }
+
+  /* ============================================================
+     SECTION HELPERS — medium density, sector-pill style
+  ============================================================ */
+  .jr-section { padding: 80px 32px; max-width: 1240px; margin: 0 auto; }
+  .jr-section.dark {
+    background: var(--primary); color: var(--on-primary);
+    max-width: none; padding: 80px 32px;
+  }
+  .jr-section.dark h2, .jr-section.dark h3, .jr-section.dark h4 { color: var(--on-primary); }
+  .jr-section.dark em { color: var(--accent); }
+  .jr-section.dark .sec-intro { color: rgba(247,250,252,0.72); }
+  .jr-section .sec-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(66,153,225,0.08);
+    border: 1px solid rgba(66,153,225,0.20);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; color: var(--secondary);
+  }
+  .jr-section.dark .sec-label {
+    background: rgba(247,250,252,0.06);
+    border-color: rgba(247,250,252,0.12);
+    color: var(--accent);
+  }
+  .jr-section h2 {
+    margin-top: 18px; font-size: 48px; line-height: 1.04;
+    letter-spacing: -0.028em; max-width: 22ch;
+  }
+  .jr-section.center { text-align: center; }
+  .jr-section.center h2 { margin-left: auto; margin-right: auto; }
+  .jr-section .sec-intro {
+    margin-top: 22px; max-width: 62ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    color: var(--ink-mute);
+  }
+  .jr-section.center .sec-intro { margin-left: auto; margin-right: auto; }
+
+  /* ============================================================
+     SPRINT CHIP — next-slot pinned pill (bottom-right, hero area)
+  ============================================================ */
+  .jr-sprint-chip {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 12px 22px; border-radius: 999px;
+    background: var(--primary); color: var(--on-primary);
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: 0 16px 40px -16px rgba(26,32,44,0.50);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .jr-sprint-chip .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(236,201,75,0.25);
+  }
+  .jr-sprint-chip .cta {
+    color: var(--accent); font-weight: 700;
+    border-left: 1px solid rgba(247,250,252,0.15); padding-left: 14px;
+  }
+  .jr-sprint-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 48px -16px rgba(26,32,44,0.60);
+  }
+
+  /* ============================================================
+     FOOTER — 4-col panel + copyright
+  ============================================================ */
+  .jr-foot {
+    margin-top: 72px;
+    background: var(--primary); color: var(--on-primary);
+    padding: 64px 32px 32px;
+  }
+  .jr-foot .top {
+    max-width: 1240px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px;
+    padding-bottom: 40px; border-bottom: 1px solid rgba(247,250,252,0.12);
+  }
+  .jr-foot .top h5 {
+    color: var(--accent); font-family: var(--body);
+    font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 18px;
+  }
+  .jr-foot .brand .word {
+    font-family: var(--heading); font-size: 24px; font-weight: 800;
+    color: var(--on-primary); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .jr-foot .brand .word .crest {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--accent); color: var(--primary);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-weight: 800; font-size: 15px;
+  }
+  .jr-foot .brand p { color: rgba(247,250,252,0.70); max-width: 36ch; line-height: 1.62; }
+  .jr-foot .col p, .jr-foot .col a {
+    color: rgba(247,250,252,0.68); display: block; padding: 4px 0;
+    font-size: 14px;
+  }
+  .jr-foot .col a:hover { color: var(--accent); }
+  .jr-foot .bot {
+    max-width: 1240px; margin: 0 auto; padding-top: 24px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    font-size: 11px; color: rgba(247,250,252,0.40);
+    letter-spacing: 0.10em; text-transform: uppercase;
+  }
+  .jr-foot .bot a:hover { color: var(--accent); }
+
+  /* ============================================================
+     ADVISORY MOTION PROFILE — strategic, snappy
+  ============================================================ */
+  :root { --lm-rise: 14px; --lm-rise-lg: 22px; --lm-dur-slow: 600ms; }
+  @media (prefers-reduced-motion: reduce) {
+    .jr-btn, .jr-nav .cta, .jr-sprint-chip { transition: none; }
+    .jr-btn:hover, .jr-nav .cta:hover, .jr-sprint-chip:hover { transform: none; }
+  }
+
+  /* ============================================================
+     MOBILE — 880px breakpoint
+  ============================================================ */
+  @media (max-width: 880px) {
+    .jr-nav-wrap { padding: 14px 18px; }
+    .jr-nav {
+      flex-wrap: wrap; padding: 10px 14px; gap: 10px 14px;
+      border-radius: 18px;
+    }
+    .jr-nav .wm { border-right: 0; padding-right: 0; margin-right: 0; }
+    .jr-nav .links { gap: 14px; font-size: 12px; }
+    .jr-nav .cta { margin-left: 0; padding: 9px 16px; font-size: 12px; }
+    .jr-lead { padding: 48px 20px 36px; }
+    .jr-lead h1 { font-size: 46px; line-height: 1.02; }
+    .jr-lead .intro { font-size: 15px; }
+    .jr-section { padding: 56px 20px; }
+    .jr-section h2 { font-size: 32px; }
+    .jr-section .sec-intro { font-size: 15px; }
+    .jr-foot { padding: 48px 20px 24px; }
+    .jr-foot .top { grid-template-columns: 1fr; gap: 32px; padding-bottom: 32px; }
+  }
+
+  /* ============================================================
+     ARABIC / RTL — Noto Kufi (display) + Noto Naskh (body)
+     Kinetic geometric Arabic voice matching DM Sans energy
+  ============================================================ */
+  html[dir="rtl"] {
+    --heading: 'Noto Kufi Arabic', '{{ theme.heading_font }}', system-ui, sans-serif;
+    --body:    'Noto Naskh Arabic', '{{ theme.body_font }}', system-ui, sans-serif;
+  }
+  html[dir="rtl"] body { font-size: 17px; line-height: 1.78; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+  html[dir="rtl"] h4, html[dir="rtl"] h5 { letter-spacing: 0; line-height: 1.18; }
+  html[dir="rtl"] .jr-btn:after { content: '←'; }
+  html[dir="rtl"] .jr-link:after { content: '←'; }
+  html[dir="rtl"] .mp-bar,
+  html[dir="rtl"] .jr-nav .links,
+  html[dir="rtl"] .jr-nav .cta,
+  html[dir="rtl"] .jr-lead .eyebrow,
+  html[dir="rtl"] .jr-section .sec-label,
+  html[dir="rtl"] .jr-foot .top h5,
+  html[dir="rtl"] .jr-foot .bot,
+  html[dir="rtl"] .mp-lang .mp-lang-label,
+  html[dir="rtl"] .mp-lang a.mp-lang-pill,
+  html[dir="rtl"] .jr-mono { letter-spacing: 0; }
+  /* Latin wordmark + emails + version-style numbers keep Latin run */
+  html[dir="rtl"] .jr-nav .wm,
+  html[dir="rtl"] .jr-foot .brand .word,
+  html[dir="rtl"] .jr-metric-band .stat .num,
+  html[dir="rtl"] .jr-counter,
+  html[dir="rtl"] .jr-mono,
+  html[dir="rtl"] .jr-sector .card .num,
+  html[dir="rtl"] .jr-process .step .num {
+    font-family: '{{ theme.heading_font }}', system-ui, sans-serif;
+    unicode-bidi: isolate;
+  }
+  html[dir="rtl"] .jr-mono { font-family: var(--mono); }
+  {% if is_rtl %}
+  /* Page-level section flips — only emitted when actually rendering AR */
+  .jr-nav .wm { border-right: 0; border-left: 1px solid var(--rule); margin-right: 0; margin-left: 22px; padding-right: 0; padding-left: 22px; }
+  .jr-nav .cta { margin-left: 0; margin-right: 24px; }
+  .jr-sprint-chip .cta { border-left: 0; padding-left: 0; border-right: 1px solid rgba(247,250,252,0.15); padding-right: 14px; }
+  .jr-foot .top { grid-template-columns: 1fr 1fr 1fr 1.6fr; }
+  {% endif %}
+
+  {% block extra_css %}{% endblock %}
+</style>
+</head>
+<body>{% endspaceless %}
+
+<div class="mp-bar">
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
+
+  {% if locale_switcher %}
+  <div class="mp-lang" aria-label="{{ chrome.mp_language }}">
+    <span class="mp-lang-label">{{ chrome.mp_language }}</span>
+    <div class="mp-lang-list">
+      {% for entry in locale_switcher %}
+        {% if page.slug == "home" %}
+          {% url 'catalog:live_template_home' template.category.slug template.slug as lang_base_url %}
+        {% else %}
+          {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
+        {% endif %}
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+           class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}"
+           lang="{{ entry.code }}"
+           dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
+          <span>{{ entry.badge }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_lawyer|default:chrome.mp_other }}</a>
+</div>
+
+<div class="jr-nav-wrap">
+  <nav class="jr-nav">
+    <a class="wm" href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+      <span class="dot">{{ site.logo_initial }}</span>{{ site.logo_word }}
+    </a>
+    <div class="links">
+      {% for p in pages %}
+        {% if p.slug != "home" %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <a class="cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ site.nav_cta }}</a>
+  </nav>
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="jr-foot">
+  <div class="top">
+    <div class="brand">
+      <h5>{{ site.foot_studio }}</h5>
+      <div class="word"><span class="crest">{{ site.logo_initial }}</span>{{ site.logo_word }}</div>
+      <p>{{ site.footer_intro }}</p>
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_pages }}</h5>
+      {% for p in pages %}
+        {% if p.slug == "home" %}
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% else %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_contact }}</h5>
+      <p>{{ site.email }}</p>
+      <p>{{ site.address }}</p>
+      <p>{{ site.hours_compact }}</p>
+      {% for row in site.hours_footer_rows %}<p>{{ row }}</p>{% endfor %}
+    </div>
+    <div class="col">
+      <h5>{{ site.foot_offices }}</h5>
+      {% for row in site.offices_footer_rows %}<p>{{ row }}</p>{% endfor %}
+    </div>
+  </div>
+  <div class="bot">
+    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+  </div>
+</footer>
+
+<script src="{% static 'js/live-motion.js' %}" defer></script>
+<script src="{% static 'js/live-forms.js' %}" defer></script>
+</body>
+</html>

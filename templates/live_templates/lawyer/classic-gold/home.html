@@ -1,0 +1,372 @@
+{% extends "live_templates/lawyer/classic-gold/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     HERO — split-ledger-monogram
+     LEFT: gold vertical rule + eyebrow + serif drama headline +
+           intro + actions + hero-credit cells
+     RIGHT: monogram crest + meta_strip institutional rows
+  ============================================================ */
+  .lx-hero {
+    display: grid; grid-template-columns: 1.3fr 1fr; min-height: 620px;
+    background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+    border-bottom: 1px solid var(--rule);
+  }
+  .lx-hero .left {
+    padding: 110px 56px 56px 108px; position: relative;
+    display: flex; flex-direction: column; justify-content: flex-start;
+  }
+  .lx-hero .left:before {
+    content: ''; position: absolute; top: 110px; bottom: 56px; left: 72px;
+    width: 2px; background: var(--secondary); opacity: 0.7;
+  }
+  .lx-hero .left .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--primary);
+  }
+  .lx-hero .left .eyebrow:before {
+    content: ''; width: 40px; height: 1.5px; background: var(--secondary);
+  }
+  .lx-hero .left h1 {
+    margin-top: 40px; font-size: 84px; line-height: 0.98;
+    letter-spacing: -0.025em; max-width: 14ch; font-weight: 500;
+  }
+  .lx-hero .left h1 em { color: var(--accent); }
+  .lx-hero .left .sub {
+    margin-top: 32px; max-width: 52ch;
+    font-family: var(--body); font-size: 18px; line-height: 1.72;
+    color: var(--ink-soft);
+  }
+  .lx-hero .left .actions { margin-top: 44px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+
+  .lx-hero .left .credits {
+    margin-top: 52px; padding-top: 24px; display: flex; gap: 48px;
+    border-top: 1px solid var(--rule);
+  }
+  .lx-hero .left .credits .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .lx-hero .left .credits .item strong {
+    display: block; margin-top: 8px;
+    font-family: var(--heading); font-size: 18px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 500;
+  }
+
+  /* RIGHT — monogram crest atop + meta_strip rows */
+  .lx-hero .right {
+    padding: 110px 72px 56px;
+    background:
+      radial-gradient(circle at 80% 10%, rgba(197,165,90,0.10), transparent 60%),
+      linear-gradient(160deg, var(--paper-2) 0%, var(--paper) 100%);
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative;
+    border-left: 1px solid var(--rule);
+  }
+  .lx-hero .right .mono-frame {
+    display: flex; justify-content: center; padding-bottom: 44px;
+  }
+  .lx-hero .right .mono-frame .mono {
+    width: 156px; height: 156px;
+    border: 1.5px solid var(--secondary); color: var(--secondary);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-weight: 500; font-size: 58px;
+    letter-spacing: 0.02em;
+    position: relative;
+  }
+  .lx-hero .right .mono-frame .mono:before,
+  .lx-hero .right .mono-frame .mono:after {
+    content: ''; position: absolute; width: 18px; height: 1px;
+    background: var(--secondary); top: 50%;
+  }
+  .lx-hero .right .mono-frame .mono:before { left: -24px; }
+  .lx-hero .right .mono-frame .mono:after { right: -24px; }
+
+  .lx-hero .right .meta-strip {
+    padding: 28px 0; display: flex; flex-direction: column; gap: 18px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .lx-hero .right .meta-strip .item {
+    display: grid; grid-template-columns: 0.6fr 1fr; gap: 16px; align-items: baseline;
+    padding: 6px 0;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .lx-hero .right .meta-strip .item strong {
+    font-family: var(--heading); font-size: 17px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 500;
+  }
+
+  /* ============================================================
+     PRACTICE-AREA LEDGER — numbered 01 02 03 04 rows
+  ============================================================ */
+  .lx-practice { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  .lx-practice .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--rule); }
+  .lx-practice .head .sec-label { color: var(--secondary); font-family: var(--body); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700; }
+  .lx-practice .head h2 { margin-top: 16px; font-size: 56px; max-width: 14ch; }
+  .lx-practice .head .intro { font-family: var(--body); font-size: 17px; line-height: 1.72; color: var(--ink-soft); max-width: 56ch; }
+  .lx-practice .list { margin-top: 32px; display: flex; flex-direction: column; }
+  .lx-practice .row {
+    display: grid; grid-template-columns: 90px 1fr 2fr 80px;
+    gap: 32px; padding: 36px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+    transition: background .2s ease;
+  }
+  .lx-practice .row:hover { background: var(--paper-2); }
+  .lx-practice .row .num {
+    font-family: var(--heading); font-size: 17px; color: var(--secondary);
+    letter-spacing: 0.04em; font-weight: 500;
+  }
+  .lx-practice .row .title {
+    font-family: var(--heading); font-size: 28px; font-weight: 500;
+    color: var(--primary); line-height: 1.18;
+  }
+  .lx-practice .row .blurb {
+    font-family: var(--body); font-size: 15px; line-height: 1.72;
+    color: var(--ink-soft); max-width: 54ch;
+  }
+  .lx-practice .row .arrow {
+    font-family: var(--heading); font-size: 22px; color: var(--secondary);
+    text-align: right;
+    transition: transform .2s ease;
+  }
+  .lx-practice .row:hover .arrow { transform: translateX(6px); }
+
+  /* ============================================================
+     STATS BAND — dark ink, gold rule, tabular counters
+  ============================================================ */
+  .lx-stats-band {
+    background: var(--primary); color: var(--on-dark);
+    padding: 80px 72px;
+    border-top: 1px solid rgba(197,165,90,0.18);
+    border-bottom: 1px solid rgba(197,165,90,0.18);
+  }
+  .lx-stats-band .row {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 0.9fr repeat(4, 1fr);
+    align-items: center; gap: 0;
+  }
+  .lx-stats-band .heading {
+    font-family: var(--heading); font-size: 26px; font-weight: 500;
+    color: var(--on-dark); max-width: 16ch; line-height: 1.24;
+    padding-right: 32px; border-right: 1px solid rgba(197,165,90,0.24);
+  }
+  .lx-stats-band .heading:before {
+    content: ''; display: block; width: 38px; height: 1.5px;
+    background: var(--secondary); margin-bottom: 16px;
+  }
+  .lx-stats-band .stat {
+    padding: 0 32px; border-right: 1px solid rgba(197,165,90,0.24);
+  }
+  .lx-stats-band .stat:last-child { border-right: 0; }
+  .lx-stats-band .stat .num {
+    font-family: var(--heading); font-size: 52px; font-weight: 500;
+    color: var(--secondary); line-height: 1.0; letter-spacing: -0.018em;
+  }
+  .lx-stats-band .stat .lbl {
+    display: block; margin-top: 12px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--on-dark-3);
+  }
+
+  /* ============================================================
+     PARTNERS PREVIEW — 3 senior portraits (typographic ledger)
+  ============================================================ */
+  .lx-partners-prev { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  .lx-partners-prev .head .sec-label { color: var(--secondary); font-family: var(--body); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700; }
+  .lx-partners-prev .head h2 { margin-top: 16px; font-size: 48px; max-width: 22ch; }
+  .lx-partners-prev .head .intro { margin-top: 22px; max-width: 64ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.72; }
+  .lx-partners-prev .grid { margin-top: 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .lx-partners-prev .card {
+    padding: 32px 28px;
+    background: var(--paper-3); border-top: 2px solid var(--primary);
+    border-left: 1px solid var(--rule-soft);
+    display: flex; flex-direction: column;
+  }
+  .lx-partners-prev .card .role {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--secondary);
+  }
+  .lx-partners-prev .card h3 {
+    margin-top: 14px; font-size: 26px; line-height: 1.18;
+    color: var(--primary); font-weight: 500;
+  }
+  .lx-partners-prev .card .foro {
+    margin-top: 10px;
+    font-family: var(--heading); font-style: italic; font-size: 14px;
+    color: var(--ink-mute);
+  }
+  .lx-partners-prev .card p {
+    margin-top: 20px; padding-top: 20px; flex: 1;
+    border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 14px;
+    line-height: 1.72; color: var(--ink-soft);
+  }
+
+  /* ============================================================
+     PUBLICATIONS RIBBON — horizontal text wordmarks
+  ============================================================ */
+  .lx-publications {
+    background: var(--paper-2); border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 60px 72px; max-width: none;
+  }
+  .lx-publications .wrap { max-width: 1400px; margin: 0 auto; }
+  .lx-publications .label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--secondary);
+    text-align: center;
+  }
+  .lx-publications .logos {
+    margin-top: 22px; display: flex; justify-content: center;
+    flex-wrap: wrap; gap: 52px;
+    font-family: var(--heading); font-size: 15px; font-weight: 600;
+    letter-spacing: 0.18em; color: var(--primary); opacity: 0.68;
+  }
+
+  /* ============================================================
+     FINAL CTA — private-consultation ghost serif
+  ============================================================ */
+  .lx-cta { background: var(--primary); color: var(--on-dark); padding: 100px 72px; }
+  .lx-cta .wrap {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 0.6fr; gap: 80px; align-items: end;
+  }
+  .lx-cta .label { color: var(--secondary); font-family: var(--body); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 700; }
+  .lx-cta h2 { margin-top: 14px; font-size: 56px; line-height: 1.04; max-width: 22ch; color: var(--on-dark); font-weight: 500; }
+  .lx-cta h2 em { color: var(--secondary); }
+  .lx-cta .intro { margin-top: 24px; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--on-dark-2); line-height: 1.72; }
+  .lx-cta .actions { display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+  .lx-cta .actions .lx-btn-primary { color: var(--on-dark); border-color: var(--secondary); background: transparent; }
+  .lx-cta .actions .lx-btn-primary:hover { background: var(--secondary); color: var(--primary); border-color: var(--secondary); }
+  .lx-cta .actions .lx-btn-primary:hover:after { color: var(--primary); }
+  .lx-cta .actions .lx-btn-ghost { color: var(--on-dark-2); border-color: var(--on-dark-3); }
+  .lx-cta .actions .lx-btn-ghost:hover { color: var(--secondary); border-color: var(--secondary); }
+
+  /* Mobile collapse */
+  @media (max-width: 880px) {
+    .lx-hero { grid-template-columns: 1fr; min-height: 0; }
+    .lx-hero .left { padding: 56px 22px 40px 40px; }
+    .lx-hero .left:before { left: 22px; top: 56px; bottom: 40px; }
+    .lx-hero .left h1 { font-size: 48px; }
+    .lx-hero .right { padding: 48px 22px; border-left: 0; border-top: 1px solid var(--rule); }
+    .lx-hero .right .mono-frame .mono { width: 120px; height: 120px; font-size: 44px; }
+    .lx-practice .row { grid-template-columns: 48px 1fr; }
+    .lx-practice .row .blurb, .lx-practice .row .arrow { display: none; }
+    .lx-partners-prev .grid { grid-template-columns: 1fr; }
+    .lx-stats-band .row { grid-template-columns: 1fr 1fr; }
+    .lx-stats-band .heading { grid-column: 1 / -1; border-right: 0; padding-right: 0; padding-bottom: 20px; margin-bottom: 16px; border-bottom: 1px solid rgba(197,165,90,0.18); }
+    .lx-stats-band .stat { border-right: 0; padding: 16px; }
+    .lx-cta .wrap { grid-template-columns: 1fr; gap: 40px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="lx-hero">
+  <div class="left" data-lm="reveal">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="sub">{{ page_data.intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="lx-btn-primary">{{ page_data.primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="lx-btn-ghost">{{ page_data.secondary_cta }}</a>
+    </div>
+    <div class="credits" data-lm-stagger data-lm-stagger-delay="100">
+      <div class="item" data-lm="reveal">{{ page_data.hero_credit_left.0 }}<strong>{{ page_data.hero_credit_left.1 }}</strong></div>
+      <div class="item" data-lm="reveal">{{ page_data.hero_credit_right.0 }}<strong>{{ page_data.hero_credit_right.1 }}</strong></div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="mono-frame" data-lm="reveal-lg">
+      <div class="mono">{{ site.logo_initial }}</div>
+    </div>
+    <div class="meta-strip" data-lm-stagger data-lm-stagger-delay="100">
+      {% for label, value in page_data.hero_meta_strip %}
+        <div class="item" data-lm="reveal">{{ label }}<strong>{{ value }}</strong></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="lx-practice">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.practice_label }}</div>
+      <h2>{{ page_data.practice_heading|safe }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.practice_intro }}</p>
+  </div>
+  <div class="list" data-lm-stagger data-lm-stagger-delay="100">
+    {% for num, title, blurb in page_data.practice %}
+      <a class="row" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'pratiche' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <span class="num">{{ num }}</span>
+        <span class="title">{{ title }}</span>
+        <span class="blurb">{{ blurb }}</span>
+        <span class="arrow">→</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="lx-stats-band">
+  <div class="row" data-lm-stagger data-lm-stagger-delay="100">
+    <div class="heading" data-lm="reveal">{{ page_data.stats_heading }}</div>
+    {% for num, label in page_data.stats %}
+      <div class="stat" data-lm="reveal">
+        <div class="num" data-lm="counter">{{ num }}</div>
+        <span class="lbl">{{ label }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="lx-partners-prev">
+  <div class="head" data-lm="reveal">
+    <div class="sec-label">{{ page_data.partners_label }}</div>
+    <h2>{{ page_data.partners_heading }}</h2>
+    <p class="intro">{{ page_data.partners_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for partner in page_data.partners %}
+      <article class="card" data-lm="reveal">
+        <div class="role">{{ partner.role }}</div>
+        <h3>{{ partner.name }}</h3>
+        <div class="foro">{{ partner.foro }}</div>
+        <p>{{ partner.bio }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="lx-publications">
+  <div class="wrap">
+    <div class="label">{{ page_data.publications_label }}</div>
+    <div class="logos">
+      {% for logo in page_data.publications %}<span>{{ logo }}</span>{% endfor %}
+    </div>
+    <div class="lm-logo-marquee" data-lm-media="logo-marquee" aria-hidden="true">
+      <div class="lm-logo-marquee-track">
+        {% for logo in page_data.publications %}<span class="lm-logo-marquee-item">{{ logo }}</span>{% endfor %}
+        {% for logo in page_data.publications %}<span class="lm-logo-marquee-item">{{ logo }}</span>{% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="lx-cta">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <div class="label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div class="actions" data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="lx-btn-primary">{{ page_data.cta_primary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="lx-btn-ghost">{{ page_data.cta_secondary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
