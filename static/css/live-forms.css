@@ -54,6 +54,9 @@
  *   --lf-listbox-fg    listbox panel fg              var(--ink)
  *   --lf-listbox-rule  listbox row rule              var(--rule)
  *   --lf-listbox-hov   listbox row hover bg          rgba(accent, 0.06)
+ *   --lf-listbox-radius listbox corner radius        12px (decoupled from
+ *                      --lf-radius so pill fields do not project 999px onto
+ *                      the listbox panel)
  * ============================================================================ */
 
 
@@ -286,10 +289,12 @@ textarea.lf-control {
   background: var(--lf-listbox-bg, var(--paper, #fff));
   color: var(--lf-listbox-fg, var(--ink));
   border: 1px solid var(--lf-listbox-rule, var(--rule, rgba(0,0,0,0.12)));
-  border-radius: var(--lf-radius, 0);
+  /* listbox-radius is decoupled from the field-radius so pill fields do not
+     inherit a 999px panel corner. Default 12px — overridden per skin. */
+  border-radius: var(--lf-listbox-radius, 12px);
   box-shadow: 0 14px 40px -16px rgba(0,0,0,0.25), 0 4px 10px -6px rgba(0,0,0,0.18);
   padding: 6px 0;
-  max-height: 280px; overflow-y: auto;
+  max-height: 280px; overflow: hidden auto;
   display: none;
   font-family: var(--body); font-size: 14px;
 }

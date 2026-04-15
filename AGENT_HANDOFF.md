@@ -1,5 +1,35 @@
 # Agent Handoff
 
+Last updated: 2026-04-15 — after **Session 52 Medical Second Wave Polish + Interaction Fix**
+
+## Session 52 — Medical Polish: Read This Before Touching `live-forms.css`, `live-motion.js`, or Any Stats Band (2026-04-15)
+
+**What changed in Session 52.** Polish-only session — no tier churn, no locale rework, no new skins. Closed three interaction defects left behind by Session 51's rollout: empty Benessere nav CTA, barrel-radius open listbox panel, static Salute stats.
+
+### What's binding (D-081)
+
+1. **`--lf-listbox-radius` exists and is the RIGHT knob to tune open-dropdown corners.** `.lf-select-listbox` in `static/css/live-forms.css` reads `var(--lf-listbox-radius, 12px)` — NOT `var(--lf-radius)`. Skins with pill fields (`--lf-radius: 999px`) MUST set `--lf-listbox-radius` explicitly to avoid a 999px-radius panel (wellness = 14px). Skins that want listbox-matches-field can set `--lf-listbox-radius: var(--lf-radius)`. Default 12px is safe.
+
+2. **Dynamic Counter Policy binds for every stats band going forward.** When a published_live template renders a stats / facts / metrics / volumes / years / visits / indicators band, the numeric span MUST carry `data-lm="counter"` (unless the DNA tone disqualifies it — funereal editorial, brutalist manifesto, literal zeros). Reduced-motion is already respected by live-motion.js. Future rollouts (Lex · Juris · Casa · Villa) are gated on this. Premium-UI reviewer treats this as an implicit gate #11 on the D-054 matrix for templates with numeric bands.
+
+3. **`live-motion.js` now handles both Italian AND English thousand separators.** `28.000` (IT dot-sep) → target 28000; `28,000` (EN comma-sep) → target 28000. The separator character is preserved through mid-animation frames. The regex is deliberately strict (`\d{1,3}(,\d{3})+` — multi-group required) so `1,4` (French decimal) stays a decimal.
+
+4. **Per-stat animation opt-out = 3rd tuple element truthy.** Content registries can author `("1998", "Anno di fondazione", True)` — the truthy 3rd element tells the skin "render static, don't animate". Default = animate (2-tuple, or 3-tuple with falsy 3rd). This is the escape hatch when a value reads as a label rather than a quantity. Clinic uses this pattern in `home.html`; future skins with stats bands can copy.
+
+5. **Multi-line Django comments inside skin HTML MUST use `{% comment %}…{% endcomment %}`.** The `{# … #}` form leaks to render output when it spans multiple lines (Django tokenizer quirk; same gotcha as Session 48 D-078 key-insight #1). This is now a hard rule for all future skin edits.
+
+6. **Nav-CTA copy lives in `site.*`, not `chrome.*`.** Chrome is archetype-shared (marketplace bar, footer headings, form primitives); nav-CTA wording is template-specific (reservation vs phone vs chat). Wellness `_base.html` binds `{{ site.nav_cta }}`; every Benessere locale defines it. Do not add `nav_cta` to `CHROME_I18N` — wrong layer.
+
+### Do NOT do in a follow-up session
+
+- Do NOT revert `--lf-listbox-radius` back to inheriting `--lf-radius`. The decoupling is intentional. If a future skin wants matched radii, override explicitly.
+- Do NOT author new stats bands without `data-lm="counter"`. If the DNA tone argues for static (e.g. editorial funereal voice), document the exception in the section comment.
+- Do NOT add `chrome.nav_cta` to `CHROME_I18N`. Per-template voice lives in `site.nav_cta`.
+- Do NOT use `{# … #}` on multiple lines inside skin HTML. Always `{% comment %}…{% endcomment %}` for annotation.
+- Do NOT translate `site.nav_cta` with machine translation. The native register per locale matters — Benessere AR uses "احجز طقسك" (book your ritual), not a literal "reserve" verb.
+
+---
+
 Last updated: 2026-04-15 — after **Session 51 Medical Second Wave Live Rollout**
 
 ## Session 51 — Medical Second Wave Live Rollout: Read This Before Touching Any Medical Skin, Salute/Benessere/Famiglia Content, or the `medical`/`medical-wellness`/`medical-family` Pexels Pools (2026-04-15)

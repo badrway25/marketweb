@@ -1,5 +1,18 @@
 # TODO Next
 
+## 🟢 Phase 2g3.2a — Medical Second Wave Polish + Interaction Fix — ✅ CLOSED (Session 52, 2026-04-15)
+
+Per D-081, three post-rollout defects closed on Salute · Benessere · Famiglia with minimal-surface fixes: (a) `--lf-listbox-radius` token decouples open-dropdown radius from field-radius (default 12px; wellness overrides to 14px); (b) wellness nav CTA reads `{{ site.nav_cta }}` instead of undefined `{{ chrome.nav_cta }}`; all 5 Benessere locale registries now carry `site.nav_cta` with locale-native voice; (c) Salute hero + band stat spans wired to `data-lm="counter"` (animates 0 → target with easeOutCubic); (d) `live-motion.js` thousand-sep heuristic extended to support EN/FR/ES comma-style `28,000` alongside IT dot-style `28.000`; (e) Dynamic Counter Policy binds retroactively + prospectively for every future stats band. 660/660 routes HTTP 200 post-fix. See SESSION_LOG Session 52 + DECISIONS D-081.
+
+**Catalog state unchanged from Session 51: 16/20 published_live.** Polish-only session.
+
+**Follow-ups (non blocking):**
+- [ ] Audit Salute band at 390×844 mobile — 4-column grid collapse verified, but the counter band specifically may need tighter padding.
+- [ ] Consider Benessere hero meta (4 short facts: "Bergamo Alta · Dal 2011 · Cinque operatori certificati · Silenzio la domenica") as a counter-opt for the year fragment "Dal 2011" if a subtle animation fits the spa register — LOW priority, wellness tone prefers calm.
+- [ ] Future real-estate + lawyer rollouts: ensure every stats band ships with `data-lm="counter"` from line one per D-081. Add a regression grep to smoke (`grep -c "data-lm=\"counter\"" templates/live_templates/**/home.html` ≥ 1 per stats-band template).
+
+---
+
 ## 🟢 Phase 2g3.2 — Medical Second Wave Live Rollout Premium — ✅ CLOSED (Session 51, 2026-04-15)
 
 Per D-080, `salute-studio-medico` (clinic archetype), `benessere-centro-olistico` (wellness archetype), `famiglia-pediatria` (family archetype) flipped from `tier=draft` to `tier=published_live` with 3 fully distinct multipage live skins (7/7/6 page kinds), 5 locales fin da subito (it/en/fr/es/ar) with real RTL for Arabic via Noto Naskh/Kufi conditional font load, and sharp D-054 differentiation enforced on 9 sibling pairs (Salute vs Cardio/Derm/Benessere/Famiglia · Benessere vs Cardio/Derm/Famiglia · Famiglia vs Cardio/Derm). D-047 chrome-authoring contract applied from line one (zero IT literals across 23 skin HTML files + 10 preview-composition literals lifted into DNA `content` dict keys).

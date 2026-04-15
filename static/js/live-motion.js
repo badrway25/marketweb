@@ -165,20 +165,28 @@
 
     var rawNum = el.getAttribute('data-lm-to') || match[2];
 
-    // Italian thousand-separator heuristic: "1.200" or "12.450" — 1–3 digits
-    // BEFORE a single dot AND exactly 3 digits AFTER it AND no further digits
-    // → treat the dot as a thousand separator, not a decimal point. Otherwise
-    // assume the dot is a decimal point ("1.4 B" stays 1.4). Comma-separators
-    // are always treated as decimals (Italian convention for fractional values).
-    var thousandsMatch = /^(\d{1,3})\.(\d{3})$/.exec(rawNum);
+    // Thousand-separator heuristic — supports IT/DE/ES (dot) and EN/FR (comma
+    // in some cases, though FR often uses narrow-space; comma is safer for
+    // the stock Western-European registers we target). A value like "28.000"
+    // or "28,000" (≥ 3-digit trailing group) is treated as a thousand-
+    // separated integer; "1.4" or "1,4" stays a decimal (4-group would be
+    // thousand-sep; single-digit/double-digit trailing group is decimal).
+    var thousandsDot   = /^\d{1,3}(\.\d{3})+$/.exec(rawNum);
+    var thousandsComma = /^\d{1,3}(,\d{3})+$/.exec(rawNum);
     var target;
-    if (thousandsMatch) {
-      target = parseInt(thousandsMatch[1] + thousandsMatch[2], 10);
+    var thousandsSep = null;
+    if (thousandsDot) {
+      target = parseInt(rawNum.replace(/\./g, ''), 10);
+      thousandsSep = '.';
+    } else if (thousandsComma) {
+      target = parseInt(rawNum.replace(/,/g, ''), 10);
+      thousandsSep = ',';
     } else {
+      // Treat comma as decimal separator when not in thousand-sep shape.
       target = parseFloat(String(rawNum).replace(',', '.'));
     }
 
-    var isInt = thousandsMatch ? true : (String(target).indexOf('.') === -1);
+    var isInt = thousandsSep ? true : (String(target).indexOf('.') === -1);
     var decimals = isInt ? 0 : (String(target).split('.')[1] || '').length;
 
     if (isNaN(target)) return;
@@ -192,9 +200,10 @@
     function formatValue(v) {
       if (isInt) {
         var n = Math.round(v);
-        // Restore Italian thousand-separator on integer fragments ≥ 1000.
-        if (thousandsMatch) {
-          return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        // Restore the original thousand-separator character so the animating
+        // count keeps the locale convention we parsed.
+        if (thousandsSep) {
+          return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSep);
         }
         return String(n);
       }

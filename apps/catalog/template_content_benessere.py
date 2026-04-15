@@ -118,6 +118,7 @@ BENESSERE_CONTENT_IT: dict[str, Any] = {
         "logo_initial":  "A",
         "logo_word":     "Studio Armonia",
         "tag":           "Centro olistico · Bergamo Alta · 800 m s.l.m.",
+        "nav_cta":       "Prenota un rituale",
         "phone":         "+39 035 412 998",
         "email":         "ritual@studioarmonia.it",
         "address":       "Via Arena 15 · 24129 Bergamo Alta",

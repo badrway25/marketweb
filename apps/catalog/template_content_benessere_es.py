@@ -47,6 +47,7 @@ BENESSERE_CONTENT_ES: dict[str, Any] = {
         "logo_initial":  "A",
         "logo_word":     "Studio Armonia",
         "tag":           "Casa holística · Bergamo Alta · 800 m sobre el nivel del mar",
+        "nav_cta":       "Reservar un ritual",
         "phone":         "+39 035 412 998",
         "email":         "ritual@studioarmonia.it",
         "address":       "Via Arena 15 · 24129 Bergamo Alta",

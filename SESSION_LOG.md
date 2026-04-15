@@ -1,5 +1,67 @@
 # Session Log
 
+## Session 52 — Medical Second Wave Polish + Interaction Fix (2026-04-15)
+
+**Agent:** chiudere i problemi qualitativi e interattivi ancora presenti sui 3 template della second wave medical (Salute · Benessere · Famiglia), con priorità pratica su Benessere e Salute; NON un nuovo rollout, ma un pass di polish + click-integrity + motion/interaction; formalizzare la regola "counter dinamici quando il tono lo consente" in memoria e nel decision log.
+
+**Branch:** `phase-medical-polish-fix-v1` (polish-only, no DB/schema/tier changes).
+
+### What was audited (real browser, not just smoke)
+
+- **Benessere IT + AR** — `/preview/` home + `/preview/prenota/` form; all nav links + CTA + language pills + dropdown open state.
+- **Salute IT + EN** — `/preview/` home hero stats + band stats; counter mid-frame sampling at 200 / 600 / 1000 / 1800 ms; `tel:` + booking-CTA + specialty links.
+- **Famiglia AR** — home + phone `tel:+390115492188` + WhatsApp `https://wa.me/393491234567` + language pills.
+
+### Defects surfaced
+
+1. **Benessere nav CTA renders empty across all 5 locales.** `templates/live_templates/medical/wellness/_base.html:573` bound to `{{ chrome.nav_cta }}`, but neither `CHROME_I18N` nor any Benessere locale file defines that key. The anchor tag renders with no text content (`<a class="cta" href="…"></a>`). Visible only in browser — smoke checks HTTP 200 only.
+2. **Benessere form dropdown open state oversized-round.** `.lf-select-listbox` inherits `border-radius: var(--lf-radius, 0)` and wellness sets `--lf-radius: 999px` (intentional for pill input fields). The open listbox panel renders as a 999px-radius barrel — wrong for a 356 × 280 panel.
+3. **Salute stats are static.** Hero `40+ · 12 · 98%` and band `1998 · 28.000 · 6 · € 0` have no `data-lm="counter"` attribute — live-motion.js leaves them frozen.
+
+### What shipped
+
+- **`static/css/live-forms.css`** — `.lf-select-listbox` now reads a new `--lf-listbox-radius` token (default 12px) instead of inheriting the pill field radius. `overflow: hidden auto` prevents child hover rows from bleeding outside the rounded corner. Token docs updated at the top of the file.
+- **`static/js/live-motion.js`** — counter heuristic extended to support BOTH Italian dot-style (`28.000`) AND English comma-style (`28,000`) thousand separators. `formatValue` preserves the detected separator in mid-animation frames so EN/FR/ES stats bands render native-formatted thousand-separators while animating.
+- **`templates/live_templates/medical/wellness/_base.html`** — nav CTA now reads `{{ site.nav_cta }}` (template-specific, not chrome-shared). Explicit `--lf-listbox-radius: 14px` added so the pill input fields (999px) no longer project their radius onto the listbox panel.
+- **`templates/live_templates/medical/clinic/home.html`** — `.cl-h-stats .n` (hero) and `.cl-stats .n` (band) spans emit `data-lm="counter"`. A 3rd tuple element on stats/stats_strip entries opts individual values out of animation (truthy = static). Loop uses `{% comment %}…{% endcomment %}` — the initial patch used `{# … #}` which Django leaks on multi-line (Session 48 D-078 gotcha, re-encountered, re-fixed).
+- **`apps/catalog/template_content_benessere.py`** + `_en.py` + `_fr.py` + `_es.py` + `_ar.py` — `site.nav_cta` added per locale: "Prenota un rituale" · "Book a ritual" · "Réserver un rituel" · "Reservar un ritual" · "احجز تجربتك" (initial first-pass draft used "احجز طقسك" iḥjiz ṭaqsak, flipped in user review to the more premium/editorial "احجز تجربتك" iḥjiz tajribatak = "book your experience" — standard AR wellness register used by Aman / Six Senses / Vogue Arabia. Rationale: `طقس` dual-meaning "rite/weather" in everyday MSA makes it stilted at a nav-CTA surface; body-copy retains `طقس` throughout for Session 51 lexical continuity).
+
+### Validation
+
+- `python manage.py check` → 0 issues.
+- Playwright browser walk @ 1440 × 900 + 1440 × 600 + AR (RTL):
+  - Benessere home: nav CTA "PRENOTA UN RITUALE" renders in IT, "احجز طقسك" in AR.
+  - Benessere prenota: dropdown opens at 14px radius on dark-band backdrop, 13 rituals listed cleanly; submit button "Riserva il tuo momento" visible (gold bg · primary ink).
+  - Salute home: hero `40+ · 12 · 98%` animate 0 → target on viewport enter (samples at t=200 / 600 / 1000 / 1800 ms showed `298 / 4,172 / 1 / € 0` → `1419 / 19,882 / 4 / € 0` → `1892 / 26,512 / 6 / € 0` → `1998 / 28,000 / 6 / € 0`, easeOutCubic-shaped climb).
+  - Salute EN home: `28,000` comma-sep preserved through animation (heuristic extension confirmed).
+  - Famiglia AR: `tel:+390115492188` + `https://wa.me/393491234567` both resolve, RTL, 5 pills.
+- `smoke_full.py` regression: 660/660 routes HTTP 200 (no route changes).
+- D-047 chrome-cleanliness preserved: no new IT literals in HTML (`site.nav_cta` values are content-registry keys, not literals in skin).
+
+### Key decisions made
+
+- **D-081** added: Dynamic Counter Policy + `--lf-listbox-radius` decoupling + `site.nav_cta` authoring convention + live-motion.js thousand-sep extension + Django multi-line comment rule restated.
+
+### Dynamic Counter Policy (D-081 binding)
+
+> When a published_live template renders a premium stats / facts / metrics / volumes / years / visits / indicators band, the numeric value MUST animate from 0 via `data-lm="counter"` unless the DNA tone disqualifies it (funereal editorial, brutalist manifesto, or the value is a semantically-inanimate label like a literal zero). Reduced-motion MUST be respected (`prefers-reduced-motion: reduce` short-circuits all counters in `live-motion.js`).
+
+Future rollouts (Lex · Juris · Casa · Villa) that ship a stats band MUST wire this. Premium-UI reviewer adds this to the D-054 10-gate as an implicit gate #11 for templates with numeric bands.
+
+### Blockers
+
+None. Session 52 closes. Catalog holds at 16/20 published_live.
+
+### Integration target
+
+**`phase-integration-baseline-v13`** (head `1f3319d`, containing medical second wave rollout). This polish branch (`phase-medical-polish-fix-v1`) roots on the medical-wave commit `728a044` which is an ancestor of v13. Integration path: commit polish changes → merge into v13.
+
+### Exact next step
+
+**Phase 2g3.6d — Lawyer (Lex / Juris) live rollout.** Then Phase 2g3.6e — Real-estate (Casa / Villa). Same recipe as Sessions 32 / 34 / 41 / 48 / 49 / 51 + NEW gate: counter-motion-when-coherent per D-081.
+
+---
+
 ## Session 49 — Agency Live Rollout Premium (Phase 2g3.6f close · 2026-04-15)
 
 **Agent:** chiudere la categoria agency portando entrambi i template (Vertex + Aura) a `tier=published_live` premium con due skin folder distinte, 5 lingue vere fin da subito, RTL serio per AR, identità sharply differenziata, zero regressione sui 11 live precedenti.
