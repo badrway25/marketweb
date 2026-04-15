@@ -1,5 +1,144 @@
 # Session Log
 
+## Session 54 — Catalog Expansion Strategy + Profession Preset Taxonomy (2026-04-15)
+
+**Agent:** progettare in modo rigoroso e scalabile l'evoluzione del catalogo dopo la chiusura del MVP a 20/20 `published_live`. Output concreto: un documento strategico principale (`CATALOG_EXPANSION_STRATEGY.md`), un companion (`PROFESSION_PRESET_TAXONOMY.md`), aggiornamenti coordinati a tutti i file di coordinamento, una proposta roadmap eseguibile in fasi successive. **Strategy-only session — no template, no skin folder, no rollout.**
+
+**Branch:** `phase-catalog-expansion-strategy-v1` (architettura, no DB/schema/tier changes).
+
+### Vincoli (espliciti)
+
+- NON implementare nuovi template live.
+- NON aprire l'editor.
+- NON refactorare codice.
+- NON toccare i 20 `published_live`.
+- NON aprire branch di rollout.
+- Architettura concreta basata sui pattern reali emersi dai 20 template live, NON teoria astratta.
+
+### Domanda centrale
+
+> Come dobbiamo organizzare il sistema per arrivare a decine di categorie, centinaia di professioni e molti più template/preset, senza duplicazioni, senza refactor continui e senza appiattire il design?
+
+### Lavoro svolto
+
+#### 1. Lettura integrale contesto (12 file)
+
+Letti: CLAUDE.md · MEMORY.md · SESSION_LOG.md (tail) · DECISIONS.md (D-080..D-082) · TODO_NEXT.md · ARCHITECTURE.md · AGENT_HANDOFF.md · CONTENT_GUIDELINES.md · BRAND_SYSTEM_GUIDELINES.md · CATEGORY_ROADMAP.md · TEMPLATE_REGISTRY.json · EDITOR_SCHEMA_BLUEPRINT.md.
+
+#### 2. Audit catalogo attuale
+
+- 8 categorie MVP, 19 archetipi spediti, 20 template `published_live`, 1 reuso archetipo (derm su specialist).
+- 12 pattern strutturali consolidati identificati (DNA, D-047, D-053/054/057, locale-keyed registry, Pexels, motion library, …).
+- 8 limiti strutturali identificati per scalare a 100+ professioni: assenza di livello "preset", template-as-scaling-unit, no editor, no varianti di sezione, asset library curatela manuale, ecc.
+- Aree mature vs aree fragili documentate.
+
+#### 3. Tassonomia futura
+
+- Proposte **14 categorie top-level medio termine** (8 esistenti + 6 nuove): `hospitality · food-retail · automotive · trades · beauty · wellness-fit · professional · education · events`.
+- Test di promozione preset → categoria definito (4 gate: nome cercato dal cliente · conversion pattern strutturalmente diverso · ≥ 3 archetipi distinti · sopravvive al test card-size).
+- Scelte di accorpamento documentate (perché dentista NON è categoria, perché idraulico NON è categoria, ecc.).
+
+#### 4. Modello strutturale a 4 livelli
+
+```
+Categoria → Archetipo → Preset Professionale → Editor Cliente
+```
+
+- Responsabilità per livello documentate (cosa contiene, cosa NON contiene).
+- 3 esempi concreti applicati (`dentista-clinico-pulito`, `idraulico-pronto-intervento-roma`, `panettiere-cesare-quartiere`).
+- Persistenza schema-level proposta: 2 colonne nuove additive (`profession_preset` + `parent_archetype`) su `WebTemplate`; 1 nuovo file registry `apps/catalog/profession_presets.py`. Zero breaking change.
+
+#### 5. Archetipi per categoria
+
+- Matrice completa `categoria × archetipo` con 7 dimensioni DNA per archetypo (hero/navbar/CT/motion/imagery/font/page-kinds + riusabilità).
+- 19 archetipi esistenti + **11 nuovi proposti** (3 trades + 3 food-retail + 4 hospitality + 3 automotive + 3 beauty + 3 wellness-fit + 3 professional + 3 education + 2-3 events + opzionali) = 28-30 medio termine, 35-40 lungo termine.
+
+#### 6. Preset professionali
+
+- Anatomia preset binding documentata in `PROFESSION_PRESET_TAXONOMY.md`.
+- Cosa cambia / cosa NON cambia tra preset dello stesso archetypo (matrice 13 dimensioni).
+- Trigger di promozione preset → archetypo definito (rompe ≥ 4 dimensioni D-054).
+- Trigger di promozione preset → template autoriale featured definito (top 10% domanda + showcase + archetypo rodato).
+- **75-90 preset target medio termine**, **130-170 lungo termine**, distribuiti su 14-16 categorie. Registro completo numerato 1-139 con archetypo/voce/cosa-cambia/proof/sezioni-opzionali/Phase per ciascuno.
+
+#### 7. DNA-locked vs editor-editable matrix
+
+- Tassonomia 5-livelli editabilità: DNA-locked · Preset-driven · Editor-editable · Tier-gated · Don't expose v1.
+- Matrice completa per ~40 dimensioni (archetype, hero silhouette, navbar style, copy, palette, font, sezioni, locali, SEO, slug, custom code, dominio, Stripe, multi-tenant, …).
+- 5 decisioni vincolanti documentate (DNA è davvero locked, editor rispetta D-047/053/054/057, tier-gated arriva dopo Phase A, don't-expose-v1 non è "mai esporre").
+
+#### 8. Strategia editor — decisione esplicita
+
+**Decisione:** Editor Foundation v1 PRIMA, poi preset-driven expansion.
+
+- 6 motivazioni dettagliate (costo lineare vs amortizzato, native voice non scalabile, modello a 4 livelli funziona solo con editor, EDITOR_SCHEMA_BLUEPRINT già autoriale, Phase 3 unblock gate MET, 20 template = campione sufficiente).
+- Scope Editor v1 chiarito (in scope: models + renderer overlay + form-based UI + preset library + validators + image upload + locale UI + smoke; out scope: AI gen, multi-user editing, SPA, custom code injection).
+- Stima: 14-23 sessioni / 2-3 mesi.
+- 3 regole vincolanti per evitare rifare lavoro (editor non sa dei preset, schema additivo, DNA è source of truth).
+
+#### 9. Roadmap eseguibile in fasi
+
+**Phase A** (Editor v1) → **Phase B** (Trades + Food retail) → **Phase C** (Beauty + Wellness-fit) → **Phase D** (Hospitality + Automotive) → **Phase E** (Professional + Education) → **Phase F** (Events + MVP extension) → **Phase G** (Tier monetization + commerce extensions). Stima totale 14-16 mesi. Tabella riassuntiva con archetypi nuovi/preset nuovi/categorie nuove/mesi per ciascuna phase.
+
+#### 10. Proposta numerica + decisione finale
+
+| Asse | Oggi | Medio termine | Lungo termine |
+|------|------|----------------|----------------|
+| Categorie top-level | 8 | 14-16 | 17-20 |
+| Archetypi totali | 19 | 28-30 | 35-40 |
+| Preset professionali | 0 | 75-90 | 130-170 |
+| Template autoriali | 20 | 20-25 | 25-30 |
+
+**Decisione binding:** Phase A è il prossimo workstream. Nessun nuovo template/archetypo/categoria finché Phase A non è chiusa.
+
+### Deliverable concreti
+
+- ✅ `CATALOG_EXPANSION_STRATEGY.md` (~1100 LOC, 11 sezioni: exec summary · audit · tassonomia · modello strutturale · archetypi per categoria · preset framework · DNA-locked matrix · editor strategy · rollout priority · numerical proposal · 12-point summary)
+- ✅ `PROFESSION_PRESET_TAXONOMY.md` (~600 LOC, registro completo 139 preset numerati su 17 categorie effettive)
+- ✅ `CATEGORY_ROADMAP.md` aggiornato con header strategy + 14 categorie top-level + tabella Phase A-G
+- ✅ `TODO_NEXT.md` aggiornato con Phase A sub-phasing (A.1-A.8) + Phase B-G (placeholder per future sessioni)
+- ✅ `DECISIONS.md` con 3 nuove decisioni binding:
+  - **D-083** Modello catalogo strutturale a 4 livelli (Categoria → Archetipo → Preset → Editor)
+  - **D-084** Tassonomia 14 categorie top-level medio termine
+  - **D-085** Editor-First Sequencing (Phase A è il prossimo workstream, blocco binding)
+- ✅ `AGENT_HANDOFF.md` con istruzioni Session 54 → Phase A (cosa NOT to do · cosa verificare prima di aprire Phase A · acceptance gates Phase A)
+- ✅ `SESSION_LOG.md` entry Session 54 (questa)
+- ✅ `MEMORY.md` index entry + `memory/catalog_expansion_strategy_session54.md`
+
+### Catalog state dopo Session 54
+
+**INVARIATO: 20/20 published_live, 8 categorie MVP CHIUSE.** Strategy-only session.
+
+### Files modificati / creati
+
+- `CATALOG_EXPANSION_STRATEGY.md` (created · ~1100 LOC)
+- `PROFESSION_PRESET_TAXONOMY.md` (created · ~600 LOC)
+- `CATEGORY_ROADMAP.md` (modified · header + 14 categorie + Phase A-G table aggiunte)
+- `TODO_NEXT.md` (modified · Phase A sub-phasing + Phase B-G placeholder aggiunti in cima)
+- `DECISIONS.md` (modified · D-083 + D-084 + D-085 aggiunti in cima)
+- `AGENT_HANDOFF.md` (modified · Session 54 entry aggiunto in cima)
+- `SESSION_LOG.md` (modified · entry Session 54 aggiunto in cima)
+- `memory/catalog_expansion_strategy_session54.md` (created)
+- `MEMORY.md` (modified · index entry aggiunto)
+
+**Nessun template, skin folder, content tree, registry JSON, o codice applicativo è stato toccato.**
+
+### Trade-off deliberati
+
+- **Strategia, non implementazione.** Questa sessione produce blueprint, NON content tree dei preset né codice editor. Tutto il lavoro autoriale concreto arriva nelle phase successive.
+- **14 categorie, non 30+.** Tassonomia contenuta per browseability + marketing chiarezza + zero overlap categoria.
+- **75-90 preset medio termine, non 200.** Numero realistico per redazione interna; il customer fork via editor è il moltiplicatore reale.
+- **Editor v1 minimal, non SPA + AI.** SPA + AI features sono v2/v3, riducono drasticamente costo + rischio Phase A.
+- **Phase B = Trades + Food-retail (NON Medical extension first).** Apre asse "mestieri italiani locali" oggi scoperto, max copertura mercato per minimo costo (riuso archetypi semplici, conversion patterns lineari).
+- **NO modifica ai 20 template `published_live`.** Restano "template autoriali" featured al livello 3 con `profession_preset` vuoto, mai retrofittati a preset.
+
+### Decisione finale
+
+> **Phase A — Editor Foundation v1 — è il prossimo workstream.**
+> Nessun nuovo template `published_live`, nessun nuovo archetipo, nessuna nuova categoria, nessun preset autoriale viene aperto finché Phase A non è chiusa con i criteri di accettazione di `CATALOG_EXPANSION_STRATEGY.md` §8.
+
+---
+
 ## Session 52 — Medical Second Wave Polish + Interaction Fix (2026-04-15)
 
 **Agent:** chiudere i problemi qualitativi e interattivi ancora presenti sui 3 template della second wave medical (Salute · Benessere · Famiglia), con priorità pratica su Benessere e Salute; NON un nuovo rollout, ma un pass di polish + click-integrity + motion/interaction; formalizzare la regola "counter dinamici quando il tono lo consente" in memoria e nel decision log.

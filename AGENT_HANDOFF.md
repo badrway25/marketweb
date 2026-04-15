@@ -1,5 +1,57 @@
 # Agent Handoff
 
+Last updated: 2026-04-15 — after **Session 54 Catalog Expansion Strategy + Profession Preset Taxonomy**
+
+## Session 54 — Strategy Session: Read This Before Proposing Any New Template, Archetype, Category, or Preset (2026-04-15)
+
+**What changed in Session 54.** No code, no template, no skin folder. **Strategy-only session.** Three deliverables landed:
+1. `CATALOG_EXPANSION_STRATEGY.md` — 11-section blueprint covering audit, taxonomy, 4-level model, archetype matrix, preset framework, DNA-locked vs editable matrix, editor strategy, rollout roadmap, numerical proposal, final decision.
+2. `PROFESSION_PRESET_TAXONOMY.md` — concrete registry of ~75-90 profession presets across 14-16 categories, mapped to archetypes (19 existing + 11 new).
+3. Coordinated updates to `CATEGORY_ROADMAP.md`, `TODO_NEXT.md`, `DECISIONS.md` (D-083 / D-084 / D-085), `AGENT_HANDOFF.md`, `SESSION_LOG.md`, `MEMORY.md`.
+
+**Catalog state UNCHANGED after Session 54: 20/20 published_live.** Strategy session does not flip tiers or modify templates.
+
+### What's binding (D-083 + D-084 + D-085)
+
+1. **D-085 — Editor-First Sequencing is the next workstream.** Phase A (Editor Foundation v1) is the next phase. **NO new template, archetype, category, or preset gets opened until Phase A is closed.** This is hard, not advisory. Proposals to "just add one more template" must be refused.
+
+2. **D-084 — 14 categorie top-level medio termine.** Le 8 MVP esistenti restano invariate (`medical · restaurant · business · agency · lawyer · real-estate · portfolio · ecommerce`); 6 nuove si aggiungono in Phase B-F (`hospitality · food-retail · automotive · trades · beauty · wellness-fit · professional · education · events` — totale 9 nuove se si conta `events` aperta in Phase F, sono 17 se si conta tutte le opzionali; il numero 14 è il **medio termine binding**, le restanti 3 sono opzionali).
+
+3. **D-083 — Modello a 4 livelli (Categoria → Archetipo → Preset → Editor)** è la struttura vincolante. Non si aprono "categorie per ogni mestiere". Non si fanno "template completamente nuovi per ogni mestiere". Si fanno **preset professionali sopra archetipi riusati**.
+
+4. **I 20 template `published_live` esistenti restano "template autoriali" (livello 3 con `profession_preset` vuoto)** — invariati, mai retrofittati a preset. Polish/security/a11y/mobile-audit ammessi; rewrite NO.
+
+5. **Editor v1 NON deve sapere dei preset.** Editor v1 modifica `CustomerProject`. Il `CustomerProject` viene creato da un seed (template autoriale o, in Phase B+, preset). L'editor non sa se il seed era preset o template — lavora sul project. Quando i preset cresceranno, basta aggiungerne nel registry; l'editor non cambia.
+
+6. **Phase A sub-phasing è in `TODO_NEXT.md`.** A.1 (models) → A.2 (renderer overlay) → A.3 (UI form-based) → A.4 (preset library) → A.5 (validators) → A.6 (image upload) → A.7 (locale UI) → A.8 (smoke). Stima ~14-23 sessioni / 2-3 mesi.
+
+7. **Phase B (Trades + Local Food Retail)** è la prima ondata post-MVP. Sequenza fissa: B → C → D → E → F → G. NO salti, NO sostituzioni di phase.
+
+### Do NOT do in a follow-up session
+
+- **Do NOT propose a new template or archetype** until Phase A.8 is verde. Anche se "sembrerebbe veloce", anche se "ci sarebbe domanda". Il blocco è binding.
+- **Do NOT touch the 20 published_live templates** salvo per polish/security/a11y/mobile-audit. NO rewrite. NO retrofit a preset.
+- **Do NOT open new categories** before Phase A. La categoria `trades` esisterà solo quando Phase A è chiusa e Phase B inizia.
+- **Do NOT translate the profession-preset taxonomy** (PROFESSION_PRESET_TAXONOMY.md) into actual content tree files yet. Quel documento è blueprint, non implementazione. I content tree dei preset si scrivono solo in Phase B-F.
+- **Do NOT machine-translate any preset content seed** quando arriverà il momento. Native voice per locale rimane non-negotiable per i preset autoriali.
+- **Do NOT skip the `EDITOR_SCHEMA_BLUEPRINT.md` contract.** Phase A implementa quel contratto. Se vuoi cambiare lo schema, prima aggiorna D-064 + EDITOR_SCHEMA_BLUEPRINT.md, poi implementi.
+- **Do NOT collassare livelli** (es. "facciamo categoria=preset" o "facciamo template=preset"). Il modello a 4 livelli è binding per scaling sostenibile.
+
+### What to verify BEFORE opening Phase A
+
+- `EDITOR_SCHEMA_BLUEPRINT.md` letto integralmente (~478 LOC).
+- `CATALOG_EXPANSION_STRATEGY.md` §4 (modello strutturale) + §7 (DNA-locked vs editable) + §8 (editor strategy) letti.
+- `PROFESSION_PRESET_TAXONOMY.md` §1 (anatomia preset) letto — anche se Phase A non implementa preset, il design dell'editor deve essere compatibile.
+- Verificare che `apps/editor/` esista come directory ma non abbia codice (vedi `ARCHITECTURE.md` §`editor`).
+- Decidere persistenza: SQLite per dev, PostgreSQL per produzione (già scelto). Le migrations Phase A.1 sono additivi.
+- Stripe + commerce v2 sono già operativi (D-076, Session 45). Editor v1 NON tocca commerce. Customer project Stripe domain mapping arriva in Phase G (D-085 sequenza).
+
+### When Phase A closes (acceptance gates)
+
+Editor v1 in produzione + tutti i 20 `published_live` clonabili + un test interno completo (clone → edit → publish) verde + smoke harness + zero regression. Solo allora si apre Phase B.
+
+---
+
 Last updated: 2026-04-15 — after **Session 53 Lawyer + Real-Estate Live Rollout · CATALOG COMPLETE 20/20**
 
 ## Session 53 — CATALOG COMPLETE 20/20 · Read This Before Touching Any Lawyer / Real-Estate Skin, Lex/Juris/Casa/Villa Content, or the 4 New Pexels Pools (2026-04-15)
