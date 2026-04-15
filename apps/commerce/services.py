@@ -38,21 +38,34 @@ from apps.commerce import payments
 
 
 # ── Errors ─────────────────────────────────────────────────────────
+#
+# Every service-layer error carries a stable `code` and a `params` dict so
+# the calling view can translate the message via commerce chrome keys
+# (apps/commerce/i18n.py → `msg_*`). The exception's string form remains an
+# IT fallback so logs and admin surfaces still read.
 
 class CommerceError(Exception):
     """Base class for commerce service errors surfaced to the UI."""
+    code = "generic"
+
+    def __init__(self, message: str = "", *, code: str | None = None, params: dict | None = None):
+        super().__init__(message)
+        if code:
+            self.code = code
+        self.params = params or {}
 
 
 class OutOfStockError(CommerceError):
     """Requested quantity exceeds what the variant currently holds."""
+    code = "out_of_stock"
 
 
 class EmptyCartError(CommerceError):
-    pass
+    code = "empty_cart"
 
 
 class InvalidShippingMethod(CommerceError):
-    pass
+    code = "invalid_shipping"
 
 
 # ── Cart lifecycle ─────────────────────────────────────────────────
@@ -80,17 +93,20 @@ def add_to_cart(
     *, cart: Cart, variant: ProductVariant, quantity: int = 1
 ) -> CartItem:
     if quantity < 1:
-        raise CommerceError("Quantity must be at least 1.")
+        raise CommerceError("La quantità minima è 1.", code="cart_min_qty")
     if variant.product.storefront_id != cart.storefront_id:
-        raise CommerceError("Variant belongs to a different storefront.")
+        raise CommerceError("Articolo non disponibile in questo shop.",
+                            code="cart_different_store")
     if not variant.is_active:
-        raise CommerceError("Variant is not available for sale.")
+        raise CommerceError("Variante non in vendita.",
+                            code="cart_inactive_variant")
 
     existing = cart.items.filter(variant=variant).first()
     new_qty = (existing.quantity if existing else 0) + quantity
     if new_qty > variant.stock:
         raise OutOfStockError(
-            f"Only {variant.stock} unit(s) left for {variant.product.title}."
+            f"Rimangono solo {variant.stock} pezzi di {variant.product.title}.",
+            params={"stock": variant.stock, "title": variant.product.title},
         )
 
     if existing:
@@ -118,7 +134,8 @@ def update_cart_item(*, cart: Cart, item_id: int, quantity: int) -> Optional[Car
         return None
     if quantity > item.variant.stock:
         raise OutOfStockError(
-            f"Only {item.variant.stock} unit(s) left for {item.variant.product.title}."
+            f"Rimangono solo {item.variant.stock} pezzi di {item.variant.product.title}.",
+            params={"stock": item.variant.stock, "title": item.variant.product.title},
         )
     item.quantity = quantity
     item.unit_price = item.variant.price
@@ -158,7 +175,10 @@ def _resolve_shipping(storefront: Storefront, code: str) -> ShippingMethod:
         storefront=storefront, code=code, is_active=True
     ).first()
     if method is None:
-        raise InvalidShippingMethod(f"Shipping method '{code}' is not available.")
+        raise InvalidShippingMethod(
+            f"Metodo di spedizione '{code}' non disponibile.",
+            params={"code": code},
+        )
     return method
 
 
@@ -173,7 +193,7 @@ def create_order_from_cart(
     storefront's configured provider. Cart is marked inactive.
     """
     if cart.items.count() == 0:
-        raise EmptyCartError("Il carrello è vuoto.")
+        raise EmptyCartError("Il carrello è vuoto.", code="empty_cart")
 
     storefront = cart.storefront
     shipping_method = _resolve_shipping(storefront, payload.shipping_method_code)
@@ -188,8 +208,8 @@ def create_order_from_cart(
         variant = ProductVariant.objects.select_for_update().get(pk=item.variant_id)
         if variant.stock < item.quantity:
             raise OutOfStockError(
-                f"{variant.product.title}: disponibili {variant.stock}, "
-                f"richiesti {item.quantity}."
+                f"Rimangono solo {variant.stock} pezzi di {variant.product.title}.",
+                params={"stock": variant.stock, "title": variant.product.title},
             )
 
     subtotal = sum((i.line_total() for i in locked_items), Decimal("0.00"))
@@ -275,7 +295,7 @@ def retry_payment(*, order: Order) -> PaymentIntent:
     page. No stock is touched — that was locked at order creation.
     """
     if order.payment_status == Order.PaymentStatus.PAID:
-        raise CommerceError("Questo ordine è già stato pagato.")
+        raise CommerceError("Questo ordine è già stato pagato.", code="already_paid")
     result = payments.dispatch(payments.PaymentContext(order=order))
     return result.intent
 

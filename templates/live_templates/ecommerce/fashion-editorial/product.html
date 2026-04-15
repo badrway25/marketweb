@@ -6,22 +6,38 @@
   }
   @media (max-width: 1100px) { .fe-pdp .top { grid-template-columns: 1fr; } }
 
-  /* Gallery */
+  /* Gallery — sticky hero + clickable thumbs with gold active rule. */
+  .fe-gal { position: sticky; top: 24px; }
   .fe-gal .main {
-    aspect-ratio: 4 / 5; background: var(--ink-2) center/cover;
-    filter: grayscale(8%) contrast(1.06);
+    aspect-ratio: 4 / 5;
+    background-color: var(--ink-2); background-size: cover; background-position: center 32%;
+    background-repeat: no-repeat;
+    filter: grayscale(6%) contrast(1.05);
+    transition: background-image .4s ease, filter .2s ease;
   }
   .fe-gal .strip {
-    margin-top: 18px;
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-top: 14px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
   }
   .fe-gal .strip .t {
-    aspect-ratio: 1; background: var(--ink-2) center/cover;
-    filter: grayscale(8%) contrast(1.06);
-    border: 1px solid var(--rule); cursor: pointer;
-    transition: filter .2s ease;
+    aspect-ratio: 3 / 4;
+    background-color: var(--ink-2); background-size: cover; background-position: center 32%;
+    background-repeat: no-repeat;
+    filter: grayscale(12%) contrast(1.03); opacity: 0.78;
+    border: 1px solid var(--rule);
+    cursor: pointer;
+    transition: filter .2s ease, opacity .2s ease, border-color .2s ease, transform .2s ease;
+    position: relative;
   }
-  .fe-gal .strip .t:hover { filter: grayscale(0%) contrast(1.10); }
+  .fe-gal .strip .t:hover { filter: grayscale(0%) contrast(1.08); opacity: 1.0; }
+  .fe-gal .strip .t.is-current {
+    border-color: var(--gold); opacity: 1.0; filter: none;
+  }
+  .fe-gal .strip .t.is-current::after {
+    content: ""; position: absolute; inset: auto 8px 8px 8px; height: 2px;
+    background: var(--gold);
+  }
+  .fe-gal .strip .t:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   .fe-gal .caps {
     margin-top: 18px;
     display: flex; justify-content: space-between; align-items: baseline; gap: 18px; flex-wrap: wrap;
@@ -245,10 +261,14 @@
 <section class="fe-pdp">
   <div class="top" data-lm="reveal">
     <div class="fe-gal">
-      <div class="main" style="background-image:url('{{ page_data.gallery.0 }}')"></div>
-      <div class="strip">
+      <div class="main" id="feGalMain" style="background-image:url('{{ page_data.gallery.0 }}')"></div>
+      <div class="strip" data-gallery-strip>
         {% for img in page_data.gallery %}
-          <div class="t" style="background-image:url('{{ img }}')"></div>
+          <div class="t{% if forloop.first %} is-current{% endif %}"
+               style="background-image:url('{{ img }}')"
+               data-swap="{{ img }}"
+               role="button" tabindex="0"
+               aria-label="Foto {{ forloop.counter }}"></div>
         {% endfor %}
       </div>
       <div class="caps">
@@ -378,5 +398,28 @@
       p.classList.add('is-current');
     });
   });
+
+  // Gallery strip → swap hero on click. Active-state on the selected thumb.
+  (function(){
+    var strip = document.querySelector('[data-gallery-strip]');
+    var main  = document.getElementById('feGalMain');
+    if (!strip || !main) return;
+    function pick(thumb){
+      var src = thumb.getAttribute('data-swap'); if (!src) return;
+      main.style.backgroundImage = "url('" + src + "')";
+      strip.querySelectorAll('.t').forEach(function(t){ t.classList.remove('is-current'); });
+      thumb.classList.add('is-current');
+    }
+    strip.addEventListener('click', function(ev){
+      var t = ev.target.closest('.t'); if (!t) return;
+      pick(t);
+    });
+    strip.addEventListener('keydown', function(ev){
+      if (ev.key !== 'Enter' && ev.key !== ' ') return;
+      var t = ev.target.closest('.t'); if (!t) return;
+      ev.preventDefault();
+      pick(t);
+    });
+  })();
 </script>
 {% endblock %}

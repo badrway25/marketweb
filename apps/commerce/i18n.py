@@ -217,6 +217,17 @@ COMMERCE_CHROME: dict[str, dict[str, str]] = {
         "foot_rights":      "Tutti i diritti riservati",
         # Language switcher
         "switch_language":  "Lingua",
+        # User-facing flash messages. Placeholders: {title}, {stock}.
+        "msg_added_to_cart":      "{title} è stato aggiunto al carrello.",
+        "msg_out_of_stock":       "Rimangono solo {stock} pezzi di {title}.",
+        "msg_empty_cart":         "Il carrello è vuoto.",
+        "msg_pick_variant":       "Scegli una variante prima di aggiungere al carrello.",
+        "msg_variant_unavailable":"Variante non disponibile.",
+        "msg_already_paid":       "Questo ordine è già stato pagato.",
+        "msg_invalid_shipping":   "Metodo di spedizione non disponibile.",
+        "msg_cart_min_qty":       "La quantità minima è 1.",
+        "msg_cart_different_store":"Articolo non disponibile in questo shop.",
+        "msg_cart_inactive_variant":"Questa variante non è più in vendita.",
     },
 
     # ─────────────────────────────────────────────────────────────
@@ -376,6 +387,16 @@ COMMERCE_CHROME: dict[str, dict[str, str]] = {
         "foot_service":     "Service",
         "foot_rights":      "All rights reserved",
         "switch_language":  "Language",
+        "msg_added_to_cart":      "{title} has been added to your bag.",
+        "msg_out_of_stock":       "Only {stock} left of {title}.",
+        "msg_empty_cart":         "Your bag is empty.",
+        "msg_pick_variant":       "Pick a variant before adding to your bag.",
+        "msg_variant_unavailable":"This variant is unavailable.",
+        "msg_already_paid":       "This order has already been paid.",
+        "msg_invalid_shipping":   "Shipping method not available.",
+        "msg_cart_min_qty":       "Minimum quantity is 1.",
+        "msg_cart_different_store":"This item isn't available in this shop.",
+        "msg_cart_inactive_variant":"This variant is no longer on sale.",
     },
 
     # ─────────────────────────────────────────────────────────────
@@ -535,6 +556,16 @@ COMMERCE_CHROME: dict[str, dict[str, str]] = {
         "foot_service":     "Service",
         "foot_rights":      "Tous droits réservés",
         "switch_language":  "Langue",
+        "msg_added_to_cart":      "{title} a été ajouté à votre panier.",
+        "msg_out_of_stock":       "Il ne reste que {stock} exemplaires de {title}.",
+        "msg_empty_cart":         "Votre panier est vide.",
+        "msg_pick_variant":       "Choisissez une variante avant d'ajouter au panier.",
+        "msg_variant_unavailable":"Variante indisponible.",
+        "msg_already_paid":       "Cette commande a déjà été payée.",
+        "msg_invalid_shipping":   "Mode de livraison indisponible.",
+        "msg_cart_min_qty":       "La quantité minimale est 1.",
+        "msg_cart_different_store":"Article indisponible dans cette boutique.",
+        "msg_cart_inactive_variant":"Cette variante n'est plus en vente.",
     },
 
     # ─────────────────────────────────────────────────────────────
@@ -694,6 +725,16 @@ COMMERCE_CHROME: dict[str, dict[str, str]] = {
         "foot_service":     "Servicio",
         "foot_rights":      "Todos los derechos reservados",
         "switch_language":  "Idioma",
+        "msg_added_to_cart":      "{title} se ha añadido a tu cesta.",
+        "msg_out_of_stock":       "Quedan solo {stock} unidades de {title}.",
+        "msg_empty_cart":         "Tu cesta está vacía.",
+        "msg_pick_variant":       "Elige una variante antes de añadirla a la cesta.",
+        "msg_variant_unavailable":"Variante no disponible.",
+        "msg_already_paid":       "Este pedido ya está pagado.",
+        "msg_invalid_shipping":   "Método de envío no disponible.",
+        "msg_cart_min_qty":       "La cantidad mínima es 1.",
+        "msg_cart_different_store":"Artículo no disponible en esta tienda.",
+        "msg_cart_inactive_variant":"Esta variante ya no está a la venta.",
     },
 
     # ─────────────────────────────────────────────────────────────
@@ -853,6 +894,16 @@ COMMERCE_CHROME: dict[str, dict[str, str]] = {
         "foot_service":     "الخدمة",
         "foot_rights":      "جميع الحقوق محفوظة",
         "switch_language":  "اللغة",
+        "msg_added_to_cart":      "تمّت إضافة {title} إلى سلّتك.",
+        "msg_out_of_stock":       "تبقّى فقط {stock} قطع من {title}.",
+        "msg_empty_cart":         "سلّتك فارغة.",
+        "msg_pick_variant":       "اختَر الإصدار قبل الإضافة إلى السلّة.",
+        "msg_variant_unavailable":"الإصدار غير متاح.",
+        "msg_already_paid":       "تمّ دفع هذا الطلب مسبقاً.",
+        "msg_invalid_shipping":   "طريقة الشحن غير متاحة.",
+        "msg_cart_min_qty":       "الحدّ الأدنى للكميّة هو 1.",
+        "msg_cart_different_store":"هذا العنصر غير متاح في هذا المتجر.",
+        "msg_cart_inactive_variant":"هذا الإصدار لم يعد للبيع.",
     },
 }
 
@@ -860,13 +911,16 @@ COMMERCE_CHROME: dict[str, dict[str, str]] = {
 # ── Helpers ────────────────────────────────────────────────────────
 
 def resolve_locale(request: HttpRequest) -> str:
-    """Read `?lang=xx` from the request, validated.
+    """Pick the active locale from GET → POST → default.
 
-    Falls back to DEFAULT_LOCALE on missing/unknown.
+    POST is consulted so `<input type="hidden" name="lang">` in a form
+    propagates the locale across a redirect/flash-message cycle. Without
+    this, a form submitted from `/shop/.../?lang=en` flashed its
+    confirmation in IT.
     """
     if request is None:
         return DEFAULT_LOCALE
-    raw = (request.GET.get("lang") or "").strip().lower()
+    raw = (request.GET.get("lang") or request.POST.get("lang") or "").strip().lower()
     if raw and raw in SUPPORTED_LOCALES:
         return raw
     return DEFAULT_LOCALE

@@ -144,7 +144,7 @@ LUXE_CONTENT_FR: dict[str, Any] = {
                 "tag":      "Capsule",
                 "name":     "Bomber Siena",
                 "price":    "1 290 €",
-                "image":    "https://images.unsplash.com/photo-1551803091-e20673f15770?w=1200&q=80&auto=format&fit=crop",
+                "image":    "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200&q=80&auto=format&fit=crop",
             },
             {
                 "id":       "pelletteria-isola",
@@ -302,7 +302,7 @@ LUXE_CONTENT_FR: dict[str, Any] = {
                 "price":    "2 480 €",
                 "tag":      "Liste d'attente",
                 "available":True,
-                "image":    "https://images.unsplash.com/photo-1551803091-e20673f15770?w=1000&q=80&auto=format&fit=crop",
+                "image":    "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1000&q=80&auto=format&fit=crop",
             },
             {
                 "id":       "bomber-siena",
@@ -399,7 +399,7 @@ LUXE_CONTENT_FR: dict[str, Any] = {
             "l'a réalisé.",
 
         "gallery": [
-            "https://images.unsplash.com/photo-1551803091-e20673f15770?w=1400&q=80&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1400&q=80&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?w=1400&q=80&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=1400&q=80&auto=format&fit=crop",
             "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=1400&q=80&auto=format&fit=crop",
@@ -697,7 +697,7 @@ LUXE_CONTENT_FR: dict[str, Any] = {
                 "title":   "Rack Atelier Noir",
                 "outfit":  "Maille cachemire courte · pantalon crêpe · sac Atelier",
                 "credit":  "Sac Atelier Sentier · 21 heures de travail",
-                "image":   "https://images.unsplash.com/photo-1551803091-e20673f15770?w=1200&q=80&auto=format&fit=crop",
+                "image":   "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=1200&q=80&auto=format&fit=crop",
             },
             {
                 "n":       "Look 14",
