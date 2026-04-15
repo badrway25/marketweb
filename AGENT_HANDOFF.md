@@ -1,5 +1,58 @@
 # Agent Handoff
 
+Last updated: 2026-04-15 — after **Session 53 Lawyer + Real-Estate Live Rollout · CATALOG COMPLETE 20/20**
+
+## Session 53 — CATALOG COMPLETE 20/20 · Read This Before Touching Any Lawyer / Real-Estate Skin, Lex/Juris/Casa/Villa Content, or the 4 New Pexels Pools (2026-04-15)
+
+**What changed in Session 53.** Phase 2g3.7 closed. Catalog now **20/20 published_live**. Lex (`lex-studio-legale`, classic-gold archetype — Studio Legale Ferri, Roma, forensic-notarile), Juris (`juris-avvocato-moderno`, modern-transparent — Avv. Martini & Partners, Milano, advisory-modern tech boutique), Casa (`casa-agenzia-immobiliare`, mass-market — Domus Immobiliare, Milano+Torino, market-approachable), Villa (`villa-immobili-lusso`, ultra-luxury-cinematic — Villa Prestige, Milano+Portofino, editorial-concierge) have been authored from line one with full multipage live skins (6-8 page routes each), 5 locales (it/en/fr/es/ar) with real RTL for Arabic, Pexels-curated imagery pools, and sharp D-054 differentiation. **Phase 3 unblock gate MET.**
+
+### What's binding (D-082)
+
+1. **4 new reusable archetypes.** `classic-gold` (forensic-notarile ink+gold studio legale institutional) · `modern-transparent` (advisory-modern slate+blue tech-forward boutique) · `mass-market` (market-approachable navy+emerald+orange residential daylight) · `ultra-luxury-cinematic` (editorial-concierge black+champagne private-advisory). Any future lawyer or real-estate sibling can ship with ONLY a seed row + DNA entry + content block + 5 locale trees. **Zero new HTML per archetype.**
+
+2. **D-054 10-gate matrix passes on every sibling pair, bidirectional.**
+   - Lex ↔ Juris: fonts (Cormorant serif ↔ DM Sans sans), palette (ink+gold+bordeaux ↔ slate+blue+yellow), hero silhouette (split-ledger ↔ centered-manifesto), conversion (private-consultation ↔ strategy-call), heritage (1962 ↔ 2018).
+   - Casa ↔ Villa: fonts (Poppins ↔ Cormorant), palette (daylight navy+emerald+orange ↔ black+champagne+white), hero (search-widget ↔ fullbleed editorial cover), cards (tile-specs ↔ dossier), geography (Italian urban ↔ Continental), price visibility (visible ↔ hidden), conversion (viewing-request ↔ private-viewing + NDA).
+   - Lex/Juris ↔ Pragma/Elevate: no overlap in font pairings, imagery pools, or conversion vocabulary.
+   - Casa/Villa ↔ Bottega/Luxe: different page kinds (no shop/cart/PDP), different card vocabularies, different conversion verbs.
+   - Villa ↔ Luxe: despite shared Cormorant+dark-champagne DNA, Villa is real-estate advisory (property dossiers, NDA, concierge) while Luxe is fashion ecommerce (atelier, lookbook, stylist).
+
+3. **D-047 chrome-cleanliness from line one.** All 32 new HTML skin files (`lawyer/classic-gold/` 8 + `lawyer/modern-transparent/` 8 + `real-estate/mass-market/` 8 + `real-estate/ultra-luxury-cinematic/` 8) + 4 preview compositions carry zero brand literals — every visible string flows from `{{ page_data.* }}` / `{{ site.* }}` / `{{ chrome.* }}` / `{{ dna.content.* }}` / `{% for %}` loops.
+
+4. **`html[dir="rtl"]` CSS block + conditional Noto Naskh/Kufi/Amiri Arabic font load on all 4 bases.** Latin proper names (Studio Legale Ferri, Avv. Prof. Alberto Ferri, Avv. Giorgia Martini, Domus Immobiliare, Villa Prestige, Alessandra Visconti di Modrone, Via Piemonte 39, Via Solferino 40, all 14 lawyer names, 9 agent names, 4 private advisor names, street addresses, property names Villa Aurelia/Castello di Monterò/Penthouse Quadronno/Mas de la Mer, territory labels Portofino/Chianti/Costa Smeralda/Saint-Tropez/Capri/Val d'Orcia, publication names) preserved verbatim across all non-IT locales. Arabic numerals stay Latin (unicode-bidi: isolate per skin RTL block).
+
+5. **Native voice per locale.** Lex EN reads as Slaughter-and-May, FR as Gide/Bredin Prat cabinet, ES as Garrigues despacho, AR as Al Tamimi MENA MSA institutional. Juris EN as Kirkland Startups/Orrick/Gunderson Dettmer, FR as Bredin Prat VC, ES as Cuatrecasas Startups, AR as Al Tamimi tech desk. Casa EN as Foxtons/Knight Frank, FR as Barnes/Century 21, ES as Engel & Völkers Spain retail, AR as Emirates Living/Better Homes. Villa EN as FT How to Spend It/Monocle Estates/Sotheby's, FR as Le Figaro Propriétés/Emile Garcin, ES as Vanity Fair Spain/Savills España, AR as Robb Report ME/Esquire ME editorial literary. Structural parity verified — same key paths at every level across all 5 locales.
+
+6. **Page slugs stay Italian (URL-canonical).** Lex: home/studio/pratiche/avvocati/notabili/contatti. Juris: home/approccio/servizi/settori/insights/contatti. Casa: home/immobili/quartieri/agenzia/valutazione/contatti. Villa: home/collezione/territorio/studio/esperienza/concierge. Only `label` fields change per locale.
+
+7. **Pexels primary imagery, 4 disjoint pools.** `lawyer-classic` (heritage ink), `lawyer-modern` (bright collaborative), `realestate-casa` (daylight attainable), `realestate-villa` (golden-hour rarefied). 6 URLs per pool, zero overlap across pools.
+
+8. **D-081 dynamic counter policy — Lex/Juris/Casa/Villa all compliant.** Stats bands carry `data-lm="counter"` on every numeric span; "Prezzo su richiesta" on Villa stays static per editorial-tone exception.
+
+9. **Page-kind choices (reference for future real-estate siblings):** Casa uses `project_list`/`project_detail` for immobili listings + details. Villa uses `blog_list`/`blog_detail` for collezione dossiers + property detail. Both use the same LiveTemplateView `_list→_detail` plumbing. The choice between the two is semantic, not structural.
+
+10. **CHROME_I18N extensions.** `mp_other_lawyer` + `mp_other_realestate` added across all 5 locales. Future category additions should follow the same pattern.
+
+### Do NOT do in a follow-up session without revisiting D-082 + CLAUDE.md
+
+- **Do NOT add a 5th lawyer or 3rd real-estate template without checking archetype fit.** If it's "like Lex but Napoli", reuse `classic-gold/` skin. If "like Casa but Roma", reuse `mass-market/` skin. If "like Villa but Costa Smeralda", reuse `ultra-luxury-cinematic/` skin. NEVER duplicate a skin folder; extend the content registry.
+- **Do NOT machine-translate legal terminology or real-estate vocabulary.** Use the native register per locale (codici italian references must keep the Italian anchor with native gloss: `Art. 2343 c.c.` → EN `Section 2343 of the Italian Civil Code` → FR `Art. 2343 du Code civil italien` → ES `Art. 2343 del Código Civil italiano` → AR `المادة 2343 من القانون المدني الإيطالي`).
+- **Do NOT translate Italian proper names (people/places/institutions/property names/publications).** They stay Italian across EN/FR/ES/AR. For AR they appear in Latin script inside Arabic text (unicode-bidi: isolate).
+- **Do NOT collapse the 4 Pexels pools back into two `lawyer` and `real-estate` pools.** The per-archetype separation is D-054 enforcement infrastructure.
+- **Do NOT add prices to Villa listings.** The "Prezzo su richiesta" convention is a Villa-specific brand signal per editorial-concierge tone.
+- **Do NOT add a cart/shop surface to Casa or Villa.** They are real-estate advisories, not ecommerce.
+- **Do NOT retroactively animate Villa's "Prezzo su richiesta" label as a counter.** D-081 tone-exception applies.
+
+### What to verify BEFORE the next major rollout
+
+When Phase 3 authors begin wiring commerce/editor/projects to the 20 live templates:
+- Every marketplace detail page (`/templates/<cat>/<slug>/`) returns HTTP 200 in all 5 locales
+- Every live preview home (`/templates/<cat>/<slug>/preview/`) returns 200 in all 5 locales
+- Every inner page (about/services/team/contact/etc per template) returns 200 in all 5 locales
+- `smoke_full.py` reports **834/834 HTTP 200** (baseline verified 2026-04-15)
+
+---
+
 Last updated: 2026-04-15 — after **Session 52 Medical Second Wave Polish + Interaction Fix**
 
 ## Session 52 — Medical Polish: Read This Before Touching `live-forms.css`, `live-motion.js`, or Any Stats Band (2026-04-15)

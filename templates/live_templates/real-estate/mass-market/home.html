@@ -1,0 +1,652 @@
+{% extends "live_templates/real-estate/mass-market/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     COVER HERO — full-bleed photo + translucent search widget
+     overlay. Daylight, attainable, search-first.
+     D-054 vs Villa: bright daylight (Villa is golden-hour cinematic).
+  ============================================================ */
+  .dm-hero {
+    position: relative; min-height: 720px;
+    background-image: linear-gradient(180deg, rgba(27,40,56,0.30) 0%, rgba(27,40,56,0.55) 70%, rgba(27,40,56,0.78) 100%),
+                      url("https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop");
+    background-size: cover; background-position: center;
+    color: #FFFFFF;
+    overflow: hidden;
+  }
+  .dm-hero .dm-hero-inner {
+    max-width: 1360px; margin: 0 auto;
+    padding: 80px 48px 64px;
+    display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px;
+    align-items: center; min-height: 720px;
+  }
+  .dm-hero .dm-hero-text { color: #FFFFFF; }
+  .dm-hero .dm-hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    background: rgba(46,204,113,0.18); border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #FFFFFF;
+    border: 1px solid rgba(46,204,113,0.4);
+  }
+  .dm-hero .dm-hero-eyebrow:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--emerald);
+  }
+  .dm-hero h1 {
+    margin-top: 26px; font-size: 64px; font-weight: 700; line-height: 1.04;
+    letter-spacing: -0.025em; color: #FFFFFF; max-width: 18ch;
+  }
+  .dm-hero h1 em { color: var(--orange); }
+  .dm-hero .dm-hero-intro {
+    margin-top: 24px; max-width: 56ch;
+    font-family: var(--body); font-size: 18px;
+    line-height: 1.65; color: rgba(255,255,255,0.86);
+  }
+  .dm-hero .dm-hero-actions {
+    margin-top: 36px; display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
+  }
+  .dm-hero .dm-hero-meta {
+    margin-top: 32px; display: flex; gap: 28px; flex-wrap: wrap;
+    font-family: var(--body); font-size: 13px; color: rgba(255,255,255,0.78);
+    padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.18);
+  }
+  .dm-hero .dm-hero-meta span:before {
+    content: '●'; color: var(--emerald); margin-right: 8px;
+    font-size: 8px; vertical-align: middle;
+  }
+
+  /* SEARCH WIDGET — translucent overlay card */
+  .dm-search {
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(20px);
+    border-radius: 18px; padding: 28px 28px 24px;
+    box-shadow: 0 28px 70px rgba(13,20,32,0.34);
+    border: 1px solid rgba(255,255,255,0.5);
+  }
+  .dm-search .dm-search-head {
+    display: flex; flex-direction: column; gap: 4px; margin-bottom: 20px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--rule-soft);
+  }
+  .dm-search .dm-search-label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange);
+  }
+  .dm-search h3 {
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.012em;
+  }
+  .dm-search .dm-search-intro {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+    margin-top: 6px;
+  }
+  .dm-search .dm-search-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  .dm-search .dm-search-cell {
+    padding: 14px 16px;
+    background: var(--paper); border-radius: 10px;
+    border: 1px solid var(--rule);
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .dm-search .dm-search-cell:hover {
+    border-color: var(--emerald);
+    background: rgba(46,204,113,0.04);
+  }
+  .dm-search .dm-search-cell .dm-search-cell-lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .dm-search .dm-search-cell .dm-search-cell-val {
+    margin-top: 6px;
+    font-family: var(--heading); font-size: 15px; font-weight: 600;
+    color: var(--navy); display: flex; justify-content: space-between; align-items: center;
+  }
+  .dm-search .dm-search-cell .dm-search-cell-val:after {
+    content: '⌄'; color: var(--ink-mute); font-size: 14px; font-weight: 800;
+  }
+  .dm-search .dm-search-cta {
+    margin-top: 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  }
+  .dm-search .dm-search-cta .dm-btn { width: 100%; justify-content: center; }
+  .dm-search .dm-search-secondary {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 12px; color: var(--ink-soft);
+    text-align: center;
+  }
+  .dm-search .dm-search-popular {
+    margin-top: 18px; padding-top: 16px;
+    border-top: 1px solid var(--rule-soft);
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .dm-search .dm-search-popular-lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+    margin-right: 8px;
+  }
+  .dm-search .dm-search-popular-tag {
+    padding: 5px 12px; border-radius: 999px;
+    background: var(--paper-2); color: var(--navy);
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    transition: background .15s ease, color .15s ease;
+  }
+  .dm-search .dm-search-popular-tag:hover {
+    background: var(--orange); color: #FFFFFF;
+  }
+
+  /* ============================================================
+     FEATURED LISTINGS — 4-up tile grid (D-054 vs Villa 2-col dossier)
+  ============================================================ */
+  .dm-featured {
+    padding: 96px 48px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-featured .dm-featured-head {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;
+    margin-bottom: 48px;
+  }
+  .dm-featured .dm-featured-head h2 {
+    font-size: 52px; max-width: 16ch;
+  }
+  .dm-featured .dm-featured-head .dm-featured-link {
+    text-align: right;
+    font-family: var(--body); font-size: 14px; font-weight: 700;
+    color: var(--orange); border-bottom: 2px solid var(--orange);
+    padding-bottom: 4px; display: inline-block;
+    align-self: end; margin-left: auto;
+    transition: color .15s ease;
+  }
+  .dm-featured .dm-featured-head .dm-featured-link:hover { color: var(--orange-2); }
+  .dm-featured .dm-featured-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+
+  /* ============================================================
+     NEIGHBORHOODS — 6-up cards
+  ============================================================ */
+  .dm-neighborhoods {
+    background: var(--paper-2); padding: 96px 48px;
+  }
+  .dm-neighborhoods .dm-nbh-inner { max-width: 1360px; margin: 0 auto; }
+  .dm-neighborhoods .dm-nbh-head {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;
+    margin-bottom: 48px;
+  }
+  .dm-neighborhoods .dm-nbh-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+  }
+  .dm-neighborhoods .dm-nbh-card {
+    background: #FFFFFF; border-radius: 12px;
+    padding: 24px; border: 1px solid var(--rule);
+    display: flex; flex-direction: column; gap: 12px;
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .dm-neighborhoods .dm-nbh-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(27,40,56,0.10);
+  }
+  .dm-neighborhoods .dm-nbh-card h3 {
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.012em;
+  }
+  .dm-neighborhoods .dm-nbh-card .dm-nbh-context {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--orange);
+  }
+  .dm-neighborhoods .dm-nbh-card .dm-nbh-stats {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    padding-top: 12px; border-top: 1px solid var(--rule-soft);
+  }
+  .dm-neighborhoods .dm-nbh-card .dm-nbh-stat {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .dm-neighborhoods .dm-nbh-card .dm-nbh-stat-val {
+    font-family: var(--heading); font-size: 15px; font-weight: 700;
+    color: var(--navy); font-variant-numeric: tabular-nums;
+  }
+  .dm-neighborhoods .dm-nbh-card .dm-nbh-stat-lbl {
+    font-family: var(--body); font-size: 11px; color: var(--ink-soft);
+  }
+  .dm-neighborhoods .dm-nbh-cta-band {
+    margin-top: 40px; text-align: center;
+  }
+
+  /* ============================================================
+     STATS BAND — counter-animated numbers, navy band
+  ============================================================ */
+  .dm-stats {
+    background: var(--navy); color: #FFFFFF;
+    padding: 96px 48px; max-width: none;
+  }
+  .dm-stats .dm-stats-inner { max-width: 1360px; margin: 0 auto; }
+  .dm-stats .dm-stats-head {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 56px; align-items: end;
+    margin-bottom: 56px;
+  }
+  .dm-stats h2 { color: #FFFFFF; }
+  .dm-stats h2 em { color: var(--orange); }
+  .dm-stats .dm-sec-intro { color: rgba(255,255,255,0.78); }
+  .dm-stats .dm-stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+  }
+  .dm-stats .dm-stat {
+    padding: 28px 0;
+    border-top: 2px solid rgba(255,255,255,0.20);
+  }
+  .dm-stats .dm-stat-num {
+    font-family: var(--heading); font-size: 56px; font-weight: 700;
+    color: var(--orange); letter-spacing: -0.025em; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .dm-stats .dm-stat-lbl {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 14px; font-weight: 500;
+    color: rgba(255,255,255,0.78); line-height: 1.4;
+  }
+  .dm-stats .dm-stats-note {
+    margin-top: 36px; padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+    font-family: var(--body); font-size: 13px;
+    color: rgba(255,255,255,0.55); font-style: italic;
+  }
+
+  /* ============================================================
+     AGENT STRIP — 4-up portrait cards
+  ============================================================ */
+  .dm-agents {
+    padding: 96px 48px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-agents .dm-agents-head {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 56px; align-items: end;
+    margin-bottom: 48px;
+  }
+  .dm-agents .dm-agents-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  .dm-agents .dm-agent {
+    background: #FFFFFF; border-radius: 14px;
+    padding: 28px 24px;
+    border: 1px solid var(--rule);
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .dm-agents .dm-agent:hover {
+    border-color: rgba(230,126,34,0.4);
+    box-shadow: 0 16px 40px rgba(27,40,56,0.10);
+    transform: translateY(-2px);
+  }
+  .dm-agents .dm-agent .dm-agent-monogram {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy), var(--emerald));
+    color: #FFFFFF; font-family: var(--heading);
+    font-weight: 700; font-size: 22px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px rgba(27,40,56,0.18);
+  }
+  .dm-agents .dm-agent h3 {
+    margin-top: 16px;
+    font-family: var(--heading); font-size: 17px; font-weight: 700;
+    color: var(--navy);
+  }
+  .dm-agents .dm-agent .dm-agent-role {
+    margin-top: 8px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--emerald-3);
+  }
+  .dm-agents .dm-agent .dm-agent-area {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 13px; color: var(--ink-body);
+  }
+  .dm-agents .dm-agent .dm-agent-years {
+    margin-top: 8px;
+    font-family: var(--body); font-size: 12px; color: var(--ink-soft);
+    padding: 4px 10px; background: var(--paper-2); border-radius: 999px;
+  }
+
+  /* ============================================================
+     VALUATION BAND — emerald CTA module
+  ============================================================ */
+  .dm-valuation {
+    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-3) 100%);
+    color: #FFFFFF; padding: 88px 48px; max-width: none;
+  }
+  .dm-valuation .dm-val-inner {
+    max-width: 1360px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px;
+    align-items: center;
+  }
+  .dm-valuation .dm-val-label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.78);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .dm-valuation .dm-val-label:before {
+    content: ''; width: 28px; height: 2px; background: #FFFFFF;
+  }
+  .dm-valuation h2 {
+    margin-top: 16px;
+    font-family: var(--heading); font-size: 52px; font-weight: 700;
+    color: #FFFFFF; line-height: 1.06; letter-spacing: -0.022em;
+  }
+  .dm-valuation h2 em { color: var(--navy); font-weight: 800; }
+  .dm-valuation .dm-val-intro {
+    margin-top: 20px; max-width: 56ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    color: rgba(255,255,255,0.92);
+  }
+  .dm-valuation .dm-val-actions {
+    margin-top: 32px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+  }
+  .dm-valuation .dm-btn.dm-btn-navy { background: var(--navy); }
+  .dm-valuation .dm-btn.dm-btn-navy:hover { background: var(--navy-2); }
+  .dm-valuation .dm-btn.dm-btn-ghost-light { color: #FFFFFF; }
+  .dm-valuation .dm-val-proof {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 18px;
+    padding: 28px 28px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .dm-valuation .dm-val-proof .dm-val-proof-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.18);
+  }
+  .dm-valuation .dm-val-proof .dm-val-proof-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .dm-valuation .dm-val-proof .dm-val-proof-num {
+    font-family: var(--heading); font-size: 36px; font-weight: 700;
+    color: #FFFFFF; font-variant-numeric: tabular-nums; line-height: 1;
+  }
+  .dm-valuation .dm-val-proof .dm-val-proof-lbl {
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: rgba(255,255,255,0.82); text-align: right; max-width: 18ch;
+  }
+
+  /* ============================================================
+     TESTIMONIAL — single warm voice quote
+  ============================================================ */
+  .dm-testimonial {
+    padding: 96px 48px; max-width: 1360px; margin: 0 auto;
+    text-align: center;
+  }
+  .dm-testimonial .dm-testimonial-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    background: rgba(46,204,113,0.10); border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--emerald-3);
+  }
+  .dm-testimonial .dm-testimonial-quote {
+    margin: 32px auto 24px; max-width: 36ch;
+    font-family: var(--heading); font-size: 32px; font-weight: 500;
+    color: var(--navy); line-height: 1.32; letter-spacing: -0.018em;
+  }
+  .dm-testimonial .dm-testimonial-quote:before {
+    content: '"'; color: var(--orange); font-size: 56px;
+    line-height: 0; vertical-align: -16px; margin-right: 6px;
+  }
+  .dm-testimonial .dm-testimonial-author {
+    margin-top: 24px;
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    color: var(--navy);
+  }
+  .dm-testimonial .dm-testimonial-meta {
+    margin-top: 6px;
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+  }
+
+  /* ============================================================
+     RESPONSIVE collapse
+  ============================================================ */
+  @media (max-width: 1100px) {
+    .dm-hero .dm-hero-inner { grid-template-columns: 1fr; gap: 36px; padding: 56px 24px; min-height: 0; }
+    .dm-hero h1 { font-size: 44px; }
+    .dm-search { padding: 22px 22px 18px; }
+    .dm-search h3 { font-size: 18px; }
+    .dm-featured, .dm-neighborhoods, .dm-stats, .dm-agents, .dm-valuation, .dm-testimonial { padding: 64px 24px; }
+    .dm-featured .dm-featured-head, .dm-neighborhoods .dm-nbh-head, .dm-stats .dm-stats-head, .dm-agents .dm-agents-head, .dm-valuation .dm-val-inner { grid-template-columns: 1fr; gap: 24px; }
+    .dm-featured .dm-featured-head h2 { font-size: 36px; }
+    .dm-featured .dm-featured-head .dm-featured-link { text-align: left; margin-left: 0; }
+    .dm-featured .dm-featured-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .dm-neighborhoods .dm-nbh-grid { grid-template-columns: repeat(2, 1fr); }
+    .dm-stats .dm-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .dm-stats .dm-stat-num { font-size: 42px; }
+    .dm-agents .dm-agents-grid { grid-template-columns: repeat(2, 1fr); }
+    .dm-valuation h2 { font-size: 36px; }
+    .dm-testimonial .dm-testimonial-quote { font-size: 24px; }
+  }
+  @media (max-width: 880px) {
+    .dm-hero { min-height: 0; }
+    .dm-hero h1 { font-size: 34px; }
+    .dm-hero .dm-hero-intro { font-size: 15px; }
+    .dm-hero .dm-hero-meta { gap: 14px; font-size: 12px; }
+    .dm-search .dm-search-grid { grid-template-columns: 1fr; gap: 10px; }
+    .dm-search .dm-search-cell { padding: 12px 14px; }
+    .dm-featured .dm-featured-grid { grid-template-columns: 1fr; gap: 18px; }
+    .dm-neighborhoods .dm-nbh-grid { grid-template-columns: 1fr; }
+    .dm-stats .dm-stats-grid { grid-template-columns: 1fr; }
+    .dm-stats .dm-stat-num { font-size: 36px; }
+    .dm-agents .dm-agents-grid { grid-template-columns: 1fr; }
+    .dm-valuation h2 { font-size: 28px; }
+    .dm-valuation .dm-val-proof { padding: 22px 22px; }
+    .dm-valuation .dm-val-proof .dm-val-proof-num { font-size: 28px; }
+    .dm-testimonial { padding: 56px 18px; }
+    .dm-testimonial .dm-testimonial-quote { font-size: 20px; line-height: 1.36; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="dm-hero">
+  <div class="dm-hero-inner">
+    <div class="dm-hero-text" data-lm="reveal-lg">
+      <span class="dm-hero-eyebrow">{{ page_data.eyebrow }}</span>
+      <h1>{{ page_data.headline|safe }}</h1>
+      <p class="dm-hero-intro">{{ page_data.intro }}</p>
+      <div class="dm-hero-actions">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-primary">
+          <span>{{ page_data.primary_cta }}</span>
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-ghost-light">
+          <span>{{ page_data.secondary_cta }}</span>
+        </a>
+      </div>
+      <div class="dm-hero-meta">
+        <span>{{ page_data.hero_availability }}</span>
+        <span>{{ page_data.hero_response }}</span>
+      </div>
+    </div>
+
+    <aside class="dm-search" data-lm="reveal">
+      <div class="dm-search-head">
+        <span class="dm-search-label">{{ page_data.search_widget.label }}</span>
+        <h3>{{ page_data.search_widget.intro }}</h3>
+      </div>
+      <div class="dm-search-grid">
+        <div class="dm-search-cell">
+          <div class="dm-search-cell-lbl">{{ page_data.search_widget.location_label }}</div>
+          <div class="dm-search-cell-val">{{ page_data.search_widget.location_value }}</div>
+        </div>
+        <div class="dm-search-cell">
+          <div class="dm-search-cell-lbl">{{ page_data.search_widget.type_label }}</div>
+          <div class="dm-search-cell-val">{{ page_data.search_widget.type_value }}</div>
+        </div>
+        <div class="dm-search-cell">
+          <div class="dm-search-cell-lbl">{{ page_data.search_widget.price_label }}</div>
+          <div class="dm-search-cell-val">{{ page_data.search_widget.price_value }}</div>
+        </div>
+        <div class="dm-search-cell">
+          <div class="dm-search-cell-lbl">{{ page_data.search_widget.rooms_label }}</div>
+          <div class="dm-search-cell-val">{{ page_data.search_widget.rooms_value }}</div>
+        </div>
+      </div>
+      <div class="dm-search-cta">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.search_widget.cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-emerald">
+          <span>{{ page_data.search_widget.cta }}</span>
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </a>
+      </div>
+      <div class="dm-search-secondary">{{ page_data.search_widget.secondary_note }}</div>
+      <div class="dm-search-popular">
+        <span class="dm-search-popular-lbl">{{ page_data.search_widget.popular_label }}</span>
+        {% for tag in page_data.search_widget.popular_tags %}
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.search_widget.cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-search-popular-tag">{{ tag }}</a>
+        {% endfor %}
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="dm-featured">
+  <div class="dm-featured-head">
+    <div data-lm="reveal-lg">
+      <div class="dm-sec-label">{{ page_data.featured_label }}</div>
+      <h2>{{ page_data.featured_heading|safe }}</h2>
+      <p class="dm-sec-intro">{{ page_data.featured_intro }}</p>
+    </div>
+    <a class="dm-featured-link" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.featured_link_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">{{ page_data.featured_link }} →</a>
+  </div>
+  <div class="dm-featured-grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for post in posts|slice:":4" %}
+      <a class="dm-tile" href="{% url 'catalog:live_template_post' template.category.slug template.slug page_data.featured_link_href post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <div class="dm-tile-frame">
+          <img src="https://images.pexels.com/photos/{% if forloop.counter == 1 %}1571460{% elif forloop.counter == 2 %}1438834{% elif forloop.counter == 3 %}2079249{% else %}1571463{% endif %}/pexels-photo-{% if forloop.counter == 1 %}1571460{% elif forloop.counter == 2 %}1438834{% elif forloop.counter == 3 %}2079249{% else %}1571463{% endif %}.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop" alt="{{ post.title }}" loading="lazy">
+          <span class="dm-tile-badge {% if post.badge == 'Esclusiva' %}dm-tile-badge-esclusiva{% elif post.badge == 'Nuova' %}dm-tile-badge-nuova{% endif %}">{{ post.badge }}</span>
+          <span class="dm-tile-ref">{{ site.tile_reference_label }} {{ post.reference }}</span>
+        </div>
+        <div class="dm-tile-body">
+          <div class="dm-tile-price">{{ post.price }}</div>
+          <div class="dm-tile-title">{{ post.title }}</div>
+          <div class="dm-tile-addr">{{ post.area }}</div>
+          <div class="dm-tile-specs">
+            <span><strong>{{ post.rooms }}</strong>{{ site.tile_rooms_label|lower }}</span>
+            <span><strong>{{ post.surface }}</strong>{{ site.tile_surface_unit }}</span>
+            <span><strong>{{ post.bathrooms }}</strong>{{ site.tile_bathrooms_label|lower }}</span>
+          </div>
+          <span class="dm-tile-cta">
+            {{ site.tile_visit_cta }}
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="dm-neighborhoods">
+  <div class="dm-nbh-inner">
+    <div class="dm-nbh-head">
+      <div data-lm="reveal-lg">
+        <div class="dm-sec-label">{{ page_data.neighborhoods_label }}</div>
+        <h2>{{ page_data.neighborhoods_heading|safe }}</h2>
+        <p class="dm-sec-intro">{{ page_data.neighborhoods_intro }}</p>
+      </div>
+    </div>
+    <div class="dm-nbh-grid" data-lm-stagger data-lm-stagger-delay="80">
+      {% for name, context, count, price in page_data.neighborhoods %}
+        <a class="dm-nbh-card" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.neighborhoods_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+          <div class="dm-nbh-context">{{ context }}</div>
+          <h3>{{ name }}</h3>
+          <div class="dm-nbh-stats">
+            <div class="dm-nbh-stat">
+              <span class="dm-nbh-stat-val">{{ count }}</span>
+            </div>
+            <div class="dm-nbh-stat">
+              <span class="dm-nbh-stat-val">{{ price }}</span>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+    <div class="dm-neighborhoods-cta-band" data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.neighborhoods_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-outline">
+        <span>{{ page_data.neighborhoods_cta }}</span>
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="dm-stats">
+  <div class="dm-stats-inner">
+    <div class="dm-stats-head">
+      <div data-lm="reveal-lg">
+        <div class="dm-sec-label">{{ page_data.stats_label }}</div>
+        <h2>{{ page_data.stats_heading|safe }}</h2>
+      </div>
+      <p class="dm-sec-intro" data-lm="reveal">{{ page_data.stats_intro }}</p>
+    </div>
+    <div class="dm-stats-grid" data-lm-stagger data-lm-stagger-delay="120">
+      {% for num, suffix, lbl in page_data.stats %}
+        <div class="dm-stat" data-lm="reveal">
+          <div class="dm-stat-num" data-lm="counter">{{ num }}{{ suffix }}</div>
+          <div class="dm-stat-lbl">{{ lbl }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="dm-stats-note">{{ page_data.stats_note }}</div>
+  </div>
+</section>
+
+<section class="dm-agents">
+  <div class="dm-agents-head">
+    <div data-lm="reveal-lg">
+      <div class="dm-sec-label">{{ page_data.agents_label }}</div>
+      <h2>{{ page_data.agents_heading|safe }}</h2>
+    </div>
+    <p class="dm-sec-intro" data-lm="reveal">{{ page_data.agents_intro }}</p>
+  </div>
+  <div class="dm-agents-grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for name, role, area, years in page_data.agents_preview %}
+      <a class="dm-agent" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.agents_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+        <div class="dm-agent-monogram">{{ name|slice:":1" }}{{ name|cut:" "|slice:"-1:" }}</div>
+        <h3>{{ name }}</h3>
+        <div class="dm-agent-role">{{ role }}</div>
+        <div class="dm-agent-area">{{ area }}</div>
+        <span class="dm-agent-years">{{ years }}</span>
+      </a>
+    {% endfor %}
+  </div>
+  <div style="text-align: center; margin-top: 36px;" data-lm="reveal">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.agents_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-outline">
+      <span>{{ page_data.agents_cta }}</span>
+      <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+</section>
+
+<section class="dm-valuation">
+  <div class="dm-val-inner">
+    <div data-lm="reveal-lg">
+      <div class="dm-val-label">{{ page_data.valuation_label }}</div>
+      <h2>{{ page_data.valuation_heading|safe }}</h2>
+      <p class="dm-val-intro">{{ page_data.valuation_intro }}</p>
+      <div class="dm-val-actions">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.valuation_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-navy">
+          <span>{{ page_data.valuation_cta }}</span>
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.valuation_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-ghost-light">
+          <span>{{ page_data.valuation_secondary }}</span>
+        </a>
+      </div>
+    </div>
+    <aside class="dm-val-proof" data-lm="reveal">
+      {% for num, lbl in page_data.valuation_proof %}
+        <div class="dm-val-proof-row">
+          <span class="dm-val-proof-num">{{ num }}</span>
+          <span class="dm-val-proof-lbl">{{ lbl }}</span>
+        </div>
+      {% endfor %}
+    </aside>
+  </div>
+</section>
+
+<section class="dm-testimonial">
+  <div class="dm-testimonial-label">{{ page_data.testimonial_label }}</div>
+  <blockquote class="dm-testimonial-quote" data-lm="reveal-lg">{{ page_data.testimonial_quote }}</blockquote>
+  <div class="dm-testimonial-author">{{ page_data.testimonial_author }}</div>
+  <div class="dm-testimonial-meta">{{ page_data.testimonial_meta }}</div>
+</section>
+{% endblock %}

@@ -71,6 +71,12 @@ LAYOUT_ARCHETYPES: dict[str, str] = {
     # Agency live rollout (Phase 2g3.6f)
     "agency-creative-studio":  "Independent creative agency / brand studio — editorial ink page with oversized serif italic pull-quote hero, selected-work cover tile, press ribbon and indexed case-study ledger. Concept-led, curatorial, strategy-driven.",
     "agency-digital-studio":   "Digital / product / growth studio — midnight-violet page with product-dashboard hero, sprint telemetry chips, capability grid and live ship-log. Momentum-led, product-minded, delivery-driven.",
+    # Lawyer live rollout (Phase 2g3.7)
+    "classic-gold":            "Istituzionale studio legale — ink page with gold monogram crest, serif drama headline, vertical rule ledger, numbered practice areas and partner portrait cards. Forensic, notarile, high-trust.",
+    "modern-transparent":      "Avvocato contemporaneo — bright advisory page with confident sans-serif kinetic headline, strategy-manifesto eyebrow, sector grid, process sprint and outcome metric band. Modern, advisory, solution-led.",
+    # Real estate live rollout (Phase 2g3.7)
+    "mass-market":             "Agenzia immobiliare accessibile — daylight page with hero search-widget over cover photo, listings tile grid with specs/price ribbon, neighborhood map cards and agent portrait strip. Practical, market-smart, visit-first.",
+    "ultra-luxury-cinematic":  "Immobiliare di lusso — fullbleed editorial cover hero with champagne wordmark, rarefied property-dossier cards, continental locations ribbon and private viewing request. Cinematic, aspirational, concierge-led.",
 }
 
 HERO_STYLES: dict[str, str] = {
@@ -87,6 +93,10 @@ HERO_STYLES: dict[str, str] = {
     "fullbleed-exif":            "Fullbleed dominant photo with a film-style EXIF credit bar along the bottom edge — no text over image except a small series counter and ghost CTA.",
     "editorial-quote-cover":     "Oversized serif italic pull-quote left + a framed selected-work cover tile right with editorial credit strip — no product UI, press ribbon below.",
     "product-console-hero":      "Bold sans-serif kinetic headline left + dashboard-chrome product card right with live metric + a delivery-cadence status chip pinned bottom-left.",
+    "split-ledger-monogram":     "Dark ink split hero with serif drama headline + vertical gold rule on the left + partner monogram crest and practice-areas ledger on the right. Notarile, studio-legale mood.",
+    "centered-advisory-manifesto":"Bright advisory page with centered sans-serif kinetic headline + confident sector pills + strategic process sprint card below the fold. No big hero photo — headline is the hero.",
+    "search-listings-grid":      "Cover photo hero with a translucent search widget overlay (location/type/price/rooms) and a 3- or 4-up listings tile grid immediately below. Market-first, visit-first.",
+    "fullbleed-editorial-cover": "Fullbleed dominant property photo with a champagne serif wordmark, location eyebrow and a small property index on the right edge. Cinematic, rarefied, private-viewing hero.",
 }
 
 NAVBAR_STYLES: dict[str, str] = {
@@ -103,6 +113,10 @@ NAVBAR_STYLES: dict[str, str] = {
     "fullbleed-dark":      "Transparent dark navbar with small uppercase wordmark, minimal link row and a tiny quiet ghost CTA on the right.",
     "serif-index-asterisk": "Ink page hairline navbar with serif wordmark + asterisk glyph + uppercase alpha-index links and a ghost dossier CTA on the right.",
     "pill-sprint-chip":     "Floating dark violet pill navbar with geometric wordmark + glow primary CTA and a tiny mono sprint chip beside it.",
+    "ledger-monogram":      "Ink sticky bar with gold monogram crest on the left, serif-capital links in the centre and a quiet forensic ledger meta (Iscr. Ordine Avvocati) on the right.",
+    "pill-advisory":        "Floating pale pill nav with slate wordmark + blue-chip links and a confident primary 'Prenota strategy call' button on the right.",
+    "cover-search":         "Transparent bar over a hero cover photo with wordmark + listing filters + ghost 'Area riservata' link on the right.",
+    "cinematic-dark":       "Transparent dark navbar over fullbleed imagery with a champagne wordmark + restrained uppercase link row + 'Richiesta privata' ghost CTA.",
 }
 
 FOOTER_STYLES: dict[str, str] = {
@@ -119,6 +133,10 @@ FOOTER_STYLES: dict[str, str] = {
     "exif-credits":      "Film-style EXIF credit bar: camera body, lens, location, year — monospaced, tiny uppercase, split in 4 cells.",
     "colophon-press":    "Editorial colophon footer: three-column credit block (studio, recognition, coordinates) with press ribbon above and a small standfirst quote.",
     "shiplog-console":   "Live console-style footer with ship-log row, current sprint chip, stack logo marquee and a boot-line telemetry string at the bottom.",
+    "ledger-institutional": "Studio legale footer: 4 columns (studio / pratiche / foro / note legali) over ink with gold hairlines and a small Ordine degli Avvocati iscrizione line.",
+    "advisory-panel":       "Advisory-firm footer: 3 columns (studio / services / booking) over slate with a confident primary CTA block and transparent sector chips.",
+    "hours-map":            "Agency footer with office hours column, map snippet, phone + whatsapp strip and neighborhood chips.",
+    "concierge-coords":     "Luxury footer: champagne serif wordmark + editorial coordinates (sede, concierge, rassegna stampa) + private-viewing promise line.",
 }
 
 CARD_STYLES: dict[str, str] = {
@@ -135,6 +153,10 @@ CARD_STYLES: dict[str, str] = {
     "filmstrip-series":   "Horizontal filmstrip of series stills with series counter badges and a hairline divider between frames.",
     "editorial-index-dossier":"Editorial oversized numbered case-study rows (01/ 02/) with serif project name + italic client + year + discipline tag, clickable into a dossier.",
     "sprint-console":         "Dark violet sprint card: mono sprint ID + capability chip + deliverable metric + accent glow CTA, product-telemetry feel.",
+    "practice-area-ledger":   "Numbered practice-area rows in a serif ledger: index (01 — 02 —) + area name + short blurb + gold arrow, ink card with gold hairline top.",
+    "advisory-sector-pill":   "Advisory sector card: confident blue title + short strategic blurb + metric chip (mandati attivi, anni esperienza) + ghost 'Scopri' link.",
+    "property-tile-specs":    "Property listing card: cover photo + price chip + title + address + specs row (camere · m² · bagni) + 'Visita' button.",
+    "property-dossier":       "Luxury property dossier card: large editorial photo + champagne serif title + 'Private viewing su richiesta' + provenance + rarity meta (unico · da 3 giorni).",
 }
 
 BUTTON_STYLES: dict[str, str] = {
@@ -151,6 +173,10 @@ BUTTON_STYLES: dict[str, str] = {
     "ghost-mono-bracket":  "Monospaced uppercase label wrapped in [ square brackets ] — cinematographer CTA, minimal and technical.",
     "ghost-serif-dossier": "Italic serif underline label with a small right-arrow — editorial agency CTA, invitational.",
     "glow-sprint-arrow":   "Solid violet glowing pill with arrow — digital-studio primary CTA, startup-energetic but premium.",
+    "serif-gold-border":   "Serif italic label inside a gold hairline border — studio-legale forensic CTA.",
+    "pill-advisory-blue":  "Rounded confident blue pill with arrow — modern lawyer / advisory CTA.",
+    "block-visit-primary": "Square bold navy button with 'Visita' / 'Cerca' label + chevron — agency real-estate search / visit CTA.",
+    "ghost-champagne":     "Thin champagne hairline border with uppercase serif label — luxury editorial CTA.",
 }
 
 DENSITY_PROFILES: dict[str, str] = {
@@ -174,6 +200,10 @@ TONES: dict[str, str] = {
     "cinematic-authorial":  "Autoriale, silenziosa, cinematografica — voce da autore di immagini, tempi lenti, ossessione per la luce.",
     "editorial-agency":     "Curatoriale, strategica, di brand — voce da art director / direttore creativo, first-person plural, manifesti e principi.",
     "digital-sprint":       "Digitale, diretta, di delivery — voce da product partner / head of digital, imperative leggero, sprint e metrica.",
+    "forensic-notarile":    "Autorevole, sobria, forense — voce da studio legale di tradizione, terza persona plurale, riserbo e rigore, citazione dei codici.",
+    "advisory-modern":      "Moderna, diretta, strategica — voce da partner advisory, prima persona plurale, orientata alla soluzione, chiara sui tempi.",
+    "market-approachable":  "Concreta, pratica, accessibile — voce da agente immobiliare di fiducia, seconda persona singolare, orientata alla visita.",
+    "editorial-concierge":  "Rarefatta, cinematografica, privata — voce da private client advisor / property concierge, riserbo, dossier, visita su appuntamento.",
 }
 
 CONVERSION_PATTERNS: dict[str, str] = {
@@ -190,6 +220,10 @@ CONVERSION_PATTERNS: dict[str, str] = {
     "series-brief":           "Ghost 'Apri la serie completa' CTA + quiet 'Disponibile per commissioni' status pulse.",
     "dossier-request":        "Ghost serif 'Richiedi il dossier' CTA + single editorial contact email + slow reply-time promise.",
     "discovery-call":         "Glowing pill 'Prenota la call di discovery' CTA + next-sprint chip + 3-step brief intake.",
+    "private-consultation":   "Ghost serif 'Richiedi una consulenza riservata' CTA + direct email to managing partner + discrete phone line. No public calendar.",
+    "strategy-call":          "Confident blue pill 'Prenota una strategy call' CTA + online calendar link + 3-step intake card.",
+    "viewing-request":        "Square 'Richiedi una visita' CTA + property reference field + agent phone + WhatsApp pill.",
+    "private-viewing":        "Ghost champagne 'Richiedi una private viewing' CTA + dedicated concierge line + dossier download (solo su appuntamento).",
 }
 
 IMAGERY_DIRECTIONS: dict[str, str] = {
@@ -206,6 +240,10 @@ IMAGERY_DIRECTIONS: dict[str, str] = {
     "cinematic-photostill":  "Moody, low-key photographic stills — reportage, still life, portrait — as if framed from a film.",
     "editorial-agency-craft":"Studio print/type close-ups, brand books on desks, art-direction contact sheets, gallery install shots — no team-lineup stock.",
     "digital-product-console":"Product UI close-ups, screen-in-screen reviews, dark IDE, sprint board detail, modern studio with monitors — momentum energy.",
+    "legal-heritage-ink":   "Studio legale interiors — leather-bound codici, studio-library bookshelves, senior partner portraits at desk, gavel/justice scale accents. Ink-dark, serious, heritage-led.",
+    "advisory-modern-light":"Modern advisory practice — bright consulting offices, collaborative meeting rooms, laptops with case-law databases, diverse professional portraits. Daylight, confident, solution-led.",
+    "mass-market-listings": "Approachable property imagery — bright urban apartments, family homes with garden, agent with clients on viewing, keys handover. Daylight, lived-in, attainable.",
+    "luxury-property-editorial":"Cinematic property photography — infinity-pool villas, editorial interior spreads, architectural details at golden hour, yacht-view terraces, heritage libraries. Dusk, champagne light, aspirational.",
 }
 
 
@@ -347,6 +385,260 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
                 ("ven · 11:12",   "v2.11", "Casavo — retention A/B loop 003"),
             ],
             "shiplog_meta": "aura.studio · uptime 99.98 · last deploy 4 min ago",
+        },
+    },
+
+    # ─────────────────────────────────────────────────────────────
+    # Lawyer live rollout (Phase 2g3.7) — 2 distinct archetypes
+    # (classic-gold · modern-transparent)
+    #
+    # Session 53 closes the Phase 2g2x.1 lawyer identity-crash by
+    # splitting Lex + Juris onto distinct DNAs. Lex goes classic-gold
+    # (serif institutional, gold + ink, forensic ledger). Juris goes
+    # modern-transparent (advisory manifesto, confident blue, strategic
+    # sprint). They never collapse into recolors — hero, navbar, card,
+    # conversion pattern, tone and imagery direction are all distinct.
+    # ─────────────────────────────────────────────────────────────
+
+    # ── L1) CLASSIC-GOLD — Lex, studio legale istituzionale ──────
+    "lex-studio-legale": {
+        "archetype":          "classic-gold",
+        "hero_style":         "split-ledger-monogram",
+        "navbar_style":       "ledger-monogram",
+        "footer_style":       "ledger-institutional",
+        "section_order":      ["ink-nav", "ledger-hero", "practice-areas-ledger", "partners-portrait", "publications", "contact-ledger"],
+        "card_style":         "practice-area-ledger",
+        "button_style":       "serif-gold-border",
+        "density":            "airy",
+        "tone":               "forensic-notarile",
+        "imagery_direction":  "legal-heritage-ink",
+        "imagery_key":        "lawyer-classic",
+        "conversion_pattern": "private-consultation",
+        "font_pairing":       ("Cormorant Garamond", "Inter"),
+        "content": {
+            "eyebrow":       "Studio Legale Ferri · Roma · Milano · dal 1962",
+            "headline":      'Competenza, <em>riservatezza</em>, risultati.',
+            "subhead":       "Assistiamo imprese, famiglie e professionisti con un approccio rigoroso, personalizzato e discreto. Oltre sessant'anni di esperienza al servizio della giustizia.",
+            "primary_cta":   "Richiedi una consulenza riservata",
+            "secondary_cta": "Aree di pratica",
+            "phone":         "+39 06 4567 2300",
+            "monogram":      "LF",
+            "nav_links":     ["Lo Studio", "Aree di pratica", "Avvocati", "Pubblicazioni", "Contatti"],
+            "meta_strip": [
+                ("Sede principale",   "Roma · via Piemonte"),
+                ("Soci fondatori",    "1962 · famiglia Ferri"),
+                ("Avvocati abilitati","14 · foro di Roma"),
+            ],
+            "hero_credit_left":  ("Direzione",       "Avv. Prof. A. Ferri"),
+            "hero_credit_right": ("Foro",             "Roma · Milano"),
+            "practice_label":    "Aree di pratica",
+            "practice_heading":  "Dodici competenze, una sola <em>firma.</em>",
+            "practice": [
+                ("01", "Diritto societario",         "M&A, governance, contrattualistica commerciale e operazioni straordinarie."),
+                ("02", "Diritto di famiglia",         "Separazioni, divorzi, successioni e tutela dei minori."),
+                ("03", "Diritto del lavoro",          "Contenzioso, contrattazione collettiva, sicurezza sul lavoro."),
+                ("04", "Diritto penale d'impresa",    "Reati societari, responsabilità 231, white collar crimes."),
+            ],
+            "stats_label": "Sessantadue anni di foro",
+            "stats": [
+                ("62",     "anni di attività"),
+                ("14",     "avvocati abilitati"),
+                ("2.400+", "cause patrocinate"),
+                ("96%",    "esito favorevole"),
+            ],
+            "publications": ["FORO ITALIANO", "DIRITTO E GIUSTIZIA", "IL SOLE 24 ORE · LEGALE", "GUIDA AL DIRITTO", "CASSAZIONE PENALE"],
+        },
+    },
+
+    # ── L2) MODERN-TRANSPARENT — Juris, avvocato moderno advisory
+    "juris-avvocato-moderno": {
+        "archetype":          "modern-transparent",
+        "hero_style":         "centered-advisory-manifesto",
+        "navbar_style":       "pill-advisory",
+        "footer_style":       "advisory-panel",
+        "section_order":      ["pill-nav", "manifesto-hero", "sector-grid", "process-sprint", "outcome-metrics", "insights-strip", "cta"],
+        "card_style":         "advisory-sector-pill",
+        "button_style":       "pill-advisory-blue",
+        "density":            "medium",
+        "tone":               "advisory-modern",
+        "imagery_direction":  "advisory-modern-light",
+        "imagery_key":        "lawyer-modern",
+        "conversion_pattern": "strategy-call",
+        "font_pairing":       ("DM Sans", "Inter"),
+        "content": {
+            "eyebrow":       "Martini & Partners · Milano · Torino · Bologna",
+            "headline":      'Il diritto, <em>dalla tua parte.</em>',
+            "subhead":       "Affianchiamo startup, PMI e professionisti nelle decisioni legali che contano — con tempi chiari, tariffe trasparenti e un dashboard condiviso dove segui l'avanzamento del tuo caso.",
+            "primary_cta":   "Prenota una strategy call",
+            "secondary_cta": "Come lavoriamo",
+            "phone":         "hello@martinipartners.legal",
+            "nav_links":     ["Approccio", "Servizi", "Settori", "Insights", "Contatti"],
+            "sector_label":  "Settori",
+            "sector_heading":"Sei aree, un solo <em>metodo</em>.",
+            "sectors": [
+                ("01", "Startup & Tech",        "Fundraising, cap table, IP, compliance GDPR e AI Act per aziende digitali."),
+                ("02", "PMI & Famiglia",         "Passaggio generazionale, governance, patti parasociali e M&A mid-market."),
+                ("03", "Lavoro & HR",            "Contratti, licenziamenti, welfare, stock option e remote-work internazionale."),
+                ("04", "Contrattualistica B2B",  "SaaS, licensing, partnership, vendor due-diligence e MSA in inglese."),
+                ("05", "Dispute resolution",     "Mediazione, arbitrato, ADR e contenzioso strategico."),
+                ("06", "Privacy & AI",           "GDPR, AI Act, data mapping, DPIA e policy per aziende data-driven."),
+            ],
+            "process_label":"Come lavoriamo",
+            "process_heading":"Dal brief al <em>primo atto</em> in due settimane.",
+            "process": [
+                ("S.01", "Discovery call",  "30 min via video · capiamo il problema, non vendiamo il servizio."),
+                ("S.02", "Offerta chiara",  "Tempi, fasi, costo fisso o a consumo — tutto scritto, zero sorprese."),
+                ("S.03", "Dashboard live",  "Segui in tempo reale atti, scadenze, documenti e ore lavorate."),
+            ],
+            "metric_heading": "I numeri dello studio",
+            "metric_strip": [
+                ("180+", "aziende assistite"),
+                ("14 gg","tempo medio primo atto"),
+                ("4.9★", "soddisfazione clienti"),
+                ("€ 0",  "setup fee, sempre"),
+            ],
+            "sprint_chip":    "Strategy call · prossimo slot 17 aprile",
+            "insights_label": "Insights · ultima settimana",
+            "insights": [
+                ("17 apr", "AI Act · cosa cambia per le PMI italiane"),
+                ("14 apr", "Stock option 2026 · nuova disciplina fiscale"),
+                ("11 apr", "Smart-working oltre confine · tre scenari"),
+            ],
+        },
+    },
+
+    # ─────────────────────────────────────────────────────────────
+    # Real Estate live rollout (Phase 2g3.7) — 2 distinct archetypes
+    # (mass-market · ultra-luxury-cinematic)
+    #
+    # Session 53 closes the Phase 2g2x.1 real-estate identity-crash.
+    # Casa goes mass-market (daylight, search-widget, tile grid, orange
+    # accent, accessible). Villa goes ultra-luxury-cinematic (fullbleed
+    # editorial cover, champagne + black, rarefied, private viewing).
+    # They never collapse into recolors of each other.
+    # ─────────────────────────────────────────────────────────────
+
+    # ── RE1) MASS-MARKET — Casa, agenzia immobiliare accessibile ──
+    "casa-agenzia-immobiliare": {
+        "archetype":          "mass-market",
+        "hero_style":         "search-listings-grid",
+        "navbar_style":       "cover-search",
+        "footer_style":       "hours-map",
+        "section_order":      ["nav", "search-hero", "featured-listings", "neighborhoods", "agents", "valuation-cta"],
+        "card_style":         "property-tile-specs",
+        "button_style":       "block-visit-primary",
+        "density":            "medium",
+        "tone":               "market-approachable",
+        "imagery_direction":  "mass-market-listings",
+        "imagery_key":        "realestate-casa",
+        "conversion_pattern": "viewing-request",
+        "font_pairing":       ("Poppins", "Inter"),
+        "content": {
+            "eyebrow":       "Domus Immobiliare · Milano · Torino · Lombardia & Piemonte",
+            "headline":      'La casa dei tuoi <em>sogni</em>, vicino a te.',
+            "subhead":       "Oltre 600 immobili selezionati a mano. Visite private, valutazione gratuita, tempi chiari dalla prima visita al rogito — e un solo agente dedicato a te.",
+            "primary_cta":   "Cerca un immobile",
+            "secondary_cta": "Valutazione gratuita",
+            "phone":         "+39 02 8765 4321",
+            "nav_links":     ["Vendita", "Affitto", "Quartieri", "Agenti", "Valutazione"],
+            "search_widget": {
+                "label":      "Cosa cerchi?",
+                "location":   "Milano, Centro",
+                "type":       "Appartamento",
+                "price":      "€ 500K — € 1.2M",
+                "rooms":      "3+ camere",
+                "cta":        "Cerca immobile",
+            },
+            "listings_label":  "In evidenza questa settimana",
+            "listings_link":   "Vedi tutti i 600+ immobili  →",
+            "listings": [
+                ("€ 1.250.000", "Attico panoramico con terrazzo",   "Milano · Brera",        "4", "180", "2", "Esclusiva"),
+                ("€ 890.000",   "Villa moderna con giardino",        "Como · Cernobbio",      "5", "240", "3", "Nuova"),
+                ("€ 650.000",   "Loft di design in zona Tortona",    "Milano · Navigli",      "2", "120", "2", "Rinnovato"),
+                ("€ 420.000",   "Trilocale luminoso con balcone",    "Torino · Crocetta",     "3",  "95", "1", "Disponibile"),
+            ],
+            "neighborhoods_label":  "Quartieri",
+            "neighborhoods_heading":"Dove <em>troviamo casa</em>.",
+            "neighborhoods": [
+                ("Brera",      "Milano · storico",    "124 immobili",  "da € 850K"),
+                ("Navigli",    "Milano · design",     "89 immobili",   "da € 520K"),
+                ("Cernobbio",  "Como · lago",         "42 immobili",   "da € 680K"),
+                ("Crocetta",   "Torino · residenziale","67 immobili",  "da € 380K"),
+            ],
+            "stats_label":   "Venti anni sul mercato",
+            "stats": [
+                ("600+",   "immobili in portafoglio"),
+                ("2.800+", "case trovate dal 2005"),
+                ("20",     "anni di esperienza"),
+                ("4.8 ★",  "su 420 recensioni Google"),
+            ],
+            "agents_label":   "I nostri agenti",
+            "agents": [
+                ("Giulia Ferrante",  "Milano · Brera & Centro", "15 anni"),
+                ("Marco Lentini",    "Milano · Navigli & Sud",   "12 anni"),
+                ("Silvia Mondelli",  "Torino · Crocetta",        "10 anni"),
+                ("Andrea Colombo",   "Como · lago",              "18 anni"),
+            ],
+            "valuation_label":   "Valutazione gratuita",
+            "valuation_heading": "Quanto vale <em>casa tua</em>?",
+            "valuation_intro":   "Ti richiamiamo entro 24 ore con una stima onesta e il piano per metterla sul mercato.",
+        },
+    },
+
+    # ── RE2) ULTRA-LUXURY-CINEMATIC — Villa, immobili di lusso ────
+    "villa-immobili-lusso": {
+        "archetype":          "ultra-luxury-cinematic",
+        "hero_style":         "fullbleed-editorial-cover",
+        "navbar_style":       "cinematic-dark",
+        "footer_style":       "concierge-coords",
+        "section_order":      ["dark-nav", "fullbleed-hero", "signature-properties", "territory-ribbon", "private-advisor", "private-viewing-cta"],
+        "card_style":         "property-dossier",
+        "button_style":       "ghost-champagne",
+        "density":            "very-airy",
+        "tone":               "editorial-concierge",
+        "imagery_direction":  "luxury-property-editorial",
+        "imagery_key":        "realestate-villa",
+        "conversion_pattern": "private-viewing",
+        "font_pairing":       ("Cormorant Garamond", "Montserrat"),
+        "content": {
+            "eyebrow":       "Villa Prestige · Private Advisory · Italia & Costa Azzurra",
+            "headline":      "Dimore <em>d'autore</em>, a chi sa riconoscerle.",
+            "subhead":       "Un portafoglio ristretto di residenze private, storiche e contemporanee, proposto solo su appuntamento. Visite riservate, dossier editoriale dedicato, trattativa discreta.",
+            "primary_cta":   "Richiedi una private viewing",
+            "secondary_cta": "Collezione in corso",
+            "phone":         "concierge@villaprestige.it",
+            "nav_links":     ["Lo studio", "Collezione", "Territorio", "Esperienza", "Concierge"],
+            "hero_wordmark": "Villa Prestige",
+            "hero_location": "Portofino · Collezione primavera 2026",
+            "hero_counter_label": "Dimora in vetrina",
+            "hero_counter_value": "N° 03 / 18",
+            "series_label":   "In vetrina",
+            "series_title":   "«Villa Aurelia» · Portofino",
+            "series_note":    "Dimora storica del 1922 con parco di tre ettari a picco sul golfo. Quattrocento metri quadri, biblioteca d'autore, infinity pool affacciata sull'Isola Palmaria.",
+            "hero_credit_cells": [
+                ("Collezione",  "N° 03 / 18"),
+                ("Territorio",  "Portofino · Liguria"),
+                ("Superficie",  "400 m² · parco 30.000 m²"),
+                ("Accesso",     "Solo su appuntamento"),
+            ],
+            "signature_label":   "Collezione primavera",
+            "signature_heading": "Dimore <em>selezionate</em> per questa stagione.",
+            "signature_intro":   "Ogni proprietà è proposta solo dopo una valutazione su due livelli — autorialità architettonica e coerenza del territorio. La lista completa è disponibile su richiesta, in formato dossier editoriale.",
+            "signature": [
+                # (index, title, territory, surface, provenance, availability)
+                ("01", "Villa Aurelia",           "Portofino · Liguria",        "400 m² · parco 30.000 m²", "Anni '20 · firma Piacentini",    "Da 3 giorni"),
+                ("02", "Castello di Monterò",      "Chianti · Toscana",          "1.200 m² · 18 ettari",      "XII secolo · restauro 2014",    "Esclusiva"),
+                ("03", "Penthouse Quadronno",      "Milano · Magenta",           "380 m² · terrazza 180 m²",  "Attico unico · vista Duomo",    "Su appuntamento"),
+                ("04", "Mas de la Mer",            "Saint-Tropez · Costa Azzurra","550 m² · vigna privata",    "XVIII secolo · certificato",    "Nuova"),
+            ],
+            "territory_label":  "Territori di riferimento",
+            "territory":        ["PORTOFINO", "CHIANTI", "COSTA SMERALDA", "LAGO DI COMO", "SAINT-TROPEZ", "CAPRI", "VAL D'ORCIA"],
+            "advisor_label":    "Private advisor",
+            "advisor_heading":  "Un solo <em>referente</em>, dal primo dossier al rogito.",
+            "advisor_name":     "Alessandra Visconti di Modrone",
+            "advisor_role":     "Private client director · dal 2011",
+            "advisor_bio":      "Quindici anni tra Savills, Knight Frank e Sotheby's International Realty. Ogni cliente privato è seguito da me personalmente, dal primo incontro di riservatezza alla firma notarile.",
+            "press":            ["FINANCIAL TIMES · HOW TO SPEND IT", "MONOCLE", "ROBB REPORT", "CORRIERE LIVING", "AD ITALIA"],
         },
     },
 

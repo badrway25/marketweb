@@ -1,0 +1,316 @@
+{% extends "live_templates/real-estate/ultra-luxury-cinematic/_base.html" %}
+{% block extra_css %}
+  /* Lead */
+  .vp-con-lead { padding: 100px 56px 72px; max-width: 1100px; margin: 0 auto; border-bottom: 1px solid var(--rule); }
+  .vp-con-lead .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-con-lead .eyebrow:before {
+    content: ''; width: 28px; height: 1px; background: var(--champagne);
+  }
+  .vp-con-lead h1 {
+    margin-top: 28px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 88px; line-height: 0.98; letter-spacing: -0.028em; color: var(--bone);
+    max-width: 14ch;
+  }
+  .vp-con-lead .intro {
+    margin-top: 30px; max-width: 62ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.7; color: var(--bone-mute);
+  }
+
+  /* Dedicated phone line by territorio */
+  .vp-con-phone {
+    padding: 72px 56px; max-width: 1280px; margin: 0 auto; border-bottom: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 1.3fr; gap: 64px; align-items: start;
+  }
+  @media (max-width: 1000px) { .vp-con-phone { grid-template-columns: 1fr; gap: 32px; } }
+  .vp-con-phone .col .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-con-phone .col h2 {
+    margin-top: 22px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 40px; line-height: 1.06; color: var(--bone); max-width: 20ch;
+  }
+  .vp-con-phone .col .intro {
+    margin-top: 22px; max-width: 58ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--bone-mute);
+  }
+  .vp-con-phone .lines {
+    display: grid; grid-template-columns: 1fr; gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .vp-con-phone .lines .row {
+    display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px;
+    padding: 20px 0; border-bottom: 1px solid var(--rule); align-items: baseline;
+  }
+  @media (max-width: 720px) { .vp-con-phone .lines .row { grid-template-columns: 1fr; gap: 6px; } }
+  .vp-con-phone .lines .row .k {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-con-phone .lines .row .v {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 18px;
+    color: var(--champagne);
+  }
+
+  /* Two-column layout — form + offices */
+  .vp-con-grid {
+    padding: 100px 56px; max-width: 1320px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 64px; align-items: start;
+  }
+  @media (max-width: 1000px) { .vp-con-grid { grid-template-columns: 1fr; } }
+
+  /* Form */
+  .vp-con-form {
+    padding: 40px 40px;
+    border: 1px solid var(--champagne); background: rgba(255,255,255,0.02);
+  }
+  .vp-con-form .lf-section-title {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 30px;
+    color: var(--bone); border-bottom: 1px solid var(--rule);
+    padding-bottom: 18px; margin-bottom: 22px;
+  }
+  .vp-con-form .form-intro {
+    font-family: var(--body); font-size: 14px; line-height: 1.7;
+    color: var(--bone-mute); margin-bottom: 22px; max-width: 64ch;
+  }
+  .vp-con-form .lf-helper-required {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-faint);
+    margin-bottom: 22px;
+  }
+  .vp-con-form .lf-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 14px;
+  }
+  @media (max-width: 720px) { .vp-con-form .lf-row { grid-template-columns: 1fr; } }
+  .vp-con-form .lf-field { margin-bottom: 18px; }
+  .vp-con-form .lf-field.full { grid-column: 1 / -1; }
+  .vp-con-form .lf-label {
+    display: block;
+    font-family: var(--body); font-size: var(--lf-label-size); font-weight: var(--lf-label-weight);
+    letter-spacing: var(--lf-label-track); text-transform: uppercase;
+    color: var(--lf-label-color); margin-bottom: 8px;
+  }
+  .vp-con-form .lf-label .req { color: var(--champagne); margin-left: 4px; }
+  .vp-con-form .lf-input,
+  .vp-con-form .lf-textarea {
+    width: 100%; padding: var(--lf-pad-y) var(--lf-pad-x);
+    background: var(--lf-bg); border: 1px solid var(--lf-border);
+    color: var(--lf-control-color); font-family: var(--body); font-size: 14px;
+    border-radius: var(--lf-radius);
+  }
+  .vp-con-form .lf-input::placeholder { color: var(--lf-placeholder); }
+  .vp-con-form .lf-input:focus,
+  .vp-con-form .lf-textarea:focus {
+    outline: none; border-color: var(--lf-border-focus);
+    box-shadow: 0 0 0 var(--lf-ring-size) var(--lf-ring);
+  }
+  .vp-con-form .lf-textarea { resize: vertical; min-height: 140px; }
+  .vp-con-form .lf-select { position: relative; }
+  .vp-con-form .lf-select .lf-input {
+    padding: var(--lf-pad-y) 38px var(--lf-pad-y) var(--lf-pad-x);
+    cursor: pointer; appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23C9A96E' stroke-width='1.6' fill='none'/></svg>");
+    background-repeat: no-repeat; background-position: right 14px center;
+  }
+  .vp-con-form .lf-consent {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 16px 20px; background: rgba(201,169,110,0.05);
+    border-left: 3px solid var(--champagne);
+    margin-top: 14px; margin-bottom: 14px;
+  }
+  .vp-con-form .lf-consent input[type=checkbox] {
+    accent-color: var(--champagne); width: 18px; height: 18px;
+    margin-top: 3px; cursor: pointer;
+  }
+  .vp-con-form .lf-consent label {
+    font-family: var(--body); font-size: 13px; line-height: 1.6; color: var(--bone-soft); cursor: pointer;
+  }
+  .vp-con-form .lf-submit {
+    margin-top: 22px;
+    display: inline-flex; align-items: center; gap: 14px;
+    background: transparent; color: var(--champagne);
+    padding: 16px 28px;
+    border: 1px solid var(--champagne); border-radius: var(--lf-submit-radius);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+  }
+  .vp-con-form .lf-submit:after { content: '→'; font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--champagne); }
+  .vp-con-form .lf-submit:hover { background: var(--champagne); color: var(--ink); }
+  .vp-con-form .lf-submit:hover:after { color: var(--ink); }
+  .vp-con-form .lf-submit-note {
+    margin-top: 14px; font-family: var(--heading); font-style: italic; font-size: 13px;
+    color: var(--bone-mute); line-height: 1.65;
+  }
+
+  /* Office cards — right column */
+  .vp-con-offices { display: flex; flex-direction: column; gap: 22px; }
+  .vp-con-offices .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-con-offices .head .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-con-offices .head h3 {
+    margin-top: 18px; margin-bottom: 6px;
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 30px; color: var(--bone); max-width: 18ch;
+  }
+  .vp-con-offices .head .intro {
+    margin-bottom: 18px; font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: var(--bone-mute);
+  }
+  .vp-office-card {
+    border: 1px solid var(--rule); padding: 28px 28px;
+    background: var(--ink-2);
+    position: relative; overflow: hidden;
+    transition: border-color 500ms ease-out;
+  }
+  .vp-office-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: var(--champagne);
+    transform: scaleY(0); transform-origin: top center;
+    transition: transform 600ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  }
+  .vp-office-card:hover { border-color: var(--rule); }
+  .vp-office-card:hover::before { transform: scaleY(1); }
+  .vp-office-card .city {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 32px;
+    color: var(--champagne);
+  }
+  .vp-office-card .row {
+    margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 110px 1fr; gap: 16px;
+    font-family: var(--body); font-size: 12px;
+  }
+  .vp-office-card .row .k {
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--bone-faint); font-size: 9px; padding-top: 2px;
+  }
+  .vp-office-card .row .v {
+    font-family: var(--heading); font-style: italic; font-size: 14px;
+    color: var(--bone);
+  }
+
+  /* Press contact ribbon */
+  .vp-con-press {
+    padding: 72px 56px; max-width: 1100px; margin: 0 auto;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    text-align: center;
+  }
+  .vp-con-press .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-con-press p {
+    margin-top: 22px; max-width: 70ch;
+    font-family: var(--heading); font-style: italic; font-size: 17px; line-height: 1.65;
+    color: var(--bone-soft); margin-left: auto; margin-right: auto;
+  }
+  .vp-con-press .email {
+    margin-top: 22px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 24px; color: var(--champagne);
+    border-bottom: 1px solid var(--champagne); padding-bottom: 4px;
+    display: inline-block;
+  }
+
+  /* Mobile */
+  @media (max-width: 1000px) {
+    .vp-con-lead { padding: 72px 32px 56px; }
+    .vp-con-lead h1 { font-size: 54px; }
+    .vp-con-phone { padding: 56px 32px; }
+    .vp-con-phone .col h2 { font-size: 30px; }
+    .vp-con-grid { padding: 72px 32px; }
+    .vp-con-form { padding: 28px 24px; }
+    .vp-con-press { padding: 56px 32px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vp-con-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="vp-con-phone">
+  <div class="col" data-lm="reveal">
+    <div class="lbl">{{ page_data.phone_label }}</div>
+    <h2>{{ page_data.phone_label }}</h2>
+    <p class="intro">{{ page_data.phone_intro }}</p>
+  </div>
+  <div class="lines" data-lm-stagger data-lm-stagger-delay="140">
+    {% for k, v in page_data.phone_rows %}
+      <div class="row" data-lm="reveal">
+        <span class="k">{{ k }}</span>
+        <span class="v" data-latin>{{ v }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vp-con-grid">
+  <form class="vp-con-form lf-form" data-lm="reveal-soft">
+    <div class="lf-section-title">{{ page_data.form_section_label }}</div>
+    <p class="form-intro">{{ page_data.form_section_intro }}</p>
+    <div class="lf-helper-required">{{ page_data.form_helper_required }}</div>
+
+    {% for f in page_data.form_fields %}
+      {% if f.type == "checkbox" %}
+        <div class="lf-consent">
+          <input type="checkbox" id="vpc-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+          <label for="vpc-{{ f.name }}">{{ f.label }}{% if f.required %}<span class="req">*</span>{% endif %}</label>
+        </div>
+      {% else %}
+        <div class="lf-field{% if f.type == 'textarea' %} full{% endif %}">
+          <label class="lf-label" for="vpc-{{ f.name }}">{{ f.label }}{% if f.required %}<span class="req">*</span>{% endif %}</label>
+          {% if f.type == 'select' %}
+            <div class="lf-select" data-lf-label="{{ f.label }}">
+              <select class="lf-input" id="vpc-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                <option value="">—</option>
+                {% for o in f.options %}<option value="{{ o }}">{{ o }}</option>{% endfor %}
+              </select>
+            </div>
+          {% elif f.type == 'textarea' %}
+            <textarea class="lf-textarea lf-input" id="vpc-{{ f.name }}" name="{{ f.name }}" rows="{{ f.rows|default:5 }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}></textarea>
+          {% else %}
+            <input class="lf-input" type="{{ f.type }}" id="vpc-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <button class="lf-submit" type="submit">{{ page_data.form_submit_button }}</button>
+    <p class="lf-submit-note">{{ page_data.form_submit_note }}</p>
+  </form>
+
+  <aside class="vp-con-offices" data-lm-stagger>
+    <div class="head" data-lm="reveal">
+      <span class="lbl">{{ page_data.offices_label }}</span>
+      <h3>{{ page_data.offices_heading|safe }}</h3>
+      <p class="intro">{{ page_data.offices_intro }}</p>
+    </div>
+    {% for o in page_data.offices %}
+      <div class="vp-office-card" data-lm="reveal">
+        <div class="city" data-latin>{{ o.city }}</div>
+        <div class="row"><span class="k">{{ chrome.mp_address|default:"Indirizzo" }}</span><span class="v" data-latin>{{ o.address }}</span></div>
+        <div class="row"><span class="k">{{ chrome.mp_email|default:"Email" }}</span><span class="v" data-latin>{{ o.email }}</span></div>
+        <div class="row"><span class="k">{{ chrome.mp_hours|default:"Orari" }}</span><span class="v">{{ o.hours }}</span></div>
+        <div class="row"><span class="k">{{ site.referent_label }}</span><span class="v">{{ o.role }}</span></div>
+      </div>
+    {% endfor %}
+  </aside>
+</section>
+
+<section class="vp-con-press" data-lm="reveal">
+  <div class="lbl">{{ page_data.press_contact_label }}</div>
+  <p>{{ page_data.press_contact_text }}</p>
+  <a class="email" href="mailto:{{ page_data.press_contact_email }}" data-latin>{{ page_data.press_contact_email }}</a>
+</section>
+{% endblock %}

@@ -1,0 +1,278 @@
+{% extends "live_templates/real-estate/mass-market/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     QUARTIERI · GUIDE GRID — 8 neighborhood cards in 2×4
+  ============================================================ */
+  .dm-guides {
+    padding: 24px 48px 80px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-guides .dm-guides-head {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;
+    margin-bottom: 48px;
+  }
+  .dm-guides .dm-guides-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px;
+  }
+  .dm-guide {
+    background: #FFFFFF; border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--rule); display: flex; flex-direction: column;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .dm-guide:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 22px 50px rgba(27,40,56,0.10);
+    border-color: rgba(46,204,113,0.35);
+  }
+  .dm-guide .dm-guide-cover {
+    aspect-ratio: 16 / 7;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--emerald) 100%);
+    position: relative; overflow: hidden;
+  }
+  .dm-guide .dm-guide-cover img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 700ms cubic-bezier(0.22,0.61,0.36,1);
+    opacity: 0.92;
+  }
+  .dm-guide:hover .dm-guide-cover img { transform: scale(1.04); }
+  .dm-guide .dm-guide-cover .dm-guide-vibe {
+    position: absolute; top: 16px; right: 16px;
+    padding: 6px 14px; border-radius: 999px;
+    background: rgba(255,255,255,0.95); color: var(--navy);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.10em;
+  }
+  .dm-guide .dm-guide-body { padding: 28px 28px 26px; display: flex; flex-direction: column; gap: 16px; }
+  .dm-guide .dm-guide-name {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  }
+  .dm-guide .dm-guide-name h3 {
+    font-family: var(--heading); font-size: 30px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.018em;
+  }
+  .dm-guide .dm-guide-name .dm-guide-context {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--orange);
+  }
+  .dm-guide .dm-guide-stats {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .dm-guide .dm-guide-stat {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .dm-guide .dm-guide-stat-val {
+    font-family: var(--heading); font-size: 17px; font-weight: 700;
+    color: var(--navy); font-variant-numeric: tabular-nums;
+  }
+  .dm-guide .dm-guide-stat-lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; color: var(--ink-soft); text-transform: uppercase;
+  }
+  .dm-guide .dm-guide-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .dm-guide .dm-guide-tag {
+    padding: 4px 10px; background: var(--paper-2); color: var(--navy);
+    border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+  }
+  .dm-guide .dm-guide-desc {
+    font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: var(--ink-body);
+  }
+  .dm-guide .dm-guide-agent {
+    padding-top: 14px; border-top: 1px solid var(--rule-soft);
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--body); font-size: 12px; color: var(--ink-soft);
+  }
+  .dm-guide .dm-guide-agent:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--emerald);
+  }
+
+  /* ============================================================
+     FAQ — accordion-ish cards
+  ============================================================ */
+  .dm-faq {
+    background: var(--paper-2); padding: 88px 48px;
+  }
+  .dm-faq .dm-faq-inner { max-width: 980px; margin: 0 auto; }
+  .dm-faq .dm-faq-head { text-align: center; margin-bottom: 48px; }
+  .dm-faq .dm-faq-head .dm-sec-label { justify-content: center; }
+  .dm-faq .dm-faq-head .dm-sec-label:before { display: none; }
+  .dm-faq .dm-faq-head h2 { margin: 14px auto 0; max-width: 22ch; }
+  .dm-faq .dm-faq-list { display: flex; flex-direction: column; gap: 16px; }
+  .dm-faq .dm-faq-item {
+    background: #FFFFFF; border-radius: 12px;
+    padding: 24px 28px;
+    border: 1px solid var(--rule);
+    transition: border-color .2s ease;
+  }
+  .dm-faq .dm-faq-item:hover { border-color: rgba(46,204,113,0.35); }
+  .dm-faq .dm-faq-item h4 {
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    color: var(--navy); display: flex; align-items: baseline; gap: 12px;
+  }
+  .dm-faq .dm-faq-item h4:before {
+    content: '?';
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--orange); color: #FFFFFF;
+    flex-shrink: 0;
+    font-family: var(--heading); font-size: 16px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .dm-faq .dm-faq-item p {
+    margin-top: 14px; padding-left: 40px;
+    font-family: var(--body); font-size: 15px; line-height: 1.65;
+    color: var(--ink-body);
+  }
+
+  /* ============================================================
+     CTA BAND — orange split panel
+  ============================================================ */
+  .dm-cta-band {
+    padding: 96px 48px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-cta-band .dm-cta-card {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
+    color: #FFFFFF; border-radius: 22px;
+    padding: 64px 56px;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: center;
+    overflow: hidden; position: relative;
+  }
+  .dm-cta-band .dm-cta-card:before {
+    content: ''; position: absolute; right: -120px; top: -120px;
+    width: 380px; height: 380px; border-radius: 50%;
+    background: radial-gradient(circle, var(--orange) 0%, transparent 70%);
+    opacity: 0.18;
+  }
+  .dm-cta-band .dm-cta-card .dm-cta-text { position: relative; z-index: 1; }
+  .dm-cta-band .dm-cta-card .dm-cta-label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .dm-cta-band .dm-cta-card .dm-cta-label:before {
+    content: ''; width: 28px; height: 2px; background: var(--orange);
+  }
+  .dm-cta-band .dm-cta-card h2 {
+    margin-top: 16px;
+    font-family: var(--heading); font-size: 44px; font-weight: 700;
+    color: #FFFFFF; line-height: 1.06; letter-spacing: -0.02em;
+  }
+  .dm-cta-band .dm-cta-card h2 em { color: var(--orange); font-style: normal; }
+  .dm-cta-band .dm-cta-card .dm-cta-intro {
+    margin-top: 18px; max-width: 56ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.65;
+    color: rgba(255,255,255,0.78);
+  }
+  .dm-cta-band .dm-cta-card .dm-cta-actions {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; gap: 14px; align-items: stretch;
+  }
+  .dm-cta-band .dm-cta-card .dm-cta-actions .dm-btn { justify-content: center; }
+
+  @media (max-width: 1100px) {
+    .dm-guides { padding: 16px 24px 56px; }
+    .dm-guides .dm-guides-head { grid-template-columns: 1fr; gap: 24px; }
+    .dm-guides .dm-guides-grid { grid-template-columns: 1fr; }
+    .dm-faq, .dm-cta-band { padding: 64px 24px; }
+    .dm-cta-band .dm-cta-card { grid-template-columns: 1fr; gap: 28px; padding: 40px 32px; }
+    .dm-cta-band .dm-cta-card h2 { font-size: 32px; }
+  }
+  @media (max-width: 880px) {
+    .dm-guide .dm-guide-name h3 { font-size: 24px; }
+    .dm-guide .dm-guide-body { padding: 22px 20px 22px; }
+    .dm-guide .dm-guide-stats { grid-template-columns: 1fr; gap: 8px; }
+    .dm-faq .dm-faq-item p { padding-left: 0; }
+    .dm-cta-band .dm-cta-card { padding: 32px 22px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="dm-lead">
+  <span class="dm-eyebrow">{{ page_data.eyebrow }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="dm-intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="dm-guides">
+  <div class="dm-guides-head">
+    <div data-lm="reveal-lg">
+      <div class="dm-sec-label">{{ page_data.guides_label }}</div>
+      <h2>{{ page_data.guides_heading|safe }}</h2>
+    </div>
+  </div>
+  <div class="dm-guides-grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for name, context, avg, count, metro, park, vibe, desc, agent in page_data.guides %}
+      <article class="dm-guide" data-lm="reveal">
+        <div class="dm-guide-cover">
+          <img src="https://images.pexels.com/photos/{% if forloop.counter == 1 %}1571460{% elif forloop.counter == 2 %}1438834{% elif forloop.counter == 3 %}2079249{% elif forloop.counter == 4 %}1571463{% elif forloop.counter == 5 %}2351649{% elif forloop.counter == 6 %}1396132{% elif forloop.counter == 7 %}1732414{% else %}2029694{% endif %}/pexels-photo-{% if forloop.counter == 1 %}1571460{% elif forloop.counter == 2 %}1438834{% elif forloop.counter == 3 %}2079249{% elif forloop.counter == 4 %}1571463{% elif forloop.counter == 5 %}2351649{% elif forloop.counter == 6 %}1396132{% elif forloop.counter == 7 %}1732414{% else %}2029694{% endif %}.jpeg?auto=compress&cs=tinysrgb&w=1200&h=525&fit=crop" alt="{{ name }}" loading="lazy">
+          <span class="dm-guide-vibe">{{ vibe }}</span>
+        </div>
+        <div class="dm-guide-body">
+          <div class="dm-guide-name">
+            <h3>{{ name }}</h3>
+            <span class="dm-guide-context">{{ context }}</span>
+          </div>
+          <div class="dm-guide-stats">
+            <div class="dm-guide-stat">
+              <span class="dm-guide-stat-val">{{ avg }}</span>
+              <span class="dm-guide-stat-lbl">{{ site.price_label }} medio</span>
+            </div>
+            <div class="dm-guide-stat">
+              <span class="dm-guide-stat-val">{{ count }}</span>
+              <span class="dm-guide-stat-lbl">In vetrina</span>
+            </div>
+          </div>
+          <div class="dm-guide-tags">
+            <span class="dm-guide-tag">{{ metro }}</span>
+            <span class="dm-guide-tag">{{ park }}</span>
+          </div>
+          <p class="dm-guide-desc">{{ desc }}</p>
+          <div class="dm-guide-agent">{{ agent }}</div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="dm-faq">
+  <div class="dm-faq-inner">
+    <div class="dm-faq-head" data-lm="reveal-lg">
+      <div class="dm-sec-label">{{ page_data.faq_label }}</div>
+      <h2>{{ page_data.faq_heading }}</h2>
+    </div>
+    <div class="dm-faq-list" data-lm-stagger data-lm-stagger-delay="80">
+      {% for q, a in page_data.faq %}
+        <article class="dm-faq-item" data-lm="reveal">
+          <h4>{{ q }}</h4>
+          <p>{{ a }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="dm-cta-band">
+  <div class="dm-cta-card" data-lm="reveal">
+    <div class="dm-cta-text">
+      <div class="dm-cta-label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading }}</h2>
+      <p class="dm-cta-intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div class="dm-cta-actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-primary">
+        <span>{{ page_data.cta_primary }}</span>
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn dm-btn-ghost-light">
+        <span>{{ page_data.cta_secondary }}</span>
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -32,6 +32,11 @@ LOCALES = {
     "salute-studio-medico":        ["it", "en", "fr", "es", "ar"],
     "benessere-centro-olistico":   ["it", "en", "fr", "es", "ar"],
     "famiglia-pediatria":          ["it", "en", "fr", "es", "ar"],
+    # Phase 2g3.7 — Lawyer + Real-estate live rollout (Session 53)
+    "lex-studio-legale":           ["it", "en", "fr", "es", "ar"],
+    "juris-avvocato-moderno":      ["it", "en", "fr", "es", "ar"],
+    "casa-agenzia-immobiliare":    ["it", "en", "fr", "es", "ar"],
+    "villa-immobili-lusso":        ["it", "en", "fr", "es", "ar"],
 }
 
 CATEGORY = {
@@ -52,6 +57,11 @@ CATEGORY = {
     "salute-studio-medico":        "medical",
     "benessere-centro-olistico":   "medical",
     "famiglia-pediatria":          "medical",
+    # Phase 2g3.7 — Lawyer + Real-estate live rollout (Session 53)
+    "lex-studio-legale":           "lawyer",
+    "juris-avvocato-moderno":      "lawyer",
+    "casa-agenzia-immobiliare":    "real-estate",
+    "villa-immobili-lusso":        "real-estate",
 }
 
 @override_settings(ALLOWED_HOSTS=["*"])
@@ -85,7 +95,7 @@ def run():
                 if r.status_code == 200: ok += 1
                 else: failed.append((url+q, r.status_code))
     # Catalog surfaces
-    for path in ["/", "/templates/", "/templates/medical/", "/templates/restaurant/", "/templates/business/", "/templates/portfolio/", "/templates/ecommerce/", "/templates/agency/"]:
+    for path in ["/", "/templates/", "/templates/medical/", "/templates/restaurant/", "/templates/business/", "/templates/portfolio/", "/templates/ecommerce/", "/templates/agency/", "/templates/lawyer/", "/templates/real-estate/"]:
         total += 1
         r = client.get(path)
         if r.status_code == 200: ok += 1
@@ -101,6 +111,15 @@ def run():
          ["fondazione-prada-rebrand", "adelphi-collana-narrativa", "maison-gentiluomo-manuale"]),
         ("/templates/agency/aura-digital-studio/preview/lavori/",
          ["casavo-retention-rework", "fastweb-plus-dashboard", "soldo-corporate-onboarding"]),
+        # Phase 2g3.7 — Lawyer + Real-estate detail routes (Session 53)
+        ("/templates/lawyer/lex-studio-legale/preview/notabili/",
+         ["aumento-capitale-quotata-2343cc", "modello-231-gruppo-utility", "successione-internazionale-reg-650"]),
+        ("/templates/lawyer/juris-avvocato-moderno/preview/insights/",
+         ["ai-act-pmi-italiane", "stock-option-2026", "smart-working-confine"]),
+        ("/templates/real-estate/casa-agenzia-immobiliare/preview/immobili/",
+         ["attico-brera-duomo", "villa-cernobbio-lago", "loft-tortona-navigli"]),
+        ("/templates/real-estate/villa-immobili-lusso/preview/collezione/",
+         ["villa-aurelia-portofino", "castello-di-montero-chianti", "penthouse-quadronno-milano"]),
     ]
     for parent, slugs in POST_ROUTES:
         for s in slugs:

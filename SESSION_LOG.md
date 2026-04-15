@@ -3933,3 +3933,142 @@ None.
 **Phase 2g3.6 final wave — lawyer + real-estate.** 4 remaining draft templates (lex / juris / casa / villa). Both categories CRITICO identity-crash. Rollout recipe: DNA split → 4 new skin folders → 4 IT + 16 locale content files → Pexels pools → preview comps → tier flip → 800+ smoke + browser walk. When this closes, catalog hits 20/20 `published_live` and Phase 3 unblocks.
 
 Companion: extend smoke_full.py to D-047 leak enforcement (programmatic grep for brand literals across rendered HTML).
+
+
+---
+## Session 53 — Lawyer + Real-Estate Live Rollout · CATALOG COMPLETE 20/20 (Phase 2g3.7, 2026-04-15)
+
+### TL;DR
+
+**Phase 2g3.7 CLOSED. Catalog 20/20.** Lex (`lex-studio-legale` → classic-gold archetype — Studio Legale Ferri, Roma, forensic-notarile), Juris (`juris-avvocato-moderno` → modern-transparent — Martini & Partners, Milano, advisory-modern tech-forward boutique), Casa (`casa-agenzia-immobiliare` → mass-market — Domus Immobiliare, Milano+Torino, approachable residential), Villa (`villa-immobili-lusso` → ultra-luxury-cinematic — Villa Prestige, Milano+Portofino, editorial-concierge) flipped from `tier=draft` to `tier=published_live`. All four ship full multi-page live skins (6-7 page routes each), 5 locales (it/en/fr/es/ar) with real RTL for Arabic, Pexels-curated imagery pools, and sharp D-054 differentiation vs each other, vs existing business/portfolio/ecommerce/agency templates, and against the dark-premium Luxe pair (Villa ≠ Luxe despite shared Cormorant+champagne/dark palette).
+
+**D-082** records the lawyer+real-estate contract. Branch: `phase-law-realestate-live-rollout-v1`.
+
+### What shipped (~38,700 LOC total new code)
+
+**4 DNA entries** (`apps/catalog/template_dna.py`):
+- lex-studio-legale: archetype `classic-gold`, hero `split-ledger-monogram`, navbar `ledger-monogram`, card `practice-area-ledger`, conversion `private-consultation`, tone `forensic-notarile`, fonts Cormorant Garamond + Inter
+- juris-avvocato-moderno: archetype `modern-transparent`, hero `centered-advisory-manifesto`, navbar `pill-advisory`, card `advisory-sector-pill`, conversion `strategy-call`, tone `advisory-modern`, fonts DM Sans + Inter
+- casa-agenzia-immobiliare: archetype `mass-market`, hero `search-listings-grid`, navbar `cover-search`, card `property-tile-specs`, conversion `viewing-request`, tone `market-approachable`, fonts Poppins + Inter
+- villa-immobili-lusso: archetype `ultra-luxury-cinematic`, hero `fullbleed-editorial-cover`, navbar `cinematic-dark`, card `property-dossier`, conversion `private-viewing`, tone `editorial-concierge`, fonts Cormorant Garamond + Montserrat
+
+**4 skin folders** (`templates/live_templates/`):
+- `lawyer/classic-gold/` — 8 HTML files (1,838 LOC). Prefix `.lx-*`. Ink nav + gold monogram crest, ledger hero with vertical gold rule, practice-area ledger rows (4 numbered entries on home + 12 on pratiche), publications marquee, partner portrait stamps (typographic-led — DNA imagery direction is library/gavel, not partner photos), sectioned contact form with premium `.lf-*` primitives.
+- `lawyer/modern-transparent/` — 8 HTML files (2,267 LOC). Prefix `.jr-*`. Floating pill nav + slate wordmark + blue CTA, centered-manifesto hero (no big photo), 6-cell sector grid, process sprint S.01/S.02/S.03, outcome metric counter band, next-slot chip, insights strip, 3-step intake form.
+- `real-estate/mass-market/` — 8 HTML files (2,915 LOC). Prefix `.dm-*`. Daylight cover hero + translucent search widget overlay, 4-up listings tile grid (property-tile-specs), 8 neighborhood cards with badges, agent cards with phone+WhatsApp pills, 3-step valuation form with emerald success state, 12 property detail pages (via project_list/project_detail page kinds).
+- `real-estate/ultra-luxury-cinematic/` — 8 HTML files (3,002 LOC). Prefix `.vp-*`. Transparent-dark nav over fullbleed imagery, champagne serif wordmark + counter chip + editorial credit cells, 2-up property dossier grid, territory ribbon + editorial territorio cards, 5-step private-viewing process with NDA consent, 8 property dossiers (via blog_list/blog_detail page kinds).
+
+**4 preview compositions** (`templates/preview_compositions/`):
+- `lawyer/classic-gold.html` (305 LOC)
+- `lawyer/modern-transparent.html` (240 LOC)
+- `real-estate/mass-market.html` (298 LOC)
+- `real-estate/ultra-luxury-cinematic.html` (362 LOC)
+
+All D-047 clean from line one.
+
+**Content registries (IT)** — ~5,277 LOC:
+- `template_content_lex.py` (1,269 LOC) — Studio Legale Ferri, Roma+Milano, 14 avvocati, 12 aree di pratica, 6 cause notabili ("Aumento capitale quotata 2343 c.c.", "Modello 231 gruppo utility", "Successione internazionale Reg. 650/2012"), sectioned contact form.
+- `template_content_juris.py` (1,238 LOC) — Avv. Martini & Partners, Milano+Torino+Bologna, 8 avvocati/legal-ops, 6 sectors (Startup & Tech / PMI & Famiglia / Lavoro & HR / Contratti B2B / Dispute resolution / Privacy & AI), 6 insights posts, 3-step intake form with prossimo-slot chip.
+- `template_content_casa.py` (1,455 LOC) — Domus Immobiliare, Milano+Torino+lago di Como, 9 agents, 12 property detail pages (attico-brera-duomo, villa-cernobbio-lago, loft-tortona-navigli, trilocale-crocetta-torino, ...), 8 quartieri (Brera, Navigli, Porta Nuova, Isola, Cernobbio, Bellagio, Crocetta, Borgo Po).
+- `template_content_villa.py` (1,315 LOC) — Villa Prestige, Milano+Portofino+Saint-Tropez, 4 private advisors (Alessandra Visconti di Modrone director), 8 property dossiers (Villa Aurelia Portofino, Castello di Monterò Chianti, Penthouse Quadronno Milano, Mas de la Mer Saint-Tropez, ...), 6 territorio (Portofino/Chianti/Costa Smeralda/Lago di Como/Saint-Tropez/Capri), 5-step private-viewing process with NDA.
+
+**Locale content (EN/FR/ES/AR)** — ~20,000 LOC across 16 files, authored by 4 parallel translator sub-agents:
+- Lex EN: Slaughter-and-May voice · FR: Gide/Bredin Prat cabinet · ES: Garrigues despacho · AR: Al Tamimi MSA institutional (5,276 LOC / 4 files)
+- Juris EN: Kirkland Startups / Orrick / Gunderson Dettmer · FR: Bredin Prat VC · ES: Cuatrecasas Startups · AR: Al Tamimi tech desk (4,738 LOC / 4 files)
+- Casa EN: Foxtons/Knight Frank UK · FR: Barnes/Century 21 · ES: Engel & Völkers Spain retail / Solvia · AR: Emirates Living / Better Homes MSA (5,456 LOC / 4 files)
+- Villa EN: FT How to Spend It / Monocle Estates / Sotheby's editorial · FR: Le Figaro Propriétés / Emile Garcin · ES: Vanity Fair Spain Propiedades / Savills España · AR: Robb Report ME / Esquire ME Property MSA literary (5,068 LOC / 4 files)
+
+Italian proper names preserved verbatim across all non-IT locales. Latin digits (0–9) used across all locales including AR.
+
+**2 new Pexels imagery pools for lawyer, 2 for real-estate** — `apps/catalog/preview_imagery.py`:
+- `lawyer-classic` — heritage library pool (leather Corpus Juris, mahogany desk, studio library, gavel)
+- `lawyer-modern` — bright collaborative pool (modern meeting rooms, diverse professionals, glass offices)
+- `realestate-casa` — daylight attainable pool (bright urban apartments, family homes, modern living rooms)
+- `realestate-villa` — cinematic editorial pool (golden-hour villas, infinity pools, architectural details, heritage libraries)
+
+6 URLs per pool, zero overlap across pools, zero overlap with legacy `lawyer`/`real-estate` fallback pools.
+
+**CHROME_I18N extensions**: `mp_other_lawyer` + `mp_other_realestate` added across all 5 locales (it/en/fr/es/ar). Category labels translated natively.
+
+**Wiring**:
+- `template_content.py` — 20 new imports + 4 new TEMPLATE_CONTENT entries
+- `TEMPLATE_REGISTRY.json` — 4 entries flipped with D-054 tier_reason
+- `smoke_full.py` — 4 new LOCALES + 4 new CATEGORY entries + `/templates/lawyer/` + `/templates/real-estate/` category paths + 12 new detail routes (lawyer/notabili, lawyer/insights, realestate/immobili, realestate/collezione)
+
+### Differentiation — D-054 10/10 on every pair
+
+**Lex ↔ Juris (lawyer siblings):**
+Typography Cormorant serif ↔ DM Sans kinetic sans · palette ink+gold+bordeaux ↔ slate+blue+yellow · background dark ink editorial ↔ bright white advisory · nav ledger with monogram crest + gold underline ↔ floating pill with wordmark + blue pill CTA · hero split-ledger-monogram with photo-right ↔ centered-manifesto with NO photo · card practice numbered ledger ↔ sector pill grid + sprint console · section order heritage→practice→partners→publications→consultation ↔ manifesto→sectors→sprint→metrics→insights→call · primary CTA serif "Richiedi una consulenza riservata" ↔ blue pill "Prenota una strategy call" · heritage "Fondato 1962" ↔ "Fondato 2018" · conversion private-consultation (email + NDA) ↔ strategy-call (calendar + 3-step intake).
+
+**Casa ↔ Villa (real-estate siblings):**
+Typography Poppins geometric ↔ Cormorant editorial · palette navy+emerald+orange daylight ↔ black+champagne+white cinematic · background bright lived-in ↔ dark golden-hour rarefied · nav cover-search transparent ↔ cinematic-dark transparent · hero search-widget-over-cover ↔ fullbleed dominant photo · card property-tile-specs (photo/price/addr/camere/m²/bagni) ↔ property-dossier (editorial photo/title/territorio/superficie/provenance) · primary CTA block "Cerca immobile" + WhatsApp pill ↔ ghost champagne "Richiedi private viewing" + NDA · geography Milano Brera/Navigli + Torino Crocetta + Como Cernobbio (Italian urban mass-market) ↔ Portofino + Chianti + Costa Smeralda + Saint-Tropez + Capri + Val d'Orcia (Continental ultra-luxury) · price visibility visible €420K-€1.25M ↔ hidden "Prezzo su richiesta" · conversion viewing-request (next-day visit) ↔ private-viewing (NDA + invitation-only).
+
+**Lex/Juris ↔ Pragma/Elevate (lawyer ↔ business):**
+Lex's forensic ledger ≠ Pragma's advisory pillars · Juris's strategic sprint ≠ Elevate's ship-log · font pairings fully distinct · imagery pools fully distinct.
+
+**Casa/Villa ↔ Bottega/Luxe (real-estate ↔ ecommerce):**
+No shop/cart/PDP/product routes on Casa/Villa (they're real-estate advisories) · Casa's tile grid ≠ Bottega's labeled-cards · Villa's property dossier ≠ Luxe's fashion editorial · territorio/superficie/provenance vocabulary ≠ silhouette/tessuto/drop · private-viewing + NDA ≠ private-request + atelier.
+
+**Villa ↔ Luxe (dark-premium pair, particular attention):**
+Villa is real-estate advisory (property dossiers, private viewings, NDA, concierge) — Luxe is fashion ecommerce (maison atelier, lookbook, stylist). Different page kinds (blog_list for property dossiers vs shop for products). Different conversion verbs. Same Cormorant font + champagne/dark palette are the only similarities and they diverge at first scroll.
+
+### Validation
+
+1. `python manage.py check` — clean.
+2. `python manage.py migrate` + `seed_categories` + `seed_templates` + `sync_template_tiers` — **20 published_live / 0 draft** ✅ **20/20 MILESTONE**.
+3. `generate_previews --force --only <slug>` — 4 new PNGs rendered under `template_assets/2026/04/`.
+4. **Full smoke: `python smoke_full.py` → 834/834 HTTP 200** (baseline 660 + 174 new routes). Zero regression on the 16 pre-existing live templates.
+5. **Browser walk via Playwright MCP at 1440×900:**
+   - Lex IT home split-ledger hero + "Competenza, *riservatezza*, risultati." + LF monogram crest ✓
+   - Lex EN home native "Competence, *discretion*, results." + THE FIRM · PRACTICE AREAS · OUR LAWYERS nav ✓
+   - Lex IT `/pratiche/` "Dodici competenze, una sola *firma.*" ledger ✓
+   - Lex AR `/pratiche/?lang=ar` RTL flipped + "اثنا عشر اختصاصًا، توقيع واحد." Arabic serif drama ✓
+   - Juris IT home "Il diritto, *dalla tua parte.*" manifesto + sector grid + next-slot chip + blue pill ✓
+   - Juris FR home native "Le droit, *de votre côté.*" + "Nous accompagnons startups, PME et freelances" ✓
+   - Casa IT home daylight cover + search widget overlay + orange CTA ✓
+   - Casa ES home "La casa de tus *sueños*, más cerca de lo que crees." + ES search widget + VENTA/ALQUILER nav ✓
+   - Casa FR `/immobili/attico-brera-duomo/` "Penthouse panoramique avec terrasse · Brera" + "1 250 000 €" ✓
+   - Casa AR home RTL + search widget "أخبرنا عن الحي وندع التفاصيل بأيدينا" + orange "ابحث عن عقار" ✓
+   - Villa IT home fullbleed + champagne wordmark + "Dimore *d'autore*, a chi sa riconoscerle." + N° 03/18 counter chip ✓
+   - Villa AR home RTL + champagne wordmark flipped + "منازل ذات توقيع، لمن يُحسن قراءتها." + fullbleed cinematic ✓
+   - Villa EN `/collezione/villa-aurelia-portofino/` "Villa Aurelia — a 1922 historic residence" dossier ✓
+
+### D-047 chrome-authoring contract — zero leak confirmed
+
+32 new skin HTML files + 4 preview compositions: zero user-facing brand literals. Skins reusable for hypothetical second siblings (e.g. `avvocato-milano-giurista` on modern-transparent, `immobiliare-lago-garda` on mass-market).
+
+### D-081 dynamic counter policy — binding satisfied
+
+Every stats/facts/metrics band on the 4 new templates carries `data-lm="counter"` (Lex 4-cell · Juris 4-cell · Casa 4-cell · Villa discreet 4-cell). Villa's "Prezzo su richiesta" signal stays static (editorial-concierge tone disqualifies animating a non-numeric ask-phrase).
+
+### Lessons
+
+1. **8-agent parallel rollout is the new normal.** 4 template implementers (DNA/skin/content/preview each) + 4 translators (IT→EN/FR/ES/AR each) = 8 parallel sub-agents. Wall-clock compressed ~32h sequential to ~6h. Each agent reviewed a narrow slice (1 template × 1 role) — context-efficient.
+
+2. **DNA entry first, translators wait for stub-files-first.** Spawning 4 translator agents BEFORE the 4 implementer agents had shipped IT trees would race on missing source files. Sequence: implementer → stub locale files (re-export IT) → wire template_content.py → smoke 834 routes → translators overwrite stubs. This matches the Session 51 pattern and is now the rollout recipe.
+
+3. **DNA imagery direction drives preview composition coherence.** Lex's DNA `imagery_direction=legal-heritage-ink` explicitly describes "library/gavel scenes, NOT partner portraits" — so the skin's team page correctly renders typographic-led monogram stamps instead of placeholder photo slots. Future team pages for classic-gold siblings should follow the same DNA-honest pattern.
+
+4. **Page-kind semantic clarity matters for real-estate.** Casa uses `project_list`/`project_detail` page kinds (structural parity with Chiara portfolio); Villa uses `blog_list`/`blog_detail` (structural parity with Pixel editorial). Both have the same plumbing via `LiveTemplateView`'s `_list→_detail` kind replacement — but the semantic choice (project = listing, blog = dossier) communicates to future editors which kind matches their surface.
+
+5. **Counter animation policy D-081 is a retroactive and prospective contract.** Applied from line one on all 4 new templates. No Session 52-style polish pass needed this time.
+
+6. **Pexels URL validation at author time.** Every new pool URL was verified via direct HTTP fetch before commit. Zero 404 URLs shipped. The `generate_previews` pipeline's `ensure_cached` hash check + offline cache fallback still serves as safety net, but the first-line-of-defense is author-time verification.
+
+### Blockers
+
+**None.** Catalog 20/20. Phase 3 unblock gate MET.
+
+### Exact next step
+
+**Phase 3 kickoff.** The 20/20 `published_live` milestone unblocks the Phase 3 workstreams per D-055 + Session 20 roadmap:
+
+1. **Commerce completion v3** — promote the Session 43+44+45 commerce foundation from Bottega/Luxe-only to all 20 templates. Every template's live preview now has a real multi-page website; Phase 3a connects the "Compra il template" marketplace CTA to a real Stripe checkout that provisions a hosted project instance from the template seed.
+
+2. **Editor app wireframe** — Session 30 locked in a ~600-row concrete editor schema blueprint for cardio/derm/gusto. Extend to the 20 live templates and wire the `projects.CustomerProject` model to feed edits back into a per-project content registry fork.
+
+3. **Auth hardening** — the customer-facing flow (`/accedi/`, `/registrati/`, `/il-mio-account/`) can now assume every entry point leads to a real product (no draft gaps).
+
+Companion work (non-blocking):
+- Extend `smoke_full.py` with programmatic D-047 leak enforcement (grep rendered HTML of every locale for brand literals of *other* templates; catches cross-template leaks in chrome authoring).
+- Document the 8 archetypes + 20 templates in a public-facing catalog index (`docs/catalog.md`) for onboarding.

@@ -1,0 +1,233 @@
+{% extends "live_templates/lawyer/modern-transparent/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     SECTOR CARDS — full-width with pain points + case snippet
+  ============================================================ */
+  .jr-sectors-full .list {
+    margin-top: 48px;
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  .jr-sectors-full .card {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 24px; padding: 40px 36px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 36px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .jr-sectors-full .card:hover {
+    border-color: var(--secondary);
+    box-shadow: 0 20px 48px -22px rgba(66,153,225,0.22);
+  }
+  .jr-sectors-full .card .left {
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .jr-sectors-full .card .top {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .jr-sectors-full .card .num {
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.14em; color: var(--secondary);
+    padding: 6px 12px; background: rgba(66,153,225,0.08);
+    border-radius: 999px;
+  }
+  .jr-sectors-full .card h3 { font-size: 28px; line-height: 1.15; }
+  .jr-sectors-full .card .tagline {
+    font-family: var(--heading); font-size: 17px; font-weight: 500;
+    color: var(--ink-soft); font-style: italic;
+  }
+  .jr-sectors-full .card .pain-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--ink-faint);
+    margin-top: 8px;
+  }
+  .jr-sectors-full .card .pains {
+    list-style: none; display: flex; flex-direction: column; gap: 6px;
+  }
+  .jr-sectors-full .card .pains li {
+    font-family: var(--body); font-size: 13px; line-height: 1.55;
+    color: var(--ink-mute); padding-left: 20px; position: relative;
+  }
+  .jr-sectors-full .card .pains li:before {
+    content: '→'; color: var(--secondary); font-weight: 700;
+    position: absolute; left: 0;
+  }
+  .jr-sectors-full .card .right {
+    display: flex; flex-direction: column; gap: 16px;
+    padding-left: 32px; border-left: 1px solid var(--rule);
+  }
+  .jr-sectors-full .card .signals-label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--accent);
+  }
+  .jr-sectors-full .card .signals {
+    list-style: none; display: flex; flex-direction: column; gap: 6px;
+  }
+  .jr-sectors-full .card .signals li {
+    font-family: var(--body); font-size: 13px; line-height: 1.5;
+    color: var(--ink-soft); padding-left: 22px; position: relative;
+  }
+  .jr-sectors-full .card .signals li:before {
+    content: '✓'; color: var(--accent); font-weight: 700;
+    position: absolute; left: 0;
+  }
+  .jr-sectors-full .card .case-snippet {
+    padding: 16px 18px;
+    background: var(--page-2);
+    border-radius: 12px;
+    font-family: var(--body); font-size: 13px; line-height: 1.65;
+    color: var(--ink-soft); font-style: italic;
+    border-left: 3px solid var(--secondary);
+  }
+  .jr-sectors-full .card .ppl {
+    margin-top: auto; padding-top: 14px;
+    border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .jr-sectors-full .card .ppl .cell {
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .jr-sectors-full .card .ppl .lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .jr-sectors-full .card .ppl .val {
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    color: var(--ink);
+  }
+  @media (max-width: 880px) {
+    .jr-sectors-full .card { grid-template-columns: 1fr; gap: 24px; padding: 28px 22px; }
+    .jr-sectors-full .card .right { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); padding-top: 20px; }
+  }
+
+  /* ============================================================
+     TEAM GRID — 10 people in 5×2
+  ============================================================ */
+  .jr-team { background: var(--panel); max-width: none; padding: 80px 32px; }
+  .jr-team .wrap { max-width: 1240px; margin: 0 auto; }
+  .jr-team .grid {
+    margin-top: 44px;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px;
+  }
+  .jr-team .card {
+    background: var(--page); border: 1px solid var(--rule);
+    border-radius: 16px; padding: 22px 18px;
+    display: flex; flex-direction: column; gap: 10px;
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .jr-team .card:hover { border-color: var(--secondary); transform: translateY(-2px); }
+  .jr-team .card .role {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--secondary);
+    line-height: 1.3;
+  }
+  .jr-team .card .office {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+  }
+  .jr-team .card h3 { font-size: 16px; line-height: 1.22; }
+  .jr-team .card .bio {
+    font-family: var(--body); font-size: 12px; line-height: 1.55;
+    color: var(--ink-mute);
+  }
+  .jr-team .card .email {
+    font-family: var(--mono); font-size: 11px; color: var(--secondary);
+    word-break: break-word;
+    margin-top: auto;
+  }
+  @media (max-width: 880px) {
+    .jr-team .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Page CTA reuse */
+  .jr-page-cta {
+    padding: 72px 32px; max-width: 1100px; margin: 0 auto; text-align: center;
+  }
+  .jr-page-cta .panel {
+    padding: 50px 40px; border-radius: 24px;
+    background: var(--panel); border: 1px solid var(--rule);
+    box-shadow: 0 24px 60px -28px rgba(26,32,44,0.18);
+  }
+  .jr-page-cta h2 { font-size: 36px; line-height: 1.08; max-width: 22ch; margin: 0 auto; }
+  .jr-page-cta .intro {
+    margin-top: 18px; max-width: 56ch; margin-left: auto; margin-right: auto;
+    font-family: var(--body); font-size: 16px; line-height: 1.62;
+    color: var(--ink-mute);
+  }
+  .jr-page-cta .actions { margin-top: 28px; display: inline-flex; gap: 18px; }
+{% endblock %}
+
+{% block content %}
+<section class="jr-lead">
+  <span class="eyebrow">{{ page_data.eyebrow }}</span>
+  <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+  <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
+</section>
+
+<section class="jr-section jr-sectors-full">
+  <span class="sec-label">{{ page_data.sectors_label }}</span>
+  <h2>{{ page_data.sectors_heading|safe }}</h2>
+  <div class="list" data-lm-stagger data-lm-stagger-delay="80">
+    {% for s in page_data.sectors %}
+      <article class="card" data-lm="reveal">
+        <div class="left">
+          <div class="top">
+            <span class="num">{{ s.num }}</span>
+            <h3>{{ s.title }}</h3>
+          </div>
+          <p class="tagline">{{ s.tagline }}</p>
+          <span class="pain-label">{{ chrome.pain_points_label|default:"Problemi che risolviamo" }}</span>
+          <ul class="pains">
+            {% for p in s.pain_points %}<li>{{ p }}</li>{% endfor %}
+          </ul>
+        </div>
+        <div class="right">
+          <span class="signals-label">{{ chrome.signals_label|default:"I segnali" }}</span>
+          <ul class="signals">
+            {% for sig in s.signals %}<li>{{ sig }}</li>{% endfor %}
+          </ul>
+          <blockquote class="case-snippet">{{ s.case_snippet }}</blockquote>
+          <div class="ppl">
+            <div class="cell">
+              <span class="lbl">{{ chrome.partner_label|default:"Partner" }}</span>
+              <span class="val">{{ s.partner }}</span>
+            </div>
+            <div class="cell">
+              <span class="lbl">{{ chrome.legal_ops_label|default:"Legal ops" }}</span>
+              <span class="val">{{ s.legal_ops }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="jr-team">
+  <div class="wrap">
+    <span class="sec-label" style="display:inline-flex;align-items:center;gap:10px;padding:6px 14px;border-radius:999px;background:rgba(66,153,225,0.08);border:1px solid rgba(66,153,225,0.20);font-family:var(--body);font-size:11px;font-weight:700;letter-spacing:0.12em;color:var(--secondary);">{{ page_data.team_label }}</span>
+    <h2 style="margin-top:14px;font-size:40px;line-height:1.06;max-width:22ch;">{{ page_data.team_heading|safe }}</h2>
+    <p style="margin-top:18px;max-width:62ch;font-size:16px;line-height:1.65;color:var(--ink-mute);">{{ page_data.team_intro }}</p>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="60">
+      {% for m in page_data.team %}
+        <article class="card" data-lm="reveal">
+          <span class="role">{{ m.role }}</span>
+          <h3>{{ m.name }}</h3>
+          <span class="office">{{ m.office }}</span>
+          <p class="bio">{{ m.bio }}</p>
+          <span class="email">{{ m.email }}</span>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="jr-page-cta">
+  <div class="panel" data-lm="reveal">
+    <h2>{{ page_data.cta_heading }}</h2>
+    <p class="intro">{{ page_data.cta_intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="jr-btn">{{ page_data.cta_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,317 @@
+{% extends "live_templates/real-estate/mass-market/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     OFFICES — 2 office cards in 2-col layout
+  ============================================================ */
+  .dm-offices {
+    padding: 24px 48px 56px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-offices .dm-offices-head { margin-bottom: 40px; }
+  .dm-offices .dm-offices-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+  }
+  .dm-office {
+    background: #FFFFFF; border-radius: 16px;
+    border: 1px solid var(--rule);
+    padding: 36px 36px;
+    display: flex; flex-direction: column; gap: 20px;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .dm-office:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 22px 50px rgba(27,40,56,0.10);
+    border-color: rgba(46,204,113,0.35);
+  }
+  .dm-office h3 {
+    font-family: var(--heading); font-size: 28px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.018em;
+  }
+  .dm-office h3:before {
+    content: '◆'; color: var(--orange); margin-right: 10px;
+    font-size: 14px; vertical-align: middle;
+  }
+  .dm-office .dm-office-grid {
+    display: grid; grid-template-columns: 110px 1fr;
+    gap: 12px 16px;
+    padding: 16px 0;
+    border-top: 1px solid var(--rule-soft);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .dm-office .dm-office-grid dt {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--ink-soft);
+    padding-top: 3px;
+  }
+  .dm-office .dm-office-grid dd {
+    font-family: var(--body); font-size: 14px; color: var(--ink-body);
+    line-height: 1.5; font-weight: 500;
+  }
+  .dm-office .dm-office-grid dd a {
+    color: var(--navy); border-bottom: 1px solid var(--orange);
+    padding-bottom: 1px; font-weight: 700;
+  }
+  .dm-office .dm-office-lead {
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--emerald-3);
+  }
+  .dm-office .dm-office-lead:before {
+    content: '◆'; color: var(--emerald); margin-right: 8px;
+    font-size: 9px; vertical-align: middle;
+  }
+  .dm-office .dm-office-note {
+    font-family: var(--body); font-size: 13.5px; line-height: 1.6;
+    color: var(--ink-body); font-style: italic;
+  }
+  .dm-office .dm-office-actions {
+    margin-top: auto; padding-top: 12px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .dm-office .dm-office-action {
+    flex: 1; min-width: 110px;
+    padding: 12px 16px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    transition: background .15s ease, transform .15s ease, color .15s ease;
+  }
+  .dm-office .dm-office-action svg {
+    width: 14px; height: 14px; stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .dm-office .dm-office-action.dm-office-call {
+    background: var(--navy); color: #FFFFFF;
+  }
+  .dm-office .dm-office-action.dm-office-call:hover { background: var(--navy-2); transform: translateY(-1px); }
+  .dm-office .dm-office-action.dm-office-wa {
+    background: var(--emerald); color: #FFFFFF;
+  }
+  .dm-office .dm-office-action.dm-office-wa:hover { background: var(--emerald-2); transform: translateY(-1px); }
+  .dm-office .dm-office-action.dm-office-map {
+    background: var(--paper-2); color: var(--navy); border: 1.5px solid var(--rule);
+  }
+  .dm-office .dm-office-action.dm-office-map:hover { background: var(--paper); border-color: var(--navy); }
+
+  /* ============================================================
+     CHANNELS — direct channels strip
+  ============================================================ */
+  .dm-channels {
+    background: var(--paper-2); padding: 80px 48px;
+  }
+  .dm-channels .dm-channels-inner { max-width: 1360px; margin: 0 auto; }
+  .dm-channels .dm-channels-head { margin-bottom: 36px; }
+  .dm-channels .dm-channels-list {
+    display: grid; grid-template-columns: 1fr;
+    background: #FFFFFF; border-radius: 16px;
+    overflow: hidden; border: 1px solid var(--rule);
+  }
+  .dm-channel {
+    display: grid; grid-template-columns: 1fr 1.2fr 1.4fr;
+    padding: 22px 32px; gap: 24px; align-items: center;
+    border-bottom: 1px solid var(--rule-soft);
+    transition: background .15s ease;
+  }
+  .dm-channel:last-child { border-bottom: 0; }
+  .dm-channel:hover { background: var(--paper); }
+  .dm-channel .dm-ch-name {
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    color: var(--navy);
+  }
+  .dm-channel .dm-ch-val {
+    font-family: var(--body); font-size: 15px; font-weight: 600;
+    color: var(--orange); font-variant-numeric: tabular-nums;
+  }
+  .dm-channel .dm-ch-meta {
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  /* ============================================================
+     FORM — general contact form (reuses lf-* primitives)
+  ============================================================ */
+  .dm-cf-shell {
+    padding: 64px 48px 64px;
+  }
+  .dm-cf-shell .dm-cf-inner {
+    max-width: 980px; margin: 0 auto;
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 56px 56px;
+    box-shadow: 0 20px 50px rgba(27,40,56,0.06);
+    border: 1px solid var(--rule);
+  }
+  .dm-cf-shell .dm-cf-head {
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .dm-cf-shell .dm-cf-head .dm-sec-label { color: var(--orange); }
+  .dm-cf-shell .dm-cf-head h2 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 30px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.018em;
+  }
+  .dm-cf-shell .dm-cf-head .dm-cf-intro {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 15px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .dm-cf-shell .dm-consent-box {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+    padding: 16px 22px;
+    background: var(--paper); border-left: 3px solid var(--emerald);
+    border-radius: 0 10px 10px 0;
+  }
+  .dm-cf-shell form { display: grid; gap: 32px; }
+
+  @media (max-width: 1100px) {
+    .dm-offices, .dm-cf-shell { padding: 48px 24px; }
+    .dm-offices { padding-top: 16px; }
+    .dm-offices .dm-offices-grid { grid-template-columns: 1fr; }
+    .dm-channels { padding: 56px 24px; }
+    .dm-channel { grid-template-columns: 1fr; gap: 6px; padding: 22px 22px; }
+    .dm-cf-shell .dm-cf-inner { padding: 36px 28px; }
+    .dm-cf-shell .dm-cf-head h2 { font-size: 24px; }
+  }
+  @media (max-width: 880px) {
+    .dm-office { padding: 26px 22px; }
+    .dm-office h3 { font-size: 22px; }
+    .dm-office .dm-office-grid { grid-template-columns: 1fr; gap: 6px 0; }
+    .dm-office .dm-office-grid dt { padding-top: 6px; }
+    .dm-cf-shell .dm-cf-inner { padding: 28px 22px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="dm-lead">
+  <span class="dm-eyebrow">{{ page_data.eyebrow }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="dm-intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="dm-offices">
+  <div class="dm-offices-head" data-lm="reveal-lg">
+    <div class="dm-sec-label">{{ page_data.offices_label }}</div>
+    <h2>{{ page_data.offices_heading|safe }}</h2>
+  </div>
+  <div class="dm-offices-grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for office in page_data.offices %}
+      <article class="dm-office" data-lm="reveal">
+        <h3>{{ office.name }}</h3>
+        <dl class="dm-office-grid">
+          <dt>{{ chrome.foot_contact }}</dt>
+          <dd>{{ office.address }}</dd>
+          <dt>Trasporti</dt>
+          <dd>{{ office.metro }}</dd>
+          <dt>{{ chrome.foot_hours }}</dt>
+          <dd>{{ office.hours }}</dd>
+          <dt>Telefono</dt>
+          <dd><a href="tel:{{ office.phone }}">{{ office.phone }}</a></dd>
+          <dt>Email</dt>
+          <dd><a href="mailto:{{ office.email }}">{{ office.email }}</a></dd>
+          <dt>Parcheggio</dt>
+          <dd>{{ office.parking }}</dd>
+        </dl>
+        <div class="dm-office-lead">{{ office.lead_agent }}</div>
+        <p class="dm-office-note">{{ office.note }}</p>
+        <div class="dm-office-actions">
+          <a href="tel:{{ office.phone }}" class="dm-office-action dm-office-call">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>{{ site.phone_label }}</span>
+          </a>
+          <a href="{{ office.whatsapp_href }}" target="_blank" rel="noopener" class="dm-office-action dm-office-wa">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <span>WhatsApp</span>
+          </a>
+          <a href="{{ office.map_href }}" target="_blank" rel="noopener" class="dm-office-action dm-office-map">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>{{ office.map_link }}</span>
+          </a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="dm-channels">
+  <div class="dm-channels-inner">
+    <div class="dm-channels-head" data-lm="reveal-lg">
+      <div class="dm-sec-label">{{ page_data.channels_label }}</div>
+      <h2>{{ page_data.channels_heading }}</h2>
+    </div>
+    <div class="dm-channels-list" data-lm-stagger data-lm-stagger-delay="60">
+      {% for name, value, meta in page_data.channels %}
+        <div class="dm-channel" data-lm="reveal">
+          <span class="dm-ch-name">{{ name }}</span>
+          <span class="dm-ch-val">{{ value }}</span>
+          <span class="dm-ch-meta">{{ meta }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="dm-cf-shell">
+  <div class="dm-cf-inner" data-lm="reveal">
+    <div class="dm-cf-head">
+      <div class="dm-sec-label">{{ page_data.form_label }}</div>
+      <h2>{{ page_data.form_heading }}</h2>
+      <p class="dm-cf-intro">{{ page_data.form_intro }}</p>
+    </div>
+
+    <form method="post" action="" enctype="multipart/form-data" novalidate class="lf-boxed">
+      {% for s in page_data.form_sections %}
+        <div class="lf-section">
+          <div class="lf-section-head">
+            <span class="lf-section-num">{{ s.num }} · {{ page_data.form_sections|length }}</span>
+            <span class="lf-section-title">{{ s.title }}</span>
+            {% if s.meta %}<span class="lf-section-meta">{{ s.meta }}</span>{% endif %}
+          </div>
+          {% for fname in s.fields %}
+            {% for f in page_data.form_fields %}{% if f.name == fname %}
+              <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+                <label class="lf-label" for="dm-cf-{{ f.name }}">{{ f.label }}{% if not f.required %}<span class="lf-opt">{{ chrome.form_optional|default:"Facoltativo" }}</span>{% endif %}</label>
+                {% if f.type == "textarea" %}
+                  <textarea class="lf-control" id="dm-cf-{{ f.name }}" name="{{ f.name }}" rows="5" placeholder="{{ f.placeholder|default:'' }}"{% if f.required %} required{% endif %}></textarea>
+                {% elif f.type == "select" %}
+                  <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder|default:'Seleziona…' }}">
+                    <select id="dm-cf-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                      <option value="" disabled selected>{{ chrome.form_select_placeholder|default:"Seleziona…" }}</option>
+                      {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                    </select>
+                  </div>
+                {% else %}
+                  <input class="lf-control" type="{{ f.type }}" id="dm-cf-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}"{% if f.required %} required{% endif %}>
+                {% endif %}
+                {% if f.helper %}<p class="lf-helper">{{ f.helper }}</p>{% endif %}
+              </div>
+            {% endif %}{% endfor %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="dm-consent-box">
+        <label class="lf-check">
+          <input type="checkbox" name="consent" required>
+          <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+          <span class="lf-check-text">{{ page_data.form_consent }}</span>
+        </label>
+      </div>
+
+      <div class="lf-submit-bar">
+        <button type="submit" class="lf-submit-primary">
+          <span>{{ page_data.form_submit_label }}</span>
+          <span class="lf-submit-arrow" aria-hidden="true">→</span>
+        </button>
+        {% if page_data.form_submit_note %}
+        <span class="lf-submit-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+          {{ page_data.form_submit_note }}
+        </span>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

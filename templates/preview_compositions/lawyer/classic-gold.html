@@ -1,0 +1,305 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: classic-gold   (lawyer DNA — Phase 2g3.7)
+   FOR     : established Italian law firms, forensic-notarile
+   MOOD    : deep ink + bordeaux + champagne gold, serif drama
+             with monogram crest + practice-area ledger + stats
+   HERO    : split-ledger-monogram — gold vertical rule + serif
+             headline + credit cells LEFT; monogram crest + meta
+             strip RIGHT
+   NAVBAR  : solid ink with gold crest + institutional phone tag
+   CARDS   : numbered practice-area ledger rows (01 02 03 04)
+   FOOTER  : ink stats band with tabular counter numerals
+
+   D-047 chrome-authoring contract:
+   - Zero literal brand strings. Everything flows from dna.content.*
+   - No hardcoded image URLs. All photos via {{ imagery.N }}
+   - No literal partner names, years, or brand references.
+============================================================ #}
+{% block extra_css %}
+  body { background: #f5f0e6; color: #14141f; }
+  .pv-frame { background: #f5f0e6; }
+
+  /* === TOP INK NAV with gold crest === */
+  .lx-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 72px;
+    display: flex; align-items: center; padding: 0 64px;
+    background: var(--primary); color: #f5f0e6;
+    z-index: 10;
+    border-bottom: 1px solid rgba(197,165,90,0.18);
+    box-shadow: 0 1px 0 rgba(197,165,90,0.08) inset;
+  }
+  .lx-nav .wm {
+    font-family: var(--heading); font-weight: 600; font-size: 22px;
+    letter-spacing: 0.01em; display: flex; align-items: center; gap: 16px;
+  }
+  .lx-nav .wm .crest {
+    width: 40px; height: 40px; border: 1.5px solid var(--accent);
+    color: var(--accent); display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 14px; font-family: var(--heading);
+    letter-spacing: 0.02em;
+    position: relative;
+  }
+  .lx-nav .wm .crest:before,
+  .lx-nav .wm .crest:after {
+    content: ''; position: absolute; width: 6px; height: 1px;
+    background: var(--accent); top: 50%;
+  }
+  .lx-nav .wm .crest:before { left: -10px; }
+  .lx-nav .wm .crest:after { right: -10px; }
+  .lx-nav .links {
+    display: flex; gap: 30px; margin-left: 68px;
+    font-family: var(--body); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: rgba(245,240,230,0.74);
+  }
+  .lx-nav .phone {
+    margin-left: auto; display: flex; align-items: center; gap: 18px;
+    font-family: var(--heading); font-size: 14px; font-weight: 500;
+    color: #f5f0e6;
+  }
+  .lx-nav .phone .tag {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid rgba(197,165,90,0.32);
+    padding: 6px 12px;
+  }
+
+  /* === HERO: split-ledger-monogram 55/45 === */
+  .lx-hero {
+    position: absolute; top: 72px; left: 0; right: 0; height: 490px;
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 0;
+    background: linear-gradient(180deg, #f5f0e6 0%, #ebe3d3 100%);
+  }
+  .lx-left {
+    padding: 68px 58px 0 108px; position: relative;
+  }
+  .lx-left:before {
+    content: ''; position: absolute; top: 72px; bottom: 38px; left: 72px;
+    width: 2px; background: var(--accent); opacity: 0.7;
+  }
+  .lx-left .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--primary);
+  }
+  .lx-left .eyebrow:before {
+    content: ''; width: 36px; height: 1.5px; background: var(--accent);
+  }
+  .lx-left h1 {
+    margin-top: 32px;
+    font-family: var(--heading); font-size: 72px; font-weight: 500;
+    line-height: 1.02; letter-spacing: -0.024em;
+    color: var(--primary); max-width: 580px;
+  }
+  .lx-left h1 em {
+    font-style: italic; color: {{ accent }}; font-weight: 500;
+  }
+  .lx-left .sub {
+    margin-top: 26px; max-width: 500px;
+    font-family: var(--body); font-size: 15px; line-height: 1.7;
+    color: #3a3a52;
+  }
+  .lx-left .credit-row {
+    position: absolute; left: 108px; right: 58px; bottom: 38px;
+    display: flex; gap: 52px; padding-top: 18px;
+    border-top: 1px solid rgba(20,20,31,0.14);
+  }
+  .lx-left .credit-row .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: #6b6b82;
+  }
+  .lx-left .credit-row .item strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 15px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 500;
+  }
+
+  .lx-right {
+    position: relative;
+    background:
+      radial-gradient(circle at 75% 20%, rgba(197,165,90,0.12), transparent 60%),
+      linear-gradient(160deg, #ebe3d3 0%, #f5f0e6 100%);
+    border-left: 1px solid rgba(20,20,31,0.12);
+    padding: 68px 56px 38px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .lx-right .mono-frame {
+    display: flex; justify-content: center; padding: 16px 0 30px;
+  }
+  .lx-right .mono-frame .mono {
+    width: 150px; height: 150px;
+    border: 1.5px solid var(--accent); color: var(--accent);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-weight: 500; font-size: 56px;
+    letter-spacing: 0.02em;
+    position: relative;
+  }
+  .lx-right .mono-frame .mono:before,
+  .lx-right .mono-frame .mono:after {
+    content: ''; position: absolute; width: 18px; height: 1px;
+    background: var(--accent); top: 50%;
+  }
+  .lx-right .mono-frame .mono:before { left: -24px; }
+  .lx-right .mono-frame .mono:after { right: -24px; }
+
+  .lx-right .meta-strip {
+    padding: 22px 0; display: flex; flex-direction: column; gap: 12px;
+    border-top: 1px solid rgba(20,20,31,0.12);
+    border-bottom: 1px solid rgba(20,20,31,0.12);
+  }
+  .lx-right .meta-strip .item {
+    display: grid; grid-template-columns: 0.7fr 1fr; gap: 16px; align-items: baseline;
+    padding: 4px 0;
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: #6b6b82;
+  }
+  .lx-right .meta-strip .item strong {
+    font-family: var(--heading); font-size: 15px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 500;
+  }
+
+  /* === PRACTICE-AREA LEDGER — 4 numbered rows === */
+  .lx-practice {
+    position: absolute; left: 64px; right: 64px; top: 582px;
+    display: flex; flex-direction: column;
+  }
+  .lx-practice .intro-row {
+    display: grid; grid-template-columns: 0.45fr 1fr; gap: 48px;
+    padding-bottom: 14px; border-bottom: 1px solid rgba(20,20,31,0.14);
+  }
+  .lx-practice .intro-row .label {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent);
+  }
+  .lx-practice .intro-row h3 {
+    margin-top: 8px;
+    font-family: var(--heading); font-size: 22px; font-weight: 500;
+    color: var(--primary); line-height: 1.15; max-width: 240px;
+  }
+  .lx-practice .rows {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px;
+  }
+  .lx-practice .rows .row {
+    display: grid; grid-template-columns: 56px 1fr;
+    gap: 20px; padding: 16px 0;
+    border-bottom: 1px solid rgba(20,20,31,0.1);
+    align-items: baseline;
+  }
+  .lx-practice .rows .row .num {
+    font-family: var(--heading); font-size: 14px; font-weight: 500;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .lx-practice .rows .row .title {
+    font-family: var(--heading); font-size: 19px; font-weight: 500;
+    color: var(--primary); line-height: 1.2;
+  }
+  .lx-practice .rows .row .blurb {
+    margin-top: 4px; grid-column: 2;
+    font-family: var(--body); font-size: 11px; line-height: 1.58;
+    color: #475569;
+  }
+
+  /* === BOTTOM STATS BAND OVER INK === */
+  .lx-stats {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 98px;
+    background: var(--primary); color: #f5f0e6;
+    padding: 0 72px;
+    display: grid; grid-template-columns: 1fr repeat(4, 1fr); gap: 0;
+    align-items: center;
+    border-top: 1px solid rgba(197,165,90,0.22);
+  }
+  .lx-stats .heading {
+    font-family: var(--heading); font-size: 15px; font-weight: 500;
+    color: #f5f0e6; max-width: 220px; line-height: 1.25;
+    padding-right: 28px; border-right: 1px solid rgba(197,165,90,0.24);
+  }
+  .lx-stats .heading:before {
+    content: ''; display: block; width: 30px; height: 1.5px;
+    background: var(--accent); margin-bottom: 10px;
+  }
+  .lx-stats .stat {
+    padding: 0 28px; border-right: 1px solid rgba(197,165,90,0.24);
+  }
+  .lx-stats .stat:last-child { border-right: 0; }
+  .lx-stats .stat .num {
+    font-family: var(--heading); font-size: 32px; font-weight: 500;
+    color: var(--accent); line-height: 1; letter-spacing: -0.02em;
+  }
+  .lx-stats .stat .lbl {
+    display: block; margin-top: 6px;
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(245,240,230,0.64);
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="lx-nav">
+    <div class="wm">
+      <span class="crest">{{ dna.content.monogram|default:brand_name|first }}</span>
+      <span>{{ brand_name }}</span>
+    </div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <div class="phone">
+      <span class="tag">{{ dna.content.nav_cta|default:"Segreteria" }}</span>
+      <span>{{ dna.content.phone }}</span>
+    </div>
+  </nav>
+
+  <section class="lx-hero">
+    <div class="lx-left">
+      <div class="eyebrow">{{ dna.content.eyebrow }}</div>
+      <h1>{{ dna.content.headline|safe }}</h1>
+      <p class="sub">{{ dna.content.subhead }}</p>
+      <div class="credit-row">
+        <div class="item">{{ dna.content.hero_credit_left.0 }}<strong>{{ dna.content.hero_credit_left.1 }}</strong></div>
+        <div class="item">{{ dna.content.hero_credit_right.0 }}<strong>{{ dna.content.hero_credit_right.1 }}</strong></div>
+      </div>
+    </div>
+    <div class="lx-right">
+      <div class="mono-frame">
+        <div class="mono">{{ dna.content.monogram|default:brand_name|first }}</div>
+      </div>
+      <div class="meta-strip">
+        {% for label, value in dna.content.meta_strip %}
+          <div class="item">{{ label }}<strong>{{ value }}</strong></div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="lx-practice">
+    <div class="intro-row">
+      <div>
+        <div class="label">{{ dna.content.practice_label }}</div>
+        <h3>{{ dna.content.practice_heading|safe }}</h3>
+      </div>
+    </div>
+    <div class="rows">
+      {% for num, title, blurb in dna.content.practice %}
+        <div class="row">
+          <div class="num">{{ num }}</div>
+          <div>
+            <div class="title">{{ title }}</div>
+            <p class="blurb">{{ blurb }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="lx-stats">
+    <div class="heading">{{ dna.content.stats_label }}</div>
+    {% for num, label in dna.content.stats %}
+      <div class="stat">
+        <div class="num">{{ num }}</div>
+        <span class="lbl">{{ label }}</span>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock %}

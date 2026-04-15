@@ -1,0 +1,369 @@
+{% extends "live_templates/real-estate/ultra-luxury-cinematic/_base.html" %}
+{% block extra_css %}
+  /* Lead */
+  .vp-std-lead { padding: 100px 56px 72px; max-width: 1100px; margin: 0 auto; border-bottom: 1px solid var(--rule); }
+  .vp-std-lead .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-std-lead .eyebrow:before {
+    content: ''; width: 28px; height: 1px; background: var(--champagne);
+  }
+  .vp-std-lead h1 {
+    margin-top: 28px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 84px; line-height: 0.98; letter-spacing: -0.028em; color: var(--bone);
+    max-width: 18ch;
+  }
+  .vp-std-lead .intro {
+    margin-top: 30px; max-width: 60ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.7; color: var(--bone-mute);
+  }
+
+  /* Director hero card */
+  .vp-director {
+    padding: 120px 56px; max-width: 1320px; margin: 0 auto;
+    display: grid; grid-template-columns: 420px 1fr; gap: 72px; align-items: center;
+    border-bottom: 1px solid var(--rule);
+  }
+  @media (max-width: 1000px) { .vp-director { grid-template-columns: 1fr; gap: 40px; } }
+  .vp-director .portrait {
+    width: 420px; height: 540px;
+    background: var(--ink-2) center/cover;
+    filter: grayscale(12%) contrast(1.10);
+    border: 1px solid var(--rule);
+  }
+  @media (max-width: 1000px) { .vp-director .portrait { width: 100%; height: 440px; } }
+  .vp-director .text .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-director .text h2 {
+    margin-top: 16px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; line-height: 1.04; color: var(--bone); letter-spacing: -0.018em;
+  }
+  .vp-director .text .role {
+    margin-top: 10px; font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-director .text p {
+    margin-top: 26px; max-width: 60ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.75; color: var(--bone-soft);
+  }
+  .vp-director .text blockquote {
+    margin-top: 32px; padding: 24px 28px; border-left: 2px solid var(--champagne);
+    font-family: var(--heading); font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--bone);
+  }
+  .vp-director .text .attribution {
+    margin-top: 16px; font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--champagne);
+  }
+
+  /* 4 private advisors */
+  .vp-advisors { padding: 100px 56px 60px; max-width: 1320px; margin: 0 auto; }
+  .vp-advisors .head { margin-bottom: 56px; max-width: 720px; }
+  .vp-advisors .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-advisors .head .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-advisors .head h2 {
+    margin-top: 22px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 52px; line-height: 1.04; color: var(--bone); max-width: 22ch;
+  }
+  .vp-advisors .head .intro {
+    margin-top: 22px; max-width: 62ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.7; color: var(--bone-mute);
+  }
+  .vp-advisors .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+  @media (max-width: 1000px) { .vp-advisors .grid { grid-template-columns: 1fr; gap: 28px; } }
+
+  .vp-advisor-card {
+    display: grid; grid-template-columns: 180px 1fr; gap: 28px;
+    padding: 28px;
+    background: var(--ink-2); border: 1px solid var(--rule);
+    align-items: start;
+  }
+  @media (max-width: 720px) { .vp-advisor-card { grid-template-columns: 1fr; } }
+  .vp-advisor-card .portrait {
+    width: 180px; height: 240px;
+    background: var(--ink-3) center/cover;
+    filter: grayscale(14%) contrast(1.08);
+  }
+  @media (max-width: 720px) { .vp-advisor-card .portrait { width: 100%; height: 280px; } }
+  .vp-advisor-card .body .name {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 28px; color: var(--bone); letter-spacing: -0.012em; line-height: 1.15;
+  }
+  .vp-advisor-card .body .role {
+    margin-top: 8px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-advisor-card .body .bio {
+    margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 14px; line-height: 1.7; color: var(--bone-mute);
+  }
+  .vp-advisor-card .body .row {
+    margin-top: 16px;
+    font-family: var(--body); font-size: 11px; color: var(--bone-mute);
+  }
+  .vp-advisor-card .body .row .k {
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--bone-faint); font-size: 9px; margin-right: 6px;
+  }
+  .vp-advisor-card .body .row .v {
+    font-family: var(--heading); font-style: italic; font-size: 14px;
+    color: var(--bone); letter-spacing: 0;
+  }
+
+  /* Partners ribbon */
+  .vp-partners { padding: 120px 56px; max-width: 1280px; margin: 0 auto; border-top: 1px solid var(--rule); }
+  .vp-partners .head { margin-bottom: 48px; max-width: 720px; }
+  .vp-partners .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-partners .head .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-partners .head h2 {
+    margin-top: 22px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 48px; line-height: 1.05; color: var(--bone); max-width: 22ch;
+  }
+  .vp-partners .head p {
+    margin-top: 22px; max-width: 62ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.7; color: var(--bone-mute);
+  }
+  .vp-partners .list {
+    display: grid; grid-template-columns: 1fr;
+    border-top: 1px solid var(--rule);
+  }
+  .vp-partners .list .row {
+    display: grid; grid-template-columns: 1fr 1.5fr; gap: 32px;
+    padding: 24px 0; border-bottom: 1px solid var(--rule); align-items: baseline;
+  }
+  @media (max-width: 1000px) { .vp-partners .list .row { grid-template-columns: 1fr; gap: 6px; } }
+  .vp-partners .list .row .name {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 22px; color: var(--champagne);
+  }
+  .vp-partners .list .row .role {
+    font-family: var(--body); font-size: 14px; color: var(--bone-mute);
+  }
+
+  /* Press */
+  .vp-press-list { padding: 100px 56px; max-width: 1320px; margin: 0 auto; border-top: 1px solid var(--rule); }
+  .vp-press-list .head { margin-bottom: 36px; max-width: 720px; }
+  .vp-press-list .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-press-list .head .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-press-list .head h2 {
+    margin-top: 22px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 44px; line-height: 1.05; color: var(--bone);
+  }
+  .vp-press-list .row {
+    display: grid; grid-template-columns: 1.4fr 0.6fr 2fr 1fr; gap: 32px;
+    padding: 24px 0; border-top: 1px solid var(--rule); align-items: baseline;
+    transition: background 400ms ease-out;
+  }
+  .vp-press-list .row:hover { background: rgba(201,169,110,0.04); }
+  .vp-press-list .row:last-child { border-bottom: 1px solid var(--rule); }
+  @media (max-width: 1000px) { .vp-press-list .row { grid-template-columns: 1fr; gap: 6px; padding: 20px 0; } }
+  .vp-press-list .magazine {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 22px;
+    color: var(--champagne);
+  }
+  .vp-press-list .issue {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-press-list .title {
+    font-family: var(--heading); font-style: italic; font-size: 17px;
+    color: var(--bone); line-height: 1.4;
+  }
+  .vp-press-list .byline {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--bone-faint);
+    text-align: right;
+  }
+  @media (max-width: 1000px) { .vp-press-list .byline { text-align: left; } }
+
+  /* Numbers */
+  .vp-std-numbers {
+    padding: 100px 56px; max-width: 1320px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
+  .vp-std-numbers .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+    margin-bottom: 36px;
+  }
+  .vp-std-numbers .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-std-numbers .grid {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    border-top: 1px solid var(--rule); border-left: 1px solid var(--rule);
+  }
+  @media (max-width: 1100px) { .vp-std-numbers .grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 720px)  { .vp-std-numbers .grid { grid-template-columns: repeat(2, 1fr); } }
+  .vp-std-numbers .stat {
+    border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule);
+    padding: 32px 28px;
+  }
+  .vp-std-numbers .stat .v {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 48px;
+    color: var(--champagne); line-height: 1; letter-spacing: -0.020em;
+    font-variant-numeric: tabular-nums;
+  }
+  .vp-std-numbers .stat .l {
+    margin-top: 12px; font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--bone-mute);
+  }
+
+  /* Visit CTA */
+  .vp-std-visit { padding: 140px 56px; background: #060606; border-top: 1px solid var(--rule); text-align: center; }
+  .vp-std-visit .inner { max-width: 1000px; margin: 0 auto; }
+  .vp-std-visit .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-std-visit h2 {
+    margin-top: 26px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; line-height: 1.04; letter-spacing: -0.022em; color: var(--bone);
+    max-width: 22ch; margin-left: auto; margin-right: auto;
+  }
+  .vp-std-visit p {
+    margin-top: 26px; max-width: 58ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.7; color: var(--bone-mute);
+    margin-left: auto; margin-right: auto;
+  }
+  .vp-std-visit .actions { margin-top: 44px; display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+
+  /* Mobile */
+  @media (max-width: 1000px) {
+    .vp-std-lead { padding: 72px 32px 56px; }
+    .vp-std-lead h1 { font-size: 56px; }
+    .vp-director { padding: 72px 32px; }
+    .vp-director .text h2 { font-size: 38px; }
+    .vp-advisors { padding: 56px 32px 48px; }
+    .vp-advisors .head h2 { font-size: 38px; }
+    .vp-partners { padding: 72px 32px; }
+    .vp-partners .head h2 { font-size: 36px; }
+    .vp-press-list { padding: 72px 32px; }
+    .vp-press-list .head h2 { font-size: 32px; }
+    .vp-std-numbers { padding: 72px 32px; }
+    .vp-std-numbers .stat { padding: 24px 20px; }
+    .vp-std-numbers .stat .v { font-size: 38px; }
+    .vp-std-visit { padding: 96px 32px; }
+    .vp-std-visit h2 { font-size: 36px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vp-std-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="vp-director" data-lm="reveal">
+  <div class="portrait" style="background-image:url('{{ page_data.director_portrait }}')"></div>
+  <div class="text">
+    <div class="lbl">{{ page_data.director_label }}</div>
+    <h2 data-latin>{{ page_data.director_name }}</h2>
+    <div class="role">{{ page_data.director_role }}</div>
+    <p>{{ page_data.director_text }}</p>
+    <blockquote>{{ page_data.director_quote }}</blockquote>
+    <div class="attribution" data-latin>{{ page_data.director_quote_attribution }}</div>
+  </div>
+</section>
+
+<section class="vp-advisors">
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ page_data.advisors_label }}</div>
+    <h2>{{ page_data.advisors_heading|safe }}</h2>
+    <p class="intro">{{ page_data.advisors_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="200">
+    {% for a in page_data.advisors %}
+      <article class="vp-advisor-card" data-lm="reveal">
+        <div class="portrait" style="background-image:url('{{ a.portrait }}')"></div>
+        <div class="body">
+          <div class="name" data-latin>{{ a.name }}</div>
+          <div class="role">{{ a.role }}</div>
+          <p class="bio">{{ a.bio }}</p>
+          <div class="row"><span class="k">{{ site.territorio_label }}</span><span class="v">{{ a.territories }}</span></div>
+          <div class="row"><span class="k">{{ site.referent_label }}</span><span class="v">{{ a.since }}</span></div>
+          <div class="row"><span class="k">{{ site.access_label }}</span><span class="v" data-latin>{{ a.langs }}</span></div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vp-partners">
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ page_data.partners_label }}</div>
+    <h2>{{ page_data.partners_heading|safe }}</h2>
+    <p>{{ page_data.partners_intro }}</p>
+  </div>
+  <div class="list" data-lm-stagger data-lm-stagger-delay="120">
+    {% for name, role in page_data.partners %}
+      <div class="row" data-lm="reveal">
+        <span class="name" data-latin>{{ name }}</span>
+        <span class="role">{{ role }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vp-press-list" data-lm-stagger>
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ page_data.press_label }}</div>
+    <h2>{{ page_data.press_heading|safe }}</h2>
+  </div>
+  {% for p in page_data.press_items %}
+    <div class="row" data-lm="reveal">
+      <span class="magazine" data-latin>{{ p.magazine }}</span>
+      <span class="issue">{{ p.issue }}</span>
+      <span class="title">{{ p.title }}</span>
+      <span class="byline" data-latin>{{ p.byline }}</span>
+    </div>
+  {% endfor %}
+</section>
+
+<section class="vp-std-numbers" data-lm="reveal">
+  <div class="lbl">{{ page_data.numbers_label }}</div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="150">
+    {% for k, v in page_data.numbers %}
+      <div class="stat" data-lm="reveal">
+        <div class="v vp-tabular" data-latin data-lm="counter" data-lm-to="{{ k }}">{{ k }}</div>
+        <div class="l">{{ v }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vp-std-visit" data-lm="reveal">
+  <div class="inner">
+    <div class="lbl">{{ page_data.visit_label }}</div>
+    <h2>{{ page_data.visit_heading|safe }}</h2>
+    <p>{{ page_data.visit_text }}</p>
+    <div class="actions">
+      <a class="vp-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.visit_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.visit_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

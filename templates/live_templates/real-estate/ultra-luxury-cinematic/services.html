@@ -1,0 +1,231 @@
+{% extends "live_templates/real-estate/ultra-luxury-cinematic/_base.html" %}
+{% block extra_css %}
+  /* Lead */
+  .vp-esp-lead { padding: 100px 56px 72px; max-width: 1100px; margin: 0 auto; border-bottom: 1px solid var(--rule); }
+  .vp-esp-lead .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-esp-lead .eyebrow:before {
+    content: ''; width: 28px; height: 1px; background: var(--champagne);
+  }
+  .vp-esp-lead h1 {
+    margin-top: 28px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 86px; line-height: 0.98; letter-spacing: -0.028em; color: var(--bone);
+    max-width: 16ch;
+  }
+  .vp-esp-lead .intro {
+    margin-top: 30px; max-width: 60ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.7; color: var(--bone-mute);
+  }
+
+  /* Process — 5 step numbered dossier entries */
+  .vp-process { padding: 120px 56px; max-width: 1280px; margin: 0 auto; }
+  .vp-process .head { margin-bottom: 72px; max-width: 720px; }
+  .vp-process .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-process .head .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-process .head h2 {
+    margin-top: 24px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 52px; line-height: 1.04; color: var(--bone); max-width: 20ch;
+  }
+  .vp-process .head .intro {
+    margin-top: 22px; max-width: 60ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.7; color: var(--bone-mute);
+  }
+
+  .vp-steps { display: grid; grid-template-columns: 1fr; gap: 0; }
+  .vp-step {
+    display: grid; grid-template-columns: 120px 1fr 220px;
+    gap: 48px; padding: 48px 0; align-items: baseline;
+    border-top: 1px solid var(--rule);
+  }
+  .vp-step:last-child { border-bottom: 1px solid var(--rule); }
+  @media (max-width: 1000px) { .vp-step { grid-template-columns: 80px 1fr; gap: 32px; } }
+  .vp-step .n {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 56px;
+    color: var(--champagne); line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .vp-step .body .title {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 32px; letter-spacing: -0.01em; color: var(--bone);
+    line-height: 1.15;
+  }
+  .vp-step .body .text {
+    margin-top: 18px; max-width: 58ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--bone-mute);
+  }
+  .vp-step .duration {
+    text-align: right;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-step .duration strong {
+    display: block; margin-top: 10px;
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 16px; color: var(--champagne); letter-spacing: 0; text-transform: none;
+  }
+  @media (max-width: 1000px) {
+    .vp-step .duration { grid-column: 2; text-align: left; margin-top: 10px; }
+  }
+
+  /* Testimonial */
+  .vp-testim {
+    padding: 140px 56px; background: #060606; border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+  .vp-testim .inner { max-width: 960px; margin: 0 auto; }
+  .vp-testim .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-testim .quote {
+    margin-top: 36px;
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 36px; line-height: 1.35; color: var(--bone);
+  }
+  .vp-testim .author {
+    margin-top: 30px; font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--bone-mute);
+  }
+
+  /* FAQ accordion */
+  .vp-faq { padding: 120px 56px 80px; max-width: 1100px; margin: 0 auto; }
+  .vp-faq .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+    margin-bottom: 36px;
+  }
+  .vp-faq .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-faq details {
+    padding: 26px 0; border-top: 1px solid var(--rule);
+  }
+  .vp-faq details:last-of-type { border-bottom: 1px solid var(--rule); }
+  .vp-faq summary {
+    cursor: pointer; list-style: none;
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 24px; color: var(--bone); gap: 24px;
+  }
+  .vp-faq summary::-webkit-details-marker { display: none; }
+  .vp-faq summary::after {
+    content: '+'; font-family: var(--heading); font-style: italic;
+    font-size: 30px; color: var(--champagne);
+    transition: transform .25s ease;
+  }
+  .vp-faq details[open] summary::after { content: '−'; }
+  .vp-faq details p {
+    margin-top: 18px;
+    font-family: var(--body); font-size: 15px; line-height: 1.75; color: var(--bone-mute);
+    max-width: 80ch;
+  }
+
+  /* Closing CTA */
+  .vp-esp-cta {
+    padding: 140px 56px; border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+  .vp-esp-cta .inner { max-width: 1000px; margin: 0 auto; }
+  .vp-esp-cta .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-esp-cta h2 {
+    margin-top: 26px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; line-height: 1.05; letter-spacing: -0.022em; color: var(--bone);
+    max-width: 22ch; margin-left: auto; margin-right: auto;
+  }
+  .vp-esp-cta p {
+    margin-top: 28px; max-width: 58ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.7; color: var(--bone-mute);
+    margin-left: auto; margin-right: auto;
+  }
+  .vp-esp-cta .actions {
+    margin-top: 44px; display: flex; align-items: center; justify-content: center;
+    gap: 28px; flex-wrap: wrap;
+  }
+
+  /* Mobile */
+  @media (max-width: 1000px) {
+    .vp-esp-lead { padding: 72px 32px 56px; }
+    .vp-esp-lead h1 { font-size: 56px; }
+    .vp-process { padding: 72px 32px; }
+    .vp-process .head h2 { font-size: 38px; }
+    .vp-step { padding: 32px 0; }
+    .vp-step .n { font-size: 44px; }
+    .vp-step .body .title { font-size: 26px; }
+    .vp-testim { padding: 96px 32px; }
+    .vp-testim .quote { font-size: 24px; }
+    .vp-faq { padding: 72px 32px 56px; }
+    .vp-faq summary { font-size: 19px; }
+    .vp-esp-cta { padding: 96px 32px; }
+    .vp-esp-cta h2 { font-size: 36px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vp-esp-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="vp-process">
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ page_data.process_label }}</div>
+    <h2>{{ page_data.process_heading|safe }}</h2>
+    <p class="intro">{{ page_data.process_intro }}</p>
+  </div>
+  <div class="vp-steps" data-lm-stagger data-lm-stagger-delay="180">
+    {% for s in page_data.process %}
+      <article class="vp-step" data-lm="reveal">
+        <div class="n vp-tabular">{{ s.n }}</div>
+        <div class="body">
+          <div class="title">{{ s.title }}</div>
+          <p class="text">{{ s.text }}</p>
+        </div>
+        <div class="duration">{{ s.duration }}<strong>·</strong></div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="vp-testim" data-lm="reveal">
+  <div class="inner">
+    <div class="lbl">{{ page_data.testimonial_label }}</div>
+    <p class="quote">{{ page_data.testimonial_text }}</p>
+    <div class="author" data-latin>{{ page_data.testimonial_author }}</div>
+  </div>
+</section>
+
+<section class="vp-faq" data-lm-stagger>
+  <div class="lbl">{{ page_data.faq_label }}</div>
+  {% for f in page_data.faq_items %}
+    <details data-lm="reveal">
+      <summary>{{ f.q }}</summary>
+      <p>{{ f.a }}</p>
+    </details>
+  {% endfor %}
+</section>
+
+<section class="vp-esp-cta" data-lm="reveal">
+  <div class="inner">
+    <div class="lbl">{{ page_data.cta_label }}</div>
+    <h2>{{ page_data.cta_heading|safe }}</h2>
+    <p>{{ page_data.cta_text }}</p>
+    <div class="actions">
+      <a class="vp-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

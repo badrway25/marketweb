@@ -1361,3 +1361,103 @@ The three new siblings are also the first formal test of D-054's 10-gate law aga
 **Trade-off.** The rollout adds ~21,000 LOC (skin + IT + locales) to the repo. This is linear growth per template (~7k LOC per template including locales) and matches the Session 41 eCommerce + Session 48 Restaurant + Session 49 Agency precedents. The review surface scales linearly too — each translator sub-agent reviewed exactly their own template × 4 locales. Parallel authoring via sub-agents compressed the wall clock from an estimated ~16h sequential to ~4h.
 
 **Consequences.** (a) Phase 2g3.2 closes. (b) Medical category is 5/5 live; the remaining identity-crash categories (lawyer, real-estate) are now the sole blockers for the 20/20 milestone. (c) CATEGORY_ROADMAP.md status matrix updates to show medical fully CHIUSA. (d) `smoke_full.py` now covers 660 routes (was 530). (e) TEMPLATE_REGISTRY.json crosses 16 templates with full tier_reason D-054 notes. (f) Phase 3 (auth + checkout + editor + projects + commerce front-stage completion) unblocks only after lawyer + real-estate close in Phase 2g3.6. (g) Any future medical template (e.g. a second clinic template like `poliambulatorio-napoli`, a second wellness like `terme-ischia`, a second family like `pediatria-milano`) can reuse the existing 3 skin folders with zero new HTML — proving the D-047 + D-054 reuse model for N≥3 siblings per archetype.
+
+
+---
+
+## D-082 — Lawyer + Real-Estate Live Rollout · CATALOG COMPLETE 20/20 (2026-04-15, Session 53)
+
+**Phase 2g3.7 — lawyer + real-estate live rollout — CLOSED.** Final wave of the draft-tier → published_live arc started Session 20 (D-053/D-054/D-055). Lex (`lex-studio-legale` → classic-gold), Juris (`juris-avvocato-moderno` → modern-transparent), Casa (`casa-agenzia-immobiliare` → mass-market), Villa (`villa-immobili-lusso` → ultra-luxury-cinematic) all flipped from `tier=draft` to `tier=published_live` with full multi-page live skins + 5-locale native-voice content trees + real RTL for Arabic + Pexels imagery pools + sharp D-054 differentiation enforced on all sibling pairs.
+
+**Catalog now 20/20 published_live.** No draft slugs remain. Phase 3 unblock gate is MET.
+
+### Archetypes introduced
+
+1. **classic-gold** (lawyer forensic-notarile) — split-ledger-monogram hero with gold vertical rule + serif drama + LF monogram crest; numbered practice-area ledger; partner portrait cards (typographic-led monogram stamps); publications marquee; private-consultation CTA. Font pairing Cormorant Garamond + Inter. Palette ink #1A1A2E + gold #C5A55A + bordeaux #8B0000. Conversion `private-consultation` — ghost serif "Richiedi una consulenza riservata", direct email to managing partner, no public calendar.
+
+2. **modern-transparent** (lawyer advisory-modern) — centered-advisory-manifesto hero (NO big hero photo — headline is the hero, Elevate/Chiara tradition); 6-cell sector grid; 3-step process sprint (S.01/S.02/S.03); outcome metric band with counter animation; next-slot chip; insights strip. Font pairing DM Sans + Inter. Palette slate #2D3748 + confident blue #4299E1 + yellow #ECC94B. Conversion `strategy-call` — blue pill CTA + online calendar + 3-step intake.
+
+3. **mass-market** (real-estate market-approachable) — search-listings-grid hero with cover photo + translucent search widget (location/type/price/rooms) + 4-up tile grid (property-tile-specs: photo + price chip + title + addr + camere/m²/bagni + Visita); neighborhood guides; agent portrait strip with WhatsApp; valuation CTA "Quanto vale casa tua?". Font pairing Poppins + Inter. Palette navy #1B2838 + emerald #2ECC71 + orange #E67E22. Conversion `viewing-request` — square primary CTA + property reference + agent phone + WhatsApp pill.
+
+4. **ultra-luxury-cinematic** (real-estate editorial-concierge) — fullbleed-editorial-cover hero with dominant photo + champagne serif wordmark + location eyebrow + editorial credit cells (`N° 03 / 18`); 2-up property dossier cards (NOT tile grid — Villa NEVER collapses into Casa); territory ribbon (Portofino · Chianti · Costa Smeralda · Saint-Tropez · Capri · Val d'Orcia); private advisor block; press ribbon. Font pairing Cormorant Garamond + Montserrat. Palette black #0A0A0A + champagne #C9A96E + white. Conversion `private-viewing` — ghost champagne CTA + NDA acknowledgement + dossier download.
+
+A hypothetical 5th law firm or 3rd real-estate can ship with ONLY a seed row + DNA entry + content block + 5 locale trees. **Zero new HTML needed per archetype.**
+
+### D-054 10-gate differentiation — every sibling pair passes
+
+**Lex ↔ Juris (lawyer):** Cormorant serif drama ↔ DM Sans kinetic sans · ink+gold+bordeaux ↔ slate+blue+yellow · dark ink editorial background ↔ bright white advisory · solid ledger nav with monogram crest ↔ floating pill nav · split-ledger-monogram hero ↔ centered-manifesto with no photo · numbered practice ledger ↔ sector pill grid + sprint console · heritage 62 anni ↔ tech-forward 2018 boutique · serif "consulenza riservata" ↔ blue pill "strategy call" · lawyer-classic imagery (heritage ink) ↔ lawyer-modern imagery (bright collaborative).
+
+**Casa ↔ Villa (real-estate):** Poppins geometric ↔ Cormorant editorial · navy+emerald+orange daylight ↔ black+champagne+white cinematic · bright lived-in background ↔ dark golden-hour rarefied · cover-search transparent nav ↔ cinematic-dark transparent nav · search-widget-over-cover hero ↔ fullbleed dominant photo hero · property-tile-specs (camere/m²/bagni) ↔ property-dossier (territorio/superficie/provenance) · "Cerca immobile" + WhatsApp ↔ "Private viewing" + NDA · Italian urban Brera/Navigli ↔ Continental Portofino/Saint-Tropez · visible prices €420K-€1.25M ↔ hidden "Prezzo su richiesta".
+
+**Lex/Juris ↔ Pragma/Elevate (lawyer ↔ business):** Lex's forensic ledger ≠ Pragma's advisory pillars; Juris's strategic sprint ≠ Elevate's ship-log; font pairings fully distinct; imagery pools fully distinct (lawyer-classic/lawyer-modern vs business-corporate/business-startup).
+
+**Casa/Villa ↔ Bottega/Luxe (real-estate ↔ ecommerce):** Casa/Villa have NO shop/cart/PDP/product routes; Casa tile grid ≠ Bottega labeled-cards; Villa property dossier ≠ Luxe fashion editorial; territorio/superficie/provenance ≠ silhouette/tessuto/drop; private-viewing NDA ≠ private-request atelier.
+
+### D-047 leak-free
+
+32 new skin HTML files (8 per archetype × 4 archetypes) + 4 preview compositions: every visible string flows from `{{ page_data.* }}` / `{{ site.* }}` / `{{ chrome.* }}` / `{{ dna.content.* }}` / `{% for %}` loops, OR is a CSS rule, OR is a generic archetype label. Zero brand literals (Ferri, Martini, Domus, Villa Prestige, Roma, Milano, Portofino, Via Piemonte, property names, partner names) hardcoded in HTML.
+
+### Real i18n, native voice per register
+
+16 locale files (4 templates × 4 non-IT locales):
+
+- **Lex**: Slaughter-and-May institutional EN · Gide/Bredin Prat cabinet FR · Garrigues/Cuatrecasas despacho ES · Al Tamimi/Baker McKenzie MENA desk MSA AR
+- **Juris**: Kirkland Startups/Orrick/Gunderson Dettmer EN · Bredin Prat VC FR · Cuatrecasas Startups/Legal Uoolu ES · Al Tamimi tech desk AR
+- **Casa**: Foxtons/Knight Frank residential UK EN · Barnes/Century 21 France FR · Engel & Völkers Spain/Solvia ES · Emirates Living/Better Homes MSA AR
+- **Villa**: FT How to Spend It/Monocle Estates/Sotheby's editorial EN · Le Figaro Propriétés/Emile Garcin FR · Vanity Fair Spain Propiedades/Savills España ES · Robb Report ME/Esquire ME Property MSA AR
+
+Italian proper names (Studio Legale Ferri, Avv. Prof. Alberto Ferri, Martini & Partners, Avv. Giorgia Martini, Domus Immobiliare, Villa Prestige, Alessandra Visconti di Modrone, Via Piemonte 39, Via Solferino 40, Villa Aurelia, Castello di Monterò, Portofino, Chianti, all 14 lawyer names, 9 agent names, 4 private advisor names) preserved verbatim across all non-IT locales. Page slugs stay Italian (URL-canonical). Only `label` fields change per locale.
+
+### Pexels 4 disjoint pools
+
+`lawyer-classic` (leather Corpus Juris, senior-partner desk, studio library — ink heritage) · `lawyer-modern` (bright modern meetings, diverse professionals, glass offices — collaborative) · `realestate-casa` (bright urban apartments, family homes, modern living rooms — daylight attainable) · `realestate-villa` (cinematic luxury villas at golden hour, editorial interiors, architectural details — rarefied). 6 URLs per pool, zero overlap across pools, zero overlap with legacy `lawyer` / `real-estate` pools (preserved per D-036 additive rule).
+
+### D-081 dynamic counter policy
+
+- **Lex** stats ("62 anni · 14 avvocati · 2.400+ cause · 96% esito") — `data-lm="counter"` on every numeric span
+- **Juris** metric strip ("180+ aziende · 14 gg · 4.9★ · € 0 setup fee") — `data-lm="counter"` on all 4
+- **Casa** stats ("600+ immobili · 2.800+ case · 20 anni · 4.8★") — all 4
+- **Villa** discreet stats ("Dal 1998 · 26 anni · 42 dimore · 150 family office") — counter on all; "Prezzo su richiesta" stays static (editorial tone disqualifies animating a non-price signal)
+
+### Validation
+
+- `python manage.py check` — clean
+- `python manage.py migrate` + `seed_categories` + `seed_templates` + `sync_template_tiers` — **20 published_live / 0 draft** ✅ 20/20 milestone
+- `generate_previews --force --only <slug>` — 4 new PNGs rendered under `template_assets/2026/04/`
+- **Full smoke: `python smoke_full.py` → 834/834 HTTP 200** (baseline 660 + 174 new routes). Zero regression on the 16 pre-existing live templates.
+- **Browser walk via Playwright at 1440×900:**
+  - Lex IT split-ledger-monogram hero + "Competenza, *riservatezza*, risultati." ✓
+  - Lex EN `/preview/?lang=en` native "Competence, *discretion*, results." ✓
+  - Lex AR `/preview/pratiche/?lang=ar` RTL flipped + "اثنا عشر اختصاصًا، توقيع واحد." ✓
+  - Juris FR `/preview/?lang=fr` native "Le droit, *de votre côté.*" ✓
+  - Juris IT home manifesto + sector grid + next-slot chip ✓
+  - Casa ES `/preview/?lang=es` native "La casa de tus *sueños*, más cerca de lo que crees." + search widget translated ✓
+  - Casa FR `/preview/immobili/attico-brera-duomo/?lang=fr` "Penthouse panoramique avec terrasse · Brera" + "1 250 000 €" ✓
+  - Casa AR home RTL + search widget "أخبرنا عن الحي وندع التفاصيل بأيدينا" + "ابحث عن عقار" orange CTA ✓
+  - Villa AR RTL + champagne "Villa Prestige" wordmark + "منازل ذات توقيع، لمن يُحسن قراءتها." ✓
+  - Villa EN `/preview/collezione/villa-aurelia-portofino/?lang=en` dossier page "Villa Aurelia — a 1922 historic residence" ✓
+
+### Alternatives rejected
+
+- Rollout as "draft-with-preview-only" — D-055 binary tier model.
+- Share `specialist` skin for Lex — D-054 distinct silhouettes; Lex needs split-ledger-monogram, not editorial-pull-quote.
+- Share `corporate-suite` skin for Juris — wrong macro tone (institutional serif vs modern sans).
+- Skip `property_detail` for Casa/Villa — D-053 baseline real-estate = 5 pages + 1 detail.
+- Translate Italian proper names — D-072 precedent: proper names stay Italian across EN/FR/ES/AR.
+- Ambient video on Villa — editorial-concierge register reads better as still photography + micro-motion than reel-style video. Can be added later as opt-in.
+- Run `generate_previews` without `--force` — Session 11/15/50 precedent: ALWAYS `--force` after DNA change.
+
+### Trade-off
+
+The rollout adds ~38,700 LOC (skin + IT + locales + preview compositions). Linear growth per template (~9,500 LOC each including 5 locales). Parallel sub-agent authoring (4 template implementers + 4 translators = 8 agents) compressed wall-clock from ~32h sequential to ~6h.
+
+### Consequences
+
+(a) Phase 2g3.7 closes — **Lawyer CHIUSA, Real-Estate CHIUSA**.
+(b) **Catalog is 20/20 published_live** — no draft slugs remain.
+(c) 4 new archetypes join the existing 14 as reusable. Future template seeding is now content-only (no new HTML per archetype).
+(d) `smoke_full.py` covers 834 routes. Zero regression across all 20.
+(e) `TEMPLATE_REGISTRY.json` — all 20 templates flagged `tier=published_live` with D-054-referenced tier_reason blocks.
+(f) **Phase 3 unblock gate MET.** Phase 3 (auth/checkout/editor/projects/commerce front-stage completion) is now unblocked.
+(g) All 8 MVP categories (agency · business · ecommerce · medical · portfolio · restaurant · lawyer · real-estate) show CHIUSA with N ≥ 2 live siblings.
+(h) D-047/D-054/D-055/D-057/D-063/D-066/D-069/D-072/D-077/D-081 all satisfied prospectively.

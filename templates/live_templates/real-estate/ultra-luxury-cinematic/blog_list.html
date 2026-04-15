@@ -1,0 +1,275 @@
+{% extends "live_templates/real-estate/ultra-luxury-cinematic/_base.html" %}
+{% block extra_css %}
+  /* Lead */
+  .vp-col-lead { padding: 100px 56px 56px; max-width: 1280px; margin: 0 auto; }
+  .vp-col-lead .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-col-lead .eyebrow:before {
+    content: ''; width: 28px; height: 1px; background: var(--champagne);
+  }
+  .vp-col-lead h1 {
+    margin-top: 28px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 92px; line-height: 0.96; letter-spacing: -0.028em; color: var(--bone);
+    max-width: 18ch;
+  }
+  .vp-col-lead .intro {
+    margin-top: 30px; max-width: 62ch;
+    font-family: var(--body); font-size: 17px; line-height: 1.7; color: var(--bone-mute);
+  }
+
+  /* Filters bar */
+  .vp-col-filters {
+    max-width: 1280px; margin: 40px auto 0; padding: 0 56px 32px;
+    border-bottom: 1px solid var(--rule);
+    display: grid; grid-template-columns: auto 1fr auto; gap: 32px; align-items: end;
+  }
+  @media (max-width: 1000px) { .vp-col-filters { grid-template-columns: 1fr; gap: 18px; } }
+  .vp-col-filters .filter-group { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .vp-col-filters .fg-lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+    margin-right: 4px;
+  }
+  .vp-col-filters .opt {
+    padding: 8px 14px; border: 1px solid var(--rule);
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--bone-mute);
+    cursor: default;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .vp-col-filters .opt:hover { color: var(--champagne); border-color: var(--champagne); }
+  .vp-col-filters .opt.is-current { color: var(--champagne); border-color: var(--champagne); background: rgba(201,169,110,0.06); }
+
+  .vp-col-meta {
+    max-width: 1280px; margin: 32px auto 0; padding: 0 56px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 24px;
+    flex-wrap: wrap;
+  }
+  .vp-col-meta .count {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 22px;
+    color: var(--bone);
+  }
+  .vp-col-meta .subtitle {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--bone-faint);
+  }
+
+  /* Lead dossier — full-bleed editorial */
+  .vp-col-lead-dossier {
+    max-width: 1280px; margin: 56px auto 0; padding: 0 56px 0;
+  }
+  .vp-col-lead-dossier .card {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 56px; align-items: center;
+    border: 1px solid var(--rule); background: var(--ink-2);
+  }
+  @media (max-width: 1000px) { .vp-col-lead-dossier .card { grid-template-columns: 1fr; gap: 32px; } }
+  .vp-col-lead-dossier .card .img {
+    aspect-ratio: 4 / 3;
+    background: var(--ink-3) center/cover;
+    filter: grayscale(10%) contrast(1.10) brightness(0.88);
+  }
+  .vp-col-lead-dossier .card .body { padding: 44px 48px 48px; }
+  @media (max-width: 1000px) { .vp-col-lead-dossier .card .body { padding: 28px; } }
+  .vp-col-lead-dossier .card .kicker {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-col-lead-dossier .card h2 {
+    margin-top: 16px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 48px; line-height: 1.05; letter-spacing: -0.016em; color: var(--bone);
+  }
+  .vp-col-lead-dossier .card h2 a { color: inherit; }
+  .vp-col-lead-dossier .card h2 a:hover { color: var(--champagne); }
+  .vp-col-lead-dossier .card .lede {
+    margin-top: 22px; max-width: 54ch;
+    font-family: var(--heading); font-style: italic; font-size: 19px; line-height: 1.55;
+    color: var(--bone-soft);
+  }
+  .vp-col-lead-dossier .card .meta {
+    margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 11px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-col-lead-dossier .card .meta strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 15px;
+    color: var(--champagne); letter-spacing: 0; text-transform: none;
+  }
+  .vp-col-lead-dossier .card .read {
+    margin-top: 26px; display: inline-flex; align-items: center; gap: 14px;
+    padding-bottom: 5px; border-bottom: 1px solid var(--champagne);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--champagne);
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .vp-col-lead-dossier .card .read:hover { color: var(--bone); border-color: var(--bone); }
+  .vp-col-lead-dossier .card .read:after {
+    content: '→'; font-family: var(--heading); font-style: italic; font-size: 16px;
+  }
+
+  /* 2-up dossier grid for remaining posts */
+  .vp-col-grid {
+    max-width: 1280px; margin: 72px auto 0; padding: 0 56px 120px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 48px;
+  }
+  @media (max-width: 1000px) { .vp-col-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+  .vp-col-dossier {
+    display: grid; grid-template-columns: 1fr;
+    border: 1px solid var(--rule);
+    background: var(--ink-2);
+    overflow: hidden;
+    transition: border-color 500ms ease-out;
+  }
+  .vp-col-dossier:hover { border-color: var(--champagne); }
+  .vp-col-dossier .img {
+    aspect-ratio: 3 / 2;
+    background: var(--ink-3) center/cover;
+    filter: grayscale(10%) contrast(1.08) brightness(0.88);
+    transition: filter 900ms ease-out;
+  }
+  .vp-col-dossier:hover .img { filter: grayscale(0%) contrast(1.12); }
+  .vp-col-dossier .body { padding: 32px 32px 36px; }
+  .vp-col-dossier .body .kicker {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-col-dossier .body h3 {
+    margin-top: 16px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 32px; line-height: 1.08; letter-spacing: -0.012em; color: var(--bone);
+  }
+  .vp-col-dossier .body h3 a { color: inherit; }
+  .vp-col-dossier .body h3 a:hover { color: var(--champagne); }
+  .vp-col-dossier .body .lede {
+    margin-top: 16px; max-width: 52ch;
+    font-family: var(--body); font-size: 14px; line-height: 1.7; color: var(--bone-mute);
+  }
+  .vp-col-dossier .body .meta-rows {
+    margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 130px 1fr; gap: 8px 16px;
+    font-family: var(--body); font-size: 11px; color: var(--bone-mute);
+  }
+  .vp-col-dossier .body .meta-rows .k {
+    font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--bone-faint); font-size: 9px;
+  }
+  .vp-col-dossier .body .meta-rows .v {
+    font-family: var(--heading); font-style: italic; font-size: 14px;
+    color: var(--bone);
+  }
+  .vp-col-dossier .body .read {
+    margin-top: 24px; display: inline-flex; align-items: center; gap: 12px;
+    padding-bottom: 4px; border-bottom: 1px solid var(--champagne);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-col-dossier .body .read:after {
+    content: '→'; font-family: var(--heading); font-style: italic; font-size: 16px;
+  }
+  .vp-col-dossier .body .read:hover { color: var(--bone); border-color: var(--bone); }
+
+  /* Footer note */
+  .vp-col-foot-note {
+    max-width: 1100px; margin: 40px auto 0; padding: 48px 56px 120px;
+    border-top: 1px solid var(--rule);
+  }
+  .vp-col-foot-note .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-col-foot-note .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-col-foot-note p {
+    margin-top: 22px; max-width: 70ch;
+    font-family: var(--heading); font-style: italic; font-size: 17px; line-height: 1.65;
+    color: var(--bone-mute);
+  }
+
+  /* Mobile */
+  @media (max-width: 1000px) {
+    .vp-col-lead { padding: 72px 32px 40px; }
+    .vp-col-lead h1 { font-size: 56px; }
+    .vp-col-filters { padding: 0 32px 24px; }
+    .vp-col-meta { padding: 0 32px; }
+    .vp-col-lead-dossier { padding: 0 32px; margin-top: 40px; }
+    .vp-col-lead-dossier .card h2 { font-size: 36px; }
+    .vp-col-lead-dossier .card .lede { font-size: 17px; }
+    .vp-col-grid { padding: 0 32px 72px; margin-top: 48px; }
+    .vp-col-dossier .body { padding: 24px 24px 28px; }
+    .vp-col-dossier .body h3 { font-size: 26px; }
+    .vp-col-foot-note { padding: 32px 32px 72px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="vp-col-lead" data-lm="reveal">
+  <div class="eyebrow">{{ page_data.eyebrow }}</div>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="vp-col-filters" data-lm="reveal">
+  {% for g in page_data.filter_groups %}
+    <div class="filter-group">
+      <span class="fg-lbl">{{ g.label }}</span>
+      {% for opt in g.options %}
+        <span class="opt{% if forloop.first %} is-current{% endif %}">{{ opt }}</span>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</section>
+
+<div class="vp-col-meta" data-lm="reveal">
+  <span class="count">{{ page_data.result_count }}</span>
+  <span class="subtitle">{{ page_data.result_subtitle }}</span>
+</div>
+
+{% with first_post=posts.0 %}
+<section class="vp-col-lead-dossier" data-lm="reveal">
+  <article class="card">
+    <div class="img" style="background-image:url('{{ page_data.lead_image|default:first_post.image }}')"></div>
+    <div class="body">
+      <div class="kicker">{{ first_post.kicker }}</div>
+      <h2><a href="{% url 'catalog:live_template_post' template.category.slug template.slug blog_parent_slug first_post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ first_post.title }}</a></h2>
+      <p class="lede">{{ first_post.lede }}</p>
+      <div class="meta">
+        {{ first_post.date }} · {{ first_post.read_min }} {{ chrome.blog_read_minutes }}
+        <strong data-latin>{{ first_post.author }}</strong>
+      </div>
+      <a class="read" href="{% url 'catalog:live_template_post' template.category.slug template.slug blog_parent_slug first_post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.blog_read_full }}</a>
+    </div>
+  </article>
+</section>
+{% endwith %}
+
+<section class="vp-col-grid" data-lm-stagger data-lm-stagger-delay="180">
+  {% for p in posts %}
+    {% if not forloop.first %}
+      <article class="vp-col-dossier" data-lm="reveal">
+        <div class="img" style="background-image:url('{{ p.image }}')"></div>
+        <div class="body">
+          <div class="kicker">{{ p.kicker }}</div>
+          <h3><a href="{% url 'catalog:live_template_post' template.category.slug template.slug blog_parent_slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.title }}</a></h3>
+          <p class="lede">{{ p.lede }}</p>
+          <div class="meta-rows">
+            {% for k, v in p.meta_rows|slice:":3" %}
+              <span class="k">{{ k }}</span><span class="v" data-latin>{{ v }}</span>
+            {% endfor %}
+          </div>
+          <a class="read" href="{% url 'catalog:live_template_post' template.category.slug template.slug blog_parent_slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.blog_read_article }}</a>
+        </div>
+      </article>
+    {% endif %}
+  {% endfor %}
+</section>
+
+<section class="vp-col-foot-note" data-lm="reveal">
+  <div class="lbl">{{ page_data.footer_note_label }}</div>
+  <p>{{ page_data.footer_note }}</p>
+</section>
+{% endblock %}

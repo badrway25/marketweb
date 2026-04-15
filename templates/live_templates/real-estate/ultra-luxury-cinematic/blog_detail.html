@@ -1,0 +1,341 @@
+{% extends "live_templates/real-estate/ultra-luxury-cinematic/_base.html" %}
+{% block extra_css %}
+  /* Breadcrumbs */
+  .vp-dd-crumbs {
+    max-width: 1100px; margin: 0 auto; padding: 32px 56px 0;
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-dd-crumbs a {
+    color: var(--champagne); border-bottom: 1px solid var(--champagne); padding-bottom: 1px;
+  }
+  .vp-dd-crumbs span { color: var(--bone-mute); }
+
+  /* Hero image */
+  .vp-dd-hero {
+    position: relative; margin-top: 32px;
+    height: 520px;
+    background: var(--ink-2) center/cover;
+    filter: grayscale(10%) contrast(1.08) brightness(0.88);
+    overflow: hidden;
+  }
+  .vp-dd-hero::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(10,10,10,0) 50%, rgba(10,10,10,0.85) 100%);
+  }
+
+  /* Article head — title + location + meta */
+  .vp-dd-head { max-width: 1100px; margin: -120px auto 0; padding: 0 56px;
+    position: relative; z-index: 2; }
+  .vp-dd-head .kicker {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--champagne);
+    background: rgba(10,10,10,0.82);
+    padding: 12px 20px; display: inline-block;
+    border: 1px solid var(--champagne);
+  }
+  .vp-dd-head h1 {
+    margin-top: 36px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 78px; line-height: 0.98; letter-spacing: -0.028em; color: var(--bone);
+    max-width: 20ch;
+  }
+  .vp-dd-head .attribution {
+    margin-top: 24px;
+    display: flex; gap: 28px; align-items: center; flex-wrap: wrap;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-dd-head .attribution strong {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 16px;
+    color: var(--champagne); letter-spacing: 0; text-transform: none;
+  }
+
+  /* Meta block — property dossier */
+  .vp-dd-meta {
+    max-width: 1100px; margin: 64px auto 0; padding: 40px 56px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 22px 48px;
+  }
+  @media (max-width: 720px) { .vp-dd-meta { grid-template-columns: 1fr; padding: 32px 32px; } }
+  .vp-dd-meta .row {
+    display: grid; grid-template-columns: 140px 1fr; gap: 20px;
+    padding: 12px 0; border-bottom: 1px solid var(--rule-soft);
+    align-items: baseline;
+  }
+  .vp-dd-meta .row:last-child { border-bottom: 0; }
+  .vp-dd-meta .row .k {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-faint);
+  }
+  .vp-dd-meta .row .v {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 17px;
+    color: var(--bone); letter-spacing: 0;
+  }
+
+  /* Body */
+  .vp-dd-article { max-width: 800px; margin: 0 auto; padding: 80px 56px 60px; }
+  .vp-dd-article .lede {
+    font-family: var(--heading); font-style: italic; font-size: 24px; line-height: 1.55;
+    color: var(--bone); max-width: 34ch;
+  }
+  .vp-dd-article .lede:first-letter {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 96px;
+    color: var(--champagne); float: left; line-height: 0.85;
+    padding: 6px 16px 0 0;
+  }
+  .vp-dd-article .body { margin-top: 56px; }
+  .vp-dd-article .body p {
+    margin-bottom: 26px;
+    font-family: var(--body); font-size: 17px; line-height: 1.8; color: var(--bone-soft);
+    max-width: 64ch;
+  }
+  .vp-dd-article .body h2 {
+    margin-top: 56px; margin-bottom: 22px;
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 36px;
+    color: var(--champagne); line-height: 1.15;
+  }
+  .vp-dd-article .body ol {
+    margin-bottom: 28px; padding-left: 22px; counter-reset: item;
+    list-style: none;
+  }
+  .vp-dd-article .body ol li {
+    position: relative; padding: 8px 0 8px 34px;
+    font-family: var(--body); font-size: 15px; line-height: 1.75; color: var(--bone-soft);
+    counter-increment: item;
+  }
+  .vp-dd-article .body ol li:before {
+    content: counter(item, decimal-leading-zero);
+    position: absolute; left: 0; top: 8px;
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 15px;
+    color: var(--champagne);
+    font-variant-numeric: tabular-nums;
+  }
+  .vp-dd-article .body blockquote {
+    margin: 44px 0; padding: 28px 36px;
+    border-left: 2px solid var(--champagne);
+    font-family: var(--heading); font-style: italic; font-size: 24px; line-height: 1.5;
+    color: var(--bone); max-width: 56ch;
+  }
+
+  /* Private-viewing request form */
+  .vp-dd-form-wrap {
+    max-width: 1100px; margin: 0 auto; padding: 80px 56px 120px;
+    border-top: 1px solid var(--rule);
+  }
+  .vp-dd-form-wrap .head { max-width: 620px; margin-bottom: 44px; }
+  .vp-dd-form-wrap .head .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--champagne);
+  }
+  .vp-dd-form-wrap .head .lbl:before {
+    content: ''; display: inline-block; width: 28px; height: 1px;
+    background: var(--champagne); margin-right: 16px; vertical-align: middle;
+  }
+  .vp-dd-form-wrap .head h2 {
+    margin-top: 22px; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 40px; line-height: 1.08; color: var(--bone); max-width: 20ch;
+  }
+  .vp-dd-form-wrap .head p {
+    margin-top: 20px; font-family: var(--body); font-size: 15px; line-height: 1.7;
+    color: var(--bone-mute); max-width: 56ch;
+  }
+
+  .vp-form {
+    padding: 36px 36px;
+    border: 1px solid var(--champagne); background: rgba(255,255,255,0.02);
+    max-width: 780px;
+  }
+  .vp-form .lf-helper-required {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--bone-faint);
+    margin-bottom: 22px;
+  }
+  .vp-form .lf-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 16px;
+  }
+  @media (max-width: 720px) { .vp-form .lf-row { grid-template-columns: 1fr; } }
+  .vp-form .lf-field { margin-bottom: 18px; }
+  .vp-form .lf-field.full { grid-column: 1 / -1; }
+  .vp-form .lf-label {
+    display: block;
+    font-family: var(--body); font-size: var(--lf-label-size); font-weight: var(--lf-label-weight);
+    letter-spacing: var(--lf-label-track); text-transform: uppercase;
+    color: var(--lf-label-color); margin-bottom: 8px;
+  }
+  .vp-form .lf-label .req { color: var(--champagne); margin-left: 4px; }
+  .vp-form .lf-input,
+  .vp-form .lf-textarea {
+    width: 100%; padding: var(--lf-pad-y) var(--lf-pad-x);
+    background: var(--lf-bg); border: 1px solid var(--lf-border);
+    color: var(--lf-control-color); font-family: var(--body); font-size: 14px;
+    border-radius: var(--lf-radius);
+  }
+  .vp-form .lf-input::placeholder { color: var(--lf-placeholder); }
+  .vp-form .lf-input:focus,
+  .vp-form .lf-textarea:focus {
+    outline: none; border-color: var(--lf-border-focus);
+    box-shadow: 0 0 0 var(--lf-ring-size) var(--lf-ring);
+  }
+  .vp-form .lf-textarea { resize: vertical; min-height: 140px; }
+  .vp-form .lf-select { position: relative; }
+  .vp-form .lf-select .lf-input {
+    padding: var(--lf-pad-y) 38px var(--lf-pad-y) var(--lf-pad-x);
+    cursor: pointer; appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23C9A96E' stroke-width='1.6' fill='none'/></svg>");
+    background-repeat: no-repeat; background-position: right 14px center;
+  }
+  .vp-form .lf-consent {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 18px 20px; background: rgba(201,169,110,0.05);
+    border-left: 3px solid var(--champagne);
+    margin-top: 14px;
+  }
+  .vp-form .lf-consent input[type=checkbox] {
+    accent-color: var(--champagne); width: 18px; height: 18px;
+    margin-top: 3px; cursor: pointer;
+  }
+  .vp-form .lf-consent label {
+    font-family: var(--body); font-size: 13px; line-height: 1.6; color: var(--bone-soft);
+    cursor: pointer;
+  }
+  .vp-form .lf-submit {
+    margin-top: 26px;
+    display: inline-flex; align-items: center; gap: 14px;
+    background: var(--lf-submit-bg); color: var(--lf-submit-fg);
+    padding: 16px 28px;
+    border: 1px solid var(--champagne); border-radius: var(--lf-submit-radius);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+  }
+  .vp-form .lf-submit:after { content: '→'; font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--champagne); }
+  .vp-form .lf-submit:hover { background: var(--champagne); color: var(--ink); }
+  .vp-form .lf-submit:hover:after { color: var(--ink); }
+
+  /* Footer back link */
+  .vp-dd-footer-meta {
+    max-width: 1100px; margin: 0 auto; padding: 32px 56px 80px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--bone-mute);
+  }
+  .vp-dd-footer-meta a {
+    color: var(--champagne);
+    border-bottom: 1px solid var(--champagne); padding-bottom: 3px;
+  }
+
+  /* Mobile */
+  @media (max-width: 1000px) {
+    .vp-dd-hero { height: 400px; }
+    .vp-dd-head { padding: 0 32px; margin-top: -80px; }
+    .vp-dd-head h1 { font-size: 48px; }
+    .vp-dd-meta { padding: 32px 32px; gap: 16px 32px; }
+    .vp-dd-article { padding: 56px 32px 40px; }
+    .vp-dd-article .lede { font-size: 20px; }
+    .vp-dd-article .body h2 { font-size: 28px; }
+    .vp-dd-form-wrap { padding: 56px 32px 80px; }
+    .vp-dd-form-wrap .head h2 { font-size: 32px; }
+    .vp-form { padding: 28px 24px; }
+    .vp-dd-footer-meta { padding: 24px 32px 56px; }
+  }
+  @media (max-width: 720px) {
+    .vp-dd-hero { height: 320px; }
+    .vp-dd-head h1 { font-size: 34px; }
+    .vp-dd-article .lede:first-letter { font-size: 72px; }
+  }
+{% endblock %}
+
+{% block content %}
+<nav class="vp-dd-crumbs">
+  <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page.label }}</a>
+  <span>{{ chrome.blog_crumb_sep|default:"·" }}</span>
+  <span>{{ post.kicker }}</span>
+</nav>
+
+<div class="vp-dd-hero" style="background-image:url('{{ post.image }}')" data-lm="reveal-soft"></div>
+
+<header class="vp-dd-head" data-lm="reveal">
+  <span class="kicker">{{ post.kicker }}</span>
+  <h1>{{ post.title }}</h1>
+  <div class="attribution">
+    <span>{{ chrome.blog_by|default:"Curato da" }} <strong data-latin>{{ post.author }}</strong></span>
+    <span>{{ post.date }}</span>
+    <span>{{ post.read_min }} {{ chrome.blog_read_minutes }}</span>
+  </div>
+</header>
+
+<section class="vp-dd-meta" data-lm="reveal">
+  {% for k, v in post.meta_rows %}
+    <div class="row">
+      <span class="k">{{ k }}</span>
+      <span class="v" data-latin>{{ v }}</span>
+    </div>
+  {% endfor %}
+</section>
+
+<article class="vp-dd-article">
+  <p class="lede" data-lm="reveal">{{ post.lede }}</p>
+  <div class="body">
+    {% for kind, text in post.body %}
+      {% if kind == "p" %}
+        <p data-lm="reveal">{{ text }}</p>
+      {% elif kind == "h2" %}
+        <h2 data-lm="reveal">{{ text }}</h2>
+      {% elif kind == "ol" %}
+        <ol data-lm="reveal">
+          {% for li in text %}<li>{{ li }}</li>{% endfor %}
+        </ol>
+      {% elif kind == "blockquote" %}
+        <blockquote data-lm="reveal">{{ text }}</blockquote>
+      {% endif %}
+    {% endfor %}
+  </div>
+</article>
+
+<section class="vp-dd-form-wrap">
+  <div class="head" data-lm="reveal">
+    <div class="lbl">{{ site.nda_required_label }}</div>
+    <h2>{{ site.nav_cta }}</h2>
+    <p>{{ site.viewing_on_request }} · {{ site.referent_label }}</p>
+  </div>
+  <form class="vp-form lf-form" data-lm="reveal-soft">
+    <div class="lf-helper-required">{{ chrome.form_required|default:"I campi contrassegnati sono obbligatori" }}</div>
+
+    <div class="lf-row">
+      <div class="lf-field">
+        <label class="lf-label" for="vpd-nome">{{ chrome.form_name|default:"Nome e cognome" }}<span class="req">*</span></label>
+        <input class="lf-input" id="vpd-nome" type="text" name="nome" required>
+      </div>
+      <div class="lf-field">
+        <label class="lf-label" for="vpd-email">{{ chrome.form_email|default:"Email riservata" }}<span class="req">*</span></label>
+        <input class="lf-input" id="vpd-email" type="email" name="email" required>
+      </div>
+    </div>
+
+    <div class="lf-field">
+      <label class="lf-label" for="vpd-date">{{ chrome.form_date_pref|default:"Preferenza date · private viewing" }}</label>
+      <input class="lf-input" id="vpd-date" type="text" name="date_preference" placeholder="—">
+    </div>
+
+    <div class="lf-field">
+      <label class="lf-label" for="vpd-note">{{ chrome.form_notes|default:"Note al referente" }}<span class="req">*</span></label>
+      <textarea class="lf-textarea lf-input" id="vpd-note" name="notes" rows="5" required></textarea>
+    </div>
+
+    <div class="lf-consent">
+      <input type="checkbox" id="vpd-nda" name="nda" required>
+      <label for="vpd-nda">{{ site.nda_required_label }}. {{ site.viewing_on_request }}.</label>
+    </div>
+
+    <button class="lf-submit" type="submit">{{ site.nav_cta }}</button>
+  </form>
+</section>
+
+<footer class="vp-dd-footer-meta">
+  <span data-latin>{{ post.footer_strap|default:site.logo_word }}</span>
+  <a href="{% url 'catalog:live_template_page' template.category.slug template.slug blog_parent_slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.blog_back_all_prefix|default:"Torna a" }} {{ page.label|lower }}</a>
+</footer>
+{% endblock %}

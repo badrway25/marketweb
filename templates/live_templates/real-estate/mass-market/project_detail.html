@@ -1,0 +1,520 @@
+{% extends "live_templates/real-estate/mass-market/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     PROPERTY DETAIL — hero gallery + price card sticky + specs +
+     description + agent card + similar grid + visit-request form
+  ============================================================ */
+  .dm-pd {
+    max-width: 1360px; margin: 0 auto;
+    padding: 24px 48px 80px;
+  }
+  .dm-pd .dm-pd-breadcrumb {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.10em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .dm-pd .dm-pd-breadcrumb a {
+    color: var(--orange); border-bottom: 1px solid var(--orange);
+    padding-bottom: 1px; font-weight: 700;
+  }
+  .dm-pd .dm-pd-breadcrumb .dm-pd-sep { color: var(--ink-mute); }
+
+  /* Title row */
+  .dm-pd .dm-pd-titlerow {
+    display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end;
+    padding-bottom: 24px; border-bottom: 2px solid var(--navy);
+    margin-bottom: 32px;
+  }
+  .dm-pd .dm-pd-titlerow .dm-pd-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    background: rgba(46,204,113,0.10); border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--emerald-3);
+  }
+  .dm-pd .dm-pd-titlerow .dm-pd-eyebrow:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--emerald);
+  }
+  .dm-pd .dm-pd-titlerow h1 {
+    margin-top: 16px;
+    font-family: var(--heading); font-size: 44px; font-weight: 700;
+    color: var(--navy); line-height: 1.08; letter-spacing: -0.022em;
+  }
+  .dm-pd .dm-pd-titlerow .dm-pd-addr {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 16px; color: var(--ink-soft);
+  }
+  .dm-pd .dm-pd-titlerow .dm-pd-addr:before {
+    content: '◆'; color: var(--orange); margin-right: 10px;
+    font-size: 11px; vertical-align: middle;
+  }
+  .dm-pd .dm-pd-titlerow .dm-pd-price {
+    text-align: right;
+    font-family: var(--heading); font-size: 36px; font-weight: 700;
+    color: var(--orange); font-variant-numeric: tabular-nums;
+    letter-spacing: -0.018em;
+  }
+  .dm-pd .dm-pd-titlerow .dm-pd-ref {
+    margin-top: 6px; text-align: right;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  /* Hero gallery — large + 2 thumbnails */
+  .dm-pd .dm-pd-gallery {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 14px;
+    margin-bottom: 40px;
+  }
+  .dm-pd .dm-pd-gallery .dm-pd-hero-img {
+    border-radius: 18px; overflow: hidden;
+    aspect-ratio: 16 / 10;
+    background: var(--paper-2);
+    position: relative;
+  }
+  .dm-pd .dm-pd-gallery .dm-pd-hero-img img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .dm-pd .dm-pd-gallery .dm-pd-hero-img .dm-pd-badge {
+    position: absolute; top: 18px; left: 18px;
+    padding: 6px 14px; border-radius: 999px;
+    background: var(--navy); color: var(--orange);
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .dm-pd .dm-pd-gallery .dm-pd-thumb-col {
+    display: grid; grid-template-rows: 1fr 1fr; gap: 14px;
+  }
+  .dm-pd .dm-pd-gallery .dm-pd-thumb {
+    border-radius: 14px; overflow: hidden;
+    background: var(--paper-2);
+    position: relative;
+  }
+  .dm-pd .dm-pd-gallery .dm-pd-thumb img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+
+  /* Body grid — content + sticky aside */
+  .dm-pd .dm-pd-body {
+    display: grid; grid-template-columns: 1.6fr 1fr; gap: 48px;
+  }
+
+  .dm-pd .dm-pd-content { display: flex; flex-direction: column; gap: 36px; }
+
+  /* Specs strip */
+  .dm-pd .dm-pd-specs {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px;
+    background: #FFFFFF; border: 1px solid var(--rule);
+    border-radius: 16px; padding: 28px 32px;
+  }
+  .dm-pd .dm-pd-specs .dm-pd-spec { display: flex; flex-direction: column; gap: 6px; }
+  .dm-pd .dm-pd-specs .dm-pd-spec-lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .dm-pd .dm-pd-specs .dm-pd-spec-val {
+    font-family: var(--heading); font-size: 17px; font-weight: 700;
+    color: var(--navy); font-variant-numeric: tabular-nums;
+  }
+
+  /* Lead block */
+  .dm-pd .dm-pd-lead {
+    background: var(--paper); border-left: 3px solid var(--orange);
+    padding: 22px 28px;
+    border-radius: 0 12px 12px 0;
+    font-family: var(--heading); font-size: 22px; font-weight: 500;
+    color: var(--navy); line-height: 1.45; font-style: italic;
+  }
+
+  /* Summary highlights */
+  .dm-pd .dm-pd-summary {
+    background: #FFFFFF; border-radius: 16px;
+    padding: 32px 36px;
+    border: 1px solid var(--rule);
+  }
+  .dm-pd .dm-pd-summary .dm-pd-summary-lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange);
+    margin-bottom: 18px;
+  }
+  .dm-pd .dm-pd-summary ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .dm-pd .dm-pd-summary li {
+    padding: 0 0 0 26px; position: relative;
+    font-family: var(--body); font-size: 15px; line-height: 1.6; color: var(--ink-body);
+  }
+  .dm-pd .dm-pd-summary li:before {
+    content: '✓'; position: absolute; left: 0; top: 1px;
+    color: var(--emerald); font-weight: 800; font-size: 16px;
+  }
+
+  /* Highlights grid (4-up) */
+  .dm-pd .dm-pd-highlights {
+    background: var(--navy); color: #FFFFFF; border-radius: 18px;
+    padding: 36px 36px;
+  }
+  .dm-pd .dm-pd-highlights .dm-pd-highlights-lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--orange);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .dm-pd .dm-pd-highlights .dm-pd-highlights-lbl:before {
+    content: ''; width: 28px; height: 2px; background: var(--orange);
+  }
+  .dm-pd .dm-pd-highlights h3 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 26px; font-weight: 700;
+    color: #FFFFFF;
+  }
+  .dm-pd .dm-pd-highlights .dm-pd-h-grid {
+    margin-top: 28px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px;
+  }
+  .dm-pd .dm-pd-highlights .dm-pd-h-cell {
+    padding: 18px 22px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 12px;
+  }
+  .dm-pd .dm-pd-highlights .dm-pd-h-key {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+  }
+  .dm-pd .dm-pd-highlights .dm-pd-h-val {
+    margin-top: 6px;
+    font-family: var(--heading); font-size: 17px; font-weight: 700;
+    color: #FFFFFF;
+  }
+
+  /* Description */
+  .dm-pd .dm-pd-desc h3 {
+    font-family: var(--heading); font-size: 26px; font-weight: 700;
+    color: var(--navy); margin-bottom: 18px;
+  }
+  .dm-pd .dm-pd-desc p {
+    font-family: var(--body); font-size: 16px; line-height: 1.75;
+    color: var(--ink-body); max-width: 64ch;
+  }
+
+  /* Sidebar — sticky agent card + visit form */
+  .dm-pd .dm-pd-aside { position: sticky; top: 100px; align-self: start; display: flex; flex-direction: column; gap: 22px; }
+  .dm-pd-agent-card {
+    background: #FFFFFF; border-radius: 18px;
+    border: 1px solid var(--rule);
+    padding: 28px 26px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .dm-pd-agent-card .dm-pd-agent-lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange);
+  }
+  .dm-pd-agent-card .dm-pd-agent-row {
+    display: flex; align-items: center; gap: 14px;
+    padding-top: 4px;
+  }
+  .dm-pd-agent-card .dm-pd-agent-monogram {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy), var(--emerald));
+    color: #FFFFFF; font-family: var(--heading);
+    font-weight: 700; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .dm-pd-agent-card h4 {
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    color: var(--navy); margin-bottom: 4px;
+  }
+  .dm-pd-agent-card .dm-pd-agent-role {
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: var(--ink-soft); letter-spacing: 0.04em;
+  }
+  .dm-pd-agent-card .dm-pd-agent-actions {
+    display: flex; gap: 10px;
+  }
+  .dm-pd-agent-card .dm-pd-agent-action {
+    flex: 1;
+    padding: 12px 14px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: background .15s ease, transform .15s ease;
+  }
+  .dm-pd-agent-card .dm-pd-agent-action svg {
+    width: 14px; height: 14px; stroke: currentColor; fill: none;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .dm-pd-agent-card .dm-pd-agent-action.dm-pd-call {
+    background: var(--navy); color: #FFFFFF;
+  }
+  .dm-pd-agent-card .dm-pd-agent-action.dm-pd-call:hover { background: var(--navy-2); transform: translateY(-1px); }
+  .dm-pd-agent-card .dm-pd-agent-action.dm-pd-wa {
+    background: var(--emerald); color: #FFFFFF;
+  }
+  .dm-pd-agent-card .dm-pd-agent-action.dm-pd-wa:hover { background: var(--emerald-2); transform: translateY(-1px); }
+
+  /* Visit request mini-form */
+  .dm-pd-visit {
+    background: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+    color: #FFFFFF; border-radius: 18px;
+    padding: 28px 26px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .dm-pd-visit .dm-pd-visit-lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.85);
+  }
+  .dm-pd-visit h4 {
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: #FFFFFF; line-height: 1.2;
+  }
+  .dm-pd-visit p {
+    font-family: var(--body); font-size: 13.5px; line-height: 1.5;
+    color: rgba(255,255,255,0.92);
+  }
+  .dm-pd-visit a.dm-btn { background: var(--navy); color: #FFFFFF; justify-content: center; }
+  .dm-pd-visit a.dm-btn:hover { background: var(--navy-2); transform: translateY(-1px); }
+
+  /* Similar properties strip */
+  .dm-pd-similar {
+    background: var(--paper-2); padding: 80px 48px;
+  }
+  .dm-pd-similar .dm-pd-similar-inner { max-width: 1360px; margin: 0 auto; }
+  .dm-pd-similar .dm-pd-similar-head {
+    margin-bottom: 36px;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;
+  }
+  .dm-pd-similar .dm-pd-similar-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+
+  /* Next link */
+  .dm-pd-next {
+    padding: 56px 48px;
+    max-width: 1360px; margin: 0 auto;
+  }
+  .dm-pd-next .dm-pd-next-card {
+    padding: 32px 36px;
+    background: #FFFFFF; border: 1px solid var(--rule);
+    border-radius: 16px;
+    display: flex; justify-content: space-between; align-items: center; gap: 24px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .dm-pd-next .dm-pd-next-card:hover { border-color: var(--orange); box-shadow: 0 16px 36px rgba(27,40,56,0.08); }
+  .dm-pd-next .dm-pd-next-lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange);
+  }
+  .dm-pd-next h4 {
+    margin-top: 8px;
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: var(--navy);
+  }
+  .dm-pd-next .dm-pd-next-arrow {
+    font-family: var(--heading); font-size: 28px; color: var(--orange);
+    transition: transform .2s ease;
+  }
+  .dm-pd-next .dm-pd-next-card:hover .dm-pd-next-arrow { transform: translateX(8px); }
+
+  @media (max-width: 1100px) {
+    .dm-pd { padding: 16px 24px 64px; }
+    .dm-pd .dm-pd-titlerow { grid-template-columns: 1fr; gap: 14px; }
+    .dm-pd .dm-pd-titlerow .dm-pd-price, .dm-pd .dm-pd-titlerow .dm-pd-ref { text-align: left; }
+    .dm-pd .dm-pd-titlerow h1 { font-size: 32px; }
+    .dm-pd .dm-pd-gallery { grid-template-columns: 1fr; }
+    .dm-pd .dm-pd-gallery .dm-pd-thumb-col { grid-template-rows: auto; grid-template-columns: 1fr 1fr; }
+    .dm-pd .dm-pd-gallery .dm-pd-thumb { aspect-ratio: 4 / 3; }
+    .dm-pd .dm-pd-body { grid-template-columns: 1fr; }
+    .dm-pd .dm-pd-aside { position: static; }
+    .dm-pd .dm-pd-specs { grid-template-columns: repeat(3, 1fr); padding: 22px 22px; }
+    .dm-pd .dm-pd-highlights .dm-pd-h-grid { grid-template-columns: 1fr; }
+    .dm-pd-similar { padding: 64px 24px; }
+    .dm-pd-similar .dm-pd-similar-grid { grid-template-columns: repeat(2, 1fr); }
+    .dm-pd-similar .dm-pd-similar-head { grid-template-columns: 1fr; gap: 20px; }
+    .dm-pd-next { padding: 40px 24px; }
+  }
+  @media (max-width: 880px) {
+    .dm-pd .dm-pd-specs { grid-template-columns: repeat(2, 1fr); }
+    .dm-pd .dm-pd-summary, .dm-pd .dm-pd-highlights { padding: 24px 22px; }
+    .dm-pd .dm-pd-lead { font-size: 18px; padding: 18px 22px; }
+    .dm-pd-similar .dm-pd-similar-grid { grid-template-columns: 1fr; }
+    .dm-pd-next .dm-pd-next-card { flex-direction: column; align-items: flex-start; gap: 14px; }
+  }
+{% endblock %}
+
+{% block content %}
+<article class="dm-pd">
+  <div class="dm-pd-breadcrumb">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">← {{ page.label }}</a>
+    <span class="dm-pd-sep">/</span>
+    <span>{{ post.area }}</span>
+  </div>
+
+  <header class="dm-pd-titlerow">
+    <div data-lm="reveal-lg">
+      <span class="dm-pd-eyebrow">{{ post.badge }}</span>
+      <h1>{{ post.title }}</h1>
+      <div class="dm-pd-addr">{{ post.area }}</div>
+    </div>
+    <div data-lm="reveal">
+      <div class="dm-pd-price">{{ post.price }}</div>
+      <div class="dm-pd-ref">{{ site.tile_reference_label }} {{ post.reference }} · {{ post.year_built }}</div>
+    </div>
+  </header>
+
+  <div class="dm-pd-gallery" data-lm="reveal">
+    <div class="dm-pd-hero-img">
+      <img src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1200&h=750&fit=crop" alt="{{ post.title }}" loading="lazy">
+      <span class="dm-pd-badge">{{ post.badge }}</span>
+    </div>
+    <div class="dm-pd-thumb-col">
+      <div class="dm-pd-thumb">
+        <img src="https://images.pexels.com/photos/1438834/pexels-photo-1438834.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="{{ post.title }}" loading="lazy">
+      </div>
+      <div class="dm-pd-thumb">
+        <img src="https://images.pexels.com/photos/2079249/pexels-photo-2079249.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="{{ post.title }}" loading="lazy">
+      </div>
+    </div>
+  </div>
+
+  <div class="dm-pd-body">
+    <div class="dm-pd-content">
+      <div class="dm-pd-specs" data-lm="reveal">
+        <div class="dm-pd-spec">
+          <span class="dm-pd-spec-lbl">{{ page_data.dossier_meta_price_label }}</span>
+          <span class="dm-pd-spec-val">{{ post.price }}</span>
+        </div>
+        <div class="dm-pd-spec">
+          <span class="dm-pd-spec-lbl">{{ page_data.dossier_meta_surface_label }}</span>
+          <span class="dm-pd-spec-val">{{ post.surface }} {{ site.tile_surface_unit }}</span>
+        </div>
+        <div class="dm-pd-spec">
+          <span class="dm-pd-spec-lbl">{{ page_data.dossier_meta_rooms_label }}</span>
+          <span class="dm-pd-spec-val">{{ post.rooms }}</span>
+        </div>
+        <div class="dm-pd-spec">
+          <span class="dm-pd-spec-lbl">{{ page_data.dossier_meta_bathrooms_label }}</span>
+          <span class="dm-pd-spec-val">{{ post.bathrooms }}</span>
+        </div>
+        <div class="dm-pd-spec">
+          <span class="dm-pd-spec-lbl">{{ page_data.dossier_meta_energy_label }}</span>
+          <span class="dm-pd-spec-val">{{ post.energy }}</span>
+        </div>
+        <div class="dm-pd-spec">
+          <span class="dm-pd-spec-lbl">{{ page_data.dossier_meta_floor_label }}</span>
+          <span class="dm-pd-spec-val">{{ post.floor }}</span>
+        </div>
+      </div>
+
+      <p class="dm-pd-lead" data-lm="reveal">{{ post.lead }}</p>
+
+      <aside class="dm-pd-summary" data-lm="reveal">
+        <div class="dm-pd-summary-lbl">{{ page_data.dossier_summary_label }}</div>
+        <ul>
+          {% for line in post.summary %}<li>{{ line }}</li>{% endfor %}
+        </ul>
+      </aside>
+
+      <section class="dm-pd-highlights" data-lm="reveal">
+        <div class="dm-pd-highlights-lbl">{{ page_data.dossier_highlights_label }}</div>
+        <h3>{{ page_data.dossier_highlights_heading }}</h3>
+        <div class="dm-pd-h-grid">
+          {% for key, val in post.highlights %}
+            <div class="dm-pd-h-cell">
+              <span class="dm-pd-h-key">{{ key }}</span>
+              <div class="dm-pd-h-val">{{ val }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <div class="dm-pd-desc" data-lm="reveal">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.description }}</p>
+      </div>
+    </div>
+
+    <aside class="dm-pd-aside">
+      <div class="dm-pd-agent-card" data-lm="reveal">
+        <div class="dm-pd-agent-lbl">{{ page_data.dossier_agent_label }}</div>
+        <div class="dm-pd-agent-row">
+          <div class="dm-pd-agent-monogram">{{ post.agent_name|slice:":1" }}{{ post.agent_name|cut:" "|slice:"-1:" }}</div>
+          <div>
+            <h4>{{ post.agent_name }}</h4>
+            <div class="dm-pd-agent-role">{{ post.agent_role }}</div>
+          </div>
+        </div>
+        <div class="dm-pd-agent-actions">
+          <a href="tel:{{ post.agent_phone }}" class="dm-pd-agent-action dm-pd-call">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>{{ site.phone_label }}</span>
+          </a>
+          <a href="{{ site.whatsapp_link }}" target="_blank" rel="noopener" class="dm-pd-agent-action dm-pd-wa">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <span>WhatsApp</span>
+          </a>
+        </div>
+      </div>
+
+      <aside class="dm-pd-visit" data-lm="reveal">
+        <div class="dm-pd-visit-lbl">{{ site.visit_request_label }}</div>
+        <h4>{{ page_data.dossier_book_cta }}</h4>
+        <p>{{ site.showings_schedule }}</p>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="dm-btn">
+          <span>{{ page_data.dossier_book_cta }}</span>
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </aside>
+    </aside>
+  </div>
+
+  <a class="dm-pd-next" href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+    <div class="dm-pd-next-card" data-lm="reveal">
+      <div>
+        <div class="dm-pd-next-lbl">{{ page_data.dossier_next_label }}</div>
+        <h4>{{ page.label }}</h4>
+      </div>
+      <span class="dm-pd-next-arrow">→</span>
+    </div>
+  </a>
+</article>
+
+<section class="dm-pd-similar">
+  <div class="dm-pd-similar-inner">
+    <div class="dm-pd-similar-head" data-lm="reveal-lg">
+      <div>
+        <div class="dm-sec-label">{{ page_data.featured_label|default:page_data.ledger_label }}</div>
+        <h2>{{ page_data.featured_heading|default:page_data.ledger_label|safe }}</h2>
+      </div>
+    </div>
+    <div class="dm-pd-similar-grid" data-lm-stagger data-lm-stagger-delay="80">
+      {% for similar in posts|slice:":3" %}
+        {% if similar.slug != post.slug %}
+          <a class="dm-tile" href="{% url 'catalog:live_template_post' template.category.slug template.slug page.slug similar.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+            <div class="dm-tile-frame">
+              <img src="https://images.pexels.com/photos/{% cycle '2724749' '1643383' '323780' as simid %}/pexels-photo-{{ simid }}.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop" alt="{{ similar.title }}" loading="lazy">
+              <span class="dm-tile-badge {% if similar.badge == 'Esclusiva' %}dm-tile-badge-esclusiva{% elif similar.badge == 'Nuova' %}dm-tile-badge-nuova{% endif %}">{{ similar.badge }}</span>
+              <span class="dm-tile-ref">{{ site.tile_reference_label }} {{ similar.reference }}</span>
+            </div>
+            <div class="dm-tile-body">
+              <div class="dm-tile-price">{{ similar.price }}</div>
+              <div class="dm-tile-title">{{ similar.title }}</div>
+              <div class="dm-tile-addr">{{ similar.area }}</div>
+              <div class="dm-tile-specs">
+                <span><strong>{{ similar.rooms }}</strong>{{ site.tile_rooms_label|lower }}</span>
+                <span><strong>{{ similar.surface }}</strong>{{ site.tile_surface_unit }}</span>
+                <span><strong>{{ similar.bathrooms }}</strong>{{ site.tile_bathrooms_label|lower }}</span>
+              </div>
+              <span class="dm-tile-cta">
+                {{ site.tile_visit_cta }}
+                <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </div>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

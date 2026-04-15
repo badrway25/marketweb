@@ -1,0 +1,362 @@
+{% extends "preview_compositions/_base.html" %}
+{% load preview_extras %}
+{# ============================================================
+   ARCHETYPE: ultra-luxury-cinematic  (real-estate DNA — Phase 2g3.7)
+   FOR     : private-advisory / ultra-luxury property maisons
+   MOOD    : fully dark #0a0a0a, editorial, image-first. The hero is
+             a DOMINANT fullbleed property photograph covering ~60%
+             of the canvas, with a champagne-gold wordmark anchored
+             bottom-left + a location eyebrow + serif italic drama
+             headline. Transparent dark navbar pinned above the cover
+             with an opposite-of-Casa champagne palette (no search
+             widget, no orange button, no navy block). Under the hero:
+             a 4-cell editorial credit bar (Collezione · Territorio ·
+             Superficie · Accesso) in tabular champagne mono. Below,
+             a 2-col property-dossier strip (4 cells) showing index +
+             title + territory + surface + provenance. At the bottom,
+             a champagne territory ribbon listing continental
+             destinations — the Villa antithesis of Casa's Milan-urban
+             neighbourhood grid.
+
+   NAVBAR  : transparent dark with champagne wordmark + restrained
+             serif italic links + ghost champagne "Richiesta privata"
+   CARDS   : 2-col property-dossier (NOT 4-up tile) — editorial cover
+             + provenance meta rows, D-054 opposite of Casa's property-
+             tile-specs grid
+   FOOTER  : champagne territory ribbon across the bottom strip
+
+   D-047 chrome-authoring contract:
+   - Zero literal brand strings. Every string flows from dna.content.*
+     or site chrome. No hardcoded prices, territories, architect names,
+     property titles, or magazine masthead copy.
+   - No hardcoded image URLs — all photos via {{ imagery.N }}.
+
+   Reference shape: portfolio/cinematic-photographer.html — same
+   fullbleed-dark-nav + fullbleed-hero + credit-bar spine, but the
+   photographer EXIF is replaced with real-estate provenance dossier
+   and filmstrip → property-dossier 2-col strip.
+============================================================ #}
+{% block extra_css %}
+  /* Fully dark editorial canvas — Villa Prestige signature */
+  body { background: #0a0a0a; color: #f3efe7; }
+  .pv-frame { background: #0a0a0a; }
+
+  /* Letterbox film margin — subtle top/bottom gradient framing */
+  .pv-frame:after {
+    content: ''; position: absolute; inset: 0;
+    box-shadow:
+      inset 0 0 0 1px rgba(243,239,231,0.06),
+      inset 0 120px 180px -80px rgba(0,0,0,0.85),
+      inset 0 -140px 220px -100px rgba(0,0,0,0.9);
+    pointer-events: none; z-index: 9;
+  }
+
+  /* === TRANSPARENT DARK NAVBAR === */
+  .vp-pv-nav {
+    position: absolute; top: 0; left: 0; right: 0; height: 74px;
+    display: flex; align-items: center; padding: 0 56px;
+    z-index: 20;
+  }
+  .vp-pv-nav .wm {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .vp-pv-nav .wm .crest {
+    width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 13px;
+    color: var(--secondary); border: 1px solid var(--secondary);
+    border-radius: 50%;
+  }
+  .vp-pv-nav .wm .word {
+    font-family: var(--heading); font-style: italic; font-weight: 500; font-size: 22px;
+    letter-spacing: 0.14em; color: #f3efe7;
+    line-height: 1.1;
+  }
+  .vp-pv-nav .wm .word small {
+    display: block; margin-top: 4px;
+    font-style: normal; font-weight: 700;
+    font-family: var(--body); font-size: 9px; letter-spacing: 0.40em;
+    text-transform: uppercase; color: var(--secondary);
+  }
+  .vp-pv-nav .links {
+    display: flex; gap: 28px; margin-left: 56px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(243,239,231,0.58);
+  }
+  .vp-pv-nav .cta {
+    margin-left: auto; display: flex; align-items: center; gap: 22px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: #f3efe7;
+  }
+  .vp-pv-nav .cta .phone {
+    color: rgba(243,239,231,0.7); display: flex; flex-direction: column; gap: 2px;
+  }
+  .vp-pv-nav .cta .phone .k {
+    font-size: 8px; letter-spacing: 0.32em; color: rgba(243,239,231,0.5);
+  }
+  .vp-pv-nav .cta .phone .v {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 14px; color: #f3efe7; letter-spacing: 0; text-transform: none;
+  }
+  .vp-pv-nav .cta .ghost {
+    padding: 11px 20px; border: 1px solid var(--secondary); color: var(--secondary);
+    background: transparent;
+  }
+
+  /* === FULLBLEED DOMINANT HERO PHOTO === */
+  .vp-pv-hero {
+    position: absolute; top: 0; left: 0; right: 0; height: 556px;
+    background:
+      linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0) 20%, rgba(10,10,10,0) 60%, rgba(10,10,10,0.92) 100%),
+      linear-gradient(90deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0) 40%, rgba(10,10,10,0) 100%),
+      url('{{ imagery.0 }}') center / cover no-repeat,
+      #0a0a0a;
+    background-blend-mode: multiply, multiply, normal, normal;
+    z-index: 1;
+  }
+
+  /* Top-right counter chip — discreet "N° 03 / 18" */
+  .vp-pv-hero .chip {
+    position: absolute; top: 100px; right: 56px;
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 20px;
+    background: rgba(10,10,10,0.64);
+    border: 1px solid rgba(201,169,110,0.45);
+    backdrop-filter: blur(6px);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(243,239,231,0.78);
+  }
+  .vp-pv-hero .chip .num {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 16px; color: var(--secondary); letter-spacing: 0;
+    text-transform: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Wordmark ledger (bottom-left corner) */
+  .vp-pv-hero .ledger {
+    position: absolute; left: 56px; bottom: 140px;
+    display: flex; flex-direction: column; gap: 12px;
+    max-width: 460px;
+  }
+  .vp-pv-hero .ledger .wm-big {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 56px; letter-spacing: 0.08em; color: #f3efe7;
+    line-height: 1;
+  }
+  .vp-pv-hero .ledger .location {
+    padding-top: 12px; border-top: 1px solid rgba(201,169,110,0.60);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.32em; text-transform: uppercase; color: var(--secondary);
+  }
+
+  /* Headline — bottom-right italic drama serif */
+  .vp-pv-hero .manifesto {
+    position: absolute; right: 56px; bottom: 120px;
+    max-width: 720px; text-align: right;
+    z-index: 2;
+  }
+  .vp-pv-hero .manifesto .eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase;
+    color: var(--secondary);
+    margin-bottom: 20px;
+  }
+  .vp-pv-hero .manifesto .eyebrow:after {
+    content: ''; width: 34px; height: 1px; background: var(--secondary);
+  }
+  .vp-pv-hero .manifesto h1 {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 72px; line-height: 0.98; letter-spacing: -0.026em;
+    color: #f3efe7;
+  }
+  .vp-pv-hero .manifesto h1 em {
+    color: var(--secondary); font-style: italic; font-weight: 500;
+  }
+
+  /* === EDITORIAL CREDIT BAR (pinned just under hero) === */
+  .vp-pv-cells {
+    position: absolute; top: 556px; left: 0; right: 0; height: 48px;
+    background: rgba(10,10,10,0.92);
+    border-top: 1px solid rgba(201,169,110,0.30);
+    border-bottom: 1px solid rgba(201,169,110,0.15);
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    z-index: 3;
+  }
+  .vp-pv-cells .cell {
+    display: flex; flex-direction: column; justify-content: center; gap: 4px;
+    padding: 0 28px;
+    border-right: 1px solid rgba(243,239,231,0.08);
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase;
+    color: rgba(243,239,231,0.44);
+  }
+  .vp-pv-cells .cell:last-child { border-right: 0; }
+  .vp-pv-cells .cell .val {
+    color: #f3efe7; font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 13px; letter-spacing: 0; text-transform: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* === PROPERTY-DOSSIER STRIP (4 cards · 2-col NOT 4-up tiles) ===
+     Visual opposite of Casa's property-tile-specs 4-up grid: each
+     card is editorial, with cover image left column and meta rows
+     right. We fit 4 cards across in a tight grid at the 1600px
+     preview viewport. Display is kept tight to fit 602–840px band. */
+  .vp-pv-strip {
+    position: absolute; top: 620px; left: 0; right: 0; height: 200px;
+    padding: 20px 56px 0;
+    z-index: 2;
+  }
+  .vp-pv-strip .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 14px; border-bottom: 1px solid rgba(201,169,110,0.30);
+  }
+  .vp-pv-strip .head .lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--secondary);
+  }
+  .vp-pv-strip .head h4 {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 18px; color: #f3efe7; letter-spacing: 0;
+  }
+  .vp-pv-strip .row {
+    margin-top: 14px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  .vp-pv-strip .dossier {
+    position: relative; height: 118px; overflow: hidden;
+    border: 1px solid rgba(201,169,110,0.22);
+    background: #121212;
+    display: grid; grid-template-columns: 96px 1fr; gap: 0;
+  }
+  .vp-pv-strip .dossier .cover {
+    background: #1b1b1b center/cover;
+    filter: grayscale(14%) contrast(1.08) brightness(0.88);
+  }
+  .vp-pv-strip .dossier:nth-child(1) .cover { background-image: url('{{ imagery.2 }}'); }
+  .vp-pv-strip .dossier:nth-child(2) .cover { background-image: url('{{ imagery.3 }}'); }
+  .vp-pv-strip .dossier:nth-child(3) .cover { background-image: url('{{ imagery.4 }}'); }
+  .vp-pv-strip .dossier:nth-child(4) .cover { background-image: url('{{ imagery.5 }}'); }
+  .vp-pv-strip .dossier .meta {
+    padding: 10px 12px;
+    display: flex; flex-direction: column; justify-content: center; gap: 3px;
+  }
+  .vp-pv-strip .dossier .meta .idx {
+    font-family: var(--body); font-size: 8px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--secondary);
+    font-variant-numeric: tabular-nums;
+  }
+  .vp-pv-strip .dossier .meta .title {
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 14px; color: #f3efe7; line-height: 1.15;
+  }
+  .vp-pv-strip .dossier .meta .ter {
+    font-family: var(--body); font-size: 8px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(243,239,231,0.56);
+  }
+  .vp-pv-strip .dossier .meta .prov {
+    margin-top: 4px; padding-top: 4px;
+    border-top: 1px solid rgba(201,169,110,0.20);
+    font-family: var(--heading); font-style: italic; font-weight: 500;
+    font-size: 11px; color: rgba(243,239,231,0.78); line-height: 1.25;
+  }
+
+  /* === TERRITORY RIBBON (bottom, champagne) === */
+  .vp-pv-ribbon {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 56px;
+    padding: 0 56px;
+    background: rgba(10,10,10,0.96);
+    border-top: 1px solid rgba(201,169,110,0.32);
+    display: flex; align-items: center; gap: 28px;
+    z-index: 4;
+  }
+  .vp-pv-ribbon .lbl {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase; color: var(--secondary);
+    padding-right: 24px; border-right: 1px solid rgba(201,169,110,0.32);
+  }
+  .vp-pv-ribbon .row {
+    display: flex; gap: 26px; flex-wrap: nowrap; overflow: hidden;
+  }
+  .vp-pv-ribbon .row span {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.30em; text-transform: uppercase;
+    color: rgba(243,239,231,0.72); white-space: nowrap;
+  }
+{% endblock %}
+
+{% block body %}
+  <nav class="vp-pv-nav">
+    <div class="wm">
+      <span class="crest">{{ brand_name|slice:":1" }}</span>
+      <div class="word">{{ brand_name }}<small>{{ dna.content.eyebrow }}</small></div>
+    </div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <div class="cta">
+      <div class="phone">
+        <span class="k">{{ dna.content.signature_label }}</span>
+        <span class="v">{{ dna.content.phone }}</span>
+      </div>
+      <span class="ghost">{{ dna.content.primary_cta }}</span>
+    </div>
+  </nav>
+
+  <section class="vp-pv-hero">
+    <div class="chip">
+      <span>{{ dna.content.hero_counter_label }}</span>
+      <span class="num">{{ dna.content.hero_counter_value }}</span>
+    </div>
+
+    <div class="ledger">
+      <div class="wm-big">{{ dna.content.hero_wordmark }}</div>
+      <div class="location">{{ dna.content.hero_location }}</div>
+    </div>
+
+    <div class="manifesto">
+      <div class="eyebrow">{{ dna.content.series_label }} · {{ dna.content.series_title }}</div>
+      <h1>{{ dna.content.headline|safe }}</h1>
+    </div>
+  </section>
+
+  <div class="vp-pv-cells">
+    {% for label, value in dna.content.hero_credit_cells %}
+      <div class="cell">
+        <span>{{ label }}</span>
+        <span class="val">{{ value }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <section class="vp-pv-strip">
+    <div class="head">
+      <span class="lbl">{{ dna.content.signature_label }}</span>
+      <h4>{{ dna.content.signature_heading|safe }}</h4>
+    </div>
+    <div class="row">
+      {% for idx, title, territorio, superficie, provenance, availability in dna.content.signature %}
+        <div class="dossier">
+          <div class="cover"></div>
+          <div class="meta">
+            <span class="idx">{{ idx }} · {{ availability }}</span>
+            <span class="title">{{ title }}</span>
+            <span class="ter">{{ territorio }}</span>
+            <span class="prov">{{ provenance }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <footer class="vp-pv-ribbon">
+    <span class="lbl">{{ dna.content.territory_label }}</span>
+    <div class="row">
+      {% for t in dna.content.territory %}<span>{{ t }}</span>{% endfor %}
+    </div>
+  </footer>
+{% endblock %}

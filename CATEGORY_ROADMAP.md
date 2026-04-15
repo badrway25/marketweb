@@ -10,14 +10,14 @@
 | 2        | Business    | business     | General business, corporate              | 2 (no DNA) — pragma + elevate share `business.html` with hardcoded `"Hanno scelto Pragma"` label + Marco Bianchi testimonial | **CRITICO** (identity crash) |
 | 3        | Restaurant  | restaurant | Restaurants, cafés, food delivery       | 3 / 3 ✅ all live (Session 48) — fine-dining + trattoria-warm + street-modern, all 5-locale + RTL, sharp D-054 differentiation | **CHIUSA** (Phase 2g3.6 closed Session 48 — Sapore + Brace flipped to published_live, restaurant 3/3 live) |
 | 4        | Medical     | medical      | Clinics, doctors, health practices       | 5 / 5 ✅ all live (Session 51) — cardio + dermatologia (specialist) + salute (clinic) + benessere (wellness) + famiglia (family), all 5-locale + RTL, 3 disjoint Pexels pools, D-054 10/10 on 9 sibling pairs | **CHIUSA** (Phase 2g3.2 closed Session 51 — Salute/Benessere/Famiglia flipped to published_live, medical 5/5 live) |
-| 5        | Lawyer      | lawyer       | Law firms, legal practices               | 2 (no DNA) — lex + juris share `lawyer.html` hardcoding "Studio legale dal 1962 · Roma · Milano" | **CRITICO** (identity crash — Juris modern template renders Lex's 60-year heritage) |
-| 6        | Real Estate | real-estate  | Agencies, property listings              | 2 (no DNA) — casa + villa share `real-estate.html` with "600+ immobili · €500K–€1.2M" mass-market search box | **CRITICO** (identity crash — Villa ultra-luxury renders mass-market copy) |
+| 5        | Lawyer      | lawyer       | Law firms, legal practices               | 2 / 2 ✅ all live (Session 53) — classic-gold (Lex, ink+gold forensic ledger) + modern-transparent (Juris, slate+blue advisory sprint), all 5-locale + RTL, sharp D-054 differentiation | **CHIUSA** (Phase 2g3.7 closed Session 53 — Lex + Juris flipped to published_live, lawyer 2/2 live) |
+| 6        | Real Estate | real-estate  | Agencies, property listings              | 2 / 2 ✅ all live (Session 53) — mass-market (Casa, Poppins daylight search-grid) + ultra-luxury-cinematic (Villa, Cormorant fullbleed editorial concierge), all 5-locale + RTL, sharp D-054 differentiation | **CHIUSA** (Phase 2g3.7 closed Session 53 — Casa + Villa flipped to published_live, real-estate 2/2 live) |
 | 7        | Portfolio   | portfolio    | Freelancers, designers, photographers    | 2 (no DNA) — chiara + pixel share `portfolio.html` hardcoding "Sono una designer indipendente" | **CRITICO** (identity crash — Pixel photographer renders Chiara's designer identity) |
 | 8        | eCommerce   | ecommerce    | Online stores, product showcases         | 2 / 2 ✅ DNA pilot — luxe (fashion-editorial) + bottega (artisan-workshop), Session 15 macro-tone split | **MEDIO** (latent — `fashion-editorial.html` has 12+ Luxe literals; `artisan-workshop.html` has 10+ Bottega literals. Will detonate on Phase 2f.2 reuse) |
 
-**Completeness coverage (preview vs full multi-page) — updated Session 51:**
-- **Full multi-page websites:** **16 of 20 templates** — cardio, dermatologia (specialist reuse), gusto-fine-dining, pragma-corporate-suite, elevate-startup-landing, chiara-portfolio-creativo, pixel-portfolio-fotografico, bottega-shop-artigianale, luxe-fashion-store, sapore-trattoria-pizzeria, brace-street-food-lab, vertex-creative-agency, aura-digital-studio, **salute-studio-medico, benessere-centro-olistico, famiglia-pediatria** — all 16/16 multilingual (5 locales + RTL).
-- **Preview-PNG-only templates:** 4 of 20 (lex + juris + casa + villa). Marketplace shows the 16 live only; the other 4 are `tier=draft` hidden per D-055/D-057.
+**Completeness coverage (preview vs full multi-page) — updated Session 53:**
+- **Full multi-page websites:** **20 of 20 templates** ✅ CATALOG COMPLETE — cardio, dermatologia (specialist reuse), gusto-fine-dining, pragma-corporate-suite, elevate-startup-landing, chiara-portfolio-creativo, pixel-portfolio-fotografico, bottega-shop-artigianale, luxe-fashion-store, sapore-trattoria-pizzeria, brace-street-food-lab, vertex-creative-agency, aura-digital-studio, salute-studio-medico, benessere-centro-olistico, famiglia-pediatria, **lex-studio-legale, juris-avvocato-moderno, casa-agenzia-immobiliare, villa-immobili-lusso** — all 20/20 multilingual (5 locales + RTL).
+- **Preview-PNG-only templates:** 0 of 20 — no draft slugs remaining. Phase 3 unblock gate met.
 
 ### DNA migration order (Phase 2f)
 1. ✅ Medical — done (Session 7 — clinic / family / specialist / wellness)
@@ -162,10 +162,10 @@ Templates flip from `draft` to `published_live` category-by-category, cheapest-f
 - Session 41 (Phase 2g3.5 — ecommerce): 9
 - Session 48 (Phase 2g3.6 — restaurant sapore + brace): 11
 - Session 49 (Phase 2g3.6f — agency vertex + aura): 13
-- Session 51 (Phase 2g3.2 — medical salute + benessere + famiglia): **16** ← today, all 16/16 multilingual
-- After Phase 2g3.6 final wave (lawyer + real-estate — lex/juris/casa/villa): 20
+- Session 51 (Phase 2g3.2 — medical salute + benessere + famiglia): 16
+- Session 53 (Phase 2g3.7 — lawyer lex+juris + real-estate casa+villa): **20** ← today, 20/20 multilingual ✅ CATALOG COMPLETE
 
-**Phase 3 unblock gate:** Phase 2g3.7 fully green (all 20 templates `published_live`). Phase 3 (auth / checkout / editor / projects / commerce) does not start before this gate.
+**Phase 3 unblock gate:** Phase 2g3.7 fully green (all 20 templates `published_live`). ✅ MET — Session 53 flipped the final 4 draft slugs. Phase 3 (auth / checkout / editor / projects / commerce) is now unblocked.
 
 ## Category-ready test (Session 20)
 

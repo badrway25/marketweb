@@ -1,5 +1,26 @@
 # TODO Next
 
+## 🟢 Phase 2g3.7 — Lawyer + Real-Estate Live Rollout · CATALOG COMPLETE 20/20 — ✅ CLOSED (Session 53, 2026-04-15)
+
+Per D-082, `lex-studio-legale` (classic-gold archetype — Studio Legale Ferri, Roma, forensic-notarile), `juris-avvocato-moderno` (modern-transparent — Avv. Martini & Partners, Milano, advisory-modern tech boutique), `casa-agenzia-immobiliare` (mass-market — Domus Immobiliare, Milano+Torino, market-approachable residential), `villa-immobili-lusso` (ultra-luxury-cinematic — Villa Prestige, Milano+Portofino, editorial-concierge) flipped from `tier=draft` to `tier=published_live` premium with 4 fully distinct multipage live skins (8 files per archetype × 4 = 32 skin files, ~10,022 LOC HTML), 5 locales fin da subito (it/en/fr/es/ar) with real RTL for Arabic, and sharp D-054 differentiation across every sibling axis + vs business/portfolio/ecommerce/agency + vs Luxe (Villa ≠ Luxe despite shared Cormorant+dark-champagne).
+
+Three concrete deliverables: (a) 4 skin folders (`lawyer/{classic-gold,modern-transparent}/` + `real-estate/{mass-market,ultra-luxury-cinematic}/`) with full RTL CSS + 880px mobile breakpoint + `:focus-visible` rings; (b) 4 IT content registries (~5,277 LOC) + 16 locale trees (~20,538 LOC) authored by 8 parallel sub-agents (4 implementers + 4 translators) — Lex (Slaughter-and-May EN · Gide/Bredin Prat cabinet FR · Garrigues despacho ES · Al Tamimi MENA MSA AR), Juris (Kirkland Startups EN · Bredin Prat VC FR · Cuatrecasas Startups ES · Al Tamimi tech desk AR), Casa (Foxtons/Knight Frank UK EN · Barnes/Century 21 FR · Engel & Völkers Spain retail ES · Emirates Living/Better Homes MSA AR), Villa (FT How to Spend It/Monocle/Sotheby's editorial EN · Le Figaro Propriétés/Emile Garcin FR · Vanity Fair Spain/Savills España ES · Robb Report ME/Esquire ME Property MSA literary AR); (c) D-047 chrome-cleanliness from line one (zero brand literals across 32 HTML files + 4 preview compositions); (d) D-081 counter-policy satisfied on all 4 stats bands from line one.
+
+Validation: `check` clean, **834/834 full sweep** (was 660, +174 net), Playwright real-browser walk at 1440×900 across Lex IT/EN/AR + Juris IT/FR + Casa IT/ES/FR/AR (home + /immobili/ detail) + Villa IT/AR/EN (home + /collezione/ dossier detail). Zero regression on 16 pre-existing templates. **Catalog 20/20 published_live — 8 MVP categories all CHIUSA. Phase 3 unblock gate MET.** See SESSION_LOG Session 53 + DECISIONS D-082 + AGENT_HANDOFF Session 53 binding list.
+
+**Catalog state after Session 53: 20/20 published_live, 20/20 multilingual.** **Zero draft slugs.**
+- Live: cardio · derm · gusto · pragma · elevate · chiara · pixel · bottega · luxe · sapore · brace · vertex · aura · salute · benessere · famiglia · **lex · juris · casa · villa**
+- Draft: none
+
+**Follow-ups (non blocking, for polish or future sessions):**
+- [ ] Villa hero Pexels URL on `realestate-villa[0]` (photo 2351649) renders a rural Tuscan heritage estate at golden-hour — coherent with Chianti/Val d'Orcia positioning but could be swapped for a more classical luxury-villa-with-infinity-pool if a client previewer prefers instant-recognizable premium. LOW priority, current image reads as Castello di Monterò territory.
+- [ ] Programmatic D-047 leak enforcement in `smoke_full.py` (grep rendered HTML of each locale for brand literals of *other* templates; catches cross-template chrome leaks at commit time).
+- [ ] Mobile audit on Lex/Juris/Casa/Villa at 390×844 viewport — all 4 skins ship with 880px breakpoint, but a dedicated iPhone-size pass would confirm type-scale + nav collapse.
+- [ ] Publish-facing catalog index doc (`docs/catalog.md`) summarizing the 20 templates + 14 archetypes for onboarding.
+- [ ] Consider ambient video heroes for Villa editorial and Casa daylight in a future polish wave — cost/benefit not yet clear, reserve for post-Phase-3.
+
+---
+
 ## 🟢 Phase 2g3.2a — Medical Second Wave Polish + Interaction Fix — ✅ CLOSED (Session 52, 2026-04-15)
 
 Per D-081, three post-rollout defects closed on Salute · Benessere · Famiglia with minimal-surface fixes: (a) `--lf-listbox-radius` token decouples open-dropdown radius from field-radius (default 12px; wellness overrides to 14px); (b) wellness nav CTA reads `{{ site.nav_cta }}` instead of undefined `{{ chrome.nav_cta }}`; all 5 Benessere locale registries now carry `site.nav_cta` with locale-native voice; (c) Salute hero + band stat spans wired to `data-lm="counter"` (animates 0 → target with easeOutCubic); (d) `live-motion.js` thousand-sep heuristic extended to support EN/FR/ES comma-style `28,000` alongside IT dot-style `28.000`; (e) Dynamic Counter Policy binds retroactively + prospectively for every future stats band. 660/660 routes HTTP 200 post-fix. See SESSION_LOG Session 52 + DECISIONS D-081.

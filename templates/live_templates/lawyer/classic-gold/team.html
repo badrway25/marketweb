@@ -1,0 +1,117 @@
+{% extends "live_templates/lawyer/classic-gold/_base.html" %}
+
+{% block extra_css %}
+  /* Lawyers ledger — 14 avvocato cards, typographic-led monogram */
+  .lx-team { padding: 72px 72px 100px; max-width: 1400px; margin: 0 auto; }
+
+  .lx-team .lawyer {
+    display: grid; grid-template-columns: 260px 1fr;
+    gap: 56px; padding: 48px 0;
+    border-top: 1px solid var(--rule);
+    align-items: start;
+  }
+  .lx-team .lawyer:first-child { border-top: 2px solid var(--primary); }
+  .lx-team .lawyer:last-child { border-bottom: 1px solid var(--rule); }
+
+  /* Monogram-led portrait panel (typographic, no stock photo) */
+  .lx-team .lawyer .portrait {
+    aspect-ratio: 4/5; position: relative;
+    background: var(--paper-3);
+    border-left: 2px solid var(--secondary);
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 28px 24px;
+  }
+  .lx-team .lawyer .portrait .mono {
+    font-family: var(--heading); font-size: 72px; font-weight: 500;
+    color: var(--secondary); letter-spacing: 0.02em; line-height: 0.88;
+    display: flex; flex-direction: column;
+  }
+  .lx-team .lawyer .portrait .mono span {
+    font-size: 72px;
+  }
+  .lx-team .lawyer .portrait .signature {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .lx-team .lawyer .portrait .signature strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-style: italic; font-size: 16px;
+    letter-spacing: 0; text-transform: none; color: var(--primary);
+    font-weight: 500;
+  }
+
+  .lx-team .lawyer .info .role {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--secondary);
+  }
+  .lx-team .lawyer .info h3 {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 42px; font-weight: 500;
+    line-height: 1.05; letter-spacing: -0.02em;
+  }
+
+  .lx-team .lawyer .info .meta {
+    margin-top: 24px; padding: 20px 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .lx-team .lawyer .info .meta strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 14px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 500;
+    font-style: italic;
+  }
+  .lx-team .lawyer .info .bio {
+    margin-top: 24px; max-width: 68ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.78;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 880px) {
+    .lx-team { padding: 48px 22px; }
+    .lx-team .lawyer { grid-template-columns: 1fr; gap: 28px; padding: 36px 0; }
+    .lx-team .lawyer .portrait { aspect-ratio: auto; padding: 24px; }
+    .lx-team .lawyer .portrait .mono span { font-size: 56px; }
+    .lx-team .lawyer .info h3 { font-size: 32px; }
+    .lx-team .lawyer .info .meta { grid-template-columns: 1fr; gap: 10px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="lx-lead">
+  <div class="inner">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="intro">{{ page_data.intro }}</p>
+  </div>
+</section>
+
+<section class="lx-team" data-lm-stagger data-lm-stagger-delay="60">
+  {% for lawyer in page_data.lawyers %}
+    <article class="lawyer" data-lm="reveal">
+      <div class="portrait">
+        <div class="mono">
+          {% for letter in lawyer.name|slice:":1" %}<span>{{ letter }}</span>{% endfor %}
+        </div>
+        <div class="signature">
+          {{ lawyer.foro }}
+          <strong>{{ lawyer.name }}</strong>
+        </div>
+      </div>
+      <div class="info">
+        <div class="role">{{ lawyer.role }}</div>
+        <h3>{{ lawyer.name }}</h3>
+        <div class="meta">
+          <div>{{ page_data.lawyer_specialization_label }}<strong>{{ lawyer.specialization }}</strong></div>
+          <div>{{ page_data.lawyer_foro_label }}<strong>{{ lawyer.foro }}</strong></div>
+          <div>{{ page_data.lawyer_year_label }}<strong>{{ lawyer.year }}</strong></div>
+        </div>
+        <p class="bio">{{ lawyer.bio }}</p>
+      </div>
+    </article>
+  {% endfor %}
+</section>
+{% endblock %}

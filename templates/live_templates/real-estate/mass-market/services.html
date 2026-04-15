@@ -1,0 +1,285 @@
+{% extends "live_templates/real-estate/mass-market/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     HOW IT WORKS — 3 numbered process steps
+  ============================================================ */
+  .dm-howto {
+    padding: 24px 48px 48px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-howto .dm-howto-head { margin-bottom: 40px; }
+  .dm-howto .dm-howto-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .dm-howto .dm-step {
+    background: #FFFFFF; border-radius: 14px;
+    padding: 32px 28px;
+    border: 1px solid var(--rule);
+    position: relative;
+  }
+  .dm-howto .dm-step .dm-step-num {
+    position: absolute; top: -16px; left: 28px;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--orange); color: #FFFFFF;
+    font-family: var(--heading); font-weight: 700; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 18px rgba(230,126,34,0.30);
+  }
+  .dm-howto .dm-step h3 {
+    margin-top: 28px;
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.012em;
+  }
+  .dm-howto .dm-step p {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 15px; line-height: 1.65;
+    color: var(--ink-body);
+  }
+
+  /* ============================================================
+     FORM — sectioned multi-step valuation request
+  ============================================================ */
+  .dm-form-shell {
+    padding: 64px 48px 64px;
+    background: var(--paper-2);
+  }
+  .dm-form-shell .dm-form-inner {
+    max-width: 980px; margin: 0 auto;
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 56px 56px;
+    box-shadow: 0 20px 50px rgba(27,40,56,0.06);
+    border: 1px solid var(--rule);
+  }
+  .dm-form-shell .dm-form-head {
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .dm-form-shell .dm-form-head .dm-sec-label { color: var(--orange); }
+  .dm-form-shell .dm-form-head h2 {
+    margin-top: 12px;
+    font-family: var(--heading); font-size: 32px; font-weight: 700;
+    color: var(--navy); letter-spacing: -0.018em;
+  }
+  .dm-form-shell .dm-form-head .dm-form-intro {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 15px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .dm-form-shell .dm-consent-box {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+    padding: 16px 22px;
+    background: var(--paper); border-left: 3px solid var(--emerald);
+    border-radius: 0 10px 10px 0;
+  }
+  .dm-form-shell .dm-consent-box .lf-check { color: var(--ink-body); }
+  .dm-form-shell form { display: grid; gap: 32px; }
+
+  /* ============================================================
+     PROOF — emerald/navy proof strip with KPIs
+  ============================================================ */
+  .dm-proof {
+    padding: 80px 48px; max-width: 1360px; margin: 0 auto;
+  }
+  .dm-proof .dm-proof-head {
+    display: grid; grid-template-columns: 1fr; gap: 16px; align-items: end;
+    margin-bottom: 40px; max-width: 64ch;
+  }
+  .dm-proof .dm-proof-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+  }
+  .dm-proof-card {
+    background: #FFFFFF; border: 1px solid var(--rule);
+    border-radius: 14px; padding: 28px 26px;
+    text-align: left;
+    transition: transform .25s ease, border-color .25s ease;
+  }
+  .dm-proof-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(46,204,113,0.35);
+  }
+  .dm-proof-card .dm-proof-num {
+    font-family: var(--heading); font-size: 44px; font-weight: 700;
+    color: var(--orange); letter-spacing: -0.025em; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .dm-proof-card .dm-proof-lbl {
+    margin-top: 14px;
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink-soft); line-height: 1.5;
+  }
+
+  /* ============================================================
+     FAQ — accordion-style cards (reused from about pattern)
+  ============================================================ */
+  .dm-val-faq {
+    background: var(--paper-2); padding: 88px 48px;
+  }
+  .dm-val-faq .dm-val-faq-inner { max-width: 980px; margin: 0 auto; }
+  .dm-val-faq .dm-val-faq-head { text-align: center; margin-bottom: 48px; }
+  .dm-val-faq .dm-val-faq-head .dm-sec-label { justify-content: center; }
+  .dm-val-faq .dm-val-faq-head .dm-sec-label:before { display: none; }
+  .dm-val-faq .dm-val-faq-head h2 { margin: 14px auto 0; max-width: 22ch; }
+  .dm-val-faq .dm-val-faq-list { display: flex; flex-direction: column; gap: 16px; }
+  .dm-val-faq .dm-val-faq-item {
+    background: #FFFFFF; border-radius: 12px;
+    padding: 24px 28px;
+    border: 1px solid var(--rule);
+  }
+  .dm-val-faq .dm-val-faq-item h4 {
+    font-family: var(--heading); font-size: 17px; font-weight: 700;
+    color: var(--navy); display: flex; align-items: baseline; gap: 12px;
+  }
+  .dm-val-faq .dm-val-faq-item h4:before {
+    content: '?';
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--emerald); color: #FFFFFF;
+    flex-shrink: 0;
+    font-family: var(--heading); font-size: 14px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .dm-val-faq .dm-val-faq-item p {
+    margin-top: 12px; padding-left: 38px;
+    font-family: var(--body); font-size: 14.5px; line-height: 1.65;
+    color: var(--ink-body);
+  }
+
+  @media (max-width: 1100px) {
+    .dm-howto, .dm-proof, .dm-val-faq { padding: 56px 24px; }
+    .dm-howto { padding-top: 16px; }
+    .dm-howto .dm-howto-grid { grid-template-columns: 1fr; gap: 32px; }
+    .dm-form-shell { padding: 48px 24px; }
+    .dm-form-shell .dm-form-inner { padding: 36px 28px; }
+    .dm-form-shell .dm-form-head h2 { font-size: 26px; }
+    .dm-proof .dm-proof-grid { grid-template-columns: repeat(2, 1fr); }
+    .dm-val-faq .dm-val-faq-item p { padding-left: 0; }
+  }
+  @media (max-width: 880px) {
+    .dm-form-shell .dm-form-inner { padding: 28px 22px; }
+    .dm-howto .dm-step { padding: 26px 22px; }
+    .dm-howto .dm-step h3 { font-size: 18px; }
+    .dm-proof .dm-proof-grid { grid-template-columns: 1fr; }
+    .dm-proof-card .dm-proof-num { font-size: 36px; }
+  }
+{% endblock %}
+
+{% block content %}
+<section class="dm-lead">
+  <span class="dm-eyebrow">{{ page_data.eyebrow }}</span>
+  <h1>{{ page_data.headline|safe }}</h1>
+  <p class="dm-intro">{{ page_data.intro }}</p>
+</section>
+
+<section class="dm-howto">
+  <div class="dm-howto-head" data-lm="reveal-lg">
+    <div class="dm-sec-label">{{ page_data.how_it_works_label }}</div>
+    <h2>{{ page_data.how_it_works_heading|safe }}</h2>
+  </div>
+  <div class="dm-howto-grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for num, title, body in page_data.how_it_works %}
+      <article class="dm-step" data-lm="reveal">
+        <div class="dm-step-num">{{ num }}</div>
+        <h3>{{ title }}</h3>
+        <p>{{ body }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="dm-form-shell">
+  <div class="dm-form-inner" data-lm="reveal">
+    <div class="dm-form-head">
+      <div class="dm-sec-label">{{ page_data.form_label }}</div>
+      <h2>{{ page_data.form_heading }}</h2>
+      <p class="dm-form-intro">{{ page_data.form_intro }}</p>
+    </div>
+
+    <form method="post" action="" enctype="multipart/form-data" novalidate class="lf-boxed">
+      {% for s in page_data.form_sections %}
+        <div class="lf-section">
+          <div class="lf-section-head">
+            <span class="lf-section-num">{{ s.num }} · {{ page_data.form_sections|length }}</span>
+            <span class="lf-section-title">{{ s.title }}</span>
+            {% if s.meta %}<span class="lf-section-meta">{{ s.meta }}</span>{% endif %}
+          </div>
+          {% for fname in s.fields %}
+            {% for f in page_data.form_fields %}{% if f.name == fname %}
+              <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+                <label class="lf-label" for="dm-f-{{ f.name }}">{{ f.label }}{% if not f.required %}<span class="lf-opt">{{ chrome.form_optional|default:"Facoltativo" }}</span>{% endif %}</label>
+                {% if f.type == "textarea" %}
+                  <textarea class="lf-control" id="dm-f-{{ f.name }}" name="{{ f.name }}" rows="5" placeholder="{{ f.placeholder|default:'' }}"{% if f.required %} required{% endif %}></textarea>
+                {% elif f.type == "select" %}
+                  <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder|default:'Seleziona…' }}">
+                    <select id="dm-f-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                      <option value="" disabled selected>{{ chrome.form_select_placeholder|default:"Seleziona…" }}</option>
+                      {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                    </select>
+                  </div>
+                {% else %}
+                  <input class="lf-control" type="{{ f.type }}" id="dm-f-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder|default:'' }}"{% if f.required %} required{% endif %}>
+                {% endif %}
+                {% if f.helper %}<p class="lf-helper">{{ f.helper }}</p>{% endif %}
+              </div>
+            {% endif %}{% endfor %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="dm-consent-box">
+        <label class="lf-check">
+          <input type="checkbox" name="consent" required>
+          <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+          <span class="lf-check-text">{{ page_data.form_consent }}</span>
+        </label>
+      </div>
+
+      <div class="lf-submit-bar">
+        <button type="submit" class="lf-submit-primary">
+          <span>{{ page_data.form_submit_label }}</span>
+          <span class="lf-submit-arrow" aria-hidden="true">→</span>
+        </button>
+        {% if page_data.form_submit_note %}
+        <span class="lf-submit-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+          {{ page_data.form_submit_note }}
+        </span>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="dm-proof">
+  <div class="dm-proof-head" data-lm="reveal-lg">
+    <div class="dm-sec-label">{{ page_data.proof_label }}</div>
+    <h2>{{ page_data.proof_heading }}</h2>
+  </div>
+  <div class="dm-proof-grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for num, lbl in page_data.proof %}
+      <article class="dm-proof-card" data-lm="reveal">
+        <div class="dm-proof-num" data-lm="counter">{{ num }}</div>
+        <div class="dm-proof-lbl">{{ lbl }}</div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="dm-val-faq">
+  <div class="dm-val-faq-inner">
+    <div class="dm-val-faq-head" data-lm="reveal-lg">
+      <div class="dm-sec-label">{{ page_data.faq_label }}</div>
+      <h2>{{ page_data.faq_heading }}</h2>
+    </div>
+    <div class="dm-val-faq-list" data-lm-stagger data-lm-stagger-delay="80">
+      {% for q, a in page_data.faq %}
+        <article class="dm-val-faq-item" data-lm="reveal">
+          <h4>{{ q }}</h4>
+          <p>{{ a }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
