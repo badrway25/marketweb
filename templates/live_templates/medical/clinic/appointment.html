@@ -1,0 +1,255 @@
+{% extends "live_templates/medical/clinic/_base.html" %}
+
+{% block extra_css %}
+  .cl-apt { padding: 0 56px 80px; max-width: 1360px; margin: 0 auto; }
+  .cl-apt .cl-apt-grid {
+    display: grid; grid-template-columns: 1.6fr 1fr; gap: 48px;
+    align-items: start;
+  }
+
+  .cl-apt-form-card {
+    background: #FFFFFF;
+    border: 1px solid var(--rule); border-radius: 20px;
+    padding: 40px 40px;
+    box-shadow: 0 20px 56px rgba(11,79,108,0.08);
+  }
+  .cl-apt-form-card form {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px 22px;
+  }
+  .cl-apt-form-card .lf-section {
+    grid-column: 1 / -1;
+  }
+
+  .cl-apt-side .cl-apt-help {
+    background: var(--primary); color: #EAF4F8;
+    border-radius: 20px;
+    padding: 36px 32px;
+    position: relative; overflow: hidden;
+  }
+  .cl-apt-side .cl-apt-help:before {
+    content: ''; position: absolute; top: -30%; right: -20%;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(1,186,239,0.28) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cl-apt-side .cl-apt-help h3 {
+    color: #FFFFFF;
+    font-family: var(--heading); font-size: 22px; font-weight: 800;
+    letter-spacing: -0.01em; line-height: 1.2;
+    position: relative;
+  }
+  .cl-apt-side .cl-apt-help .cl-apt-help-steps {
+    margin-top: 22px; display: flex; flex-direction: column; gap: 18px;
+    position: relative;
+  }
+  .cl-apt-side .cl-apt-help .cl-apt-help-step {
+    display: grid; grid-template-columns: 36px 1fr; gap: 14px;
+  }
+  .cl-apt-side .cl-apt-help .cl-apt-help-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--secondary); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-size: 14px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .cl-apt-side .cl-apt-help .cl-apt-help-step h4 {
+    color: #FFFFFF;
+    font-family: var(--heading); font-size: 15px; font-weight: 700;
+    line-height: 1.25;
+  }
+  .cl-apt-side .cl-apt-help .cl-apt-help-step p {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 13px; line-height: 1.55;
+    color: rgba(234,244,248,0.75);
+  }
+
+  .cl-apt-side .cl-apt-alt {
+    margin-top: 24px;
+    background: #FFFFFF;
+    border: 1px solid var(--rule); border-radius: 20px;
+    padding: 28px 28px;
+  }
+  .cl-apt-side .cl-apt-alt h4 {
+    font-family: var(--heading); font-size: 15px; font-weight: 700;
+    color: var(--primary);
+  }
+  .cl-apt-side .cl-apt-alt p {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 14px; line-height: 1.55; color: var(--ink-soft);
+  }
+  .cl-apt-side .cl-apt-alt .cl-apt-alt-phone {
+    margin-top: 16px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-band); border-radius: 12px;
+    text-decoration: none;
+  }
+  .cl-apt-side .cl-apt-alt .cl-apt-alt-phone .cl-apt-alt-ico {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--green); color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .cl-apt-side .cl-apt-alt .cl-apt-alt-phone .cl-apt-alt-ico svg {
+    width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .cl-apt-side .cl-apt-alt .cl-apt-alt-phone .cl-apt-alt-lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .cl-apt-side .cl-apt-alt .cl-apt-alt-phone .cl-apt-alt-num {
+    display: block; margin-top: 2px;
+    font-family: var(--heading); font-size: 19px; font-weight: 800;
+    color: var(--primary); font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+  }
+
+  .cl-apt-side .cl-apt-trust {
+    margin-top: 20px;
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 20px 22px;
+    background: var(--bg-soft); border: 1px solid var(--rule); border-radius: 14px;
+  }
+  .cl-apt-side .cl-apt-trust .cl-apt-trust-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-family: var(--body); font-size: 13px; line-height: 1.55; color: var(--ink-body);
+  }
+  .cl-apt-side .cl-apt-trust .cl-apt-trust-item svg {
+    width: 18px; height: 18px; stroke: var(--green); fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 2px;
+  }
+
+  @media (max-width: 1100px) {
+    .cl-apt { padding: 0 22px 56px; }
+    .cl-apt .cl-apt-grid { grid-template-columns: 1fr; gap: 28px; }
+    .cl-apt-form-card { padding: 28px 22px; }
+    .cl-apt-form-card form { grid-template-columns: 1fr; gap: 14px; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="cl-lead">
+    <span class="cl-eyebrow">{{ page_data.eyebrow }}</span>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="cl-intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="cl-apt">
+    <div class="cl-apt-grid">
+      <div class="cl-apt-form-card" data-lm="reveal">
+        <form method="post" action="" novalidate>
+          {% if page_data.form_sections %}
+            {% for s in page_data.form_sections %}
+              <div class="lf-section">
+                <div class="lf-section-head">
+                  <span class="lf-section-num">{{ s.num }} · {{ page_data.form_sections|length }}</span>
+                  <span class="lf-section-title">{{ s.title }}</span>
+                  {% if s.meta %}<span class="lf-section-meta">{{ s.meta }}</span>{% endif %}
+                </div>
+                {% for fname in s.fields %}
+                  {% for f in page_data.form_fields %}{% if f.name == fname %}
+                    <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+                      <label class="lf-label" for="cl-apt-{{ f.name }}">{{ f.label }}{% if not f.required %}<span class="lf-opt">{{ chrome.form_optional }}</span>{% endif %}</label>
+                      {% if f.type == "select" %}
+                        <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                          <select id="cl-apt-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                            <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                            {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                          </select>
+                        </div>
+                      {% elif f.type == "textarea" %}
+                        <textarea class="lf-control" id="cl-apt-{{ f.name }}" name="{{ f.name }}" rows="4" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}></textarea>
+                      {% else %}
+                        <input class="lf-control" type="{{ f.type }}" id="cl-apt-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}>
+                      {% endif %}
+                      {% if f.helper %}<p class="lf-helper">{{ f.helper }}</p>{% endif %}
+                    </div>
+                  {% endif %}{% endfor %}
+                {% endfor %}
+              </div>
+            {% endfor %}
+          {% else %}
+            {% for f in page_data.form_fields %}
+              <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+                <label class="lf-label">{{ f.label }}</label>
+                {% if f.type == "select" %}
+                  <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                    <select name="{{ f.name|default:'field' }}">
+                      <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                      {% for opt in f.options %}<option>{{ opt }}</option>{% endfor %}
+                    </select>
+                  </div>
+                {% elif f.type == "textarea" %}
+                  <textarea class="lf-control" placeholder="{{ f.placeholder }}"></textarea>
+                {% else %}
+                  <input class="lf-control" type="{{ f.type }}" placeholder="{{ f.placeholder }}">
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <label class="lf-check lf-full" style="grid-column:1/-1;">
+            <input type="checkbox" name="consent" required>
+            <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+            <span class="lf-check-text">{{ page_data.consent }}</span>
+          </label>
+
+          <div class="lf-submit-bar" style="grid-column:1/-1;">
+            <button type="submit" class="lf-submit-primary">
+              <span>{{ page_data.submit_label }}</span>
+              <span class="lf-submit-arrow" aria-hidden="true">→</span>
+            </button>
+            {% if page_data.form_submit_note %}
+            <span class="lf-submit-note">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+              {{ page_data.form_submit_note }}
+            </span>
+            {% endif %}
+            <span class="lf-submit-secondary">{{ chrome.apt_alternative_prefix }} <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.apt_alternative_link }}</a></span>
+          </div>
+        </form>
+      </div>
+
+      <aside class="cl-apt-side">
+        <div class="cl-apt-help" data-lm="reveal">
+          <h3>{{ page_data.help_title }}</h3>
+          <div class="cl-apt-help-steps">
+            {% for s in page_data.help_steps %}
+              <div class="cl-apt-help-step">
+                <span class="cl-apt-help-num">{{ s.num }}</span>
+                <div>
+                  <h4>{{ s.title }}</h4>
+                  <p>{{ s.body }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="cl-apt-alt" data-lm="reveal">
+          <h4>{{ page_data.alt_title }}</h4>
+          <p>{{ page_data.alt_body }}</p>
+          <a class="cl-apt-alt-phone" href="tel:{{ site.phone_tel|default:site.phone }}">
+            <span class="cl-apt-alt-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </span>
+            <span>
+              <span class="cl-apt-alt-lbl">{{ site.phone_label }}</span>
+              <span class="cl-apt-alt-num">{{ site.phone }}</span>
+            </span>
+          </a>
+        </div>
+
+        <div class="cl-apt-trust" data-lm="reveal">
+          {% for t in page_data.trust %}
+            <div class="cl-apt-trust-item">
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>{{ t }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </aside>
+    </div>
+  </section>
+{% endblock %}

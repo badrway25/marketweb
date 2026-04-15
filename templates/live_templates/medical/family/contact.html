@@ -1,0 +1,289 @@
+{% extends "live_templates/medical/family/_base.html" %}
+
+{% block extra_css %}
+  .fm-contact { padding: 24px 8vw 72px; max-width: 1320px; margin: 0 auto; }
+  .fm-contact-grid {
+    display: grid; grid-template-columns: 1fr 1.05fr; gap: 48px;
+    align-items: start;
+  }
+
+  /* LEFT: map / address / how-to */
+  .fm-contact .info-card {
+    background: var(--paper-2); border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+  }
+  .fm-contact .map {
+    aspect-ratio: 4/3;
+    background-size: cover; background-position: center;
+    background-color: var(--paper-3);
+    position: relative;
+  }
+  .fm-contact .map .pin {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -100%);
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--accent); color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 24px rgba(233,123,92,0.44);
+    border: 3px solid #FFFFFF;
+  }
+  .fm-contact .map .pin svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .fm-contact .map .pin:after {
+    content: ''; position: absolute; bottom: -8px; left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent; border-top-color: var(--accent);
+  }
+  .fm-contact .info { padding: 30px 32px 32px; }
+  .fm-contact .info .lbl {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; color: var(--accent); text-transform: uppercase;
+  }
+  .fm-contact .info .address {
+    margin-top: 8px; font-family: var(--heading);
+    font-size: 24px; font-weight: 700; color: var(--primary);
+    line-height: 1.3;
+  }
+  .fm-contact .info .address-sub {
+    margin-top: 4px; font-family: var(--body);
+    font-size: 15px; color: var(--ink-soft);
+  }
+  .fm-contact .info .split {
+    margin-top: 22px; padding-top: 22px;
+    border-top: 1px dashed var(--rule);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  }
+  .fm-contact .info .split .b {
+    font-family: var(--body);
+  }
+  .fm-contact .info .split .b .k {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--accent); text-transform: uppercase;
+  }
+  .fm-contact .info .split .b .v {
+    margin-top: 4px; font-size: 15px; color: var(--primary); font-weight: 700;
+  }
+
+  .fm-travel {
+    margin-top: 24px;
+    background: #FFFFFF; border-radius: 24px; padding: 28px 32px;
+    border: 1px solid var(--rule);
+  }
+  .fm-travel h4 {
+    font-family: var(--heading); font-size: 20px; font-weight: 700;
+    color: var(--primary); margin-bottom: 18px;
+  }
+  .fm-travel .row {
+    display: grid; grid-template-columns: 44px 1fr; gap: 14px;
+    padding: 14px 0; border-top: 1px dashed var(--rule);
+    font-family: var(--body); font-size: 14px; line-height: 1.55;
+  }
+  .fm-travel .row:first-of-type { border-top: 0; padding-top: 0; }
+  .fm-travel .row .ico {
+    width: 36px; height: 36px; border-radius: 12px; flex-shrink: 0;
+    background: var(--peach-tint); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .fm-travel .row .ico svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .fm-travel .row .txt strong {
+    display: block; font-weight: 700; color: var(--primary); font-size: 14px;
+  }
+  .fm-travel .row .txt span { color: var(--ink-soft); }
+
+  .fm-hours-side {
+    margin-top: 24px;
+    background: var(--secondary); border-radius: 24px; padding: 28px 32px;
+  }
+  .fm-hours-side h4 {
+    font-family: var(--heading); font-size: 20px; font-weight: 700;
+    color: var(--primary); margin-bottom: 16px;
+  }
+  .fm-hours-side .row {
+    display: grid; grid-template-columns: 110px 1fr; gap: 14px;
+    padding: 10px 0; border-top: 1px solid rgba(74,46,42,0.14);
+    font-family: var(--body); font-size: 14px;
+  }
+  .fm-hours-side .row:first-of-type { border-top: 0; padding-top: 0; }
+  .fm-hours-side .row .d { font-weight: 700; color: var(--primary); }
+  .fm-hours-side .row .h { color: var(--ink); }
+
+  /* RIGHT: form */
+  .fm-form-card {
+    background: #FFFFFF; border-radius: 28px;
+    padding: 40px 44px;
+    border: 1px solid var(--rule);
+    box-shadow: 0 20px 44px rgba(74,46,42,0.05);
+  }
+  .fm-form-card h3 {
+    font-family: var(--heading); font-size: 28px; font-weight: 700;
+    color: var(--primary); line-height: 1.3;
+  }
+  .fm-form-card .intro {
+    margin-top: 12px; font-family: var(--body);
+    font-size: 16px; line-height: 1.65; color: var(--ink-soft); max-width: 50ch;
+  }
+  .fm-form-card form {
+    margin-top: 28px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  }
+  .fm-form-card .lf-field.lf-full,
+  .fm-form-card .lf-select.lf-full,
+  .fm-form-card .lf-full { grid-column: 1 / -1; }
+
+  .fm-form-card .submit-row {
+    grid-column: 1 / -1; margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .fm-form-card .submit-row .fm-submit-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 15px 32px; border-radius: 999px;
+    background: var(--accent); color: #FFFFFF;
+    font-family: var(--body); font-size: 15px; font-weight: 700;
+    border: 0; cursor: pointer;
+    box-shadow: 0 12px 28px rgba(233,123,92,0.30);
+    transition: background .2s ease, transform .2s ease;
+  }
+  .fm-form-card .submit-row .fm-submit-btn:hover { background: var(--primary); transform: translateY(-1px); }
+  .fm-form-card .submit-row .fm-submit-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .fm-form-card .submit-row .note {
+    font-family: var(--body); font-size: 12px; color: var(--ink-mute);
+    display: inline-flex; align-items: center; gap: 8px; max-width: 38ch;
+  }
+  .fm-form-card .submit-row .note svg { width: 14px; height: 14px; stroke: var(--accent); fill: none; stroke-width: 2; flex-shrink: 0; }
+
+  @media (max-width: 920px) {
+    .fm-contact-grid { grid-template-columns: 1fr; gap: 32px; }
+    .fm-form-card { padding: 28px; }
+    .fm-form-card form { grid-template-columns: 1fr; }
+    .fm-form-card h3 { font-size: 22px; }
+  }
+{% endblock %}
+
+{% block content %}
+{% with p=page_data %}
+
+<section class="fm-lead">
+  <div class="eyebrow">{{ p.eyebrow }}</div>
+  <h1>{{ p.headline|safe }}</h1>
+  <p class="intro">{{ p.intro }}</p>
+</section>
+
+<section class="fm-contact">
+  <div class="fm-contact-grid">
+    <!-- LEFT COLUMN -->
+    <div data-lm="reveal">
+      <div class="info-card">
+        <div class="map" style="{% if p.map_image %}background-image: url('{{ p.map_image }}');{% endif %}">
+          <span class="pin" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </span>
+        </div>
+        <div class="info">
+          <div class="lbl">{{ p.address_label }}</div>
+          <div class="address">{{ p.address_line }}</div>
+          <div class="address-sub">{{ p.address_sub }}</div>
+          <div class="split">
+            <div class="b">
+              <div class="k">{{ p.phone_label }}</div>
+              <a href="tel:{{ site.phone_tel }}" class="v">{{ site.phone }}</a>
+            </div>
+            <div class="b">
+              <div class="k">{{ p.email_label }}</div>
+              <a href="mailto:{{ site.email }}" class="v">{{ site.email }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fm-travel">
+        <h4>{{ p.travel_heading }}</h4>
+        {% for t in p.travel %}
+          <div class="row">
+            <span class="ico">
+              {% if t.icon == 'car' %}<svg viewBox="0 0 24 24"><rect x="2" y="10" width="20" height="8" rx="2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M5 10l2-5h10l2 5"/></svg>
+              {% elif t.icon == 'metro' %}<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="16" rx="3"/><path d="M4 11h16"/><circle cx="8" cy="15" r="1"/><circle cx="16" cy="15" r="1"/><path d="M8 19l-2 3M16 19l2 3"/></svg>
+              {% else %}<svg viewBox="0 0 24 24"><path d="M13 4v8l-4 4v4"/><circle cx="13" cy="2" r="2"/><path d="M9 12l4-2M17 7l-4 3"/></svg>{% endif %}
+            </span>
+            <span class="txt">
+              <strong>{{ t.title }}</strong>
+              <span>{{ t.text }}</span>
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="fm-hours-side">
+        <h4>{{ p.hours_heading }}</h4>
+        {% for d, hrs in p.hours %}
+          <div class="row"><span class="d">{{ d }}</span><span class="h">{{ hrs }}</span></div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: FORM -->
+    <div class="fm-form-card" data-lm="reveal">
+      <h3>{{ p.form_title }}</h3>
+      <p class="intro">{{ p.form_intro }}</p>
+      {% with ph=p.form_placeholders h=p.form_helpers %}
+      <form novalidate>
+        <div class="lf-field">
+          <label class="lf-label" for="fm-ct-parent">{{ p.label_parent_name }}</label>
+          <input class="lf-control" type="text" id="fm-ct-parent" name="parent_name" placeholder="{{ ph.parent_name }}" autocomplete="name">
+          {% if h.parent_name %}<p class="lf-helper">{{ h.parent_name }}</p>{% endif %}
+        </div>
+        <div class="lf-field">
+          <label class="lf-label" for="fm-ct-email">{{ chrome.form_email }}</label>
+          <input class="lf-control" type="email" id="fm-ct-email" name="email" placeholder="{{ ph.email }}" autocomplete="email">
+          {% if h.email %}<p class="lf-helper">{{ h.email }}</p>{% endif %}
+        </div>
+        <div class="lf-field">
+          <label class="lf-label" for="fm-ct-phone">{{ chrome.form_phone }}</label>
+          <input class="lf-control" type="tel" id="fm-ct-phone" name="phone" placeholder="{{ ph.phone }}" autocomplete="tel">
+          {% if h.phone %}<p class="lf-helper">{{ h.phone }}</p>{% endif %}
+        </div>
+        <div class="lf-field">
+          <label class="lf-label" for="fm-ct-age">{{ p.label_child_age }}</label>
+          <input class="lf-control" type="text" id="fm-ct-age" name="child_age" placeholder="{{ ph.child_age }}">
+          {% if h.child_age %}<p class="lf-helper">{{ h.child_age }}</p>{% endif %}
+        </div>
+        <div class="lf-select lf-full" data-lf-select>
+          <label class="lf-label" for="fm-ct-reason">{{ p.label_reason }}</label>
+          <select id="fm-ct-reason" name="reason">
+            <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+            {% for opt in p.reason_options %}
+              <option value="{{ forloop.counter }}">{{ opt }}</option>
+            {% endfor %}
+          </select>
+          {% if h.reason %}<p class="lf-helper">{{ h.reason }}</p>{% endif %}
+        </div>
+        <div class="lf-field lf-full">
+          <label class="lf-label" for="fm-ct-msg">{{ chrome.form_message }}</label>
+          <textarea class="lf-control" id="fm-ct-msg" name="message" rows="5" placeholder="{{ ph.message }}"></textarea>
+          {% if h.message %}<p class="lf-helper">{{ h.message }}</p>{% endif %}
+        </div>
+        <label class="lf-check lf-full">
+          <input type="checkbox" name="consent" required>
+          <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+          <span class="lf-check-text">{{ p.form_consent }}</span>
+        </label>
+        <div class="submit-row">
+          <button type="submit" class="fm-submit-btn">
+            <span>{{ chrome.form_submit }}</span>
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          {% if p.form_submit_note %}
+          <span class="note">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            {{ p.form_submit_note }}
+          </span>
+          {% endif %}
+        </div>
+      </form>
+      {% endwith %}
+    </div>
+  </div>
+</section>
+
+{% endwith %}
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends "live_templates/medical/wellness/_base.html" %}
+
+{% block extra_css %}
+  /* Extended pricelist: each item has meta + description + mini CTA */
+  .we-ritual-list { padding: 24px 90px 96px; max-width: 1200px; margin: 0 auto; }
+  .we-ritual-list .it {
+    display: grid; grid-template-columns: 80px 1fr 220px auto;
+    gap: 32px; align-items: baseline;
+    padding: 40px 0; border-top: 1px solid var(--rule);
+  }
+  .we-ritual-list .it:last-child { border-bottom: 1px solid var(--rule); }
+  .we-ritual-list .it .num {
+    font-family: var(--heading); font-style: italic;
+    font-size: 32px; font-weight: 500; color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+  .we-ritual-list .it .body .name {
+    font-family: var(--heading); font-style: italic;
+    font-size: 32px; font-weight: 500; color: var(--primary);
+    line-height: 1.1;
+  }
+  .we-ritual-list .it .body .meta {
+    margin-top: 8px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .we-ritual-list .it .body .desc {
+    margin-top: 16px; max-width: 52ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.75;
+    color: var(--ink-soft); font-weight: 300;
+  }
+  .we-ritual-list .it .price {
+    font-family: var(--heading); font-style: italic;
+    font-size: 34px; font-weight: 500; color: var(--ink);
+    white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  .we-ritual-list .it .mini-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 999px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--primary); border: 1px solid var(--accent);
+    white-space: nowrap;
+    transition: background .25s ease, color .25s ease;
+  }
+  .we-ritual-list .it .mini-cta:hover { background: var(--accent); color: var(--paper); }
+  .we-ritual-list .it .mini-cta:after { content: '→'; font-family: var(--heading); font-style: italic; font-size: 14px; }
+
+  /* Advice card — bullets editorial */
+  .we-advice {
+    background: var(--paper-2);
+    padding: 96px 90px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .we-advice .inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1.6fr; gap: 80px;
+  }
+  .we-advice h3 {
+    font-family: var(--heading); font-style: italic;
+    font-size: 44px; font-weight: 500; line-height: 1.1;
+    max-width: 10ch;
+  }
+  .we-advice .label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .we-advice ul { list-style: none; padding: 0; margin: 0; }
+  .we-advice ul li {
+    padding: 22px 0 22px 48px; border-bottom: 1px solid var(--rule-soft);
+    position: relative;
+    font-family: var(--body); font-size: 16px; line-height: 1.7;
+    color: var(--ink); font-weight: 300;
+  }
+  .we-advice ul li:last-child { border-bottom: 0; }
+  .we-advice ul li:before {
+    content: '✦'; position: absolute; left: 0; top: 22px;
+    color: var(--accent); font-size: 18px;
+  }
+  .we-advice ul li strong {
+    display: block; margin-bottom: 6px;
+    font-family: var(--heading); font-style: italic; font-size: 20px;
+    font-weight: 500; color: var(--primary);
+  }
+
+  /* Packages — 2 editorial cards */
+  .we-packages { padding: 110px 90px; max-width: 1280px; margin: 0 auto; }
+  .we-packages .grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 36px;
+  }
+  .we-packages .pkg {
+    padding: 48px 44px; border-radius: 4px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    position: relative; overflow: hidden;
+  }
+  .we-packages .pkg .tag {
+    display: inline-block; padding: 6px 14px; border-radius: 999px;
+    background: rgba(212,165,116,0.18); color: var(--accent);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+  }
+  .we-packages .pkg h3 {
+    margin-top: 28px;
+    font-family: var(--heading); font-style: italic; font-size: 42px;
+    font-weight: 500; line-height: 1.1; color: var(--primary);
+  }
+  .we-packages .pkg .dur {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .we-packages .pkg .desc {
+    margin-top: 22px;
+    font-family: var(--body); font-size: 15px; line-height: 1.75;
+    color: var(--ink); font-weight: 300;
+  }
+  .we-packages .pkg ul { list-style: none; padding: 0; margin: 28px 0 0 0; }
+  .we-packages .pkg ul li {
+    padding: 10px 0 10px 28px; position: relative;
+    font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: var(--ink-soft); font-weight: 300;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .we-packages .pkg ul li:before {
+    content: '·'; position: absolute; left: 0; top: 8px;
+    color: var(--accent); font-size: 22px; font-family: var(--heading);
+  }
+  .we-packages .pkg .foot {
+    margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 16px;
+  }
+  .we-packages .pkg .price {
+    font-family: var(--heading); font-style: italic;
+    font-size: 40px; font-weight: 500; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 980px) {
+    .we-ritual-list { padding: 16px 24px 72px; }
+    .we-ritual-list .it { grid-template-columns: 1fr; gap: 12px; padding: 32px 0; }
+    .we-ritual-list .it .num { font-size: 20px; }
+    .we-ritual-list .it .body .name { font-size: 24px; }
+    .we-ritual-list .it .price { font-size: 28px; }
+    .we-advice { padding: 72px 24px; }
+    .we-advice .inner { grid-template-columns: 1fr; gap: 32px; }
+    .we-packages { padding: 72px 24px; }
+    .we-packages .grid { grid-template-columns: 1fr; gap: 24px; }
+    .we-packages .pkg { padding: 32px 24px; }
+    .we-packages .pkg h3 { font-size: 30px; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="we-lead">
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
+  </section>
+
+  {# Extended pricelist #}
+  <section class="we-ritual-list" data-lm-stagger data-lm-stagger-delay="70">
+    {% for r in page_data.treatments %}
+      <div class="it">
+        <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
+        <div class="body">
+          <div class="name">{{ r.name }}</div>
+          <div class="meta">{{ r.meta }}</div>
+          <p class="desc">{{ r.desc }}</p>
+        </div>
+        <span class="price">{{ r.price }}</span>
+        <a class="mini-cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.reserve_label }}</a>
+      </div>
+    {% endfor %}
+  </section>
+
+  {# Advice bullets #}
+  <section class="we-advice">
+    <div class="inner" data-lm="reveal">
+      <div>
+        <div class="label">{{ page_data.advice_label }}</div>
+        <h3>{{ page_data.advice_heading|safe }}</h3>
+      </div>
+      <ul data-lm-stagger data-lm-stagger-delay="90">
+        {% for a in page_data.advice %}
+          <li><strong>{{ a.title }}</strong>{{ a.body }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  {# Packages #}
+  <section class="we-packages">
+    <div class="we-sec-head">
+      <div><span class="label" data-lm="reveal">{{ page_data.packages_label }}</span></div>
+      <div>
+        <h2 data-lm="reveal-lg">{{ page_data.packages_heading|safe }}</h2>
+        <p class="intro" data-lm="reveal">{{ page_data.packages_intro }}</p>
+      </div>
+    </div>
+    <div class="grid" data-lm-stagger data-lm-stagger-delay="140">
+      {% for p in page_data.packages %}
+        <div class="pkg">
+          <span class="tag">{{ p.tag }}</span>
+          <h3>{{ p.title }}</h3>
+          <div class="dur">{{ p.duration }}</div>
+          <p class="desc">{{ p.desc }}</p>
+          <ul>
+            {% for i in p.includes %}<li>{{ i }}</li>{% endfor %}
+          </ul>
+          <div class="foot">
+            <span class="price">{{ p.price }}</span>
+            <a class="we-btn we-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.cta }}</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="we-cta-band">
+    <div class="eyebrow">{{ page_data.cta_label }}</div>
+    <h2>{{ page_data.cta_heading|safe }}</h2>
+    <p class="sub">{{ page_data.cta_sub }}</p>
+    <div class="actions">
+      <a class="we-btn we-btn-solid" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary }}</a>
+      <a class="we-btn we-btn-ghost" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_secondary }}</a>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "live_templates/medical/wellness/_base.html" %}
+
+{% block extra_css %}
+  .we-team { padding: 24px 90px 96px; max-width: 1280px; margin: 0 auto; }
+  .we-team .p {
+    display: grid; grid-template-columns: 340px 1fr;
+    gap: 56px; padding: 48px 0;
+    border-top: 1px solid var(--rule);
+    align-items: start;
+  }
+  .we-team .p:last-child { border-bottom: 1px solid var(--rule); }
+  .we-team .p .portrait {
+    aspect-ratio: 3/4;
+    background-size: cover; background-position: center;
+    filter: saturate(0.90) brightness(0.96);
+    transition: filter 900ms cubic-bezier(0.33, 1.00, 0.68, 1);
+  }
+  .we-team .p .portrait:hover { filter: saturate(1.0) brightness(1); }
+  .we-team .p .info .role {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+  }
+  .we-team .p .info h3 {
+    margin-top: 14px;
+    font-family: var(--heading); font-style: italic;
+    font-size: 54px; font-weight: 500; line-height: 1.05;
+    letter-spacing: -0.015em; color: var(--primary);
+  }
+  .we-team .p .info .tags {
+    margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .we-team .p .info .tags span {
+    font-family: var(--body); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--primary); padding: 8px 16px;
+    border: 1px solid var(--rule); border-radius: 999px;
+    background: var(--paper-2);
+  }
+  .we-team .p .info .bio {
+    margin-top: 28px; max-width: 60ch;
+    font-family: var(--body); font-size: 16px; line-height: 1.8;
+    color: var(--ink); font-weight: 300;
+  }
+  .we-team .p .info .quote {
+    margin-top: 28px;
+    font-family: var(--heading); font-style: italic;
+    font-size: 20px; line-height: 1.55; color: var(--ink-soft);
+    padding-left: 18px; border-left: 2px solid var(--accent);
+    max-width: 52ch;
+  }
+
+  /* Philosophy band */
+  .we-team-philo {
+    background: var(--paper-2);
+    padding: 110px 90px; text-align: center;
+    border-top: 1px solid var(--rule);
+  }
+  .we-team-philo .label {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 22px;
+  }
+  .we-team-philo blockquote {
+    font-family: var(--heading); font-style: italic;
+    font-size: 42px; font-weight: 400; line-height: 1.25; color: var(--primary);
+    max-width: 30ch; margin: 0 auto;
+    letter-spacing: -0.012em;
+  }
+  .we-team-philo .attr {
+    margin-top: 32px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  @media (max-width: 980px) {
+    .we-team { padding: 16px 24px 72px; }
+    .we-team .p { grid-template-columns: 1fr; gap: 24px; padding: 32px 0; }
+    .we-team .p .portrait { max-width: 260px; }
+    .we-team .p .info h3 { font-size: 34px; }
+    .we-team-philo { padding: 72px 24px; }
+    .we-team-philo blockquote { font-size: 28px; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="we-lead">
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="we-team">
+    {% for person in page_data.people %}
+      <div class="p" data-lm="reveal">
+        <div class="portrait" style="background-image: url('{{ person.portrait }}');"></div>
+        <div class="info">
+          <div class="role">{{ person.role }}</div>
+          <h3>{{ person.name }}</h3>
+          {% if person.tags %}
+          <div class="tags" data-lm-stagger data-lm-stagger-delay="50">
+            {% for t in person.tags %}<span>{{ t }}</span>{% endfor %}
+          </div>
+          {% endif %}
+          <p class="bio">{{ person.bio }}</p>
+          {% if person.quote %}<p class="quote">{{ person.quote }}</p>{% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+
+  <section class="we-team-philo">
+    <div class="label">{{ page_data.philo_label }}</div>
+    <blockquote data-lm="reveal-lg">{{ page_data.philo_quote|safe }}</blockquote>
+    <div class="attr">{{ page_data.philo_attr }}</div>
+  </section>
+
+  <section class="we-cta-band">
+    <div class="eyebrow">{{ page_data.cta_label }}</div>
+    <h2>{{ page_data.cta_heading|safe }}</h2>
+    <div class="actions">
+      <a class="we-btn we-btn-solid" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.cta_primary }}</a>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,269 @@
+{% extends "live_templates/medical/clinic/_base.html" %}
+
+{% block extra_css %}
+  .cl-contact { padding: 0 56px 80px; max-width: 1360px; margin: 0 auto; }
+  .cl-contact .cl-contact-grid {
+    display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px;
+  }
+
+  .cl-contact .cl-map-card {
+    background: #FFFFFF;
+    border: 1px solid var(--rule); border-radius: 18px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .cl-contact .cl-map {
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #D4E8ED 0%, #BBDCE4 100%);
+    position: relative;
+  }
+  .cl-contact .cl-map:before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(11,79,108,0.08) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(90deg, rgba(11,79,108,0.08) 0 1px, transparent 1px 40px);
+  }
+  .cl-contact .cl-map .cl-map-pin {
+    position: absolute; top: 45%; left: 50%; transform: translate(-50%, -100%);
+    width: 44px; height: 44px;
+    background: var(--green); border-radius: 50% 50% 50% 0;
+    transform: translate(-50%, -100%) rotate(-45deg);
+    box-shadow: 0 10px 24px rgba(32,191,85,0.4);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cl-contact .cl-map .cl-map-pin:before {
+    content: ''; width: 16px; height: 16px; border-radius: 50%; background: #FFFFFF;
+    transform: rotate(45deg);
+  }
+  .cl-contact .cl-map .cl-map-stamp {
+    position: absolute; bottom: 16px; left: 16px;
+    padding: 8px 14px;
+    background: #FFFFFF; border-radius: 8px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    color: var(--primary); letter-spacing: 0.04em;
+    box-shadow: 0 4px 12px rgba(11,79,108,0.12);
+  }
+  .cl-contact .cl-map-body {
+    padding: 28px 28px 26px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .cl-contact .cl-map-row {
+    display: grid; grid-template-columns: 36px 1fr; gap: 14px;
+    align-items: start;
+  }
+  .cl-contact .cl-map-row .cl-map-ico {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--bg-band); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cl-contact .cl-map-row .cl-map-ico svg {
+    width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .cl-contact .cl-map-row .cl-map-lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .cl-contact .cl-map-row .cl-map-val {
+    margin-top: 2px;
+    font-family: var(--body); font-size: 15px; font-weight: 600;
+    color: var(--ink); line-height: 1.5;
+  }
+  .cl-contact .cl-map-row .cl-map-val a { color: var(--primary); }
+  .cl-contact .cl-map-row .cl-map-val a:hover { color: var(--secondary); }
+
+  /* Hours table */
+  .cl-hours {
+    margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--rule);
+  }
+  .cl-hours h4 {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .cl-hours table {
+    margin-top: 10px; width: 100%; border-collapse: collapse;
+  }
+  .cl-hours td {
+    padding: 8px 0;
+    font-family: var(--body); font-size: 14px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .cl-hours td:first-child { color: var(--ink); font-weight: 600; }
+  .cl-hours td:last-child {
+    text-align: right; color: var(--primary); font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  html[dir="rtl"] .cl-hours td:last-child { text-align: left; }
+
+  /* Access info */
+  .cl-access {
+    margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  .cl-access .cl-access-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-family: var(--body); font-size: 13px; color: var(--ink-body); line-height: 1.5;
+  }
+  .cl-access .cl-access-item svg {
+    width: 18px; height: 18px; stroke: var(--secondary); fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 2px;
+  }
+  .cl-access .cl-access-item strong {
+    display: block;
+    font-family: var(--heading); font-size: 14px; font-weight: 700; color: var(--primary);
+  }
+
+  /* Contact form */
+  .cl-form-card {
+    background: #FFFFFF;
+    border: 1px solid var(--rule); border-radius: 18px;
+    padding: 36px 36px;
+  }
+  .cl-form-card .cl-form-lead {
+    padding-bottom: 22px; border-bottom: 1px solid var(--rule);
+  }
+  .cl-form-card .cl-form-lead h2 {
+    font-family: var(--heading); font-size: 26px; font-weight: 800;
+    color: var(--primary); letter-spacing: -0.01em; line-height: 1.2;
+  }
+  .cl-form-card .cl-form-lead p {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 15px; line-height: 1.55; color: var(--ink-soft);
+  }
+  .cl-form-card form {
+    margin-top: 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px;
+  }
+  .cl-form-card .cl-form-actions {
+    grid-column: 1 / -1;
+    display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 1100px) {
+    .cl-contact { padding: 0 22px 56px; }
+    .cl-contact .cl-contact-grid { grid-template-columns: 1fr; gap: 28px; }
+    .cl-form-card { padding: 28px 22px; }
+    .cl-form-card form { grid-template-columns: 1fr; gap: 14px; }
+    .cl-access { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="cl-lead">
+    <span class="cl-eyebrow">{{ page_data.eyebrow }}</span>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="cl-intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="cl-contact">
+    <div class="cl-contact-grid">
+      <aside class="cl-map-card" data-lm="reveal">
+        <div class="cl-map" role="img" aria-label="{{ page_data.map_aria }}">
+          <span class="cl-map-pin" aria-hidden="true"></span>
+          <span class="cl-map-stamp">{{ page_data.map_stamp }}</span>
+        </div>
+        <div class="cl-map-body">
+          <div class="cl-map-row">
+            <span class="cl-map-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <div>
+              <div class="cl-map-lbl">{{ page_data.address_label }}</div>
+              <div class="cl-map-val">{{ site.address }}</div>
+            </div>
+          </div>
+          <div class="cl-map-row">
+            <span class="cl-map-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </span>
+            <div>
+              <div class="cl-map-lbl">{{ site.phone_label }}</div>
+              <div class="cl-map-val"><a href="tel:{{ site.phone_tel|default:site.phone }}">{{ site.phone }}</a></div>
+            </div>
+          </div>
+          <div class="cl-map-row">
+            <span class="cl-map-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <div>
+              <div class="cl-map-lbl">{{ page_data.email_label }}</div>
+              <div class="cl-map-val"><a href="mailto:{{ site.email }}">{{ site.email }}</a></div>
+            </div>
+          </div>
+
+          <div class="cl-hours">
+            <h4>{{ page_data.hours_heading }}</h4>
+            <table>
+              {% for day, hours in page_data.hours_table %}
+                <tr><td>{{ day }}</td><td>{{ hours }}</td></tr>
+              {% endfor %}
+            </table>
+          </div>
+
+          <div class="cl-access">
+            {% for a in page_data.access %}
+              <div class="cl-access-item">
+                {% if a.icon == "car" %}
+                  <svg viewBox="0 0 24 24"><path d="M5 17h14v-3.17a2 2 0 0 0-.66-1.48l-3.1-2.78a2 2 0 0 0-1.34-.52H10.1a2 2 0 0 0-1.34.52L5.66 12.35A2 2 0 0 0 5 13.83V17z"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/></svg>
+                {% elif a.icon == "metro" %}
+                  <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 16h16"/><circle cx="8" cy="18" r="1"/><circle cx="16" cy="18" r="1"/></svg>
+                {% elif a.icon == "wheelchair" %}
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M10 7v5h5l3 6"/><circle cx="10" cy="18" r="4"/></svg>
+                {% else %}
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                {% endif %}
+                <div>
+                  <strong>{{ a.title }}</strong>
+                  <span>{{ a.body }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </aside>
+
+      <div class="cl-form-card" data-lm="reveal">
+        <div class="cl-form-lead">
+          <h2>{{ page_data.form_title }}</h2>
+          <p>{{ page_data.form_intro }}</p>
+        </div>
+
+        <form method="post" action="" novalidate>
+          {% for f in page_data.form_fields %}
+            <div class="lf-field{% if f.full_width %} lf-full{% endif %}"{% if f.full_width %} style="grid-column:1/-1;"{% endif %}>
+              <label class="lf-label" for="cl-contact-{{ f.name }}">{{ f.label }}{% if not f.required %}<span class="lf-opt">{{ chrome.form_optional }}</span>{% endif %}</label>
+              {% if f.type == "select" %}
+                <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                  <select id="cl-contact-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                    <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                    {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                  </select>
+                </div>
+              {% elif f.type == "textarea" %}
+                <textarea class="lf-control" id="cl-contact-{{ f.name }}" name="{{ f.name }}" rows="4" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}></textarea>
+              {% else %}
+                <input class="lf-control" type="{{ f.type }}" id="cl-contact-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}>
+              {% endif %}
+              {% if f.helper %}<p class="lf-helper">{{ f.helper }}</p>{% endif %}
+            </div>
+          {% endfor %}
+
+          <label class="lf-check" style="grid-column:1/-1;">
+            <input type="checkbox" name="consent" required>
+            <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+            <span class="lf-check-text">{{ page_data.consent }}</span>
+          </label>
+
+          <div class="cl-form-actions">
+            <button type="submit" class="cl-btn cl-btn-primary">
+              {{ page_data.submit_label }}
+              <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+            <span style="font-family:var(--body);font-size:13px;color:var(--ink-soft);">{{ page_data.form_note }}</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+{% endblock %}

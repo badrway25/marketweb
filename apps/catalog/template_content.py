@@ -2491,6 +2491,28 @@ from apps.catalog.template_content_aura_fr import AURA_CONTENT_FR  # noqa: E402
 from apps.catalog.template_content_aura_es import AURA_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_aura_ar import AURA_CONTENT_AR  # noqa: E402
 
+# Phase 2g3.2 — Medical second wave live rollout (Session medical-second-wave-v1).
+# Salute (clinic archetype), Benessere (wellness archetype), Famiglia (family
+# archetype) flip from tier=draft to tier=published_live with 5 locales each
+# (it/en/fr/es/ar) and real RTL for Arabic. The three new skins are distinct
+# products by D-054: Salute institutional teal booking-widget · Benessere
+# serene sage calendar-spot · Famiglia warm peach phone-and-chat.
+from apps.catalog.template_content_salute import SALUTE_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_salute_en import SALUTE_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_salute_fr import SALUTE_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_salute_es import SALUTE_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_salute_ar import SALUTE_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_benessere import BENESSERE_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_benessere_en import BENESSERE_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_benessere_fr import BENESSERE_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_benessere_es import BENESSERE_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_benessere_ar import BENESSERE_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_famiglia import FAMIGLIA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_famiglia_en import FAMIGLIA_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_famiglia_fr import FAMIGLIA_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_famiglia_es import FAMIGLIA_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_famiglia_ar import FAMIGLIA_CONTENT_AR  # noqa: E402
+
 
 TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
     "cardio-studio-specialistico": {
@@ -2584,6 +2606,28 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": AURA_CONTENT_FR,
         "es": AURA_CONTENT_ES,
         "ar": AURA_CONTENT_AR,
+    },
+    # Medical second wave live rollout (Phase 2g3.2, Session 51)
+    "salute-studio-medico": {
+        "it": SALUTE_CONTENT_IT,
+        "en": SALUTE_CONTENT_EN,
+        "fr": SALUTE_CONTENT_FR,
+        "es": SALUTE_CONTENT_ES,
+        "ar": SALUTE_CONTENT_AR,
+    },
+    "benessere-centro-olistico": {
+        "it": BENESSERE_CONTENT_IT,
+        "en": BENESSERE_CONTENT_EN,
+        "fr": BENESSERE_CONTENT_FR,
+        "es": BENESSERE_CONTENT_ES,
+        "ar": BENESSERE_CONTENT_AR,
+    },
+    "famiglia-pediatria": {
+        "it": FAMIGLIA_CONTENT_IT,
+        "en": FAMIGLIA_CONTENT_EN,
+        "fr": FAMIGLIA_CONTENT_FR,
+        "es": FAMIGLIA_CONTENT_ES,
+        "ar": FAMIGLIA_CONTENT_AR,
     },
 }
 

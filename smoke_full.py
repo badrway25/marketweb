@@ -28,6 +28,10 @@ LOCALES = {
     # Phase 2g3.6f — Agency live rollout (Session 49)
     "vertex-creative-agency":      ["it", "en", "fr", "es", "ar"],
     "aura-digital-studio":         ["it", "en", "fr", "es", "ar"],
+    # Phase 2g3.2 — Medical second wave live rollout (Session 51)
+    "salute-studio-medico":        ["it", "en", "fr", "es", "ar"],
+    "benessere-centro-olistico":   ["it", "en", "fr", "es", "ar"],
+    "famiglia-pediatria":          ["it", "en", "fr", "es", "ar"],
 }
 
 CATEGORY = {
@@ -44,6 +48,10 @@ CATEGORY = {
     "brace-street-food-lab":       "restaurant",
     "vertex-creative-agency":      "agency",
     "aura-digital-studio":         "agency",
+    # Phase 2g3.2 — Medical second wave
+    "salute-studio-medico":        "medical",
+    "benessere-centro-olistico":   "medical",
+    "famiglia-pediatria":          "medical",
 }
 
 @override_settings(ALLOWED_HOSTS=["*"])

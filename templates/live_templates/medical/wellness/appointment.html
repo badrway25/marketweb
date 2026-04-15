@@ -1,0 +1,215 @@
+{% extends "live_templates/medical/wellness/_base.html" %}
+
+{% block extra_css %}
+  /* Dark-band 7-day calendar widget, refined */
+  .we-apt-calendar {
+    background: var(--primary); color: var(--paper);
+    padding: 96px 90px;
+    margin-top: 48px;
+  }
+  .we-apt-calendar .inner { max-width: 1280px; margin: 0 auto; }
+  .we-apt-calendar .head {
+    display: grid; grid-template-columns: 1fr auto; gap: 24px;
+    align-items: baseline; margin-bottom: 40px;
+    padding-bottom: 24px; border-bottom: 1px solid rgba(245,239,230,0.16);
+  }
+  .we-apt-calendar .head h2 {
+    font-family: var(--heading); font-style: italic;
+    font-size: 44px; font-weight: 400; line-height: 1.1; color: var(--paper);
+    max-width: 22ch;
+  }
+  .we-apt-calendar .head .hint {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: rgba(245,239,230,0.60);
+  }
+
+  /* Dark band form wrapper */
+  .we-form-band {
+    padding: 96px 90px; background: var(--primary); color: var(--paper);
+  }
+  .we-form-band .inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.8fr; gap: 80px; }
+  .we-form-band h2 {
+    font-family: var(--heading); font-style: italic;
+    font-size: 52px; font-weight: 400; line-height: 1.05; color: var(--paper);
+    letter-spacing: -0.018em;
+  }
+  .we-form-band h2 em { color: var(--accent); }
+  .we-form-band .side {
+    margin-top: 28px;
+    font-family: var(--body); font-size: 16px; line-height: 1.75;
+    color: rgba(245,239,230,0.75); max-width: 34ch; font-weight: 300;
+  }
+  .we-form-band .side small {
+    display: block; margin-top: 24px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .we-form-band form {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px 36px;
+  }
+
+  /* Why-book sidebar for the full-form section */
+  .we-why {
+    margin-top: 48px;
+    padding: 32px 28px;
+    background: rgba(245,239,230,0.06);
+    border-radius: 20px;
+    border: 1px solid rgba(245,239,230,0.12);
+  }
+  .we-why .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .we-why ul { list-style: none; padding: 0; margin: 0; }
+  .we-why ul li {
+    padding: 14px 0 14px 26px; position: relative;
+    font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: rgba(245,239,230,0.85); font-weight: 300;
+    border-top: 1px solid rgba(245,239,230,0.08);
+  }
+  .we-why ul li:first-child { border-top: 0; }
+  .we-why ul li:before {
+    content: '✦'; position: absolute; left: 0; top: 14px;
+    color: var(--accent); font-size: 14px;
+  }
+
+  @media (max-width: 980px) {
+    .we-apt-calendar { padding: 56px 24px; }
+    .we-apt-calendar .head { grid-template-columns: 1fr; }
+    .we-apt-calendar .head h2 { font-size: 28px; }
+    .we-form-band { padding: 56px 24px; }
+    .we-form-band .inner { grid-template-columns: 1fr; gap: 32px; }
+    .we-form-band h2 { font-size: 32px; }
+    .we-form-band form { grid-template-columns: 1fr; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="we-lead">
+    <div class="eyebrow" data-lm="reveal">{{ page_data.eyebrow }}</div>
+    <h1 data-lm="reveal-lg">{{ page_data.headline|safe }}</h1>
+    <p class="intro" data-lm="reveal">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="we-apt-calendar">
+    <div class="inner">
+      <div class="head" data-lm="reveal">
+        <h2>{{ page_data.calendar_heading|safe }}</h2>
+        <div class="hint">{{ page_data.calendar_hint }}</div>
+      </div>
+      <div class="we-calendar" data-lm-stagger data-lm-stagger-delay="70">
+        {% for d in page_data.calendar %}
+          <div class="day{% if d.has_slots %} has-slots{% endif %}{% if d.soldout %} soldout{% endif %}">
+            <div class="d-day">{{ d.day }}</div>
+            <div class="d-num">{{ d.num }}</div>
+            <div class="d-month">{{ d.month }}</div>
+            <div class="slots">
+              {% for s in d.slots %}<span class="slot">{{ s }}</span>{% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="we-form-band">
+    <div class="inner" data-lm="reveal">
+      <div>
+        <h2>{{ page_data.form_title|safe }}</h2>
+        <p class="side">
+          {{ page_data.form_side_note }}
+          {% if page_data.form_side_small %}<small>{{ page_data.form_side_small }}</small>{% endif %}
+        </p>
+        {% if page_data.why %}
+        <div class="we-why">
+          <div class="lbl">{{ page_data.why_label }}</div>
+          <ul>
+            {% for w in page_data.why %}<li>{{ w }}</li>{% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+
+      <form method="post" action="" novalidate>
+        {% if page_data.form_sections %}
+          {% for s in page_data.form_sections %}
+            <div class="lf-section">
+              <div class="lf-section-head">
+                <span class="lf-section-num">{{ s.num }} · {{ page_data.form_sections|length }}</span>
+                <span class="lf-section-title">{{ s.title }}</span>
+                {% if s.meta %}<span class="lf-section-meta">{{ s.meta }}</span>{% endif %}
+              </div>
+              {% for fname in s.fields %}
+                {% for f in page_data.form_fields %}{% if f.name == fname %}
+                  <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+                    <label class="lf-label" for="we-apt-{{ f.name }}">{{ f.label }}{% if not f.required %}<span class="lf-opt">{{ chrome.form_optional }}</span>{% endif %}</label>
+                    {% if f.type == "select" %}
+                      <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                        <select id="we-apt-{{ f.name }}" name="{{ f.name }}"{% if f.required %} required{% endif %}>
+                          <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                          {% for opt in f.options %}<option value="{{ opt }}">{{ opt }}</option>{% endfor %}
+                        </select>
+                      </div>
+                    {% elif f.type == "textarea" %}
+                      <textarea class="lf-control" id="we-apt-{{ f.name }}" name="{{ f.name }}" rows="5" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}></textarea>
+                    {% else %}
+                      <input class="lf-control" type="{{ f.type }}" id="we-apt-{{ f.name }}" name="{{ f.name }}" placeholder="{{ f.placeholder }}"{% if f.required %} required{% endif %}>
+                    {% endif %}
+                    {% if f.helper %}<p class="lf-helper">{{ f.helper }}</p>{% endif %}
+                  </div>
+                {% endif %}{% endfor %}
+              {% endfor %}
+            </div>
+          {% endfor %}
+        {% else %}
+          {% for f in page_data.form_fields %}
+            <div class="lf-field{% if f.full_width %} lf-full{% endif %}">
+              <label class="lf-label">{{ f.label }}</label>
+              {% if f.type == "select" %}
+                <div class="lf-select" data-lf-label="{{ f.label }}" data-lf-placeholder="{{ chrome.form_select_placeholder }}">
+                  <select name="{{ f.name|default:'field' }}">
+                    <option value="" disabled selected>{{ chrome.form_select_placeholder }}</option>
+                    {% for opt in f.options %}<option>{{ opt }}</option>{% endfor %}
+                  </select>
+                </div>
+              {% elif f.type == "textarea" %}
+                <textarea class="lf-control" placeholder="{{ f.placeholder }}"></textarea>
+              {% else %}
+                <input class="lf-control" type="{{ f.type }}" placeholder="{{ f.placeholder }}">
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <label class="lf-check lf-full" style="grid-column:1/-1;">
+          <input type="checkbox" name="consent" required>
+          <span class="lf-check-box" aria-hidden="true"><svg viewBox="0 0 12 10"><polyline points="1 5 4.5 8.5 11 1.5"/></svg></span>
+          <span class="lf-check-text">{{ page_data.consent }}</span>
+        </label>
+
+        <div class="lf-submit-bar">
+          <button type="submit" class="lf-submit-primary">
+            <span>{{ page_data.submit_label }}</span>
+            <span class="lf-submit-arrow" aria-hidden="true">→</span>
+          </button>
+          {% if page_data.form_submit_note %}
+          <span class="lf-submit-note">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+            {{ page_data.form_submit_note }}
+          </span>
+          {% endif %}
+          <span class="lf-submit-secondary">{{ chrome.apt_alternative_prefix }} <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.apt_alternative_link }}</a></span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  {% if page_data.footnote %}
+  <section style="background: var(--paper-2); padding: 48px 90px; text-align: center; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);">
+    <p style="font-family: var(--heading); font-style: italic; font-size: 18px; color: var(--ink-soft); max-width: 54ch; margin: 0 auto; line-height: 1.6;">
+      {{ page_data.footnote }}
+    </p>
+  </section>
+  {% endif %}
+{% endblock %}

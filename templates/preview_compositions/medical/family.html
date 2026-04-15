@@ -160,10 +160,10 @@
     </div>
     <div class="fam-hero-img">
       <div class="photo"></div>
-      <span class="ribbon">Convenzionato SSN</span>
+      <span class="ribbon">{{ dna.content.hero_ribbon }}</span>
       <div class="pebble">
         <div class="av"></div>
-        <div class="txt"><strong>Dr.ssa Rambaldi</strong>oggi disponibile</div>
+        <div class="txt"><strong>{{ dna.content.hero_pebble_name }}</strong>{{ dna.content.hero_pebble_note }}</div>
       </div>
     </div>
   </section>
@@ -181,7 +181,7 @@
   </div>
 
   <div class="fam-hours">
-    <div class="label">Orari di apertura</div>
+    <div class="label">{{ dna.content.hours_label }}</div>
     {% for day, hours in dna.content.hours %}
       <div class="row"><strong>{{ day }}</strong><span>{{ hours }}</span></div>
     {% endfor %}

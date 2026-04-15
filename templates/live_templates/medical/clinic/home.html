@@ -1,0 +1,679 @@
+{% extends "live_templates/medical/clinic/_base.html" %}
+
+{% block extra_css %}
+  /* ============================================================
+     HERO — split-booking (D-054 #1 signature silhouette)
+     56% copy column · 44% realistic booking widget card
+  ============================================================ */
+  .cl-hero {
+    padding: 72px 56px 56px;
+    max-width: 1360px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.28fr 1fr; gap: 64px;
+    align-items: start;
+  }
+  .cl-hero .cl-h-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    background: var(--bg-band); border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary);
+  }
+  .cl-hero .cl-h-eyebrow:before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    animation: clPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes clPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(32,191,85,0.45); }
+    70%      { box-shadow: 0 0 0 8px rgba(32,191,85,0); }
+  }
+  .cl-hero h1 {
+    margin-top: 26px; font-size: 64px; font-weight: 800; line-height: 1.03;
+    letter-spacing: -0.028em; color: var(--primary); max-width: 14ch;
+  }
+  .cl-hero .cl-h-sub {
+    margin-top: 22px; max-width: 52ch;
+    font-family: var(--body); font-size: 19px;
+    line-height: 1.55; color: var(--ink-soft);
+  }
+  .cl-hero .cl-h-stats {
+    margin-top: 40px; display: flex; flex-wrap: wrap; gap: 36px;
+    padding-top: 24px; border-top: 1px solid var(--rule);
+  }
+  .cl-hero .cl-h-stats .cl-s {
+    display: flex; flex-direction: column;
+  }
+  .cl-hero .cl-h-stats .cl-s .n {
+    font-family: var(--heading); font-size: 32px; font-weight: 800;
+    color: var(--primary); letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .cl-hero .cl-h-stats .cl-s .l {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .cl-hero .cl-h-actions {
+    margin-top: 36px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+  }
+  .cl-hero .cl-h-actions .cl-h-note {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--body); font-size: 13px; color: var(--ink-soft);
+  }
+  .cl-hero .cl-h-actions .cl-h-note svg {
+    width: 16px; height: 16px; stroke: var(--green); fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* Booking widget card — D-054 #1 conversion-pattern */
+  .cl-book {
+    background: #FFFFFF;
+    border: 1px solid var(--rule);
+    border-radius: 18px;
+    padding: 28px 28px 24px;
+    box-shadow: 0 24px 64px rgba(11,79,108,0.10), 0 2px 8px rgba(11,79,108,0.04);
+    position: relative;
+  }
+  .cl-book .cl-book-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 18px; border-bottom: 1px solid var(--rule);
+  }
+  .cl-book .cl-book-head .cl-book-title {
+    font-family: var(--heading); font-size: 19px; font-weight: 800;
+    color: var(--primary); letter-spacing: -0.01em;
+  }
+  .cl-book .cl-book-head .cl-book-title small {
+    display: block; margin-top: 4px;
+    font-family: var(--body); font-size: 12px; font-weight: 500;
+    color: var(--ink-soft); letter-spacing: 0;
+  }
+  .cl-book .cl-book-head .cl-book-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    background: rgba(32,191,85,0.10); color: var(--green);
+    border-radius: 999px;
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .cl-book .cl-book-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+  }
+  .cl-book .cl-book-row {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    display: grid; grid-template-columns: 28px 1fr auto; gap: 14px;
+    align-items: center;
+  }
+  .cl-book .cl-book-row:last-of-type { border-bottom: 0; }
+  .cl-book .cl-book-row .cl-book-ico {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--bg-band); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cl-book .cl-book-row .cl-book-ico svg {
+    width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .cl-book .cl-book-row .cl-book-labels .cl-book-lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .cl-book .cl-book-row .cl-book-labels .cl-book-val {
+    margin-top: 2px;
+    font-family: var(--body); font-size: 15px; font-weight: 600;
+    color: var(--primary);
+  }
+  .cl-book .cl-book-row .cl-book-chev svg {
+    width: 16px; height: 16px; stroke: var(--ink-muted); fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .cl-book .cl-book-cta {
+    margin-top: 18px;
+    width: 100%; justify-content: center;
+  }
+  .cl-book .cl-book-foot {
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule-soft);
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    font-family: var(--body); font-size: 12px; color: var(--ink-soft);
+  }
+  .cl-book .cl-book-foot svg {
+    width: 14px; height: 14px; stroke: var(--secondary); fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;
+  }
+
+  /* ============================================================
+     STATS STRIP — horizontal band
+  ============================================================ */
+  .cl-stats {
+    background: var(--bg-band);
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    padding: 40px 56px;
+  }
+  .cl-stats .cl-stats-inner {
+    max-width: 1360px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+    align-items: center;
+  }
+  .cl-stats .cl-stat {
+    display: flex; flex-direction: column; gap: 6px;
+    border-left: 3px solid var(--secondary); padding-left: 18px;
+  }
+  .cl-stats .cl-stat .n {
+    font-family: var(--heading); font-size: 38px; font-weight: 800;
+    color: var(--primary); letter-spacing: -0.02em; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .cl-stats .cl-stat .l {
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink-soft); line-height: 1.45;
+  }
+  html[dir="rtl"] .cl-stats .cl-stat { border-left: 0; border-right: 3px solid var(--secondary); padding-left: 0; padding-right: 18px; }
+
+  /* ============================================================
+     SPECIALTIES GRID — icon-grid 4-up (D-054 #5)
+  ============================================================ */
+  .cl-specialties .cl-spec-grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  .cl-specialties .cl-spec {
+    background: #FFFFFF;
+    border: 1px solid var(--rule);
+    border-radius: 16px;
+    padding: 28px 26px 26px;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .cl-specialties .cl-spec:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(11,79,108,0.08);
+    border-color: rgba(1,186,239,0.35);
+  }
+  .cl-specialties .cl-spec .cl-spec-ico {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, rgba(1,186,239,0.12) 0%, rgba(11,79,108,0.06) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary);
+  }
+  .cl-specialties .cl-spec .cl-spec-ico svg {
+    width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 1.7;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .cl-specialties .cl-spec h3 {
+    margin-top: 18px;
+    font-family: var(--heading); font-size: 19px; font-weight: 700;
+    color: var(--primary);
+  }
+  .cl-specialties .cl-spec p {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .cl-specialties .cl-spec .cl-spec-link {
+    margin-top: 18px;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--secondary);
+  }
+  .cl-specialties .cl-spec .cl-spec-link:hover { color: var(--primary); }
+
+  /* ============================================================
+     JOURNEY — 4-step patient timeline
+  ============================================================ */
+  .cl-journey { background: var(--bg-soft); max-width: none; }
+  .cl-journey .cl-journey-steps {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    position: relative;
+  }
+  .cl-journey .cl-journey-steps:before {
+    content: ''; position: absolute; top: 22px; left: 4%; right: 4%; height: 2px;
+    background: repeating-linear-gradient(90deg, var(--secondary) 0 6px, transparent 6px 12px);
+    opacity: 0.45;
+  }
+  .cl-journey .cl-step {
+    position: relative;
+    padding: 0 10px;
+  }
+  .cl-journey .cl-step .cl-step-num {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #FFFFFF; border: 2px solid var(--secondary);
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-size: 15px; font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    position: relative; z-index: 1;
+  }
+  .cl-journey .cl-step h4 {
+    margin-top: 20px;
+    font-family: var(--heading); font-size: 18px; font-weight: 700;
+    color: var(--primary);
+  }
+  .cl-journey .cl-step p {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6;
+    color: var(--ink-soft); max-width: 30ch;
+  }
+
+  /* ============================================================
+     PREVENZIONE — 3 editorial cards with accent rule
+  ============================================================ */
+  .cl-prev .cl-prev-grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+  }
+  .cl-prev .cl-prev-card {
+    background: #FFFFFF;
+    border: 1px solid var(--rule);
+    border-top: 4px solid var(--secondary);
+    border-radius: 0 0 16px 16px;
+    padding: 32px 28px;
+    display: flex; flex-direction: column;
+  }
+  .cl-prev .cl-prev-card:nth-child(2) { border-top-color: var(--green); }
+  .cl-prev .cl-prev-card:nth-child(3) { border-top-color: var(--primary); }
+  .cl-prev .cl-prev-card .cl-prev-eye {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .cl-prev .cl-prev-card h3 {
+    margin-top: 10px;
+    font-family: var(--heading); font-size: 24px; font-weight: 800;
+    color: var(--primary); line-height: 1.15;
+  }
+  .cl-prev .cl-prev-card .cl-prev-desc {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .cl-prev .cl-prev-card .cl-prev-meta {
+    margin-top: 18px; display: flex; gap: 18px;
+    padding-top: 14px; border-top: 1px solid var(--rule-soft);
+    font-family: var(--body); font-size: 12px; color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+  .cl-prev .cl-prev-card .cl-prev-meta strong {
+    display: block;
+    font-family: var(--heading); font-size: 17px; font-weight: 800;
+    color: var(--primary); letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .cl-prev .cl-prev-card .cl-prev-includes {
+    margin-top: 16px; padding-left: 0; list-style: none;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .cl-prev .cl-prev-card .cl-prev-includes li {
+    position: relative; padding-left: 22px;
+    font-family: var(--body); font-size: 13px; color: var(--ink-body); line-height: 1.5;
+  }
+  .cl-prev .cl-prev-card .cl-prev-includes li:before {
+    content: ''; position: absolute; left: 0; top: 7px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: rgba(32,191,85,0.16);
+  }
+  .cl-prev .cl-prev-card .cl-prev-includes li:after {
+    content: ''; position: absolute; left: 3px; top: 10px;
+    width: 6px; height: 3px;
+    border-left: 2px solid var(--green); border-bottom: 2px solid var(--green);
+    transform: rotate(-45deg);
+  }
+  .cl-prev .cl-prev-card .cl-btn { margin-top: 22px; align-self: flex-start; }
+  html[dir="rtl"] .cl-prev .cl-prev-card .cl-prev-includes li { padding-left: 0; padding-right: 22px; }
+  html[dir="rtl"] .cl-prev .cl-prev-card .cl-prev-includes li:before { left: auto; right: 0; }
+  html[dir="rtl"] .cl-prev .cl-prev-card .cl-prev-includes li:after { left: auto; right: 3px; }
+
+  /* ============================================================
+     TEAM RIBBON — 8 circular avatars
+  ============================================================ */
+  .cl-team-ribbon .cl-tr-grid {
+    margin-top: 48px;
+    display: grid; grid-template-columns: repeat(8, 1fr); gap: 20px;
+  }
+  .cl-team-ribbon .cl-tr-card {
+    text-align: center;
+  }
+  .cl-team-ribbon .cl-tr-card .cl-tr-avatar {
+    width: 96px; height: 96px; border-radius: 50%;
+    margin: 0 auto;
+    background-size: cover; background-position: center;
+    background-color: var(--bg-band);
+    border: 3px solid #FFFFFF;
+    box-shadow: 0 4px 12px rgba(11,79,108,0.10);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .cl-team-ribbon .cl-tr-card:hover .cl-tr-avatar {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(11,79,108,0.16);
+  }
+  .cl-team-ribbon .cl-tr-card .cl-tr-name {
+    margin-top: 14px;
+    font-family: var(--heading); font-size: 13px; font-weight: 700;
+    color: var(--primary); line-height: 1.2;
+  }
+  .cl-team-ribbon .cl-tr-card .cl-tr-spec {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--secondary);
+  }
+  .cl-team-ribbon .cl-tr-foot {
+    margin-top: 36px;
+    text-align: center;
+    font-family: var(--body); font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .cl-team-ribbon .cl-tr-foot a {
+    color: var(--secondary); border-bottom: 1.5px solid var(--secondary);
+    padding-bottom: 2px; font-weight: 700;
+  }
+
+  /* ============================================================
+     PARTNERS / CONVENZIONI — soft marquee strip
+  ============================================================ */
+  .cl-partners {
+    background: var(--bg); padding: 56px 56px;
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  }
+  .cl-partners .cl-partners-inner {
+    max-width: 1360px; margin: 0 auto;
+    display: grid; grid-template-columns: 200px 1fr; gap: 48px; align-items: center;
+  }
+  .cl-partners .cl-partners-title h3 {
+    font-family: var(--heading); font-size: 15px; font-weight: 700;
+    color: var(--ink); line-height: 1.3;
+  }
+  .cl-partners .cl-partners-title .cl-sec-label { margin-bottom: 8px; }
+  .cl-partners .cl-partners-row {
+    display: flex; flex-wrap: wrap; gap: 40px; align-items: center;
+    font-family: var(--heading); font-size: 20px; font-weight: 700;
+    color: var(--ink-muted); letter-spacing: -0.01em;
+  }
+  .cl-partners .cl-partners-row span {
+    padding: 8px 0;
+    transition: color .2s ease;
+  }
+  .cl-partners .cl-partners-row span:hover { color: var(--primary); }
+
+  /* ============================================================
+     CTA BAND — teal-dark institutional close
+  ============================================================ */
+  .cl-cta-band {
+    background: linear-gradient(135deg, var(--primary) 0%, #09425a 100%);
+    color: #EAF4F8;
+    padding: 72px 56px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cl-cta-band:before {
+    content: ''; position: absolute; top: -40%; right: -10%;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(1,186,239,0.18) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cl-cta-band .cl-cta-inner { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+  .cl-cta-band h2 {
+    color: #FFFFFF;
+    font-size: 44px; font-weight: 800; letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .cl-cta-band p {
+    margin-top: 16px; color: rgba(234,244,248,0.78);
+    font-size: 18px; line-height: 1.55;
+  }
+  .cl-cta-band .cl-cta-actions {
+    margin-top: 32px;
+    display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+  ============================================================ */
+  @media (max-width: 1100px) {
+    .cl-hero { grid-template-columns: 1fr; gap: 36px; padding: 48px 22px 32px; }
+    .cl-hero h1 { font-size: 42px; }
+    .cl-stats .cl-stats-inner { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .cl-specialties .cl-spec-grid,
+    .cl-journey .cl-journey-steps { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .cl-journey .cl-journey-steps:before { display: none; }
+    .cl-prev .cl-prev-grid { grid-template-columns: 1fr; }
+    .cl-team-ribbon .cl-tr-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .cl-team-ribbon .cl-tr-card .cl-tr-avatar { width: 72px; height: 72px; }
+    .cl-partners .cl-partners-inner { grid-template-columns: 1fr; gap: 20px; }
+    .cl-cta-band h2 { font-size: 30px; }
+  }
+{% endblock %}
+
+{% block content %}
+  <!-- ============== HERO · split-booking =============== -->
+  <section class="cl-hero">
+    <div class="cl-hero-left" data-lm="reveal">
+      <span class="cl-h-eyebrow">{{ page_data.eyebrow }}</span>
+      <h1>{{ page_data.headline|safe }}</h1>
+      <p class="cl-h-sub">{{ page_data.subhead }}</p>
+
+      <div class="cl-h-stats" data-lm-stagger data-lm-stagger-delay="70">
+        {% for n, l in page_data.stats %}
+          <div class="cl-s">
+            <span class="n">{{ n }}</span>
+            <span class="l">{{ l }}</span>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="cl-h-actions">
+        <a class="cl-btn cl-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+          {{ page_data.primary_cta }}
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a class="cl-btn cl-btn-outline" href="tel:{{ site.phone_tel|default:site.phone }}">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          {{ page_data.secondary_cta }}
+        </a>
+        <span class="cl-h-note">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          {{ page_data.trust_note }}
+        </span>
+      </div>
+    </div>
+
+    <aside class="cl-book" data-lm="reveal" data-lm-delay="120" aria-label="{{ page_data.booking_widget.aria_label }}">
+      <header class="cl-book-head">
+        <div>
+          <div class="cl-book-title">
+            {{ page_data.booking_widget.title }}
+            <small>{{ page_data.booking_widget.subtitle }}</small>
+          </div>
+        </div>
+        <span class="cl-book-badge"><span class="dot"></span>{{ page_data.booking_widget.badge }}</span>
+      </header>
+
+      <div class="cl-book-row">
+        <div class="cl-book-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        </div>
+        <div class="cl-book-labels">
+          <span class="cl-book-lbl">{{ page_data.booking_widget.specialty_label }}</span>
+          <span class="cl-book-val">{{ page_data.booking_widget.specialty_value }}</span>
+        </div>
+        <span class="cl-book-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </div>
+
+      <div class="cl-book-row">
+        <div class="cl-book-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="cl-book-labels">
+          <span class="cl-book-lbl">{{ page_data.booking_widget.date_label }}</span>
+          <span class="cl-book-val">{{ page_data.booking_widget.date_value }}</span>
+        </div>
+        <span class="cl-book-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </div>
+
+      <div class="cl-book-row">
+        <div class="cl-book-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="cl-book-labels">
+          <span class="cl-book-lbl">{{ page_data.booking_widget.doctor_label }}</span>
+          <span class="cl-book-val">{{ page_data.booking_widget.doctor_value }}</span>
+        </div>
+        <span class="cl-book-chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </div>
+
+      <a class="cl-btn cl-btn-primary cl-book-cta" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+        {{ page_data.booking_widget.cta }}
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+
+      <div class="cl-book-foot">
+        <span>{{ page_data.booking_widget.footnote }}</span>
+        <span><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>{{ page_data.booking_widget.secure_label }}</span>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ============== STATS STRIP =============== -->
+  <section class="cl-stats" data-lm="reveal">
+    <div class="cl-stats-inner" data-lm-stagger data-lm-stagger-delay="80">
+      {% for n, l in page_data.stats_strip %}
+        <div class="cl-stat">
+          <span class="n">{{ n }}</span>
+          <span class="l">{{ l }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ============== SPECIALTIES =============== -->
+  <section class="cl-section cl-specialties">
+    <div data-lm="reveal">
+      <span class="cl-sec-label">{{ page_data.specialties_label }}</span>
+      <h2>{{ page_data.specialties_heading|safe }}</h2>
+      <p class="cl-sec-intro">{{ page_data.specialties_intro }}</p>
+    </div>
+    <div class="cl-spec-grid" data-lm-stagger data-lm-stagger-delay="90">
+      {% for s in page_data.specialties %}
+        <article class="cl-spec" data-lm="reveal">
+          <span class="cl-spec-ico" aria-hidden="true">{{ s.icon_svg|safe }}</span>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.blurb }}</p>
+          <a class="cl-spec-link" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'servizi' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+            {{ s.link_label }} →
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ============== JOURNEY =============== -->
+  <section class="cl-section cl-journey cl-band">
+    <div class="cl-sec-inner" data-lm="reveal">
+      <span class="cl-sec-label">{{ page_data.journey_label }}</span>
+      <h2>{{ page_data.journey_heading|safe }}</h2>
+      <p class="cl-sec-intro">{{ page_data.journey_intro }}</p>
+      <div class="cl-journey-steps" data-lm-stagger data-lm-stagger-delay="110">
+        {% for step in page_data.journey_steps %}
+          <div class="cl-step">
+            <div class="cl-step-num">{{ step.num }}</div>
+            <h4>{{ step.title }}</h4>
+            <p>{{ step.body }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== PREVENZIONE =============== -->
+  <section class="cl-section cl-prev">
+    <div data-lm="reveal">
+      <span class="cl-sec-label">{{ page_data.prevenzione_label }}</span>
+      <h2>{{ page_data.prevenzione_heading|safe }}</h2>
+      <p class="cl-sec-intro">{{ page_data.prevenzione_intro }}</p>
+    </div>
+    <div class="cl-prev-grid" data-lm-stagger data-lm-stagger-delay="110">
+      {% for card in page_data.prevenzione_cards %}
+        <article class="cl-prev-card" data-lm="reveal">
+          <span class="cl-prev-eye">{{ card.eyebrow }}</span>
+          <h3>{{ card.title }}</h3>
+          <p class="cl-prev-desc">{{ card.desc }}</p>
+          <ul class="cl-prev-includes">
+            {% for item in card.includes %}<li>{{ item }}</li>{% endfor %}
+          </ul>
+          <div class="cl-prev-meta">
+            <div>
+              <span>{{ card.duration_label }}</span>
+              <strong>{{ card.duration }}</strong>
+            </div>
+            <div>
+              <span>{{ card.price_label }}</span>
+              <strong>{{ card.price }}</strong>
+            </div>
+          </div>
+          <a class="cl-btn cl-btn-teal" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prevenzione' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+            {{ card.cta }}
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ============== TEAM RIBBON =============== -->
+  <section class="cl-section cl-team-ribbon cl-band">
+    <div class="cl-sec-inner" data-lm="reveal">
+      <span class="cl-sec-label">{{ page_data.team_label }}</span>
+      <h2>{{ page_data.team_heading|safe }}</h2>
+      <p class="cl-sec-intro">{{ page_data.team_intro }}</p>
+      <div class="cl-tr-grid" data-lm-stagger data-lm-stagger-delay="60">
+        {% for m in page_data.team_ribbon_people %}
+          <div class="cl-tr-card">
+            <div class="cl-tr-avatar"{% if m.avatar %} style="background-image: url('{{ m.avatar }}');"{% endif %}></div>
+            <div class="cl-tr-name">{{ m.name }}</div>
+            <div class="cl-tr-spec">{{ m.specialty }}</div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="cl-tr-foot">
+        {{ page_data.team_footnote_prefix }}
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'medici' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.team_footnote_link }}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== PARTNERS =============== -->
+  <section class="cl-partners" data-lm="reveal">
+    <div class="cl-partners-inner">
+      <div class="cl-partners-title">
+        <span class="cl-sec-label">{{ page_data.partners_label }}</span>
+        <h3>{{ page_data.partners_heading }}</h3>
+      </div>
+      <div class="cl-partners-row" data-lm-stagger data-lm-stagger-delay="50">
+        {% for p in page_data.partners %}<span>{{ p }}</span>{% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== CTA BAND =============== -->
+  <section class="cl-cta-band" data-lm="reveal">
+    <div class="cl-cta-inner">
+      <h2>{{ page_data.cta_band.heading }}</h2>
+      <p>{{ page_data.cta_band.body }}</p>
+      <div class="cl-cta-actions">
+        <a class="cl-btn cl-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_band.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+          {{ page_data.cta_band.primary_cta }}
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a class="cl-btn cl-btn-ghost-light" href="tel:{{ site.phone_tel|default:site.phone }}">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          {{ page_data.cta_band.secondary_cta }}
+        </a>
+      </div>
+    </div>
+  </section>
+{% endblock %}

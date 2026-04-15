@@ -1,0 +1,108 @@
+{% extends "live_templates/medical/clinic/_base.html" %}
+
+{% block extra_css %}
+  .cl-team { padding: 0 56px 80px; max-width: 1360px; margin: 0 auto; }
+  .cl-team .cl-team-grid {
+    margin-top: 40px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+  }
+  .cl-team .cl-doc-card {
+    background: #FFFFFF;
+    border: 1px solid var(--rule); border-radius: 16px;
+    padding: 28px 26px;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .cl-team .cl-doc-card:hover {
+    border-color: rgba(1,186,239,0.40);
+    box-shadow: 0 16px 40px rgba(11,79,108,0.08);
+    transform: translateY(-2px);
+  }
+  .cl-team .cl-doc-portrait {
+    width: 140px; height: 140px; border-radius: 50%;
+    background-size: cover; background-position: center;
+    background-color: var(--bg-band);
+    border: 4px solid #FFFFFF;
+    box-shadow: 0 6px 18px rgba(11,79,108,0.14);
+  }
+  .cl-team .cl-doc-role {
+    margin-top: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--secondary);
+  }
+  .cl-team .cl-doc-name {
+    margin-top: 8px;
+    font-family: var(--heading); font-size: 22px; font-weight: 800;
+    color: var(--primary); letter-spacing: -0.015em; line-height: 1.2;
+  }
+  .cl-team .cl-doc-creds {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 13px; line-height: 1.5; color: var(--ink-soft);
+    max-width: 32ch;
+  }
+  .cl-team .cl-doc-tags {
+    margin-top: 14px;
+    display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+  }
+  .cl-team .cl-doc-tags span {
+    padding: 4px 10px; background: var(--bg-band); color: var(--primary);
+    border-radius: 999px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+  }
+  .cl-team .cl-doc-card .cl-btn { margin-top: 18px; }
+
+  .cl-team-foot {
+    margin-top: 56px; padding: 28px 32px;
+    background: var(--bg-soft);
+    border-radius: 14px;
+    text-align: center;
+    font-family: var(--body); font-size: 15px; color: var(--ink-body);
+    line-height: 1.6;
+  }
+  .cl-team-foot strong {
+    font-family: var(--heading); font-size: 17px; color: var(--primary);
+  }
+  .cl-team-foot a {
+    color: var(--secondary); border-bottom: 1.5px solid var(--secondary);
+    padding-bottom: 2px; font-weight: 700;
+  }
+
+  @media (max-width: 1100px) {
+    .cl-team { padding: 0 22px 56px; }
+    .cl-team .cl-team-grid { grid-template-columns: 1fr; gap: 20px; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="cl-lead">
+    <span class="cl-eyebrow">{{ page_data.eyebrow }}</span>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="cl-intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="cl-team">
+    <div class="cl-team-grid" data-lm-stagger data-lm-stagger-delay="90">
+      {% for d in page_data.doctors %}
+        <article class="cl-doc-card" data-lm="reveal">
+          <div class="cl-doc-portrait"{% if d.portrait %} style="background-image: url('{{ d.portrait }}');"{% endif %}></div>
+          <div class="cl-doc-role">{{ d.role }}</div>
+          <div class="cl-doc-name">{{ d.name }}</div>
+          <p class="cl-doc-creds">{{ d.credentials }}</p>
+          <div class="cl-doc-tags">
+            {% for t in d.tags %}<span>{{ t }}</span>{% endfor %}
+          </div>
+          <a class="cl-btn cl-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+            {{ page_data.book_cta }}
+            <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="cl-team-foot" data-lm="reveal">
+      <strong>{{ page_data.footnote_strong }}</strong><br>
+      {{ page_data.footnote_body }}
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ page_data.footnote_link }} →</a>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends "live_templates/medical/clinic/_base.html" %}
+
+{% block extra_css %}
+  .cl-values { padding: 0 56px 80px; max-width: 1360px; margin: 0 auto; }
+  .cl-values .cl-values-grid {
+    margin-top: 40px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  .cl-values .cl-value {
+    padding: 28px 22px;
+    background: #FFFFFF;
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    border-top: 3px solid var(--secondary);
+  }
+  .cl-values .cl-value:nth-child(2) { border-top-color: var(--green); }
+  .cl-values .cl-value:nth-child(3) { border-top-color: var(--primary); }
+  .cl-values .cl-value:nth-child(4) { border-top-color: var(--secondary); }
+  .cl-values .cl-value h4 {
+    font-family: var(--heading); font-size: 19px; font-weight: 800; color: var(--primary);
+    line-height: 1.2;
+  }
+  .cl-values .cl-value p {
+    margin-top: 12px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+  }
+
+  .cl-photo {
+    padding: 0 56px 80px; max-width: 1360px; margin: 0 auto;
+  }
+  .cl-photo .cl-photo-inner {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 56px; align-items: center;
+  }
+  .cl-photo .cl-photo-img {
+    aspect-ratio: 5/4;
+    background-size: cover; background-position: center;
+    border-radius: 16px;
+    box-shadow: 0 24px 64px rgba(11,79,108,0.14);
+  }
+  .cl-photo .cl-photo-body h3 {
+    font-family: var(--heading); font-size: 30px; font-weight: 800; color: var(--primary);
+    line-height: 1.15; letter-spacing: -0.02em;
+  }
+  .cl-photo .cl-photo-body p {
+    margin-top: 18px;
+    font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--ink-body);
+  }
+  .cl-photo .cl-photo-body .cl-photo-caption {
+    margin-top: 22px;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--secondary);
+  }
+
+  .cl-timeline {
+    background: var(--bg-soft);
+    padding: 80px 56px;
+  }
+  .cl-timeline .cl-timeline-inner {
+    max-width: 1360px; margin: 0 auto;
+  }
+  .cl-timeline .cl-tl-grid {
+    margin-top: 40px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    position: relative;
+  }
+  .cl-timeline .cl-tl-grid:before {
+    content: ''; position: absolute; top: 22px; left: 4%; right: 4%; height: 2px;
+    background: var(--rule);
+  }
+  .cl-timeline .cl-tl-item { position: relative; }
+  .cl-timeline .cl-tl-year {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--primary); color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--heading); font-size: 12px; font-weight: 800;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    position: relative; z-index: 1;
+  }
+  .cl-timeline .cl-tl-item h4 {
+    margin-top: 18px;
+    font-family: var(--heading); font-size: 17px; font-weight: 700; color: var(--primary);
+  }
+  .cl-timeline .cl-tl-item p {
+    margin-top: 10px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+  }
+
+  .cl-cta-band {
+    background: linear-gradient(135deg, var(--primary) 0%, #09425a 100%);
+    color: #EAF4F8; padding: 72px 56px; text-align: center; position: relative; overflow: hidden;
+  }
+  .cl-cta-band:before {
+    content: ''; position: absolute; top: -40%; right: -10%;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(1,186,239,0.18) 0%, transparent 60%);
+  }
+  .cl-cta-band .cl-cta-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+  .cl-cta-band h2 { color: #FFFFFF; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .cl-cta-band p { margin-top: 16px; color: rgba(234,244,248,0.78); font-size: 17px; line-height: 1.55; }
+  .cl-cta-band .cl-cta-actions {
+    margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+  }
+
+  @media (max-width: 1100px) {
+    .cl-values { padding: 0 22px 56px; }
+    .cl-values .cl-values-grid { grid-template-columns: 1fr 1fr; gap: 18px; }
+    .cl-photo { padding: 0 22px 56px; }
+    .cl-photo .cl-photo-inner { grid-template-columns: 1fr; gap: 28px; }
+    .cl-timeline { padding: 56px 22px; }
+    .cl-timeline .cl-tl-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+    .cl-timeline .cl-tl-grid:before { display: none; }
+    .cl-cta-band { padding: 56px 22px; }
+    .cl-cta-band h2 { font-size: 28px; }
+  }
+{% endblock %}
+
+{% block content %}
+  <section class="cl-lead">
+    <span class="cl-eyebrow">{{ page_data.eyebrow }}</span>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="cl-intro">{{ page_data.intro }}</p>
+  </section>
+
+  <section class="cl-values" data-lm="reveal">
+    <span class="cl-sec-label">{{ page_data.values_label }}</span>
+    <h2 style="margin-top:14px;font-size:36px;font-weight:800;line-height:1.12;letter-spacing:-0.02em;max-width:22ch;">{{ page_data.values_heading|safe }}</h2>
+    <div class="cl-values-grid" data-lm-stagger data-lm-stagger-delay="90">
+      {% for v in page_data.values %}
+        <div class="cl-value">
+          <h4>{{ v.title }}</h4>
+          <p>{{ v.body }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="cl-photo" data-lm="reveal">
+    <div class="cl-photo-inner">
+      <div class="cl-photo-img" style="background-image: url('{{ page_data.photo_src }}');"></div>
+      <div class="cl-photo-body">
+        <span class="cl-sec-label">{{ page_data.photo_label }}</span>
+        <h3 style="margin-top:14px;">{{ page_data.photo_heading }}</h3>
+        <p>{{ page_data.photo_body }}</p>
+        <div class="cl-photo-caption">{{ page_data.photo_caption }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cl-timeline" data-lm="reveal">
+    <div class="cl-timeline-inner">
+      <span class="cl-sec-label">{{ page_data.timeline_label }}</span>
+      <h2 style="margin-top:14px;font-size:36px;font-weight:800;line-height:1.12;letter-spacing:-0.02em;max-width:22ch;">{{ page_data.timeline_heading|safe }}</h2>
+      <div class="cl-tl-grid" data-lm-stagger data-lm-stagger-delay="100">
+        {% for t in page_data.timeline %}
+          <div class="cl-tl-item">
+            <div class="cl-tl-year">{{ t.year }}</div>
+            <h4>{{ t.title }}</h4>
+            <p>{{ t.body }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="cl-cta-band" data-lm="reveal">
+    <div class="cl-cta-inner">
+      <h2>{{ page_data.cta_band.heading }}</h2>
+      <p>{{ page_data.cta_band.body }}</p>
+      <div class="cl-cta-actions">
+        <a class="cl-btn cl-btn-primary" href="{% url 'catalog:live_template_page' template.category.slug template.slug 'prenota' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+          {{ page_data.cta_band.primary_cta }}
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a class="cl-btn cl-btn-ghost-light" href="tel:{{ site.phone_tel|default:site.phone }}">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          {{ page_data.cta_band.secondary_cta }}
+        </a>
+      </div>
+    </div>
+  </section>
+{% endblock %}
