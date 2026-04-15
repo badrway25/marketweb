@@ -198,8 +198,12 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
     #     ambient light.
     # ─────────────────────────────────────────────────────────────
     "agency-creative": [
-        # 0: hero — editorial studio desk with type specimens
-        "https://images.unsplash.com/photo-1561070791-2526d30994b8?w=1600&q=80&auto=format&fit=crop",
+        # 0: hero — editorial studio desk with paper case-study artifacts.
+        # Session 50 swap: the prior `photo-1561070791-2526d30994b8` URL
+        # returned HTTP 404 on every call so the cache never warmed — the
+        # composition then received an empty imagery list. Replaced with
+        # the portfolio-designer slot-1 URL (proven in Sessions 34/37).
+        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1600&q=80&auto=format&fit=crop",
         # 1: feature — brand book on desk (design-workspace)
         "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=1200&q=80&auto=format&fit=crop",
         # 2-5: case-study craft shots

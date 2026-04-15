@@ -1,0 +1,442 @@
+{% extends "preview_compositions/_base.html" %}
+{# ============================================================
+   ARCHETYPE: agency-digital-studio   (agency DNA — Phase 2g3.6f)
+   FOR     : digital / product / growth studios
+   MOOD    : midnight-violet page, cyan glow accents, mono telemetry,
+             product-dashboard console hero, sprint cards, ship-log.
+   HERO    : headline + sub LEFT + product-console dashboard tile RIGHT
+             (status chip · primary metric · 4-KPI grid · mono path).
+   NAVBAR  : floating pill with sprint chip pulse + glow CTA.
+   CARDS   : 4 capability sprint-console tiles below hero.
+   FOOTER  : ship-log strip (mono timestamps + version + desc).
+
+   D-047 chrome-authoring contract:
+   - Zero literal brand strings. Everything flows from dna.content.*
+   - No hardcoded image URLs (accent photo from imagery pool).
+   - No literal client names / metrics / versions — all via DNA content.
+============================================================ #}
+{% block extra_css %}
+  /* Deliberate visual opposite of agency-creative-studio: fully dark
+     midnight page, product-console hero, mono telemetry band.
+     Aura speaks KPI / sprint / delivery — never editorial / curatorial. */
+  body { background: #12122a; color: #eceefc; }
+  .pv-frame {
+    background:
+      radial-gradient(circle at 88% -10%, color-mix(in oklab, var(--accent) 40%, #12122a 60%) 0%, transparent 52%),
+      radial-gradient(circle at 10% 115%, color-mix(in oklab, var(--accent) 22%, #12122a 78%) 0%, transparent 55%),
+      #12122a;
+  }
+  .pv-frame:before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(rgba(236,238,252,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* === TOP SPRINT BANNER === */
+  .ad-banner {
+    position: absolute; top: 0; left: 0; right: 0; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(236,238,252,0.04);
+    border-bottom: 1px solid rgba(236,238,252,0.08);
+    z-index: 9;
+    font-family: 'JetBrains Mono', ui-monospace, var(--body);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(236,238,252,0.62);
+  }
+  .ad-banner .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(139,92,246,0.14), 0 0 14px var(--accent);
+    margin-right: 14px;
+  }
+  .ad-banner span + span { margin-left: 18px; padding-left: 18px; border-left: 1px solid rgba(236,238,252,0.16); }
+
+  /* === FLOATING PILL NAV === */
+  .ad-nav {
+    position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center;
+    padding: 8px 10px 8px 26px;
+    background: rgba(10,10,28,0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(236,238,252,0.14);
+    border-radius: 999px;
+    z-index: 10;
+  }
+  .ad-nav .wm {
+    font-family: var(--heading); font-weight: 800; font-size: 18px;
+    color: #eceefc; letter-spacing: -0.02em;
+    padding-right: 24px; margin-right: 24px;
+    border-right: 1px solid rgba(236,238,252,0.14);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ad-nav .wm .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    display: inline-block;
+  }
+  .ad-nav .links {
+    display: flex; gap: 26px;
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: rgba(236,238,252,0.72);
+  }
+  .ad-nav .cta {
+    margin-left: 26px;
+    padding: 10px 22px; border-radius: 999px;
+    background: var(--accent); color: #ffffff;
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.03em;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.14), 0 10px 28px -8px var(--accent);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .ad-nav .cta:after { content: '→'; font-weight: 800; }
+
+  /* === HERO — headline LEFT + product console RIGHT === */
+  .ad-hero {
+    position: absolute; top: 128px; left: 0; right: 0; height: 358px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    padding: 0 72px;
+    gap: 56px;
+    overflow: hidden;
+  }
+  .ad-left .eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 8px 18px; border-radius: 999px;
+    background: rgba(236,238,252,0.05);
+    border: 1px solid rgba(236,238,252,0.16);
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em;
+    color: rgba(236,238,252,0.72);
+  }
+  .ad-left .eyebrow:before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 10px var(--accent);
+  }
+  .ad-left h1 {
+    margin-top: 22px;
+    font-family: var(--heading); font-size: 58px; font-weight: 800;
+    line-height: 1.0; letter-spacing: -0.03em;
+    color: #eceefc; max-width: 640px;
+  }
+  .ad-left h1 em {
+    font-style: normal; font-weight: 800;
+    background: linear-gradient(95deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 60%, #7dd3fc 40%) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    padding-right: 3px;
+  }
+  .ad-left .sub {
+    margin-top: 20px; max-width: 560px;
+    font-family: var(--body); font-size: 14px; line-height: 1.6;
+    color: rgba(236,238,252,0.66);
+  }
+  .ad-left .cta-row {
+    margin-top: 24px; display: inline-flex; align-items: center; gap: 22px;
+  }
+  .ad-left .cta-row .primary {
+    font-family: var(--body); font-size: 13px; font-weight: 700;
+    color: #ffffff;
+    background: var(--accent);
+    padding: 14px 26px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 12px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.18),
+      0 12px 34px -8px var(--accent),
+      0 0 40px -4px var(--accent);
+  }
+  .ad-left .cta-row .primary:after { content: '→'; font-weight: 800; }
+  .ad-left .cta-row .secondary {
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    color: rgba(236,238,252,0.82);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .ad-left .cta-row .secondary .dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1px solid rgba(236,238,252,0.32);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 9px; color: var(--accent);
+  }
+
+  /* === PRODUCT CONSOLE TILE (RIGHT) === */
+  .ad-console {
+    position: relative;
+    background: rgba(8,10,24,0.78);
+    border: 1px solid rgba(236,238,252,0.16);
+    border-radius: 18px;
+    box-shadow:
+      0 30px 80px -24px rgba(0,0,0,0.6),
+      0 0 90px -30px var(--accent) inset;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .ad-console .chrome {
+    height: 34px; padding: 0 16px;
+    background: rgba(236,238,252,0.04);
+    border-bottom: 1px solid rgba(236,238,252,0.08);
+    display: flex; align-items: center;
+    font-family: 'JetBrains Mono', ui-monospace, var(--body);
+    font-size: 11px; color: rgba(236,238,252,0.56);
+  }
+  .ad-console .chrome .dots { display: inline-flex; gap: 6px; margin-right: 16px; }
+  .ad-console .chrome .dots span {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: rgba(236,238,252,0.16); font-size: 0;
+  }
+  .ad-console .chrome .tag {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', ui-monospace, var(--body);
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent);
+    padding: 4px 10px; border: 1px solid rgba(139,92,246,0.38);
+    border-radius: 999px;
+  }
+  .ad-console .primary {
+    padding: 22px 26px 10px;
+    border-bottom: 1px solid rgba(236,238,252,0.08);
+  }
+  .ad-console .primary .label {
+    font-family: 'JetBrains Mono', ui-monospace, var(--body);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(236,238,252,0.48);
+  }
+  .ad-console .primary .big {
+    margin-top: 6px;
+    font-family: var(--heading); font-size: 56px; font-weight: 800;
+    color: var(--accent); letter-spacing: -0.035em; line-height: 1.0;
+    text-shadow: 0 0 40px color-mix(in oklab, var(--accent) 55%, transparent);
+  }
+  .ad-console .primary .desc {
+    margin-top: 6px; max-width: 380px;
+    font-family: var(--body); font-size: 12px; line-height: 1.45;
+    color: rgba(236,238,252,0.62);
+  }
+  .ad-console .kpis {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    flex: 1;
+  }
+  .ad-console .kpis .kpi {
+    padding: 14px 24px;
+    border-right: 1px solid rgba(236,238,252,0.08);
+    border-top: 1px solid rgba(236,238,252,0.08);
+  }
+  .ad-console .kpis .kpi:nth-child(2n) { border-right: 0; }
+  .ad-console .kpis .kpi:nth-child(-n+2) { border-top: 0; }
+  .ad-console .kpis .kpi .v {
+    font-family: var(--heading); font-size: 22px; font-weight: 800;
+    color: #eceefc; letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .ad-console .kpis .kpi .l {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(236,238,252,0.5);
+    text-transform: uppercase;
+  }
+
+  /* === CAPABILITY SPRINT CARDS === */
+  .ad-capab {
+    position: absolute; left: 72px; right: 72px; top: 504px; height: 218px;
+  }
+  .ad-capab .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 14px;
+  }
+  .ad-capab .head .lbl {
+    font-family: 'JetBrains Mono', ui-monospace, var(--body);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .ad-capab .head h2 {
+    font-family: var(--heading); font-size: 22px; font-weight: 800;
+    color: #eceefc; letter-spacing: -0.02em;
+  }
+  .ad-capab .head h2 em {
+    font-style: normal; font-weight: 800;
+    background: linear-gradient(95deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 60%, #7dd3fc 40%) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .ad-capab .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .ad-capab .card {
+    padding: 18px 20px 20px;
+    background: rgba(236,238,252,0.04);
+    border: 1px solid rgba(236,238,252,0.1);
+    border-radius: 14px;
+    display: flex; flex-direction: column;
+    min-height: 122px;
+    position: relative; overflow: hidden;
+  }
+  .ad-capab .card:before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 100% 0%, color-mix(in oklab, var(--accent) 20%, transparent 80%) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .ad-capab .card .id {
+    font-family: 'JetBrains Mono', ui-monospace, var(--body);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; color: var(--accent);
+  }
+  .ad-capab .card .t {
+    margin-top: 10px;
+    font-family: var(--heading); font-size: 17px; font-weight: 700;
+    color: #eceefc; letter-spacing: -0.015em; line-height: 1.2;
+  }
+  .ad-capab .card .b {
+    margin-top: 8px;
+    font-family: var(--body); font-size: 11px; line-height: 1.5;
+    color: rgba(236,238,252,0.62);
+  }
+  .ad-capab .card .arrow {
+    margin-top: auto;
+    font-family: var(--heading); font-size: 16px; color: var(--accent);
+  }
+
+  /* === SHIP-LOG STRIP (BOTTOM) === */
+  .ad-shiplog {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 146px;
+    padding: 18px 72px 18px;
+    border-top: 1px solid rgba(236,238,252,0.12);
+    background: rgba(0,0,0,0.24);
+  }
+  .ad-shiplog .head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', ui-monospace, var(--body);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(236,238,252,0.48);
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(236,238,252,0.08);
+  }
+  .ad-shiplog .head .live {
+    color: var(--accent);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .ad-shiplog .head .live:before {
+    content: ''; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+  }
+  .ad-shiplog .rows {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .ad-shiplog .row {
+    padding: 10px 20px 8px 0;
+    border-right: 1px solid rgba(236,238,252,0.08);
+    font-family: 'JetBrains Mono', ui-monospace, var(--body);
+  }
+  .ad-shiplog .row:last-child { border-right: 0; }
+  .ad-shiplog .row .ts {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.06em; color: rgba(236,238,252,0.48);
+  }
+  .ad-shiplog .row .v {
+    margin-top: 3px;
+    font-size: 13px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .ad-shiplog .row .d {
+    margin-top: 4px;
+    font-family: var(--body); font-size: 11px; font-weight: 500;
+    color: rgba(236,238,252,0.78); line-height: 1.4;
+  }
+  .ad-shiplog .meta {
+    position: absolute; right: 72px; bottom: 12px;
+    font-family: 'JetBrains Mono', ui-monospace, var(--body);
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: lowercase;
+    color: rgba(236,238,252,0.38);
+  }
+{% endblock %}
+
+{% block body %}
+  <div class="ad-banner">
+    <span><span class="pulse"></span>{{ dna.content.sprint_chip }}</span>
+    <span>{{ dna.content.console_status }}</span>
+  </div>
+
+  <nav class="ad-nav">
+    <div class="wm"><span class="dot"></span>{{ brand_name }}</div>
+    <div class="links">
+      {% for link in dna.content.nav_links %}<span>{{ link }}</span>{% endfor %}
+    </div>
+    <span class="cta">{{ dna.content.primary_cta }}</span>
+  </nav>
+
+  <section class="ad-hero">
+    <div class="ad-left">
+      <span class="eyebrow">{{ dna.content.eyebrow }}</span>
+      <h1>{{ dna.content.headline|safe }}</h1>
+      <p class="sub">{{ dna.content.subhead }}</p>
+      <div class="cta-row">
+        <span class="primary">{{ dna.content.primary_cta }}</span>
+        <span class="secondary"><span class="dot">▶</span>{{ dna.content.secondary_cta }}</span>
+      </div>
+    </div>
+
+    <aside class="ad-console">
+      <div class="chrome">
+        <span class="dots"><span>·</span><span>·</span><span>·</span></span>
+        <span>{{ dna.content.console_path }}</span>
+        <span class="tag">{{ dna.content.console_status }}</span>
+      </div>
+      <div class="primary">
+        <div class="label">{{ dna.content.console_primary_label }}</div>
+        <div class="big">{{ dna.content.console_primary_metric }}</div>
+      </div>
+      <div class="kpis">
+        {% for val, label in dna.content.console_kpis %}
+          <div class="kpi">
+            <div class="v">{{ val }}</div>
+            <div class="l">{{ label }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </aside>
+  </section>
+
+  <section class="ad-capab">
+    <div class="head">
+      <div>
+        <div class="lbl">{{ dna.content.capab_label }}</div>
+        <h2>{{ dna.content.capab_heading|safe }}</h2>
+      </div>
+      <span class="lbl">// 4 aree · 1 team</span>
+    </div>
+    <div class="grid">
+      {% for id, title, body in dna.content.capabilities %}
+        <div class="card">
+          <div class="id">{{ id }}</div>
+          <div class="t">{{ title }}</div>
+          <div class="b">{{ body }}</div>
+          <div class="arrow">→</div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="ad-shiplog">
+    <div class="head">
+      <span>{{ dna.content.shiplog_label }}</span>
+      <span class="live">{{ dna.content.sprint_chip }}</span>
+    </div>
+    <div class="rows">
+      {% for ts, version, desc in dna.content.shiplog_rows %}
+        <div class="row">
+          <div class="ts">{{ ts }}</div>
+          <div class="v">{{ version }}</div>
+          <div class="d">{{ desc }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    <span class="meta">{{ dna.content.shiplog_meta }}</span>
+  </section>
+{% endblock %}

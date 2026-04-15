@@ -244,8 +244,48 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "conversion_pattern": "dossier-request",
         "font_pairing":       ("Space Grotesk", "Inter"),
         "content": {
-            "eyebrow":    "Independent creative studio · Milano",
-            "headline":   "Brand che <em>pesano</em>, <em>tengono</em>, <em>durano</em>.",
+            # Core hero copy — mirrors the live VERTEX_CONTENT_IT so the
+            # static preview foreshadows the live page rather than showing
+            # generic chrome. Session 50 expansion from 2 keys to full set.
+            "eyebrow":       "Studio indipendente · fondato nel 2018 · Milano",
+            "headline":      'Brand che <em>pesano</em>, <em>tengono</em>, <em>durano</em>.',
+            "subhead":       "Uno studio indipendente che disegna sistemi di identità, collane editoriali e direzioni artistiche per un numero ristretto di clienti culturali e di lusso.",
+            "primary_cta":   "Richiedi il dossier",
+            "secondary_cta": "Lavori selezionati",
+            "nav_links":     ["Studio", "Lavori", "Capacità", "Manifesto", "Contatti"],
+            "availability":  "Nuove commesse · autunno 2026",
+            "status_label":  "Disponibilità",
+            "status_value":  "Autunno 2026",
+
+            # Right-hand editorial cover tile (Case Study · 01)
+            "cover_label":   "Case Study · 01",
+            "cover_client":  "FONDAZIONE PRADA · Collana 2025",
+            "cover_title":   "Un sistema editoriale per <em>quattro autori</em>.",
+            "cover_discipline": "Identità · editoria",
+            "cover_year":    "2025 — 2026",
+
+            # Ledger of selected work (4 rows shown in preview)
+            "ledger_label":   "Lavori recenti",
+            "ledger_heading": "Archivio <em>selezionato</em> · 2023 — 2026",
+            "ledger_link":    "Archivio completo →",
+            "projects": [
+                ("01", "Collana Narrativa Italiana",  "Adelphi Edizioni",     "Identità · editoria", "2025"),
+                ("02", "Rebranding della Fondazione", "Fondazione Prada",      "Direzione artistica", "2025"),
+                ("03", "Manuale di marca integrato",   "Maison Gentiluomo",    "Branding di lusso",   "2024"),
+                ("04", "Segnaletica & wayfinding",     "Triennale Milano",     "Identità spaziale",   "2024"),
+            ],
+
+            # Press ribbon — cultural / design-trade publications
+            "press_label":        "Pubblicato su",
+            "press_publications": ["MONOCLE", "DOMUS", "WALLPAPER*", "CREATIVE REVIEW", "EYE MAGAZINE", "IT'S NICE THAT"],
+
+            # Colophon strip (bottom)
+            "colophon_label":      "Lo studio",
+            "colophon_rows": [
+                ("Sede",         "Via Tortona · Milano"),
+                ("Fondato",      "2018 · otto anni"),
+                ("Riconoscimenti","ADI · TDC · Compasso d'Oro"),
+            ],
         },
     },
 
@@ -265,8 +305,48 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "conversion_pattern": "discovery-call",
         "font_pairing":       ("Plus Jakarta Sans", "Inter"),
         "content": {
-            "eyebrow":    "Digital · product · growth studio",
-            "headline":   "Dalla <em>call di discovery</em> al <em>primo KPI</em>.",
+            # Core hero copy — mirrors the live AURA_CONTENT_IT so the
+            # static preview foreshadows the live page. Session 50
+            # expansion from 2 keys to full set.
+            "eyebrow":        "Digital · product · growth studio",
+            "headline":       'Dalla <em>call di discovery</em> al <em>primo KPI</em> in sei settimane.',
+            "subhead":        "Costruiamo prodotti e sistemi di crescita per scale-up italiane ed europee. Sprint di due settimane, dashboard condiviso, consegne misurabili.",
+            "primary_cta":    "Prenota una call",
+            "secondary_cta":  "Lavori recenti",
+            "nav_links":      ["Studio", "Capabilities", "Lavori", "Sprint", "Brief"],
+            "sprint_chip":    "Sprint 07/Q2 · live",
+
+            # Product console tile (top-right, dark IDE look)
+            "console_path":          "aura.studio/clients/casavo/live",
+            "console_status":        "LIVE · sprint 07/Q2",
+            "console_primary_metric":"+34%",
+            "console_primary_label": "Conversione post-rework · 30 gg",
+            "console_kpis": [
+                ("+18%",    "Retention D30"),
+                ("Δ 22",    "NPS pre / post"),
+                ("€ 840K",  "MRR sprint 1-14"),
+                ("99.98%",  "Uptime Q2"),
+            ],
+
+            # Capabilities mini — 4 sprint-card tiles
+            "capab_label":   "Capabilities",
+            "capab_heading": "Quattro <em>aree</em>, un solo team.",
+            "capabilities": [
+                ("C.01", "Product launch",      "Dal concept all'onboarding live."),
+                ("C.02", "Platform redesign",   "Ripensare prodotti maturi senza perdere utenti."),
+                ("C.03", "Growth systems",      "Onboarding, retention, referral, pricing."),
+                ("C.04", "B2B delivery",        "Portali asset manager, dashboard corporate."),
+            ],
+
+            # Ship log footer strip (last 4 deploys)
+            "shiplog_label":  "// ship log · last 4",
+            "shiplog_rows": [
+                ("ieri · 18:04",  "v2.14", "Soldo — onboarding corporate"),
+                ("ieri · 09:21",  "v2.13", "Fastweb Plus — dashboard v2.3"),
+                ("lun · 15:30",   "v2.12", "Lendlease — portale asset manager"),
+                ("ven · 11:12",   "v2.11", "Casavo — retention A/B loop 003"),
+            ],
+            "shiplog_meta": "aura.studio · uptime 99.98 · last deploy 4 min ago",
         },
     },
 
