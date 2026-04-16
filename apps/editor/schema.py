@@ -749,28 +749,28 @@ def is_supported_archetype(archetype: str) -> bool:
     return archetype in _ARCHETYPE_SCHEMAS
 
 
-def iter_groups(archetype: str) -> list[dict[str, Any]]:
+def iter_groups(
+    archetype: str,
+    meta_by_path: dict[str, dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     """Return the raw group list for an archetype (empty if unsupported).
 
-    Used by the editor view and by tests that need to introspect group
-    metadata like ``page`` and ``region``. A.2.6b: synthetic groups for
-    the indexed-row contract are appended after the curated scalar
-    groups so the editor sidebar shows them in the canonical order
-    (chrome → home → page-by-page → contact_info / footer → indexed).
+    When ``meta_by_path`` is supplied, indexed groups reflect the
+    **effective** row state of a specific project (baseline minus
+    removed rows + added uid rows). When it is None the returned
+    groups describe the baseline registry shape — the form required
+    by ``iter_editable_fields`` and ``validate_key_path``.
     """
     base = list(_ARCHETYPE_SCHEMAS.get(archetype) or [])
-    base.extend(_iter_indexed_groups(archetype))
+    base.extend(_iter_indexed_groups(archetype, meta_by_path))
     return base
 
 
 def iter_editable_fields(archetype: str) -> list[tuple[str, dict[str, Any]]]:
     """Flat list of (key_path, field_spec) tuples for an archetype.
 
-    Groups may expose either a flat ``fields`` list OR a ``subgroups``
-    list of ``{label, fields}`` dicts — this helper flattens both
-    shapes so downstream validators see a uniform stream of tuples.
-    A.2.6b: indexed-row paths (``studio.facts.0.label`` etc.) flow in
-    via ``_iter_indexed_groups`` and are exposed identically.
+    Baseline-only (no project meta). Added-row uid paths are validated
+    via ``_validate_uid_cell_path`` in ``validate_key_path``.
     """
     out: list[tuple[str, dict[str, Any]]] = []
     for group in iter_groups(archetype):
@@ -786,16 +786,20 @@ def iter_editable_fields(archetype: str) -> list[tuple[str, dict[str, Any]]]:
 # A.2.6b · Indexed group generator
 # ---------------------------------------------------------------------------
 
-def _iter_indexed_groups(archetype: str) -> list[dict[str, Any]]:
+def _iter_indexed_groups(
+    archetype: str,
+    meta_by_path: dict[str, dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     """Build synthetic schema groups for every list in
     ``STRUCTURED_FIELD_SHAPES[archetype]``.
 
-    Row counts come from the baseline content registry — we never
-    invent rows the template doesn't already author. Each list becomes
-    one accordion with one subgroup per row (``Riga 1`` … ``Riga N``)
-    and one field per editable column. The subgroup label leans on the
-    customer's own first column where it reads well (``"Riga 1 · 8"``
-    for ``studio.facts``); everywhere else it stays a clean ``Riga N``.
+    Baseline mode (``meta_by_path=None``): one subgroup per baseline
+    row, keyed on integer index. Used by ``iter_editable_fields``.
+
+    Project mode: each mutable list consults ``meta_by_path[list_path]``
+    so the sidebar reflects the effective row state — removed baseline
+    rows are hidden and added uid rows appended. Every subgroup carries
+    ``row_identity`` so the UI can render the correct remove button.
     """
     shapes = STRUCTURED_FIELD_SHAPES.get(archetype) or {}
     if not shapes:
@@ -810,29 +814,75 @@ def _iter_indexed_groups(archetype: str) -> list[dict[str, Any]]:
         list_data = _resolve_path(baseline, list_path)
         if not isinstance(list_data, list) or not list_data:
             continue
-        rows = len(list_data)
-        out.append(_build_indexed_group(list_path, shape, list_data, rows))
+        meta = (meta_by_path or {}).get(list_path)
+        out.append(_build_indexed_group(list_path, shape, list_data, meta))
     return out
 
 
 def _build_indexed_group(
     list_path: str,
     shape: dict[str, Any],
-    list_data: list[Any],
-    rows: int,
+    baseline_rows: list[Any],
+    meta: dict[str, Any] | None,
 ) -> dict[str, Any]:
     kind = shape["kind"]
     group_id = f"idx__{list_path.replace('.', '__')}"
+    removed = set(
+        (meta.get("removed") or []) if isinstance(meta, dict) else []
+    )
+    added_entries = (
+        (meta.get("added") or []) if isinstance(meta, dict) else []
+    )
+
     subgroups: list[dict[str, Any]] = []
-    for i in range(rows):
-        sub_label = _row_subgroup_label(i, shape, list_data[i])
-        fields: list[tuple[str, dict[str, Any]]] = []
-        if kind == "scalar":
-            fields.append((f"{list_path}.{i}", dict(shape["cell_spec"])))
-        else:  # tuple or dict
-            for col_name, col_spec in shape["cols"]:
-                fields.append((f"{list_path}.{i}.{col_name}", dict(col_spec)))
-        subgroups.append({"label": sub_label, "fields": fields})
+    position = 0
+    # Baseline rows (filtered by removed)
+    for baseline_idx, row in enumerate(baseline_rows):
+        if baseline_idx in removed:
+            continue
+        position += 1
+        sub_label = _row_subgroup_label(position - 1, shape, row)
+        fields = _build_row_fields(list_path, shape, str(baseline_idx))
+        subgroups.append({
+            "label": sub_label,
+            "fields": fields,
+            "row_identity": {
+                "kind": "baseline",
+                "baseline_idx": baseline_idx,
+                "segment": str(baseline_idx),
+            },
+        })
+    # Added rows (effective shape = empty)
+    for entry in added_entries:
+        if not isinstance(entry, dict) or not isinstance(entry.get("uid"), str):
+            continue
+        uid = entry["uid"]
+        position += 1
+        sub_label = f"Riga {position}"
+        fields = _build_row_fields(list_path, shape, uid)
+        subgroups.append({
+            "label": sub_label,
+            "fields": fields,
+            "row_identity": {
+                "kind": "added",
+                "uid": uid,
+                "segment": uid,
+            },
+        })
+
+    mutable = bool(shape.get("mutable"))
+    min_rows = shape.get("min_rows", 1)
+    max_rows = shape.get("max_rows", len(baseline_rows))
+    help_text = (
+        f"Modifica il contenuto di ognuna delle {len(subgroups)} righe. "
+        f"Aggiungere o rimuovere righe arriverà a breve."
+    )
+    if mutable:
+        help_text = (
+            f"Modifica il contenuto di ognuna delle {len(subgroups)} righe. "
+            f"Puoi aggiungere o rimuovere righe (minimo {min_rows}, massimo {max_rows})."
+        )
+
     return {
         "id": group_id,
         "label": shape["label"],
@@ -840,12 +890,28 @@ def _build_indexed_group(
         "region": shape.get("region", ".vx-section"),
         "page": shape["page"],
         "keywords": list(shape.get("keywords") or []) + ["lista", "righe"],
-        "help": (
-            f"Modifica il contenuto di ognuna delle {rows} righe. "
-            f"Aggiungere o rimuovere righe arriverà a breve."
-        ),
+        "help": help_text,
         "subgroups": subgroups,
+        # A.3a — expose mutability metadata for the sidebar UI.
+        "mutable": mutable,
+        "min_rows": min_rows,
+        "max_rows": max_rows,
+        "list_path": list_path,
+        "effective_length": len(subgroups),
     }
+
+
+def _build_row_fields(
+    list_path: str, shape: dict[str, Any], segment: str,
+) -> list[tuple[str, dict[str, Any]]]:
+    """Build (key_path, spec) pairs for one row — baseline idx or uid."""
+    kind = shape["kind"]
+    if kind == "scalar":
+        return [(f"{list_path}.{segment}", dict(shape["cell_spec"]))]
+    return [
+        (f"{list_path}.{segment}.{col}", dict(spec))
+        for col, spec in (shape.get("cols") or [])
+    ]
 
 
 def _row_subgroup_label(idx: int, shape: dict[str, Any], row_data: Any) -> str:
