@@ -1,4 +1,4 @@
-/* Preview Bridge — Phase A.2
+/* Preview Bridge — Phase A.2 / A.2.4
  *
  * Runs inside the LiveTemplateView iframe only when a project preview
  * is active (injected by the per-archetype _base template behind an
@@ -9,6 +9,14 @@
  * CSS selector. The effect is deliberately subtle — a soft amber
  * glow + dashed outline — so it reinforces the mapping between the
  * sidebar field and the live region without hijacking the preview.
+ *
+ * A.2.4 — deterministic field targeting:
+ *   paintRings() ONLY positions the ring overlays — never scrolls.
+ *   maybeScrollToTarget() is the single scroll gate: it runs at most
+ *   once per explicit activation (message with `scroll: true`), only
+ *   if the target is off-screen, and dedups same-target re-activations
+ *   so repaints from autosave reload, resize, or manual iframe scroll
+ *   never auto-follow the user.
  */
 (function () {
   "use strict";
@@ -129,18 +137,21 @@
     if (label) label.classList.remove("is-visible");
   }
 
-  function paintHighlight(selector, labelText) {
+  // Paint-only — positions the rings + label, NEVER scrolls.
+  // Safe to call on every resize / scroll event.
+  function paintRings(selector, labelText) {
     clearHighlight();
-    if (!selector) return;
+    if (!selector) return null;
 
     let els;
     try { els = document.querySelectorAll(selector); }
-    catch (e) { return; }
+    catch (e) { return null; }
 
-    if (!els || !els.length) return;
+    if (!els || !els.length) return null;
 
     const layer = getOverlayLayer();
     let minTop = Infinity, minLeft = Infinity;
+    let firstVisible = null;
 
     els.forEach((el) => {
       const rect = el.getBoundingClientRect();
@@ -155,11 +166,7 @@
       layer.appendChild(ring);
 
       if (rect.top < minTop) { minTop = rect.top; minLeft = rect.left; }
-
-      // Soft scroll into view if the ring is off-screen
-      if (rect.top < 60 || rect.bottom > window.innerHeight - 40) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+      if (!firstVisible) firstVisible = el;
     });
 
     if (labelText && minTop !== Infinity) {
@@ -168,6 +175,32 @@
       label.style.top  = Math.max(8, minTop - 28) + "px";
       label.style.left = Math.max(8, minLeft) + "px";
       requestAnimationFrame(() => label.classList.add("is-visible"));
+    }
+    return firstVisible;
+  }
+
+  // Scroll gate — runs at most once per explicit activation.
+  // Dedups same-target re-activations; only scrolls if the target is
+  // meaningfully off-screen; never centres an element that is already
+  // visible ("nearest" keeps the camera calm).
+  let lastScrolledSelector = "";
+  function maybeScrollToTarget(el, selector) {
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const fullyVisible = rect.top >= 8 && rect.bottom <= vh - 8;
+    const largelyVisible = rect.top >= -rect.height * 0.2
+                        && rect.bottom <= vh + rect.height * 0.2;
+    if (fullyVisible) { lastScrolledSelector = selector; return; }
+    // If we just scrolled to this exact selector AND it is still
+    // largely in view, do not scroll again (guards against autosave
+    // reload re-activation and rapid re-focus).
+    if (selector && selector === lastScrolledSelector && largelyVisible) return;
+    lastScrolledSelector = selector;
+    try {
+      el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+    } catch (e) {
+      el.scrollIntoView(true);
     }
   }
 
@@ -179,14 +212,35 @@
     const data = event.data || {};
     if (data.source !== "mw-editor") return;
     if (data.kind === "highlight") {
-      lastSelector = data.selector || "";
-      lastLabel = data.label || "";
-      paintHighlight(lastSelector, lastLabel);
+      const selector = data.selector || "";
+      const label = data.label || "";
+      const shouldScroll = data.scroll === true;
+      // Clearing highlight: reset dedup so the next activation can
+      // scroll if needed.
+      if (!selector) { lastScrolledSelector = ""; }
+      lastSelector = selector;
+      lastLabel = label;
+      const firstVisible = paintRings(selector, label);
+      if (shouldScroll && firstVisible) {
+        maybeScrollToTarget(firstVisible, selector);
+      }
     }
   });
 
-  // Re-paint on resize / scroll so the ring tracks the target
-  function reposition() { if (lastSelector) paintHighlight(lastSelector, lastLabel); }
+  // Keep rings glued to their target during manual user scroll /
+  // resize. This NEVER scrolls — it only re-measures and repositions
+  // the existing ring rectangles. Breaks the old feedback loop where
+  // scroll → paint → scrollIntoView → scroll.
+  let repositionTicking = false;
+  function reposition() {
+    if (!lastSelector) return;
+    if (repositionTicking) return;
+    repositionTicking = true;
+    requestAnimationFrame(() => {
+      paintRings(lastSelector, lastLabel);
+      repositionTicking = false;
+    });
+  }
   window.addEventListener("resize", reposition);
   window.addEventListener("scroll", reposition, { passive: true });
 

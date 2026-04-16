@@ -183,8 +183,10 @@
         }
       } catch (e) { /* same-origin guarantees */ }
       // Re-paint the currently active highlight after the reload
+      // WITHOUT re-scrolling (A.2.4: autosave reload must never
+      // auto-follow the user — scroll is only on explicit activation).
       if (lastHighlight.selector) {
-        setTimeout(() => postHighlight(lastHighlight.selector, lastHighlight.label), 80);
+        setTimeout(() => postHighlight(lastHighlight.selector, lastHighlight.label, false), 80);
       }
       wireIframeScrollSync(frame);
     });
@@ -221,7 +223,12 @@
 
   let highlightHoldTimer = null;
 
-  function postHighlight(selector, label) {
+  // A.2.4: `scroll` is opt-in and per-activation. It is only true when
+  // the user explicitly clicks/focuses a sidebar field (or reactivates
+  // a different target). Autosave reload repaints, 5s idle clears,
+  // group-head hover, and compare repaints all pass scroll=false so
+  // the preview never chases the user.
+  function postHighlight(selector, label, scroll) {
     lastHighlight = { selector: selector || "", label: label || "" };
     if (frame && frame.contentWindow) {
       frame.contentWindow.postMessage({
@@ -229,6 +236,7 @@
         kind: "highlight",
         selector: selector || "",
         label: label || "",
+        scroll: scroll === true,
       }, window.location.origin);
     }
     // Keep the highlight alive for a while so autosave reload (iframe
@@ -238,7 +246,7 @@
       highlightHoldTimer = setTimeout(() => {
         // Only clear if no sidebar field has focus
         if (!document.activeElement || !document.activeElement.closest(".ed-field")) {
-          postHighlight("");
+          postHighlight("", "", false);
         }
       }, 5000);
     }
@@ -293,15 +301,16 @@
       }
     }
 
-    // Highlight mapping: focus / mouseenter posts region selector;
-    // blur does NOT clear if another field is about to take focus —
-    // the 5s idle timer inside postHighlight handles that cleanly.
+    // Highlight mapping: focus is the ONLY event that requests a scroll
+    // (A.2.4 click/focus-driven policy). Blur does NOT clear — the 5s
+    // idle timer inside postHighlight handles that cleanly while the
+    // user is still typing into the field.
     const group = input.closest(".ed-group");
     const region = group ? group.getAttribute("data-region") : "";
     const label = input.closest(".ed-field")
                   ? (input.closest(".ed-field").getAttribute("data-ed-label") || "")
                   : "";
-    input.addEventListener("focus", () => postHighlight(region, label));
+    input.addEventListener("focus", () => postHighlight(region, label, true));
 
     // Reset-to-baseline
     const resetBtn = field.querySelector(".ed-reset");
@@ -318,14 +327,15 @@
     }
   });
 
-  // Group-head hover also flashes the region
+  // Group-head hover flashes the region — highlight only, NO scroll
+  // (A.2.4: only field focus/click may scroll the preview).
   $$(".ed-group-head").forEach((btn) => {
     const group = btn.closest(".ed-group");
     const region = group ? group.getAttribute("data-region") : "";
     const label  = group ? (group.querySelector(".ed-glabel")?.textContent.trim() || "") : "";
     btn.addEventListener("mouseenter", () => {
       if (!document.activeElement || !document.activeElement.closest(".ed-field")) {
-        postHighlight(region, label);
+        postHighlight(region, label, false);
       }
     });
   });
