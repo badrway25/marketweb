@@ -1,5 +1,37 @@
 # Decisions Log
 
+## D-086: Editor Foundation v1 — Vertical Slice Shape + DNA-Lock Contract + Preview-Overlay Pipeline (2026-04-16, Session 55)
+
+**Decision:** Phase A.1 (D-085) lands as a real vertical slice: `apps/projects/` ships `CustomerProject` + `ProjectContent` (sparse per-key overrides) + `ProjectDesignTokens` (palette + curated font pair) + `ProjectRevision` (snapshot on seed/manual-save/publish/unpublish). `apps/editor/` ships `schema.py` (archetype-whitelist + DNA-lock validation) + `rendering.py` (deep-merge overlay). The first slice exercises ONE archetype — `agency-creative-studio` (Vertex) — across site chrome + home + studio + contatti with 23 editable keys + 5 design tokens, enough to walk the end-to-end loop (create → edit → save → preview → publish) without overbuild.
+
+**Rationale:**
+1. **Catalog URL piggyback vs new preview route.** The skin `_base.html` templates hardcode `{% url 'catalog:live_template_home/page' %}`. Touching 24+ skins to route through a new `projects:preview` URL is the opposite of Foundation scope. Instead `LiveTemplateView.setup()` detects `?project=<uuid>`; when present, `apply_project_overrides()` deep-merges content + tokens onto the existing context dict. Zero skin changes. The same pipeline ships to all 20 templates the day their archetype gets a schema entry.
+2. **Sparse-diff content (not snapshot).** `ProjectContent` rows are `(project, key_path, value_json)`. Writing a value equal to the baseline auto-deletes the override row. This lets upstream DNA polish flow through to the customer for free — a future `home.headline` register lift on the archetype seed reaches every project that hasn't personalised that field. Matches EDITOR_SCHEMA_BLUEPRINT §7.
+3. **DNA-lock at service layer, not UI.** `apps.editor.schema.validate_key_path()` raises `InvalidEditableField` on any write targeting a non-whitelisted key. The UI already hides them, but the enforcement is at `save_content_edits()` so a crafted POST cannot bypass the lock. `LOCKED_KEYS_NOTE` surfaces a human-readable "perché non è editabile" row in the editor UI for seven well-known structural keys.
+4. **Snapshot-on-revision queries fresh, not prefetched.** `_build_snapshot()` re-queries `ProjectContent` + `ProjectDesignTokens` directly from the DB. A prefetched cache on the view's `project` instance would freeze the pre-save state. This caught a real bug in the first E2E run — a manual revision after a POST save carried 0 content keys until the fix.
+5. **Archetype whitelist first, permissive later.** Foundation v1 explicitly supports ONE archetype. Attempting to create a project from any other WebTemplate raises `UnsupportedTemplate`. This is the opposite of a lazy "if it has a DNA entry, let them edit" — it forces the schema to be authored per archetype before the editor opens to it. Phase A.1 proves the shape; A.2 extends.
+6. **No SPA, no JS framework.** Editor UI is a single server-rendered form with a preview iframe. Save = form POST + redirect + iframe cache-bust via `?_t=<ms>`. Zero JS runtime state. Drastically lower cost + rick for a foundation.
+7. **Published vs draft overlay visibility.** Draft projects overlay only for the owner (or staff). Published projects overlay for any authenticated user. Share tokens / public-unlisted projects are Phase B scope. The selector `get_project_for_preview()` encodes this in one function — no view-level checks.
+
+**Scope explicitly NOT in A.1 (deferred):**
+- Repeater widgets for list fields (`home.ledger_rows`, `home.capab_items`, `home.manifesto_principles`).
+- Image / media uploads (`home.cover.image`, any `*_image` fields). Phase A.6.
+- Multi-locale project trees. Project model carries a `locale` field but only IT is wired. Phase A.7.
+- Page management (add/rename/reorder pages). Phase A.4.
+- Section reorder / visibility toggles. Phase A.2.
+- Archetypes beyond `agency-creative-studio`. Phase A.2+ per archetype.
+- D-054 palette differentiation validator. Phase A.5.
+- Branded login page (editor routes redirect to /admin/login/ until accounts app is fleshed out). Phase A scaffolding, not a decision.
+
+**Consequence:**
+- `apps/projects/` + `apps/editor/` go from empty scaffolds to real modules with tests (12 unit tests, 834/834 catalog smoke unchanged).
+- New migration `projects.0001_initial` lands 4 tables + 1 index + 1 uniqueness constraint.
+- Catalog `LiveTemplateView` gains a single cross-app import (`apps.editor.rendering.apply_project_overrides`) + 20 LOC in `setup/get_context_data`. Zero regression on the 834 existing live routes (verified via `smoke_full.py`).
+- D-085 acceptance gate #1 (foundation exists end-to-end on at least one template) is MET.
+- Phase A.2 can proceed when ready — add schema entries for more archetypes, one archetype at a time, reusing the proven loop.
+
+---
+
 ## D-085: Editor-First Sequencing — Phase A è il prossimo workstream (2026-04-15, Session 54)
 
 **Decision:** dopo la chiusura del MVP catalogo a 20/20 `published_live` (Session 53, D-082), il prossimo workstream del progetto è **Phase A — Editor Foundation v1**. Nessun nuovo template `published_live`, nessun nuovo archetipo, nessuna nuova categoria, nessun preset autoriale viene aperto finché Phase A non è chiusa con i criteri di accettazione documentati in `CATALOG_EXPANSION_STRATEGY.md` §8. Phase A apre `apps/editor/` su tutti i 20 template attuali implementando il contratto già autoriale in `EDITOR_SCHEMA_BLUEPRINT.md` (D-064).

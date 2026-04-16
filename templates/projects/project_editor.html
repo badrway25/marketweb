@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Editor · {{ project.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .pe-layout { display: grid; grid-template-columns: minmax(0, 520px) 1fr; gap: 24px; align-items: start; }
+  .pe-form { background: #fff; border: 1px solid var(--bs-border-color, #dee2e6); border-radius: 12px; padding: 22px; }
+  .pe-form h2 { font-size: 18px; letter-spacing: -0.01em; margin: 0 0 6px; }
+  .pe-form h2 .lbl { display: inline-block; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #6c757d; font-weight: 700; margin-right: 10px; }
+  .pe-group { border-top: 1px solid #eef0f2; padding-top: 18px; margin-top: 18px; }
+  .pe-group:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+  .pe-field { margin-bottom: 16px; }
+  .pe-field label { font-weight: 600; font-size: 13px; }
+  .pe-field .helper { font-size: 12px; color: #6c757d; margin-top: 4px; }
+  .pe-field .baseline { font-size: 12px; color: #6c757d; margin-top: 4px; font-style: italic; }
+  .pe-field .override-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: #f59e0b; margin-left: 6px; vertical-align: middle;
+  }
+  .pe-preview {
+    position: sticky; top: 16px;
+    height: calc(100vh - 32px);
+    border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden;
+    background: #0f172a;
+    display: flex; flex-direction: column;
+  }
+  .pe-preview .bar {
+    background: #0f172a; color: #f8f9fa; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .pe-preview .bar .dot { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; }
+  .pe-preview iframe { flex: 1; width: 100%; border: 0; background: #fff; }
+  .pe-locked { background: #f8f9fa; border-left: 4px solid #ced4da; padding: 10px 14px; border-radius: 0 6px 6px 0; margin-bottom: 10px; font-size: 13px; }
+  .pe-locked strong { font-family: monospace; }
+  .pe-sticky-actions { position: sticky; top: 0; z-index: 4; background: #fff; padding: 10px 0; margin-bottom: 10px; border-bottom: 1px solid #eef0f2; }
+  .pe-color-row { display: flex; gap: 10px; align-items: center; }
+  .pe-color-row input[type=color] { width: 52px; height: 36px; padding: 0; border: 1px solid #ced4da; border-radius: 6px; }
+  .pe-color-row input[type=text] { max-width: 110px; }
+  @media (max-width: 1100px) { .pe-layout { grid-template-columns: 1fr; } .pe-preview { position: static; height: 640px; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container-fluid py-3" style="max-width: 1500px;">
+  <header class="d-flex justify-content-between align-items-end mb-3">
+    <div>
+      <p class="text-uppercase small text-muted mb-1">
+        <a href="{% url 'projects:project_list' %}" class="text-decoration-none">← Progetti</a>
+        · editor · {{ project.source_archetype }}
+      </p>
+      <h1 class="h3 mb-1">{{ project.name }}</h1>
+      <p class="text-muted mb-0">
+        Derivato da <strong>{{ project.source_template.name }}</strong>
+        ·
+        {% if project.status == "published" %}
+          <span class="badge bg-success">Pubblicato</span>
+          {% if project.last_published_at %}
+            <small>— ultima pubblicazione {{ project.last_published_at|date:"d M Y H:i" }}</small>
+          {% endif %}
+        {% else %}
+          <span class="badge bg-secondary">Bozza</span>
+        {% endif %}
+      </p>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-dark btn-sm" target="_blank" href="{{ preview_url }}">Apri in nuova scheda</a>
+      {% if project.status == "published" %}
+        <form method="post" action="{% url 'projects:project_unpublish' project.uuid %}" class="d-inline">
+          {% csrf_token %}
+          <button class="btn btn-outline-warning btn-sm">Riporta in bozza</button>
+        </form>
+      {% else %}
+        <form method="post" action="{% url 'projects:project_publish' project.uuid %}" class="d-inline">
+          {% csrf_token %}
+          <button class="btn btn-success btn-sm">Pubblica</button>
+        </form>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags|default:'info' }} py-2 my-2">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" class="pe-layout" id="editor-form">
+    {% csrf_token %}
+
+    <div class="pe-col-left">
+      <div class="pe-sticky-actions d-flex justify-content-between align-items-center">
+        <small class="text-muted">Modifica, salva, ricarica la preview a destra.</small>
+        <button type="submit" class="btn btn-dark">Salva modifiche</button>
+      </div>
+
+      <!-- Design tokens -->
+      <div class="pe-form mb-3">
+        <h2><span class="lbl">01</span> Design tokens</h2>
+        <p class="text-muted small">
+          Palette e font globali. Le variazioni finiscono nei CSS custom
+          properties dell'archetipo senza rompere la struttura DNA.
+        </p>
+        <div class="pe-group">
+          {% for field in design_fields %}
+            <div class="pe-field">
+              <label for="token__{{ field.key }}">{{ field.spec.label }}</label>
+              {% if field.spec.type == "color" %}
+                <div class="pe-color-row">
+                  <input type="color" name="token__{{ field.key }}" id="token__{{ field.key }}" value="{{ field.value }}">
+                  <input type="text" class="form-control" value="{{ field.value }}"
+                         oninput="this.previousElementSibling.value=this.value; this.previousElementSibling.dispatchEvent(new Event('input',{bubbles:true}))"
+                         readonly>
+                </div>
+              {% elif field.spec.type == "select" %}
+                <select class="form-select form-select-sm" name="token__{{ field.key }}" id="token__{{ field.key }}">
+                  {% for choice in field.spec.choices %}
+                    <option value="{{ choice }}" {% if choice == field.value %}selected{% endif %}>{{ choice }}</option>
+                  {% endfor %}
+                </select>
+              {% endif %}
+              {% if field.spec.help %}<div class="helper">{{ field.spec.help }}</div>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Content groups -->
+      {% for group in groups %}
+      <div class="pe-form mb-3">
+        <h2><span class="lbl">{{ forloop.counter|stringformat:"02d" }}</span> {{ group.label }}</h2>
+        {% if group.help %}<p class="text-muted small mb-3">{{ group.help }}</p>{% endif %}
+        <div class="pe-group">
+          {% for field in group.fields %}
+            <div class="pe-field">
+              <label for="content__{{ field.key|slugify }}">
+                {{ field.spec.label }}
+                {% if field.is_overridden %}<span class="override-dot" title="Campo modificato rispetto al template sorgente"></span>{% endif %}
+              </label>
+              {% if field.spec.type == "textarea" or field.spec.type == "richtext" %}
+                <textarea name="content__{{ field.key }}" id="content__{{ field.key|slugify }}"
+                          rows="3" class="form-control"
+                          {% if field.spec.max_length %}maxlength="{{ field.spec.max_length }}"{% endif %}>{{ field.value }}</textarea>
+              {% elif field.spec.type == "select" %}
+                <select class="form-select" name="content__{{ field.key }}" id="content__{{ field.key|slugify }}">
+                  {% for choice in field.spec.choices %}
+                    <option value="{{ choice }}" {% if choice == field.value %}selected{% endif %}>{{ choice }}</option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <input type="text" class="form-control"
+                       name="content__{{ field.key }}" id="content__{{ field.key|slugify }}"
+                       value="{{ field.value }}"
+                       {% if field.spec.max_length %}maxlength="{{ field.spec.max_length }}"{% endif %}>
+              {% endif %}
+              {% if field.spec.help %}<div class="helper">{{ field.spec.help }}</div>{% endif %}
+              <div class="baseline"><code>{{ field.key }}</code>{% if field.is_overridden %} · modificato{% else %} · baseline{% endif %}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+
+      <!-- Locked keys (read-only note) -->
+      <div class="pe-form mb-3">
+        <h2><span class="lbl">—</span> DNA-locked · non modificabile in Foundation v1</h2>
+        <p class="text-muted small mb-3">
+          Questi slot sono parte del DNA dell'archetipo (D-054). Saranno
+          sbloccati nelle prossime sub-phase dell'editor.
+        </p>
+        {% for key, note in locked_notes.items %}
+          <div class="pe-locked"><strong>{{ key }}</strong> — {{ note }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Revisions -->
+      <div class="pe-form mb-3">
+        <h2><span class="lbl">—</span> Revisioni recenti</h2>
+        {% if recent_revisions %}
+          <ul class="list-unstyled small mb-0">
+            {% for r in recent_revisions %}
+              <li class="py-1 border-bottom">
+                <strong>{{ r.label }}</strong>
+                <span class="text-muted">— {{ r.get_reason_display }} · {{ r.created_at|date:"d M Y H:i" }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted small mb-0">Nessuna revisione ancora.</p>
+        {% endif %}
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-dark">Salva modifiche</button>
+      </div>
+    </div>
+
+    <div class="pe-preview" aria-label="Anteprima progetto">
+      <div class="bar">
+        <span class="dot"></span>
+        Anteprima progetto · overrides attivi
+        <a href="{{ preview_url }}" target="_blank" class="ms-auto text-white" style="font-size: 11px; text-decoration: underline;">Apri ↗</a>
+      </div>
+      <iframe id="preview-iframe" src="{{ preview_url }}" title="Project preview"></iframe>
+    </div>
+  </form>
+</section>
+
+<script>
+  (function() {
+    // Refresh the preview iframe after any save (the server-side redirect
+    // already re-renders the editor; bumping the iframe src busts its cache).
+    var iframe = document.getElementById("preview-iframe");
+    if (iframe && iframe.src.indexOf("&_t=") === -1) {
+      var sep = iframe.src.indexOf("?") === -1 ? "?" : "&";
+      iframe.src = iframe.src + sep + "_t=" + Date.now();
+    }
+  })();
+</script>
+{% endblock %}

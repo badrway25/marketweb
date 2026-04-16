@@ -3,6 +3,8 @@ from django.views.generic import DetailView, ListView, TemplateView
 
 from apps.catalog import selectors, template_content, template_i18n
 from apps.catalog.template_dna import get_dna
+from apps.editor.rendering import apply_project_overrides
+from apps.projects.selectors import get_project_for_preview
 
 
 # ── Staff preview gate (D-055) ────────────────────────────────
@@ -176,6 +178,20 @@ class LiveTemplateView(TemplateView):
             f"live_templates/{category_slug}/{archetype}/{page_kind}.html"
         )
 
+        # Project overlay (D-085 Phase A.1). When ?project=<uuid> is
+        # present AND the current user is allowed to preview it, the
+        # customer's ProjectContent + ProjectDesignTokens overlay the
+        # catalog-side content + theme. The skin is unchanged — overrides
+        # are applied server-side in get_context_data.
+        project_uuid = request.GET.get("project")
+        self.preview_project = None
+        if project_uuid:
+            self.preview_project = get_project_for_preview(
+                project_uuid=project_uuid,
+                user=request.user,
+                template_slug=slug,
+            )
+
     def get_template_names(self):
         return [self._resolved_template]
 
@@ -186,16 +202,36 @@ class LiveTemplateView(TemplateView):
         brand   = self.template_obj.brand
         palette = brand.palette or {}
 
+        heading_font, body_font = self.dna["font_pairing"]
+        theme = {
+            "primary":      palette.get("primary",   "#0f172a"),
+            "secondary":    palette.get("secondary", "#f1f5f9"),
+            "accent":       palette.get("accent",    "#f59e0b"),
+            "heading_font": heading_font,
+            "body_font":    body_font,
+        }
+
+        # Apply project overlay (D-085 Phase A.1) if a preview_project
+        # was resolved in setup(). The skin sees exactly the same
+        # context shape — site/pages/page_data/theme — just with the
+        # customer's overrides merged in.
+        content = self.content
+        if self.preview_project is not None:
+            content, theme = apply_project_overrides(
+                self.preview_project, self.content, theme
+            )
+
         ctx["template"]  = self.template_obj
         ctx["brand"]     = brand
         ctx["dna"]       = self.dna
-        ctx["content"]   = self.content
-        ctx["site"]      = self.content["site"]
-        ctx["pages"]     = self.content["pages"]
+        ctx["content"]   = content
+        ctx["site"]      = content["site"]
+        ctx["pages"]     = content["pages"]
         ctx["page"]      = self.page_entry
-        ctx["page_data"] = self.content.get(self.page_entry["slug"], {})
-        ctx["posts"]     = self.content.get("posts", [])
+        ctx["page_data"] = content.get(self.page_entry["slug"], {})
+        ctx["posts"]     = content.get("posts", [])
         ctx["post"]      = self.post
+        ctx["preview_project"] = self.preview_project
 
         # Blog parent page slug — used by blog_list/blog_detail chrome templates
         # so they don't have to hardcode the per-template slug ('pubblicazioni',
@@ -206,14 +242,8 @@ class LiveTemplateView(TemplateView):
         )
 
         # Theme tokens for CSS variable injection in the per-archetype _base
-        heading_font, body_font = self.dna["font_pairing"]
-        ctx["theme"] = {
-            "primary":      palette.get("primary",   "#0f172a"),
-            "secondary":    palette.get("secondary", "#f1f5f9"),
-            "accent":       palette.get("accent",    "#f59e0b"),
-            "heading_font": heading_font,
-            "body_font":    body_font,
-        }
+        # (already composed above so we can apply project overrides)
+        ctx["theme"] = theme
 
         # i18n/RTL pilot context (Phase 2i.1 — Session 23).
         # - `locale`: current active language code (e.g. "it", "en", "ar")
