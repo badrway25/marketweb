@@ -579,6 +579,25 @@ class FoundationHttpTests(TestCase):
         self.assertIn("Vertex Studio", body)
         self.assertNotIn("Edited Studio", body)
 
+    def test_a28_editor_exposes_mweditor_jump_field_public_api(self):
+        """A.2.8 Step 1: the editor JS must expose `jumpField` on the
+        `window.MWEditor` object so A.3 repeater + devtools + test
+        harness can jump to a field without going through the palette."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        # The JS file is served via {% static %} — read it directly to
+        # lock the export shape.
+        with open("static/editor/live-editor.js", encoding="utf-8") as f:
+            js = f.read()
+        # Function must be declared
+        self.assertIn("function jumpField(", js)
+        # Function must be on the MWEditor export object
+        self.assertRegex(js, r"window\.MWEditor\s*=\s*\{[^}]*jumpField")
+        # Legacy name must be gone so palette + click delegates can't
+        # silently diverge from the public contract.
+        self.assertNotIn("jumpToField", js)
+
     def test_a27_live_template_title_reflects_logo_word_override(self):
         """A.2.7 L1: the iframe <title> must read site.logo_word so an
         override of the brand word is visible in the browser tab and

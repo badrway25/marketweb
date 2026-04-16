@@ -1009,9 +1009,24 @@
     }
   }
 
-  function jumpToField(key, kind) {
-    if (!key) return false;
-    const selector = `[data-ed-field="${CSS.escape(key)}"][data-ed-kind="${CSS.escape(kind || "content")}"]`;
+  // A.2.8 · Public Jump API — exposed as `window.MWEditor.jumpField`.
+  //
+  // Callers (palette Enter, delegated row click, devtools, future A.3
+  // repeater "jump-after-add-row") share the same entry point. The
+  // function opens the owning accordion, scrolls the row into view,
+  // and defers a focus so the existing focus handler runs its
+  // page-aware-nav + highlight + scroll pipeline. Idempotent on
+  // already-open accordions; tolerant on unknown `kind` values.
+  //
+  // @param {string}             key  — field key_path (e.g. "home.headline")
+  // @param {"content"|"token"}  kind — defaults to "content" on any
+  //                                    non-"token" input
+  // @returns {boolean}                — true iff a matching input was
+  //                                    found and focus was scheduled
+  function jumpField(key, kind) {
+    if (typeof key !== "string" || !key) return false;
+    const safeKind = kind === "token" ? "token" : "content";
+    const selector = `[data-ed-field="${CSS.escape(key)}"][data-ed-kind="${CSS.escape(safeKind)}"]`;
     const input = document.querySelector(selector);
     if (!input) return false;
     const group = input.closest(".ed-group");
@@ -1053,7 +1068,7 @@
         e.preventDefault();
         const item = paletteCurrentResults[paletteActiveIdx];
         if (!item) return;
-        const ok = jumpToField(item.key, item.kind);
+        const ok = jumpField(item.key, item.kind);
         if (ok) closePalette();
         else toast("Impossibile aprire il campo richiesto.", "error");
       } else if (e.key === "Escape") {
@@ -1068,7 +1083,7 @@
       if (!row) return;
       const key  = row.getAttribute("data-ed-key");
       const kind = row.getAttribute("data-ed-kind") || "content";
-      const ok = jumpToField(key, kind);
+      const ok = jumpField(key, kind);
       if (ok) closePalette();
     });
 
@@ -1163,6 +1178,7 @@
 
   window.MWEditor = {
     toast, setStatus, flushDirty, refreshPreview,
+    jumpField,
     get currentLang() { return currentLang; },
   };
 })();
