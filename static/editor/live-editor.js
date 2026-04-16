@@ -999,6 +999,10 @@
       setTimeout(() => field.classList.remove("is-just-jumped"), 950);
       field.scrollIntoView({ behavior: "smooth", block: "center" });
     }
+    // A jump is claiming the sidebar — cancel any pending focus-restore
+    // from closePalette() so the sidebar lands on the target instead of
+    // scrolling back to wherever the user was before opening the palette.
+    palettePreviouslyFocused = null;
     // Focus triggers the page-aware nav + highlight pipeline that was
     // wired in step 1. We defer a tick so scrollIntoView has settled.
     setTimeout(() => {
