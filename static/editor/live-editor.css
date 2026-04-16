@@ -1205,6 +1205,29 @@ button { font-family: inherit; }
   flex: 1;
 }
 
+/* A.3b — move row (up / down) — ghost icon button, same footprint as remove */
+.ed-row-move {
+  border: 0;
+  background: transparent;
+  color: var(--ed-muted-2);
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  transition: background 140ms ease, color 140ms ease;
+}
+.ed-row-move:hover:not(:disabled) {
+  background: var(--ed-paper-2);
+  color: var(--ed-ink);
+}
+.ed-row-move:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.ed-row-move i { font-size: 13px; }
+
 /* A.3a — mutable-list repeater affordances */
 .ed-row-remove {
   border: 0;

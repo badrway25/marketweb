@@ -1396,6 +1396,44 @@
     }
   }, true);
 
+  // A.3b — row move (up/down) wires the same autosave-flush + POST +
+  // page-hint + reload pipeline as add/remove. Disabled boundary state
+  // is handed by the server (aria-disabled + attribute) so JS only
+  // needs to short-circuit on the disabled property.
+  $$("[data-ed-row-move]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (btn.disabled) return;
+      const direction = btn.getAttribute("data-ed-row-move");
+      if (direction !== "up" && direction !== "down") return;
+      const subgroup = btn.closest(".ed-subgroup");
+      const group = btn.closest(".ed-group");
+      const listPath = group && group.getAttribute("data-ed-list-path");
+      const rowSegment = subgroup && subgroup.getAttribute("data-ed-row-segment");
+      if (!listPath || !rowSegment || !cfg.rowMoveUrl) return;
+      btn.disabled = true;
+      withAutosaveFlush(() => {
+        postRowOp(cfg.rowMoveUrl, {
+          list_path: listPath, segment: rowSegment, direction: direction,
+        })
+          .then(({ status, data }) => {
+            if (status === 200 && data.ok) {
+              try { sessionStorage.setItem(PENDING_PAGE_KEY, currentPage); }
+              catch (e) {}
+              window.location.reload();
+            } else {
+              btn.disabled = false;
+              toast(data.error || "Impossibile spostare la riga.", "error");
+            }
+          })
+          .catch(() => {
+            btn.disabled = false;
+            toast("Connessione interrotta.", "error");
+          });
+      });
+    });
+  });
+
   syncRowAddDisabled();
 
   // Post-add jump: consume the pending_jump hint once, after mount.
