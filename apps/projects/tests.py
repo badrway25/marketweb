@@ -579,6 +579,32 @@ class FoundationHttpTests(TestCase):
         self.assertIn("Vertex Studio", body)
         self.assertNotIn("Edited Studio", body)
 
+    def test_a28_editor_copy_has_no_phase_jargon(self):
+        """A.2.8 Step 4: customer-facing strings served by the editor
+        view must not leak internal project jargon (Phase A.x, D-054,
+        DNA-locked, repeater widget, 10-gate matrix). The test locks
+        the microcopy clean so future edits don't regress it."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        body = r.content.decode("utf-8", "ignore")
+        for jargon in ("Phase A", "D-054", "DNA-locked", "repeater widget",
+                       "10-gate", "archetipo-driven"):
+            self.assertNotIn(jargon, body,
+                f"Customer-facing editor body must not contain {jargon!r}")
+
+    def test_a28_indexed_group_help_is_customer_friendly(self):
+        """A.2.8 Step 4: the schema-generated help for indexed-row
+        groups must be customer-friendly — no 'Phase A.3' reference,
+        no 'repeater widget' term."""
+        groups = iter_groups("agency-creative-studio")
+        indexed = [g for g in groups if g.get("id", "").startswith("idx__")]
+        self.assertTrue(indexed, "expected at least one indexed group for Vertex")
+        for g in indexed:
+            help_text = g.get("help", "")
+            self.assertNotIn("Phase", help_text)
+            self.assertNotIn("widget", help_text)
+            self.assertNotIn("repeater", help_text)
+
     def test_a28_editor_renders_group_toggle_all_control(self):
         """A.2.8 Step 3: the sidebar head must expose a single
         collapse-all / expand-all button that the JS wires to toggle

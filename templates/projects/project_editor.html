@@ -166,7 +166,7 @@
 
         {# ── Locked fields note + revisions ──────────────────── #}
         <div class="ed-locked-block">
-          <h4>Sezioni in arrivo nelle prossime fasi</h4>
+          <h4>Non modificabili in questa versione</h4>
           <ul>
             {% for key, note in locked_notes.items %}
               <li><code>{{ key }}</code><span>{{ note }}</span></li>
@@ -187,8 +187,7 @@
       </div>
 
       <div class="ed-sidebar-foot">
-        <span>Le modifiche vengono salvate automaticamente mentre scrivi.</span>
-        <span>Clicca <span class="kbd">Salva versione</span> per archiviarle nella cronologia.</span>
+        <span>Le modifiche si salvano mentre scrivi. Usa <span class="kbd">Salva versione</span> per archiviarle.</span>
       </div>
     </aside>
 

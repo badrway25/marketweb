@@ -391,20 +391,20 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
 # list in STRUCTURED_FIELD_SHAPES are now editable as scalar fields.
 LOCKED_KEYS_NOTE: dict[str, str] = {
     "section_order":
-        "L'ordine delle sezioni è parte del DNA dell'archetipo (D-054). "
-        "Cambiarlo rientra nella Phase A.3+.",
+        "L'ordine delle sezioni è fissato dal design del template. "
+        "Arriverà nelle prossime versioni.",
     "navbar_style":
-        "Lo stile della navbar è DNA-locked — un cambio richiede un archetipo diverso.",
+        "Lo stile della navbar è parte del template scelto. "
+        "Per cambiarlo scegli un template diverso.",
     "hero_style":
-        "Lo stile dell'hero è DNA-locked per preservare il premium differentiation "
-        "(D-054, 10-gate matrix).",
+        "Lo stile dell'hero fa parte del template. "
+        "Per un hero diverso scegli un altro template.",
     "pages":
-        "La lista pagine è archetipo-driven in Foundation v1 — nuove pagine "
-        "opt-in arrivano nella Phase A.4.",
+        "Le pagine del sito sono quelle del template. "
+        "Aggiungere pagine personalizzate arriverà a breve.",
     "_repeater_intro":
-        "Le liste hanno un numero di righe fissato dall'archetipo: puoi "
-        "modificare il contenuto di ogni cella, ma non aggiungere o rimuovere "
-        "righe (Phase A.3 — repeater widget).",
+        "Puoi modificare il contenuto di ogni riga delle liste. "
+        "Aggiungere o rimuovere righe arriverà a breve.",
 }
 
 
@@ -816,8 +816,8 @@ def _build_indexed_group(
         "page": shape["page"],
         "keywords": list(shape.get("keywords") or []) + ["lista", "righe"],
         "help": (
-            f"Modifica le {rows} righe di questa lista. Per aggiungere o "
-            f"rimuovere righe attendi la Phase A.3 (repeater widget)."
+            f"Modifica il contenuto di ognuna delle {rows} righe. "
+            f"Aggiungere o rimuovere righe arriverà a breve."
         ),
         "subgroups": subgroups,
     }
