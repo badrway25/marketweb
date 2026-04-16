@@ -5,11 +5,13 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 
 from django.core.management import call_command
+from apps.catalog import template_content
 from apps.catalog.models import WebTemplate
 from apps.editor.schema import (
     InvalidEditableField,
     get_field_spec,
     is_supported_archetype,
+    iter_groups,
     validate_key_path,
     validate_value,
 )
@@ -93,6 +95,328 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
         rev = p.revisions.filter(reason="publish").first()
         self.assertIn("home.eyebrow", rev.snapshot["content"])
+
+    def test_schema_groups_declare_valid_page(self):
+        """A.2.5: every group must carry a `page` slug matching the
+        template's authored pages list (or `*` for chrome)."""
+        vertex_pages = {
+            p["slug"]
+            for p in template_content.get_content("vertex-creative-agency", "it")["pages"]
+        }
+        allowed = vertex_pages | {"*"}
+        for group in iter_groups("agency-creative-studio"):
+            with self.subTest(group=group["id"]):
+                self.assertIn("page", group,
+                              f"Group '{group['id']}' missing 'page' key.")
+                self.assertIn(group["page"], allowed,
+                              f"Group '{group['id']}' page='{group['page']}' "
+                              f"not in {sorted(allowed)}.")
+
+    def test_preview_url_for_page_shapes(self):
+        """A.2.5: preview URL builder handles home implicitly and adds
+        the page segment for non-home pages, always with ?project=."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        self.assertEqual(
+            p.preview_url_for_page("home"),
+            f"/templates/agency/vertex-creative-agency/preview/?project={p.uuid}",
+        )
+        self.assertEqual(
+            p.preview_url_for_page("studio"),
+            f"/templates/agency/vertex-creative-agency/preview/studio/?project={p.uuid}",
+        )
+        self.assertEqual(
+            p.preview_url_for_page(None),
+            f"/templates/agency/vertex-creative-agency/preview/?project={p.uuid}",
+        )
+        self.assertEqual(
+            p.preview_url_path,
+            "/templates/agency/vertex-creative-agency/preview/",
+        )
+
+    def test_dict_path_overrides_merge_into_baseline_dict(self):
+        """A.2.6a: a leaf override into a dict-shaped registry slot
+        (e.g. contatti.labels.name) must merge into the baseline dict
+        without wiping sibling keys."""
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={
+                "contatti.labels.name":  "Nome completo",
+                "contatti.labels.email": "Indirizzo email",
+            },
+        )
+        tree = p.get_overrides_dict()
+        self.assertEqual(tree["contatti"]["labels"]["name"],  "Nome completo")
+        self.assertEqual(tree["contatti"]["labels"]["email"], "Indirizzo email")
+
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        self.assertEqual(merged["contatti"]["labels"]["name"],  "Nome completo")
+        self.assertEqual(merged["contatti"]["labels"]["email"], "Indirizzo email")
+        # Sibling keys not overridden remain at baseline.
+        self.assertEqual(merged["contatti"]["labels"]["role"],   "Ruolo nell'organizzazione")
+        self.assertEqual(merged["contatti"]["labels"]["budget"], "Banda di budget indicativa")
+
+    def test_a26a_contatti_scalar_fields_whitelisted(self):
+        """A.2.6a: the 23 new contatti scalar / dict-key fields are
+        whitelisted for write."""
+        new_paths = [
+            "contatti.form_submit_label",
+            "contatti.form_submit_note",
+            "contatti.labels.name",
+            "contatti.labels.role",
+            "contatti.labels.company",
+            "contatti.labels.email",
+            "contatti.labels.discipline",
+            "contatti.labels.budget",
+            "contatti.labels.brief",
+            "contatti.placeholders.name",
+            "contatti.placeholders.role",
+            "contatti.placeholders.company",
+            "contatti.placeholders.email",
+            "contatti.placeholders.brief",
+            "contatti.direct_label",
+            "contatti.direct_heading",
+            "contatti.studio_label",
+            "contatti.reply_label",
+            "contatti.reply_heading",
+            "contatti.reply_body",
+            "contatti.channels_label",
+            "contatti.promise_label",
+            "contatti.promise_heading",
+        ]
+        for path in new_paths:
+            with self.subTest(path=path):
+                validate_key_path("agency-creative-studio", path)
+                self.assertIsNotNone(get_field_spec("agency-creative-studio", path))
+
+    # ── A.2.6b · Indexed-row contract ───────────────────────────────
+
+    def test_a26b_schema_size_meets_target(self):
+        """A.2.6b: indexed-row contract must lift the editable-field
+        count to at least 250 (target band 260-280, +5 design tokens
+        on top in the editor surface)."""
+        from apps.editor.schema import iter_editable_fields, iter_groups
+        fields = iter_editable_fields("agency-creative-studio")
+        groups = iter_groups("agency-creative-studio")
+        self.assertGreaterEqual(len(fields), 250,
+            f"Field coverage regressed below A.2.6b floor: {len(fields)}")
+        # 14 curated + 18 indexed list groups = 32.
+        self.assertGreaterEqual(len(groups), 32)
+
+    def test_a26b_tuple_cell_splice_preserves_siblings(self):
+        """A.2.6b: editing studio.facts.0.label must update only the
+        target cell — other columns of row 0 and other rows stay at
+        baseline."""
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={
+                "studio.facts.0.label":  "anni di attività dello studio",
+                "studio.facts.2.number": "12",
+            },
+        )
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        facts = merged["studio"]["facts"]
+        # Row 0: label changed, number / sub preserved.
+        self.assertEqual(facts[0][0], "8")  # number col untouched
+        self.assertEqual(facts[0][1], "anni di attività dello studio")
+        self.assertEqual(facts[0][2], "Fondato nel 2018 a Milano")
+        # Row 1: fully baseline.
+        self.assertEqual(facts[1][0], "42")
+        self.assertEqual(facts[1][1], "progetti in archivio")
+        # Row 2: number changed, label / sub preserved.
+        self.assertEqual(facts[2][0], "12")
+        self.assertEqual(facts[2][1], "collaboratori")
+        # Row count unchanged — repeater cannot add rows in A.2.6.
+        self.assertEqual(len(facts), 4)
+
+    def test_a26b_dict_cell_splice_preserves_siblings(self):
+        """A.2.6b: editing studio.partners.1.name must update only
+        that key — other keys of partner 1 and other partners stay at
+        baseline."""
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"studio.partners.1.name": "Tommaso B. Boeri"},
+        )
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        partners = merged["studio"]["partners"]
+        self.assertEqual(partners[1]["name"], "Tommaso B. Boeri")
+        self.assertEqual(partners[1]["role"], "Co-fondatore · Direttore artistico")
+        # Other partners untouched.
+        self.assertEqual(partners[0]["name"], "Margherita Serafini")
+        self.assertEqual(partners[2]["name"], "Ilaria Ferri")
+
+    def test_a26b_scalar_list_cell_splice_preserves_siblings(self):
+        """A.2.6b: editing home.press_publications.2 (a plain string
+        list) must update only that index."""
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"home.press_publications.2": "Apartamento"},
+        )
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        pubs = merged["home"]["press_publications"]
+        self.assertEqual(pubs[2], "Apartamento")
+        self.assertEqual(pubs[0], "Monocle")  # untouched
+        self.assertEqual(pubs[1], "Domus")    # untouched
+        self.assertEqual(len(pubs), 8)        # row count preserved
+
+    def test_a26b_indexed_paths_validate(self):
+        """A.2.6b: every indexed cell of every shaped list is a
+        whitelisted key, and out-of-range / unknown-column / locked
+        column writes are rejected."""
+        from apps.editor.schema import (
+            STRUCTURED_FIELD_SHAPES, get_field_spec,
+        )
+        # Sample: one cell per list at row 0, plus a known-locked column.
+        sampling = [
+            "home.ledger_rows.0.title",
+            "home.capab_items.0.title",
+            "home.press_publications.0",
+            "home.manifesto_principles.0.title",
+            "studio.facts.0.number",
+            "studio.partners.0.name",
+            "studio.timeline_rows.0.year",
+            "capacita.disciplines.0.title",
+            "capacita.engagement_tiles.0.title",
+            "lavori.filters.0",
+            "lavori.projects.0.title",
+            "lavori.archive_stats.0.number",
+            "manifesto.phases.0.title",
+            "manifesto.principles.0.title",
+            "manifesto.promise_stats.0.number",
+            "contatti.discipline_options.0",
+            "contatti.budget_bands.0.label",
+            "contatti.channels.0.value",
+        ]
+        # All 18 lists must contribute an editable cell.
+        self.assertEqual(len(sampling), len(STRUCTURED_FIELD_SHAPES["agency-creative-studio"]))
+        for path in sampling:
+            with self.subTest(path=path):
+                validate_key_path("agency-creative-studio", path)
+                self.assertIsNotNone(get_field_spec("agency-creative-studio", path))
+        # Locked tuple columns (slug, num) stay rejected.
+        for locked in [
+            "home.ledger_rows.0.slug",        # route slug column
+            "home.ledger_rows.0.discipline",  # not exposed in A.2.6b
+            "lavori.projects.0.slug",         # route slug
+            "lavori.projects.0.index",        # ordinal
+            "studio.partners.0.creds",        # nested list, not exposed
+            "manifesto.phases.0.deliverables",# nested list
+            "contatti.budget_bands.0.slug",   # locked
+        ]:
+            with self.subTest(path=locked):
+                with self.assertRaises(InvalidEditableField):
+                    validate_key_path("agency-creative-studio", locked)
+        # Whole-list overwrite still locked even though cells are open.
+        with self.assertRaises(InvalidEditableField):
+            validate_key_path("agency-creative-studio", "studio.facts")
+        with self.assertRaises(InvalidEditableField):
+            validate_key_path("agency-creative-studio", "lavori.projects")
+
+    def test_a26b_indexed_out_of_range_rejected(self):
+        """A.2.6b: write to a row beyond the baseline length must
+        raise InvalidEditableField."""
+        # studio.facts has 4 baseline rows → index 4+ is out of range.
+        with self.assertRaises(InvalidEditableField):
+            validate_key_path("agency-creative-studio", "studio.facts.4.label")
+        with self.assertRaises(InvalidEditableField):
+            validate_key_path("agency-creative-studio", "studio.partners.7.name")
+
+    def test_a26b_indexed_baseline_resolves_for_all_three_shapes(self):
+        """A.2.6b: the editor sidebar prefills inputs with the
+        baseline value when no override is present. The resolver must
+        therefore walk through list indices AND translate tuple-column
+        names back to tuple positions."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # Tuple column (studio.facts is a tuple list, "label" is col 1)
+        self.assertEqual(
+            services.resolve_path_in_baseline(p, "studio.facts.0.label"),
+            "anni di attività",
+        )
+        # Dict-list column (studio.partners[1].name)
+        self.assertEqual(
+            services.resolve_path_in_baseline(p, "studio.partners.1.name"),
+            "Tommaso Boeri",
+        )
+        # Scalar list cell (home.press_publications[0])
+        self.assertEqual(
+            services.resolve_path_in_baseline(p, "home.press_publications.0"),
+            "Monocle",
+        )
+        # Out-of-range gracefully returns None (does not crash).
+        self.assertIsNone(services.resolve_path_in_baseline(p, "studio.facts.99.label"))
+
+    def test_a26b_indexed_sparse_diff_deletes_row_on_baseline_match(self):
+        """A.2.6b: writing the baseline value back into an indexed
+        cell must drop the override row (sparse-diff). Critical so a
+        customer who 'undoes' an edit doesn't leave dead overrides
+        behind that block future DNA polish."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # First, override studio.facts.0.label.
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"studio.facts.0.label": "Mutato per test"},
+        )
+        self.assertEqual(p.content_overrides.filter(key_path="studio.facts.0.label").count(), 1)
+        # Now write the baseline value back. The row should be deleted.
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"studio.facts.0.label": "anni di attività"},
+        )
+        self.assertEqual(p.content_overrides.filter(key_path="studio.facts.0.label").count(), 0)
+
+    def test_a26b_indexed_save_then_render_end_to_end(self):
+        """A.2.6b: save four indexed edits, render preview HTML, and
+        assert all four overlay strings appear (and the locked
+        columns remain at baseline)."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={
+                "studio.facts.0.label":         "anni di indipendenza",
+                "lavori.projects.2.title":      "Manuale di marca rinnovato",
+                "contatti.channels.0.value":    "studio@walker.test",
+                "home.press_publications.0":    "Apartamento Magazine",
+            },
+        )
+        # Use the rendering function directly so we don't need the HTTP layer.
+        from apps.editor.rendering import apply_project_overrides
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        # Tuple cell
+        self.assertEqual(merged["studio"]["facts"][0][1], "anni di indipendenza")
+        # Dict cell
+        self.assertEqual(merged["lavori"]["projects"][2]["title"], "Manuale di marca rinnovato")
+        # Tuple cell (channels)
+        self.assertEqual(merged["contatti"]["channels"][0][1], "studio@walker.test")
+        # Scalar list cell
+        self.assertEqual(merged["home"]["press_publications"][0], "Apartamento Magazine")
+        # Locked column (lavori.projects.2.slug) untouched at baseline.
+        self.assertEqual(merged["lavori"]["projects"][2]["slug"], "maison-gentiluomo-manuale")
+
+    def test_a26a_baseline_lookup_resolves_dict_paths(self):
+        """A.2.6a: baseline resolver walks through dict slots, so the
+        sparse-diff equality check (override == baseline ⇒ delete) works
+        for dict-key paths."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        baseline_value = services.resolve_path_in_baseline(p, "contatti.labels.email")
+        self.assertEqual(baseline_value, "Email di contatto")
+        # Setting the same value as baseline should NOT create a row.
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"contatti.labels.email": baseline_value},
+        )
+        self.assertEqual(p.content_overrides.count(), 0)
 
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
@@ -264,6 +588,96 @@ class FoundationHttpTests(TestCase):
         self.assertTrue(r.json()["ok"])
         p.refresh_from_db()
         self.assertEqual(p.revisions.count(), before + 1)
+
+    def test_editor_renders_palette_index(self):
+        """A.2.5 palette search: editor GET must ship a JSON index
+        with every field (content + tokens), with keywords surfaced
+        for fuzzy-friendly client-side ranking."""
+        import json as _json
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+
+        # Palette skeleton + trigger present
+        self.assertIn('id="ed-palette"', body)
+        self.assertIn('data-ed-open-palette', body)
+        self.assertIn('id="ed-palette-input"', body)
+        self.assertIn('id="ed-palette-index"', body)
+
+        # Extract the JSON payload from the <script type="application/json">
+        marker = 'id="ed-palette-index" type="application/json">'
+        idx = body.index(marker) + len(marker)
+        end = body.index("</script>", idx)
+        # Undo the "</" -> "<\/" neutralisation we apply server-side
+        raw = body[idx:end].replace("<\\/", "</")
+        data = _json.loads(raw)
+        self.assertIsInstance(data, list)
+        # A.2.6b: indexed-row contract pushes the palette index past
+        # 250 (target band 260-280, +5 design tokens on top).
+        self.assertGreaterEqual(len(data), 250)
+
+        keys = {row["key"] for row in data}
+        # Mix of content + design-token keys must be indexed
+        self.assertIn("home.headline", keys)
+        self.assertIn("site.email", keys)
+        self.assertIn("contatti.form_heading", keys)
+        self.assertIn("palette_primary", keys)
+        self.assertIn("heading_font", keys)
+        # A.2.6a: new contatti scalar / dict-key fields surface in palette.
+        self.assertIn("contatti.labels.name", keys)
+        self.assertIn("contatti.placeholders.email", keys)
+        self.assertIn("contatti.form_submit_label", keys)
+        self.assertIn("contatti.reply_body", keys)
+        self.assertIn("contatti.promise_heading", keys)
+        # A.2.6b: indexed-row cells (one per shape kind) surface in palette.
+        self.assertIn("studio.facts.0.label", keys)         # tuple
+        self.assertIn("studio.partners.0.name", keys)       # dict
+        self.assertIn("home.press_publications.0", keys)    # scalar list
+        self.assertIn("contatti.channels.5.value", keys)    # tail row of tuple list
+
+        # Context metadata travels with each row
+        row = next(r for r in data if r["key"] == "home.headline")
+        self.assertEqual(row["page"], "home")
+        self.assertEqual(row["page_label"], "Studio")  # Vertex home label
+        self.assertEqual(row["group_id"], "hero")
+        self.assertEqual(row["kind"], "content")
+        self.assertIn("titolo", row["keywords"])
+
+        # Tokens carry synthetic keywords so "colori" / "font" / "palette"
+        # all route to the design group
+        color_row = next(r for r in data if r["key"] == "palette_primary")
+        self.assertEqual(color_row["kind"], "token")
+        self.assertEqual(color_row["page"], "*")
+        self.assertIn("colori", color_row["keywords"])
+        self.assertIn("font", color_row["keywords"])
+
+    def test_editor_renders_data_ed_page_metadata(self):
+        """A.2.5: GET editor must expose page-aware group attributes
+        so the JS can route iframe navigation on focus."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        # Home-bound group: hero
+        self.assertIn('data-group-id="hero"', body)
+        self.assertIn('data-ed-page="home"', body)
+        # Subpage group: studio
+        self.assertIn('data-group-id="studio"', body)
+        self.assertIn('data-ed-page="studio"', body)
+        # Chrome-bound group: contact_info (footer, cross-page)
+        self.assertIn('data-group-id="contact_info"', body)
+        self.assertIn('data-ed-page="*"', body)
+        # Config block carries the raw base path + uuid + pages list
+        self.assertIn("previewBasePath", body)
+        self.assertIn(
+            "/templates/agency/vertex-creative-agency/preview/",
+            body,
+        )
+        self.assertIn("availablePages", body)
+        # Every declared page slug for this template appears in the list
+        for slug in ("home", "studio", "capacita", "lavori", "manifesto", "contatti"):
+            self.assertIn(f'"{slug}"', body)
 
     def test_published_overlay_visible_to_other_user(self):
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)

@@ -175,7 +175,7 @@ def save_content_edits(
         validate_key_path(archetype, key_path)
         cleaned = validate_value(archetype, key_path, raw_value)
 
-        baseline_value = _resolve_path(baseline, key_path)
+        baseline_value = _resolve_path(baseline, key_path, archetype)
 
         # A value equal to baseline is persisted as "delete override" —
         # keeps the overrides table sparse and lets upstream DNA
@@ -297,12 +297,67 @@ def _build_snapshot(project: CustomerProject) -> dict[str, Any]:
     }
 
 
-def _resolve_path(tree: dict[str, Any], key_path: str) -> Any:
+def _resolve_path(
+    tree: dict[str, Any],
+    key_path: str,
+    archetype: str | None = None,
+) -> Any:
+    """Walk a dotted path, including numeric/tuple-column segments.
+
+    A.2.6b: indexed paths like ``studio.facts.0.label`` need three
+    kinds of step:
+    - dict key (``studio``, ``facts``)
+    - list index (``0``)
+    - tuple-column name (``label`` → tuple position 1) — only when the
+      preceding list is a tuple-shaped list per
+      ``STRUCTURED_FIELD_SHAPES``. ``archetype`` lets us perform the
+      column-name → tuple-index lookup; if omitted we fall back to
+      dict/list walking only (good enough for scalar/dict lists).
+
+    The splicer in ``apps.editor.rendering`` does the same dance at
+    apply time; this helper is the read-side counterpart used by the
+    editor sidebar (prefill values) and by ``save_content_edits``
+    (delete-on-baseline-equality sparse-diff).
+    """
+    shapes: dict[str, Any] = {}
+    if archetype:
+        try:
+            from apps.editor.schema import get_structured_shapes
+            shapes = get_structured_shapes(archetype)
+        except Exception:
+            shapes = {}
+
+    parts = key_path.split(".")
     cursor: Any = tree
-    for segment in key_path.split("."):
-        if not isinstance(cursor, dict):
+    walked: list[str] = []
+    for segment in parts:
+        if isinstance(cursor, dict):
+            cursor = cursor.get(segment)
+        elif isinstance(cursor, list):
+            try:
+                idx = int(segment)
+            except ValueError:
+                return None
+            if idx < 0 or idx >= len(cursor):
+                return None
+            cursor = cursor[idx]
+        elif isinstance(cursor, tuple):
+            # Tuple cell — translate the column name via the shape that
+            # described the parent list (the path two segments back).
+            list_path = ".".join(walked[:-1])
+            shape = shapes.get(list_path)
+            if not shape or shape.get("kind") != "tuple":
+                return None
+            order = shape.get("tuple_order") or []
+            if segment not in order:
+                return None
+            col_idx = order.index(segment)
+            if col_idx >= len(cursor):
+                return None
+            cursor = cursor[col_idx]
+        else:
             return None
-        cursor = cursor.get(segment)
+        walked.append(segment)
         if cursor is None:
             return None
     return cursor
@@ -331,7 +386,7 @@ def _validate_token(spec: dict[str, Any], value: Any) -> str:
 def resolve_path_in_baseline(project: CustomerProject, key_path: str) -> Any:
     """Convenience used by the editor UI to show the original value."""
     baseline = template_content.get_content(project.source_template.slug, project.locale) or {}
-    return _resolve_path(baseline, key_path)
+    return _resolve_path(baseline, key_path, project.source_archetype)
 
 
 def current_value_for(project: CustomerProject, key_path: str) -> Any:

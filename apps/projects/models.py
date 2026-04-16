@@ -81,17 +81,39 @@ class CustomerProject(TimestampedModel):
 
     @property
     def preview_url_base(self) -> str:
-        """Catalog live-preview URL extended with ?project=<uuid>.
+        """Catalog live-preview URL for the HOME page (with ?project=).
 
         The project preview piggybacks on the existing catalog route so
         we do not have to modify any skin template. The renderer detects
         the `project` query param and overlays content + tokens.
         """
+        return self.preview_url_for_page("home")
+
+    @property
+    def preview_url_path(self) -> str:
+        """Raw preview path WITHOUT page segment or query string.
+
+        Shape: ``/templates/<cat>/<slug>/preview/``. The editor JS
+        appends the page slug and query params client-side, so we
+        don't have to pass every page variant in the context.
+        """
         return (
             f"/templates/{self.source_category_slug}/"
             f"{self.source_template.slug}/preview/"
-            f"?project={self.uuid}"
         )
+
+    def preview_url_for_page(self, page_slug: str | None) -> str:
+        """Preview URL for a specific page of this project's template.
+
+        Home is the implicit default (no trailing segment) to match the
+        catalog URL pattern ``<cat>/<slug>/preview/``. Other pages get
+        ``<cat>/<slug>/preview/<page>/``. The ``?project=<uuid>`` query
+        is always appended so the renderer applies the customer overlay.
+        """
+        base = self.preview_url_path
+        if page_slug and page_slug != "home":
+            base += f"{page_slug}/"
+        return f"{base}?project={self.uuid}"
 
     def get_overrides_dict(self) -> dict[str, Any]:
         """Return a nested dict of all content overrides.
