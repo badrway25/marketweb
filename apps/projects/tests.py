@@ -579,6 +579,26 @@ class FoundationHttpTests(TestCase):
         self.assertIn("Vertex Studio", body)
         self.assertNotIn("Edited Studio", body)
 
+    def test_a27_live_template_title_reflects_logo_word_override(self):
+        """A.2.7 L1: the iframe <title> must read site.logo_word so an
+        override of the brand word is visible in the browser tab and
+        not just in the navbar."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "Atelier Prova"},
+        )
+        r = self.client.get(
+            f"/templates/agency/vertex-creative-agency/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        title_start = body.index("<title>")
+        title_end = body.index("</title>", title_start)
+        title = body[title_start + len("<title>"): title_end]
+        self.assertIn("Atelier Prova", title)
+        self.assertNotIn("Vertex Studio", title)
+
     def test_snapshot_endpoint_creates_revision(self):
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)
         before = p.revisions.count()
