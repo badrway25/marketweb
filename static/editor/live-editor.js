@@ -761,6 +761,25 @@
     });
   }
 
+  // A.2.7 L3 — page-intent tuning.
+  //
+  // With 284 fields, a single generic token like "studio" used to
+  // match `contatti.studio_label` (label contains "studio" → +140)
+  // ahead of any real Studio-page field (page_label contains "studio"
+  // → only +60). Two surgical boosts close the gap without reshaping
+  // the ranking:
+  //
+  //   +200  when the whole query EQUALS the page_label  → "studio"
+  //         pulls every Studio-page field to the top.
+  //   + 60  when the whole query EQUALS the group_label → "brand",
+  //         "contatti", "hero" pull their own group first.
+  //
+  // Both are exact-normalised matches, so a query of "studio legale"
+  // gets no boost (it's not a page) and the existing per-token scoring
+  // continues to work. The floor on `rankItems` is raised from >0 to
+  // >=10 so pure help/placeholder whispers (+6/+3) stop polluting
+  // long result lists — anything meaningful hits at least a keyNorm
+  // (+10) or label-token (+35).
   function scoreItem(item, queryNorm, tokens) {
     if (!queryNorm) return 1; // empty query → keep, bucketed order
     let score = 0;
@@ -769,8 +788,10 @@
     else if (item.labelNorm.startsWith(queryNorm)) score += 240;
     else if (item.labelNorm.indexOf(queryNorm) !== -1) score += 140;
     if (item.keywordsNorm.indexOf(queryNorm) !== -1) score += 90;
-    if (item.pageLabelNorm.indexOf(queryNorm) !== -1) score += 60;
-    if (item.groupLabelNorm.indexOf(queryNorm) !== -1) score += 60;
+    if (item.pageLabelNorm === queryNorm) score += 200;
+    else if (item.pageLabelNorm.indexOf(queryNorm) !== -1) score += 60;
+    if (item.groupLabelNorm === queryNorm) score += 60;
+    else if (item.groupLabelNorm.indexOf(queryNorm) !== -1) score += 60;
     // Per-token (so "contatti email" also works)
     for (let i = 0; i < tokens.length; i++) {
       const t = tokens[i];
@@ -787,13 +808,19 @@
     return score;
   }
 
+  const PALETTE_SCORE_FLOOR = 10;
+
   function rankItems(index, query) {
     const queryNorm = normaliseText(query);
     const tokens = queryNorm ? queryNorm.split(" ").filter(Boolean) : [];
+    const hasQuery = queryNorm.length > 0;
     const scored = [];
     for (let i = 0; i < index.length; i++) {
       const s = scoreItem(index[i], queryNorm, tokens);
-      if (s > 0) scored.push({ item: index[i], score: s });
+      // Empty query keeps its bucketed order; query runs get a floor so
+      // help-only / placeholder-only noise (+6 / +3) is dropped.
+      if (!hasQuery) { if (s > 0) scored.push({ item: index[i], score: s }); }
+      else if (s >= PALETTE_SCORE_FLOOR) scored.push({ item: index[i], score: s });
     }
     scored.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
