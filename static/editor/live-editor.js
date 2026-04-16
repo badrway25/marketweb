@@ -560,14 +560,55 @@
   // Sidebar: accordion + search + collapse
   // ────────────────────────────────────────────────────────────
 
-  const firstGroup = $(".ed-group");
-  if (firstGroup) firstGroup.classList.add("is-open");
+  // A.2.8 step 2 — default-open aligned with the page the iframe boots
+  // on. The first group whose data-ed-page matches currentPage wins;
+  // chrome groups (page="*") and the fallback (first group overall) are
+  // only considered if no page-specific group exists. One-shot at mount
+  // — later page switches don't reshuffle the accordion so the user
+  // keeps whatever they opened manually.
+  (function openDefaultGroup() {
+    const allGroups = $$(".ed-group");
+    if (!allGroups.length) return;
+    const pageMatch = allGroups.find(
+      (g) => g.getAttribute("data-ed-page") === currentPage
+    );
+    (pageMatch || allGroups[0]).classList.add("is-open");
+  })();
 
   $$(".ed-group-head").forEach((btn) => {
     btn.addEventListener("click", () => {
       btn.closest(".ed-group").classList.toggle("is-open");
+      syncGroupToggleAllState();
     });
   });
+
+  // A.2.8 step 3 — collapse-all / expand-all toggle. One button whose
+  // icon + title reflect the aggregate state: if any group is open it
+  // acts as "collapse all"; when everything is closed it flips to
+  // "expand all". Keeping a single control avoids cluttering the head.
+  const groupToggleAllBtn = $("[data-ed-group-toggle-all]");
+  function syncGroupToggleAllState() {
+    if (!groupToggleAllBtn) return;
+    const anyOpen = $$(".ed-group.is-open").length > 0;
+    const icon = groupToggleAllBtn.querySelector("i");
+    if (anyOpen) {
+      if (icon) icon.className = "bi bi-chevron-contract";
+      groupToggleAllBtn.title = "Comprimi tutti i gruppi";
+      groupToggleAllBtn.setAttribute("aria-label", "Comprimi tutti i gruppi");
+    } else {
+      if (icon) icon.className = "bi bi-chevron-expand";
+      groupToggleAllBtn.title = "Espandi tutti i gruppi";
+      groupToggleAllBtn.setAttribute("aria-label", "Espandi tutti i gruppi");
+    }
+  }
+  if (groupToggleAllBtn) {
+    groupToggleAllBtn.addEventListener("click", () => {
+      const anyOpen = $$(".ed-group.is-open").length > 0;
+      $$(".ed-group").forEach((g) => g.classList.toggle("is-open", !anyOpen));
+      syncGroupToggleAllState();
+    });
+    syncGroupToggleAllState();
+  }
 
   // A.2.5 — command palette replaces the old inline filter. The
   // palette logic lives after the focus-handler wiring so it can
@@ -1009,9 +1050,24 @@
     }
   }
 
-  function jumpToField(key, kind) {
-    if (!key) return false;
-    const selector = `[data-ed-field="${CSS.escape(key)}"][data-ed-kind="${CSS.escape(kind || "content")}"]`;
+  // A.2.8 · Public Jump API — exposed as `window.MWEditor.jumpField`.
+  //
+  // Callers (palette Enter, delegated row click, devtools, future A.3
+  // repeater "jump-after-add-row") share the same entry point. The
+  // function opens the owning accordion, scrolls the row into view,
+  // and defers a focus so the existing focus handler runs its
+  // page-aware-nav + highlight + scroll pipeline. Idempotent on
+  // already-open accordions; tolerant on unknown `kind` values.
+  //
+  // @param {string}             key  — field key_path (e.g. "home.headline")
+  // @param {"content"|"token"}  kind — defaults to "content" on any
+  //                                    non-"token" input
+  // @returns {boolean}                — true iff a matching input was
+  //                                    found and focus was scheduled
+  function jumpField(key, kind) {
+    if (typeof key !== "string" || !key) return false;
+    const safeKind = kind === "token" ? "token" : "content";
+    const selector = `[data-ed-field="${CSS.escape(key)}"][data-ed-kind="${CSS.escape(safeKind)}"]`;
     const input = document.querySelector(selector);
     if (!input) return false;
     const group = input.closest(".ed-group");
@@ -1053,7 +1109,7 @@
         e.preventDefault();
         const item = paletteCurrentResults[paletteActiveIdx];
         if (!item) return;
-        const ok = jumpToField(item.key, item.kind);
+        const ok = jumpField(item.key, item.kind);
         if (ok) closePalette();
         else toast("Impossibile aprire il campo richiesto.", "error");
       } else if (e.key === "Escape") {
@@ -1068,7 +1124,7 @@
       if (!row) return;
       const key  = row.getAttribute("data-ed-key");
       const kind = row.getAttribute("data-ed-kind") || "content";
-      const ok = jumpToField(key, kind);
+      const ok = jumpField(key, kind);
       if (ok) closePalette();
     });
 
@@ -1163,6 +1219,7 @@
 
   window.MWEditor = {
     toast, setStatus, flushDirty, refreshPreview,
+    jumpField,
     get currentLang() { return currentLang; },
   };
 })();

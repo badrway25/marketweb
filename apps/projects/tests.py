@@ -579,6 +579,65 @@ class FoundationHttpTests(TestCase):
         self.assertIn("Vertex Studio", body)
         self.assertNotIn("Edited Studio", body)
 
+    def test_a28_editor_copy_has_no_phase_jargon(self):
+        """A.2.8 Step 4: customer-facing strings served by the editor
+        view must not leak internal project jargon (Phase A.x, D-054,
+        DNA-locked, repeater widget, 10-gate matrix). The test locks
+        the microcopy clean so future edits don't regress it."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        body = r.content.decode("utf-8", "ignore")
+        for jargon in ("Phase A", "D-054", "DNA-locked", "repeater widget",
+                       "10-gate", "archetipo-driven"):
+            self.assertNotIn(jargon, body,
+                f"Customer-facing editor body must not contain {jargon!r}")
+
+    def test_a28_indexed_group_help_is_customer_friendly(self):
+        """A.2.8 Step 4: the schema-generated help for indexed-row
+        groups must be customer-friendly — no 'Phase A.3' reference,
+        no 'repeater widget' term."""
+        groups = iter_groups("agency-creative-studio")
+        indexed = [g for g in groups if g.get("id", "").startswith("idx__")]
+        self.assertTrue(indexed, "expected at least one indexed group for Vertex")
+        for g in indexed:
+            help_text = g.get("help", "")
+            self.assertNotIn("Phase", help_text)
+            self.assertNotIn("widget", help_text)
+            self.assertNotIn("repeater", help_text)
+
+    def test_a28_editor_renders_group_toggle_all_control(self):
+        """A.2.8 Step 3: the sidebar head must expose a single
+        collapse-all / expand-all button that the JS wires to toggle
+        every accordion's is-open state. Markup-level smoke only; the
+        actual aggregate-state logic is covered by the browser walk."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("data-ed-group-toggle-all", body)
+        # Initial icon class reflects the "some groups open" state that
+        # the default-open-at-mount logic guarantees.
+        self.assertIn("bi-chevron-contract", body)
+
+    def test_a28_editor_exposes_mweditor_jump_field_public_api(self):
+        """A.2.8 Step 1: the editor JS must expose `jumpField` on the
+        `window.MWEditor` object so A.3 repeater + devtools + test
+        harness can jump to a field without going through the palette."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        # The JS file is served via {% static %} — read it directly to
+        # lock the export shape.
+        with open("static/editor/live-editor.js", encoding="utf-8") as f:
+            js = f.read()
+        # Function must be declared
+        self.assertIn("function jumpField(", js)
+        # Function must be on the MWEditor export object
+        self.assertRegex(js, r"window\.MWEditor\s*=\s*\{[^}]*jumpField")
+        # Legacy name must be gone so palette + click delegates can't
+        # silently diverge from the public contract.
+        self.assertNotIn("jumpToField", js)
+
     def test_a27_live_template_title_reflects_logo_word_override(self):
         """A.2.7 L1: the iframe <title> must read site.logo_word so an
         override of the brand word is visible in the browser tab and
