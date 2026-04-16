@@ -1,5 +1,161 @@
 # Decisions Log
 
+## D-086: Editor Foundation v1 — Vertical Slice Shape + DNA-Lock Contract + Preview-Overlay Pipeline (2026-04-16, Session 55)
+
+**Decision:** Phase A.1 (D-085) lands as a real vertical slice: `apps/projects/` ships `CustomerProject` + `ProjectContent` (sparse per-key overrides) + `ProjectDesignTokens` (palette + curated font pair) + `ProjectRevision` (snapshot on seed/manual-save/publish/unpublish). `apps/editor/` ships `schema.py` (archetype-whitelist + DNA-lock validation) + `rendering.py` (deep-merge overlay). The first slice exercises ONE archetype — `agency-creative-studio` (Vertex) — across site chrome + home + studio + contatti with 23 editable keys + 5 design tokens, enough to walk the end-to-end loop (create → edit → save → preview → publish) without overbuild.
+
+**Rationale:**
+1. **Catalog URL piggyback vs new preview route.** The skin `_base.html` templates hardcode `{% url 'catalog:live_template_home/page' %}`. Touching 24+ skins to route through a new `projects:preview` URL is the opposite of Foundation scope. Instead `LiveTemplateView.setup()` detects `?project=<uuid>`; when present, `apply_project_overrides()` deep-merges content + tokens onto the existing context dict. Zero skin changes. The same pipeline ships to all 20 templates the day their archetype gets a schema entry.
+2. **Sparse-diff content (not snapshot).** `ProjectContent` rows are `(project, key_path, value_json)`. Writing a value equal to the baseline auto-deletes the override row. This lets upstream DNA polish flow through to the customer for free — a future `home.headline` register lift on the archetype seed reaches every project that hasn't personalised that field. Matches EDITOR_SCHEMA_BLUEPRINT §7.
+3. **DNA-lock at service layer, not UI.** `apps.editor.schema.validate_key_path()` raises `InvalidEditableField` on any write targeting a non-whitelisted key. The UI already hides them, but the enforcement is at `save_content_edits()` so a crafted POST cannot bypass the lock. `LOCKED_KEYS_NOTE` surfaces a human-readable "perché non è editabile" row in the editor UI for seven well-known structural keys.
+4. **Snapshot-on-revision queries fresh, not prefetched.** `_build_snapshot()` re-queries `ProjectContent` + `ProjectDesignTokens` directly from the DB. A prefetched cache on the view's `project` instance would freeze the pre-save state. This caught a real bug in the first E2E run — a manual revision after a POST save carried 0 content keys until the fix.
+5. **Archetype whitelist first, permissive later.** Foundation v1 explicitly supports ONE archetype. Attempting to create a project from any other WebTemplate raises `UnsupportedTemplate`. This is the opposite of a lazy "if it has a DNA entry, let them edit" — it forces the schema to be authored per archetype before the editor opens to it. Phase A.1 proves the shape; A.2 extends.
+6. **No SPA, no JS framework.** Editor UI is a single server-rendered form with a preview iframe. Save = form POST + redirect + iframe cache-bust via `?_t=<ms>`. Zero JS runtime state. Drastically lower cost + rick for a foundation.
+7. **Published vs draft overlay visibility.** Draft projects overlay only for the owner (or staff). Published projects overlay for any authenticated user. Share tokens / public-unlisted projects are Phase B scope. The selector `get_project_for_preview()` encodes this in one function — no view-level checks.
+
+**Scope explicitly NOT in A.1 (deferred):**
+- Repeater widgets for list fields (`home.ledger_rows`, `home.capab_items`, `home.manifesto_principles`).
+- Image / media uploads (`home.cover.image`, any `*_image` fields). Phase A.6.
+- Multi-locale project trees. Project model carries a `locale` field but only IT is wired. Phase A.7.
+- Page management (add/rename/reorder pages). Phase A.4.
+- Section reorder / visibility toggles. Phase A.2.
+- Archetypes beyond `agency-creative-studio`. Phase A.2+ per archetype.
+- D-054 palette differentiation validator. Phase A.5.
+- Branded login page (editor routes redirect to /admin/login/ until accounts app is fleshed out). Phase A scaffolding, not a decision.
+
+**Consequence:**
+- `apps/projects/` + `apps/editor/` go from empty scaffolds to real modules with tests (12 unit tests, 834/834 catalog smoke unchanged).
+- New migration `projects.0001_initial` lands 4 tables + 1 index + 1 uniqueness constraint.
+- Catalog `LiveTemplateView` gains a single cross-app import (`apps.editor.rendering.apply_project_overrides`) + 20 LOC in `setup/get_context_data`. Zero regression on the 834 existing live routes (verified via `smoke_full.py`).
+- D-085 acceptance gate #1 (foundation exists end-to-end on at least one template) is MET.
+- Phase A.2 can proceed when ready — add schema entries for more archetypes, one archetype at a time, reusing the proven loop.
+
+---
+
+## D-085: Editor-First Sequencing — Phase A è il prossimo workstream (2026-04-15, Session 54)
+
+**Decision:** dopo la chiusura del MVP catalogo a 20/20 `published_live` (Session 53, D-082), il prossimo workstream del progetto è **Phase A — Editor Foundation v1**. Nessun nuovo template `published_live`, nessun nuovo archetipo, nessuna nuova categoria, nessun preset autoriale viene aperto finché Phase A non è chiusa con i criteri di accettazione documentati in `CATALOG_EXPANSION_STRATEGY.md` §8. Phase A apre `apps/editor/` su tutti i 20 template attuali implementando il contratto già autoriale in `EDITOR_SCHEMA_BLUEPRINT.md` (D-064).
+
+**Rationale:**
+1. **Costo lineare vs amortizzato.** Senza editor, ogni nuovo preset costa ~600-900 LOC IT + 4 traduzioni (~700 LOC × 4) = ~3500-5000 LOC. Con editor, il preset è uno snapshot seed clonabile dal cliente — l'asset è 1-volta, non N-volte. Sopra 30-40 preset il delta diventa enorme.
+2. **Native voice non scalabile a mano.** Mantenere voce native per locale per preset richiede un copywriter native per locale per preset. A 75 preset = 75 × 5 copywriter pass = insostenibile per redazione interna.
+3. **Modello a 4 livelli funziona solo con editor.** Vedi D-083 — senza editor, "preset" e "template" collassano in un solo concetto.
+4. **EDITOR_SCHEMA_BLUEPRINT è già autoriale e completo** (Session 30, D-064). Lo scaffold è già nell'ARCHITECTURE. Lo stato persistenza è già delineato (`CustomerProject` + `ProjectContent` + `ProjectDesignTokens`).
+5. **Phase 3 unblock gate è MET** (Session 53). La roadmap esplicitamente sblocca "auth / checkout / editor / projects / commerce" a 20/20 `published_live`.
+6. **20 template autoriali sono un campione sufficiente** per validare il modello editor su tutte le shape (medical/specialist/family/clinic/wellness · restaurant/fine-dining/trattoria-warm/street-modern · business/corporate-suite/startup-saas-landing · portfolio/editorial-designer-grid/cinematic-photographer · ecommerce/artisan-workshop/fashion-editorial · agency/creative-studio/digital-studio · lawyer/classic-gold/modern-transparent · real-estate/mass-market/ultra-luxury-cinematic). Aggiungere 50 template prima dell'editor non aumenta l'evidenza necessaria.
+
+**Sub-phasing Phase A:**
+- A.1 Models + migrations + admin CRUD per CustomerProject/ProjectContent/ProjectDesignTokens
+- A.2 Live renderer overlay (project sparse-diff sopra registry)
+- A.3 Editor UI v1 form-based (server-rendered)
+- A.4 Preset library (clone CTA — funziona con i template esistenti come "preset autoriali")
+- A.5 Validators D-053/D-054/D-057
+- A.6 Image upload + library
+- A.7 Locale activation + per-locale tree editor
+- A.8 End-to-end QA + smoke
+
+**Stima:** 14-23 sessioni / 2-3 mesi.
+
+**Trade-off deliberati:**
+- **No new templates during Phase A.** Una proposta "facciamo solo 1 altro template prima" inevitabilmente ne diventa 5. Il blocco è duro.
+- **Editor v1 NON espone preset library full** finché i preset veri non arrivano (Phase B+). I template attuali appaiono come "preset autoriali" nella stessa UI clonabile.
+- **No SPA editor v1.** Server-rendered form-based con page-reload preview. Riduce drasticamente costo + rischio. SPA è v2.
+- **No AI copywriter v1, no AI image gen v1.** Aggiungono superficie ML non necessaria al MVP editor.
+- **Phase B-G dopo Phase A**, sequenza fissa: B (Trades + Food retail) → C (Beauty + Wellness-fit) → D (Hospitality + Automotive) → E (Professional + Education) → F (Events + MVP extension) → G (tier monetization).
+
+**Consequence:**
+- Roadmap "Catalog Expansion" gated su Phase A.
+- TODO_NEXT.md ricostruito con Phase A-G come spina dorsale.
+- I 20 template `published_live` restano invariati durante Phase A (solo polish/security/a11y/mobile-audit ammessi).
+- L'orchestrator (00_orchestrator_bootstrap.md) deve respingere proposte di nuovo template/categoria/archetypo finché A.8 non è verde.
+
+---
+
+## D-084: Tassonomia 14 Categorie Top-Level (medio termine) (2026-04-15, Session 54)
+
+**Decision:** il marketplace estende le 8 categorie MVP a **14 categorie top-level nel medio termine** (Phase B-F). Le 6 nuove categorie coprono l'asse "mestieri italiani locali" oggi scoperto dal MVP marketplace generico:
+
+- 🆕 `hospitality` — hotel · b&b · agriturismo · masseria · resort · rifugio · ostello design
+- 🆕 `food-retail` — panettiere · pasticcere · gelateria · salumeria · macelleria · pescheria · formaggi · gastronomia · drogheria bio · enoteca · torrefazione · oleificio · birrificio
+- 🆕 `automotive` — meccanico · elettrauto · gommista · revisioni · carrozziere · detailing · concessionario auto/moto
+- 🆕 `trades` — idraulico · elettricista · muratore · falegname · fabbro · imbianchino · piastrellista · serramentista · giardiniere · impresa edile · impresa pulizie · ditta multiservizi · pronto intervento (idraulico/elettrico/spurgo/disinfestazione/fabbro/soccorso stradale)
+- 🆕 `beauty` — parrucchiere · barbiere · centro estetico · solarium · nail bar · centro massaggi · tatuatore
+- 🆕 `wellness-fit` — palestra · CrossFit · powerlifting · yoga · pilates · meditazione · spinning · TRX-HIIT
+- 🆕 `professional` — commercialista · consulente lavoro · notaio · architetto · geometra · consulente strategy · consulente HR · agenzia investigativa
+- 🆕 `education` — scuola lingue · master · scuola cucina · musica · danza · doposcuola · ripetizioni · autoscuola
+- 🆕 `events` — wedding planner · event planner corporate · catering eventi · location matrimoni · food-truck eventi
+
+Più due opzionali (decisione rinviata): `pharmacy` (preset opt-in di medical o categoria a sé) · `bistro-modern` (archetypo opt-in di restaurant).
+
+**Categorie che NON esistono come top-level** (e perché — vedi `CATALOG_EXPANSION_STRATEGY.md` §3.3):
+- ❌ Dentista, fisioterapista, psicologo → preset di `medical`
+- ❌ Idraulico, elettricista, muratore → preset di `trades`
+- ❌ Panettiere, salumiere, macelleria → preset di `food-retail`
+- ❌ Hotel, B&B, agriturismo → preset di `hospitality`
+- ❌ Yoga, CrossFit, pilates → preset di `wellness-fit`
+- ❌ Wedding planner, event planner → preset di `events`
+
+**Rationale:** una categoria top-level esiste se e solo se (a) il cliente la cerca per nome, (b) ha un conversion pattern strutturalmente diverso, (c) ospita ≥ 3 archetipi distinti, (d) sopravvive al test del catalogo browseable a card-size 200×120. Le 6 nuove categorie passano i 4 gate; i mestieri singoli falliscono il gate (a) o il gate (c) e diventano preset.
+
+**Trade-off deliberati:**
+- **Numero contenuto (14, non 30+).** Catalogo browseable, marketing chiaro, zero overlap categorie.
+- **Le 8 MVP esistenti restano invariate.** Nessuna fusione, nessun rebrand. Si espandono solo via preset.
+- **`pharmacy` rinviato.** Può vivere come preset di `medical` (variante `clinic`) finché non emergono ≥ 4 preset farmacia distinti. Allora si splitta.
+- **`hospitality` separato da `restaurant`.** Conversion pattern diverso (room booking vs reservation table). Asset critici diversi (foto stanze + recensioni TripAdvisor vs menu + chef CV).
+- **`wellness-fit` separato da `medical`.** Conversion (prova lezione + abbonamento + class schedule) molto diversa da medical (booking + visita). Anche se centro olistico (Benessere) sta sotto medical, palestra fitness sta sotto wellness-fit.
+
+**Consequence:**
+- `CATEGORY_ROADMAP.md` aggiornato con le 14 categorie + sequenza Phase A-G.
+- Nuovi `Category` model rows creati progressivamente in Phase B-F (uno o due per phase).
+- CHROME_I18N esteso con `mp_other_<categoria>` keys nelle 5 lingue.
+- Slug URL stabili: `/templates/hospitality/`, `/templates/trades/`, `/templates/food-retail/`, etc.
+
+---
+
+## D-083: Modello Catalog Strutturale a 4 Livelli (Categoria → Archetipo → Preset Professionale → Editor Cliente) (2026-04-15, Session 54)
+
+**Decision:** il marketplace adotta un **modello strutturale a 4 livelli** che governa scaling del catalogo, autorialità contenuti, e personalizzazione cliente:
+
+```
+Livello 1 — CATEGORIA (browse + market container)
+   ↓
+Livello 2 — ARCHETIPO (struttura · design · conversion DNA, riusabile)
+   ↓
+Livello 3 — PRESET PROFESSIONALE (variante settoriale ready-use, content seed sopra archetype)
+   ↓
+Livello 4 — EDITOR CLIENTE (personalizzazione finale via CustomerProject)
+```
+
+Ciascun livello ha responsabilità chiare (vedi `CATALOG_EXPANSION_STRATEGY.md` §4.2):
+
+- **Categoria** = URL slug, baseline page kinds (D-053), CHROME_I18N namespace, browse facets. NO HTML/CSS/copy/palette/font.
+- **Archetipo** = HTML skin folder, CSS scoped, motion profile, section_order, hero/navbar/footer style, conversion_pattern, font_pairing, imagery direction, baseline page wirings. NO copy specifico, palette finale, nomi propri.
+- **Preset Professionale** = content tree seed IT, palette fork (entro range archetype), imagery pool seed, CTA wording settoriale, voice register, tono settoriale, tag tassonomici. NO HTML, CSS, conversion pattern, section order. **RIUSA archetype, ZERO new HTML.**
+- **Editor Cliente** = override palette, override copy, override foto, override team/listino/orari, opt-in/out sezioni opzionali, riordino sezioni, attivazione locali, SEO. **NO cambio archetype** (= nuovo project), **NO cambio conversion pattern** (DNA-locked).
+
+**Rationale:**
+1. **Risolve il dilemma "categoria-per-mestiere vs template-per-mestiere".** Una nuova categoria si apre solo per cluster di mestieri distinti; un singolo mestiere è preset.
+2. **Permette riuso aggressivo.** Pattern `dermatologia su specialist = ZERO new HTML` (Session 13, D-051 archetype-reuse) si scala a tutto il catalogo. Un archetipo `clinic` ospita 8-10 preset (poliambulatorio, dentista, ortopedia, centro analisi, vaccinale, …) con stesso skin e contenuti diversi.
+3. **Compatibile con Editor Schema Blueprint** (D-064, EDITOR_SCHEMA_BLUEPRINT.md). Il modello editor `CustomerProject` + `ProjectContent` + `ProjectDesignTokens` legge da preset baseline e applica overlay — il preset è il seed, l'editor è l'override.
+4. **Compatibile con D-047/D-053/D-054/D-055/D-057/D-058/D-059/D-063.** Tutti gli invarianti binding restano applicabili a livello archetype (skin) o preset (content seed) o editor (CustomerProject overlay) — ognuno al posto giusto.
+5. **Scala a 100+ mestieri.** Un archetypo nuovo (~3000-5000 LOC HTML, 1-volta) ospita 6-12 preset (~600-900 LOC content tree IT each, 1-volta per preset). Customer fork via editor moltiplica all'infinito senza redazione interna aggiuntiva.
+
+**Trade-off deliberati:**
+- **DNA-locked è davvero locked.** L'editor non espone mai un'opzione di cambio archetype. Cambiare archetype = nuovo CustomerProject. Evita caos "cliente che forza specialist a fare booking-widget".
+- **Preset autoriale solo IT seed.** Il customer attiva e traduce gli altri locali via editor. NO obbligo di tradurre tutti i preset in 5 locali (sarebbe insostenibile per redazione).
+- **Promozione preset → archetypo è gated.** Solo se il preset rompe ≥ 4 dimensioni D-054 (vedi `PROFESSION_PRESET_TAXONOMY.md` §1.3) si splitta in archetypo nuovo.
+- **Promozione preset → template autoriale featured è raro.** Solo per mestieri top 10% domanda + caso showcase concreto + archetypo molto rodato (≥ 3 preset live).
+- **Schema additivo.** Il livello "preset" è un nuovo dict `apps/catalog/profession_presets.py` + 1 colonna nuova `WebTemplate.profession_preset` (SlugField, nullable). Zero breaking change.
+
+**Consequence:**
+- `CATALOG_EXPANSION_STRATEGY.md` documenta il modello in dettaglio (§4 + §7 + §10).
+- `PROFESSION_PRESET_TAXONOMY.md` lista 75-90 preset target con archetypo di provenienza.
+- Phase A (Editor v1, D-085) implementa il livello 4 prima di crescere il livello 3.
+- Phase B-F (D-085 + D-084) cresce livelli 1-3 nelle 6 nuove categorie.
+- I 20 template `published_live` esistenti restano "template autoriali" (livello 3 con `profession_preset` vuoto) — invariati, mai retrofittati a preset.
+
+---
+
 ## D-081: Medical Second Wave Polish — Dynamic Counter Policy, Listbox-Radius Decoupling, Chrome Key Shape (2026-04-15, Session 52)
 
 **Decision:** Session 51 shipped three medical archetypes (Salute · Benessere · Famiglia) as `published_live`, but three interaction-quality defects slipped through the Playwright walk: (1) Benessere's nav CTA rendered as **empty text** across all 5 locales because wellness `_base.html` bound to an undefined `chrome.nav_cta` key; (2) Benessere's form dropdown open state inherited the pill field-radius (`999px`), producing a barrel-shaped listbox panel; (3) Salute's hero + band stat spans (`40+ · 12 · 98%` + `1998 · 28.000 · 6 · € 0`) rendered as static text — zero animation — even though the section is a clear stats/facts band that the DNA register admits. This decision closes all three with minimal-surface fixes and binds a **Dynamic Counter Policy** that future rollouts must honor.

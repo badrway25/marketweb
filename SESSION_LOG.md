@@ -1,5 +1,230 @@
 # Session Log
 
+## Session 55 — Editor Foundation v1 (Phase A.1 vertical slice) (2026-04-16)
+
+**Summary.** Phase A.1 per D-085/D-086 ships as a real vertical slice — not a theoretical blueprint, not a half-finished scaffold. `apps/projects/` and `apps/editor/` go from empty `__init__.py` files to working modules with models, migrations, services, selectors, schema, overlay rendering, URLs, views, templates, admin, and tests. The first slice exercises `vertex-creative-agency` (agency-creative-studio archetype) end-to-end: a customer can log in, derive a new project from the published_live Vertex template, edit 23 content fields + 5 design tokens across 4 form groups, save (sparse-diff persisted, baseline-equal writes auto-delete the row), see the changes in a live iframe preview, publish, revise, and optionally unpublish. Cross-owner access returns 404; draft overlays are hidden from non-owners; DNA-locked keys are rejected at the service layer with `InvalidEditableField`. 834/834 catalog smoke unchanged — zero regression on the 20 published_live templates.
+
+### Starting state
+- Branch: `phase-editor-foundation-v1`, forked from `phase-integration-baseline-v14` @ 79724db (catalog 20/20 published_live, Session 53 closed).
+- First action: merged `phase-catalog-expansion-strategy-v1` (commit 4381588) via fast-forward so D-083 / D-084 / D-085 + `CATALOG_EXPANSION_STRATEGY.md` + `PROFESSION_PRESET_TAXONOMY.md` became part of the working branch context before the foundation was authored.
+- `apps/editor/` and `apps/projects/` were empty scaffolds: `__init__.py`, `apps.py`, empty `models.py` / `services.py` / `selectors.py`, placeholder `urls.py` with `urlpatterns = []`.
+
+### First vertical slice — motivation
+Chose **`vertex-creative-agency`** (archetype `agency-creative-studio`):
+- Non-commerce (no PDP/cart complications — editing stays about content + tokens).
+- Non-extreme register (not ultra-luxe editorial, not growth-tech chips) — middle-ground editorial voice.
+- Rich hero shape: eyebrow / headline / pull-quote / intro / primary+secondary CTA / cover tile — exercises text, richtext, page-ref.
+- 6 pages (home / studio / capacita / lavori / manifesto / contatti) — enough to prove multi-page without the weight of an 8-page rollout.
+- Real 3-colour palette + real DNA font pairing (Space Grotesk / Inter) — exercises palette + curated-font overrides.
+- Exclusive consumer of its archetype skin folder — future skin changes stay contained.
+
+### Models shipped (`apps/projects/models.py`, 230 LOC)
+- `CustomerProject` — uuid + owner FK + source_template (PROTECT) + source_archetype snapshot + source_category_slug + name + locale + status (draft|published) + last_published_at. `preview_url_base` property returns the catalog preview URL extended with `?project=<uuid>`.
+- `ProjectContent` — sparse per-key overrides: `(project, key_path, value_json)`. Unique `(project, key_path)`. `value_decoded` / `set_value()` handle JSON round-trip so strings, lists, dicts, numbers all persist cleanly.
+- `ProjectDesignTokens` — OneToOne with palette primary/secondary/accent + heading_font + body_font. `CURATED_FONTS` class attribute locks the Google Fonts whitelist.
+- `ProjectRevision` — snapshot JSONField with reason (seed | manual | publish | unpublish). A revision is always an atomic read so the denormalised shape is the right trade-off for A.1.
+- Migration `projects.0001_initial` — 4 tables, 1 owner+status index, 1 unique constraint.
+
+### Schema + overlay (`apps/editor/`)
+- `schema.py` (~200 LOC) — per-archetype editable-field whitelist. `AGENCY_CREATIVE_STUDIO_SCHEMA` authors 4 groups (site identity, home, studio, contatti) with 23 editable fields typed text/textarea/richtext/select + max_length soft constraints. `DESIGN_TOKEN_FIELDS` authors 5 global fields (3 colours + 2 curated fonts). `validate_key_path()` raises `InvalidEditableField` on any non-whitelisted key. `LOCKED_KEYS_NOTE` surfaces human-readable notes for 7 structural keys (ledger_rows, capab_items, cover, section_order, navbar_style, hero_style, pages).
+- `rendering.py` (~50 LOC) — `apply_project_overrides(project, content, theme)` deep-copies the baseline content, walks the project's `get_overrides_dict()`, deep-merges, then applies tokens. Returns the `(merged_content, merged_theme)` shape the skin expects. Zero skin changes required.
+
+### Services + selectors
+- `services.create_project_from_template()` — validates tier + DNA + archetype whitelist, creates project + token row + seed revision, atomic.
+- `services.save_content_edits()` — validates key_paths + values, writes rows atomically, auto-deletes rows where the edit equals the baseline (sparse-diff per EDITOR_SCHEMA_BLUEPRINT §7). Returns the list of actually-changed key_paths.
+- `services.save_design_token_edits()` — same shape for palette + fonts.
+- `services.publish_project()` / `unpublish_project()` / `take_manual_revision()` — snapshot + log.
+- `selectors.list_projects_for_owner()` / `get_project_for_owner()` / `get_project_for_preview()` — the last one encodes overlay visibility (draft = owner+staff; published = any authenticated user; mismatched template slug → None).
+
+### Views + URLs + templates
+- `/projects/` — dashboard with "I miei progetti" table + "Nuovo progetto" form listing editable_templates (filtered to published_live + supported archetype).
+- `/projects/new/` — POST to derive project from a chosen template.
+- `/projects/<uuid>/editor/` — left column: 4 content groups with per-field override-dot indicator + baseline hint + max_length, 1 design-token group with colour pickers + font dropdowns, 1 read-only locked-keys group, 1 recent-revisions group. Right column: sticky iframe previewing `?project=<uuid>` overlay with status bar. Save = form POST → service layer → `take_manual_revision` → redirect → iframe cache-bust via `?_t=<ms>`.
+- `/projects/<uuid>/publish/` + `/projects/<uuid>/unpublish/` — transitions.
+- `templates/projects/project_list.html` (~90 LOC) + `templates/projects/project_editor.html` (~200 LOC), both extending the existing `base.html`.
+- Admin: `CustomerProjectAdmin` + inline `ProjectContentInline` (tabular) + `ProjectDesignTokensInline` (stacked), plus `ProjectRevisionAdmin` with readonly snapshot.
+
+### Catalog integration (single-file touch)
+- `apps/catalog/views.py` +2 imports + ~25 LOC. `LiveTemplateView.setup()` detects `?project=<uuid>`, calls `selectors.get_project_for_preview()`, stores `self.preview_project`. `get_context_data()` now composes `theme` unconditionally, then calls `apply_project_overrides()` when a project is resolved. Also exposes `preview_project` in the context (unused in A.1).
+
+### Settings deltas
+- `LOGIN_URL = "/admin/login/"` + `LOGIN_REDIRECT_URL = "/projects/"` — editor auth redirects to admin login until the accounts app gets a branded login surface.
+- `ALLOWED_HOSTS = ["*"] if DEBUG else []` — needed so Django's test client default `testserver` host resolves.
+
+### In-flight bug caught + fixed
+- First E2E run showed a manual revision taken after a POST save carried 0 content keys — a prefetched `content_overrides` cache on the view's `project` instance was freezing the pre-save state. `_build_snapshot()` now always queries `ProjectContent` + `ProjectDesignTokens` fresh via `.filter(project=project)` / `.get(project=project)`. A regression test (`test_snapshot_reflects_post_save_state`) locks this in.
+
+### Validation
+- `python manage.py check` → 0 issues.
+- `python manage.py test apps.projects` → **12 tests, all green** (5 HTTP + 6 model + 1 prefetch-cache regression).
+- `python manage.py test` (whole suite) → 12/12 green.
+- `smoke_full.py` → **834/834 catalog routes HTTP 200** — unchanged from Session 53 baseline.
+- Live E2E walk (12 manual checks): create → editor GET → save → reopen → owner preview overlay → baseline preview untouched → cross-owner 404 → draft hidden from non-owner → publish → shared preview → DNA-lock rejection → revisions taken → sparse-diff reset. All 12 green.
+
+### Files modified / created
+- `apps/projects/models.py` (created) · `apps/projects/migrations/0001_initial.py` (created, auto) · `apps/projects/services.py` (created) · `apps/projects/selectors.py` (created) · `apps/projects/views.py` (created) · `apps/projects/urls.py` (rewritten) · `apps/projects/admin.py` (rewritten) · `apps/projects/tests.py` (rewritten, 12 tests).
+- `apps/editor/schema.py` (created) · `apps/editor/rendering.py` (created).
+- `apps/catalog/views.py` (+ ~25 LOC in LiveTemplateView).
+- `templates/projects/project_list.html` (created) · `templates/projects/project_editor.html` (created).
+- `marketweb/settings.py` (+3 LOC).
+- `memory/phase_a1_editor_foundation.md` (created).
+- `DECISIONS.md` (D-086) · `SESSION_LOG.md` (this entry) · `TODO_NEXT.md` · `AGENT_HANDOFF.md` · `MEMORY.md`.
+
+### What's NOT in Phase A.1 (deferred, explicit scope marker)
+- Repeater widgets for list fields (ledger_rows / capab_items / manifesto_principles / clients_footer_rows) — A.2.
+- Image / media upload — A.6.
+- Multi-locale project trees (locale field exists, only IT wired) — A.7.
+- Page add / rename / reorder — A.4.
+- Section reorder / per-section visibility — A.2.
+- Archetypes beyond `agency-creative-studio` — schema extension per archetype, A.2+.
+- D-054 palette differentiation validator — A.5.
+- Branded login page (editor redirects to /admin/login/) — A scaffolding.
+- SPA / inline-preview editing — intentionally out; server-rendered form + iframe reload is the Foundation shape.
+
+### Catalog state after Session 55
+**Unchanged: 20/20 published_live, 0 draft.** Zero skin files touched, zero content registry files touched, zero DNA entries touched. Foundation v1 is additive — it opens `apps/projects/` and `apps/editor/` without disturbing the catalog.
+
+---
+
+## Session 54 — Catalog Expansion Strategy + Profession Preset Taxonomy (2026-04-15)
+
+**Agent:** progettare in modo rigoroso e scalabile l'evoluzione del catalogo dopo la chiusura del MVP a 20/20 `published_live`. Output concreto: un documento strategico principale (`CATALOG_EXPANSION_STRATEGY.md`), un companion (`PROFESSION_PRESET_TAXONOMY.md`), aggiornamenti coordinati a tutti i file di coordinamento, una proposta roadmap eseguibile in fasi successive. **Strategy-only session — no template, no skin folder, no rollout.**
+
+**Branch:** `phase-catalog-expansion-strategy-v1` (architettura, no DB/schema/tier changes).
+
+### Vincoli (espliciti)
+
+- NON implementare nuovi template live.
+- NON aprire l'editor.
+- NON refactorare codice.
+- NON toccare i 20 `published_live`.
+- NON aprire branch di rollout.
+- Architettura concreta basata sui pattern reali emersi dai 20 template live, NON teoria astratta.
+
+### Domanda centrale
+
+> Come dobbiamo organizzare il sistema per arrivare a decine di categorie, centinaia di professioni e molti più template/preset, senza duplicazioni, senza refactor continui e senza appiattire il design?
+
+### Lavoro svolto
+
+#### 1. Lettura integrale contesto (12 file)
+
+Letti: CLAUDE.md · MEMORY.md · SESSION_LOG.md (tail) · DECISIONS.md (D-080..D-082) · TODO_NEXT.md · ARCHITECTURE.md · AGENT_HANDOFF.md · CONTENT_GUIDELINES.md · BRAND_SYSTEM_GUIDELINES.md · CATEGORY_ROADMAP.md · TEMPLATE_REGISTRY.json · EDITOR_SCHEMA_BLUEPRINT.md.
+
+#### 2. Audit catalogo attuale
+
+- 8 categorie MVP, 19 archetipi spediti, 20 template `published_live`, 1 reuso archetipo (derm su specialist).
+- 12 pattern strutturali consolidati identificati (DNA, D-047, D-053/054/057, locale-keyed registry, Pexels, motion library, …).
+- 8 limiti strutturali identificati per scalare a 100+ professioni: assenza di livello "preset", template-as-scaling-unit, no editor, no varianti di sezione, asset library curatela manuale, ecc.
+- Aree mature vs aree fragili documentate.
+
+#### 3. Tassonomia futura
+
+- Proposte **14 categorie top-level medio termine** (8 esistenti + 6 nuove): `hospitality · food-retail · automotive · trades · beauty · wellness-fit · professional · education · events`.
+- Test di promozione preset → categoria definito (4 gate: nome cercato dal cliente · conversion pattern strutturalmente diverso · ≥ 3 archetipi distinti · sopravvive al test card-size).
+- Scelte di accorpamento documentate (perché dentista NON è categoria, perché idraulico NON è categoria, ecc.).
+
+#### 4. Modello strutturale a 4 livelli
+
+```
+Categoria → Archetipo → Preset Professionale → Editor Cliente
+```
+
+- Responsabilità per livello documentate (cosa contiene, cosa NON contiene).
+- 3 esempi concreti applicati (`dentista-clinico-pulito`, `idraulico-pronto-intervento-roma`, `panettiere-cesare-quartiere`).
+- Persistenza schema-level proposta: 2 colonne nuove additive (`profession_preset` + `parent_archetype`) su `WebTemplate`; 1 nuovo file registry `apps/catalog/profession_presets.py`. Zero breaking change.
+
+#### 5. Archetipi per categoria
+
+- Matrice completa `categoria × archetipo` con 7 dimensioni DNA per archetypo (hero/navbar/CT/motion/imagery/font/page-kinds + riusabilità).
+- 19 archetipi esistenti + **11 nuovi proposti** (3 trades + 3 food-retail + 4 hospitality + 3 automotive + 3 beauty + 3 wellness-fit + 3 professional + 3 education + 2-3 events + opzionali) = 28-30 medio termine, 35-40 lungo termine.
+
+#### 6. Preset professionali
+
+- Anatomia preset binding documentata in `PROFESSION_PRESET_TAXONOMY.md`.
+- Cosa cambia / cosa NON cambia tra preset dello stesso archetypo (matrice 13 dimensioni).
+- Trigger di promozione preset → archetypo definito (rompe ≥ 4 dimensioni D-054).
+- Trigger di promozione preset → template autoriale featured definito (top 10% domanda + showcase + archetypo rodato).
+- **75-90 preset target medio termine**, **130-170 lungo termine**, distribuiti su 14-16 categorie. Registro completo numerato 1-139 con archetypo/voce/cosa-cambia/proof/sezioni-opzionali/Phase per ciascuno.
+
+#### 7. DNA-locked vs editor-editable matrix
+
+- Tassonomia 5-livelli editabilità: DNA-locked · Preset-driven · Editor-editable · Tier-gated · Don't expose v1.
+- Matrice completa per ~40 dimensioni (archetype, hero silhouette, navbar style, copy, palette, font, sezioni, locali, SEO, slug, custom code, dominio, Stripe, multi-tenant, …).
+- 5 decisioni vincolanti documentate (DNA è davvero locked, editor rispetta D-047/053/054/057, tier-gated arriva dopo Phase A, don't-expose-v1 non è "mai esporre").
+
+#### 8. Strategia editor — decisione esplicita
+
+**Decisione:** Editor Foundation v1 PRIMA, poi preset-driven expansion.
+
+- 6 motivazioni dettagliate (costo lineare vs amortizzato, native voice non scalabile, modello a 4 livelli funziona solo con editor, EDITOR_SCHEMA_BLUEPRINT già autoriale, Phase 3 unblock gate MET, 20 template = campione sufficiente).
+- Scope Editor v1 chiarito (in scope: models + renderer overlay + form-based UI + preset library + validators + image upload + locale UI + smoke; out scope: AI gen, multi-user editing, SPA, custom code injection).
+- Stima: 14-23 sessioni / 2-3 mesi.
+- 3 regole vincolanti per evitare rifare lavoro (editor non sa dei preset, schema additivo, DNA è source of truth).
+
+#### 9. Roadmap eseguibile in fasi
+
+**Phase A** (Editor v1) → **Phase B** (Trades + Food retail) → **Phase C** (Beauty + Wellness-fit) → **Phase D** (Hospitality + Automotive) → **Phase E** (Professional + Education) → **Phase F** (Events + MVP extension) → **Phase G** (Tier monetization + commerce extensions). Stima totale 14-16 mesi. Tabella riassuntiva con archetypi nuovi/preset nuovi/categorie nuove/mesi per ciascuna phase.
+
+#### 10. Proposta numerica + decisione finale
+
+| Asse | Oggi | Medio termine | Lungo termine |
+|------|------|----------------|----------------|
+| Categorie top-level | 8 | 14-16 | 17-20 |
+| Archetypi totali | 19 | 28-30 | 35-40 |
+| Preset professionali | 0 | 75-90 | 130-170 |
+| Template autoriali | 20 | 20-25 | 25-30 |
+
+**Decisione binding:** Phase A è il prossimo workstream. Nessun nuovo template/archetypo/categoria finché Phase A non è chiusa.
+
+### Deliverable concreti
+
+- ✅ `CATALOG_EXPANSION_STRATEGY.md` (~1100 LOC, 11 sezioni: exec summary · audit · tassonomia · modello strutturale · archetypi per categoria · preset framework · DNA-locked matrix · editor strategy · rollout priority · numerical proposal · 12-point summary)
+- ✅ `PROFESSION_PRESET_TAXONOMY.md` (~600 LOC, registro completo 139 preset numerati su 17 categorie effettive)
+- ✅ `CATEGORY_ROADMAP.md` aggiornato con header strategy + 14 categorie top-level + tabella Phase A-G
+- ✅ `TODO_NEXT.md` aggiornato con Phase A sub-phasing (A.1-A.8) + Phase B-G (placeholder per future sessioni)
+- ✅ `DECISIONS.md` con 3 nuove decisioni binding:
+  - **D-083** Modello catalogo strutturale a 4 livelli (Categoria → Archetipo → Preset → Editor)
+  - **D-084** Tassonomia 14 categorie top-level medio termine
+  - **D-085** Editor-First Sequencing (Phase A è il prossimo workstream, blocco binding)
+- ✅ `AGENT_HANDOFF.md` con istruzioni Session 54 → Phase A (cosa NOT to do · cosa verificare prima di aprire Phase A · acceptance gates Phase A)
+- ✅ `SESSION_LOG.md` entry Session 54 (questa)
+- ✅ `MEMORY.md` index entry + `memory/catalog_expansion_strategy_session54.md`
+
+### Catalog state dopo Session 54
+
+**INVARIATO: 20/20 published_live, 8 categorie MVP CHIUSE.** Strategy-only session.
+
+### Files modificati / creati
+
+- `CATALOG_EXPANSION_STRATEGY.md` (created · ~1100 LOC)
+- `PROFESSION_PRESET_TAXONOMY.md` (created · ~600 LOC)
+- `CATEGORY_ROADMAP.md` (modified · header + 14 categorie + Phase A-G table aggiunte)
+- `TODO_NEXT.md` (modified · Phase A sub-phasing + Phase B-G placeholder aggiunti in cima)
+- `DECISIONS.md` (modified · D-083 + D-084 + D-085 aggiunti in cima)
+- `AGENT_HANDOFF.md` (modified · Session 54 entry aggiunto in cima)
+- `SESSION_LOG.md` (modified · entry Session 54 aggiunto in cima)
+- `memory/catalog_expansion_strategy_session54.md` (created)
+- `MEMORY.md` (modified · index entry aggiunto)
+
+**Nessun template, skin folder, content tree, registry JSON, o codice applicativo è stato toccato.**
+
+### Trade-off deliberati
+
+- **Strategia, non implementazione.** Questa sessione produce blueprint, NON content tree dei preset né codice editor. Tutto il lavoro autoriale concreto arriva nelle phase successive.
+- **14 categorie, non 30+.** Tassonomia contenuta per browseability + marketing chiarezza + zero overlap categoria.
+- **75-90 preset medio termine, non 200.** Numero realistico per redazione interna; il customer fork via editor è il moltiplicatore reale.
+- **Editor v1 minimal, non SPA + AI.** SPA + AI features sono v2/v3, riducono drasticamente costo + rischio Phase A.
+- **Phase B = Trades + Food-retail (NON Medical extension first).** Apre asse "mestieri italiani locali" oggi scoperto, max copertura mercato per minimo costo (riuso archetypi semplici, conversion patterns lineari).
+- **NO modifica ai 20 template `published_live`.** Restano "template autoriali" featured al livello 3 con `profession_preset` vuoto, mai retrofittati a preset.
+
+### Decisione finale
+
+> **Phase A — Editor Foundation v1 — è il prossimo workstream.**
+> Nessun nuovo template `published_live`, nessun nuovo archetipo, nessuna nuova categoria, nessun preset autoriale viene aperto finché Phase A non è chiusa con i criteri di accettazione di `CATALOG_EXPANSION_STRATEGY.md` §8.
+
+---
+
 ## Session 52 — Medical Second Wave Polish + Interaction Fix (2026-04-15)
 
 **Agent:** chiudere i problemi qualitativi e interattivi ancora presenti sui 3 template della second wave medical (Salute · Benessere · Famiglia), con priorità pratica su Benessere e Salute; NON un nuovo rollout, ma un pass di polish + click-integrity + motion/interaction; formalizzare la regola "counter dinamici quando il tono lo consente" in memoria e nel decision log.

@@ -1,6 +1,48 @@
 # Category Roadmap
 
-## 🛑 Session 16 audit severity (2026-04-11) — see D-049, Phase 2g2x is blocking
+## ✅ MVP CHIUSO (Session 53, 2026-04-15) — 20/20 published_live, 8 categorie chiuse · ✅ Phase 3 unblock gate MET
+## 🆕 Strategia di espansione (Session 54, 2026-04-15) — vedi `CATALOG_EXPANSION_STRATEGY.md` + `PROFESSION_PRESET_TAXONOMY.md` + D-083/D-084/D-085
+
+### Catalogo target medio termine (Phase A-F): 14 categorie · 28-30 archetypi · 75-90 preset professionali
+La roadmap si sposta da "altri template autoriali" a "**editor-first + preset-driven expansion**". Phase A (Editor Foundation v1) è la priorità assoluta. Phase B (Trades + Local-food retail) apre il primo set di nuove categorie con 6 nuovi archetypi + 24-30 nuovi preset.
+
+### Categorie top-level proposte (medio termine: 14)
+1. ✅ **Medical & Care** — esistente, 5/5 live, archetypi: clinic · specialist · wellness · family · (opz pharmacy)
+2. ✅ **Restaurant & Food** — esistente, 3/3 live, archetypi: fine-dining · trattoria-warm · street-modern · (opz bistro-modern)
+3. ✅ **Business** — esistente, 2/2 live, archetypi: corporate-suite · startup-saas-landing
+4. ✅ **Agency** — esistente, 2/2 live, archetypi: agency-creative-studio · agency-digital-studio
+5. ✅ **Lawyer** — esistente, 2/2 live, archetypi: classic-gold · modern-transparent
+6. ✅ **Real Estate** — esistente, 2/2 live, archetypi: mass-market · ultra-luxury-cinematic
+7. ✅ **Portfolio** — esistente, 2/2 live, archetypi: editorial-designer-grid · cinematic-photographer
+8. ✅ **eCommerce** — esistente, 2/2 live, archetypi: artisan-workshop · fashion-editorial
+9. 🆕 **Hotel & Hospitality** (`hospitality`) — 4 archetypi nuovi: boutique-hotel · b&b-warm · agriturismo-rurale · resort-luxury
+10. 🆕 **Local Food Retail** (`food-retail`) — 3 archetypi nuovi: bakery-warm · deli-counter · artisan-food-shop
+11. 🆕 **Automotive Services** (`automotive`) — 3 archetypi nuovi: garage-trust · bodyshop-clean · dealership-showroom
+12. 🆕 **Home Services & Trades** (`trades`) — 3 archetypi nuovi: single-trade-pro · multi-trade-team · emergency-pro
+13. 🆕 **Personal Services & Beauty** (`beauty`) — 3 archetypi nuovi: salon-fashion · barber-classic · aesthetic-spa
+14. 🆕 **Wellness & Fitness** (`wellness-fit`) — 3 archetypi nuovi: gym-strength · yoga-studio-soft · boutique-fitness-bold
+15. 🆕 **Professional Services** (`professional`) — 3 archetypi nuovi: consultant-advisory · accountant-trust · notary-institutional
+16. 🆕 **Education & Training** (`education`) — 3 archetypi nuovi: language-school-bright · vocational-academy-pro · private-tutor-warm
+17. 🆕 **Events & Wedding** (`events`) — 2-3 archetypi nuovi: wedding-romantic · event-planner-corporate · (opz catering-events-warm)
+
+(Le ultime 9 categorie aprono progressivamente in Phase B-F; vedi `CATALOG_EXPANSION_STRATEGY.md` §9 per la sequenza.)
+
+### Sequenza rollout post-MVP (Phase A-G)
+| Phase | Contenuto | Archetypi nuovi | Preset nuovi | Categorie nuove | Mesi |
+|-------|-----------|-----------------|--------------|------------------|------|
+| **A** — Editor Foundation v1 | Apre `apps/editor/` su 20 template attuali | 0 | 0 | 0 | 2-3 |
+| **B** — Trades + Food retail | Prima ondata mestieri italiani locali | 6 | 24-30 | 2 | 2 |
+| **C** — Beauty + Wellness-fit | Servizi alla persona | 6 | 16-20 | 2 | 2 |
+| **D** — Hospitality + Automotive | Servizi turistici e auto | 7 | 16-20 | 2 | 2 |
+| **E** — Professional + Education | Knowledge economy + formazione | 6 | 16-20 | 2 | 2 |
+| **F** — Events + MVP extension | Eventi + preset estensione 8 cat MVP | 3 | 25-37 | 1 | 2 |
+| **G** — Tier monetization + commerce extensions | Tier free/pro/business + Stripe Connect + multi-storefront | 0 | 0 | 0 | 2-3 |
+
+**Decisione binding (D-085):** nessun nuovo template `published_live`, nessun nuovo archetypo, nessuna nuova categoria viene aperta finché Phase A non è chiusa.
+
+---
+
+## 🛑 Session 16 audit severity (2026-04-11) — see D-049, Phase 2g2x is blocking [STORICO — chiuso da Session 53]
 
 ## MVP Categories (Phase 1)
 

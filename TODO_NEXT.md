@@ -1,5 +1,151 @@
 # TODO Next
 
+## 🟢 Phase A.1 — Editor Foundation v1 (vertical slice on Vertex) — ✅ CLOSED (Session 55, 2026-04-16)
+
+Per D-085 (editor-first) + D-086 (A.1 slice shape): `apps/projects/` + `apps/editor/` shipped as real, working modules. First slice exercises `vertex-creative-agency` (archetype `agency-creative-studio`) end-to-end — create project → 23 editable content fields + 5 design tokens → sparse-diff save → iframe preview overlay → publish/draft → revision snapshots. 834/834 catalog smoke unchanged. 12/12 unit tests green. See SESSION_LOG Session 55 + DECISIONS D-086.
+
+**What's binding for Phase A.2 and every later subphase:**
+- **Overlay pipeline is the contract.** `?project=<uuid>` on the catalog preview URL + `apply_project_overrides()` is how every archetype ships into the editor. Do NOT add a parallel `/projects/<uuid>/preview/<page>/` route — one surface, one pipeline.
+- **Sparse-diff is the storage contract.** An override row equal to baseline is deleted, not stored. Upstream registry polish flows through to customer projects for free. Don't regress to full-snapshot storage.
+- **Archetype whitelist is explicit, not permissive.** `apps.editor.schema._ARCHETYPE_SCHEMAS` gates which templates can seed a project. Adding a template = author the schema entry first, not "let's see if it renders".
+- **DNA-lock at service layer, not UI-only.** UI hides the lock; `validate_key_path()` prevents a crafted POST from bypassing it. Preserve both layers.
+- **Snapshot queries fresh.** `_build_snapshot()` must NOT consume the view's prefetched `content_overrides` cache — the cache freezes pre-save state. The regression test is there to catch a relapse.
+
+**Phase A.2 — immediate next step (Editor extension to 1 more archetype + repeater widgets):**
+- [ ] Add `apps.editor.schema` entries for a second archetype — recommend `clinic` (Salute) because medical has the richest stats/cards/services shape and exercises `section_order` visibility toggles. Alternative: `corporate-suite` (Pragma) for a growth-market seed.
+- [ ] Build repeater widget groundwork: `apps.editor.schema` field type `"list"` with add/remove/reorder + per-item field spec. Exercise on `home.ledger_rows` (Vertex) + `home.services` (Salute).
+- [ ] Section visibility toggles: a `home.sections_hidden` set on the project that filters `page_data.section_order` at render time.
+- [ ] Section reorder: per-project `section_order_override` list with baseline diff.
+
+**Phase A.3 — Locale activation (mirrors Phase A.7 plan):**
+- [ ] Project `locale` → multi-locale tree. Each `ProjectContent` row gains a `locale` column (or move to a `(project, locale, key_path)` unique index). Editor gains a locale switcher pill matching the catalog preview `?lang=` shape.
+
+**Phase A.4 — Page registry:**
+- [ ] Add/rename/hide pages (respecting D-053 baseline-required pages per category). Editor shows "questa è una pagina baseline, non puoi eliminarla" block instead of a delete button.
+
+**Phase A.5 — Validators (D-053 / D-054 / D-057 at publish time):**
+- [ ] Publish-gate validator: required baseline pages present + required field paths non-empty + palette-vs-sibling D-054 distance ≥ threshold. Block publish with actionable error list when failing.
+
+**Phase A.6 — Image upload + library:**
+- [ ] `ProjectAsset` model (image upload to `media/projects/<uuid>/`) + `image` / `gallery` field types in schema. Starts with hero `cover.image` on Vertex.
+
+**Phase A.7 — Locale per-locale tree (full):**
+- [ ] Full CHROME_I18N / language-switcher awareness in project UI. Per-locale fallback policy (hide vs. fall-back-to-default).
+
+**Phase A.8 — End-to-end QA + smoke integration:**
+- [ ] Extend `smoke_full.py` with `?project=<uuid>` sampling on the supported archetypes. Ensure every published project renders 200 at the overlay URL for every page slug.
+
+**Nothing else.** Per D-085, no new templates / archetypes / categories / preset author work lands until A.8 is green.
+
+---
+
+## 🆕 Session 54 — Catalog Expansion Strategy + Profession Preset Taxonomy — ✅ CLOSED (Session 54, 2026-04-15)
+
+Per D-083 (modello a 4 livelli), D-084 (tassonomia 14 categorie), D-085 (editor-first sequencing), questa è una sessione **strategica/architetturale**: non implementa template, non apre rollout, non tocca i 20 `published_live`. Tre deliverable concreti: (a) `CATALOG_EXPANSION_STRATEGY.md` — strategia 11-section completa (audit + tassonomia + modello + archetipi + preset + DNA-locked vs editable + editor strategy + rollout priority + numerical proposal + decisione finale); (b) `PROFESSION_PRESET_TAXONOMY.md` — registro concreto di ~75-90 preset target su 14 categorie e 28-30 archetypi (19 esistenti + 11 nuovi); (c) aggiornamenti coordinati a CATEGORY_ROADMAP/TODO_NEXT/DECISIONS/AGENT_HANDOFF/SESSION_LOG/MEMORY.
+
+**Catalogo state invariato dopo Session 54: 20/20 published_live.** Strategy-only session.
+
+### 🚨 Decisione vincolante (D-085 — Editor-First Sequencing)
+
+> **Phase A — Editor Foundation v1 — è il prossimo workstream.**
+> Nessun nuovo template `published_live`, nessun nuovo archetipo, nessuna nuova categoria viene aperta finché Phase A non è chiusa.
+
+Le sessioni 55+ devono concentrarsi su **`apps/editor/`**. Le proposte di "fai un altro template / un'altra categoria / un altro preset" vanno respinte fino a chiusura Phase A.
+
+---
+
+## 🔴 Phase A — Editor Foundation v1 (PROSSIMO WORKSTREAM, da aprire)
+
+**Goal:** aprire `apps/editor/` su tutti i 20 template attuali. Un cliente può clonare un template, modificare copy/foto/team/listino/contatti/palette/font, attivare locali, pubblicare in `draft` o `published_live`.
+
+**Source of truth:** `EDITOR_SCHEMA_BLUEPRINT.md` (D-064, esistente, ~478 LOC). `CATALOG_EXPANSION_STRATEGY.md` §8 per i criteri di accettazione.
+
+**Sub-phasing:**
+- [ ] **A.1** — `CustomerProject` + `ProjectContent` + `ProjectDesignTokens` models + migrations + admin CRUD. Source: `EDITOR_SCHEMA_BLUEPRINT.md` §7.
+- [ ] **A.2** — `LiveTemplateView` overlay: legge da `CustomerProject` quando passato un `project_uuid`, fallback a registry statico altrimenti. Sparse-diff merge.
+- [ ] **A.3** — Editor UI v1 form-based (server-rendered, Bootstrap 5 + crispy-forms). Widgets per i `kind` minimi: nav · hero · section (manifesto/facts/services/team/pricelist/timeline_steps/trust_strip/gallery_strip/map_location) · form · contact · blog · footer · locale.
+- [ ] **A.4** — Preset library page: lista template autoriali con "Clona come progetto" CTA. Stesso pattern lavora con i preset professionali quando arriveranno in Phase B+.
+- [ ] **A.5** — Validators: D-053 baseline page enforcement · D-054 sibling-distance check · D-057 completeness check (`tier=published_live` solo se 100% required field non vuoti).
+- [ ] **A.6** — Image upload + library picker (no AI gen v1).
+- [ ] **A.7** — Locale activation UI + per-locale tree editor + fallback policy.
+- [ ] **A.8** — End-to-end QA + smoke harness + `smoke_editor.py` (clone preset → edit → publish flow).
+
+**Stima totale:** ~14-23 sessioni / 2-3 mesi.
+
+**Acceptance criteria (binding D-085):**
+- Editor v1 in produzione, usato da almeno 1 customer-project reale di test interno.
+- I 20 template originari restano invariati (zero rewrite).
+- `manage.py check` clean, full smoke verde, nessuna regressione su preview live.
+- D-047/D-053/D-054/D-057 enforced via validation, non solo via review umana.
+
+---
+
+## ⏸️ Phase B — Trades + Local Food Retail (DOPO Phase A)
+
+**Goal:** prima ondata di nuove categorie post-MVP. Apre `trades` e `food-retail` con 6 nuovi archetypi e 24-30 nuovi preset professionali.
+
+**Pre-condizione:** Phase A chiusa, editor v1 in produzione.
+
+**Sub-phasing:**
+- [ ] **B.1** — Categoria `trades` + 3 archetypi: `single-trade-pro`, `multi-trade-team`, `emergency-pro`. Skin folder + DNA + preview composition + imagery pool curato per ciascuno.
+- [ ] **B.2** — Preset trades (15-20): idraulico · elettricista · muratore · falegname · fabbro · imbianchino · piastrellista · serramentista · giardiniere · impresa edile · impresa pulizie · ditta multiservizi + 6 emergency-pro (idraulico h24 · elettrico h24 · spurgo · disinfestazione · fabbro h24 · soccorso stradale).
+- [ ] **B.3** — Categoria `food-retail` + 3 archetypi: `bakery-warm`, `deli-counter`, `artisan-food-shop`. Skin folder + DNA + preview composition + imagery pool curato per ciascuno.
+- [ ] **B.4** — Preset food-retail (12-15): panettiere · pasticcere · gelateria · cioccolateria · biscottificio · salumeria · macelleria · pescheria · formaggi · gastronomia · drogheria bio · enoteca · torrefazione · oleificio · birrificio.
+- [ ] **B.5** — Smoke + Playwright walk + 5-locale verification.
+
+**Stima totale:** ~2 mesi (parallel-agent recipe ormai stabile).
+
+---
+
+## ⏸️ Phase C — Beauty + Wellness-Fit (DOPO Phase B)
+
+**Goal:** servizi alla persona. 6 nuovi archetypi + 16-20 preset.
+
+- [ ] Categorie: `beauty` (3 archetypi) + `wellness-fit` (3 archetypi).
+- [ ] Preset target: parrucchiere · barbiere · centro estetico · solarium · nail bar · centro massaggi · tatuatore + palestra · CrossFit · powerlifting · yoga · pilates · meditazione · spinning · TRX-HIIT.
+
+---
+
+## ⏸️ Phase D — Hospitality + Automotive (DOPO Phase C)
+
+**Goal:** turismo + servizi auto. 7 nuovi archetypi + 16-20 preset.
+
+- [ ] Categorie: `hospitality` (4 archetypi) + `automotive` (3 archetypi).
+- [ ] Preset target: hotel boutique · b&b · agriturismo · masseria · resort · rifugio · ostello design + meccanico · elettrauto · gommista · revisioni · carrozziere · detailing · concessionario auto/moto.
+
+---
+
+## ⏸️ Phase E — Professional + Education (DOPO Phase D)
+
+**Goal:** knowledge economy + formazione. 6 nuovi archetypi + 16-20 preset.
+
+- [ ] Categorie: `professional` (3 archetypi) + `education` (3 archetypi).
+- [ ] Preset target: commercialista · consulente lavoro · notaio · architetto · geometra · consulente strategy · consulente HR + scuola lingue · master · scuola cucina · musica · danza · doposcuola · ripetizioni · autoscuola.
+
+---
+
+## ⏸️ Phase F — Events + MVP Preset Extension (DOPO Phase E)
+
+**Goal:** eventi + estensione preset delle 8 categorie MVP. 2-3 nuovi archetypi + 25-37 preset.
+
+- [ ] Categoria `events` (2-3 archetypi) + preset wedding/corporate/catering.
+- [ ] Estensione preset MVP: medical (dentista, fisioterapista, psicologo, farmacia, veterinario) + restaurant (pizzeria, sushi, pokè, gastropub, vegan, cocktail bar) + ecommerce (home-décor, outdoor, jewelry, specialty-foods) + business (fintech, industrial-B2B, consulting boutique) + agency (branding, web-only, advertising) + portfolio (illustrator, 3D-motion) + lawyer (civile, penale, famiglia, lavoro, tributarista) + real-estate (locazioni, commerciale).
+
+---
+
+## ⏸️ Phase G — Tier Monetization + Commerce Extensions (DOPO Phase F)
+
+**Goal:** monetizzazione tier (free/pro/business) + commerce v3.
+
+- [ ] Tier free / pro / business con feature gating.
+- [ ] Domain mapping per published_live customer projects.
+- [ ] Multi-storefront, multi-user editing.
+- [ ] Stripe Connect multi-account.
+- [ ] Coupons, refunds, tax engine, carrier integration.
+- [ ] Marketplace fee + commissioni.
+
+---
+
 ## 🟢 Phase 2g3.7 — Lawyer + Real-Estate Live Rollout · CATALOG COMPLETE 20/20 — ✅ CLOSED (Session 53, 2026-04-15)
 
 Per D-082, `lex-studio-legale` (classic-gold archetype — Studio Legale Ferri, Roma, forensic-notarile), `juris-avvocato-moderno` (modern-transparent — Avv. Martini & Partners, Milano, advisory-modern tech boutique), `casa-agenzia-immobiliare` (mass-market — Domus Immobiliare, Milano+Torino, market-approachable residential), `villa-immobili-lusso` (ultra-luxury-cinematic — Villa Prestige, Milano+Portofino, editorial-concierge) flipped from `tier=draft` to `tier=published_live` premium with 4 fully distinct multipage live skins (8 files per archetype × 4 = 32 skin files, ~10,022 LOC HTML), 5 locales fin da subito (it/en/fr/es/ar) with real RTL for Arabic, and sharp D-054 differentiation across every sibling axis + vs business/portfolio/ecommerce/agency + vs Luxe (Villa ≠ Luxe despite shared Cormorant+dark-champagne).

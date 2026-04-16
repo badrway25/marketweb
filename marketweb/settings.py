@@ -18,7 +18,7 @@ SECRET_KEY = "django-insecure-x-nf+kru)qxx-dl)#re+0l2nzt=shdk0mi^z9me05t6n2*%%$-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"] if DEBUG else []
 
 
 # Application definition
@@ -89,6 +89,12 @@ DATABASES = {
 # Custom User model — MUST be set before first migrate
 
 AUTH_USER_MODEL = "accounts.User"
+
+# Phase A.1 editor foundation relies on Django auth redirects. A full
+# branded login page is a later phase (accounts app scaffold); until
+# then the admin login serves as the auth surface for project owners.
+LOGIN_URL = "/admin/login/"
+LOGIN_REDIRECT_URL = "/projects/"
 
 
 # Password validation

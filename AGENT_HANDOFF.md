@@ -1,5 +1,109 @@
 # Agent Handoff
 
+Last updated: 2026-04-16 — after **Session 55 Editor Foundation v1 (Phase A.1 vertical slice)**
+
+## Session 55 — Editor Foundation v1: Read This Before Touching `apps/projects/`, `apps/editor/`, `LiveTemplateView`, or Any Editor Surface (2026-04-16)
+
+**What changed in Session 55.** `apps/projects/` + `apps/editor/` went from empty scaffolds to working modules. The editor ships a real vertical slice for ONE archetype (`agency-creative-studio`, slug `vertex-creative-agency`): customer logs in, derives a project, edits 23 content fields + 5 design tokens, saves with sparse-diff semantics, sees a live iframe overlay preview, publishes, and revises. 12/12 unit tests + 834/834 catalog smoke green. No skin files, no content registries, no DNA entries touched.
+
+### What's binding (D-086)
+
+1. **Overlay pipeline, not parallel routes.** Project preview is the existing `/templates/<cat>/<slug>/preview/<page>/` URL extended with `?project=<uuid>`. `LiveTemplateView.setup()` detects it + calls `selectors.get_project_for_preview()` + stores `self.preview_project`. `get_context_data()` calls `apply_project_overrides()` which deep-merges content + tokens onto the baseline. **Do NOT** introduce a second `/projects/<uuid>/preview/<page>/` route to "clean up" URLs — that would require touching every skin's hardcoded `{% url 'catalog:live_template_*' %}` tags. The overlay is the contract.
+
+2. **Sparse-diff storage, not snapshot.** `ProjectContent` rows are per-key. A POST whose value equals the baseline auto-deletes the override row. This lets upstream registry polish flow through to the customer for free. **Do NOT** regress to a single JSONField full-state snapshot on `CustomerProject` — that breaks the blueprint's read-path model (EDITOR_SCHEMA_BLUEPRINT §7).
+
+3. **Archetype whitelist is explicit.** `apps.editor.schema._ARCHETYPE_SCHEMAS` maps archetype → editable-fields list. Only archetypes with an entry can seed a project (`services.create_project_from_template()` raises `UnsupportedTemplate` otherwise). Foundation v1 has ONE entry — `agency-creative-studio`. Opening a second archetype in Phase A.2 = author its schema entry first, don't "let it through and see what breaks".
+
+4. **DNA-lock at service layer, not UI.** `validate_key_path()` raises `InvalidEditableField` on any non-whitelisted key. UI already hides locked fields, but a crafted POST with `content__home.capab_items=hack` is rejected by the service. Preserve both layers — removing either weakens the contract.
+
+5. **Snapshot queries fresh.** `_build_snapshot()` in `apps.projects.services` uses `ProjectContent.objects.filter(project=project)` + `ProjectDesignTokens.objects.get(project=project)` — NOT `project.content_overrides.all()`. The view's prefetched cache freezes the pre-save state. A regression test (`test_snapshot_reflects_post_save_state`) catches a relapse.
+
+6. **Publish visibility contract.** `selectors.get_project_for_preview()`: draft = owner OR staff only; published = any authenticated user; template slug mismatch → None. Share tokens / unlisted-public projects are deferred to Phase B — **do NOT** silently open drafts to anonymous users.
+
+7. **LOGIN_URL is `/admin/login/`.** A branded login page is Phase A scaffolding. Editor routes redirect anonymous users to admin login. **Do NOT** mark project routes public — they require authentication.
+
+8. **Iframe preview reload via `?_t=<ms>` cache-bust.** After a save the redirect re-renders the editor, and the GET-side script in `project_editor.html` appends `_t=<Date.now()>` to the iframe src. This is a simple non-JS-state cache busting pattern. **Do NOT** replace with a polling loop or WebSocket for Foundation v1 — SPA is Phase A.8+.
+
+### Do NOT do in a follow-up session without revisiting D-086
+
+- **Do NOT author new archetypes (`apps.editor.schema`) without an explicit scope entry in TODO_NEXT.** Phase A.2 plans one archetype addition (recommend `clinic` or `corporate-suite`). Two in one session is scope creep.
+- **Do NOT** modify any existing skin file (`templates/live_templates/<cat>/<arch>/*.html`) for Foundation v1. Foundation v1 is proven additive — the moment a skin changes, regression surface explodes.
+- **Do NOT** touch `apps/catalog/template_content*.py` files. The registry is baseline; overrides are project-side.
+- **Do NOT** collapse `ProjectContent` into a JSONField on `CustomerProject` "for simplicity". Per-row storage is the foundation for future revision diffing + the Phase A.3 multi-locale column.
+- **Do NOT** remove the `LOCKED_KEYS_NOTE` read-only panel from the editor UI. It's the human-facing half of the DNA-lock contract — hiding both the controls AND the explanation removes the teaching surface.
+- **Do NOT** persist `?project=<uuid>` into nav links inside any skin `_base.html`. Clicking a nav link inside the iframe exits project mode by design; this is acceptable Foundation v1 behavior. Phase A.2 addresses in-template navigation persistence via a custom template tag.
+- **Do NOT** translate `CURATED_FONTS` into a dynamic query from `template_dna.py`. The whitelist is intentional — arbitrary Google Fonts break D-040 font-miss regression.
+- **Do NOT** relax `InvalidEditableField` on unknown keys. Silently ignoring unknown key_paths is the same as relaxing the DNA-lock.
+
+### Phase A.2 acceptance gates (for the next session)
+
+1. One additional archetype shipped in `apps.editor.schema` with 15+ editable fields across 3+ groups.
+2. Repeater widget groundwork: `"list"` field type in the schema + UI + services layer. Exercise on at least one list field (Vertex `home.ledger_rows` or Salute `home.services`).
+3. `python manage.py test` stays at 12+ green (new tests land for the new archetype + the list widget).
+4. `smoke_full.py` stays at 834/834.
+5. A second slug (e.g. `salute-studio-medico` or `pragma-corporate-suite`) renders a personalised overlay at `/templates/<cat>/<slug>/preview/?project=<uuid>` with at least 10 distinct field overrides applied.
+
+### What to verify BEFORE any Phase A.2 slice opens
+
+- `python manage.py check` → 0 issues
+- `python manage.py test apps.projects` → 12+ green
+- `python smoke_full.py` → 834/834
+- Browser walk: `/projects/` dashboard loads with the existing Vertex entry, the editor page renders all 4 content groups + 5 token fields + DNA-lock note + recent revisions, the iframe preview overlays edits, publish/unpublish transitions work.
+
+---
+
+Last updated: 2026-04-15 — after **Session 54 Catalog Expansion Strategy + Profession Preset Taxonomy**
+
+## Session 54 — Strategy Session: Read This Before Proposing Any New Template, Archetype, Category, or Preset (2026-04-15)
+
+**What changed in Session 54.** No code, no template, no skin folder. **Strategy-only session.** Three deliverables landed:
+1. `CATALOG_EXPANSION_STRATEGY.md` — 11-section blueprint covering audit, taxonomy, 4-level model, archetype matrix, preset framework, DNA-locked vs editable matrix, editor strategy, rollout roadmap, numerical proposal, final decision.
+2. `PROFESSION_PRESET_TAXONOMY.md` — concrete registry of ~75-90 profession presets across 14-16 categories, mapped to archetypes (19 existing + 11 new).
+3. Coordinated updates to `CATEGORY_ROADMAP.md`, `TODO_NEXT.md`, `DECISIONS.md` (D-083 / D-084 / D-085), `AGENT_HANDOFF.md`, `SESSION_LOG.md`, `MEMORY.md`.
+
+**Catalog state UNCHANGED after Session 54: 20/20 published_live.** Strategy session does not flip tiers or modify templates.
+
+### What's binding (D-083 + D-084 + D-085)
+
+1. **D-085 — Editor-First Sequencing is the next workstream.** Phase A (Editor Foundation v1) is the next phase. **NO new template, archetype, category, or preset gets opened until Phase A is closed.** This is hard, not advisory. Proposals to "just add one more template" must be refused.
+
+2. **D-084 — 14 categorie top-level medio termine.** Le 8 MVP esistenti restano invariate (`medical · restaurant · business · agency · lawyer · real-estate · portfolio · ecommerce`); 6 nuove si aggiungono in Phase B-F (`hospitality · food-retail · automotive · trades · beauty · wellness-fit · professional · education · events` — totale 9 nuove se si conta `events` aperta in Phase F, sono 17 se si conta tutte le opzionali; il numero 14 è il **medio termine binding**, le restanti 3 sono opzionali).
+
+3. **D-083 — Modello a 4 livelli (Categoria → Archetipo → Preset → Editor)** è la struttura vincolante. Non si aprono "categorie per ogni mestiere". Non si fanno "template completamente nuovi per ogni mestiere". Si fanno **preset professionali sopra archetipi riusati**.
+
+4. **I 20 template `published_live` esistenti restano "template autoriali" (livello 3 con `profession_preset` vuoto)** — invariati, mai retrofittati a preset. Polish/security/a11y/mobile-audit ammessi; rewrite NO.
+
+5. **Editor v1 NON deve sapere dei preset.** Editor v1 modifica `CustomerProject`. Il `CustomerProject` viene creato da un seed (template autoriale o, in Phase B+, preset). L'editor non sa se il seed era preset o template — lavora sul project. Quando i preset cresceranno, basta aggiungerne nel registry; l'editor non cambia.
+
+6. **Phase A sub-phasing è in `TODO_NEXT.md`.** A.1 (models) → A.2 (renderer overlay) → A.3 (UI form-based) → A.4 (preset library) → A.5 (validators) → A.6 (image upload) → A.7 (locale UI) → A.8 (smoke). Stima ~14-23 sessioni / 2-3 mesi.
+
+7. **Phase B (Trades + Local Food Retail)** è la prima ondata post-MVP. Sequenza fissa: B → C → D → E → F → G. NO salti, NO sostituzioni di phase.
+
+### Do NOT do in a follow-up session
+
+- **Do NOT propose a new template or archetype** until Phase A.8 is verde. Anche se "sembrerebbe veloce", anche se "ci sarebbe domanda". Il blocco è binding.
+- **Do NOT touch the 20 published_live templates** salvo per polish/security/a11y/mobile-audit. NO rewrite. NO retrofit a preset.
+- **Do NOT open new categories** before Phase A. La categoria `trades` esisterà solo quando Phase A è chiusa e Phase B inizia.
+- **Do NOT translate the profession-preset taxonomy** (PROFESSION_PRESET_TAXONOMY.md) into actual content tree files yet. Quel documento è blueprint, non implementazione. I content tree dei preset si scrivono solo in Phase B-F.
+- **Do NOT machine-translate any preset content seed** quando arriverà il momento. Native voice per locale rimane non-negotiable per i preset autoriali.
+- **Do NOT skip the `EDITOR_SCHEMA_BLUEPRINT.md` contract.** Phase A implementa quel contratto. Se vuoi cambiare lo schema, prima aggiorna D-064 + EDITOR_SCHEMA_BLUEPRINT.md, poi implementi.
+- **Do NOT collassare livelli** (es. "facciamo categoria=preset" o "facciamo template=preset"). Il modello a 4 livelli è binding per scaling sostenibile.
+
+### What to verify BEFORE opening Phase A
+
+- `EDITOR_SCHEMA_BLUEPRINT.md` letto integralmente (~478 LOC).
+- `CATALOG_EXPANSION_STRATEGY.md` §4 (modello strutturale) + §7 (DNA-locked vs editable) + §8 (editor strategy) letti.
+- `PROFESSION_PRESET_TAXONOMY.md` §1 (anatomia preset) letto — anche se Phase A non implementa preset, il design dell'editor deve essere compatibile.
+- Verificare che `apps/editor/` esista come directory ma non abbia codice (vedi `ARCHITECTURE.md` §`editor`).
+- Decidere persistenza: SQLite per dev, PostgreSQL per produzione (già scelto). Le migrations Phase A.1 sono additivi.
+- Stripe + commerce v2 sono già operativi (D-076, Session 45). Editor v1 NON tocca commerce. Customer project Stripe domain mapping arriva in Phase G (D-085 sequenza).
+
+### When Phase A closes (acceptance gates)
+
+Editor v1 in produzione + tutti i 20 `published_live` clonabili + un test interno completo (clone → edit → publish) verde + smoke harness + zero regression. Solo allora si apre Phase B.
+
+---
+
 Last updated: 2026-04-15 — after **Session 53 Lawyer + Real-Estate Live Rollout · CATALOG COMPLETE 20/20**
 
 ## Session 53 — CATALOG COMPLETE 20/20 · Read This Before Touching Any Lawyer / Real-Estate Skin, Lex/Juris/Casa/Villa Content, or the 4 New Pexels Pools (2026-04-15)
