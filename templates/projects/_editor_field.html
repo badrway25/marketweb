@@ -1,0 +1,90 @@
+{% comment %}One editable field row — shared by content groups and the design tokens group. Requires a `field` dict with {key, spec, value, baseline, is_overridden} and a `kind` ("content" | "token").{% endcomment %}<div class="ed-field {% if field.is_overridden %}is-overridden{% endif %}"
+     data-ed-label="{{ field.spec.label }}"
+     data-ed-key="{{ field.key }}">
+  <div class="ed-field-head">
+    <label for="ed__{{ field.key|slugify }}">{{ field.spec.label }}</label>
+    {% if field.spec.max_length and field.spec.type != "image" and field.spec.type != "color" and field.spec.type != "select" %}
+      <span class="ed-count" data-max="{{ field.spec.max_length }}"
+            aria-label="Caratteri utilizzati">{{ field.value|length }}/{{ field.spec.max_length }}</span>
+    {% endif %}
+    <span class="ed-dot" aria-hidden="true" title="Modificato rispetto al baseline"></span>
+    <button type="button" class="ed-reset" title="Riporta al valore originale">reset</button>
+  </div>
+
+  {% if field.spec.type == "textarea" or field.spec.type == "richtext" %}
+    <textarea class="ed-textarea"
+              id="ed__{{ field.key|slugify }}"
+              data-ed-field="{{ field.key }}"
+              data-ed-kind="{{ kind|default:'content' }}"
+              data-ed-baseline="{{ field.baseline }}"
+              rows="3"
+              {% if field.spec.max_length %}maxlength="{{ field.spec.max_length }}"{% endif %}
+              {% if field.spec.placeholder %}placeholder="{{ field.spec.placeholder }}"{% endif %}>{{ field.value }}</textarea>
+
+  {% elif field.spec.type == "select" %}
+    <select class="ed-select"
+            id="ed__{{ field.key|slugify }}"
+            data-ed-field="{{ field.key }}"
+            data-ed-kind="{{ kind|default:'content' }}"
+            data-ed-baseline="{{ field.baseline }}"
+            {% if kind == 'token' %}style="font-family: '{{ field.value }}', system-ui, sans-serif;"{% endif %}>
+      {% for choice in field.spec.choices %}
+        <option value="{{ choice }}"
+                {% if kind == 'token' %}style="font-family: '{{ choice }}', system-ui, sans-serif;"{% endif %}
+                {% if choice == field.value %}selected{% endif %}>{{ choice }}</option>
+      {% endfor %}
+    </select>
+
+  {% elif field.spec.type == "color" %}
+    <div class="ed-color">
+      <input type="color"
+             id="ed__{{ field.key|slugify }}"
+             data-ed-field="{{ field.key }}"
+             data-ed-kind="{{ kind|default:'token' }}"
+             data-ed-baseline="{{ field.baseline }}"
+             value="{{ field.value }}">
+      <input type="text" class="ed-input ed-color-hex"
+             value="{{ field.value|upper }}"
+             aria-label="Valore esadecimale di {{ field.spec.label }}">
+    </div>
+
+  {% elif field.spec.type == "image" %}
+    <div class="ed-image" data-ed-image-key="{{ field.key }}">
+      <div class="ed-image-thumb" {% if field.value %}style="background-image: url('{{ field.value }}');"{% endif %}>
+        {% if not field.value %}<i class="bi bi-image" aria-hidden="true"></i>{% endif %}
+      </div>
+      <div class="ed-image-controls">
+        <input class="ed-input ed-image-url"
+               type="text"
+               id="ed__{{ field.key|slugify }}"
+               data-ed-field="{{ field.key }}"
+               data-ed-kind="{{ kind|default:'content' }}"
+               data-ed-baseline="{{ field.baseline }}"
+               value="{{ field.value }}"
+               placeholder="https://…">
+        <div class="ed-image-actions">
+          <label class="ed-btn is-mini is-ghost ed-image-pick" title="Scegli un file dal tuo computer">
+            <i class="bi bi-cloud-upload"></i> Carica file
+            <input type="file" accept="image/*" hidden>
+          </label>
+          <button type="button" class="ed-btn is-mini is-ghost ed-image-clear" title="Rimuovi immagine">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <input class="ed-input"
+           type="{% if field.spec.type == 'url' %}url{% else %}text{% endif %}"
+           id="ed__{{ field.key|slugify }}"
+           data-ed-field="{{ field.key }}"
+           data-ed-kind="{{ kind|default:'content' }}"
+           data-ed-baseline="{{ field.baseline }}"
+           value="{{ field.value }}"
+           {% if field.spec.max_length %}maxlength="{{ field.spec.max_length }}"{% endif %}
+           {% if field.spec.placeholder %}placeholder="{{ field.spec.placeholder }}"{% endif %}>
+  {% endif %}
+
+  {% if field.spec.help %}<div class="ed-field-help">{{ field.spec.help }}</div>{% endif %}
+</div>

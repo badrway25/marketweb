@@ -1,6 +1,31 @@
 # Agent Handoff
 
-Last updated: 2026-04-16 — after **Session 56 Phase A.1b Public Customize Flow**
+Last updated: 2026-04-16 — after **Session 57 Phase A.2 Editor UX + Live Preview**
+
+## Session 57 — Phase A.2 Editor UX + Live Preview: Read This Before Touching The Editor, Autosave, `?baseline=1`, or the Preview-Bridge Injection (2026-04-16)
+
+**What changed in Session 57.** The A.1b editor (server-form POST with 520px narrow sidebar) is rebuilt as a premium standalone app shell. Debounced JSON autosave (400ms) on `POST /projects/<uuid>/autosave/`. Explicit-only revisions via `POST /projects/<uuid>/snapshot/`. `?baseline=1` on `LiveTemplateView` short-circuits the project overlay for the before/after compare slider. `preview-bridge.js` (injected behind `{% if preview_project %}`) listens for `window.postMessage` and paints an amber region ring on hover/focus of any sidebar field. Schema widened on Vertex: 4 flat groups → 14 themed groups with `icon` + `region` metadata, ~39 editable fields (was 23). 20/20 project tests + full Playwright walk green.
+
+### What's binding (D-088)
+
+1. **Autosave is the customer-UI mutation path.** Any new field type must be serialisable into the JSON autosave payload `{content:{}, tokens:{}}`. No per-field form POSTs. The legacy `POST /editor/` form path was rewired to proxy to `project_snapshot` — a safety net, not an active path.
+2. **Revisions are explicit-only.** Autosave NEVER creates a revision. Only `Salva versione` (button → `project_snapshot`) and `Pubblica` / `Sposta in bozza` create revisions. Don't regress this — it's why cronologia stays useful.
+3. **Baseline preview is `?baseline=1`.** Don't refactor into post-render diffing. `LiveTemplateView.setup` reads the flag and sets `preview_project = None`; the same skin renders the baseline deterministically.
+4. **`preview-bridge.js` is conditional.** Currently injected in `templates/live_templates/agency/agency-creative-studio/_base.html` behind `{% if preview_project %}`. When opening the editor to a second archetype (Phase A.3), add the same conditional include to that archetype's `_base.html`. The baseline iframe must stay bridge-less for the compare to stay deterministic.
+5. **Schema groups MUST declare `icon` + `region`.** Bootstrap Icons class for `icon`; CSS selector (scoped to the archetype's skin) for `region`. Groups without these still render but without sidebar icons / without highlight. Don't ship a second archetype's schema without them.
+6. **Editor shell is standalone.** `templates/projects/project_editor.html` is NOT extending `base.html`. It loads its own fonts (Inter + JetBrains Mono + Bootstrap Icons), `live-editor.css`, `live-editor.js`. No marketing navbar/footer. No Bootstrap CSS bundle.
+7. **Editor does NOT render Django messages.** Autosave flow is silent JSON (chip + optional toast). `customize_start` uses `request.session["editor_just_created"]` for a one-shot welcome banner. Publish / unpublish flashes exist in the session but are discarded silently on the redirect — the topbar tier chip's colour change is the visible signal. Adding a `{% for m in messages %}` block to the editor shell reopens the stacking bug the customer reported.
+8. **Prefetch-cache bypass.** Any `.count()` on `project.content_overrides` called AFTER a mutation must go through a fresh queryset (`ProjectContent.objects.filter(project=project).count()`), because the selector's `prefetch_related` caches pre-save state. Parallel to D-086 Session 55's `_build_snapshot` bug.
+
+### Phase A.3 immediate next step
+
+- Schema field type `"list"` + UI repeater widget (add / remove / reorder / per-item validation). Target: `home.ledger_rows` + `home.capab_items` on Vertex.
+- Add `apps.editor.schema` entries for a second archetype — `clinic` (Salute) or `corporate-suite` (Pragma). MUST declare `icon` + `region` per group. Remove those slugs' equivalents from `LOCKED_KEYS_NOTE` if they become editable. Opens editor to 5/20 templates.
+- Remember to add `{% if preview_project %}<script>...preview-bridge.js</script>{% endif %}` to the new archetype's `_base.html`.
+- Regression: verify `customize_start` still bounces the other 18 non-editable templates cleanly after A.3 lands.
+- Deferred polish from A.2: sync baseline iframe scroll to edited iframe on compare-open · replace archetype-specific `region` selectors with a shared `data-mw-region="hero"` attribute pattern · add toast-on-publish / toast-on-unpublish in the editor shell.
+
+---
 
 ## Session 56 — Phase A.1b Public Customize Flow: Read This Before Touching Auth, `/projects/start/`, Navbar, or Detail-Page CTAs (2026-04-16)
 

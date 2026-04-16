@@ -1,231 +1,258 @@
-{% extends "base.html" %}
+{% load static %}<!DOCTYPE html>
+<html lang="it" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Editor · {{ project.name }} — MarketWeb</title>
 
-{% block title %}Editor · {{ project.name }}{% endblock %}
+  <!-- Fonts: UI only — the preview iframe loads its own fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-{% block extra_css %}
-<style>
-  .pe-layout { display: grid; grid-template-columns: minmax(0, 520px) 1fr; gap: 24px; align-items: start; }
-  .pe-form { background: #fff; border: 1px solid var(--bs-border-color, #dee2e6); border-radius: 12px; padding: 22px; }
-  .pe-form h2 { font-size: 18px; letter-spacing: -0.01em; margin: 0 0 6px; }
-  .pe-form h2 .lbl { display: inline-block; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #6c757d; font-weight: 700; margin-right: 10px; }
-  .pe-group { border-top: 1px solid #eef0f2; padding-top: 18px; margin-top: 18px; }
-  .pe-group:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
-  .pe-field { margin-bottom: 16px; }
-  .pe-field label { font-weight: 600; font-size: 13px; }
-  .pe-field .helper { font-size: 12px; color: #6c757d; margin-top: 4px; }
-  .pe-field .baseline { font-size: 12px; color: #6c757d; margin-top: 4px; font-style: italic; }
-  .pe-field .override-dot {
-    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-    background: #f59e0b; margin-left: 6px; vertical-align: middle;
-  }
-  .pe-preview {
-    position: sticky; top: 16px;
-    height: calc(100vh - 32px);
-    border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden;
-    background: #0f172a;
-    display: flex; flex-direction: column;
-  }
-  .pe-preview .bar {
-    background: #0f172a; color: #f8f9fa; padding: 10px 16px;
-    display: flex; align-items: center; gap: 12px;
-    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
-  }
-  .pe-preview .bar .dot { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; }
-  .pe-preview iframe { flex: 1; width: 100%; border: 0; background: #fff; }
-  .pe-locked { background: #f8f9fa; border-left: 4px solid #ced4da; padding: 10px 14px; border-radius: 0 6px 6px 0; margin-bottom: 10px; font-size: 13px; }
-  .pe-locked strong { font-family: monospace; }
-  .pe-sticky-actions { position: sticky; top: 0; z-index: 4; background: #fff; padding: 10px 0; margin-bottom: 10px; border-bottom: 1px solid #eef0f2; }
-  .pe-color-row { display: flex; gap: 10px; align-items: center; }
-  .pe-color-row input[type=color] { width: 52px; height: 36px; padding: 0; border: 1px solid #ced4da; border-radius: 6px; }
-  .pe-color-row input[type=text] { max-width: 110px; }
-  @media (max-width: 1100px) { .pe-layout { grid-template-columns: 1fr; } .pe-preview { position: static; height: 640px; } }
-</style>
-{% endblock %}
+  <!-- Bootstrap Icons (icons only — no Bootstrap CSS) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-{% block content %}
-<section class="container-fluid py-3" style="max-width: 1500px;">
-  <header class="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-3">
-    <div>
-      <p class="text-uppercase small text-muted mb-1">
-        <a href="{% url 'projects:project_list' %}" class="text-decoration-none">← Torna ai miei progetti</a>
-      </p>
-      <h1 class="h3 mb-1">{{ project.name }}</h1>
-      <p class="text-muted mb-0">
-        Da <strong>{{ project.source_template.name }}</strong>
-        {% if project.source_template.category %} · {{ project.source_template.category.name }}{% endif %}
-        ·
-        {% if project.status == "published" %}
-          <span class="badge bg-success">Pubblicato</span>
-          {% if project.last_published_at %}
-            <small>— ultima pubblicazione {{ project.last_published_at|date:"d M Y · H:i" }}</small>
-          {% endif %}
-        {% else %}
-          <span class="badge bg-secondary">Bozza</span>
-        {% endif %}
-      </p>
-    </div>
-    <div class="d-flex gap-2 flex-wrap">
-      <a class="mw-btn mw-btn-ghost mw-btn-sm" target="_blank" href="{{ preview_url }}">
-        <i class="bi bi-box-arrow-up-right"></i> Apri anteprima in nuova scheda
-      </a>
+  <link rel="stylesheet" href="{% static 'editor/live-editor.css' %}">
+</head>
+<body>
+  <div class="ed-root" id="ed-root">
+
+    {# ── Topbar ─────────────────────────────────────────────────── #}
+    <header class="ed-topbar" role="banner">
+      <span class="ed-brand">
+        <span class="dot" aria-hidden="true"></span>
+        <span>MarketWeb</span>
+      </span>
+
+      <span class="ed-crumbs">
+        <a href="{% url 'projects:project_list' %}" title="I miei progetti">
+          <i class="bi bi-arrow-left"></i>
+        </a>
+        <span>Editor</span>
+        <span style="color: rgba(255,255,255,0.28);">·</span>
+        <strong>{{ project.name }}</strong>
+      </span>
+
+      <span class="ed-topbar-tier" data-tier="{{ project.status }}">
+        <i class="bi {% if project.status == 'published' %}bi-broadcast{% else %}bi-pencil-square{% endif %}"></i>
+        {% if project.status == 'published' %}Pubblicato{% else %}Bozza{% endif %}
+      </span>
+
+      <span class="ed-status" data-state="idle" role="status" aria-live="polite">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="label">Pronto</span>
+      </span>
+
+      <span class="ed-topbar-spacer"></span>
+
+      <button class="ed-btn is-ghost is-mini" type="button" data-ed-snapshot
+              title="Crea una versione salvata nella cronologia">
+        <i class="bi bi-bookmark-plus"></i>
+        Salva versione
+      </button>
+
       {% if project.status == "published" %}
-        <form method="post" action="{% url 'projects:project_unpublish' project.uuid %}" class="d-inline m-0">
+        <form method="post" action="{% url 'projects:project_unpublish' project.uuid %}" class="ed-inline-form">
           {% csrf_token %}
-          <button class="mw-btn mw-btn-secondary mw-btn-sm">
-            <i class="bi bi-archive"></i> Riporta in bozza
+          <button class="ed-btn is-ghost is-mini is-danger" type="submit"
+                  onclick="return confirm('Riportare il progetto in bozza?');">
+            <i class="bi bi-archive"></i>
+            Sposta in bozza
           </button>
         </form>
       {% else %}
-        <form method="post" action="{% url 'projects:project_publish' project.uuid %}" class="d-inline m-0">
+        <form method="post" action="{% url 'projects:project_publish' project.uuid %}" class="ed-inline-form">
           {% csrf_token %}
-          <button class="mw-btn mw-btn-primary mw-btn-sm">
-            <i class="bi bi-check2-circle"></i> Pubblica
+          <button class="ed-btn is-primary is-mini" type="submit">
+            <i class="bi bi-check2-circle"></i>
+            Pubblica
           </button>
         </form>
       {% endif %}
-    </div>
-  </header>
 
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags|default:'info' }} py-2 my-2">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
+      <a class="ed-btn is-ghost is-mini" target="_blank" href="{{ preview_url }}" rel="noopener"
+         title="Apri l'anteprima in una nuova scheda">
+        <i class="bi bi-box-arrow-up-right"></i>
+      </a>
+    </header>
 
-  <form method="post" class="pe-layout" id="editor-form">
-    {% csrf_token %}
-
-    <div class="pe-col-left">
-      <div class="pe-sticky-actions d-flex justify-content-between align-items-center">
-        <small class="text-muted">Modifica a sinistra · l'anteprima a destra si ricarica dopo ogni salvataggio.</small>
-        <button type="submit" class="mw-btn mw-btn-primary mw-btn-sm">
-          <i class="bi bi-save"></i> Salva
+    {# ── Sidebar ────────────────────────────────────────────────── #}
+    <aside class="ed-sidebar" aria-label="Pannello di personalizzazione">
+      <div class="ed-sidebar-head">
+        <button class="icon-btn" type="button" data-ed-collapse title="Comprimi pannello">
+          <i class="bi bi-layout-sidebar-inset"></i>
         </button>
+        <span class="title">Personalizzazione</span>
+        <span class="counter">{% if override_count == 1 %}1 modifica{% else %}{{ override_count }} modifiche{% endif %}</span>
       </div>
 
-      <!-- Design tokens -->
-      <div class="pe-form mb-3">
-        <h2><span class="lbl">01</span> Colori e font</h2>
-        <p class="text-muted small">
-          La palette e la scelta tipografica del tuo sito. Le modifiche si applicano
-          a tutte le pagine mantenendo la coerenza visiva del template.
-        </p>
-        <div class="pe-group">
-          {% for field in design_fields %}
-            <div class="pe-field">
-              <label for="token__{{ field.key }}">{{ field.spec.label }}</label>
-              {% if field.spec.type == "color" %}
-                <div class="pe-color-row">
-                  <input type="color" name="token__{{ field.key }}" id="token__{{ field.key }}" value="{{ field.value }}">
-                  <input type="text" class="form-control" value="{{ field.value }}"
-                         oninput="this.previousElementSibling.value=this.value; this.previousElementSibling.dispatchEvent(new Event('input',{bubbles:true}))"
-                         readonly>
+      {% if locale_switcher %}
+      <div class="ed-sidebar-lang" aria-label="Lingua dell'anteprima">
+        <span class="ed-lang-label"><i class="bi bi-translate"></i> Lingua anteprima</span>
+        <div class="ed-lang-pills" role="tablist">
+          {% for entry in locale_switcher %}
+            <button type="button"
+                    class="ed-lang-pill {% if entry.is_current %}is-active{% endif %}"
+                    data-ed-lang="{{ entry.code }}"
+                    lang="{{ entry.code }}"
+                    {% if entry.code == 'ar' %}dir="rtl"{% endif %}
+                    title="{{ entry.label }}">{{ entry.badge }}</button>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="ed-sidebar-search">
+        <div class="wrap">
+          <i class="bi bi-search"></i>
+          <input type="search" placeholder="Cerca un campo…" aria-label="Cerca nei campi">
+        </div>
+      </div>
+
+      <div class="ed-sidebar-body">
+
+        {# ── Groups with content fields ───────────────────────── #}
+        {% for group in groups %}
+        <section class="ed-group" data-region="{{ group.region }}" data-group-id="{{ group.id }}">
+          <button class="ed-group-head" type="button">
+            <span class="ed-gicon"><i class="bi {{ group.icon }}"></i></span>
+            <span class="ed-glabel">{{ group.label }}</span>
+            <span class="ed-gbadge" data-count="0">0</span>
+            <i class="bi bi-chevron-right ed-gchev"></i>
+          </button>
+          <div class="ed-group-body">
+            {% if group.help %}<p class="ed-group-help">{{ group.help }}</p>{% endif %}
+            {% if group.subgroups %}
+              {% for sub in group.subgroups %}
+                <div class="ed-subgroup">
+                  <h4 class="ed-subgroup-head">{{ sub.label }}</h4>
+                  {% for field in sub.fields %}
+                    {% include "projects/_editor_field.html" with field=field kind="content" %}
+                  {% endfor %}
                 </div>
-              {% elif field.spec.type == "select" %}
-                <select class="form-select form-select-sm" name="token__{{ field.key }}" id="token__{{ field.key }}">
-                  {% for choice in field.spec.choices %}
-                    <option value="{{ choice }}" {% if choice == field.value %}selected{% endif %}>{{ choice }}</option>
-                  {% endfor %}
-                </select>
-              {% endif %}
-              {% if field.spec.help %}<div class="helper">{{ field.spec.help }}</div>{% endif %}
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- Content groups -->
-      {% for group in groups %}
-      <div class="pe-form mb-3">
-        <h2><span class="lbl">{{ forloop.counter|stringformat:"02d" }}</span> {{ group.label }}</h2>
-        {% if group.help %}<p class="text-muted small mb-3">{{ group.help }}</p>{% endif %}
-        <div class="pe-group">
-          {% for field in group.fields %}
-            <div class="pe-field">
-              <label for="content__{{ field.key|slugify }}">
-                {{ field.spec.label }}
-                {% if field.is_overridden %}<span class="override-dot" title="Campo modificato rispetto al template sorgente"></span>{% endif %}
-              </label>
-              {% if field.spec.type == "textarea" or field.spec.type == "richtext" %}
-                <textarea name="content__{{ field.key }}" id="content__{{ field.key|slugify }}"
-                          rows="3" class="form-control"
-                          {% if field.spec.max_length %}maxlength="{{ field.spec.max_length }}"{% endif %}>{{ field.value }}</textarea>
-              {% elif field.spec.type == "select" %}
-                <select class="form-select" name="content__{{ field.key }}" id="content__{{ field.key|slugify }}">
-                  {% for choice in field.spec.choices %}
-                    <option value="{{ choice }}" {% if choice == field.value %}selected{% endif %}>{{ choice }}</option>
-                  {% endfor %}
-                </select>
-              {% else %}
-                <input type="text" class="form-control"
-                       name="content__{{ field.key }}" id="content__{{ field.key|slugify }}"
-                       value="{{ field.value }}"
-                       {% if field.spec.max_length %}maxlength="{{ field.spec.max_length }}"{% endif %}>
-              {% endif %}
-              {% if field.spec.help %}<div class="helper">{{ field.spec.help }}</div>{% endif %}
-              <div class="baseline"><code>{{ field.key }}</code>{% if field.is_overridden %} · modificato{% else %} · baseline{% endif %}</div>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-      {% endfor %}
-
-      <!-- Locked keys (read-only note) -->
-      <div class="pe-form mb-3">
-        <h2><span class="lbl">—</span> Prossimamente · aree in arrivo</h2>
-        <p class="text-muted small mb-3">
-          Queste sezioni fanno parte dello stile del template e saranno
-          personalizzabili nei prossimi aggiornamenti dell'editor.
-        </p>
-        {% for key, note in locked_notes.items %}
-          <div class="pe-locked"><strong>{{ key }}</strong> — {{ note }}</div>
+              {% endfor %}
+            {% else %}
+              {% for field in group.fields %}
+                {% include "projects/_editor_field.html" with field=field kind="content" %}
+              {% endfor %}
+            {% endif %}
+          </div>
+        </section>
         {% endfor %}
-      </div>
 
-      <!-- Revisions -->
-      <div class="pe-form mb-3">
-        <h2><span class="lbl">—</span> Cronologia recente</h2>
-        {% if recent_revisions %}
-          <ul class="list-unstyled small mb-0">
-            {% for r in recent_revisions %}
-              <li class="py-1 border-bottom">
-                <strong>{{ r.label }}</strong>
-                <span class="text-muted">— {{ r.get_reason_display }} · {{ r.created_at|date:"d M Y H:i" }}</span>
-              </li>
+        {# ── Design tokens (colors + fonts) ──────────────────── #}
+        <section class="ed-group" data-region=".vx-nav, .vx-section" data-group-id="design">
+          <button class="ed-group-head" type="button">
+            <span class="ed-gicon"><i class="bi bi-palette"></i></span>
+            <span class="ed-glabel">Colori e tipografia</span>
+            <span class="ed-gbadge" data-count="0">0</span>
+            <i class="bi bi-chevron-right ed-gchev"></i>
+          </button>
+          <div class="ed-group-body">
+            <p class="ed-group-help">Palette e font del tuo sito. Si applicano a tutte le pagine.</p>
+            {% for field in design_fields %}
+              {% include "projects/_editor_field.html" with field=field kind="token" %}
+            {% endfor %}
+          </div>
+        </section>
+
+        <div class="ed-empty">
+          <i class="bi bi-search" style="font-size: 20px; color: var(--ed-muted-2); display: block; margin-bottom: 8px;"></i>
+          Nessun campo corrisponde alla ricerca.
+        </div>
+
+        {# ── Locked fields note + revisions ──────────────────── #}
+        <div class="ed-locked-block">
+          <h4>Sezioni in arrivo nelle prossime fasi</h4>
+          <ul>
+            {% for key, note in locked_notes.items %}
+              <li><code>{{ key }}</code><span>{{ note }}</span></li>
             {% endfor %}
           </ul>
-        {% else %}
-          <p class="text-muted small mb-0">Nessuna revisione ancora.</p>
+        </div>
+
+        {% if recent_revisions %}
+        <div class="ed-locked-block">
+          <h4>Cronologia recente</h4>
+          <ul>
+            {% for r in recent_revisions %}
+              <li><code>{{ r.get_reason_display }}</code><span>{{ r.label }} · {{ r.created_at|date:"d M Y H:i" }}</span></li>
+            {% endfor %}
+          </ul>
+        </div>
         {% endif %}
       </div>
 
-      <div class="d-flex justify-content-end">
-        <button type="submit" class="mw-btn mw-btn-primary">
-          <i class="bi bi-save"></i> Salva modifiche
+      <div class="ed-sidebar-foot">
+        <span>Le modifiche vengono salvate automaticamente mentre scrivi.</span>
+        <span>Clicca <span class="kbd">Salva versione</span> per archiviarle nella cronologia.</span>
+      </div>
+    </aside>
+
+    {# ── Canvas ─────────────────────────────────────────────────── #}
+    <main class="ed-canvas" aria-label="Anteprima live">
+      <div class="ed-device-bar">
+        <span class="ed-canvas-title">
+          <strong>{{ project.source_template.name }}</strong>
+          <span class="pipe">·</span>
+          {% if project.source_template.category %}{{ project.source_template.category.name }}{% endif %}
+        </span>
+
+        <div class="seg" role="group" aria-label="Dimensione preview">
+          <button type="button" data-ed-device="desktop" class="is-active" title="Desktop"><i class="bi bi-display"></i>Desktop</button>
+          <button type="button" data-ed-device="tablet"  title="Tablet"><i class="bi bi-tablet"></i>Tablet</button>
+          <button type="button" data-ed-device="mobile"  title="Mobile"><i class="bi bi-phone"></i>Mobile</button>
+        </div>
+
+        <span class="sep"></span>
+
+        <button type="button" class="ed-btn is-mini" data-ed-compare title="Confronta prima/dopo">
+          <i class="bi bi-layout-split"></i> Prima / Dopo
+        </button>
+        <button type="button" class="ed-btn is-mini" data-ed-focus title="Modalità focus · nasconde la sidebar">
+          <i class="bi bi-arrows-fullscreen"></i>
         </button>
       </div>
-    </div>
 
-    <div class="pe-preview" aria-label="Anteprima del tuo progetto">
-      <div class="bar">
-        <span class="dot"></span>
-        Anteprima del tuo progetto
-        <a href="{{ preview_url }}" target="_blank" class="ms-auto text-white" style="font-size: 11px; text-decoration: underline;">Apri ↗</a>
+      <div class="ed-stage">
+        <div class="ed-frame-wrap" data-device="desktop">
+          <iframe class="ed-frame-baseline"
+                  title="Anteprima baseline (originale del template)"
+                  aria-hidden="true"></iframe>
+          <iframe class="ed-frame"
+                  src="{{ preview_url }}"
+                  title="Anteprima del tuo progetto"></iframe>
+          <div class="ed-compare-labels">
+            <span class="before">Originale</span>
+            <span class="after">Il tuo progetto</span>
+          </div>
+          <div class="ed-split" role="separator" aria-label="Confronto prima/dopo">
+            <div class="handle" aria-hidden="true"></div>
+          </div>
+        </div>
       </div>
-      <iframe id="preview-iframe" src="{{ preview_url }}" title="Anteprima del progetto"></iframe>
-    </div>
-  </form>
-</section>
 
-<script>
-  (function() {
-    // Refresh the preview iframe after any save (the server-side redirect
-    // already re-renders the editor; bumping the iframe src busts its cache).
-    var iframe = document.getElementById("preview-iframe");
-    if (iframe && iframe.src.indexOf("&_t=") === -1) {
-      var sep = iframe.src.indexOf("?") === -1 ? "?" : "&";
-      iframe.src = iframe.src + sep + "_t=" + Date.now();
-    }
-  })();
-</script>
-{% endblock %}
+      <div class="ed-banner" aria-live="polite"></div>
+    </main>
+  </div>
+
+  <div class="ed-toasts" aria-live="polite"></div>
+
+  {% csrf_token %}
+
+  <script>
+    window.MW_EDITOR_CONFIG = {
+      autosaveUrl: "{{ autosave_url|escapejs }}",
+      snapshotUrl: "{{ snapshot_url|escapejs }}",
+      previewUrl:  "{{ preview_url|escapejs }}",
+      baselineUrl: "{{ baseline_preview_url|escapejs }}",
+      csrfToken:   document.querySelector('input[name=csrfmiddlewaretoken]').value,
+      justCreated: {{ just_created|yesno:"true,false" }},
+      projectUuid: "{{ project.uuid }}",
+    };
+  </script>
+  <script src="{% static 'editor/live-editor.js' %}" defer></script>
+</body>
+</html>

@@ -1,5 +1,193 @@
 # Session Log
 
+## Session 57b — Phase A.2.1 · Editor UX Corrective Micro-Fix (2026-04-16)
+
+**Summary.** Micro-fix on top of Session 57's Phase A.2 shell. Nine customer-reported product gaps closed without any perimeter expansion: (1) preview top-strip (marketplace bar + duplicate lang switcher) hidden in editor mode; (2) language switcher moved into the sidebar; (3) image widget shipped with thumbnail + "Carica file" data-URL upload + clear; (4) character counters with near-limit / at-limit colouring; (5) highlight reliability — pulse animation, state preserved across autosave reloads, idle-clear moved out of iframe into editor (field-focus-aware); (6) compare slider now scroll-syncs the baseline and edited iframes; (7) preview canvas widened (sidebar 380→340px, topbar 56→52px, stage padding 20→14px); (8) schema beyond home — studio, manifesto and contatti pages now use `subgroups` structure with ~12 additional editable fields (essay heading + pullquote, partners intro, timeline intro, principles intro, promise intro, form heading); (9) overflow guardrails in the skin's `_base.html` (`overflow-wrap: anywhere` on hero headlines, nav logo clamped to 32ch). 27/27 tests green (4 new pre-existing tests still green after `iter_editable_fields` refactor to handle subgroups). Browser-authenticated Playwright re-validation end-to-end green.
+
+### Gaps reported (all closed)
+
+1. **Highlight not robust.** — ring cleared too aggressively, lost across autosave iframe reload.
+2. **No image fields.** — schema had `home.cover.image` as URL type, no UI affordance.
+3. **Layout broke on long text.** — no guardrails for oversized headlines / logo.
+4. **Preview still tight.** — 380px sidebar + 20px stage padding felt cramped.
+5. **i18n in editor was half-English.** — lang switcher sat inside the preview top-strip; editor labels were IT but preview chrome duplicated the marketing chrome.
+6. **Preview top-strip was noise.** — marketplace "← Torna a MarketWeb" + "Altri template" + lang pills all visible inside the editor iframe.
+7. **Only home editable.** — studio / manifesto / contatti headings existed as single fields; sub-sections inside those pages were not exposed.
+8. **Sidebar could be more premium.** — flat field list without subsections inside a group.
+9. **Compare didn't sync scroll.** — two iframes scrolled independently.
+
+### What shipped
+
+**Schema (`apps/editor/schema.py`)**
+- New field type ``image`` with thumbnail widget (URL + data-URL accepted; 2MB hard cap; data-URI length guard bypasses the `max_length` that would otherwise truncate the base64).
+- `home.cover.image` upgraded from `url` to `image`.
+- `studio`, `manifesto_page`, `contatti` groups converted to `subgroups` form (divider + sub-head). ~12 new editable fields.
+- `iter_editable_fields` now flattens both `fields` and `subgroups` shapes — the bug that broke 8 tests in the first run.
+
+**Backend (`apps/projects/views.py`)**
+- Context carries `locale_switcher` list (built from `template_content.get_available_locales` + `template_i18n.get_chrome`) — consumed by the sidebar UI, avoiding the preview top-strip duplicate.
+- Groups materialised with both flat `fields` and `subgroups` outputs so templates can render either.
+
+**Skin (`templates/live_templates/agency/agency-creative-studio/_base.html`)**
+- Body class `mw-is-editor-preview` conditional on `preview_project` being truthy.
+- CSS block hides `.mp-bar` (+ its padding-top) in that state.
+- Overflow guardrails: `overflow-wrap: anywhere; word-break: break-word; hyphens: auto` on hero h1, section h2, nav logo. Logo also clamped to `max-width: 32ch`.
+
+**Editor shell**
+- `_editor_field.html` new partial — handles `text / textarea / richtext / select / color / url / image` widgets uniformly. Shared by content and token groups.
+- `project_editor.html` reorganised — sidebar gains a `LINGUA ANTEPRIMA` segmented control next to search.
+- Sub-group divider + sub-head style rendering.
+
+**CSS (`static/editor/live-editor.css`)**
+- Sidebar 380→340px, topbar 56→52px, devicebar 48→44px, stage padding 20→14px.
+- New widgets: `.ed-sidebar-lang` / `.ed-lang-pill`, `.ed-subgroup`, `.ed-count` (with `is-near-limit` / `is-at-limit`), `.ed-image` (+thumb + controls + pick + clear).
+
+**JS (`static/editor/live-editor.js`)**
+- `currentLang` state + `withLang(url)` helper; lang pills reload both frames with `?lang=xx`.
+- `lastHighlight = {selector, label}` memoised; re-posted on iframe `load` (after every autosave).
+- `highlightHoldTimer` 5s keeps the ring if no sidebar field has focus; reset on every new highlight.
+- Image widget: `maybeUpdateImageThumb` does an `Image()` probe, `is-loading` + `is-error` states, `FileReader.readAsDataURL` for local file pick.
+- Character counter: `updateCharCount` on input; colouring at 90%+ (`is-near-limit`) and 100% (`is-at-limit`).
+- `wireIframeScrollSync` attached on every iframe `load`; `activeScroller` switches on `mouseenter`; `requestAnimationFrame` throttled mirror.
+
+**Preview-bridge (`static/editor/preview-bridge.js`)**
+- Ring gains `mwEditPulse` 2.6s keyframe animation (reduced-motion aware).
+- Internal 4.2s idle-clear REMOVED — the editor owns the clear decision now (it knows whether a sidebar field still has focus).
+
+**Tests**
+- All 27 tests green (20 A.2 + 7 accounts). No new tests authored for A.2.1 — the subgroup flatten bug was caught by existing `validate_key_path` tests; image / lang switcher are UI-only.
+
+### Lessons
+
+1. **Django `{# #}` is single-line only.** Multi-line requires `{% comment %}...{% endcomment %}`. The field-partial shipped with a multi-line `{# #}` whose line 2+ rendered as literal text into the sidebar. Caught in-browser, fixed in one line. First rule of partial authoring: comment tags must match the syntax.
+
+2. **Schema refactors break the flattener.** Adding `subgroups` to three groups shipped clean through the UI but broke 8 tests on the service layer because `iter_editable_fields` assumed every group had `"fields"`. The flattener is the one place that MUST know about every schema shape — refactor it first, then the UI.
+
+3. **Image widget without an upload endpoint is legitimate.** Data-URL fallback for `image` fields + 2MB server cap is a perfectly solid "draft mode" — users see their image live, it persists, it renders in preview. A real upload endpoint (Phase A.6) simply replaces the data-URI with a CDN URL. Not a hack; a scope choice.
+
+4. **Preview chrome hiding is a body-class concern.** The skin owns its own chrome; the editor tells the skin it's being embedded via a body class. No skin surgery, no extra template includes, no feature flag. One CSS rule, one conditional class.
+
+5. **Scroll-sync needs an `activeScroller` flag.** Without it, every scroll event ping-pongs because A's sync writes B, B's scroll event fires sync back to A. The `mouseenter` flag + `requestAnimationFrame` throttle + early-return when `activeScroller !== f` is the minimum robust pattern.
+
+### Blockers
+
+**None.**
+
+### Exact next step
+
+Phase A.3 per TODO_NEXT — unchanged scope. The A.2.1 fixes are all backwards-compatible. Merge the branch to main OR continue to A.3 on the same branch.
+
+## Session 57 — Phase A.2 · Editor UX + Live Preview (2026-04-16)
+
+**Summary.** A.2 rebuilds the customer-facing editor as a premium two-column app shell with debounced live autosave, a wide device-aware preview canvas, a premium sidebar with icon-prefixed accordion groups + search + reset-to-baseline, hover/focus → preview-region highlight, and a before/after compare slider. Notification hygiene is restored: no more Django-messages stacking on every save — autosave returns JSON + silent chip state + optional ephemeral toast. Rich-customization coverage ~doubled on `agency-creative-studio`: 39 content-editable fields across 14 grouped sections (was 23 in 4 flat groups). Browser-authenticated Playwright walk green end-to-end (login → edit → live preview → highlight → compare → reset → snapshot → publish → reload → verify clean). 20/20 project tests green (16 pre-existing + 3 new autosave / baseline / snapshot tests, 1 legacy POST form test rewritten for JSON autosave).
+
+### Starting state
+- Branch: `phase-editor-ux-live-preview-v1`, forked from `phase-editor-public-customize-v1` @ 5f3cef8.
+- Editor UI shipped in A.1b was a server-rendered form: 520px-wide left column, iframe on the right, explicit Save button that POSTed and redirected. Messages flashed and stacked on every save. Preview felt cramped; no live update; no highlight mapping; no compare.
+
+### UX root-cause audit
+1. **Messages stacking** — every save triggered `messages.success("Salvato: N campi aggiornati")`. Over 5 edits a customer saw 5 success banners piled at the top of the editor.
+2. **Preview too narrow** — 520px fixed form + bootstrap container max-width limited preview to ~650px. Typography and layout felt compressed.
+3. **No live preview** — POST → redirect → iframe cache-bust. One round-trip per edit, always preceded by a manual click.
+4. **Limited schema** — only ~23 fields on Vertex, grouped in 4 flat sections (`site`, `home`, `studio`, `contatti`). No group icons, no help copy hierarchy, no search.
+5. **Sidebar form felt technical** — baseline footer `<code>home.headline · baseline</code>` leaked implementation to the customer.
+6. **No mapping editor↔preview** — customer had to hunt for what they were editing.
+7. **No compare** — no way to see "was vs is".
+
+### What shipped
+
+**1. Backend — `apps/editor/schema.py`**
+- `AGENCY_CREATIVE_STUDIO_SCHEMA` widened from 4 flat groups to **14 themed groups × ~39 editable fields** (brand · nav · hero · cover · manifesto · cta_home · ledger · studio · capacita · manifesto_page · lavori · contatti · contact_info · footer_copy).
+- Each group carries `icon` (Bootstrap Icons key) and `region` (CSS selector for preview highlight) metadata consumed by the UI only — no schema change to locked vs unlocked semantics.
+- New field type `url` with HTTPS/HTTP validation (baseline empty allowed to clear override) — opens `home.cover.image` and future media URLs.
+- `validate_value` extended to handle the `url` type.
+
+**2. Backend — `apps/projects/views.py` + `urls.py`**
+- New `project_autosave` JSON endpoint at `POST /projects/<uuid>/autosave/`. Takes `{content: {...}, tokens: {...}}`, validates via schema, saves sparse overrides, returns `{ok, touched, override_count, ts}`. Never creates a revision — autosaves are draft writes. Returns 400 JSON for `InvalidEditableField` so the UI can show a toast.
+- New `project_snapshot` at `POST /projects/<uuid>/snapshot/` — this is the explicit "Salva versione" button. XHR path returns JSON; form-post path redirects with a flash. Revision creation is now customer-opt-in, not every-save-reflex.
+- `ProjectEditorView.post` becomes a safety net that proxies to `project_snapshot` (legacy form submit).
+- `customize_start` no longer flashes "Progetto creato" / "Bentornato" on every click — sets `request.session["editor_just_created"]=True` on first-time create. Editor consumes the flag into a one-shot welcome banner that self-dismisses. Zero accumulation on re-entry.
+- Publish/unpublish still flash a Django message but the editor shell intentionally doesn't render Django's messages list — the topbar tier chip's colour change is the honest visual signal.
+
+**3. Backend — `apps/catalog/views.py` (LiveTemplateView)**
+- New `?baseline=1` query flag forces the catalog render *without* applying the project overlay even when `?project=<uuid>` is present. Powers the before/after compare iframe (same pipeline, deterministic diff).
+- `preview_project` is injected into context only when NOT in baseline mode; the `_base.html` conditionally includes `preview-bridge.js` behind `{% if preview_project %}` — the baseline iframe stays bridge-less.
+
+**4. Backend — prefetch-cache gotcha fix**
+- `get_project_for_owner` uses `prefetch_related("content_overrides")` so the editor GET renders without N+1. But `project.content_overrides.count()` called after a save would return the *pre-save* cached count — off-by-one in the UI counter. Fix: fresh `ProjectContent.objects.filter(project=project).count()` in `project_autosave`. Similar pattern to D-086 Session 55's prefetch-bug regression, but this time on `.count()` rather than `_build_snapshot()`.
+
+**5. Frontend — `static/editor/live-editor.css` (~680 LOC)**
+- Full-viewport grid shell: 56px topbar + sidebar column (380px default, 64px rail collapse, 0 focus-mode) + preview canvas.
+- Premium sidebar: icon-prefixed group heads, amber badge showing per-group override count, chevron accordion, search input with ring-focus, field-level override dot + reset button (shows on `is-overridden`).
+- Canvas: device bar (desktop / tablet / mobile / compare / focus), dotted-grid stage, frame-wrap with animated max-width transition (100% / 860px / 390px), large rounded shadow for physical depth.
+- Compare mode: stacked baseline iframe + clip-path-masked edited iframe, drag-slider handle at a configurable `--ed-split` CSS var, floating "ORIGINALE" / "IL TUO PROGETTO" labels.
+- Toasts: bottom-right stack, max 3, 2.4s self-dismiss, 3 variants (info / success / error).
+- Banner: one-shot contextual welcome (used by session-keyed `editor_just_created`).
+- Status chip: 4 states (idle / saving / saved / error) with pulsing amber dot on saving, green dot on saved.
+
+**6. Frontend — `static/editor/live-editor.js` (~340 LOC)**
+- Debounced autosave (400ms window) — collects dirty content + tokens into two buckets, one fetch per window, cleared on success, retried on error. In-flight coalescing with `pendingAfterSave` flag so rapid typing doesn't lose writes.
+- Iframe soft-reload on success: preserves scroll position via `contentDocument.defaultView.scrollY` snapshot + restore on load event.
+- postMessage to iframe on focus/hover of a field — `{kind: 'highlight', selector, label}`. On blur, sends `{selector: ''}` to clear. Group-head hover also fires the highlight.
+- Device segmented control, focus-mode toggle, compare toggle with drag-to-reposition handler (mouse + touch).
+- Search filter with per-group "any visible field" visibility roll-up.
+- Per-field `reset` button: restores the baseline value, immediately queues an autosave (the service treats baseline-match as "delete override", keeping the table sparse).
+- `beforeunload` `navigator.sendBeacon` to flush any pending dirty buckets — no lost keystrokes on tab-close.
+
+**7. Frontend — `static/editor/preview-bridge.js` (~140 LOC)**
+- Injected ONLY inside the iframe when `{% if preview_project %}` is true (the baseline iframe does not get it — correct).
+- Listens for `window.postMessage` with origin-check. On `{kind:'highlight', selector, label}`: queries the DOM, paints a fixed-position amber "ring" overlay (double box-shadow + dashed pseudo-element border) around each match, optionally renders a floating uppercase label at the first match.
+- `scrollIntoView({behavior:'smooth', block:'center'})` when the target is off-screen so the customer can see what they're editing even on a long page.
+- Repositions on scroll/resize, self-clears after 4.2s idle to avoid visual debt.
+
+**8. Frontend — new `templates/projects/project_editor.html` (~210 LOC)**
+- Standalone HTML (not extending `base.html`) — editor owns its viewport, no marketing nav/footer.
+- Loads UI fonts + Bootstrap Icons + live-editor.css only. Preview iframe loads its own typography / skin CSS.
+- Each field declares `data-ed-field` / `data-ed-kind` / `data-ed-baseline` so the JS can handle content vs token writes and reset-to-baseline without extra URLs.
+- Renders the design-tokens group (palette + fonts) using the same field component as content — the sidebar is visually consistent.
+- Locked-keys + recent-revisions as dashed-border info blocks at the bottom of the sidebar.
+
+**9. Tests — `apps/projects/tests.py`**
+- Rewrote `test_create_then_edit_then_preview` to POST JSON to `/autosave/` instead of form fields to `/editor/`.
+- New `test_autosave_endpoint_rejects_locked_keys` — 400 on DNA-locked write attempts.
+- New `test_baseline_preview_ignores_overrides` — `?baseline=1` renders baseline even when `?project=` is set.
+- New `test_snapshot_endpoint_creates_revision` — explicit snapshot creates one revision row per call.
+- Result: 20/20 green (was 16/16 pre-A.2).
+
+### D-088 Editor UX live-preview contract — defined
+
+Introduced D-088: the editor autosave pipeline is the only mutation path used by the customer UI. POST form submits to `/editor/` fall through to `project_snapshot` (revision) to avoid silently losing edits on legacy browsers. Key contract clauses:
+
+- Autosave NEVER creates a revision (draft writes are not history).
+- Autosave returns JSON with `override_count` computed from a cache-bypassing query.
+- Baseline preview (`?baseline=1`) is the before side of compare — must not apply overrides.
+- `preview-bridge.js` loads only under `{% if preview_project %}` — baseline iframe stays untouched so the compare is deterministic.
+- Django messages framework is used only for full-page transitions (publish / unpublish). The editor shell intentionally does not render the messages list — visual feedback is through the topbar tier chip + transient toasts + the save-status chip.
+
+### Lessons
+
+1. **Prefetch cache bites `.count()` too.** Session 55 caught the snapshot prefetch bug (D-086 recap); A.2 caught the symmetric one on the override counter. Rule: any mutation path that reads a counter / snapshot after a save MUST bypass the selector's prefetch cache via a fresh `.filter(...).count()` / queryset.
+
+2. **"Live" has to mean client-side immediate + server debounced + iframe soft-reload.** Neither pure postMessage DOM patching (too many content shapes) nor naked form-POST works. The sweet spot: debounced autosave + cache-busted iframe reload with scroll-position preservation. User perception is "instant" — actual network chatter is 1 request per 400ms window.
+
+3. **Highlight via region selector beats text matching.** Early attempts to flash the exact text node broke on `richtext` fields (`<em>` tags, HTML entities, ellipsis). A CSS selector on the section container is both more resilient and more elegant — the glow communicates "this area" better than a tight outline on a single word.
+
+4. **Standalone editor shell > base.html override.** The marketing navbar/footer belong on the marketing site. Extending base.html and hiding chrome with CSS creates visual debt; a standalone HTML that only pulls the UI fonts + icons + editor CSS keeps the editor surface clean.
+
+5. **One source of truth for notifications.** When the editor shell stopped rendering Django's messages list, `publish` / `unpublish` flashes "disappeared" — but the topbar tier chip's colour change is a clearer signal. If a future phase needs a richer confirmation, route it through the toast stack (never back to Django messages).
+
+### Blockers
+
+**None.**
+
+### Exact next step
+
+**Phase A.3 — repeater widgets + second archetype.** Two workstreams, in order:
+
+1. **Repeater widget groundwork.** Define `{"type": "list", "of": {...}}` in schema; UI renders add/remove/reorder with per-item field specs. First target: `home.ledger_rows` (Vertex) — a tuple list that's currently DNA-locked. Second: `home.capab_items`.
+2. **Second archetype schema.** Pick `clinic` (Salute) or `corporate-suite` (Pragma) and port the same 14-group pattern. Validates the schema's generality; opens the editor to 5/20 templates.
+3. **Optional polish this session deferred:** sync iframe scroll between baseline + edited when compare opens (currently only the edited side tracks manual scroll).
+
 ## Session 56 — Phase A.1b · Public Customize Flow (2026-04-16)
 
 **Summary.** A.1b closes the gap between the A.1 foundation and the customer-facing promise: a visitor can now click **Personalizza** on a template card or on the template detail page, hit a branded login/signup gate (no longer the staff `/admin/login/`), return automatically to the same template, open an auto-created editable project, modify content, save, see the iframe preview update, reopen later, and publish — without ever touching `/admin/`. One active draft per `(owner, template)` (create-or-open); cross-owner access still 404s. Browser-authenticated Playwright walk completed end-to-end. 834/834 catalog smoke + 24/24 unit tests green (12 pre-existing A.1 tests + 5 new projects tests + 7 new accounts tests).

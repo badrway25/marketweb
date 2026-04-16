@@ -1,5 +1,29 @@
 # Decisions Log
 
+## D-088: Editor UX v2 — Debounced Autosave + Baseline Compare + Highlight Mapping + Standalone Shell (2026-04-16, Session 57)
+
+**Decision.** Phase A.2 transforms the A.1b editor from a form-POST surface into a premium app shell governed by six interlocking contract clauses:
+
+1. **Autosave is the only customer mutation path.** The UI uses `POST /projects/<uuid>/autosave/` (JSON: `{content:{}, tokens:{}}`) with a 400ms client-side debounce. The endpoint validates against the archetype schema, persists sparse overrides via `services.save_content_edits` / `services.save_design_token_edits`, and returns `{ok, touched, content_keys, token_keys, override_count, ts}`. It NEVER creates a revision. The legacy `POST /editor/` form path now proxies to `project_snapshot` so any stray legacy submit takes a revision rather than silently losing edits.
+
+2. **Revisions are customer-opt-in via an explicit "Salva versione" button.** `POST /projects/<uuid>/snapshot/` creates exactly one `ProjectRevision` with `reason=MANUAL`. XHR path returns JSON; form path redirects with a one-off Django flash (the editor shell intentionally does NOT render it — visual feedback is the toast stack).
+
+3. **Baseline preview is `?baseline=1`.** `LiveTemplateView` now respects a `baseline_mode` setup flag that short-circuits the project-overlay even when `?project=<uuid>` is present. Same pipeline, same skin, deterministic diff — powers the before/after compare slider. `preview-bridge.js` loads only in non-baseline mode (the baseline iframe stays clean of editor-bridge JS).
+
+4. **Highlight mapping is region-selector-based, not text-based.** Each schema group carries a `region` CSS selector. On field focus/hover the editor JS posts `{source:'mw-editor', kind:'highlight', selector, label}` to the iframe via `window.postMessage`. `preview-bridge.js` paints a fixed-position amber ring overlay around each match, smooth-scrolls the target into view, and self-clears after 4.2s idle. No skin changes; no text-search brittleness on richtext fields.
+
+5. **Notification hygiene: the editor shell does NOT render Django's messages list.** Autosave never flashes; `customize_start` uses `request.session["editor_just_created"]=True` for a one-shot welcome banner instead of `messages.success`. Publish / unpublish transitions still flash — consumed silently on the redirect because the editor template has no `{% for m in messages %}` block — but their success is visible via the topbar tier chip's colour change. This retires the "messages that stack and repeat" bug reported by the customer.
+
+6. **Editor shell is standalone HTML, not `base.html` extension.** The marketing navbar/footer belong on the marketing site. `project_editor.html` loads UI fonts (Inter + JetBrains Mono), Bootstrap Icons, and `live-editor.css` only — no Bootstrap CSS bundle, no marketing partials. The preview iframe keeps its own typography / skin CSS. Editor CSS variables live under `--ed-*` to avoid collisions with `--lf-*` (live-forms) and `--lm-*` (live-motion) token spaces.
+
+**Why.** The customer reported six independent UX complaints on the A.1b editor (messages stacking, narrow preview, no live update, thin sidebar, no mapping, no compare). Each maps directly to one of the clauses above. D-088 is the contract that keeps them consistent across future phases — Phase A.3 repeater widgets, Phase A.7 multi-locale editing, Phase A.6 image uploads — without re-opening the autosave / baseline / highlight shape.
+
+**Binding for:** All future editor phases (A.3+). Any new archetype schema MUST declare `icon` and `region` per group; any new field type MUST be consumable by the debounced autosave payload shape. Deviations from the no-flash-on-save rule require an amendment to D-088.
+
+**Caught in flight.** `.count()` on a prefetched reverse-relation returns the pre-save cached count, causing an off-by-one override counter in the UI. Fix: autosave computes `ProjectContent.objects.filter(project=project).count()` directly, bypassing the selector's prefetch cache. Parallel to D-086's lesson on `_build_snapshot()` — any post-save aggregate read must go through a fresh queryset.
+
+---
+
 ## D-087: Public Customize Flow — Branded Auth Gate + `/projects/start/` Entry + One-Draft-Per-Template (2026-04-16, Session 56)
 
 **Decision:** Phase A.1b transforms the A.1 foundation into a customer-facing flow without widening the editor schema. Four interlocking pieces:

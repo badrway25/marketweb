@@ -193,9 +193,16 @@ class LiveTemplateView(TemplateView):
         # customer's ProjectContent + ProjectDesignTokens overlay the
         # catalog-side content + theme. The skin is unchanged — overrides
         # are applied server-side in get_context_data.
+        #
+        # D-088 (Phase A.2) adds ``?baseline=1`` which forces the catalog
+        # render *without* applying the project overlay even when
+        # ?project= is present. The editor before/after compare mount
+        # two iframes — one with the overlay, one baseline — and slides
+        # between them. Same pipeline, same skin, deterministic diff.
         project_uuid = request.GET.get("project")
+        self.baseline_mode = request.GET.get("baseline") == "1"
         self.preview_project = None
-        if project_uuid:
+        if project_uuid and not self.baseline_mode:
             self.preview_project = get_project_for_preview(
                 project_uuid=project_uuid,
                 user=request.user,

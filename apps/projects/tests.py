@@ -130,16 +130,27 @@ class FoundationHttpTests(TestCase):
         self.assertEqual(r.status_code, 302)
         uuid = r["Location"].split("/")[-3]
 
-        r = self.client.post(f"/projects/{uuid}/editor/", {
-            "content__site.logo_word": "HTTP Test Studio",
-            "content__home.headline": "Test <em>overlay</em>",
-            "token__palette_primary": "#123456",
-            "token__palette_secondary": "#abcdef",
-            "token__palette_accent": "#ff00aa",
-            "token__heading_font": "Playfair Display",
-            "token__body_font": "Inter",
-        })
-        self.assertEqual(r.status_code, 302)
+        import json as _json
+        r = self.client.post(
+            f"/projects/{uuid}/autosave/",
+            data=_json.dumps({
+                "content": {
+                    "site.logo_word": "HTTP Test Studio",
+                    "home.headline":  "Test <em>overlay</em>",
+                },
+                "tokens": {
+                    "palette_primary":   "#123456",
+                    "palette_secondary": "#abcdef",
+                    "palette_accent":    "#ff00aa",
+                    "heading_font":      "Playfair Display",
+                    "body_font":         "Inter",
+                },
+            }),
+            content_type="application/json",
+        )
+        self.assertEqual(r.status_code, 200)
+        body = r.json()
+        self.assertTrue(body["ok"])
 
         r = self.client.get(f"/templates/agency/vertex-creative-agency/preview/?project={uuid}")
         self.assertEqual(r.status_code, 200)
@@ -217,6 +228,42 @@ class FoundationHttpTests(TestCase):
         self.assertEqual(r.status_code, 302)
         # Either /templates/restaurant/gusto-fine-dining/ or template_list — both accept.
         self.assertIn("/templates/", r["Location"])
+
+    def test_autosave_endpoint_rejects_locked_keys(self):
+        """D-088: autosave must reject DNA-locked paths with 400."""
+        import json as _json
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.post(
+            f"/projects/{p.uuid}/autosave/",
+            data=_json.dumps({"content": {"home.ledger_rows": []}, "tokens": {}}),
+            content_type="application/json",
+        )
+        self.assertEqual(r.status_code, 400)
+
+    def test_baseline_preview_ignores_overrides(self):
+        """D-088: ?baseline=1 must render the original regardless of project overrides."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "Edited Studio"},
+        )
+        r = self.client.get(
+            f"/templates/agency/vertex-creative-agency/preview/?project={p.uuid}&baseline=1"
+        )
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("Vertex Studio", body)
+        self.assertNotIn("Edited Studio", body)
+
+    def test_snapshot_endpoint_creates_revision(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        before = p.revisions.count()
+        r = self.client.post(f"/projects/{p.uuid}/snapshot/",
+                             HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.json()["ok"])
+        p.refresh_from_db()
+        self.assertEqual(p.revisions.count(), before + 1)
 
     def test_published_overlay_visible_to_other_user(self):
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)
