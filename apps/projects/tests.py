@@ -579,6 +579,20 @@ class FoundationHttpTests(TestCase):
         self.assertIn("Vertex Studio", body)
         self.assertNotIn("Edited Studio", body)
 
+    def test_a28_editor_renders_group_toggle_all_control(self):
+        """A.2.8 Step 3: the sidebar head must expose a single
+        collapse-all / expand-all button that the JS wires to toggle
+        every accordion's is-open state. Markup-level smoke only; the
+        actual aggregate-state logic is covered by the browser walk."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("data-ed-group-toggle-all", body)
+        # Initial icon class reflects the "some groups open" state that
+        # the default-open-at-mount logic guarantees.
+        self.assertIn("bi-chevron-contract", body)
+
     def test_a28_editor_exposes_mweditor_jump_field_public_api(self):
         """A.2.8 Step 1: the editor JS must expose `jumpField` on the
         `window.MWEditor` object so A.3 repeater + devtools + test
