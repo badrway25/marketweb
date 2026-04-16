@@ -141,6 +141,18 @@
                   <h4 class="ed-subgroup-head">
                     <span>{{ sub.label }}</span>
                     {% if group.mutable and sub.row_identity %}
+                      <button type="button" class="ed-row-move" data-ed-row-move="up"
+                              title="Sposta su"
+                              aria-label="Sposta {{ sub.label }} più in alto"
+                              {% if not sub.row_identity.can_move_up %}disabled{% endif %}>
+                        <i class="bi bi-chevron-up"></i>
+                      </button>
+                      <button type="button" class="ed-row-move" data-ed-row-move="down"
+                              title="Sposta giù"
+                              aria-label="Sposta {{ sub.label }} più in basso"
+                              {% if not sub.row_identity.can_move_down %}disabled{% endif %}>
+                        <i class="bi bi-chevron-down"></i>
+                      </button>
                       <button type="button" class="ed-row-remove" data-ed-row-remove
                               title="Rimuovi questa riga" aria-label="Rimuovi questa riga">
                         <i class="bi bi-x-lg"></i>
@@ -301,6 +313,7 @@
       snapshotUrl: "{{ snapshot_url|escapejs }}",
       rowAddUrl:  "{{ row_add_url|escapejs }}",
       rowRemoveUrl: "{{ row_remove_url|escapejs }}",
+      rowMoveUrl: "{{ row_move_url|escapejs }}",
       previewUrl:  "{{ preview_url|escapejs }}",
       baselineUrl: "{{ baseline_preview_url|escapejs }}",
       // A.2.5 page-aware targeting: JS composes per-page URLs from

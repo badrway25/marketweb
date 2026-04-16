@@ -323,6 +323,9 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
             "row_remove_url": reverse(
                 "projects:project_row_remove", kwargs={"uuid": project.uuid}
             ),
+            "row_move_url": reverse(
+                "projects:project_row_move", kwargs={"uuid": project.uuid}
+            ),
             "locale_switcher": locale_switcher,
             "current_locale": project.locale,
         })
@@ -514,6 +517,67 @@ def project_row_remove(request, uuid):
             index=index if uid is None else None,
             uid=uid if index is None else None,
             editor=request.user,
+        )
+    except services.UnsupportedMutation as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+    except services.RowLimitReached as exc:
+        return JsonResponse(
+            {"ok": False, "error": str(exc), "limit_kind": exc.kind, "limit": exc.limit},
+            status=409,
+        )
+    except InvalidEditableField as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+    except Exception as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+
+    from apps.projects.models import ProjectContent
+    override_count = ProjectContent.objects.filter(project=project).count()
+    return JsonResponse({
+        "ok": True,
+        "effective_length": result["effective_length"],
+        "override_count": override_count,
+    })
+
+
+@login_required
+@require_POST
+def project_row_move(request, uuid):
+    """A.3b — reorder a row one position up or down.
+
+    Request body JSON::
+        {"list_path": "studio.partners", "segment": "a0", "direction": "up"}
+
+    Success (200): ``{"ok": true, "effective_length": N, "override_count": M}``
+    Errors:
+    - 400 on malformed payload / unknown list / non-mutable list /
+      bad direction / missing segment
+    - 404 on ownership mismatch
+    - 409 when the move would cross the first/last boundary
+    """
+    project = selectors.get_project_for_owner(request.user, uuid)
+    if project is None:
+        raise Http404()
+    if not is_supported_archetype(project.source_archetype):
+        raise Http404()
+
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except ValueError:
+        return HttpResponseBadRequest("Invalid JSON payload.")
+    list_path = payload.get("list_path")
+    segment = payload.get("segment")
+    direction = payload.get("direction")
+    if not isinstance(list_path, str) or not list_path:
+        return HttpResponseBadRequest("list_path is required.")
+    if not isinstance(segment, str) or not segment:
+        return HttpResponseBadRequest("segment is required.")
+    if direction not in ("up", "down"):
+        return HttpResponseBadRequest("direction must be 'up' or 'down'.")
+
+    try:
+        result = services.move_row(
+            project=project, list_path=list_path,
+            segment=segment, direction=direction, editor=request.user,
         )
     except services.UnsupportedMutation as exc:
         return JsonResponse({"ok": False, "error": str(exc)}, status=400)
