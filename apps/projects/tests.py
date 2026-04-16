@@ -842,6 +842,64 @@ class FoundationModelTests(TestCase):
         self.assertGreater(pos_8, pos_42)
         self.assertGreater(pos_8, pos_6)
 
+    def test_a3b_custom_order_survives_subsequent_add(self):
+        """After a reorder, adding a new row must append the uid to the
+        existing order rather than discard the custom sequence."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment="0", direction="down", editor=self.owner,
+        )
+        # meta.order is now ["1","0","2"]
+        r = services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta.get("order"), ["1", "0", "2", r["uid"]])
+
+    def test_a3b_custom_order_survives_subsequent_remove(self):
+        """Removing a row (baseline idx or uid) must also drop that
+        segment from order[], and strip order back to default when the
+        remaining sequence is canonical."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # Reorder: move baseline 2 to position 0 → order ["2","0","1"]
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment="2", direction="up", editor=self.owner,
+        )
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment="2", direction="up", editor=self.owner,
+        )
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta.get("order"), ["2", "0", "1"])
+        # Remove baseline 0 → order must become ["2","1"]
+        services.remove_row(
+            project=p, list_path="studio.partners",
+            index=0, editor=self.owner,
+        )
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta.get("order"), ["2", "1"])
+
+    def test_a3b_custom_order_strips_when_remove_makes_it_default(self):
+        """If pruning a segment leaves the order equal to the canonical
+        default, order must be stripped from meta (sparse-diff)."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # Add then reorder the added row to the top
+        r = services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        uid = r["uid"]
+        # Default was ["0","1","2","a0"]; move a0 up 3 times → ["a0","0","1","2"]
+        for _ in range(3):
+            services.move_row(
+                project=p, list_path="studio.partners",
+                segment=uid, direction="up", editor=self.owner,
+            )
+        # Now remove a0 → remaining ["0","1","2"] which equals default
+        services.remove_row(
+            project=p, list_path="studio.partners",
+            uid=uid, editor=self.owner,
+        )
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertNotIn("order", meta)
+
     def test_a3a_uid_path_validates_only_on_mutable_lists(self):
         """validate_key_path accepts ``studio.partners.a0.name`` (mutable)
         but rejects ``contatti.channels.a0.value`` (locked)."""

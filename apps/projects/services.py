@@ -556,6 +556,12 @@ def add_row(
     existing_added = list(meta.get("added") or [])
     existing_added.append({"uid": uid})
     meta["added"] = existing_added
+    # A.3b — if a custom order is already persisted, append the new uid
+    # at the end so the customer's previous arrangement survives. The
+    # new row still lands at the bottom visually; the customer can move
+    # it afterwards.
+    if "order" in meta and isinstance(meta["order"], list):
+        meta["order"] = list(meta["order"]) + [uid]
     _persist_meta(project, list_path, meta)
     project.save(update_fields=["updated_at"])
     return {"uid": uid, "meta": meta, "effective_length": current_len + 1}
@@ -704,7 +710,8 @@ def remove_row(
         existing_removed = list(meta.get("removed") or [])
         existing_removed.append(index)
         meta["removed"] = existing_removed
-        _cascade_delete_cell_overrides(project, list_path, str(index))
+        dropped_segment = str(index)
+        _cascade_delete_cell_overrides(project, list_path, dropped_segment)
     else:
         added = list(meta.get("added") or [])
         new_added = [e for e in added if e.get("uid") != uid]
@@ -713,7 +720,22 @@ def remove_row(
                 f"Added-row uid {uid!r} is not present on '{list_path}'."
             )
         meta["added"] = new_added
+        dropped_segment = uid
         _cascade_delete_cell_overrides(project, list_path, uid)
+
+    # A.3b — keep order[] in sync by pruning the dropped segment. If
+    # pruning leaves the array equal to the canonical default, strip
+    # order so sparse-diff stays clean.
+    if "order" in meta and isinstance(meta["order"], list):
+        pruned = [s for s in meta["order"] if s != dropped_segment]
+        from apps.editor.rendering import compute_default_order
+        default = compute_default_order(
+            baseline_len, meta.get("removed") or [], meta.get("added") or [],
+        )
+        if pruned == default:
+            meta.pop("order")
+        else:
+            meta["order"] = pruned
 
     _persist_meta(project, list_path, meta)
     project.save(update_fields=["updated_at"])
