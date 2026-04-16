@@ -368,9 +368,29 @@
   }
 
   {% block extra_css %}{% endblock %}
+
+  /* Editor-embedded preview (D-089 A.2.1 micro-fix): when the live
+     route is loaded inside the customer editor iframe (identified by
+     `preview_project` being non-null), suppress the marketplace top
+     strip and back-links — they duplicate the editor's own chrome
+     and steal vertical real-estate from the working canvas. */
+  body.mw-is-editor-preview .mp-bar { display: none !important; }
+  body.mw-is-editor-preview { padding-top: 0 !important; }
+
+  /* Overflow guardrails — long customer titles must not break the
+     editorial layout. These are safety nets; the skin's own clamps
+     stay authoritative. */
+  body.mw-is-editor-preview .vx-hero .left h1,
+  body.mw-is-editor-preview .vx-section h2,
+  body.mw-is-editor-preview .vx-nav .logo {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  body.mw-is-editor-preview .vx-nav .logo { max-width: 32ch; }
 </style>
 </head>
-<body>{% endspaceless %}
+<body class="{% if preview_project %}mw-is-editor-preview{% endif %}">{% endspaceless %}
 
 <div class="mp-bar">
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
@@ -471,5 +491,6 @@
 <script src="{% static 'js/live-motion.js' %}" defer></script>
 <script src="{% static 'js/live-interactions.js' %}" defer></script>
 <script src="{% static 'js/live-forms.js' %}" defer></script>
+{% if preview_project %}<script src="{% static 'editor/preview-bridge.js' %}" defer></script>{% endif %}
 </body>
 </html>

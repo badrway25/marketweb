@@ -11,6 +11,8 @@ urlpatterns = [
     path("start/", views.customize_start, name="customize_start"),
     path("new/", views.project_create, name="project_create"),
     path("<uuid:uuid>/editor/", views.ProjectEditorView.as_view(), name="project_editor"),
+    path("<uuid:uuid>/autosave/", views.project_autosave, name="project_autosave"),
+    path("<uuid:uuid>/snapshot/", views.project_snapshot, name="project_snapshot"),
     path("<uuid:uuid>/publish/", views.project_publish, name="project_publish"),
     path("<uuid:uuid>/unpublish/", views.project_unpublish, name="project_unpublish"),
 ]

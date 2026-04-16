@@ -1,5 +1,33 @@
 # TODO Next
 
+## 🟢 Phase A.2 — Editor UX + Live Preview — ✅ CLOSED (Session 57, 2026-04-16)
+
+Per D-088: the editor is now a premium app shell — debounced JSON autosave (400ms), wide device-aware preview canvas, 14-group accordion sidebar with icons + search + reset-to-baseline, hover-to-highlight via postMessage to `preview-bridge.js`, baseline before/after compare slider, clean notification hygiene (no Django-messages stacking). Rich customization widened ~doubled on Vertex (~39 editable fields across 14 grouped sections, was 23/4). 20/20 project tests green (4 new).
+
+**What's binding for Phase A.3 and every later subphase (carries forward from D-088 + D-087 + D-086):**
+- **Autosave is the single customer mutation path.** Any new field type in the schema MUST be consumable by the JSON autosave payload (`{content:{}, tokens:{}}`). Don't add new form-POST endpoints for per-field writes.
+- **Revisions are explicit, not reflexive.** Only `Salva versione` or `Pubblica` / `Sposta in bozza` create revisions. Autosave never does. Preserve this — it's why the cronologia stays readable.
+- **Highlight groups MUST declare `region`.** Every schema group needs an `icon` + `region` CSS selector so the UI can map field focus/hover to a preview overlay. Groups without a selector degrade silently.
+- **Baseline preview contract.** `?baseline=1` MUST short-circuit the project overlay in `LiveTemplateView.setup`. Don't refactor into post-render diffing — the contract is "same pipeline, deterministic diff".
+- **`preview-bridge.js` stays behind `{% if preview_project %}`.** The baseline iframe must not load it. Skin authors adding new archetypes must preserve the guard.
+- **Editor shell is standalone.** Don't extend `base.html` from `project_editor.html`. Marketing chrome has no place inside the editor viewport.
+- **Post-save aggregate reads bypass prefetch.** Any `.count()` on reverse-relations after a mutation goes through a fresh queryset to avoid stale cached results.
+
+**Phase A.3 — immediate next step (repeater widgets + second archetype):**
+- [ ] Schema field type `"list"` with `of: {...}` per-item spec. UI: add / remove / reorder rows, per-item validation, min/max per blueprint §6.
+- [ ] First repeaters on Vertex: `home.ledger_rows` + `home.capab_items` (currently in `LOCKED_KEYS_NOTE` — promote them out once widget ships).
+- [ ] Add `apps.editor.schema` for a second archetype — recommend `clinic` (Salute) or `corporate-suite` (Pragma). MUST reuse the `icon` + `region` metadata pattern from A.2.
+- [ ] Re-verify `customize_start` bounces fire for remaining non-editable templates once the second archetype lands.
+- [ ] **Polish deferred from A.2:** sync baseline iframe scroll to edited iframe when compare opens. Currently the baseline loads at page top regardless of where the edited iframe is scrolled.
+- [ ] **Polish deferred from A.2:** use `webtemplate-slug-specific` CSS selectors for `region` (e.g. the current `.vx-hero` works for Vertex but won't map across archetypes — Phase A.3 should either re-select per archetype or introduce a `data-mw-region="hero"` attribute baked into each skin).
+- [ ] **Polish deferred from A.2:** publish / unpublish success toast in the editor shell (currently only the tier chip changes colour — honest but subtle).
+
+**Phase A.4+ (unchanged) — locale activation / page registry / publish-time validators / image upload / full multi-locale / smoke integration.**
+
+**Nothing else.** Per D-085, no new templates / archetypes / categories / preset author work lands until A.8 is green.
+
+---
+
 ## 🟢 Phase A.1b — Public Customize Flow — ✅ CLOSED (Session 56, 2026-04-16)
 
 Per D-087: `apps/accounts/` ships branded login/signup/logout + `/projects/start/?template=<slug>` single-entry flow + `get_or_create_project_for_template` (one draft per `(owner, template)`) + X-Frame-Options SAMEORIGIN on `LiveTemplateView`. Zero schema growth — editor field set unchanged. 24/24 unit tests + 834/834 catalog smoke + 11-step authenticated Playwright walk all green.
