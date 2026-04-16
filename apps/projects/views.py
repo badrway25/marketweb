@@ -10,6 +10,8 @@ All mutations delegate to `apps.projects.services`.
 """
 from __future__ import annotations
 
+from urllib.parse import urlencode
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -41,6 +43,78 @@ class ProjectListView(LoginRequiredMixin, TemplateView):
         ctx["projects"] = selectors.list_projects_for_owner(self.request.user)
         ctx["editable_templates"] = list(services.iter_editable_templates())
         return ctx
+
+
+def customize_start(request):
+    """Public customer entry point — the "Personalizza" click lands here.
+
+    Phase A.1b flow (D-087):
+    - Anon user          → redirect to login with ?next preserving the
+                           template slug so the journey resumes after
+                           auth.
+    - Authenticated user → get-or-create the project for this template
+                           (one draft per owner/template) and drop the
+                           user straight into the editor.
+
+    The view is tolerant by design: a missing / unknown / non-editable
+    slug bounces back to the public catalog with a clear message rather
+    than blowing up. Customers never see a 500 from a stale button.
+    """
+    template_slug = (request.GET.get("template") or "").strip()
+
+    # Anon path: bounce to branded login with ?next= preserved. We
+    # intentionally build ?next manually (not Django's redirect_to_login
+    # helper) because we want the same concrete slug to come back
+    # after auth — the auth layer itself does not know about templates.
+    if not request.user.is_authenticated:
+        login_url = reverse("accounts:login")
+        this_url = request.get_full_path()
+        return redirect(f"{login_url}?{urlencode({'next': this_url})}")
+
+    if not template_slug:
+        messages.error(request, "Scegli prima un template da personalizzare.")
+        return redirect("catalog:template_list")
+
+    template = (
+        WebTemplate.objects.select_related("category", "brand")
+        .filter(slug=template_slug, tier=WebTemplate.Tier.PUBLISHED_LIVE)
+        .first()
+    )
+    if template is None:
+        messages.error(
+            request,
+            "Template non disponibile per la personalizzazione.",
+        )
+        return redirect("catalog:template_list")
+
+    try:
+        project, created = services.get_or_create_project_for_template(
+            owner=request.user, template=template,
+        )
+    except services.UnsupportedTemplate as exc:
+        messages.info(
+            request,
+            "Questo template non è ancora personalizzabile online. "
+            "Stiamo aprendo l'editor archetipo per archetipo — "
+            f"dettaglio: {exc}",
+        )
+        return redirect(
+            "catalog:template_detail",
+            category_slug=template.category.slug,
+            slug=template.slug,
+        )
+
+    if created:
+        messages.success(
+            request,
+            f"Progetto '{project.name}' creato. Inizia a personalizzarlo qui sotto.",
+        )
+    else:
+        messages.info(
+            request,
+            f"Bentornato su '{project.name}'. Riprendi da dove avevi lasciato.",
+        )
+    return redirect("projects:project_editor", uuid=project.uuid)
 
 
 @login_required

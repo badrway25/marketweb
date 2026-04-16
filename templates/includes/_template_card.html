@@ -29,11 +29,11 @@ Context variables:
 
     <!-- Hover Actions -->
     <div class="mw-template-card-actions">
-      <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}" class="mw-btn mw-btn-white mw-btn-sm" title="Anteprima rapida">
+      <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}" target="_blank" rel="noopener" class="mw-btn mw-btn-white mw-btn-sm" title="Apri anteprima live">
         <i class="bi bi-eye"></i>
       </a>
-      <a href="#" class="mw-btn mw-btn-white mw-btn-sm" title="Salva nei preferiti">
-        <i class="bi bi-heart"></i>
+      <a href="{% url 'projects:customize_start' %}?template={{ template.slug }}" class="mw-btn mw-btn-white mw-btn-sm" title="Personalizza">
+        <i class="bi bi-magic"></i>
       </a>
     </div>
   </div>
@@ -52,7 +52,7 @@ Context variables:
       <p class="mw-template-card-desc mw-line-clamp-2">{{ template.short_description }}</p>
     {% endif %}
 
-    <!-- Footer: Price + CTA -->
+    <!-- Footer: Price + CTAs -->
     <div class="mw-template-card-footer">
       <div class="mw-template-card-price">
         {% if template.is_free %}
@@ -61,7 +61,12 @@ Context variables:
           <span class="currency">&euro;</span>{{ template.price|floatformat:0 }}
         {% endif %}
       </div>
-      <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}" class="mw-btn mw-btn-primary mw-btn-sm">Scopri</a>
+      <div class="d-flex gap-2">
+        <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}" class="mw-btn mw-btn-ghost mw-btn-sm">Scopri</a>
+        <a href="{% url 'projects:customize_start' %}?template={{ template.slug }}" class="mw-btn mw-btn-primary mw-btn-sm">
+          <i class="bi bi-magic"></i> Personalizza
+        </a>
+      </div>
     </div>
   </div>
 </article>

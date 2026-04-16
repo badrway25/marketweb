@@ -1,5 +1,30 @@
 # TODO Next
 
+## 🟢 Phase A.1b — Public Customize Flow — ✅ CLOSED (Session 56, 2026-04-16)
+
+Per D-087: `apps/accounts/` ships branded login/signup/logout + `/projects/start/?template=<slug>` single-entry flow + `get_or_create_project_for_template` (one draft per `(owner, template)`) + X-Frame-Options SAMEORIGIN on `LiveTemplateView`. Zero schema growth — editor field set unchanged. 24/24 unit tests + 834/834 catalog smoke + 11-step authenticated Playwright walk all green.
+
+**What's binding for Phase A.2 and every later subphase (carries forward from D-087 + D-086):**
+- **`/projects/start/` is the single public entry.** Do not add a parallel customize-create URL. Views that need to launch an editor flow link to `/projects/start/?template=<slug>`.
+- **Unsupported archetypes bounce honestly.** When a template's DNA archetype is not yet in `_ARCHETYPE_SCHEMAS`, `customize_start` redirects to the template detail page with an info message. Never land a customer on a blank editor. When you add a new archetype to the editor, remove no code — the bounce is driven by `is_supported_archetype()`.
+- **One draft per `(owner, source_template)`.** Multi-draft is a later opt-in — do not relax the uniqueness until a richer dashboard UX is in place to disambiguate variants.
+- **`/admin/login/` is staff-only.** Customer surfaces stay at `/account/`. `LOGIN_URL` must not regress.
+- **`?next=` stays preserved across login↔signup switching.** The login page's signup link carries `?next=`; likewise signup carries login. Don't break the round-trip.
+- **X-Frame-Options opt-in per view.** Keep project-wide default as Django's `DENY`. Only `LiveTemplateView` opts into `SAMEORIGIN` for the editor iframe.
+
+**Phase A.2 — immediate next step (Editor extension to 1 more archetype + repeater widgets):**
+- [ ] Add `apps.editor.schema` entries for a second archetype — recommend `clinic` (Salute) because medical has the richest stats/cards/services shape and exercises `section_order` visibility toggles. Alternative: `corporate-suite` (Pragma) for a growth-market seed.
+- [ ] Build repeater widget groundwork: `apps.editor.schema` field type `"list"` with add/remove/reorder + per-item field spec. Exercise on `home.ledger_rows` (Vertex) + `home.services` (Salute).
+- [ ] Section visibility toggles: a `home.sections_hidden` set on the project that filters `page_data.section_order` at render time.
+- [ ] Section reorder: per-project `section_order_override` list with baseline diff.
+- [ ] **When you add the second archetype, re-verify `customize_start` bounces still fire for the remaining 18 non-editable templates** — guard against a missing-archetype regression masking as "works for me on Vertex".
+
+**Phase A.3+ (unchanged) — locale activation / page registry / publish-time validators / image upload / full multi-locale / smoke integration.**
+
+**Nothing else.** Per D-085, no new templates / archetypes / categories / preset author work lands until A.8 is green.
+
+---
+
 ## 🟢 Phase A.1 — Editor Foundation v1 (vertical slice on Vertex) — ✅ CLOSED (Session 55, 2026-04-16)
 
 Per D-085 (editor-first) + D-086 (A.1 slice shape): `apps/projects/` + `apps/editor/` shipped as real, working modules. First slice exercises `vertex-creative-agency` (archetype `agency-creative-studio`) end-to-end — create project → 23 editable content fields + 5 design tokens → sparse-diff save → iframe preview overlay → publish/draft → revision snapshots. 834/834 catalog smoke unchanged. 12/12 unit tests green. See SESSION_LOG Session 55 + DECISIONS D-086.

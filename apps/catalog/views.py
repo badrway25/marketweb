@@ -1,4 +1,6 @@
 from django.http import Http404, HttpRequest
+from django.utils.decorators import method_decorator
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.views.generic import DetailView, ListView, TemplateView
 
 from apps.catalog import selectors, template_content, template_i18n
@@ -119,8 +121,16 @@ class TemplateDetailView(DetailView):
 # D-055 adds a second gate: only `published_live` templates may render here
 # publicly. Staff may preview a draft's live route via `?preview=1`.
 
+@method_decorator(xframe_options_sameorigin, name="dispatch")
 class LiveTemplateView(TemplateView):
-    """Render one page of a template's live multi-page preview."""
+    """Render one page of a template's live multi-page preview.
+
+    Phase A.1b (D-087): the project editor embeds this view inside an
+    <iframe> on /projects/<uuid>/editor/. Django's project-wide default
+    is X-Frame-Options: DENY — overriding to SAMEORIGIN on THIS view
+    only keeps clickjacking protection everywhere else while letting
+    the customer see their overrides render live next to the form.
+    """
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)

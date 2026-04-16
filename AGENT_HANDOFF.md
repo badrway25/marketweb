@@ -1,6 +1,35 @@
 # Agent Handoff
 
-Last updated: 2026-04-16 — after **Session 55 Editor Foundation v1 (Phase A.1 vertical slice)**
+Last updated: 2026-04-16 — after **Session 56 Phase A.1b Public Customize Flow**
+
+## Session 56 — Phase A.1b Public Customize Flow: Read This Before Touching Auth, `/projects/start/`, Navbar, or Detail-Page CTAs (2026-04-16)
+
+**What changed in Session 56.** Customer-facing flow is now real. A user goes: `/templates/` → click `Personalizza` on a card or detail page → `/account/login/` or `/account/signup/` if anon → after auth, `/projects/start/?template=<slug>` does get-or-create and drops them in the editor. Second click reopens the same draft. Logout/login preserves `?next=`. Preview iframe renders (X-Frame-Options SAMEORIGIN applied to `LiveTemplateView` only). 24/24 tests + 834/834 catalog smoke green. Editor schema UNCHANGED — zero field/archetype growth.
+
+### What's binding (D-087)
+
+1. **Single start URL.** `customize_start` at `/projects/start/?template=<slug>` is the only public customize entry. Every new CTA that wants to launch the editor links here. **Do NOT** add `/customize/`, `/editor/start/`, or variant URLs — the decorators, the analytics hooks, and the login-next chain will only follow one path.
+2. **Anon bounces to `/account/login/` (NOT `/admin/login/`).** `LOGIN_URL` in settings is the single source of truth; don't hard-code login URLs anywhere else.
+3. **`?next=` round-trip.** Both `customer_signup` and `CustomerLoginView` thread the originating URL through the switch-between-them link. Preserve this on any future auth-surface change — a customer clicking `Personalizza` must come back to the same template after signup, even if they switch to login mid-way.
+4. **One draft per `(owner, template)`.** `get_or_create_project_for_template` returns the most recent existing project for the pair before creating. Keep this constraint until a dashboard UX exists that can disambiguate multiple drafts.
+5. **Unsupported archetypes bounce honestly.** When a template's archetype is not in `_ARCHETYPE_SCHEMAS`, `customize_start` redirects to the template detail page with an info message. Never "fake" an editor for an unsupported archetype.
+6. **X-Frame-Options per view.** Keep `SAMEORIGIN` opt-in only on `LiveTemplateView`. Do not set `X_FRAME_OPTIONS = "SAMEORIGIN"` project-wide — clickjacking protection stays `DENY` for every other surface.
+7. **Don't conflate the `/projects/new/` POST with `customize_start`.** `project_create` (POST form on `/projects/` dashboard) still exists for power-user flow that wants a custom name. It's wrapped in a `<details>` on the list page. Keep both paths; they have different UX signals.
+
+### Phase A.2 immediate next step
+
+Add a second archetype to `apps.editor.schema` (recommend `clinic` for Salute) + build `list` field type for repeaters. **Integration checkpoint:** after adding the archetype, visit `/templates/medico/salute-studio-medico/` and click `Personalizza` — the bounce-to-detail branch of `customize_start` must continue to fire for every non-editable archetype. A naïve `is_supported_archetype()` addition can accidentally "open" archetypes without their schema being complete. Re-run the Phase A.1b browser walk (step 3 especially) against the new surface.
+
+### Files to know
+
+- `apps/accounts/forms.py · views.py · urls.py · tests.py` — customer auth. Templates at `templates/accounts/{login,signup}.html`.
+- `apps/projects/views.py :: customize_start` — the single public entry.
+- `apps/projects/services.py :: get_or_create_project_for_template` — one-draft-per-template.
+- `apps/catalog/views.py :: LiveTemplateView` — the `@xframe_options_sameorigin` decorator on `dispatch`.
+- `marketweb/settings.py :: LOGIN_URL` — `/account/login/` (not `/admin/login/`).
+- `templates/includes/_navbar.html · _template_card.html` + `templates/catalog/template_detail.html` — the 3 surfaces that wire `Personalizza`.
+
+---
 
 ## Session 55 — Editor Foundation v1: Read This Before Touching `apps/projects/`, `apps/editor/`, `LiveTemplateView`, or Any Editor Surface (2026-04-16)
 

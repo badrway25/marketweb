@@ -38,6 +38,41 @@ class UnsupportedTemplate(Exception):
 
 
 @transaction.atomic
+def get_or_create_project_for_template(
+    *,
+    owner,
+    template: WebTemplate,
+    locale: str = "it",
+) -> tuple[CustomerProject, bool]:
+    """Return the user's existing project for this template, or create one.
+
+    Phase A.1b customer-facing rule (D-087): a customer gets ONE
+    active project per (owner, source_template). The entry point from
+    the catalog treats "Personalizza" as "open my workspace for this
+    template" rather than "fork a new draft every time I click".
+
+    Motivation: matches Wix/Squarespace mental model and removes the
+    "which draft is mine?" confusion we'd otherwise ship on first
+    launch. Multi-draft is a later opt-in — when we have a richer
+    dashboard to disambiguate them.
+
+    Returns (project, created_bool).
+    """
+    existing = (
+        CustomerProject.objects
+        .filter(owner=owner, source_template=template)
+        .order_by("-updated_at")
+        .first()
+    )
+    if existing is not None:
+        return existing, False
+    project = create_project_from_template(
+        owner=owner, template=template, locale=locale,
+    )
+    return project, True
+
+
+@transaction.atomic
 def create_project_from_template(
     *,
     owner,
