@@ -133,6 +133,78 @@ class FoundationModelTests(TestCase):
             "/templates/agency/vertex-creative-agency/preview/",
         )
 
+    def test_dict_path_overrides_merge_into_baseline_dict(self):
+        """A.2.6a: a leaf override into a dict-shaped registry slot
+        (e.g. contatti.labels.name) must merge into the baseline dict
+        without wiping sibling keys."""
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={
+                "contatti.labels.name":  "Nome completo",
+                "contatti.labels.email": "Indirizzo email",
+            },
+        )
+        tree = p.get_overrides_dict()
+        self.assertEqual(tree["contatti"]["labels"]["name"],  "Nome completo")
+        self.assertEqual(tree["contatti"]["labels"]["email"], "Indirizzo email")
+
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        self.assertEqual(merged["contatti"]["labels"]["name"],  "Nome completo")
+        self.assertEqual(merged["contatti"]["labels"]["email"], "Indirizzo email")
+        # Sibling keys not overridden remain at baseline.
+        self.assertEqual(merged["contatti"]["labels"]["role"],   "Ruolo nell'organizzazione")
+        self.assertEqual(merged["contatti"]["labels"]["budget"], "Banda di budget indicativa")
+
+    def test_a26a_contatti_scalar_fields_whitelisted(self):
+        """A.2.6a: the 23 new contatti scalar / dict-key fields are
+        whitelisted for write."""
+        new_paths = [
+            "contatti.form_submit_label",
+            "contatti.form_submit_note",
+            "contatti.labels.name",
+            "contatti.labels.role",
+            "contatti.labels.company",
+            "contatti.labels.email",
+            "contatti.labels.discipline",
+            "contatti.labels.budget",
+            "contatti.labels.brief",
+            "contatti.placeholders.name",
+            "contatti.placeholders.role",
+            "contatti.placeholders.company",
+            "contatti.placeholders.email",
+            "contatti.placeholders.brief",
+            "contatti.direct_label",
+            "contatti.direct_heading",
+            "contatti.studio_label",
+            "contatti.reply_label",
+            "contatti.reply_heading",
+            "contatti.reply_body",
+            "contatti.channels_label",
+            "contatti.promise_label",
+            "contatti.promise_heading",
+        ]
+        for path in new_paths:
+            with self.subTest(path=path):
+                validate_key_path("agency-creative-studio", path)
+                self.assertIsNotNone(get_field_spec("agency-creative-studio", path))
+
+    def test_a26a_baseline_lookup_resolves_dict_paths(self):
+        """A.2.6a: baseline resolver walks through dict slots, so the
+        sparse-diff equality check (override == baseline ⇒ delete) works
+        for dict-key paths."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        baseline_value = services.resolve_path_in_baseline(p, "contatti.labels.email")
+        self.assertEqual(baseline_value, "Email di contatto")
+        # Setting the same value as baseline should NOT create a row.
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"contatti.labels.email": baseline_value},
+        )
+        self.assertEqual(p.content_overrides.count(), 0)
+
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)
@@ -328,7 +400,8 @@ class FoundationHttpTests(TestCase):
         raw = body[idx:end].replace("<\\/", "</")
         data = _json.loads(raw)
         self.assertIsInstance(data, list)
-        self.assertGreater(len(data), 30)  # 68+ fields for Vertex
+        # A.2.6a: contatti rollout brings ~23 new fields → guard ≥85.
+        self.assertGreaterEqual(len(data), 85)
 
         keys = {row["key"] for row in data}
         # Mix of content + design-token keys must be indexed
@@ -337,6 +410,12 @@ class FoundationHttpTests(TestCase):
         self.assertIn("contatti.form_heading", keys)
         self.assertIn("palette_primary", keys)
         self.assertIn("heading_font", keys)
+        # A.2.6a: new contatti scalar / dict-key fields surface in palette.
+        self.assertIn("contatti.labels.name", keys)
+        self.assertIn("contatti.placeholders.email", keys)
+        self.assertIn("contatti.form_submit_label", keys)
+        self.assertIn("contatti.reply_body", keys)
+        self.assertIn("contatti.promise_heading", keys)
 
         # Context metadata travels with each row
         row = next(r for r in data if r["key"] == "home.headline")
