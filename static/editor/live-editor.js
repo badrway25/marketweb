@@ -81,6 +81,23 @@
   let   currentPage     = cfg.initialPage || "home";
   let   pendingFocusActivation = null;
 
+  // A.3a step 4 — row-op reload preserves the iframe's current page.
+  // Before add/remove triggers location.reload(), the handler stashes
+  // currentPage in sessionStorage; at mount the iframe's first load
+  // handler consumes the hint once, redirecting the preview to the
+  // right page so the customer never loses context after a reload.
+  const PENDING_PAGE_KEY = "ed_pending_row_page";
+  let pendingPageRestore = null;
+  try {
+    const stashed = sessionStorage.getItem(PENDING_PAGE_KEY);
+    if (stashed) {
+      sessionStorage.removeItem(PENDING_PAGE_KEY);
+      if (availablePages.indexOf(stashed) !== -1 && stashed !== "home") {
+        pendingPageRestore = stashed;
+      }
+    }
+  } catch (e) { /* sessionStorage unavailable */ }
+
   function buildPageUrl(page, opts) {
     opts = opts || {};
     const p = page || currentPage || "home";
@@ -248,6 +265,18 @@
       // autosave reload + focus routing stays accurate.
       const detected = pageFromIframeLocation(frame);
       if (detected) currentPage = detected;
+
+      // A.3a step 4 — redirect the preview back to the page the customer
+      // was on before the add/remove reload. Fires exactly once per
+      // mount: the hint is nulled after consumption so a subsequent
+      // user-driven page click inside the iframe is never overridden.
+      if (pendingPageRestore && detected === "home" && pendingPageRestore !== "home") {
+        const target = pendingPageRestore;
+        pendingPageRestore = null;
+        // Defer a tick so the home load settles fully before we re-nav.
+        setTimeout(() => navigatePreviewToPage(target), 40);
+        return;
+      }
 
       // If a focus on a field triggered a page switch, the activation
       // is deferred until this exact load. Consume it ONCE (scroll=true),
@@ -1281,6 +1310,8 @@
                 try { sessionStorage.setItem(PENDING_JUMP_KEY, data.jump_key); }
                 catch (e) {}
               }
+              try { sessionStorage.setItem(PENDING_PAGE_KEY, currentPage); }
+              catch (e) {}
               // Full reload so the server re-renders the sidebar + iframe
               // with the new effective list state.
               window.location.reload();
@@ -1340,6 +1371,8 @@
         postRowOp(cfg.rowRemoveUrl, body)
           .then(({ status, data }) => {
             if (status === 200 && data.ok) {
+              try { sessionStorage.setItem(PENDING_PAGE_KEY, currentPage); }
+              catch (e) {}
               window.location.reload();
             } else {
               btn.disabled = false;

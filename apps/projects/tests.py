@@ -576,6 +576,84 @@ class FoundationModelTests(TestCase):
             p.content_overrides.filter(key_path="studio.facts.__meta__").count(), 0,
         )
 
+    def test_a3a_ordering_is_stable_across_add_remove_reopen(self):
+        """A.3a step 4 — effective list ordering must be deterministic
+        and survive a full reopen:
+        - baseline rows appear in their original numerical order
+          (minus any ``removed``)
+        - added rows appear AFTER all surviving baseline rows, in the
+          declaration order of ``added[]``
+        - uids are never recycled; a0 can't be reused after being
+          removed and re-added.
+        """
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+
+        # Remove baseline partner at index 0, then add 2 rows, then
+        # remove the first added (a0), then add another one.
+        services.remove_row(project=p, list_path="studio.partners", index=0, editor=self.owner)
+        r1 = services.add_row(project=p, list_path="studio.partners", editor=self.owner)  # a0
+        r2 = services.add_row(project=p, list_path="studio.partners", editor=self.owner)  # a1
+        services.remove_row(project=p, list_path="studio.partners", uid=r1["uid"], editor=self.owner)
+        r3 = services.add_row(project=p, list_path="studio.partners", editor=self.owner)  # a2, never a0
+
+        self.assertEqual(r1["uid"], "a0")
+        self.assertEqual(r2["uid"], "a1")
+        self.assertEqual(r3["uid"], "a2")  # monotonic, never recycled
+
+        # Name the survivors so we can check order by content.
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={
+                "studio.partners.1.name": "baseline-1-renamed",  # survives (baseline idx 1)
+                "studio.partners.2.name": "baseline-2-renamed",  # survives (baseline idx 2)
+                "studio.partners.a1.name": "added-a1",           # first surviving added
+                "studio.partners.a2.name": "added-a2",           # second surviving added
+            },
+        )
+
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        names = [row["name"] for row in merged["studio"]["partners"]]
+        # Baseline rows keep their relative order; added follow; a0 gone.
+        self.assertEqual(names, [
+            "baseline-1-renamed",
+            "baseline-2-renamed",
+            "added-a1",
+            "added-a2",
+        ])
+
+        # Simulate reopen — fetch meta fresh from the DB.
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta["removed"], [0])
+        self.assertEqual([e["uid"] for e in meta["added"]], ["a1", "a2"])
+
+    def test_a3a_published_preserves_repeater_state_for_other_viewers(self):
+        """After publish, a second user hitting the public preview must
+        see the customer's effective list (with removed baseline rows
+        filtered + added rows appended)."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.remove_row(
+            project=p, list_path="studio.facts", index=0, editor=self.owner,
+        )
+        r = services.add_row(project=p, list_path="studio.facts", editor=self.owner)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={f"studio.facts.{r['uid']}.number": "999"},
+        )
+        services.publish_project(project=p, editor=self.owner)
+
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        resp = self.client.get(
+            f"/templates/agency/vertex-creative-agency/preview/studio/?project={p.uuid}"
+        )
+        body = resp.content.decode("utf-8", "ignore")
+        # baseline[0] label "anni di attività" must be gone
+        self.assertNotIn("anni di attività", body)
+        # Added row's number must appear
+        self.assertIn("999", body)
+
     def test_a3a_uid_path_validates_only_on_mutable_lists(self):
         """validate_key_path accepts ``studio.partners.a0.name`` (mutable)
         but rejects ``contatti.channels.a0.value`` (locked)."""
