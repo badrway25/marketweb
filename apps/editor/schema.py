@@ -31,6 +31,15 @@ back to the model):
 - ``region`` — CSS selector(s) on the live preview that the editor
   should flash when a field in this group gets focus/hover. The
   selector is interpreted inside the iframe by preview-bridge.js.
+- ``page`` — slug of the template page a group's fields belong to,
+  so the editor can navigate the preview iframe to that page before
+  painting the highlight. Use ``"*"`` for chrome that appears on every
+  page (navbar, footer, brand). Phase A.2.5 page-aware targeting.
+- ``keywords`` — optional list of extra search tokens (synonyms,
+  common customer questions, English equivalents). Consumed by the
+  Phase A.2.5 command-palette search so "mail" finds the contact
+  email field, "chi siamo" finds the studio page, etc. Keep it lean —
+  3-6 words per group, no per-field annotation.
 
 Locked keys — and anything NOT in this whitelist — cannot be written.
 """
@@ -86,6 +95,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Brand",
         "icon": "bi-bookmark-star",
         "region": ".vx-nav, .vx-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "nome studio", "tagline", "disponibilità", "claim"],
         "help": "Logo, tagline e voce del tuo studio.",
         "fields": [
             ("site.logo_word",     {"label": "Nome del logo", "type": "text", "max_length": 32,
@@ -101,6 +112,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Navigazione",
         "icon": "bi-list",
         "region": ".vx-nav",
+        "page": "*",
+        "keywords": ["menu", "nav", "cta header", "bottone in alto", "navbar"],
         "help": "Etichetta e destinazione del pulsante in alto a destra.",
         "fields": [
             ("site.nav_cta",       {"label": "Etichetta CTA nav", "type": "text", "max_length": 32}),
@@ -113,6 +126,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Hero della home",
         "icon": "bi-stars",
         "region": ".vx-hero",
+        "page": "home",
+        "keywords": ["titolo", "headline", "eyebrow", "primo scroll", "apertura", "pull quote", "claim home"],
         "help": "Il primo scroll della home: eyebrow, headline, intro e CTA.",
         "fields": [
             ("home.eyebrow",      {"label": "Eyebrow",         "type": "text",     "max_length": 120}),
@@ -133,6 +148,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Copertina editoriale",
         "icon": "bi-image",
         "region": ".vx-hero .right",
+        "page": "home",
+        "keywords": ["foto", "immagine", "cover", "copertina", "case study", "cliente home"],
         "help": "Il riquadro visivo che accompagna l'hero: immagine e didascalie.",
         "fields": [
             ("home.cover.image",    {"label": "Immagine", "type": "image", "max_length": 400,
@@ -153,6 +170,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Manifesto · home",
         "icon": "bi-quote",
         "region": ".vx-manifesto",
+        "page": "home",
+        "keywords": ["manifesto home", "citazione", "quote", "valori", "mission"],
         "help": "La sezione manifesto della home: intro, testo principale e cappello.",
         "fields": [
             ("home.manifesto_label",   {"label": "Eyebrow",  "type": "text",     "max_length": 80}),
@@ -165,6 +184,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Call to action home",
         "icon": "bi-send",
         "region": ".vx-inquiry",
+        "page": "home",
+        "keywords": ["cta", "call to action", "invito", "contatto", "chiusura home", "bottone home"],
         "help": "Il blocco finale della home che invita al contatto.",
         "fields": [
             ("home.cta_label",    {"label": "Eyebrow",       "type": "text", "max_length": 60}),
@@ -178,6 +199,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Registro lavori · home",
         "icon": "bi-journal-bookmark",
         "region": ".vx-ledger",
+        "page": "home",
+        "keywords": ["registro", "portfolio home", "progetti home", "archivio lavori"],
         "help": "Intestazione del registro lavori mostrato in home.",
         "fields": [
             ("home.ledger_heading", {"label": "Heading",  "type": "richtext", "max_length": 120}),
@@ -189,6 +212,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Pagina Studio",
         "icon": "bi-building",
         "region": ".vx-section",
+        "page": "studio",
+        "keywords": ["chi siamo", "about", "team", "storia", "partner", "bio", "saggio", "cronologia"],
         "help": "About dello studio: voce, racconto e partner.",
         "subgroups": [
             {"label": "Intestazione", "fields": [
@@ -217,6 +242,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Pagina Capacità",
         "icon": "bi-gem",
         "region": ".vx-section",
+        "page": "capacita",
+        "keywords": ["servizi", "services", "capacità", "discipline", "pilastri", "offerta"],
         "help": "Intestazione e pilastri della pagina capacità.",
         "fields": [
             ("capacita.eyebrow",    {"label": "Eyebrow",    "type": "text",     "max_length": 100}),
@@ -229,6 +256,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Pagina Manifesto",
         "icon": "bi-compass",
         "region": ".vx-section",
+        "page": "manifesto",
+        "keywords": ["processo", "metodo", "fasi", "principi", "come lavoriamo", "process"],
         "help": "Intestazione della pagina manifesto + introduzione delle fasi.",
         "subgroups": [
             {"label": "Intestazione", "fields": [
@@ -251,6 +280,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Pagina Lavori",
         "icon": "bi-images",
         "region": ".vx-section",
+        "page": "lavori",
+        "keywords": ["progetti", "portfolio", "archivio", "projects", "case study", "lavori"],
         "help": "Intestazione dell'archivio lavori.",
         "fields": [
             ("lavori.eyebrow",    {"label": "Eyebrow",    "type": "text",     "max_length": 100}),
@@ -263,6 +294,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Pagina Contatti",
         "icon": "bi-envelope",
         "region": ".vx-section",
+        "page": "contatti",
+        "keywords": ["contatti", "contact", "form", "richiedi", "email", "mail", "inquiry", "brief"],
         "help": "Inquiry page: copy del form e voce editoriale.",
         "subgroups": [
             {"label": "Intestazione", "fields": [
@@ -280,6 +313,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Contatti · footer",
         "icon": "bi-telephone",
         "region": ".vx-foot",
+        "page": "*",
+        "keywords": ["telefono", "phone", "email", "mail", "indirizzo", "address", "p.iva", "piva", "orari", "footer contatti"],
         "help": "Dati di contatto che appaiono nel footer.",
         "fields": [
             ("site.phone",       {"label": "Telefono",  "type": "text", "max_length": 40}),
@@ -294,6 +329,8 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
         "label": "Footer · voce",
         "icon": "bi-card-text",
         "region": ".vx-foot",
+        "page": "*",
+        "keywords": ["footer", "piede pagina", "colophon", "standfirst footer", "note legali"],
         "help": "Voce editoriale del footer.",
         "fields": [
             ("site.footer_intro",    {"label": "Intro studio", "type": "textarea", "max_length": 500}),
@@ -349,6 +386,15 @@ def get_schema(archetype: str) -> list[dict[str, Any]] | None:
 
 def is_supported_archetype(archetype: str) -> bool:
     return archetype in _ARCHETYPE_SCHEMAS
+
+
+def iter_groups(archetype: str) -> list[dict[str, Any]]:
+    """Return the raw group list for an archetype (empty if unsupported).
+
+    Used by the editor view and by tests that need to introspect group
+    metadata like ``page`` and ``region``.
+    """
+    return list(_ARCHETYPE_SCHEMAS.get(archetype) or [])
 
 
 def iter_editable_fields(archetype: str) -> list[tuple[str, dict[str, Any]]]:

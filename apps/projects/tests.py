@@ -5,11 +5,13 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 
 from django.core.management import call_command
+from apps.catalog import template_content
 from apps.catalog.models import WebTemplate
 from apps.editor.schema import (
     InvalidEditableField,
     get_field_spec,
     is_supported_archetype,
+    iter_groups,
     validate_key_path,
     validate_value,
 )
@@ -93,6 +95,43 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
         rev = p.revisions.filter(reason="publish").first()
         self.assertIn("home.eyebrow", rev.snapshot["content"])
+
+    def test_schema_groups_declare_valid_page(self):
+        """A.2.5: every group must carry a `page` slug matching the
+        template's authored pages list (or `*` for chrome)."""
+        vertex_pages = {
+            p["slug"]
+            for p in template_content.get_content("vertex-creative-agency", "it")["pages"]
+        }
+        allowed = vertex_pages | {"*"}
+        for group in iter_groups("agency-creative-studio"):
+            with self.subTest(group=group["id"]):
+                self.assertIn("page", group,
+                              f"Group '{group['id']}' missing 'page' key.")
+                self.assertIn(group["page"], allowed,
+                              f"Group '{group['id']}' page='{group['page']}' "
+                              f"not in {sorted(allowed)}.")
+
+    def test_preview_url_for_page_shapes(self):
+        """A.2.5: preview URL builder handles home implicitly and adds
+        the page segment for non-home pages, always with ?project=."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        self.assertEqual(
+            p.preview_url_for_page("home"),
+            f"/templates/agency/vertex-creative-agency/preview/?project={p.uuid}",
+        )
+        self.assertEqual(
+            p.preview_url_for_page("studio"),
+            f"/templates/agency/vertex-creative-agency/preview/studio/?project={p.uuid}",
+        )
+        self.assertEqual(
+            p.preview_url_for_page(None),
+            f"/templates/agency/vertex-creative-agency/preview/?project={p.uuid}",
+        )
+        self.assertEqual(
+            p.preview_url_path,
+            "/templates/agency/vertex-creative-agency/preview/",
+        )
 
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
@@ -264,6 +303,83 @@ class FoundationHttpTests(TestCase):
         self.assertTrue(r.json()["ok"])
         p.refresh_from_db()
         self.assertEqual(p.revisions.count(), before + 1)
+
+    def test_editor_renders_palette_index(self):
+        """A.2.5 palette search: editor GET must ship a JSON index
+        with every field (content + tokens), with keywords surfaced
+        for fuzzy-friendly client-side ranking."""
+        import json as _json
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+
+        # Palette skeleton + trigger present
+        self.assertIn('id="ed-palette"', body)
+        self.assertIn('data-ed-open-palette', body)
+        self.assertIn('id="ed-palette-input"', body)
+        self.assertIn('id="ed-palette-index"', body)
+
+        # Extract the JSON payload from the <script type="application/json">
+        marker = 'id="ed-palette-index" type="application/json">'
+        idx = body.index(marker) + len(marker)
+        end = body.index("</script>", idx)
+        # Undo the "</" -> "<\/" neutralisation we apply server-side
+        raw = body[idx:end].replace("<\\/", "</")
+        data = _json.loads(raw)
+        self.assertIsInstance(data, list)
+        self.assertGreater(len(data), 30)  # 68+ fields for Vertex
+
+        keys = {row["key"] for row in data}
+        # Mix of content + design-token keys must be indexed
+        self.assertIn("home.headline", keys)
+        self.assertIn("site.email", keys)
+        self.assertIn("contatti.form_heading", keys)
+        self.assertIn("palette_primary", keys)
+        self.assertIn("heading_font", keys)
+
+        # Context metadata travels with each row
+        row = next(r for r in data if r["key"] == "home.headline")
+        self.assertEqual(row["page"], "home")
+        self.assertEqual(row["page_label"], "Studio")  # Vertex home label
+        self.assertEqual(row["group_id"], "hero")
+        self.assertEqual(row["kind"], "content")
+        self.assertIn("titolo", row["keywords"])
+
+        # Tokens carry synthetic keywords so "colori" / "font" / "palette"
+        # all route to the design group
+        color_row = next(r for r in data if r["key"] == "palette_primary")
+        self.assertEqual(color_row["kind"], "token")
+        self.assertEqual(color_row["page"], "*")
+        self.assertIn("colori", color_row["keywords"])
+        self.assertIn("font", color_row["keywords"])
+
+    def test_editor_renders_data_ed_page_metadata(self):
+        """A.2.5: GET editor must expose page-aware group attributes
+        so the JS can route iframe navigation on focus."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        # Home-bound group: hero
+        self.assertIn('data-group-id="hero"', body)
+        self.assertIn('data-ed-page="home"', body)
+        # Subpage group: studio
+        self.assertIn('data-group-id="studio"', body)
+        self.assertIn('data-ed-page="studio"', body)
+        # Chrome-bound group: contact_info (footer, cross-page)
+        self.assertIn('data-group-id="contact_info"', body)
+        self.assertIn('data-ed-page="*"', body)
+        # Config block carries the raw base path + uuid + pages list
+        self.assertIn("previewBasePath", body)
+        self.assertIn(
+            "/templates/agency/vertex-creative-agency/preview/",
+            body,
+        )
+        self.assertIn("availablePages", body)
+        # Every declared page slug for this template appears in the list
+        for slug in ("home", "studio", "capacita", "lavori", "manifesto", "contatti"):
+            self.assertIn(f'"{slug}"', body)
 
     def test_published_overlay_visible_to_other_user(self):
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)

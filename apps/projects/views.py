@@ -204,6 +204,11 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
                 "help": group.get("help", ""),
                 "icon": group.get("icon", "bi-layers"),
                 "region": group.get("region", ""),
+                # A.2.5: page-aware targeting. ``"*"`` = chrome (nav/foot)
+                # visible on every page → editor JS treats as "stay".
+                "page": group.get("page", "*"),
+                # A.2.5 palette search — surfaced only in the JSON index.
+                "keywords": list(group.get("keywords") or []),
                 "fields": flat_fields,
                 "subgroups": subgroups,
             })
@@ -242,6 +247,34 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
                     "is_current": code == project.locale,
                 })
 
+        # A.2.5 page-aware targeting — the editor JS builds per-page
+        # preview URLs client-side, so it needs the raw base path plus
+        # the list of authored page slugs. The home URL stays available
+        # as ``preview_url`` for the initial iframe src + backward-compat.
+        baseline_content = (
+            _tc.get_content(project.source_template.slug, project.locale) or {}
+        )
+        available_pages = [p["slug"] for p in baseline_content.get("pages", [])]
+
+        # Page slug → display label (used by the palette breadcrumbs so
+        # results read "Home · Hero · Headline" instead of "home · hero").
+        # Chrome gets "Ovunque" — fields on every page.
+        page_labels: dict[str, str] = {"*": "Ovunque"}
+        for p in baseline_content.get("pages", []):
+            page_labels[p["slug"]] = p.get("label") or p["slug"].title()
+
+        # A.2.5 palette-search index — a flat, pre-normalised list of
+        # every editable field (content + design tokens) with enough
+        # context for client-side ranking. The JS parses this JSON at
+        # init and never re-queries the server for search.
+        palette_index = _build_palette_index(groups, design_fields, page_labels)
+        # `</script>` in any label would break out of the inline <script>
+        # block; neutralise defensively so we don't rely on field authors.
+        palette_index_json = (
+            json.dumps(palette_index, ensure_ascii=False)
+            .replace("</", "<\\/")
+        )
+
         ctx.update({
             "project": project,
             "groups": groups,
@@ -249,6 +282,9 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
             "locked_notes": LOCKED_KEYS_NOTE,
             "preview_url": project.preview_url_base,
             "baseline_preview_url": f"{project.preview_url_base}&baseline=1",
+            "preview_base_path": project.preview_url_path,
+            "available_pages": available_pages,
+            "palette_index_json": palette_index_json,
             "recent_revisions": project.revisions.all()[:5],
             "just_created": just_created,
             "override_count": override_count,
@@ -394,3 +430,99 @@ def project_unpublish(request, uuid):
 
 def _has_override(project, key_path: str) -> bool:
     return any(row.key_path == key_path for row in project.content_overrides.all())
+
+
+# ---------------------------------------------------------------------------
+# A.2.5 · palette-search index builder
+# ---------------------------------------------------------------------------
+
+# Icons shown next to each result row — by widget type, not by group.
+_PALETTE_TYPE_ICONS = {
+    "text":     "bi-type",
+    "textarea": "bi-text-paragraph",
+    "richtext": "bi-quote",
+    "select":   "bi-chevron-contract",
+    "color":    "bi-palette",
+    "url":      "bi-link-45deg",
+    "image":    "bi-image",
+}
+_PALETTE_TYPE_LABELS = {
+    "text":     "Testo",
+    "textarea": "Area",
+    "richtext": "Rich text",
+    "select":   "Select",
+    "color":    "Colore",
+    "url":      "URL",
+    "image":    "Immagine",
+}
+
+
+def _build_palette_index(groups, design_fields, page_labels):
+    """Flat, UI-ready index of every editable field for the palette.
+
+    One dict per field. Shape is stable client-side; new fields never
+    need server-side scoring changes. Keep the payload tiny: the JSON
+    is parsed at init and lives in memory for the session, so labels
+    stay short and `keywords` stays group-level.
+    """
+    rows = []
+
+    for group in groups:
+        group_id     = group["id"]
+        group_label  = group["label"]
+        group_page   = group.get("page", "*")
+        group_page_l = page_labels.get(group_page, group_page)
+        group_kws    = list(group.get("keywords") or [])
+
+        def _append(field, subgroup_label=""):
+            spec = field["spec"]
+            ftype = spec.get("type", "text")
+            rows.append({
+                "key":           field["key"],
+                "kind":          "content",
+                "label":         spec.get("label", field["key"]),
+                "help":          spec.get("help", ""),
+                "placeholder":   spec.get("placeholder", ""),
+                "type":          ftype,
+                "type_label":    _PALETTE_TYPE_LABELS.get(ftype, ftype),
+                "icon":          _PALETTE_TYPE_ICONS.get(ftype, "bi-input-cursor"),
+                "group_id":      group_id,
+                "group_label":   group_label,
+                "subgroup_label": subgroup_label,
+                "page":          group_page,
+                "page_label":    group_page_l,
+                "keywords":      group_kws,
+            })
+
+        if group.get("subgroups"):
+            for sub in group["subgroups"]:
+                for f in sub["fields"]:
+                    _append(f, sub["label"])
+        else:
+            for f in group["fields"]:
+                _append(f, "")
+
+    # Design tokens — one virtual "group" surfaced in the palette so
+    # customers can type "colori", "font", "palette" and jump to the
+    # right control.
+    for f in design_fields:
+        spec = f["spec"]
+        ftype = spec.get("type", "text")
+        rows.append({
+            "key":           f["key"],
+            "kind":          "token",
+            "label":         spec.get("label", f["key"]),
+            "help":          spec.get("help", ""),
+            "placeholder":   "",
+            "type":          ftype,
+            "type_label":    _PALETTE_TYPE_LABELS.get(ftype, ftype),
+            "icon":          _PALETTE_TYPE_ICONS.get(ftype, "bi-sliders"),
+            "group_id":      "design",
+            "group_label":   "Colori e tipografia",
+            "subgroup_label": "",
+            "page":          "*",
+            "page_label":    "Ovunque",
+            "keywords":      ["colori", "color", "palette", "font", "tipografia", "typography", "brand", "tema"],
+        })
+
+    return rows

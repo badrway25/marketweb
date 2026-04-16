@@ -105,17 +105,19 @@
       {% endif %}
 
       <div class="ed-sidebar-search">
-        <div class="wrap">
-          <i class="bi bi-search"></i>
-          <input type="search" placeholder="Cerca un campo…" aria-label="Cerca nei campi">
-        </div>
+        <button type="button" class="ed-search-trigger" data-ed-open-palette
+                aria-label="Cerca nell'editor (Ctrl+K)">
+          <i class="bi bi-search" aria-hidden="true"></i>
+          <span class="ed-search-trigger-text">Cerca campo, sezione o pagina…</span>
+          <kbd class="ed-kbd" aria-hidden="true"><span class="ed-kbd-mac">⌘K</span><span class="ed-kbd-pc">Ctrl K</span></kbd>
+        </button>
       </div>
 
       <div class="ed-sidebar-body">
 
         {# ── Groups with content fields ───────────────────────── #}
         {% for group in groups %}
-        <section class="ed-group" data-region="{{ group.region }}" data-group-id="{{ group.id }}">
+        <section class="ed-group" data-region="{{ group.region }}" data-group-id="{{ group.id }}" data-ed-page="{{ group.page }}">
           <button class="ed-group-head" type="button">
             <span class="ed-gicon"><i class="bi {{ group.icon }}"></i></span>
             <span class="ed-glabel">{{ group.label }}</span>
@@ -143,7 +145,7 @@
         {% endfor %}
 
         {# ── Design tokens (colors + fonts) ──────────────────── #}
-        <section class="ed-group" data-region=".vx-nav, .vx-section" data-group-id="design">
+        <section class="ed-group" data-region=".vx-nav, .vx-section" data-group-id="design" data-ed-page="*">
           <button class="ed-group-head" type="button">
             <span class="ed-gicon"><i class="bi bi-palette"></i></span>
             <span class="ed-glabel">Colori e tipografia</span>
@@ -157,11 +159,6 @@
             {% endfor %}
           </div>
         </section>
-
-        <div class="ed-empty">
-          <i class="bi bi-search" style="font-size: 20px; color: var(--ed-muted-2); display: block; margin-bottom: 8px;"></i>
-          Nessun campo corrisponde alla ricerca.
-        </div>
 
         {# ── Locked fields note + revisions ──────────────────── #}
         <div class="ed-locked-block">
@@ -238,6 +235,40 @@
     </main>
   </div>
 
+  {# ── Command palette (⌘K) ──────────────────────────────────── #}
+  <div class="ed-palette" id="ed-palette" aria-hidden="true">
+    <div class="ed-palette-backdrop" data-ed-palette-close></div>
+    <div class="ed-palette-box" role="dialog" aria-modal="true" aria-label="Cerca nell'editor">
+      <div class="ed-palette-head">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input type="search"
+               class="ed-palette-input"
+               id="ed-palette-input"
+               placeholder="Cerca campo, sezione o pagina… (prova: colori, contatti, headline)"
+               autocomplete="off"
+               spellcheck="false"
+               aria-label="Cerca nei campi, sezioni e pagine"
+               aria-controls="ed-palette-results">
+        <button type="button" class="ed-palette-close" data-ed-palette-close
+                aria-label="Chiudi ricerca">
+          <kbd class="ed-kbd">Esc</kbd>
+        </button>
+      </div>
+      <div class="ed-palette-results"
+           id="ed-palette-results"
+           role="listbox"
+           aria-label="Risultati di ricerca"></div>
+      <div class="ed-palette-foot">
+        <span><kbd class="ed-kbd">↑</kbd><kbd class="ed-kbd">↓</kbd> muovi</span>
+        <span><kbd class="ed-kbd">⏎</kbd> apri</span>
+        <span><kbd class="ed-kbd">Esc</kbd> chiudi</span>
+        <span class="ed-palette-count" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+
+  <script id="ed-palette-index" type="application/json">{{ palette_index_json|safe }}</script>
+
   <div class="ed-toasts" aria-live="polite"></div>
 
   {% csrf_token %}
@@ -248,9 +279,16 @@
       snapshotUrl: "{{ snapshot_url|escapejs }}",
       previewUrl:  "{{ preview_url|escapejs }}",
       baselineUrl: "{{ baseline_preview_url|escapejs }}",
+      // A.2.5 page-aware targeting: JS composes per-page URLs from
+      // this base path + the project UUID. "home" is the implicit
+      // default page (no trailing segment), matching the catalog
+      // LiveTemplateView URL pattern.
+      previewBasePath: "{{ preview_base_path|escapejs }}",
+      projectUuid: "{{ project.uuid }}",
+      availablePages: [{% for p in available_pages %}"{{ p|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+      initialPage: "home",
       csrfToken:   document.querySelector('input[name=csrfmiddlewaretoken]').value,
       justCreated: {{ just_created|yesno:"true,false" }},
-      projectUuid: "{{ project.uuid }}",
     };
   </script>
   <script src="{% static 'editor/live-editor.js' %}" defer></script>
