@@ -654,6 +654,194 @@ class FoundationModelTests(TestCase):
         # Added row's number must appear
         self.assertIn("999", body)
 
+    # ------------------------------------------------------------------
+    # A.3b · Reorder-only contract tests (Step 0 — no UI, no HTTP).
+    # ------------------------------------------------------------------
+
+    def test_a3b_default_order_derives_from_baseline_plus_added(self):
+        from apps.editor.rendering import compute_default_order
+        self.assertEqual(
+            compute_default_order(3, [], []),
+            ["0", "1", "2"],
+        )
+        self.assertEqual(
+            compute_default_order(3, [1], []),
+            ["0", "2"],
+        )
+        self.assertEqual(
+            compute_default_order(3, [], [{"uid": "a0"}, {"uid": "a1"}]),
+            ["0", "1", "2", "a0", "a1"],
+        )
+        self.assertEqual(
+            compute_default_order(3, [0], [{"uid": "a0"}]),
+            ["1", "2", "a0"],
+        )
+
+    def test_a3b_move_up_baseline_row_swaps_with_previous(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # studio.partners baseline length 3 → default order ["0","1","2"]
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment="1", direction="up", editor=self.owner,
+        )
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta.get("order"), ["1", "0", "2"])
+
+    def test_a3b_move_down_baseline_row_swaps_with_next(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment="0", direction="down", editor=self.owner,
+        )
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta.get("order"), ["1", "0", "2"])
+
+    def test_a3b_move_added_row_above_baseline_row(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        # Default after add: ["0","1","2","a0"], effective len 4
+        # Move a0 up three times to land it at position 0
+        for _ in range(3):
+            services.move_row(
+                project=p, list_path="studio.partners",
+                segment=r["uid"], direction="up", editor=self.owner,
+            )
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta.get("order"), ["a0", "0", "1", "2"])
+
+    def test_a3b_move_up_rejects_at_first_position(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        with self.assertRaises(services.RowLimitReached) as ctx:
+            services.move_row(
+                project=p, list_path="studio.partners",
+                segment="0", direction="up", editor=self.owner,
+            )
+        self.assertEqual(ctx.exception.kind, "boundary")
+
+    def test_a3b_move_down_rejects_at_last_position(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        with self.assertRaises(services.RowLimitReached) as ctx:
+            services.move_row(
+                project=p, list_path="studio.partners",
+                segment="2", direction="down", editor=self.owner,
+            )
+        self.assertEqual(ctx.exception.kind, "boundary")
+
+    def test_a3b_move_rejects_non_mutable_list(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        with self.assertRaises(services.UnsupportedMutation):
+            services.move_row(
+                project=p, list_path="contatti.channels",
+                segment="0", direction="down", editor=self.owner,
+            )
+
+    def test_a3b_move_rejects_missing_segment(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        with self.assertRaises(InvalidEditableField):
+            # baseline len 3 → "5" not present
+            services.move_row(
+                project=p, list_path="studio.partners",
+                segment="5", direction="up", editor=self.owner,
+            )
+        with self.assertRaises(InvalidEditableField):
+            services.move_row(
+                project=p, list_path="studio.partners",
+                segment="a99", direction="up", editor=self.owner,
+            )
+        with self.assertRaises(InvalidEditableField):
+            services.move_row(
+                project=p, list_path="studio.partners",
+                segment="1", direction="sideways", editor=self.owner,
+            )
+
+    def test_a3b_sparse_diff_strips_order_when_default_restored(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # Down then up → back to default, `order` field must be stripped.
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment="0", direction="down", editor=self.owner,
+        )
+        # Intermediate state: order present
+        meta1 = services.get_list_meta(p, "studio.partners")
+        self.assertIn("order", meta1)
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment="0", direction="up", editor=self.owner,
+        )
+        meta2 = services.get_list_meta(p, "studio.partners")
+        self.assertNotIn("order", meta2)
+        # Full meta restoration → record deleted entirely.
+        self.assertEqual(
+            p.content_overrides.filter(key_path="studio.partners.__meta__").count(),
+            0,
+        )
+
+    def test_a3b_cell_overrides_preserved_after_move(self):
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        uid = r["uid"]
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={
+                "studio.partners.2.name":     "Baseline2-renamed",
+                f"studio.partners.{uid}.name": "Added-name",
+            },
+        )
+        # Move baseline "2" up two positions; move added uid up once.
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment="2", direction="up", editor=self.owner,
+        )
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment="2", direction="up", editor=self.owner,
+        )
+        services.move_row(
+            project=p, list_path="studio.partners",
+            segment=uid, direction="up", editor=self.owner,
+        )
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        names = [r["name"] for r in merged["studio"]["partners"]]
+        # Expected order after "2" up×2 + a0 up×1 = ["2","0","a0","1"]:
+        #   pos 0 = baseline[2] with override → "Baseline2-renamed"
+        #   pos 1 = baseline[0]               → "Margherita Serafini"
+        #   pos 2 = added uid a0              → "Added-name"
+        #   pos 3 = baseline[1]               → "Tommaso Boeri"
+        self.assertEqual(names[0], "Baseline2-renamed")
+        self.assertEqual(names[1], "Margherita Serafini")
+        self.assertEqual(names[2], "Added-name")
+        self.assertEqual(names[3], "Tommaso Boeri")
+
+    def test_a3b_published_overlay_reflects_reorder_for_other_viewer(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.move_row(
+            project=p, list_path="studio.facts",
+            segment="0", direction="down", editor=self.owner,
+        )
+        services.move_row(
+            project=p, list_path="studio.facts",
+            segment="0", direction="down", editor=self.owner,
+        )
+        # Effective default ["0","1","2","3"] → after 2 downs on "0":
+        # ["1","2","0","3"]
+        services.publish_project(project=p, editor=self.owner)
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        r = self.client.get(
+            f"/templates/agency/vertex-creative-agency/preview/studio/?project={p.uuid}"
+        )
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        # Find relative ordering of the 4 baseline numbers; baseline idx
+        # 0 ("8") must appear AFTER baseline idx 2 ("6") in the body.
+        pos_8 = body.find(">8<")
+        pos_42 = body.find(">42<")
+        pos_6 = body.find(">6<")
+        self.assertGreater(pos_8, pos_42)
+        self.assertGreater(pos_8, pos_6)
+
     def test_a3a_uid_path_validates_only_on_mutable_lists(self):
         """validate_key_path accepts ``studio.partners.a0.name`` (mutable)
         but rejects ``contatti.channels.a0.value`` (locked)."""

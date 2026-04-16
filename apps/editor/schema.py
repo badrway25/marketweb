@@ -834,14 +834,50 @@ def _build_indexed_group(
         (meta.get("added") or []) if isinstance(meta, dict) else []
     )
 
+    # A.3b — honor meta.order when present, else default baseline-then-added.
+    added_clean = [
+        e for e in added_entries
+        if isinstance(e, dict) and isinstance(e.get("uid"), str)
+    ]
+    default_order = [
+        str(i) for i in range(len(baseline_rows)) if i not in removed
+    ] + [e["uid"] for e in added_clean]
+    raw_order = (meta or {}).get("order") if isinstance(meta, dict) else None
+    if isinstance(raw_order, list):
+        cleaned = [s for s in raw_order if isinstance(s, str)]
+        if set(cleaned) == set(default_order) and len(cleaned) == len(default_order):
+            order = cleaned
+        else:
+            order = default_order
+    else:
+        order = default_order
+
+    uid_set = {e["uid"] for e in added_clean}
     subgroups: list[dict[str, Any]] = []
-    position = 0
-    # Baseline rows (filtered by removed)
-    for baseline_idx, row in enumerate(baseline_rows):
-        if baseline_idx in removed:
+    total = len(order)
+    for pos, segment in enumerate(order):
+        if segment in uid_set:
+            fields = _build_row_fields(list_path, shape, segment)
+            subgroups.append({
+                "label": f"Riga {pos + 1}",
+                "fields": fields,
+                "row_identity": {
+                    "kind": "added",
+                    "uid": segment,
+                    "segment": segment,
+                    "can_move_up": pos > 0,
+                    "can_move_down": pos < total - 1,
+                },
+            })
             continue
-        position += 1
-        sub_label = _row_subgroup_label(position - 1, shape, row)
+        try:
+            baseline_idx = int(segment)
+        except ValueError:
+            continue
+        if baseline_idx < 0 or baseline_idx >= len(baseline_rows) or baseline_idx in removed:
+            continue
+        row = baseline_rows[baseline_idx]
+        sub_label = _row_subgroup_label(pos, shape, row)
         fields = _build_row_fields(list_path, shape, str(baseline_idx))
         subgroups.append({
             "label": sub_label,
@@ -850,23 +886,8 @@ def _build_indexed_group(
                 "kind": "baseline",
                 "baseline_idx": baseline_idx,
                 "segment": str(baseline_idx),
-            },
-        })
-    # Added rows (effective shape = empty)
-    for entry in added_entries:
-        if not isinstance(entry, dict) or not isinstance(entry.get("uid"), str):
-            continue
-        uid = entry["uid"]
-        position += 1
-        sub_label = f"Riga {position}"
-        fields = _build_row_fields(list_path, shape, uid)
-        subgroups.append({
-            "label": sub_label,
-            "fields": fields,
-            "row_identity": {
-                "kind": "added",
-                "uid": uid,
-                "segment": uid,
+                "can_move_up": pos > 0,
+                "can_move_down": pos < total - 1,
             },
         })
 

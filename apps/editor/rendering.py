@@ -123,6 +123,59 @@ def _shape_default_row(shape: dict[str, Any]) -> Any:
     return ""
 
 
+def compute_default_order(
+    baseline_len: int,
+    removed: set[int] | list[int] | None,
+    added: list[dict[str, Any]] | None,
+) -> list[str]:
+    """A.3b · the canonical ordering when ``meta.order`` is absent.
+
+    Baseline survivors appear first in ascending index order, then
+    added uid rows appear in declaration order. Segments are strings
+    (int-as-str for baseline, uid literal for added) so the downstream
+    ``order`` array has a uniform element type.
+
+    Services use this to normalize sparse-diff (``order == default``
+    strips the field from ``__meta__``) and rendering uses it as a
+    safe fallback when ``meta.order`` is malformed or absent.
+    """
+    removed_set = set(removed or [])
+    out: list[str] = [
+        str(i) for i in range(baseline_len) if i not in removed_set
+    ]
+    for entry in added or []:
+        if not isinstance(entry, dict):
+            continue
+        uid = entry.get("uid")
+        if isinstance(uid, str) and is_uid(uid):
+            out.append(uid)
+    return out
+
+
+def _valid_order_or_default(
+    meta: dict[str, Any],
+    baseline_len: int,
+    removed: set[int],
+    added: list[dict[str, Any]],
+) -> list[str]:
+    """Return ``meta.order`` if it's a valid permutation of the
+    expected segment set, otherwise the default order.
+
+    Validation is strict: set equality of segments. Missing or extra
+    entries trigger the fallback — the renderer never crashes on a
+    malformed meta (defensive), while the service layer remains the
+    authoritative guard via explicit validation.
+    """
+    default = compute_default_order(baseline_len, removed, added)
+    raw = meta.get("order")
+    if not isinstance(raw, list):
+        return default
+    cleaned = [s for s in raw if isinstance(s, str)]
+    if set(cleaned) == set(default) and len(cleaned) == len(default):
+        return cleaned
+    return default
+
+
 def _materialize_mutable_list(
     tree: dict[str, Any],
     list_path: str,
@@ -132,10 +185,12 @@ def _materialize_mutable_list(
 ) -> None:
     """Rebuild the effective list in-place and record position maps.
 
-    The baseline list at ``list_path`` is walked, rows whose index is in
-    ``meta["removed"]`` are filtered out, and one default row is
-    appended per entry in ``meta["added"]`` (in declaration order).
-    Two maps are produced for Phase B:
+    A.3a shape: baseline list filtered by ``meta["removed"]``, uid rows
+    from ``meta["added"]`` appended. A.3b extension: ``meta["order"]``
+    (when present and valid) rearranges the resulting segments into a
+    custom display sequence. Baseline indices never change value — only
+    their position in the effective list. Two maps are produced for
+    Phase B cell-override application:
 
     - ``baseline_idx_to_pos`` — baseline row index → position in the
       effective list (or missing if removed).
@@ -151,30 +206,33 @@ def _materialize_mutable_list(
         return
 
     removed_raw = meta.get("removed") or []
-    added_raw = meta.get("added") or []
+    added_raw = [
+        e for e in (meta.get("added") or [])
+        if isinstance(e, dict) and isinstance(e.get("uid"), str) and is_uid(e["uid"])
+    ]
     removed = {i for i in removed_raw if isinstance(i, int) and 0 <= i < len(baseline)}
+
+    order = _valid_order_or_default(meta, len(baseline), removed, added_raw)
+
+    uid_by_segment = {entry["uid"] for entry in added_raw}
 
     effective: list[Any] = []
     baseline_idx_to_pos: dict[int, int] = {}
-    for baseline_idx, row in enumerate(baseline):
-        if baseline_idx in removed:
-            continue
-        baseline_idx_to_pos[baseline_idx] = len(effective)
-        # Deep-copy baseline rows: later cell overrides mutate them in
-        # place, and we already deep-copied the top-level tree, but
-        # tuple rows become list rows and nested dicts deserve their
-        # own identity.
-        effective.append(copy.deepcopy(row))
-
     uid_to_pos: dict[str, int] = {}
-    for entry in added_raw:
-        if not isinstance(entry, dict):
+    for segment in order:
+        if segment in uid_by_segment:
+            uid_to_pos[segment] = len(effective)
+            effective.append(_shape_default_row(shape))
             continue
-        uid = entry.get("uid")
-        if not isinstance(uid, str) or not is_uid(uid):
+        # Otherwise: int-as-str baseline index
+        try:
+            idx = int(segment)
+        except ValueError:
             continue
-        uid_to_pos[uid] = len(effective)
-        effective.append(_shape_default_row(shape))
+        if idx < 0 or idx >= len(baseline) or idx in removed:
+            continue
+        baseline_idx_to_pos[idx] = len(effective)
+        effective.append(copy.deepcopy(baseline[idx]))
 
     parent[last] = effective
     list_maps[list_path] = {

@@ -430,6 +430,9 @@ def get_list_meta(project: CustomerProject, list_path: str) -> dict[str, Any]:
     The structural record lives at ``<list_path>.__meta__``; when absent
     the list is in its baseline shape. Never raises — callers consuming
     this for rendering or UI decisions want a permissive default.
+
+    A.3b: when present, the ``order`` field (array of segment strings)
+    is passed through verbatim so rendering + services can honor it.
     """
     row = ProjectContent.objects.filter(
         project=project, key_path=f"{list_path}.{META_KEY}",
@@ -444,7 +447,13 @@ def get_list_meta(project: CustomerProject, list_path: str) -> dict[str, Any]:
         {"uid": e["uid"]} for e in (value.get("added") or [])
         if isinstance(e, dict) and isinstance(e.get("uid"), str)
     ]
-    return {"removed": removed, "added": added}
+    out: dict[str, Any] = {"removed": removed, "added": added}
+    raw_order = value.get("order")
+    if isinstance(raw_order, list):
+        order = [s for s in raw_order if isinstance(s, str)]
+        if order:
+            out["order"] = order
+    return out
 
 
 def _baseline_list_length(project: CustomerProject, list_path: str) -> int:
@@ -483,11 +492,19 @@ def _next_uid(meta: dict[str, Any]) -> str:
 
 
 def _persist_meta(project: CustomerProject, list_path: str, meta: dict[str, Any]) -> None:
-    """Write the meta sentinel — or delete the record if meta is empty
-    so sparse-diff stays clean (no-op mutation == baseline == no row).
+    """Write the meta sentinel — or delete the record when meta is
+    fully empty so sparse-diff stays clean. A.3b: a custom ``order``
+    counts as meaningful state and keeps the record alive even if
+    ``removed`` and ``added`` are empty (a reorder without add/remove
+    is still a non-default mutation).
     """
     key = f"{list_path}.{META_KEY}"
-    if not meta.get("removed") and not meta.get("added"):
+    has_state = (
+        bool(meta.get("removed"))
+        or bool(meta.get("added"))
+        or bool(meta.get("order"))
+    )
+    if not has_state:
         ProjectContent.objects.filter(project=project, key_path=key).delete()
         return
     row, _ = ProjectContent.objects.get_or_create(project=project, key_path=key)
@@ -542,6 +559,104 @@ def add_row(
     _persist_meta(project, list_path, meta)
     project.save(update_fields=["updated_at"])
     return {"uid": uid, "meta": meta, "effective_length": current_len + 1}
+
+
+def _current_order(
+    baseline_len: int, meta: dict[str, Any],
+) -> list[str]:
+    """Return the list of segments that describe the effective row
+    sequence, honoring ``meta.order`` when valid, otherwise deriving
+    the canonical default (baseline survivors ascending + added in
+    declaration order). Mirror of ``rendering.compute_default_order``.
+    """
+    from apps.editor.rendering import compute_default_order
+    removed = meta.get("removed") or []
+    added = [
+        e for e in (meta.get("added") or [])
+        if isinstance(e, dict) and isinstance(e.get("uid"), str)
+    ]
+    default = compute_default_order(baseline_len, removed, added)
+    raw = meta.get("order")
+    if isinstance(raw, list):
+        cleaned = [s for s in raw if isinstance(s, str)]
+        if set(cleaned) == set(default) and len(cleaned) == len(default):
+            return cleaned
+    return default
+
+
+@transaction.atomic
+def move_row(
+    *, project: CustomerProject, list_path: str,
+    segment: str, direction: str, editor,
+) -> dict[str, Any]:
+    """A.3b — swap a row one position up or down in the effective list.
+
+    ``segment`` is the row identity as used by the sidebar:
+    ``"<int>"`` for a baseline row, or an ``"aN"`` uid for an added
+    row. ``direction`` is ``"up"`` or ``"down"``.
+
+    Raises:
+    - ``UnsupportedMutation`` if the list is not ``mutable``.
+    - ``InvalidEditableField`` on malformed segment / direction or
+      if the segment is not present in the current effective order.
+    - ``RowLimitReached("boundary", pos)`` when the move would cross
+      the first/last row of the effective list.
+
+    The new ``order`` is compared to the canonical default: when they
+    match, ``order`` is stripped from ``__meta__`` so sparse-diff stays
+    clean (the list is back to its baseline-plus-added sequence).
+    """
+    archetype = project.source_archetype
+    if not is_mutable_list(archetype, list_path):
+        raise UnsupportedMutation(
+            f"List '{list_path}' is not mutable for archetype '{archetype}'."
+        )
+    if direction not in ("up", "down"):
+        raise InvalidEditableField(
+            f"direction must be 'up' or 'down', got {direction!r}."
+        )
+    if not isinstance(segment, str) or not segment:
+        raise InvalidEditableField(f"segment must be a non-empty string.")
+
+    meta = get_list_meta(project, list_path)
+    baseline_len = _baseline_list_length(project, list_path)
+    order = list(_current_order(baseline_len, meta))
+
+    try:
+        pos = order.index(segment)
+    except ValueError:
+        raise InvalidEditableField(
+            f"Segment {segment!r} is not present in '{list_path}'."
+        )
+
+    if direction == "up":
+        if pos == 0:
+            raise RowLimitReached("boundary", pos)
+        swap_with = pos - 1
+    else:
+        if pos >= len(order) - 1:
+            raise RowLimitReached("boundary", pos)
+        swap_with = pos + 1
+
+    order[pos], order[swap_with] = order[swap_with], order[pos]
+
+    # Sparse-diff normalize: if the new order matches the canonical
+    # default, drop the field. Otherwise persist it inside meta.
+    from apps.editor.rendering import compute_default_order
+    default = compute_default_order(
+        baseline_len,
+        meta.get("removed") or [],
+        [e for e in (meta.get("added") or []) if isinstance(e, dict)],
+    )
+    new_meta = dict(meta)
+    if order == default:
+        new_meta.pop("order", None)
+    else:
+        new_meta["order"] = order
+
+    _persist_meta(project, list_path, new_meta)
+    project.save(update_fields=["updated_at"])
+    return {"order": order, "effective_length": len(order)}
 
 
 @transaction.atomic
