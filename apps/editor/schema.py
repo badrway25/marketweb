@@ -45,7 +45,22 @@ Locked keys — and anything NOT in this whitelist — cannot be written.
 """
 from __future__ import annotations
 
+import re
 from typing import Any
+
+
+# A.3a · structural sentinels + uid pattern.
+# `__meta__` is the reserved child-key for a mutable list's structural
+# mutations. `UID_RE` matches the `a<digits>` shape used for rows the
+# customer added. Baseline rows keep integer indices so the math of
+# existing cell-override paths stays untouched.
+META_KEY = "__meta__"
+UID_RE = re.compile(r"^a\d+$")
+
+
+def is_uid(segment: str) -> bool:
+    """True if ``segment`` is a well-formed added-row uid (``a0``, ``a12``)."""
+    return bool(UID_RE.match(segment))
 
 from apps.projects.models import ProjectDesignTokens
 
@@ -516,6 +531,11 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
                 ("label",  {"label": "Etichetta",   "type": "text", "max_length": 80}),
                 ("sub",    {"label": "Sotto-testo", "type": "text", "max_length": 140}),
             ],
+            # A.3a — first wave repeater. Customer can add/remove rows
+            # between these bounds. Other mutable=True lists ship in A.3c.
+            "mutable": True,
+            "min_rows": 1,
+            "max_rows": 8,
         },
         "studio.partners": {
             "kind": "dict",
@@ -530,6 +550,11 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
                 ("bio",      {"label": "Biografia",     "type": "textarea", "max_length": 600}),
                 ("portrait", {"label": "Ritratto · URL","type": "image",    "max_length": 400}),
             ],
+            # A.3a — first wave repeater. min=2 preserves the "a partnership,
+            # not a solo studio" narrative of the agency archetype.
+            "mutable": True,
+            "min_rows": 2,
+            "max_rows": 8,
         },
         "studio.timeline_rows": {
             "kind": "tuple",
@@ -894,21 +919,97 @@ def get_structured_shapes(archetype: str) -> dict[str, dict[str, Any]]:
 
 
 def get_field_spec(archetype: str, key_path: str) -> dict[str, Any] | None:
-    """Look up the widget spec for a key_path (None if not editable)."""
+    """Look up the widget spec for a key_path (None if not editable).
+
+    A.3a: also resolves uid cell paths (``studio.partners.a0.name``) by
+    matching the list's ``cols`` spec — the spec is identical between a
+    baseline row and an added row, only the path prefix differs.
+    """
     for path, spec in iter_editable_fields(archetype):
         if path == key_path:
             return spec
+    # A.3a — uid cell fallback
+    parts = key_path.split(".")
+    for cut in range(len(parts) - 1, 0, -1):
+        list_path = ".".join(parts[:cut])
+        shape = get_list_shape(archetype, list_path)
+        if not shape or not shape.get("mutable"):
+            continue
+        remaining = parts[cut:]
+        if not remaining or not is_uid(remaining[0]):
+            return None
+        kind = shape.get("kind")
+        if kind == "scalar" and len(remaining) == 1:
+            return dict(shape["cell_spec"])
+        if kind in ("tuple", "dict") and len(remaining) == 2:
+            col = remaining[1]
+            for name, spec in (shape.get("cols") or []):
+                if name == col:
+                    return dict(spec)
     return None
 
 
+def get_list_shape(archetype: str, list_path: str) -> dict[str, Any] | None:
+    """Return the STRUCTURED_FIELD_SHAPES entry for a list, or None."""
+    return (STRUCTURED_FIELD_SHAPES.get(archetype) or {}).get(list_path)
+
+
+def is_mutable_list(archetype: str, list_path: str) -> bool:
+    """A.3a — True iff the list is opted-in to row add/remove."""
+    shape = get_list_shape(archetype, list_path)
+    return bool(shape and shape.get("mutable"))
+
+
+def _validate_uid_cell_path(archetype: str, key_path: str) -> bool:
+    """A.3a — accept ``<mutable_list>.a<N>.<col>`` for dict/tuple lists and
+    ``<mutable_list>.a<N>`` for scalar lists. Returns True if the path is a
+    well-formed cell override against a mutable list's added row. The
+    service layer is responsible for verifying that the uid actually
+    exists in the project's meta; validator stays stateless.
+    """
+    parts = key_path.split(".")
+    if len(parts) < 2:
+        return False
+    # Walk longest-prefix-first so nested lists (none today, guarded for
+    # future phases) prefer the deepest mutable match.
+    for cut in range(len(parts) - 1, 0, -1):
+        list_path = ".".join(parts[:cut])
+        shape = get_list_shape(archetype, list_path)
+        if not shape or not shape.get("mutable"):
+            continue
+        remaining = parts[cut:]
+        if not remaining or not is_uid(remaining[0]):
+            return False
+        kind = shape.get("kind")
+        if kind == "scalar":
+            return len(remaining) == 1
+        # tuple / dict
+        if len(remaining) != 2:
+            return False
+        col = remaining[1]
+        col_names = [name for name, _spec in (shape.get("cols") or [])]
+        return col in col_names
+    return False
+
+
 def validate_key_path(archetype: str, key_path: str) -> None:
-    """Raise ``InvalidEditableField`` if the path is DNA-locked."""
-    if get_field_spec(archetype, key_path) is None:
-        raise InvalidEditableField(
-            f"Field '{key_path}' is not editable for archetype "
-            f"'{archetype}'. It is either DNA-locked or out of scope "
-            f"for the current editor phase."
-        )
+    """Raise ``InvalidEditableField`` if the path is not writable.
+
+    A.3a extends A.2.6b by accepting ``<mutable_list>.a<N>.<col>`` shapes
+    for cell overrides on added rows. The structural ``__meta__`` sentinel
+    is NOT accepted here — it is written exclusively through
+    ``services.add_row`` / ``services.remove_row`` so customer autosave
+    can never corrupt a list's structural state.
+    """
+    if get_field_spec(archetype, key_path) is not None:
+        return
+    if _validate_uid_cell_path(archetype, key_path):
+        return
+    raise InvalidEditableField(
+        f"Field '{key_path}' is not editable for archetype "
+        f"'{archetype}'. It is either DNA-locked or out of scope "
+        f"for the current editor phase."
+    )
 
 
 def validate_value(archetype: str, key_path: str, value: Any) -> Any:
