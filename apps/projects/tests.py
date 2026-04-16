@@ -121,7 +121,9 @@ class FoundationHttpTests(TestCase):
         self.client.logout()
         r = self.client.get("/projects/")
         self.assertEqual(r.status_code, 302)
-        self.assertIn("/admin/login/", r["Location"])
+        # D-087: customer surface bounces to the branded /account/login/,
+        # not the staff /admin/login/.
+        self.assertIn("/account/login/", r["Location"])
 
     def test_create_then_edit_then_preview(self):
         r = self.client.post("/projects/new/", {"template_slug": "vertex-creative-agency"})
@@ -172,6 +174,49 @@ class FoundationHttpTests(TestCase):
         body = r.content.decode("utf-8", "ignore")
         self.assertNotIn("Draft-Only Studio", body)
         self.assertIn("Vertex Studio", body)
+
+    def test_customize_start_anon_redirects_to_login_with_next(self):
+        """Phase A.1b: Personalizza click while anon must preserve ?template."""
+        self.client.logout()
+        r = self.client.get("/projects/start/?template=vertex-creative-agency")
+        self.assertEqual(r.status_code, 302)
+        self.assertIn("/account/login/", r["Location"])
+        # The next= param must carry the original template slug (URL-encoded).
+        from urllib.parse import unquote
+        self.assertIn(
+            "template=vertex-creative-agency",
+            unquote(r["Location"]),
+        )
+
+    def test_customize_start_auth_creates_project_and_redirects_to_editor(self):
+        r = self.client.get("/projects/start/?template=vertex-creative-agency")
+        self.assertEqual(r.status_code, 302)
+        self.assertIn("/editor/", r["Location"])
+        project = CustomerProject.objects.filter(owner=self.owner).first()
+        self.assertIsNotNone(project)
+
+    def test_customize_start_auth_reuses_existing_project(self):
+        """Second click on Personalizza for the same template must reopen, not fork."""
+        first = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get("/projects/start/?template=vertex-creative-agency")
+        self.assertEqual(r.status_code, 302)
+        self.assertIn(str(first.uuid), r["Location"])
+        self.assertEqual(
+            CustomerProject.objects.filter(owner=self.owner).count(),
+            1,
+        )
+
+    def test_customize_start_unknown_template_redirects_to_catalog(self):
+        r = self.client.get("/projects/start/?template=does-not-exist")
+        self.assertEqual(r.status_code, 302)
+        self.assertIn("/templates/", r["Location"])
+
+    def test_customize_start_unsupported_archetype_redirects_to_detail(self):
+        """Templates without editor support bounce to detail with an info message."""
+        r = self.client.get("/projects/start/?template=gusto-fine-dining")
+        self.assertEqual(r.status_code, 302)
+        # Either /templates/restaurant/gusto-fine-dining/ or template_list — both accept.
+        self.assertIn("/templates/", r["Location"])
 
     def test_published_overlay_visible_to_other_user(self):
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Accedi{% endblock %}
+{% block meta_description %}Accedi a MarketWeb per personalizzare il tuo template e gestire i tuoi progetti.{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-shell { max-width: 440px; margin: 64px auto; }
+  .auth-shell .auth-card {
+    background: #fff;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 16px;
+    padding: 40px 36px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px rgba(15, 23, 42, 0.06);
+  }
+  .auth-shell h1 { font-size: 26px; letter-spacing: -0.02em; margin: 0 0 8px; }
+  .auth-shell .auth-sub { color: #6c757d; margin-bottom: 24px; font-size: 15px; }
+  .auth-shell label { font-weight: 600; font-size: 13px; color: #111827; }
+  .auth-shell .form-control { padding: 10px 14px; font-size: 15px; }
+  .auth-shell .auth-errors { background: #fff5f5; border: 1px solid #fca5a5; color: #991b1b; padding: 10px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
+  .auth-shell .auth-submit { width: 100%; padding: 12px 18px; font-weight: 600; }
+  .auth-shell .auth-switch {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #eef0f2;
+    font-size: 14px;
+    color: #6c757d;
+    text-align: center;
+  }
+  .auth-shell .auth-switch a { font-weight: 600; color: #111827; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container auth-shell">
+  <div class="auth-card">
+    <h1>Accedi</h1>
+    <p class="auth-sub">Apri i tuoi progetti e torna dove avevi lasciato.</p>
+
+    {% if form.non_field_errors %}
+      <div class="auth-errors">{{ form.non_field_errors|join:" · " }}</div>
+    {% endif %}
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} py-2">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <div class="mb-3">
+        <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        {{ form.username }}
+        {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors|join:" · " }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        {{ form.password }}
+        {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors|join:" · " }}</div>{% endif %}
+      </div>
+
+      <button type="submit" class="mw-btn mw-btn-primary auth-submit">
+        <i class="bi bi-box-arrow-in-right"></i> Accedi
+      </button>
+    </form>
+
+    <p class="auth-switch">
+      Non hai ancora un account?
+      <a href="{{ signup_url }}">Registrati</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

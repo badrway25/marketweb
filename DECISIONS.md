@@ -1,5 +1,46 @@
 # Decisions Log
 
+## D-087: Public Customize Flow — Branded Auth Gate + `/projects/start/` Entry + One-Draft-Per-Template (2026-04-16, Session 56)
+
+**Decision:** Phase A.1b transforms the A.1 foundation into a customer-facing flow without widening the editor schema. Four interlocking pieces:
+
+1. **`/projects/start/?template=<slug>`** is the single public entry point for `Personalizza`. Anon → `302 /account/login/?next=<full start url>`. Authed → `get_or_create_project_for_template(owner, template)` → editor. Unknown slug → catalog with message. Unsupported archetype → template detail with "non ancora editabile" info message. Views never touch `/admin/`.
+2. **Branded auth** lives in `apps/accounts/` at `/account/login/`, `/account/signup/`, `/account/logout/`. `LOGIN_URL = "/account/login/"` (was `/admin/login/`). Login/signup templates preserve `?next=` across the switch-between-them link, so a user who realises mid-flow they don't have an account doesn't lose their originating template.
+3. **One active draft per `(owner, source_template)`.** `get_or_create_project_for_template` returns the most-recently-updated existing project if one exists, else creates. Second click on `Personalizza` for the same template reopens the same workspace — no duplicate drafts.
+4. **Preview iframe requires same-origin framing.** `@xframe_options_sameorigin` applied to `LiveTemplateView.dispatch` only. Clickjacking protection stays `DENY` everywhere else.
+
+**Rationale:**
+1. **Single entry URL vs dashboard-dropdown.** The A.1 flow required the customer to understand `/projects/` (dashboard) + pick from a select box. That's admin-shaped. Customers start from the catalog; the CTA has to live there, the start URL has to be a direct shortcut, and the auth gate has to be part of the CTA, not a separate page.
+2. **Create-or-open vs fork-every-click.** Two drafts of the same template is a "which one is mine?" UX smell. Wix/Squarespace/Webflow all scope customization to "one workspace per source" at this maturity. Multi-draft becomes meaningful later, after a dashboard can disambiguate variants (revisions, labels, etc.) — opening that door before we have that UX would create confusion we'd then have to rescue from.
+3. **Branded auth vs staff admin.** `/admin/login/` was fine for QA but incoherent with the product promise. A customer seeing the Django admin chrome reasonably concludes "this is not for me". The branded pages use the same `base.html` navbar/footer as the rest of the site.
+4. **`?next=` preserved across login ↔ signup switch.** If a customer clicks `Personalizza`, bounces to login, realises they need to register, and clicks `Registrati`, they'd otherwise lose the template context and land back on `/projects/` after signup. The signup link is built with the login page's `?next=` already threaded in.
+5. **X-Frame-Options SAMEORIGIN on one view.** Django 3.0+ default is `DENY` (not `SAMEORIGIN`). Since the editor iframe is same-origin (both the editor and the preview live on the same host), per-view opt-in is safer than project-wide relaxation.
+6. **No schema widening.** A.1b explicitly does not grow the editable field set. Customer-facing = entry + auth + chrome. Schema growth is A.2 (second archetype + repeater widgets). Resisting the temptation to also add image uploads or a second archetype in the same session is the guard-rail that keeps sub-phases shippable.
+
+**Scope explicitly NOT in A.1b (still open):**
+- Image / logo uploads (Phase A.6).
+- Repeater widgets (Phase A.2).
+- Second archetype (Phase A.2+). Non-Vertex templates bounce to detail with an info message — honest about the limit.
+- Multi-locale editing (Phase A.7).
+- Password reset / email verification / social providers (later A.7+).
+- Purchase / checkout (Phase 3).
+
+**Consequence:**
+- `apps/accounts/` goes from empty scaffolding to a real module with forms, views, templates, URLs, and 7 unit tests.
+- `apps/projects/` gains `customize_start` view + `get_or_create_project_for_template` service + 5 new unit tests.
+- `apps/catalog/views.LiveTemplateView` gains 1 decorator + 3 imports.
+- 12 templates / navbar / detail-page updates. 0 skin changes.
+- 24/24 unit tests green. 834/834 catalog smoke green. Browser E2E walk (11 steps) green.
+- D-085 acceptance gate #2 (foundation opens publicly to customers on at least one template) is MET.
+
+**How to apply:**
+- Every future archetype opened for editing must ship with a schema entry AND the `customize_start` flow must continue to bounce unsupported archetypes to detail — never let a customer land on a blank editor.
+- When Phase A.2 adds the second archetype, audit `apps.projects.services.iter_editable_templates()` + `customize_start`'s unsupported-archetype branch to confirm the friendly bounce still fires for remaining non-editable templates.
+- Do not regress to `/admin/login/` as a fallback for anything customer-facing. Staff surfaces stay at `/admin/`; customer surfaces stay at `/account/`.
+- Do not relax `X_FRAME_OPTIONS` project-wide. Keep `SAMEORIGIN` opt-in per view.
+
+---
+
 ## D-086: Editor Foundation v1 — Vertical Slice Shape + DNA-Lock Contract + Preview-Overlay Pipeline (2026-04-16, Session 55)
 
 **Decision:** Phase A.1 (D-085) lands as a real vertical slice: `apps/projects/` ships `CustomerProject` + `ProjectContent` (sparse per-key overrides) + `ProjectDesignTokens` (palette + curated font pair) + `ProjectRevision` (snapshot on seed/manual-save/publish/unpublish). `apps/editor/` ships `schema.py` (archetype-whitelist + DNA-lock validation) + `rendering.py` (deep-merge overlay). The first slice exercises ONE archetype — `agency-creative-studio` (Vertex) — across site chrome + home + studio + contatti with 23 editable keys + 5 design tokens, enough to walk the end-to-end loop (create → edit → save → preview → publish) without overbuild.

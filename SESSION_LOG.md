@@ -1,5 +1,94 @@
 # Session Log
 
+## Session 56 — Phase A.1b · Public Customize Flow (2026-04-16)
+
+**Summary.** A.1b closes the gap between the A.1 foundation and the customer-facing promise: a visitor can now click **Personalizza** on a template card or on the template detail page, hit a branded login/signup gate (no longer the staff `/admin/login/`), return automatically to the same template, open an auto-created editable project, modify content, save, see the iframe preview update, reopen later, and publish — without ever touching `/admin/`. One active draft per `(owner, template)` (create-or-open); cross-owner access still 404s. Browser-authenticated Playwright walk completed end-to-end. 834/834 catalog smoke + 24/24 unit tests green (12 pre-existing A.1 tests + 5 new projects tests + 7 new accounts tests).
+
+### Starting state
+- Branch: `phase-editor-public-customize-v1`, forked from `phase-editor-foundation-v1` @ aa06d0b.
+- `apps/accounts/` was empty scaffolding (`views.py`/`services.py`/`selectors.py` empty, `urls.py = []`). `LOGIN_URL` pointed at `/admin/login/`. No signup form, no login template, no navbar auth links.
+- Entry points: customize flow lived behind `/projects/` dashboard dropdown — too technical for a customer starting from the catalog. Template cards/detail had no `Personalizza` CTA.
+- Create-flow: `/projects/new/` POST forked a new project every click; no dedup, so "Personalizza" twice would leave two drafts.
+
+### Gap audit (what was missing for customer-facing)
+1. No `Personalizza` button on card or detail.
+2. Login gate = `/admin/login/` (staff-facing). No signup.
+3. No start URL: customer had to understand `/projects/`, pick from a dropdown.
+4. No create-or-open: every POST forked. Classic "three drafts of the same thing" smell.
+5. Editor chrome used admin-like copy (`Foundation v1`, `archetipo`) — leaked implementation terms to the customer.
+6. Navbar "Accedi" / "Inizia Gratis" were `href="#"` ghost links.
+
+### What shipped
+
+**1. Branded auth (apps/accounts/)**
+- `forms.py` (~95 LOC) — `CustomerSignupForm` (UserCreationForm + required email with uniqueness check) · `CustomerLoginForm` (branded `AuthenticationForm`). All widgets styled as `form-control form-control-lg` with Italian labels.
+- `views.py` (~110 LOC) — `CustomerLoginView` (subclass of Django's `LoginView` with template_name override + `?next=` threaded into signup link) · `customer_signup` (FBV; logs user in on success) · `customer_logout` (POST-preferred, bounces home).
+- `urls.py` — 3 routes: `login/`, `signup/`, `logout/`. Mounted at `/account/` in project urls.
+- Templates: `templates/accounts/login.html` (85 LOC) · `templates/accounts/signup.html` (95 LOC). Card-based chrome, no admin styling, Bootstrap primitives only.
+- `settings.LOGIN_URL = "/account/login/"` (was `/admin/login/`). New `LOGIN_REDIRECT_URL = "/projects/"` unchanged; added `LOGOUT_REDIRECT_URL = "/"`.
+- Tests (`apps/accounts/tests.py`, 7 cases): login page reachable · signup page reachable · signup creates-and-logs-in · signup honours `?next=` · login honours `?next=` · logout bounces home · duplicate email blocked.
+
+**2. Public customize entry point (`/projects/start/`)**
+- New view `customize_start(request)` in `apps/projects/views.py`. Single URL, handles anon + authed:
+  - Anon → 302 to `/account/login/?next=/projects/start/?template=<slug>` — preserves template slug end-to-end.
+  - Authed → `get_or_create_project_for_template(owner, template)` → 302 to editor.
+  - Missing slug → bounce to catalog with message.
+  - Unknown / not published_live slug → bounce to catalog.
+  - Unsupported archetype (e.g. gusto-fine-dining) → bounce to template detail with info message.
+- New service `get_or_create_project_for_template(owner, template)` in `apps/projects/services.py`. Returns `(project, created_bool)`. One active draft per `(owner, source_template)`. Motivation: matches Wix/Squarespace mental model, lowers cognitive overhead; multi-draft is a later opt-in.
+- Tests (5 new in `apps/projects/tests.py`): anon→login+next · authed→create+editor · authed+existing→reopen+same-uuid · unknown-slug→catalog · unsupported-archetype→detail.
+
+**3. Public entry points**
+- `templates/catalog/template_detail.html` — `Personalizza` is now the primary CTA in the sidebar. `Apri anteprima completa` demoted to secondary. `Aggiungi al Carrello` (disabled) → `Acquista in seguito` (disabled, with honest tooltip) since Phase 3 checkout not here.
+- `templates/includes/_template_card.html` — hover actions: `eye` → live preview in new tab, `magic` → `/projects/start/?template=...`. Card footer gains `Personalizza` as primary CTA next to `Scopri` (now ghost).
+- `templates/includes/_navbar.html` — `Accedi` / `Inizia Gratis` / `I miei progetti` / `Esci` all real, auth-aware. Shows `Ciao, <username>` when authed. Mobile menu parity.
+
+**4. Editor UX polish (customer-facing)**
+- `templates/projects/project_list.html` rewritten as card grid (~95 LOC). Dropped `Editor · Foundation v1` eyebrow. Empty state routes customer to catalog. `editable_templates` fallback form now in `<details>` (power-user). Added `Sfoglia template` primary CTA.
+- `templates/projects/project_editor.html` — lifted all `Foundation v1` / `archetipo` / `DNA-locked` / `overrides` admin-ish language. `Design tokens` → `Colori e font`. `DNA-locked · non modificabile in Foundation v1` → `Prossimamente · aree in arrivo`. `Revisioni recenti` → `Cronologia recente`. All buttons now use `mw-btn` design system classes. Header shows project name + source template + status badge only, no archetype slug. Save toast copy kept server-side from A.1.
+
+**5. X-Frame-Options fix (catalog LiveTemplateView)**
+Caught in live E2E: Django's project-wide default is `X-Frame-Options: DENY`, so the editor's preview iframe (same-origin) was refusing to render. Fix: `@method_decorator(xframe_options_sameorigin, name="dispatch")` on `LiveTemplateView` only — clickjacking protection stays DENY everywhere else. Single-line change + docstring explaining the trade-off.
+
+### Browser-authenticated validation (Playwright)
+Full cold-start walk:
+1. `/templates/` (anon) → 12 cards each with `Personalizza` link to `/projects/start/?template=<slug>`. ✓
+2. Click `Personalizza` on Vertex detail → `/account/login/?next=...` — template slug URL-encoded in `?next=`. ✓
+3. Click `Registrati` — `?next=` preserved on signup link. ✓
+4. Submit signup (cliente.demo / demo@studiopersonale.it) → auto-login → `/projects/start/?...` → `get_or_create_project_for_template` creates project → 302 to editor. ✓
+5. Edit 4 fields (Logo word, Headline, Eyebrow, Telefono) → Save → toast `Salvato: 31 campi aggiornati` (A.1 quirk — sparse-diff write counts every form field, 4 actual overrides visible as orange dots). ✓
+6. Preview iframe (`http://127.0.0.1:8111/templates/agency/vertex-creative-agency/preview/?project=<uuid>&_t=<ms>`) shows all 4 overrides live. ✓
+7. Navigate to `/projects/start/?template=vertex-creative-agency` again → SAME uuid returned (no duplicate draft). ✓
+8. Click `Pubblica` → status flips → `Riporta in bozza` visible + success toast. ✓
+9. Logout (POST via navbar `Esci`) → home → navbar flips to `Accedi` / `Inizia Gratis`. ✓
+10. Anon visits `/templates/agency/vertex-creative-agency/preview/?project=<uuid>` → published overrides visible (per D-086 rule: published = any user). ✓
+11. Anon click `Personalizza` → login → submit form with `?next` preserved → lands in same editor. ✓
+
+### In-flight bug caught
+X-Frame-Options DENY (Django default since 3.0) killed the preview iframe. Caught only through real Playwright walk — no unit test covered it. Fixed with `xframe_options_sameorigin` on the single view that's supposed to be iframeable. Defensive stays everywhere else.
+
+### What's NOT in A.1b (honesty ledger)
+- **Image / logo upload.** Still Phase A.6. A.1b exposes `site.logo_word` (text) — no image. Hero cover image also remains baseline-only.
+- **Repeater widgets** (ledger_rows, capab_items, manifesto_principles). Still Phase A.2.
+- **Second archetype.** Only `agency-creative-studio` (Vertex) is editor-ready. Clicking `Personalizza` on other 19 templates bounces to detail with a friendly "not yet editable" message.
+- **Multi-locale editing.** Project `locale` column exists, only IT wired. Phase A.7.
+- **Password reset / email verification / social login.** Not opened. Phase A.7+.
+- **Purchase / checkout.** Button is visible but disabled with honest tooltip — Phase 3.
+
+### Files touched
+Created: `apps/accounts/forms.py` · `apps/accounts/views.py` · `apps/accounts/tests.py` · `templates/accounts/login.html` · `templates/accounts/signup.html`.
+Modified: `apps/accounts/urls.py` · `apps/projects/views.py` · `apps/projects/services.py` · `apps/projects/urls.py` · `apps/projects/tests.py` · `apps/catalog/views.py` · `marketweb/settings.py` · `templates/catalog/template_detail.html` · `templates/includes/_template_card.html` · `templates/includes/_navbar.html` · `templates/projects/project_list.html` · `templates/projects/project_editor.html`.
+
+### Validation
+- `python manage.py test apps.projects apps.editor apps.accounts` → `Ran 24 tests ... OK` (12 pre-existing + 5 new projects + 7 new accounts).
+- `python smoke_full.py` → `834/834 routes HTTP 200` (no catalog regression).
+- Playwright E2E walk (11 steps above) — all green.
+
+### Decision
+**Phase A.1b PUBLIC CUSTOMIZE FLOW APPROVATO.** Criterio di successo soddisfatto: un utente normale parte dal catalogo → `Personalizza` → signup → editor proprio → salva → preview → publish, zero passaggi via `/admin/`. Foundation non overbuilt: A.2 (secondo archetipo + repeater) resta lo scope successivo intatto. D-087 documenta la shape.
+
+---
+
 ## Session 55 — Editor Foundation v1 (Phase A.1 vertical slice) (2026-04-16)
 
 **Summary.** Phase A.1 per D-085/D-086 ships as a real vertical slice — not a theoretical blueprint, not a half-finished scaffold. `apps/projects/` and `apps/editor/` go from empty `__init__.py` files to working modules with models, migrations, services, selectors, schema, overlay rendering, URLs, views, templates, admin, and tests. The first slice exercises `vertex-creative-agency` (agency-creative-studio archetype) end-to-end: a customer can log in, derive a new project from the published_live Vertex template, edit 23 content fields + 5 design tokens across 4 form groups, save (sparse-diff persisted, baseline-equal writes auto-delete the row), see the changes in a live iframe preview, publish, revise, and optionally unpublish. Cross-owner access returns 404; draft overlays are hidden from non-owners; DNA-locked keys are rejected at the service layer with `InvalidEditableField`. 834/834 catalog smoke unchanged — zero regression on the 20 published_live templates.

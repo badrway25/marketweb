@@ -44,37 +44,43 @@
 
 {% block content %}
 <section class="container-fluid py-3" style="max-width: 1500px;">
-  <header class="d-flex justify-content-between align-items-end mb-3">
+  <header class="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-3">
     <div>
       <p class="text-uppercase small text-muted mb-1">
-        <a href="{% url 'projects:project_list' %}" class="text-decoration-none">← Progetti</a>
-        · editor · {{ project.source_archetype }}
+        <a href="{% url 'projects:project_list' %}" class="text-decoration-none">← Torna ai miei progetti</a>
       </p>
       <h1 class="h3 mb-1">{{ project.name }}</h1>
       <p class="text-muted mb-0">
-        Derivato da <strong>{{ project.source_template.name }}</strong>
+        Da <strong>{{ project.source_template.name }}</strong>
+        {% if project.source_template.category %} · {{ project.source_template.category.name }}{% endif %}
         ·
         {% if project.status == "published" %}
           <span class="badge bg-success">Pubblicato</span>
           {% if project.last_published_at %}
-            <small>— ultima pubblicazione {{ project.last_published_at|date:"d M Y H:i" }}</small>
+            <small>— ultima pubblicazione {{ project.last_published_at|date:"d M Y · H:i" }}</small>
           {% endif %}
         {% else %}
           <span class="badge bg-secondary">Bozza</span>
         {% endif %}
       </p>
     </div>
-    <div class="d-flex gap-2">
-      <a class="btn btn-outline-dark btn-sm" target="_blank" href="{{ preview_url }}">Apri in nuova scheda</a>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="mw-btn mw-btn-ghost mw-btn-sm" target="_blank" href="{{ preview_url }}">
+        <i class="bi bi-box-arrow-up-right"></i> Apri anteprima in nuova scheda
+      </a>
       {% if project.status == "published" %}
-        <form method="post" action="{% url 'projects:project_unpublish' project.uuid %}" class="d-inline">
+        <form method="post" action="{% url 'projects:project_unpublish' project.uuid %}" class="d-inline m-0">
           {% csrf_token %}
-          <button class="btn btn-outline-warning btn-sm">Riporta in bozza</button>
+          <button class="mw-btn mw-btn-secondary mw-btn-sm">
+            <i class="bi bi-archive"></i> Riporta in bozza
+          </button>
         </form>
       {% else %}
-        <form method="post" action="{% url 'projects:project_publish' project.uuid %}" class="d-inline">
+        <form method="post" action="{% url 'projects:project_publish' project.uuid %}" class="d-inline m-0">
           {% csrf_token %}
-          <button class="btn btn-success btn-sm">Pubblica</button>
+          <button class="mw-btn mw-btn-primary mw-btn-sm">
+            <i class="bi bi-check2-circle"></i> Pubblica
+          </button>
         </form>
       {% endif %}
     </div>
@@ -91,16 +97,18 @@
 
     <div class="pe-col-left">
       <div class="pe-sticky-actions d-flex justify-content-between align-items-center">
-        <small class="text-muted">Modifica, salva, ricarica la preview a destra.</small>
-        <button type="submit" class="btn btn-dark">Salva modifiche</button>
+        <small class="text-muted">Modifica a sinistra · l'anteprima a destra si ricarica dopo ogni salvataggio.</small>
+        <button type="submit" class="mw-btn mw-btn-primary mw-btn-sm">
+          <i class="bi bi-save"></i> Salva
+        </button>
       </div>
 
       <!-- Design tokens -->
       <div class="pe-form mb-3">
-        <h2><span class="lbl">01</span> Design tokens</h2>
+        <h2><span class="lbl">01</span> Colori e font</h2>
         <p class="text-muted small">
-          Palette e font globali. Le variazioni finiscono nei CSS custom
-          properties dell'archetipo senza rompere la struttura DNA.
+          La palette e la scelta tipografica del tuo sito. Le modifiche si applicano
+          a tutte le pagine mantenendo la coerenza visiva del template.
         </p>
         <div class="pe-group">
           {% for field in design_fields %}
@@ -164,10 +172,10 @@
 
       <!-- Locked keys (read-only note) -->
       <div class="pe-form mb-3">
-        <h2><span class="lbl">—</span> DNA-locked · non modificabile in Foundation v1</h2>
+        <h2><span class="lbl">—</span> Prossimamente · aree in arrivo</h2>
         <p class="text-muted small mb-3">
-          Questi slot sono parte del DNA dell'archetipo (D-054). Saranno
-          sbloccati nelle prossime sub-phase dell'editor.
+          Queste sezioni fanno parte dello stile del template e saranno
+          personalizzabili nei prossimi aggiornamenti dell'editor.
         </p>
         {% for key, note in locked_notes.items %}
           <div class="pe-locked"><strong>{{ key }}</strong> — {{ note }}</div>
@@ -176,7 +184,7 @@
 
       <!-- Revisions -->
       <div class="pe-form mb-3">
-        <h2><span class="lbl">—</span> Revisioni recenti</h2>
+        <h2><span class="lbl">—</span> Cronologia recente</h2>
         {% if recent_revisions %}
           <ul class="list-unstyled small mb-0">
             {% for r in recent_revisions %}
@@ -192,17 +200,19 @@
       </div>
 
       <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-dark">Salva modifiche</button>
+        <button type="submit" class="mw-btn mw-btn-primary">
+          <i class="bi bi-save"></i> Salva modifiche
+        </button>
       </div>
     </div>
 
-    <div class="pe-preview" aria-label="Anteprima progetto">
+    <div class="pe-preview" aria-label="Anteprima del tuo progetto">
       <div class="bar">
         <span class="dot"></span>
-        Anteprima progetto · overrides attivi
+        Anteprima del tuo progetto
         <a href="{{ preview_url }}" target="_blank" class="ms-auto text-white" style="font-size: 11px; text-decoration: underline;">Apri ↗</a>
       </div>
-      <iframe id="preview-iframe" src="{{ preview_url }}" title="Project preview"></iframe>
+      <iframe id="preview-iframe" src="{{ preview_url }}" title="Anteprima del progetto"></iframe>
     </div>
   </form>
 </section>

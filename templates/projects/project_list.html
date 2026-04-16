@@ -4,15 +4,17 @@
 
 {% block content %}
 <section class="container py-5">
-  <header class="d-flex justify-content-between align-items-end mb-4">
+  <header class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
     <div>
-      <p class="text-uppercase small text-muted mb-1">Editor · Foundation v1</p>
+      <p class="text-uppercase small text-muted mb-1">Il tuo spazio</p>
       <h1 class="h2 mb-0">I miei progetti</h1>
-      <p class="text-muted mt-2">
-        Deriva un nuovo progetto da un template premium, personalizzalo e pubblicalo.
+      <p class="text-muted mt-2 mb-0">
+        I template che hai cominciato a personalizzare. Riapri, salva, pubblica.
       </p>
     </div>
-    <a href="#nuovo" class="btn btn-dark">+ Nuovo progetto</a>
+    <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-primary">
+      <i class="bi bi-grid-3x3-gap"></i> Sfoglia template
+    </a>
   </header>
 
   {% if messages %}
@@ -22,84 +24,75 @@
   {% endif %}
 
   {% if projects %}
-  <div class="table-responsive mb-5">
-    <table class="table align-middle">
-      <thead class="table-light">
-        <tr>
-          <th>Progetto</th>
-          <th>Template sorgente</th>
-          <th>Stato</th>
-          <th>Aggiornato</th>
-          <th class="text-end">Azioni</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for p in projects %}
-        <tr>
-          <td>
-            <strong>{{ p.name }}</strong><br>
-            <small class="text-muted font-monospace">{{ p.uuid }}</small>
-          </td>
-          <td>{{ p.source_template.name }} <small class="text-muted">· {{ p.source_archetype }}</small></td>
-          <td>
-            {% if p.status == "published" %}
-              <span class="badge bg-success">Pubblicato</span>
-            {% else %}
-              <span class="badge bg-secondary">Bozza</span>
-            {% endif %}
-          </td>
-          <td><small class="text-muted">{{ p.updated_at|date:"d M Y H:i" }}</small></td>
-          <td class="text-end">
-            <a href="{% url 'projects:project_editor' p.uuid %}" class="btn btn-sm btn-outline-dark">Apri editor</a>
-            <a href="{{ p.preview_url_base }}" target="_blank" class="btn btn-sm btn-outline-secondary">Anteprima</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="row g-3 mb-4">
+    {% for p in projects %}
+    <div class="col-12 col-md-6 col-lg-4">
+      <article class="h-100 p-4 border rounded-3 bg-white d-flex flex-column gap-2">
+        <div class="d-flex justify-content-between align-items-start">
+          <strong class="h5 mb-0">{{ p.name }}</strong>
+          {% if p.status == "published" %}
+            <span class="badge bg-success">Pubblicato</span>
+          {% else %}
+            <span class="badge bg-secondary">Bozza</span>
+          {% endif %}
+        </div>
+        <p class="text-muted small mb-0">
+          Da <strong>{{ p.source_template.name }}</strong>
+          {% if p.source_template.category %} · {{ p.source_template.category.name }}{% endif %}
+        </p>
+        <p class="text-muted small mb-2">
+          Aggiornato {{ p.updated_at|date:"d M Y · H:i" }}
+        </p>
+        <div class="mt-auto d-flex gap-2">
+          <a href="{% url 'projects:project_editor' p.uuid %}" class="mw-btn mw-btn-primary mw-btn-sm flex-grow-1">
+            <i class="bi bi-pencil"></i> Apri editor
+          </a>
+          <a href="{{ p.preview_url_base }}" target="_blank" class="mw-btn mw-btn-ghost mw-btn-sm" title="Apri anteprima">
+            <i class="bi bi-eye"></i>
+          </a>
+        </div>
+      </article>
+    </div>
+    {% endfor %}
   </div>
   {% else %}
-  <div class="alert alert-light border text-center py-5 mb-5">
-    <p class="mb-2">Non hai ancora progetti.</p>
-    <p class="text-muted mb-0">Derivane uno da un template premium qui sotto.</p>
+  <div class="p-5 border rounded-3 bg-light text-center mb-4">
+    <p class="h5 mb-2">Non hai ancora progetti</p>
+    <p class="text-muted mb-4">
+      Scegli un template dal catalogo e clicca <strong>Personalizza</strong> per aprirlo qui.
+    </p>
+    <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-primary">
+      <i class="bi bi-grid-3x3-gap"></i> Vai al catalogo
+    </a>
   </div>
   {% endif %}
 
-  <h2 id="nuovo" class="h4 mt-5 mb-3">Crea un nuovo progetto</h2>
-  <p class="text-muted">
-    Scegli uno dei template pubblicati. Foundation v1 supporta solo gli archetipi
-    abilitati all'editor — gli altri arriveranno con le prossime sub-phase A.
-  </p>
-
   {% if editable_templates %}
-  <form method="post" action="{% url 'projects:project_create' %}" class="row g-3">
-    {% csrf_token %}
-    <div class="col-md-6">
-      <label class="form-label" for="template_slug">Template sorgente</label>
-      <select class="form-select" id="template_slug" name="template_slug" required>
-        <option value="">— Seleziona —</option>
-        {% for t in editable_templates %}
-          <option value="{{ t.slug }}">
-            {{ t.category.name }} · {{ t.name }}
-          </option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-4">
-      <label class="form-label" for="project_name">Nome del progetto (opzionale)</label>
-      <input type="text" class="form-control" id="project_name" name="name"
-             placeholder="Es. Studio Ferri · homepage 2026">
-    </div>
-    <div class="col-md-2 d-flex align-items-end">
-      <button type="submit" class="btn btn-dark w-100">Crea</button>
-    </div>
-  </form>
-  {% else %}
-  <div class="alert alert-warning">
-    Nessun template con archetipo editor-ready è attualmente disponibile.
-    Phase A.1 abilita l'archetipo <code>agency-creative-studio</code> —
-    assicurati che <strong>vertex-creative-agency</strong> sia presente a catalogo.
-  </div>
+  <details class="mt-4">
+    <summary class="text-muted small" style="cursor: pointer;">
+      Oppure crea un progetto direttamente da qui
+    </summary>
+    <form method="post" action="{% url 'projects:project_create' %}" class="row g-3 mt-2 align-items-end">
+      {% csrf_token %}
+      <div class="col-md-6">
+        <label class="form-label small text-muted" for="template_slug">Template</label>
+        <select class="form-select" id="template_slug" name="template_slug" required>
+          <option value="">— Seleziona —</option>
+          {% for t in editable_templates %}
+            <option value="{{ t.slug }}">{{ t.category.name }} · {{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small text-muted" for="project_name">Nome del progetto (opzionale)</label>
+        <input type="text" class="form-control" id="project_name" name="name"
+               placeholder="Es. Studio Ferri · homepage 2026">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="mw-btn mw-btn-secondary w-100">Crea</button>
+      </div>
+    </form>
+  </details>
   {% endif %}
 </section>
 {% endblock %}

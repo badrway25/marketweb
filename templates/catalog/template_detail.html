@@ -123,15 +123,21 @@
             {# the "Apri anteprima completa" CTA is unconditional —    #}
             {# no legacy href="#" fallback. The cart CTA remains a     #}
             {# placeholder until commerce lands in Phase 3.            #}
+            {# Phase A.1b (D-087): "Personalizza" is the new primary CTA.  #}
+            {# Anteprima diventa CTA secondaria — il cliente parte dal    #}
+            {# customize flow, non dalla passeggiata read-only.           #}
             <div class="d-grid gap-3 mb-5">
-              <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}" class="mw-btn mw-btn-primary mw-btn-lg w-100" target="_blank" rel="noopener">
+              <a href="{% url 'projects:customize_start' %}?template={{ template.slug }}" class="mw-btn mw-btn-primary mw-btn-lg w-100">
+                <i class="bi bi-magic"></i> Personalizza
+              </a>
+              <p class="mw-detail-preview-note text-muted small mb-0 mt-1">
+                Apri il tuo progetto editabile · salva e torna quando vuoi
+              </p>
+              <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}" class="mw-btn mw-btn-secondary w-100" target="_blank" rel="noopener">
                 <i class="bi bi-eye"></i> Apri anteprima completa
               </a>
-              <p class="mw-detail-preview-note text-muted small mb-0 mt-1 mb-2">
-                Template completo · navigabile su tutte le pagine interne
-              </p>
-              <button type="button" class="mw-btn mw-btn-secondary w-100" disabled aria-disabled="true">
-                <i class="bi bi-cart-plus"></i> Aggiungi al Carrello
+              <button type="button" class="mw-btn mw-btn-ghost w-100" disabled aria-disabled="true" title="Il checkout verrà abilitato nella prossima fase">
+                <i class="bi bi-cart-plus"></i> Acquista in seguito
               </button>
             </div>
 

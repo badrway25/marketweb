@@ -90,11 +90,12 @@ DATABASES = {
 
 AUTH_USER_MODEL = "accounts.User"
 
-# Phase A.1 editor foundation relies on Django auth redirects. A full
-# branded login page is a later phase (accounts app scaffold); until
-# then the admin login serves as the auth surface for project owners.
-LOGIN_URL = "/admin/login/"
+# Phase A.1b (D-087): customer-facing auth lives under /account/.
+# /admin/login/ remains reserved for staff — project owners authenticate
+# against the branded login/signup pages under apps.accounts.
+LOGIN_URL = "/account/login/"
 LOGIN_REDIRECT_URL = "/projects/"
+LOGOUT_REDIRECT_URL = "/"
 
 
 # Password validation

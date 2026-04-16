@@ -14,18 +14,29 @@
         <a class="nav-link" href="{% url 'pages:home' %}">Home</a>
         <a class="nav-link" href="{% url 'catalog:template_list' %}">Template</a>
         <a class="nav-link" href="{% url 'catalog:category_list' %}">Categorie</a>
-        <a class="nav-link" href="#">Prezzi</a>
-        <a class="nav-link" href="#">Chi Siamo</a>
+        {% if user.is_authenticated %}
+          <a class="nav-link" href="{% url 'projects:project_list' %}">I miei progetti</a>
+        {% endif %}
       </div>
 
       <!-- Desktop Actions -->
       <div class="d-none d-lg-flex align-items-center gap-3">
-        <a href="#" class="mw-btn mw-btn-ghost">
-          <i class="bi bi-person"></i> Accedi
-        </a>
-        <a href="#" class="mw-btn mw-btn-primary mw-btn-sm">
-          <i class="bi bi-rocket-takeoff"></i> Inizia Gratis
-        </a>
+        {% if user.is_authenticated %}
+          <span class="text-muted small">Ciao, <strong>{{ user.username }}</strong></span>
+          <form method="post" action="{% url 'accounts:logout' %}" class="d-inline m-0">
+            {% csrf_token %}
+            <button type="submit" class="mw-btn mw-btn-ghost">
+              <i class="bi bi-box-arrow-right"></i> Esci
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="mw-btn mw-btn-ghost">
+            <i class="bi bi-person"></i> Accedi
+          </a>
+          <a href="{% url 'accounts:signup' %}" class="mw-btn mw-btn-primary mw-btn-sm">
+            <i class="bi bi-rocket-takeoff"></i> Inizia Gratis
+          </a>
+        {% endif %}
       </div>
 
       <!-- Mobile Toggle -->
@@ -55,17 +66,27 @@
       <a class="nav-link" href="{% url 'pages:home' %}">Home</a>
       <a class="nav-link" href="{% url 'catalog:template_list' %}">Template</a>
       <a class="nav-link" href="{% url 'catalog:category_list' %}">Categorie</a>
-      <a class="nav-link" href="#">Prezzi</a>
-      <a class="nav-link" href="#">Chi Siamo</a>
+      {% if user.is_authenticated %}
+        <a class="nav-link" href="{% url 'projects:project_list' %}">I miei progetti</a>
+      {% endif %}
     </nav>
 
     <div class="d-flex flex-column gap-3">
-      <a href="#" class="mw-btn mw-btn-secondary w-100">
-        <i class="bi bi-person"></i> Accedi
-      </a>
-      <a href="#" class="mw-btn mw-btn-primary w-100">
-        <i class="bi bi-rocket-takeoff"></i> Inizia Gratis
-      </a>
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="mw-btn mw-btn-secondary w-100">
+            <i class="bi bi-box-arrow-right"></i> Esci
+          </button>
+        </form>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="mw-btn mw-btn-secondary w-100">
+          <i class="bi bi-person"></i> Accedi
+        </a>
+        <a href="{% url 'accounts:signup' %}" class="mw-btn mw-btn-primary w-100">
+          <i class="bi bi-rocket-takeoff"></i> Inizia Gratis
+        </a>
+      {% endif %}
     </div>
   </div>
 </nav>
