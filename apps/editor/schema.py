@@ -385,13 +385,11 @@ AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
 # structural decisions the archetype owns — exposing them would be a
 # D-054 Premium Differentiation Law violation per EDITOR_SCHEMA_BLUEPRINT
 # §1.1–1.3.
+#
+# A.2.6b updates: list-level overwrites stay locked (you cannot replace
+# the whole list to add or remove rows), but individual cells of every
+# list in STRUCTURED_FIELD_SHAPES are now editable as scalar fields.
 LOCKED_KEYS_NOTE: dict[str, str] = {
-    "home.ledger_rows":
-        "Il registro lavori è una lista curata del tuo portfolio — diventerà "
-        "editabile nella Phase A.3 (repeater widget).",
-    "home.capab_items":
-        "Le capacità dello studio hanno una griglia archetipo — personalizzabili "
-        "nella Phase A.3.",
     "section_order":
         "L'ordine delle sezioni è parte del DNA dell'archetipo (D-054). "
         "Cambiarlo rientra nella Phase A.3+.",
@@ -403,6 +401,304 @@ LOCKED_KEYS_NOTE: dict[str, str] = {
     "pages":
         "La lista pagine è archetipo-driven in Foundation v1 — nuove pagine "
         "opt-in arrivano nella Phase A.4.",
+    "_repeater_intro":
+        "Le liste hanno un numero di righe fissato dall'archetipo: puoi "
+        "modificare il contenuto di ogni cella, ma non aggiungere o rimuovere "
+        "righe (Phase A.3 — repeater widget).",
+}
+
+
+# ---------------------------------------------------------------------------
+# A.2.6b · Indexed-row contract — STRUCTURED_FIELD_SHAPES
+# ---------------------------------------------------------------------------
+#
+# The content registry stores several editorial lists as either tuples,
+# dicts or plain strings. A.2.6b exposes the cells of those lists as
+# indexed scalar fields: ``studio.facts.0.label`` walks to row 0 of
+# ``studio.facts`` and updates only the ``label`` cell, leaving the
+# rest of the tuple intact and the other rows untouched.
+#
+# Shape declaration::
+#
+#   {
+#       "kind":      "tuple" | "dict" | "scalar",
+#       "page":      "<page slug for navigation/highlight>",
+#       "label":     "<sidebar accordion label>",
+#       "icon":      "<bootstrap icon>",
+#       "region":    "<CSS selector to highlight>",
+#       "keywords":  [<extra search tokens>],
+#       # Tuple-specific:
+#       "tuple_order": [<full list of column names, in tuple position>],
+#       # Tuple/dict-specific (the exposed subset, in editor display order):
+#       "cols":      [(col_name, field_spec), ...],
+#       # Scalar-specific (one value per cell):
+#       "cell_spec": {<field spec for every row>},
+#   }
+#
+# For tuple lists, ``tuple_order`` lists ALL columns including the locked
+# ones (None). The splicer at apply time uses it to convert the cell name
+# (e.g. "title") into the tuple index. ``cols`` lists only the editable
+# subset — locked columns (slugs, ordinals) never appear in the schema or
+# the editor sidebar.
+#
+# For dict lists (each item is a ``{"name": ..., "role": ...}`` dict),
+# ``cols`` lists the dict-keys to expose, in editor display order. The
+# splicer just sets ``item[col]`` directly; no order translation needed.
+#
+# For scalar lists (plain ``["Monocle", "Domus", ...]``), there is no
+# column dimension — each row IS the value. ``cell_spec`` is the field
+# spec applied to every row.
+
+STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
+    "agency-creative-studio": {
+
+        # ── HOME ────────────────────────────────────────────────────────
+        "home.ledger_rows": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Registro lavori",
+            "icon": "bi-journal-text",
+            "region": ".vx-ledger",
+            "keywords": ["registro", "ledger", "portfolio home", "progetti home"],
+            "tuple_order": ["index", "title", "client", "discipline", "year", "slug"],
+            "cols": [
+                ("title",  {"label": "Titolo",  "type": "text", "max_length": 100}),
+                ("client", {"label": "Cliente", "type": "text", "max_length": 80}),
+            ],
+        },
+        "home.capab_items": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Capacità (riepilogo)",
+            "icon": "bi-grid-3x3-gap",
+            "region": ".vx-capab",
+            "keywords": ["capacità", "discipline", "home capacità", "pilastri"],
+            "tuple_order": ["num", "title", "body", "bullets"],
+            "cols": [
+                ("title", {"label": "Titolo", "type": "text",     "max_length": 80}),
+                ("body",  {"label": "Body",   "type": "textarea", "max_length": 300}),
+            ],
+        },
+        "home.press_publications": {
+            "kind": "scalar",
+            "page": "home",
+            "label": "Home · Pubblicazioni",
+            "icon": "bi-megaphone",
+            "region": ".vx-press",
+            "keywords": ["press", "stampa", "pubblicazioni", "marquee"],
+            "cell_spec": {"label": "Voce", "type": "text", "max_length": 60},
+        },
+        "home.manifesto_principles": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Manifesto · principi",
+            "icon": "bi-list-check",
+            "region": ".vx-manifesto",
+            "keywords": ["manifesto", "principi", "valori"],
+            "tuple_order": ["num", "title", "body"],
+            "cols": [
+                ("title", {"label": "Titolo", "type": "richtext", "max_length": 120}),
+                ("body",  {"label": "Body",   "type": "textarea", "max_length": 300}),
+            ],
+        },
+
+        # ── STUDIO ──────────────────────────────────────────────────────
+        "studio.facts": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Fatti chiave",
+            "icon": "bi-123",
+            "region": ".vx-section",
+            "keywords": ["numeri", "fatti", "facts", "metriche", "kpi", "anni"],
+            "tuple_order": ["number", "label", "sub"],
+            "cols": [
+                ("number", {"label": "Numero",      "type": "text", "max_length": 12}),
+                ("label",  {"label": "Etichetta",   "type": "text", "max_length": 80}),
+                ("sub",    {"label": "Sotto-testo", "type": "text", "max_length": 140}),
+            ],
+        },
+        "studio.partners": {
+            "kind": "dict",
+            "page": "studio",
+            "label": "Studio · Partner",
+            "icon": "bi-people",
+            "region": ".vx-section",
+            "keywords": ["partner", "team", "soci", "fondatori", "bio"],
+            "cols": [
+                ("name",     {"label": "Nome",          "type": "text",     "max_length": 80}),
+                ("role",     {"label": "Ruolo",         "type": "text",     "max_length": 120}),
+                ("bio",      {"label": "Biografia",     "type": "textarea", "max_length": 600}),
+                ("portrait", {"label": "Ritratto · URL","type": "image",    "max_length": 400}),
+            ],
+        },
+        "studio.timeline_rows": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Cronologia",
+            "icon": "bi-clock-history",
+            "region": ".vx-section",
+            "keywords": ["cronologia", "timeline", "anni", "tappe"],
+            "tuple_order": ["year", "title", "body"],
+            "cols": [
+                ("year",  {"label": "Anno",  "type": "text",     "max_length": 12}),
+                ("title", {"label": "Titolo","type": "text",     "max_length": 120}),
+                ("body",  {"label": "Body",  "type": "textarea", "max_length": 400}),
+            ],
+        },
+
+        # ── CAPACITA ────────────────────────────────────────────────────
+        "capacita.disciplines": {
+            "kind": "dict",
+            "page": "capacita",
+            "label": "Capacità · Discipline",
+            "icon": "bi-gem",
+            "region": ".vx-section",
+            "keywords": ["discipline", "servizi", "capacità", "pilastri"],
+            "cols": [
+                ("title",   {"label": "Titolo",   "type": "richtext", "max_length": 100}),
+                ("tagline", {"label": "Tagline",  "type": "text",     "max_length": 140}),
+                ("body",    {"label": "Body",     "type": "textarea", "max_length": 700}),
+            ],
+        },
+        "capacita.engagement_tiles": {
+            "kind": "dict",
+            "page": "capacita",
+            "label": "Capacità · Modi di lavorare",
+            "icon": "bi-handshake",
+            "region": ".vx-section",
+            "keywords": ["engagement", "ingaggio", "modalità", "incarichi"],
+            "cols": [
+                ("title", {"label": "Titolo",   "type": "richtext", "max_length": 100}),
+                ("range", {"label": "Tempistica","type": "text",    "max_length": 100}),
+                ("body",  {"label": "Body",     "type": "textarea", "max_length": 400}),
+            ],
+        },
+
+        # ── LAVORI ──────────────────────────────────────────────────────
+        "lavori.filters": {
+            "kind": "scalar",
+            "page": "lavori",
+            "label": "Lavori · Filtri",
+            "icon": "bi-funnel",
+            "region": ".vx-section",
+            "keywords": ["filtri", "filters", "categorie", "tag"],
+            "cell_spec": {"label": "Voce", "type": "text", "max_length": 40},
+        },
+        "lavori.projects": {
+            "kind": "dict",
+            "page": "lavori",
+            "label": "Lavori · Progetti",
+            "icon": "bi-briefcase",
+            "region": ".vx-section",
+            "keywords": ["progetti", "portfolio", "lavori", "case study"],
+            "cols": [
+                ("title",      {"label": "Titolo",     "type": "text", "max_length": 120}),
+                ("client",     {"label": "Cliente",    "type": "text", "max_length": 100}),
+                ("year",       {"label": "Anno",       "type": "text", "max_length": 16}),
+            ],
+        },
+        "lavori.archive_stats": {
+            "kind": "tuple",
+            "page": "lavori",
+            "label": "Lavori · Statistiche archivio",
+            "icon": "bi-bar-chart",
+            "region": ".vx-section",
+            "keywords": ["statistiche", "archivio", "numeri lavori"],
+            "tuple_order": ["number", "label"],
+            "cols": [
+                ("number", {"label": "Numero",    "type": "richtext", "max_length": 24}),
+                ("label",  {"label": "Etichetta", "type": "text",     "max_length": 80}),
+            ],
+        },
+
+        # ── MANIFESTO ───────────────────────────────────────────────────
+        "manifesto.phases": {
+            "kind": "dict",
+            "page": "manifesto",
+            "label": "Manifesto · Fasi del processo",
+            "icon": "bi-diagram-3",
+            "region": ".vx-section",
+            "keywords": ["fasi", "processo", "metodo", "phases"],
+            "cols": [
+                ("duration", {"label": "Durata",  "type": "text",     "max_length": 60}),
+                ("title",    {"label": "Titolo",  "type": "richtext", "max_length": 120}),
+                ("tagline",  {"label": "Tagline", "type": "text",     "max_length": 120}),
+                ("body",     {"label": "Body",    "type": "textarea", "max_length": 700}),
+            ],
+        },
+        "manifesto.principles": {
+            "kind": "tuple",
+            "page": "manifesto",
+            "label": "Manifesto · Principi di studio",
+            "icon": "bi-list-check",
+            "region": ".vx-section",
+            "keywords": ["principi", "valori", "regole", "manifesto"],
+            "tuple_order": ["num", "title", "body"],
+            "cols": [
+                ("title", {"label": "Titolo", "type": "richtext", "max_length": 120}),
+                ("body",  {"label": "Body",   "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "manifesto.promise_stats": {
+            "kind": "tuple",
+            "page": "manifesto",
+            "label": "Manifesto · Promessa numerica",
+            "icon": "bi-trophy",
+            "region": ".vx-section",
+            "keywords": ["promessa", "numeri", "statistiche", "stats"],
+            "tuple_order": ["number", "label", "sub"],
+            "cols": [
+                ("number", {"label": "Numero",      "type": "richtext", "max_length": 30}),
+                ("label",  {"label": "Etichetta",   "type": "text",     "max_length": 80}),
+                ("sub",    {"label": "Sotto-testo", "type": "textarea", "max_length": 240}),
+            ],
+        },
+
+        # ── CONTATTI ────────────────────────────────────────────────────
+        "contatti.discipline_options": {
+            "kind": "scalar",
+            "page": "contatti",
+            "label": "Contatti · Opzioni disciplina (form)",
+            "icon": "bi-list-ul",
+            "region": ".vx-section",
+            "keywords": ["discipline", "form", "select", "opzioni form", "scelta"],
+            "cell_spec": {"label": "Voce", "type": "text", "max_length": 80},
+        },
+        "contatti.budget_bands": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Bande budget (form)",
+            "icon": "bi-cash-stack",
+            "region": ".vx-section",
+            "keywords": ["budget", "bande", "fasce", "prezzo", "form"],
+            "tuple_order": ["slug", "label"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 60}),
+            ],
+        },
+        "contatti.channels": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Canali diretti",
+            "icon": "bi-broadcast",
+            "region": ".vx-section",
+            "keywords": ["canali", "channels", "telefono", "email", "linkedin", "studio"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 40}),
+                ("value", {"label": "Valore",    "type": "text", "max_length": 100}),
+            ],
+        },
+    },
+}
+
+
+# Map archetype → (template_slug, default_locale) so that the indexed
+# field generator can find the baseline list lengths. Foundation v1
+# only has one template per archetype so a flat dict is enough; once
+# multiple templates share an archetype this becomes a query.
+_ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
+    "agency-creative-studio": ("vertex-creative-agency", "it"),
 }
 
 
@@ -432,9 +728,14 @@ def iter_groups(archetype: str) -> list[dict[str, Any]]:
     """Return the raw group list for an archetype (empty if unsupported).
 
     Used by the editor view and by tests that need to introspect group
-    metadata like ``page`` and ``region``.
+    metadata like ``page`` and ``region``. A.2.6b: synthetic groups for
+    the indexed-row contract are appended after the curated scalar
+    groups so the editor sidebar shows them in the canonical order
+    (chrome → home → page-by-page → contact_info / footer → indexed).
     """
-    return list(_ARCHETYPE_SCHEMAS.get(archetype) or [])
+    base = list(_ARCHETYPE_SCHEMAS.get(archetype) or [])
+    base.extend(_iter_indexed_groups(archetype))
+    return base
 
 
 def iter_editable_fields(archetype: str) -> list[tuple[str, dict[str, Any]]]:
@@ -443,18 +744,153 @@ def iter_editable_fields(archetype: str) -> list[tuple[str, dict[str, Any]]]:
     Groups may expose either a flat ``fields`` list OR a ``subgroups``
     list of ``{label, fields}`` dicts — this helper flattens both
     shapes so downstream validators see a uniform stream of tuples.
+    A.2.6b: indexed-row paths (``studio.facts.0.label`` etc.) flow in
+    via ``_iter_indexed_groups`` and are exposed identically.
     """
-    schema = get_schema(archetype)
-    if not schema:
-        return []
     out: list[tuple[str, dict[str, Any]]] = []
-    for group in schema:
+    for group in iter_groups(archetype):
         if "subgroups" in group:
             for sub in group["subgroups"]:
                 out.extend(sub["fields"])
         else:
             out.extend(group["fields"])
     return out
+
+
+# ---------------------------------------------------------------------------
+# A.2.6b · Indexed group generator
+# ---------------------------------------------------------------------------
+
+def _iter_indexed_groups(archetype: str) -> list[dict[str, Any]]:
+    """Build synthetic schema groups for every list in
+    ``STRUCTURED_FIELD_SHAPES[archetype]``.
+
+    Row counts come from the baseline content registry — we never
+    invent rows the template doesn't already author. Each list becomes
+    one accordion with one subgroup per row (``Riga 1`` … ``Riga N``)
+    and one field per editable column. The subgroup label leans on the
+    customer's own first column where it reads well (``"Riga 1 · 8"``
+    for ``studio.facts``); everywhere else it stays a clean ``Riga N``.
+    """
+    shapes = STRUCTURED_FIELD_SHAPES.get(archetype) or {}
+    if not shapes:
+        return []
+
+    baseline = _baseline_content_for(archetype)
+    if not baseline:
+        return []
+
+    out: list[dict[str, Any]] = []
+    for list_path, shape in shapes.items():
+        list_data = _resolve_path(baseline, list_path)
+        if not isinstance(list_data, list) or not list_data:
+            continue
+        rows = len(list_data)
+        out.append(_build_indexed_group(list_path, shape, list_data, rows))
+    return out
+
+
+def _build_indexed_group(
+    list_path: str,
+    shape: dict[str, Any],
+    list_data: list[Any],
+    rows: int,
+) -> dict[str, Any]:
+    kind = shape["kind"]
+    group_id = f"idx__{list_path.replace('.', '__')}"
+    subgroups: list[dict[str, Any]] = []
+    for i in range(rows):
+        sub_label = _row_subgroup_label(i, shape, list_data[i])
+        fields: list[tuple[str, dict[str, Any]]] = []
+        if kind == "scalar":
+            fields.append((f"{list_path}.{i}", dict(shape["cell_spec"])))
+        else:  # tuple or dict
+            for col_name, col_spec in shape["cols"]:
+                fields.append((f"{list_path}.{i}.{col_name}", dict(col_spec)))
+        subgroups.append({"label": sub_label, "fields": fields})
+    return {
+        "id": group_id,
+        "label": shape["label"],
+        "icon": shape.get("icon", "bi-list-ol"),
+        "region": shape.get("region", ".vx-section"),
+        "page": shape["page"],
+        "keywords": list(shape.get("keywords") or []) + ["lista", "righe"],
+        "help": (
+            f"Modifica le {rows} righe di questa lista. Per aggiungere o "
+            f"rimuovere righe attendi la Phase A.3 (repeater widget)."
+        ),
+        "subgroups": subgroups,
+    }
+
+
+def _row_subgroup_label(idx: int, shape: dict[str, Any], row_data: Any) -> str:
+    """Friendly per-row label (``Riga 1 · Margherita Serafini`` etc.).
+
+    Falls back to a clean ``Riga N`` when no concise hint is available.
+    """
+    base = f"Riga {idx + 1}"
+    hint: str | None = None
+    kind = shape["kind"]
+    if kind == "dict" and isinstance(row_data, dict):
+        for candidate in ("name", "title", "label"):
+            value = row_data.get(candidate)
+            if isinstance(value, str) and value.strip():
+                hint = value
+                break
+    elif kind == "tuple" and isinstance(row_data, (list, tuple)):
+        order = shape.get("tuple_order") or []
+        for candidate in ("title", "label", "year", "number"):
+            if candidate in order:
+                pos = order.index(candidate)
+                if pos < len(row_data):
+                    value = row_data[pos]
+                    if isinstance(value, str) and value.strip():
+                        hint = value
+                        break
+    elif kind == "scalar" and isinstance(row_data, str) and row_data.strip():
+        hint = row_data
+    if hint:
+        # Strip rich-text tags so the subgroup label stays clean.
+        clean = hint.replace("<em>", "").replace("</em>", "")
+        clean = clean.strip()
+        if len(clean) > 38:
+            clean = clean[:36].rstrip() + "…"
+        return f"{base} · {clean}"
+    return base
+
+
+def _baseline_content_for(archetype: str) -> dict[str, Any] | None:
+    """Lazy helper — fetches the IT baseline registry for an archetype.
+
+    Lazy import prevents a startup-time circular dep against
+    ``apps.catalog`` (which transitively wants the editor schema for
+    its admin forms).
+    """
+    pair = _ARCHETYPE_BASELINE_TEMPLATE.get(archetype)
+    if pair is None:
+        return None
+    template_slug, locale = pair
+    try:
+        from apps.catalog import template_content  # local import — see docstring
+    except Exception:
+        return None
+    return template_content.get_content(template_slug, locale) or None
+
+
+def _resolve_path(tree: Any, dotted: str) -> Any:
+    cursor: Any = tree
+    for segment in dotted.split("."):
+        if not isinstance(cursor, dict):
+            return None
+        cursor = cursor.get(segment)
+        if cursor is None:
+            return None
+    return cursor
+
+
+def get_structured_shapes(archetype: str) -> dict[str, dict[str, Any]]:
+    """Public accessor used by the rendering splicer."""
+    return STRUCTURED_FIELD_SHAPES.get(archetype) or {}
 
 
 def get_field_spec(archetype: str, key_path: str) -> dict[str, Any] | None:

@@ -35,8 +35,8 @@ from apps.editor.schema import (
     DESIGN_TOKEN_FIELDS,
     InvalidEditableField,
     LOCKED_KEYS_NOTE,
-    get_schema,
     is_supported_archetype,
+    iter_groups,
 )
 from apps.projects import selectors, services
 
@@ -166,7 +166,10 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         project = self.project
-        schema = get_schema(project.source_archetype) or []
+        # A.2.6b: iter_groups returns curated + synthetic indexed-row
+        # groups so the sidebar surfaces all 32 accordions for the
+        # agency-creative-studio archetype (was 14 in A.2.6a).
+        schema = iter_groups(project.source_archetype)
 
         # Materialise the form values: override-if-present else baseline.
         # Groups may expose a flat "fields" list OR a "subgroups" list of
