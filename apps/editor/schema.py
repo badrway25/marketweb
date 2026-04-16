@@ -45,7 +45,22 @@ Locked keys — and anything NOT in this whitelist — cannot be written.
 """
 from __future__ import annotations
 
+import re
 from typing import Any
+
+
+# A.3a · structural sentinels + uid pattern.
+# `__meta__` is the reserved child-key for a mutable list's structural
+# mutations. `UID_RE` matches the `a<digits>` shape used for rows the
+# customer added. Baseline rows keep integer indices so the math of
+# existing cell-override paths stays untouched.
+META_KEY = "__meta__"
+UID_RE = re.compile(r"^a\d+$")
+
+
+def is_uid(segment: str) -> bool:
+    """True if ``segment`` is a well-formed added-row uid (``a0``, ``a12``)."""
+    return bool(UID_RE.match(segment))
 
 from apps.projects.models import ProjectDesignTokens
 
@@ -516,6 +531,11 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
                 ("label",  {"label": "Etichetta",   "type": "text", "max_length": 80}),
                 ("sub",    {"label": "Sotto-testo", "type": "text", "max_length": 140}),
             ],
+            # A.3a — first wave repeater. Customer can add/remove rows
+            # between these bounds. Other mutable=True lists ship in A.3c.
+            "mutable": True,
+            "min_rows": 1,
+            "max_rows": 8,
         },
         "studio.partners": {
             "kind": "dict",
@@ -530,6 +550,11 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
                 ("bio",      {"label": "Biografia",     "type": "textarea", "max_length": 600}),
                 ("portrait", {"label": "Ritratto · URL","type": "image",    "max_length": 400}),
             ],
+            # A.3a — first wave repeater. min=2 preserves the "a partnership,
+            # not a solo studio" narrative of the agency archetype.
+            "mutable": True,
+            "min_rows": 2,
+            "max_rows": 8,
         },
         "studio.timeline_rows": {
             "kind": "tuple",
@@ -724,28 +749,28 @@ def is_supported_archetype(archetype: str) -> bool:
     return archetype in _ARCHETYPE_SCHEMAS
 
 
-def iter_groups(archetype: str) -> list[dict[str, Any]]:
+def iter_groups(
+    archetype: str,
+    meta_by_path: dict[str, dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     """Return the raw group list for an archetype (empty if unsupported).
 
-    Used by the editor view and by tests that need to introspect group
-    metadata like ``page`` and ``region``. A.2.6b: synthetic groups for
-    the indexed-row contract are appended after the curated scalar
-    groups so the editor sidebar shows them in the canonical order
-    (chrome → home → page-by-page → contact_info / footer → indexed).
+    When ``meta_by_path`` is supplied, indexed groups reflect the
+    **effective** row state of a specific project (baseline minus
+    removed rows + added uid rows). When it is None the returned
+    groups describe the baseline registry shape — the form required
+    by ``iter_editable_fields`` and ``validate_key_path``.
     """
     base = list(_ARCHETYPE_SCHEMAS.get(archetype) or [])
-    base.extend(_iter_indexed_groups(archetype))
+    base.extend(_iter_indexed_groups(archetype, meta_by_path))
     return base
 
 
 def iter_editable_fields(archetype: str) -> list[tuple[str, dict[str, Any]]]:
     """Flat list of (key_path, field_spec) tuples for an archetype.
 
-    Groups may expose either a flat ``fields`` list OR a ``subgroups``
-    list of ``{label, fields}`` dicts — this helper flattens both
-    shapes so downstream validators see a uniform stream of tuples.
-    A.2.6b: indexed-row paths (``studio.facts.0.label`` etc.) flow in
-    via ``_iter_indexed_groups`` and are exposed identically.
+    Baseline-only (no project meta). Added-row uid paths are validated
+    via ``_validate_uid_cell_path`` in ``validate_key_path``.
     """
     out: list[tuple[str, dict[str, Any]]] = []
     for group in iter_groups(archetype):
@@ -761,16 +786,20 @@ def iter_editable_fields(archetype: str) -> list[tuple[str, dict[str, Any]]]:
 # A.2.6b · Indexed group generator
 # ---------------------------------------------------------------------------
 
-def _iter_indexed_groups(archetype: str) -> list[dict[str, Any]]:
+def _iter_indexed_groups(
+    archetype: str,
+    meta_by_path: dict[str, dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     """Build synthetic schema groups for every list in
     ``STRUCTURED_FIELD_SHAPES[archetype]``.
 
-    Row counts come from the baseline content registry — we never
-    invent rows the template doesn't already author. Each list becomes
-    one accordion with one subgroup per row (``Riga 1`` … ``Riga N``)
-    and one field per editable column. The subgroup label leans on the
-    customer's own first column where it reads well (``"Riga 1 · 8"``
-    for ``studio.facts``); everywhere else it stays a clean ``Riga N``.
+    Baseline mode (``meta_by_path=None``): one subgroup per baseline
+    row, keyed on integer index. Used by ``iter_editable_fields``.
+
+    Project mode: each mutable list consults ``meta_by_path[list_path]``
+    so the sidebar reflects the effective row state — removed baseline
+    rows are hidden and added uid rows appended. Every subgroup carries
+    ``row_identity`` so the UI can render the correct remove button.
     """
     shapes = STRUCTURED_FIELD_SHAPES.get(archetype) or {}
     if not shapes:
@@ -785,29 +814,75 @@ def _iter_indexed_groups(archetype: str) -> list[dict[str, Any]]:
         list_data = _resolve_path(baseline, list_path)
         if not isinstance(list_data, list) or not list_data:
             continue
-        rows = len(list_data)
-        out.append(_build_indexed_group(list_path, shape, list_data, rows))
+        meta = (meta_by_path or {}).get(list_path)
+        out.append(_build_indexed_group(list_path, shape, list_data, meta))
     return out
 
 
 def _build_indexed_group(
     list_path: str,
     shape: dict[str, Any],
-    list_data: list[Any],
-    rows: int,
+    baseline_rows: list[Any],
+    meta: dict[str, Any] | None,
 ) -> dict[str, Any]:
     kind = shape["kind"]
     group_id = f"idx__{list_path.replace('.', '__')}"
+    removed = set(
+        (meta.get("removed") or []) if isinstance(meta, dict) else []
+    )
+    added_entries = (
+        (meta.get("added") or []) if isinstance(meta, dict) else []
+    )
+
     subgroups: list[dict[str, Any]] = []
-    for i in range(rows):
-        sub_label = _row_subgroup_label(i, shape, list_data[i])
-        fields: list[tuple[str, dict[str, Any]]] = []
-        if kind == "scalar":
-            fields.append((f"{list_path}.{i}", dict(shape["cell_spec"])))
-        else:  # tuple or dict
-            for col_name, col_spec in shape["cols"]:
-                fields.append((f"{list_path}.{i}.{col_name}", dict(col_spec)))
-        subgroups.append({"label": sub_label, "fields": fields})
+    position = 0
+    # Baseline rows (filtered by removed)
+    for baseline_idx, row in enumerate(baseline_rows):
+        if baseline_idx in removed:
+            continue
+        position += 1
+        sub_label = _row_subgroup_label(position - 1, shape, row)
+        fields = _build_row_fields(list_path, shape, str(baseline_idx))
+        subgroups.append({
+            "label": sub_label,
+            "fields": fields,
+            "row_identity": {
+                "kind": "baseline",
+                "baseline_idx": baseline_idx,
+                "segment": str(baseline_idx),
+            },
+        })
+    # Added rows (effective shape = empty)
+    for entry in added_entries:
+        if not isinstance(entry, dict) or not isinstance(entry.get("uid"), str):
+            continue
+        uid = entry["uid"]
+        position += 1
+        sub_label = f"Riga {position}"
+        fields = _build_row_fields(list_path, shape, uid)
+        subgroups.append({
+            "label": sub_label,
+            "fields": fields,
+            "row_identity": {
+                "kind": "added",
+                "uid": uid,
+                "segment": uid,
+            },
+        })
+
+    mutable = bool(shape.get("mutable"))
+    min_rows = shape.get("min_rows", 1)
+    max_rows = shape.get("max_rows", len(baseline_rows))
+    help_text = (
+        f"Modifica il contenuto di ognuna delle {len(subgroups)} righe. "
+        f"Aggiungere o rimuovere righe arriverà a breve."
+    )
+    if mutable:
+        help_text = (
+            f"Modifica il contenuto di ognuna delle {len(subgroups)} righe. "
+            f"Puoi aggiungere o rimuovere righe (minimo {min_rows}, massimo {max_rows})."
+        )
+
     return {
         "id": group_id,
         "label": shape["label"],
@@ -815,12 +890,28 @@ def _build_indexed_group(
         "region": shape.get("region", ".vx-section"),
         "page": shape["page"],
         "keywords": list(shape.get("keywords") or []) + ["lista", "righe"],
-        "help": (
-            f"Modifica il contenuto di ognuna delle {rows} righe. "
-            f"Aggiungere o rimuovere righe arriverà a breve."
-        ),
+        "help": help_text,
         "subgroups": subgroups,
+        # A.3a — expose mutability metadata for the sidebar UI.
+        "mutable": mutable,
+        "min_rows": min_rows,
+        "max_rows": max_rows,
+        "list_path": list_path,
+        "effective_length": len(subgroups),
     }
+
+
+def _build_row_fields(
+    list_path: str, shape: dict[str, Any], segment: str,
+) -> list[tuple[str, dict[str, Any]]]:
+    """Build (key_path, spec) pairs for one row — baseline idx or uid."""
+    kind = shape["kind"]
+    if kind == "scalar":
+        return [(f"{list_path}.{segment}", dict(shape["cell_spec"]))]
+    return [
+        (f"{list_path}.{segment}.{col}", dict(spec))
+        for col, spec in (shape.get("cols") or [])
+    ]
 
 
 def _row_subgroup_label(idx: int, shape: dict[str, Any], row_data: Any) -> str:
@@ -894,21 +985,97 @@ def get_structured_shapes(archetype: str) -> dict[str, dict[str, Any]]:
 
 
 def get_field_spec(archetype: str, key_path: str) -> dict[str, Any] | None:
-    """Look up the widget spec for a key_path (None if not editable)."""
+    """Look up the widget spec for a key_path (None if not editable).
+
+    A.3a: also resolves uid cell paths (``studio.partners.a0.name``) by
+    matching the list's ``cols`` spec — the spec is identical between a
+    baseline row and an added row, only the path prefix differs.
+    """
     for path, spec in iter_editable_fields(archetype):
         if path == key_path:
             return spec
+    # A.3a — uid cell fallback
+    parts = key_path.split(".")
+    for cut in range(len(parts) - 1, 0, -1):
+        list_path = ".".join(parts[:cut])
+        shape = get_list_shape(archetype, list_path)
+        if not shape or not shape.get("mutable"):
+            continue
+        remaining = parts[cut:]
+        if not remaining or not is_uid(remaining[0]):
+            return None
+        kind = shape.get("kind")
+        if kind == "scalar" and len(remaining) == 1:
+            return dict(shape["cell_spec"])
+        if kind in ("tuple", "dict") and len(remaining) == 2:
+            col = remaining[1]
+            for name, spec in (shape.get("cols") or []):
+                if name == col:
+                    return dict(spec)
     return None
 
 
+def get_list_shape(archetype: str, list_path: str) -> dict[str, Any] | None:
+    """Return the STRUCTURED_FIELD_SHAPES entry for a list, or None."""
+    return (STRUCTURED_FIELD_SHAPES.get(archetype) or {}).get(list_path)
+
+
+def is_mutable_list(archetype: str, list_path: str) -> bool:
+    """A.3a — True iff the list is opted-in to row add/remove."""
+    shape = get_list_shape(archetype, list_path)
+    return bool(shape and shape.get("mutable"))
+
+
+def _validate_uid_cell_path(archetype: str, key_path: str) -> bool:
+    """A.3a — accept ``<mutable_list>.a<N>.<col>`` for dict/tuple lists and
+    ``<mutable_list>.a<N>`` for scalar lists. Returns True if the path is a
+    well-formed cell override against a mutable list's added row. The
+    service layer is responsible for verifying that the uid actually
+    exists in the project's meta; validator stays stateless.
+    """
+    parts = key_path.split(".")
+    if len(parts) < 2:
+        return False
+    # Walk longest-prefix-first so nested lists (none today, guarded for
+    # future phases) prefer the deepest mutable match.
+    for cut in range(len(parts) - 1, 0, -1):
+        list_path = ".".join(parts[:cut])
+        shape = get_list_shape(archetype, list_path)
+        if not shape or not shape.get("mutable"):
+            continue
+        remaining = parts[cut:]
+        if not remaining or not is_uid(remaining[0]):
+            return False
+        kind = shape.get("kind")
+        if kind == "scalar":
+            return len(remaining) == 1
+        # tuple / dict
+        if len(remaining) != 2:
+            return False
+        col = remaining[1]
+        col_names = [name for name, _spec in (shape.get("cols") or [])]
+        return col in col_names
+    return False
+
+
 def validate_key_path(archetype: str, key_path: str) -> None:
-    """Raise ``InvalidEditableField`` if the path is DNA-locked."""
-    if get_field_spec(archetype, key_path) is None:
-        raise InvalidEditableField(
-            f"Field '{key_path}' is not editable for archetype "
-            f"'{archetype}'. It is either DNA-locked or out of scope "
-            f"for the current editor phase."
-        )
+    """Raise ``InvalidEditableField`` if the path is not writable.
+
+    A.3a extends A.2.6b by accepting ``<mutable_list>.a<N>.<col>`` shapes
+    for cell overrides on added rows. The structural ``__meta__`` sentinel
+    is NOT accepted here — it is written exclusively through
+    ``services.add_row`` / ``services.remove_row`` so customer autosave
+    can never corrupt a list's structural state.
+    """
+    if get_field_spec(archetype, key_path) is not None:
+        return
+    if _validate_uid_cell_path(archetype, key_path):
+        return
+    raise InvalidEditableField(
+        f"Field '{key_path}' is not editable for archetype "
+        f"'{archetype}'. It is either DNA-locked or out of scope "
+        f"for the current editor phase."
+    )
 
 
 def validate_value(archetype: str, key_path: str, value: Any) -> Any:

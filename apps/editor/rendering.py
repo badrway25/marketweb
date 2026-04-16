@@ -16,6 +16,17 @@ list unpacks like a 3-element tuple). Dicts and plain-string lists
 update in place. See ``apps.editor.schema.STRUCTURED_FIELD_SHAPES``
 for the per-list contract.
 
+A.3a: mutable lists (currently ``studio.facts`` + ``studio.partners``)
+carry an additional ``__meta__`` sentinel override that describes the
+structural mutation — which baseline rows were removed and which uid
+rows were added. We materialize the effective list BEFORE applying
+cell overrides so per-cell paths land on the right row regardless of
+add/remove order. Baseline row indices in cell paths stay stable: a
+cell override `.2.name` means "the row that was at baseline position 2",
+which may now sit at a different effective-list position after a row
+earlier in the list was removed. Added-row cells use an uid prefix:
+`.a0.name`, `.a1.name`, etc.
+
 See EDITOR_SCHEMA_BLUEPRINT §7 read-path for the model.
 """
 from __future__ import annotations
@@ -23,7 +34,11 @@ from __future__ import annotations
 import copy
 from typing import Any
 
-from apps.editor.schema import get_structured_shapes
+from apps.editor.schema import (
+    META_KEY,
+    get_structured_shapes,
+    is_uid,
+)
 from apps.projects.models import CustomerProject
 
 
@@ -37,13 +52,40 @@ def apply_project_overrides(
     - `content` is the catalog-side registry block (site + pages + per-page keys).
     - `theme` is the catalog-side tokens dict (primary/secondary/accent/fonts).
     The returned tuple is deep-copied so callers can mutate freely.
+
+    A.3a: two-phase pass. Mutable lists are rebuilt from their
+    ``__meta__`` sentinel first so later cell overrides land on the
+    correct effective-list position.
     """
     merged_content = copy.deepcopy(content)
     merged_theme = dict(theme)
 
     shapes = get_structured_shapes(project.source_archetype)
-    for row in project.content_overrides.all():
-        _apply_override(merged_content, row.key_path, row.value_decoded, shapes)
+    all_overrides = list(project.content_overrides.all())
+
+    # Phase A — materialize mutable lists and compute path-resolution
+    # maps. Must happen BEFORE any cell override is applied so splicing
+    # does not land on the pre-mutation list.
+    list_maps: dict[str, dict[str, Any]] = {}
+    for row in all_overrides:
+        list_path = _extract_meta_list_path(row.key_path)
+        if list_path is None:
+            continue
+        shape = shapes.get(list_path)
+        if not shape or not shape.get("mutable"):
+            continue
+        meta = row.value_decoded
+        if not isinstance(meta, dict):
+            continue
+        _materialize_mutable_list(merged_content, list_path, shape, meta, list_maps)
+
+    # Phase B — apply cell overrides, routing through list_maps for
+    # mutable-list paths so (baseline idx) → (effective pos) and
+    # (uid) → (effective pos) resolve correctly.
+    for row in all_overrides:
+        if _extract_meta_list_path(row.key_path) is not None:
+            continue
+        _apply_override(merged_content, row.key_path, row.value_decoded, shapes, list_maps)
 
     tokens = getattr(project, "tokens", None)
     if tokens is not None:
@@ -52,40 +94,128 @@ def apply_project_overrides(
     return merged_content, merged_theme
 
 
+# ---------------------------------------------------------------------------
+# A.3a · mutable-list materialization
+# ---------------------------------------------------------------------------
+
+def _extract_meta_list_path(key_path: str) -> str | None:
+    """Return the list_path if ``key_path`` is a structural meta sentinel,
+    otherwise ``None``. ``"studio.partners.__meta__"`` → ``"studio.partners"``.
+    """
+    suffix = "." + META_KEY
+    if key_path.endswith(suffix):
+        return key_path[: -len(suffix)]
+    return None
+
+
+def _shape_default_row(shape: dict[str, Any]) -> Any:
+    """Zero-value row for a new (added) row in a mutable list.
+
+    Tuple → list of empty strings in ``tuple_order``.
+    Dict  → dict with each declared col set to empty string.
+    Scalar → empty string.
+    """
+    kind = shape.get("kind")
+    if kind == "tuple":
+        return ["" for _ in shape.get("tuple_order") or []]
+    if kind == "dict":
+        return {name: "" for name, _spec in shape.get("cols") or []}
+    return ""
+
+
+def _materialize_mutable_list(
+    tree: dict[str, Any],
+    list_path: str,
+    shape: dict[str, Any],
+    meta: dict[str, Any],
+    list_maps: dict[str, dict[str, Any]],
+) -> None:
+    """Rebuild the effective list in-place and record position maps.
+
+    The baseline list at ``list_path`` is walked, rows whose index is in
+    ``meta["removed"]`` are filtered out, and one default row is
+    appended per entry in ``meta["added"]`` (in declaration order).
+    Two maps are produced for Phase B:
+
+    - ``baseline_idx_to_pos`` — baseline row index → position in the
+      effective list (or missing if removed).
+    - ``uid_to_pos`` — added-row uid → position in the effective list.
+    """
+    parts = list_path.split(".")
+    parent = _walk_to_parent(tree, parts)
+    if parent is None:
+        return
+    last = parts[-1]
+    baseline = parent.get(last)
+    if not isinstance(baseline, list):
+        return
+
+    removed_raw = meta.get("removed") or []
+    added_raw = meta.get("added") or []
+    removed = {i for i in removed_raw if isinstance(i, int) and 0 <= i < len(baseline)}
+
+    effective: list[Any] = []
+    baseline_idx_to_pos: dict[int, int] = {}
+    for baseline_idx, row in enumerate(baseline):
+        if baseline_idx in removed:
+            continue
+        baseline_idx_to_pos[baseline_idx] = len(effective)
+        # Deep-copy baseline rows: later cell overrides mutate them in
+        # place, and we already deep-copied the top-level tree, but
+        # tuple rows become list rows and nested dicts deserve their
+        # own identity.
+        effective.append(copy.deepcopy(row))
+
+    uid_to_pos: dict[str, int] = {}
+    for entry in added_raw:
+        if not isinstance(entry, dict):
+            continue
+        uid = entry.get("uid")
+        if not isinstance(uid, str) or not is_uid(uid):
+            continue
+        uid_to_pos[uid] = len(effective)
+        effective.append(_shape_default_row(shape))
+
+    parent[last] = effective
+    list_maps[list_path] = {
+        "baseline_idx_to_pos": baseline_idx_to_pos,
+        "uid_to_pos": uid_to_pos,
+    }
+
+
+def _walk_to_parent(tree: dict[str, Any], parts: list[str]) -> dict[str, Any] | None:
+    cursor: Any = tree
+    for seg in parts[:-1]:
+        if not isinstance(cursor, dict):
+            return None
+        cursor = cursor.get(seg)
+        if cursor is None:
+            return None
+    return cursor if isinstance(cursor, dict) else None
+
+
+# ---------------------------------------------------------------------------
+# Cell override apply (A.2.6b shape, extended with uid + list_maps)
+# ---------------------------------------------------------------------------
+
 def _apply_override(
     tree: dict[str, Any],
     key_path: str,
     value: Any,
     shapes: dict[str, dict[str, Any]],
+    list_maps: dict[str, dict[str, Any]],
 ) -> None:
-    """Apply a single override row to the baseline tree.
-
-    Three branches:
-    - The key_path matches a list-prefix in ``shapes`` → splice into
-      the baseline list at the right (row, column) cell.
-    - Otherwise → walk the dict-only path and set the leaf, creating
-      nothing along the way (so a typoed override never invents
-      structure that the skin would then crash trying to render).
-    """
     parts = key_path.split(".")
-
     list_prefix_len = _find_list_prefix(parts, shapes)
     if list_prefix_len is not None:
-        _apply_indexed(tree, parts, list_prefix_len, value, shapes)
+        _apply_indexed(tree, parts, list_prefix_len, value, shapes, list_maps)
         return
-
     _apply_dict_path(tree, parts, value)
 
 
 def _find_list_prefix(
     parts: list[str], shapes: dict[str, dict[str, Any]],
 ) -> int | None:
-    """Length of the longest prefix in ``parts`` that names a list path.
-
-    Returns the *segment count* of the prefix, not a string length.
-    Walks longest-first so a nested list (none today, but guarded for
-    Phase A.3) prefers the deeper match.
-    """
     for cut in range(len(parts) - 1, 0, -1):
         candidate = ".".join(parts[:cut])
         if candidate in shapes:
@@ -99,11 +229,11 @@ def _apply_indexed(
     list_prefix_len: int,
     value: Any,
     shapes: dict[str, dict[str, Any]],
+    list_maps: dict[str, dict[str, Any]],
 ) -> None:
     list_path = ".".join(parts[:list_prefix_len])
     shape = shapes[list_path]
 
-    # Walk dicts down to the parent of the list, then resolve the list itself.
     parent = tree
     for seg in parts[: list_prefix_len - 1]:
         if not isinstance(parent, dict):
@@ -121,47 +251,69 @@ def _apply_indexed(
     remaining = parts[list_prefix_len:]
     if not remaining:
         return  # bare ``studio.facts`` is locked — see LOCKED_KEYS_NOTE
-    try:
-        idx = int(remaining[0])
-    except ValueError:
-        return
-    if idx < 0 or idx >= len(target_list):
-        return
+
+    # A.3a — resolve the first-segment to an effective-list position.
+    first = remaining[0]
+    list_map = list_maps.get(list_path)
+    if list_map is not None:
+        # Mutable list: consult the pre-computed maps.
+        if first in list_map["uid_to_pos"]:
+            pos = list_map["uid_to_pos"][first]
+        else:
+            try:
+                baseline_idx = int(first)
+            except ValueError:
+                return
+            pos = list_map["baseline_idx_to_pos"].get(baseline_idx)
+            if pos is None:
+                return  # row was removed; orphan override, ignore
+    else:
+        # Legacy path (A.2.6b): non-mutable list or mutable list with
+        # no meta (= no structural mutation yet). Baseline index equals
+        # effective position.
+        try:
+            pos = int(first)
+        except ValueError:
+            return
+        if pos < 0 or pos >= len(target_list):
+            return
 
     kind = shape["kind"]
 
     if kind == "scalar":
         if len(remaining) != 1:
             return
-        target_list[idx] = value
+        if pos < 0 or pos >= len(target_list):
+            return
+        target_list[pos] = value
         return
 
     # tuple / dict → need an explicit column at remaining[1]
     if len(remaining) != 2:
         return
     col = remaining[1]
+    if pos < 0 or pos >= len(target_list):
+        return
 
     if kind == "tuple":
         order = shape.get("tuple_order") or []
         if col not in order:
             return
         col_idx = order.index(col)
-        original = target_list[idx]
+        original = target_list[pos]
         if not isinstance(original, (list, tuple)):
             return
         if col_idx >= len(original):
             return
         new_row = list(original)
         new_row[col_idx] = value
-        target_list[idx] = new_row
+        target_list[pos] = new_row
         return
 
     if kind == "dict":
-        item = target_list[idx]
+        item = target_list[pos]
         if not isinstance(item, dict):
             return
-        # Limit writes to the schema-declared columns so a typo can never
-        # poison a dict with garbage keys the skin doesn't expect.
         allowed = {name for name, _spec in shape.get("cols") or []}
         if col not in allowed:
             return
@@ -170,14 +322,6 @@ def _apply_indexed(
 
 
 def _apply_dict_path(tree: dict[str, Any], parts: list[str], value: Any) -> None:
-    """Set a leaf inside a baseline dict tree.
-
-    Strict: every intermediate segment must exist as a dict. We never
-    invent structure — if the path doesn't already resolve, the
-    override is silently dropped at apply time. Validation upstream
-    (validate_key_path) is the layer that prevents bogus paths from
-    ever being stored.
-    """
     cursor: Any = tree
     for seg in parts[:-1]:
         if not isinstance(cursor, dict):

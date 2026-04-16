@@ -81,6 +81,23 @@
   let   currentPage     = cfg.initialPage || "home";
   let   pendingFocusActivation = null;
 
+  // A.3a step 4 — row-op reload preserves the iframe's current page.
+  // Before add/remove triggers location.reload(), the handler stashes
+  // currentPage in sessionStorage; at mount the iframe's first load
+  // handler consumes the hint once, redirecting the preview to the
+  // right page so the customer never loses context after a reload.
+  const PENDING_PAGE_KEY = "ed_pending_row_page";
+  let pendingPageRestore = null;
+  try {
+    const stashed = sessionStorage.getItem(PENDING_PAGE_KEY);
+    if (stashed) {
+      sessionStorage.removeItem(PENDING_PAGE_KEY);
+      if (availablePages.indexOf(stashed) !== -1 && stashed !== "home") {
+        pendingPageRestore = stashed;
+      }
+    }
+  } catch (e) { /* sessionStorage unavailable */ }
+
   function buildPageUrl(page, opts) {
     opts = opts || {};
     const p = page || currentPage || "home";
@@ -248,6 +265,18 @@
       // autosave reload + focus routing stays accurate.
       const detected = pageFromIframeLocation(frame);
       if (detected) currentPage = detected;
+
+      // A.3a step 4 — redirect the preview back to the page the customer
+      // was on before the add/remove reload. Fires exactly once per
+      // mount: the hint is nulled after consumption so a subsequent
+      // user-driven page click inside the iframe is never overridden.
+      if (pendingPageRestore && detected === "home" && pendingPageRestore !== "home") {
+        const target = pendingPageRestore;
+        pendingPageRestore = null;
+        // Defer a tick so the home load settles fully before we re-nav.
+        setTimeout(() => navigatePreviewToPage(target), 40);
+        return;
+      }
 
       // If a focus on a field triggered a page switch, the activation
       // is deferred until this exact load. Consume it ONCE (scroll=true),
@@ -1205,6 +1234,182 @@
       }
     });
   }
+
+  // ────────────────────────────────────────────────────────────
+  // A.3a — repeater row ops (add / remove on mutable lists)
+  //
+  // Add and remove trigger a full editor reload so the server-side
+  // sidebar re-renders with the effective row list. Remove uses an
+  // inline 3s confirm (first click arms the button, second click
+  // within the timeout executes); avoids a modal component.
+  //
+  // After a successful add, the new uid's first editable column is
+  // stashed in sessionStorage so the reloaded page can consume it
+  // via MWEditor.jumpField — landing focus on the empty row so the
+  // customer can start typing immediately.
+  // ────────────────────────────────────────────────────────────
+
+  const PENDING_JUMP_KEY = "ed_pending_row_jump";
+
+  function syncRowAddDisabled() {
+    $$(".ed-group.is-repeater").forEach((group) => {
+      const max = parseInt(group.getAttribute("data-ed-max-rows") || "0", 10);
+      const min = parseInt(group.getAttribute("data-ed-min-rows") || "0", 10);
+      const currentLen = group.querySelectorAll(".ed-subgroup").length;
+      const addBtn = group.querySelector("[data-ed-row-add]");
+      if (addBtn) {
+        const atMax = max > 0 && currentLen >= max;
+        addBtn.disabled = atMax;
+        addBtn.title = atMax ? `Massimo ${max} righe` : "";
+      }
+      group.querySelectorAll("[data-ed-row-remove]").forEach((btn) => {
+        const atMin = min > 0 && currentLen <= min;
+        btn.disabled = atMin;
+        btn.title = atMin ? `Minimo ${min} righe` : "Rimuovi questa riga";
+      });
+    });
+  }
+
+  function postRowOp(url, body) {
+    return fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrfToken,
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      credentials: "same-origin",
+      body: JSON.stringify(body),
+    }).then((r) => r.json().then((data) => ({ status: r.status, data })));
+  }
+
+  // Flush any dirty autosave first so cell edits on existing rows land
+  // before the add/remove reshuffles the sidebar markup.
+  function withAutosaveFlush(run) {
+    if (Object.keys(dirtyContent).length || Object.keys(dirtyTokens).length) {
+      clearTimeout(pendingTimer);
+      flushDirty();
+      setTimeout(run, 500);
+    } else {
+      run();
+    }
+  }
+
+  $$("[data-ed-row-add]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.disabled) return;
+      const group = btn.closest(".ed-group");
+      const listPath = group && group.getAttribute("data-ed-list-path");
+      if (!listPath || !cfg.rowAddUrl) return;
+      btn.disabled = true;
+      withAutosaveFlush(() => {
+        postRowOp(cfg.rowAddUrl, { list_path: listPath })
+          .then(({ status, data }) => {
+            if (status === 200 && data.ok) {
+              if (data.jump_key) {
+                try { sessionStorage.setItem(PENDING_JUMP_KEY, data.jump_key); }
+                catch (e) {}
+              }
+              try { sessionStorage.setItem(PENDING_PAGE_KEY, currentPage); }
+              catch (e) {}
+              // Full reload so the server re-renders the sidebar + iframe
+              // with the new effective list state.
+              window.location.reload();
+            } else {
+              btn.disabled = false;
+              toast(data.error || "Impossibile aggiungere la riga.", "error");
+            }
+          })
+          .catch(() => {
+            btn.disabled = false;
+            toast("Connessione interrotta.", "error");
+          });
+      });
+    });
+  });
+
+  const ROW_REMOVE_ARM_MS = 3000;
+  let removeArmTimer = null;
+
+  function disarmRowRemove(btn) {
+    btn.classList.remove("is-armed");
+    btn.title = "Rimuovi questa riga";
+    btn.innerHTML = '<i class="bi bi-x-lg"></i>';
+  }
+
+  $$("[data-ed-row-remove]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (btn.disabled) return;
+      if (!btn.classList.contains("is-armed")) {
+        // First click — arm
+        $$(".ed-row-remove.is-armed").forEach((other) => disarmRowRemove(other));
+        btn.classList.add("is-armed");
+        btn.title = "Clicca di nuovo per confermare";
+        btn.innerHTML = '<i class="bi bi-check2"></i><span>Conferma</span>';
+        clearTimeout(removeArmTimer);
+        removeArmTimer = setTimeout(() => disarmRowRemove(btn), ROW_REMOVE_ARM_MS);
+        return;
+      }
+      // Second click — fire
+      clearTimeout(removeArmTimer);
+      btn.disabled = true;
+      const subgroup = btn.closest(".ed-subgroup");
+      const group = btn.closest(".ed-group");
+      const listPath = group && group.getAttribute("data-ed-list-path");
+      const rowKind = subgroup && subgroup.getAttribute("data-ed-row-kind");
+      const rowSegment = subgroup && subgroup.getAttribute("data-ed-row-segment");
+      if (!listPath || !rowKind || !rowSegment || !cfg.rowRemoveUrl) {
+        btn.disabled = false;
+        return;
+      }
+      const body = { list_path: listPath };
+      if (rowKind === "added") body.uid = rowSegment;
+      else body.index = parseInt(rowSegment, 10);
+
+      withAutosaveFlush(() => {
+        postRowOp(cfg.rowRemoveUrl, body)
+          .then(({ status, data }) => {
+            if (status === 200 && data.ok) {
+              try { sessionStorage.setItem(PENDING_PAGE_KEY, currentPage); }
+              catch (e) {}
+              window.location.reload();
+            } else {
+              btn.disabled = false;
+              disarmRowRemove(btn);
+              toast(data.error || "Impossibile rimuovere la riga.", "error");
+            }
+          })
+          .catch(() => {
+            btn.disabled = false;
+            disarmRowRemove(btn);
+            toast("Connessione interrotta.", "error");
+          });
+      });
+    });
+  });
+
+  // Disarm any pending confirm when the user clicks elsewhere.
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("[data-ed-row-remove]")) {
+      $$(".ed-row-remove.is-armed").forEach((btn) => disarmRowRemove(btn));
+    }
+  }, true);
+
+  syncRowAddDisabled();
+
+  // Post-add jump: consume the pending_jump hint once, after mount.
+  try {
+    const pending = sessionStorage.getItem(PENDING_JUMP_KEY);
+    if (pending) {
+      sessionStorage.removeItem(PENDING_JUMP_KEY);
+      // Defer so the first autosave + highlight have settled.
+      setTimeout(() => {
+        try { jumpField(pending, "content"); }
+        catch (e) {}
+      }, 250);
+    }
+  } catch (e) { /* sessionStorage may be unavailable */ }
 
   window.addEventListener("beforeunload", () => {
     if (Object.keys(dirtyContent).length || Object.keys(dirtyTokens).length) {

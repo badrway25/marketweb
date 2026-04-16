@@ -16,7 +16,10 @@ from apps.catalog.models import WebTemplate
 from apps.catalog.template_dna import get_dna
 from apps.editor.schema import (
     DESIGN_TOKEN_FIELDS,
+    META_KEY,
     InvalidEditableField,
+    get_list_shape,
+    is_mutable_list,
     is_supported_archetype,
     validate_key_path,
     validate_value,
@@ -398,6 +401,211 @@ def current_value_for(project: CustomerProject, key_path: str) -> Any:
     if override is not None:
         return override.value_decoded
     return resolve_path_in_baseline(project, key_path)
+
+
+# ---------------------------------------------------------------------------
+# A.3a · True repeater interactions (add/remove row on mutable lists)
+# ---------------------------------------------------------------------------
+
+class UnsupportedMutation(Exception):
+    """The list_path is not opted-in to add/remove (``mutable=False``)."""
+
+
+class RowLimitReached(Exception):
+    """Row add/remove would violate the list's min/max row bounds."""
+
+    def __init__(self, kind: str, limit: int):
+        super().__init__(f"Row limit reached: {kind} = {limit}")
+        self.kind = kind  # "min" or "max"
+        self.limit = limit
+
+
+def _empty_meta() -> dict[str, Any]:
+    return {"removed": [], "added": []}
+
+
+def get_list_meta(project: CustomerProject, list_path: str) -> dict[str, Any]:
+    """Return the project's structural meta for a mutable list (or empty).
+
+    The structural record lives at ``<list_path>.__meta__``; when absent
+    the list is in its baseline shape. Never raises — callers consuming
+    this for rendering or UI decisions want a permissive default.
+    """
+    row = ProjectContent.objects.filter(
+        project=project, key_path=f"{list_path}.{META_KEY}",
+    ).first()
+    if row is None:
+        return _empty_meta()
+    value = row.value_decoded
+    if not isinstance(value, dict):
+        return _empty_meta()
+    removed = [i for i in (value.get("removed") or []) if isinstance(i, int)]
+    added = [
+        {"uid": e["uid"]} for e in (value.get("added") or [])
+        if isinstance(e, dict) and isinstance(e.get("uid"), str)
+    ]
+    return {"removed": removed, "added": added}
+
+
+def _baseline_list_length(project: CustomerProject, list_path: str) -> int:
+    """Row count of the baseline list in the catalog registry."""
+    baseline = template_content.get_content(project.source_template.slug, project.locale) or {}
+    cursor: Any = baseline
+    for seg in list_path.split("."):
+        if not isinstance(cursor, dict):
+            return 0
+        cursor = cursor.get(seg)
+    return len(cursor) if isinstance(cursor, list) else 0
+
+
+def _effective_length(baseline_len: int, meta: dict[str, Any]) -> int:
+    """Effective row count after applying removed + added from meta."""
+    removed = set(meta.get("removed") or [])
+    kept = sum(1 for i in range(baseline_len) if i not in removed)
+    return kept + len(meta.get("added") or [])
+
+
+def _next_uid(meta: dict[str, Any]) -> str:
+    """Monotonic uid sequence: a0, a1, a2, … Never recycled — an uid
+    that was removed + re-added stays distinct so stale cell overrides
+    can never collide with a new row.
+    """
+    existing = meta.get("added") or []
+    n = 0
+    for entry in existing:
+        uid = entry.get("uid") if isinstance(entry, dict) else None
+        if isinstance(uid, str) and uid.startswith("a"):
+            try:
+                n = max(n, int(uid[1:]) + 1)
+            except ValueError:
+                continue
+    return f"a{n}"
+
+
+def _persist_meta(project: CustomerProject, list_path: str, meta: dict[str, Any]) -> None:
+    """Write the meta sentinel — or delete the record if meta is empty
+    so sparse-diff stays clean (no-op mutation == baseline == no row).
+    """
+    key = f"{list_path}.{META_KEY}"
+    if not meta.get("removed") and not meta.get("added"):
+        ProjectContent.objects.filter(project=project, key_path=key).delete()
+        return
+    row, _ = ProjectContent.objects.get_or_create(project=project, key_path=key)
+    row.set_value(meta)
+    row.save()
+
+
+def _cascade_delete_cell_overrides(
+    project: CustomerProject, list_path: str, segment: str,
+) -> None:
+    """Delete every cell override keyed under ``<list_path>.<segment>.``.
+
+    Used when a row disappears (baseline remove or added-row revert) so
+    orphan cells never linger. ``segment`` may be a baseline integer
+    index (``"2"``) or an added-row uid (``"a3"``).
+    """
+    prefix = f"{list_path}.{segment}."
+    ProjectContent.objects.filter(
+        project=project, key_path__startswith=prefix,
+    ).delete()
+
+
+@transaction.atomic
+def add_row(
+    *, project: CustomerProject, list_path: str, editor,
+) -> dict[str, Any]:
+    """Append a new row to a mutable list.
+
+    Raises ``UnsupportedMutation`` if the list is not mutable, and
+    ``RowLimitReached("max", ...)`` if the effective length is already
+    at the max_rows bound. Returns a summary dict with the new uid +
+    the updated meta + the new effective length.
+    """
+    archetype = project.source_archetype
+    if not is_mutable_list(archetype, list_path):
+        raise UnsupportedMutation(
+            f"List '{list_path}' is not mutable for archetype '{archetype}'."
+        )
+    shape = get_list_shape(archetype, list_path)
+    max_rows = shape.get("max_rows", 10)
+
+    meta = get_list_meta(project, list_path)
+    baseline_len = _baseline_list_length(project, list_path)
+    current_len = _effective_length(baseline_len, meta)
+    if current_len >= max_rows:
+        raise RowLimitReached("max", max_rows)
+
+    uid = _next_uid(meta)
+    existing_added = list(meta.get("added") or [])
+    existing_added.append({"uid": uid})
+    meta["added"] = existing_added
+    _persist_meta(project, list_path, meta)
+    project.save(update_fields=["updated_at"])
+    return {"uid": uid, "meta": meta, "effective_length": current_len + 1}
+
+
+@transaction.atomic
+def remove_row(
+    *, project: CustomerProject, list_path: str,
+    index: int | None = None, uid: str | None = None,
+    editor,
+) -> dict[str, Any]:
+    """Remove a row from a mutable list.
+
+    Exactly one of ``index`` (baseline int index) or ``uid`` (added row)
+    must be supplied. Cell overrides under the removed row are
+    cascade-deleted so no orphan records remain.
+
+    Raises ``UnsupportedMutation`` for non-mutable lists, and
+    ``RowLimitReached("min", ...)`` when the effective length is already
+    at the min_rows bound.
+    """
+    if (index is None) == (uid is None):
+        raise ValueError("remove_row requires exactly one of index/uid.")
+
+    archetype = project.source_archetype
+    if not is_mutable_list(archetype, list_path):
+        raise UnsupportedMutation(
+            f"List '{list_path}' is not mutable for archetype '{archetype}'."
+        )
+    shape = get_list_shape(archetype, list_path)
+    min_rows = shape.get("min_rows", 1)
+
+    meta = get_list_meta(project, list_path)
+    baseline_len = _baseline_list_length(project, list_path)
+    current_len = _effective_length(baseline_len, meta)
+    if current_len <= min_rows:
+        raise RowLimitReached("min", min_rows)
+
+    if index is not None:
+        if not isinstance(index, int) or index < 0 or index >= baseline_len:
+            raise InvalidEditableField(
+                f"Baseline index {index} out of range for '{list_path}'."
+            )
+        if index in (meta.get("removed") or []):
+            raise InvalidEditableField(
+                f"Baseline row {index} is already removed from '{list_path}'."
+            )
+        existing_removed = list(meta.get("removed") or [])
+        existing_removed.append(index)
+        meta["removed"] = existing_removed
+        _cascade_delete_cell_overrides(project, list_path, str(index))
+    else:
+        added = list(meta.get("added") or [])
+        new_added = [e for e in added if e.get("uid") != uid]
+        if len(new_added) == len(added):
+            raise InvalidEditableField(
+                f"Added-row uid {uid!r} is not present on '{list_path}'."
+            )
+        meta["added"] = new_added
+        _cascade_delete_cell_overrides(project, list_path, uid)
+
+    _persist_meta(project, list_path, meta)
+    project.save(update_fields=["updated_at"])
+    return {"meta": meta, "effective_length": current_len - 1}
+
+
+# ---------------------------------------------------------------------------
 
 
 def iter_editable_templates() -> Iterable[WebTemplate]:

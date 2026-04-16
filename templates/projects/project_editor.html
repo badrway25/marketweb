@@ -121,7 +121,11 @@
 
         {# ── Groups with content fields ───────────────────────── #}
         {% for group in groups %}
-        <section class="ed-group" data-region="{{ group.region }}" data-group-id="{{ group.id }}" data-ed-page="{{ group.page }}">
+        <section class="ed-group{% if group.mutable %} is-repeater{% endif %}"
+                 data-region="{{ group.region }}"
+                 data-group-id="{{ group.id }}"
+                 data-ed-page="{{ group.page }}"
+                 {% if group.mutable %}data-ed-mutable="1" data-ed-list-path="{{ group.list_path }}" data-ed-min-rows="{{ group.min_rows }}" data-ed-max-rows="{{ group.max_rows }}"{% endif %}>
           <button class="ed-group-head" type="button">
             <span class="ed-gicon"><i class="bi {{ group.icon }}"></i></span>
             <span class="ed-glabel">{{ group.label }}</span>
@@ -132,8 +136,17 @@
             {% if group.help %}<p class="ed-group-help">{{ group.help }}</p>{% endif %}
             {% if group.subgroups %}
               {% for sub in group.subgroups %}
-                <div class="ed-subgroup">
-                  <h4 class="ed-subgroup-head">{{ sub.label }}</h4>
+                <div class="ed-subgroup{% if sub.row_identity.kind == 'added' %} is-added-row{% endif %}"
+                     {% if sub.row_identity %}data-ed-row-kind="{{ sub.row_identity.kind }}" data-ed-row-segment="{{ sub.row_identity.segment }}"{% endif %}>
+                  <h4 class="ed-subgroup-head">
+                    <span>{{ sub.label }}</span>
+                    {% if group.mutable and sub.row_identity %}
+                      <button type="button" class="ed-row-remove" data-ed-row-remove
+                              title="Rimuovi questa riga" aria-label="Rimuovi questa riga">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    {% endif %}
+                  </h4>
                   {% for field in sub.fields %}
                     {% include "projects/_editor_field.html" with field=field kind="content" %}
                   {% endfor %}
@@ -143,6 +156,12 @@
               {% for field in group.fields %}
                 {% include "projects/_editor_field.html" with field=field kind="content" %}
               {% endfor %}
+            {% endif %}
+            {% if group.mutable %}
+              <button type="button" class="ed-row-add" data-ed-row-add>
+                <i class="bi bi-plus-lg"></i>
+                <span>Aggiungi riga</span>
+              </button>
             {% endif %}
           </div>
         </section>
@@ -280,6 +299,8 @@
     window.MW_EDITOR_CONFIG = {
       autosaveUrl: "{{ autosave_url|escapejs }}",
       snapshotUrl: "{{ snapshot_url|escapejs }}",
+      rowAddUrl:  "{{ row_add_url|escapejs }}",
+      rowRemoveUrl: "{{ row_remove_url|escapejs }}",
       previewUrl:  "{{ preview_url|escapejs }}",
       baselineUrl: "{{ baseline_preview_url|escapejs }}",
       // A.2.5 page-aware targeting: JS composes per-page URLs from

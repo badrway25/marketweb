@@ -418,6 +418,257 @@ class FoundationModelTests(TestCase):
         )
         self.assertEqual(p.content_overrides.count(), 0)
 
+    # ------------------------------------------------------------------
+    # A.3a · True repeater contract tests (Step 0 — design + math only,
+    # no UI, no HTTP endpoint). All cases use the two lists opted-in to
+    # mutability: studio.facts (tuple, min=1, max=8) and studio.partners
+    # (dict, min=2, max=8).
+    # ------------------------------------------------------------------
+
+    def test_a3a_mutable_flag_whitelists_only_two_lists(self):
+        """Only studio.facts and studio.partners may accept add/remove.
+        Every other indexed list stays locked to its baseline row count."""
+        from apps.editor.schema import STRUCTURED_FIELD_SHAPES, is_mutable_list
+        arc = "agency-creative-studio"
+        mutable = {
+            path for path, shape in STRUCTURED_FIELD_SHAPES[arc].items()
+            if shape.get("mutable")
+        }
+        self.assertEqual(mutable, {"studio.facts", "studio.partners"})
+        # Sanity — representative non-mutable lists still reject
+        for path in ("contatti.channels", "lavori.projects", "home.ledger_rows"):
+            self.assertFalse(is_mutable_list(arc, path))
+
+    def test_a3a_add_row_appends_uid_to_meta(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r1 = services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        r2 = services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        r3 = services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        self.assertEqual(r1["uid"], "a0")
+        self.assertEqual(r2["uid"], "a1")
+        self.assertEqual(r3["uid"], "a2")
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta["added"], [{"uid": "a0"}, {"uid": "a1"}, {"uid": "a2"}])
+        self.assertEqual(meta["removed"], [])
+
+    def test_a3a_remove_baseline_row_records_index_in_removed(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.remove_row(
+            project=p, list_path="studio.partners", index=1, editor=self.owner,
+        )
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta["removed"], [1])
+        self.assertEqual(meta["added"], [])
+
+    def test_a3a_remove_added_row_pops_uid_from_added(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        services.remove_row(
+            project=p, list_path="studio.partners", uid="a0", editor=self.owner,
+        )
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta["added"], [{"uid": "a1"}])
+
+    def test_a3a_effective_list_excludes_removed_and_includes_added(self):
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.remove_row(
+            project=p, list_path="studio.partners", index=1, editor=self.owner,
+        )
+        services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        partners = merged["studio"]["partners"]
+        # baseline had 3 partners; remove 1 + add 2 = 4 effective rows
+        self.assertEqual(len(partners), 4)
+        # First row keeps baseline[0] content
+        self.assertEqual(partners[0]["name"], "Margherita Serafini")
+        # Second row is baseline[2] (Ilaria Ferri, the third original partner)
+        self.assertEqual(partners[1]["name"], "Ilaria Ferri")
+        # Two trailing rows are shape-default for added uids
+        self.assertEqual(partners[2], {"name": "", "role": "", "bio": "", "portrait": ""})
+        self.assertEqual(partners[3], {"name": "", "role": "", "bio": "", "portrait": ""})
+
+    def test_a3a_cell_override_on_added_row_lands_in_effective_position(self):
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = services.add_row(project=p, list_path="studio.partners", editor=self.owner)
+        uid = r["uid"]
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={f"studio.partners.{uid}.name": "Luca Arrighi"},
+        )
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        partners = merged["studio"]["partners"]
+        self.assertEqual(len(partners), 4)
+        self.assertEqual(partners[3]["name"], "Luca Arrighi")
+
+    def test_a3a_remove_baseline_cascades_cell_overrides(self):
+        """When a baseline row is removed, every ProjectContent under
+        its cell prefix must be deleted so no orphan records survive."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={
+                "studio.partners.1.name": "Nome personalizzato",
+                "studio.partners.1.bio":  "Bio personalizzata",
+                "studio.partners.0.name": "Altro partner",   # unrelated baseline 0
+            },
+        )
+        self.assertEqual(p.content_overrides.filter(key_path__startswith="studio.partners.1.").count(), 2)
+        services.remove_row(
+            project=p, list_path="studio.partners", index=1, editor=self.owner,
+        )
+        # Cascade: both cells on baseline row 1 are gone
+        self.assertEqual(p.content_overrides.filter(key_path__startswith="studio.partners.1.").count(), 0)
+        # Unrelated override on baseline row 0 is untouched
+        self.assertEqual(
+            p.content_overrides.filter(key_path="studio.partners.0.name").count(), 1,
+        )
+
+    def test_a3a_min_rows_guard_rejects_last_remove(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # studio.partners has 3 baseline rows; min=2 → only 1 removal allowed.
+        services.remove_row(
+            project=p, list_path="studio.partners", index=0, editor=self.owner,
+        )
+        with self.assertRaises(services.RowLimitReached) as ctx:
+            services.remove_row(
+                project=p, list_path="studio.partners", index=1, editor=self.owner,
+            )
+        self.assertEqual(ctx.exception.kind, "min")
+        self.assertEqual(ctx.exception.limit, 2)
+
+    def test_a3a_max_rows_guard_rejects_over_limit_add(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # studio.facts baseline=4, max=8 → 4 adds before blocking the 5th.
+        for _ in range(4):
+            services.add_row(project=p, list_path="studio.facts", editor=self.owner)
+        with self.assertRaises(services.RowLimitReached) as ctx:
+            services.add_row(project=p, list_path="studio.facts", editor=self.owner)
+        self.assertEqual(ctx.exception.kind, "max")
+        self.assertEqual(ctx.exception.limit, 8)
+
+    def test_a3a_non_mutable_list_rejects_row_ops(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        with self.assertRaises(services.UnsupportedMutation):
+            services.add_row(project=p, list_path="contatti.channels", editor=self.owner)
+        with self.assertRaises(services.UnsupportedMutation):
+            services.remove_row(
+                project=p, list_path="lavori.projects", index=0, editor=self.owner,
+            )
+
+    def test_a3a_sparse_diff_preserved_when_meta_becomes_empty(self):
+        """Add a row then remove it — meta should persist empty → no record."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = services.add_row(project=p, list_path="studio.facts", editor=self.owner)
+        self.assertEqual(
+            p.content_overrides.filter(key_path="studio.facts.__meta__").count(), 1,
+        )
+        services.remove_row(
+            project=p, list_path="studio.facts", uid=r["uid"], editor=self.owner,
+        )
+        # Meta back to baseline → no row left in the overrides table
+        self.assertEqual(
+            p.content_overrides.filter(key_path="studio.facts.__meta__").count(), 0,
+        )
+
+    def test_a3a_ordering_is_stable_across_add_remove_reopen(self):
+        """A.3a step 4 — effective list ordering must be deterministic
+        and survive a full reopen:
+        - baseline rows appear in their original numerical order
+          (minus any ``removed``)
+        - added rows appear AFTER all surviving baseline rows, in the
+          declaration order of ``added[]``
+        - uids are never recycled; a0 can't be reused after being
+          removed and re-added.
+        """
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+
+        # Remove baseline partner at index 0, then add 2 rows, then
+        # remove the first added (a0), then add another one.
+        services.remove_row(project=p, list_path="studio.partners", index=0, editor=self.owner)
+        r1 = services.add_row(project=p, list_path="studio.partners", editor=self.owner)  # a0
+        r2 = services.add_row(project=p, list_path="studio.partners", editor=self.owner)  # a1
+        services.remove_row(project=p, list_path="studio.partners", uid=r1["uid"], editor=self.owner)
+        r3 = services.add_row(project=p, list_path="studio.partners", editor=self.owner)  # a2, never a0
+
+        self.assertEqual(r1["uid"], "a0")
+        self.assertEqual(r2["uid"], "a1")
+        self.assertEqual(r3["uid"], "a2")  # monotonic, never recycled
+
+        # Name the survivors so we can check order by content.
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={
+                "studio.partners.1.name": "baseline-1-renamed",  # survives (baseline idx 1)
+                "studio.partners.2.name": "baseline-2-renamed",  # survives (baseline idx 2)
+                "studio.partners.a1.name": "added-a1",           # first surviving added
+                "studio.partners.a2.name": "added-a2",           # second surviving added
+            },
+        )
+
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        names = [row["name"] for row in merged["studio"]["partners"]]
+        # Baseline rows keep their relative order; added follow; a0 gone.
+        self.assertEqual(names, [
+            "baseline-1-renamed",
+            "baseline-2-renamed",
+            "added-a1",
+            "added-a2",
+        ])
+
+        # Simulate reopen — fetch meta fresh from the DB.
+        meta = services.get_list_meta(p, "studio.partners")
+        self.assertEqual(meta["removed"], [0])
+        self.assertEqual([e["uid"] for e in meta["added"]], ["a1", "a2"])
+
+    def test_a3a_published_preserves_repeater_state_for_other_viewers(self):
+        """After publish, a second user hitting the public preview must
+        see the customer's effective list (with removed baseline rows
+        filtered + added rows appended)."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.remove_row(
+            project=p, list_path="studio.facts", index=0, editor=self.owner,
+        )
+        r = services.add_row(project=p, list_path="studio.facts", editor=self.owner)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={f"studio.facts.{r['uid']}.number": "999"},
+        )
+        services.publish_project(project=p, editor=self.owner)
+
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        resp = self.client.get(
+            f"/templates/agency/vertex-creative-agency/preview/studio/?project={p.uuid}"
+        )
+        body = resp.content.decode("utf-8", "ignore")
+        # baseline[0] label "anni di attività" must be gone
+        self.assertNotIn("anni di attività", body)
+        # Added row's number must appear
+        self.assertIn("999", body)
+
+    def test_a3a_uid_path_validates_only_on_mutable_lists(self):
+        """validate_key_path accepts ``studio.partners.a0.name`` (mutable)
+        but rejects ``contatti.channels.a0.value`` (locked)."""
+        arc = "agency-creative-studio"
+        validate_key_path(arc, "studio.partners.a0.name")
+        validate_key_path(arc, "studio.facts.a3.label")
+        with self.assertRaises(InvalidEditableField):
+            validate_key_path(arc, "contatti.channels.a0.value")
+        with self.assertRaises(InvalidEditableField):
+            # Bad uid shape (no digits)
+            validate_key_path(arc, "studio.partners.ax.name")
+        with self.assertRaises(InvalidEditableField):
+            # Unknown column on a mutable list
+            validate_key_path(arc, "studio.partners.a0.mystery")
+
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)

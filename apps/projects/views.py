@@ -169,7 +169,14 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
         # A.2.6b: iter_groups returns curated + synthetic indexed-row
         # groups so the sidebar surfaces all 32 accordions for the
         # agency-creative-studio archetype (was 14 in A.2.6a).
-        schema = iter_groups(project.source_archetype)
+        # A.3a: pass meta_by_path so mutable lists surface their
+        # effective (post-add/remove) row list in the sidebar.
+        from apps.editor.schema import STRUCTURED_FIELD_SHAPES
+        meta_by_path: dict[str, dict] = {}
+        for list_path, shape in (STRUCTURED_FIELD_SHAPES.get(project.source_archetype) or {}).items():
+            if shape.get("mutable"):
+                meta_by_path[list_path] = services.get_list_meta(project, list_path)
+        schema = iter_groups(project.source_archetype, meta_by_path=meta_by_path)
 
         # Materialise the form values: override-if-present else baseline.
         # Groups may expose a flat "fields" list OR a "subgroups" list of
@@ -194,7 +201,13 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
             subgroups_spec = group.get("subgroups")
             if subgroups_spec:
                 subgroups = [
-                    {"label": sg["label"], "fields": _materialise_fields(sg["fields"])}
+                    {
+                        "label": sg["label"],
+                        "fields": _materialise_fields(sg["fields"]),
+                        # A.3a — surface the row identity so template can
+                        # render a targeted remove button per row.
+                        "row_identity": sg.get("row_identity"),
+                    }
                     for sg in subgroups_spec
                 ]
                 flat_fields = [f for sg in subgroups for f in sg["fields"]]
@@ -214,6 +227,12 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
                 "keywords": list(group.get("keywords") or []),
                 "fields": flat_fields,
                 "subgroups": subgroups,
+                # A.3a — repeater affordances.
+                "mutable": bool(group.get("mutable")),
+                "min_rows": group.get("min_rows"),
+                "max_rows": group.get("max_rows"),
+                "list_path": group.get("list_path"),
+                "effective_length": group.get("effective_length"),
             })
 
         tokens = project.tokens
@@ -296,6 +315,13 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
             ),
             "snapshot_url": reverse(
                 "projects:project_snapshot", kwargs={"uuid": project.uuid}
+            ),
+            # A.3a — repeater endpoints.
+            "row_add_url": reverse(
+                "projects:project_row_add", kwargs={"uuid": project.uuid}
+            ),
+            "row_remove_url": reverse(
+                "projects:project_row_remove", kwargs={"uuid": project.uuid}
             ),
             "locale_switcher": locale_switcher,
             "current_locale": project.locale,
@@ -385,6 +411,128 @@ def project_autosave(request, uuid):
         "token_keys": list(touched_tokens),
         "override_count": fresh_count,
         "ts": int(timezone.now().timestamp() * 1000),
+    })
+
+
+@login_required
+@require_POST
+def project_row_add(request, uuid):
+    """A.3a — append a new row to a mutable list.
+
+    Request body JSON: ``{"list_path": "studio.partners"}``.
+
+    Success (200)::
+        {"ok": true, "uid": "a3", "effective_length": 4,
+         "override_count": 7, "jump_key": "studio.partners.a3.name"}
+
+    Errors:
+    - 400 on malformed payload or unknown/non-mutable list
+    - 404 on ownership mismatch / unsupported archetype
+    - 409 when max_rows guard would be crossed
+    """
+    project = selectors.get_project_for_owner(request.user, uuid)
+    if project is None:
+        raise Http404()
+    if not is_supported_archetype(project.source_archetype):
+        raise Http404()
+
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except ValueError:
+        return HttpResponseBadRequest("Invalid JSON payload.")
+    list_path = payload.get("list_path")
+    if not isinstance(list_path, str) or not list_path:
+        return HttpResponseBadRequest("list_path is required.")
+
+    try:
+        result = services.add_row(
+            project=project, list_path=list_path, editor=request.user,
+        )
+    except services.UnsupportedMutation as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+    except services.RowLimitReached as exc:
+        return JsonResponse(
+            {"ok": False, "error": str(exc), "limit_kind": exc.kind, "limit": exc.limit},
+            status=409,
+        )
+    except Exception as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+
+    from apps.projects.models import ProjectContent
+    override_count = ProjectContent.objects.filter(project=project).count()
+    # Suggest the sidebar field the browser should jump to after the add:
+    # the first editable column of the new row, for a content-ready focus.
+    from apps.editor.schema import get_list_shape
+    shape = get_list_shape(project.source_archetype, list_path)
+    kind = shape.get("kind")
+    if kind == "scalar":
+        jump_key = f"{list_path}.{result['uid']}"
+    else:
+        cols = shape.get("cols") or []
+        first_col = cols[0][0] if cols else ""
+        jump_key = f"{list_path}.{result['uid']}.{first_col}" if first_col else ""
+
+    return JsonResponse({
+        "ok": True,
+        "uid": result["uid"],
+        "effective_length": result["effective_length"],
+        "override_count": override_count,
+        "jump_key": jump_key,
+    })
+
+
+@login_required
+@require_POST
+def project_row_remove(request, uuid):
+    """A.3a — remove a row from a mutable list.
+
+    Request body JSON: ``{"list_path": "studio.partners", "index": 1}``
+    OR ``{"list_path": "studio.partners", "uid": "a0"}``. Exactly one
+    of ``index`` / ``uid`` must be provided.
+    """
+    project = selectors.get_project_for_owner(request.user, uuid)
+    if project is None:
+        raise Http404()
+    if not is_supported_archetype(project.source_archetype):
+        raise Http404()
+
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except ValueError:
+        return HttpResponseBadRequest("Invalid JSON payload.")
+    list_path = payload.get("list_path")
+    index = payload.get("index")
+    uid = payload.get("uid")
+    if not isinstance(list_path, str) or not list_path:
+        return HttpResponseBadRequest("list_path is required.")
+    if (index is None) == (uid is None):
+        return HttpResponseBadRequest("Provide exactly one of index / uid.")
+
+    try:
+        result = services.remove_row(
+            project=project, list_path=list_path,
+            index=index if uid is None else None,
+            uid=uid if index is None else None,
+            editor=request.user,
+        )
+    except services.UnsupportedMutation as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+    except services.RowLimitReached as exc:
+        return JsonResponse(
+            {"ok": False, "error": str(exc), "limit_kind": exc.kind, "limit": exc.limit},
+            status=409,
+        )
+    except InvalidEditableField as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+    except Exception as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+
+    from apps.projects.models import ProjectContent
+    override_count = ProjectContent.objects.filter(project=project).count()
+    return JsonResponse({
+        "ok": True,
+        "effective_length": result["effective_length"],
+        "override_count": override_count,
     })
 
 

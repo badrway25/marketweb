@@ -1201,6 +1201,87 @@ button { font-family: inherit; }
   height: 1px;
   background: var(--ed-rule-strong);
 }
+.ed-subgroup-head > span:first-of-type {
+  flex: 1;
+}
+
+/* A.3a — mutable-list repeater affordances */
+.ed-row-remove {
+  border: 0;
+  background: transparent;
+  color: var(--ed-muted-2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  transition: background 140ms ease, color 140ms ease;
+}
+.ed-row-remove:hover {
+  background: rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
+}
+.ed-row-remove:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.ed-row-remove.is-armed {
+  background: #b91c1c;
+  color: #fff;
+  padding: 4px 10px;
+}
+.ed-row-remove.is-armed:hover {
+  background: #991b1b;
+}
+.ed-subgroup.is-added-row .ed-subgroup-head > span:first-of-type {
+  color: var(--ed-ink);
+}
+.ed-subgroup.is-added-row .ed-subgroup-head > span:first-of-type::after {
+  content: "NUOVA";
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+}
+
+.ed-row-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px dashed var(--ed-rule-strong);
+  background: transparent;
+  color: var(--ed-ink);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.ed-row-add:hover:not(:disabled) {
+  background: var(--ed-paper-2);
+  border-color: var(--ed-ink);
+}
+.ed-row-add:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ed-row-add i {
+  font-size: 14px;
+}
 
 /* ── Character counter on length-limited fields ────────────── */
 
