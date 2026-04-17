@@ -1374,6 +1374,102 @@ class FoundationModelTests(TestCase):
         self.assertTrue(ProjectAsset.objects.filter(pk=asset_b.pk).exists())
         self.assertTrue(os.path.exists(b_path))
 
+    # ------------------------------------------------------------------
+    # A.6 · Pragma (corporate-suite) second-archetype support
+    # ------------------------------------------------------------------
+
+    def test_a6_pragma_archetype_registered(self):
+        """`corporate-suite` must now appear in the supported-archetype
+        registry alongside `agency-creative-studio`."""
+        from apps.editor.schema import _ARCHETYPE_SCHEMAS
+        self.assertIn("corporate-suite", _ARCHETYPE_SCHEMAS)
+        self.assertTrue(is_supported_archetype("corporate-suite"))
+        self.assertTrue(is_supported_archetype("agency-creative-studio"))
+        # Sanity — a third unsupported archetype still rejects.
+        self.assertFalse(is_supported_archetype("fine-dining"))
+
+    def test_a6_pragma_schema_shape_covers_core_pages(self):
+        """The Pragma schema must surface groups for every customer-
+        editable page kind plus chrome-level groups (page="*")."""
+        groups = iter_groups("corporate-suite")
+        self.assertGreaterEqual(len(groups), 7)
+        pages = {g.get("page") for g in groups}
+        # Must cover: chrome + home + about + services + case_study_list
+        self.assertIn("*", pages)
+        self.assertIn("home", pages)
+        self.assertIn("about", pages)
+        self.assertIn("services", pages)
+        self.assertIn("case_study_list", pages)
+        # Every group must declare icon + region
+        for g in groups:
+            with self.subTest(group=g["id"]):
+                self.assertIn("icon", g)
+                self.assertIn("region", g)
+
+    def test_a6_pragma_validate_key_path_accepts_whitelist_rejects_outside(self):
+        arc = "corporate-suite"
+        # Whitelisted
+        validate_key_path(arc, "site.logo_word")
+        validate_key_path(arc, "home.headline")
+        validate_key_path(arc, "home.hero_image")
+        validate_key_path(arc, "chi-siamo.intro")
+        validate_key_path(arc, "competenze.headline")
+        validate_key_path(arc, "case-studies.cta_primary")
+        validate_key_path(arc, "home.pillars.0.title")  # indexed cell
+        validate_key_path(arc, "home.leadership.1.name")
+        # Off-whitelist paths must reject
+        with self.assertRaises(InvalidEditableField):
+            validate_key_path(arc, "home.mystery_field")
+        with self.assertRaises(InvalidEditableField):
+            # Vertex path on Pragma
+            validate_key_path(arc, "studio.partners.0.name")
+        with self.assertRaises(InvalidEditableField):
+            # Structural section_order is DNA-locked per D-054
+            validate_key_path(arc, "section_order")
+
+    def test_a6_pragma_indexed_lists_are_readonly_not_mutable(self):
+        """A.6 ships 3 indexed lists on Pragma but NONE are mutable.
+        Row add/remove/move must be rejected; cell edits still work."""
+        from apps.editor.schema import STRUCTURED_FIELD_SHAPES, is_mutable_list
+        arc = "corporate-suite"
+        shapes = STRUCTURED_FIELD_SHAPES[arc]
+        expected = {"home.pillars", "home.kpi_strip", "home.leadership"}
+        self.assertEqual(set(shapes.keys()), expected)
+        for path in expected:
+            with self.subTest(path=path):
+                self.assertFalse(shapes[path].get("mutable", False),
+                                 f"{path} must not be mutable in A.6")
+                self.assertFalse(is_mutable_list(arc, path))
+
+    def test_a6_pragma_customize_start_creates_editable_project(self):
+        """Public customize entry must land the customer inside the
+        editor when the template's archetype is now supported."""
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+        self.assertEqual(p.source_archetype, "corporate-suite")
+        # The project's baseline resolution must pick up Pragma's IT content,
+        # so baseline-side of sparse-diff is wired correctly.
+        baseline = services.resolve_path_in_baseline(p, "site.logo_word")
+        self.assertEqual(baseline, "Pragma Advisors")
+
+    def test_a6_vertex_editor_unchanged(self):
+        """Regression guard: the agency-creative-studio schema must stay
+        at its A.3c shape (4 mutable lists, 15 curated groups)."""
+        from apps.editor.schema import STRUCTURED_FIELD_SHAPES
+        arc = "agency-creative-studio"
+        mutable = {
+            path for path, shape in STRUCTURED_FIELD_SHAPES[arc].items()
+            if shape.get("mutable")
+        }
+        self.assertEqual(mutable, {
+            "studio.facts", "studio.partners",
+            "studio.timeline_rows", "contatti.channels",
+        })
+        # Vertex still has 14 curated + 18 indexed = 32 groups when
+        # meta_by_path is absent (baseline mode).
+        vertex_groups = iter_groups(arc)
+        self.assertEqual(len(vertex_groups), 32)
+
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)

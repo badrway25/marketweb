@@ -104,6 +104,176 @@ DESIGN_TOKEN_FIELDS: dict[str, dict[str, Any]] = {
 # Per-archetype content schema
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# A.6 · Pragma (corporate-suite archetype) schema
+# ---------------------------------------------------------------------------
+#
+# Second editable archetype. Scope is deliberately tighter than Vertex:
+# ~50 scalar fields across 7 sidebar groups + 1 image field (hero) +
+# 3 readonly indexed lists (pillars, kpi_strip, leadership). No mutable
+# repeaters in this wave — the pattern is proven on Vertex, adding it
+# here would only bundle complexity without new learning.
+#
+# Page slugs follow pragma-corporate-suite registry pages: home (`home`),
+# chi-siamo (`about`), competenze (`services`), case-studies
+# (`case_study_list`), contatti (`contact`). Indexed row cells stay
+# editable cell-by-cell (A.2.6b contract); customers cannot add, remove
+# or reorder. Widening mutability on Pragma is A.6b if ever needed.
+
+PRAGMA_CORPORATE_SUITE_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".cs-nav, .cs-foot",
+        "page": "*",
+        "keywords": ["logo", "nome", "tagline", "marchio", "advisory"],
+        "help": "Logo, tagline e voce dello studio.",
+        "fields": [
+            ("site.logo_word",     {"label": "Nome del logo", "type": "text", "max_length": 32,
+                                     "placeholder": "Pragma Advisors"}),
+            ("site.logo_initial",  {"label": "Iniziale logo", "type": "text", "max_length": 4,
+                                     "help": "Lettera singola usata nel crest del nav."}),
+            ("site.tag",           {"label": "Tagline", "type": "text", "max_length": 80,
+                                     "placeholder": "Advisory corporate · Milano"}),
+        ],
+    },
+    {
+        "id": "hero_board",
+        "label": "Hero boardroom (home)",
+        "icon": "bi-easel",
+        "region": ".cs-hero",
+        "page": "home",
+        "keywords": ["hero", "apertura", "headline", "eyebrow", "copertina", "board"],
+        "help": "Primo scroll della home: eyebrow, headline, intro e CTA.",
+        "fields": [
+            ("home.eyebrow",        {"label": "Eyebrow",     "type": "text",     "max_length": 120}),
+            ("home.headline",       {"label": "Headline",    "type": "richtext", "max_length": 220,
+                                      "help": "Consentiti i tag <em> per l'italico."}),
+            ("home.intro",          {"label": "Intro",       "type": "textarea", "max_length": 600}),
+            ("home.primary_cta",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 40}),
+            ("home.primary_href",   {"label": "CTA primaria · destinazione", "type": "select",
+                                     "choices": ["home", "chi-siamo", "competenze", "case-studies", "contatti"]}),
+            ("home.secondary_cta",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 40}),
+            ("home.secondary_href", {"label": "CTA secondaria · destinazione", "type": "select",
+                                     "choices": ["home", "chi-siamo", "competenze", "case-studies", "contatti"]}),
+            ("home.hero_image",     {"label": "Immagine hero · URL", "type": "image", "max_length": 400,
+                                      "help": "Fotografia boardroom che affianca l'hero."}),
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Sezioni home",
+        "icon": "bi-layout-three-columns",
+        "region": ".cs-pillars, .cs-kpi-band, .cs-sectors, .cs-leadership, .cs-cases-preview, .cs-cta-band",
+        "page": "home",
+        "keywords": ["pillars", "kpi", "settori", "sectors", "leadership", "case studies", "cta", "banda"],
+        "help": "Titoli e testi introduttivi delle bande della home.",
+        "fields": [
+            ("home.pillars_label",     {"label": "Pilastri · eyebrow",    "type": "text", "max_length": 60}),
+            ("home.pillars_heading",   {"label": "Pilastri · titolo",     "type": "richtext", "max_length": 160}),
+            ("home.pillars_intro",     {"label": "Pilastri · intro",      "type": "textarea", "max_length": 400}),
+            ("home.kpi_heading",       {"label": "KPI · titolo",          "type": "text", "max_length": 140}),
+            ("home.sectors_label",     {"label": "Settori · eyebrow",     "type": "text", "max_length": 60}),
+            ("home.trust_label",       {"label": "Clienti · eyebrow",     "type": "text", "max_length": 80}),
+            ("home.leadership_label",  {"label": "Leadership · eyebrow",  "type": "text", "max_length": 60}),
+            ("home.leadership_heading",{"label": "Leadership · titolo",   "type": "richtext", "max_length": 160}),
+            ("home.leadership_intro",  {"label": "Leadership · intro",    "type": "textarea", "max_length": 400}),
+            ("home.cases_label",       {"label": "Case studies · eyebrow","type": "text", "max_length": 60}),
+            ("home.cases_heading",     {"label": "Case studies · titolo", "type": "richtext", "max_length": 160}),
+            ("home.cases_intro",       {"label": "Case studies · intro",  "type": "textarea", "max_length": 400}),
+            ("home.cta_label",         {"label": "CTA finale · eyebrow",  "type": "text", "max_length": 60}),
+            ("home.cta_heading",       {"label": "CTA finale · titolo",   "type": "richtext", "max_length": 160}),
+            ("home.cta_intro",         {"label": "CTA finale · intro",    "type": "textarea", "max_length": 400}),
+            ("home.cta_primary",       {"label": "CTA finale · pulsante",      "type": "text", "max_length": 40}),
+            ("home.cta_primary_href",  {"label": "CTA finale · destinazione",  "type": "select",
+                                         "choices": ["home", "chi-siamo", "competenze", "case-studies", "contatti"]}),
+            ("home.cta_secondary",     {"label": "CTA finale · secondaria",    "type": "text", "max_length": 40}),
+            ("home.cta_secondary_href",{"label": "CTA finale · sec. destinazione", "type": "select",
+                                         "choices": ["home", "chi-siamo", "competenze", "case-studies", "contatti"]}),
+        ],
+    },
+    {
+        "id": "about_page",
+        "label": "Pagina Chi siamo",
+        "icon": "bi-people",
+        "region": ".cs-hero, .cs-history, .cs-values, .cs-team, .cs-coords",
+        "page": "about",
+        "keywords": ["chi siamo", "studio", "storia", "valori", "team", "sedi"],
+        "help": "Contenuti della pagina Chi siamo.",
+        "fields": [
+            ("chi-siamo.eyebrow",          {"label": "Eyebrow",   "type": "text",     "max_length": 120}),
+            ("chi-siamo.headline",         {"label": "Headline",  "type": "richtext", "max_length": 220}),
+            ("chi-siamo.intro",            {"label": "Intro",     "type": "textarea", "max_length": 600}),
+            ("chi-siamo.history_label",    {"label": "Storia · eyebrow", "type": "text",     "max_length": 60}),
+            ("chi-siamo.history_heading",  {"label": "Storia · titolo",  "type": "richtext", "max_length": 160}),
+            ("chi-siamo.history_intro",    {"label": "Storia · intro",   "type": "textarea", "max_length": 400}),
+            ("chi-siamo.values_label",     {"label": "Metodo · eyebrow", "type": "text",     "max_length": 60}),
+            ("chi-siamo.values_heading",   {"label": "Metodo · titolo",  "type": "richtext", "max_length": 160}),
+            ("chi-siamo.values_intro",     {"label": "Metodo · intro",   "type": "textarea", "max_length": 400}),
+            ("chi-siamo.team_label",       {"label": "Equipe · eyebrow", "type": "text",     "max_length": 60}),
+            ("chi-siamo.team_heading",     {"label": "Equipe · titolo",  "type": "richtext", "max_length": 160}),
+            ("chi-siamo.team_intro",       {"label": "Equipe · intro",   "type": "textarea", "max_length": 400}),
+        ],
+    },
+    {
+        "id": "services_page",
+        "label": "Pagina Competenze",
+        "icon": "bi-briefcase",
+        "region": ".cs-services, .cs-process, .cs-cta-svc",
+        "page": "services",
+        "keywords": ["competenze", "practice", "servizi", "processo", "metodo"],
+        "help": "Contenuti della pagina Competenze.",
+        "fields": [
+            ("competenze.eyebrow",         {"label": "Eyebrow",   "type": "text",     "max_length": 120}),
+            ("competenze.headline",        {"label": "Headline",  "type": "richtext", "max_length": 220}),
+            ("competenze.intro",           {"label": "Intro",     "type": "textarea", "max_length": 600}),
+            ("competenze.process_label",   {"label": "Processo · eyebrow", "type": "text",     "max_length": 60}),
+            ("competenze.process_heading", {"label": "Processo · titolo",  "type": "richtext", "max_length": 160}),
+            ("competenze.cta_heading",     {"label": "CTA finale · titolo", "type": "richtext", "max_length": 160}),
+            ("competenze.cta_intro",       {"label": "CTA finale · intro",  "type": "textarea", "max_length": 400}),
+            ("competenze.cta_primary",     {"label": "CTA finale · pulsante", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "cases_page",
+        "label": "Pagina Case studies",
+        "icon": "bi-journals",
+        "region": ".cs-cases-list, .cs-cta-list",
+        "page": "case_study_list",
+        "keywords": ["case studies", "lavori", "portfolio", "mandati"],
+        "help": "Contenuti della pagina Case studies.",
+        "fields": [
+            ("case-studies.eyebrow",       {"label": "Eyebrow",  "type": "text",     "max_length": 120}),
+            ("case-studies.headline",      {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("case-studies.intro",         {"label": "Intro",    "type": "textarea", "max_length": 600}),
+            ("case-studies.cases_label",   {"label": "Lista · eyebrow", "type": "text",     "max_length": 60}),
+            ("case-studies.cases_intro",   {"label": "Lista · intro",   "type": "textarea", "max_length": 400}),
+            ("case-studies.cta_heading",   {"label": "CTA finale · titolo", "type": "richtext", "max_length": 160}),
+            ("case-studies.cta_intro",     {"label": "CTA finale · intro",  "type": "textarea", "max_length": 400}),
+            ("case-studies.cta_primary",   {"label": "CTA finale · pulsante", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "contact_info",
+        "label": "Contatti · footer",
+        "icon": "bi-telephone",
+        "region": ".cs-foot, .cs-contact-wrap",
+        "page": "*",
+        "keywords": ["telefono", "phone", "email", "mail", "indirizzo", "address", "orari", "footer"],
+        "help": "Dati di contatto usati nel footer e nella pagina contatti.",
+        "fields": [
+            ("site.phone",         {"label": "Telefono",   "type": "text", "max_length": 40}),
+            ("site.email",         {"label": "Email",      "type": "text", "max_length": 80}),
+            ("site.address",       {"label": "Indirizzo",  "type": "text", "max_length": 120}),
+            ("site.hours_compact", {"label": "Orari studio", "type": "text", "max_length": 80}),
+            ("site.license",       {"label": "Licenza / albo", "type": "text", "max_length": 120}),
+            ("site.footer_intro",  {"label": "Intro footer", "type": "textarea", "max_length": 600}),
+        ],
+    },
+]
+
+
 AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -725,6 +895,50 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             "max_rows": 10,
         },
     },
+    # A.6 · Pragma corporate-suite — 3 indexed lists exposed as readonly
+    # cells (customer edits per-column; add/remove/reorder deferred to
+    # A.6b if ever needed). No `mutable: True` flag.
+    "corporate-suite": {
+        "home.pillars": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Pilastri",
+            "icon": "bi-grid-3x3-gap",
+            "region": ".cs-pillars",
+            "keywords": ["pillars", "practice", "competenze"],
+            "tuple_order": ["num", "title", "body"],
+            "cols": [
+                ("title", {"label": "Titolo", "type": "text",     "max_length": 80}),
+                ("body",  {"label": "Body",   "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "home.kpi_strip": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · KPI",
+            "icon": "bi-bar-chart",
+            "region": ".cs-kpi-band",
+            "keywords": ["kpi", "numeri", "stats", "metriche"],
+            "tuple_order": ["number", "label"],
+            "cols": [
+                ("number", {"label": "Numero",    "type": "text", "max_length": 20}),
+                ("label",  {"label": "Etichetta", "type": "text", "max_length": 80}),
+            ],
+        },
+        "home.leadership": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Leadership",
+            "icon": "bi-people",
+            "region": ".cs-leadership",
+            "keywords": ["leadership", "partner", "team", "bio"],
+            "cols": [
+                ("name", {"label": "Nome",      "type": "text",     "max_length": 80}),
+                ("role", {"label": "Ruolo",     "type": "text",     "max_length": 120}),
+                ("bio",  {"label": "Biografia", "type": "textarea", "max_length": 600}),
+            ],
+        },
+    },
 }
 
 
@@ -734,6 +948,7 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
 # multiple templates share an archetype this becomes a query.
 _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     "agency-creative-studio": ("vertex-creative-agency", "it"),
+    "corporate-suite":        ("pragma-corporate-suite", "it"),
 }
 
 
@@ -743,6 +958,7 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
 
 _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     "agency-creative-studio": AGENCY_CREATIVE_STUDIO_SCHEMA,
+    "corporate-suite":        PRAGMA_CORPORATE_SUITE_SCHEMA,
 }
 
 
