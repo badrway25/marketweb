@@ -1311,6 +1311,69 @@ class FoundationModelTests(TestCase):
         # File gone
         self.assertFalse(os.path.exists(file_path))
 
+    def test_a5_gc_end_to_end_lifecycle(self):
+        """A.5 integration lock — walk the full orphan lifecycle:
+
+        1. Upload two assets.
+        2. Reference asset_A in an image field.
+        3. Reference asset_B in the SAME image field, orphaning A.
+        4. Both assets still inside default grace window → dry-run
+           returns empty list (protection holds).
+        5. Backdate asset_A's created_at past the grace window →
+           dry-run now picks it up as the single candidate.
+        6. --apply through the command removes asset_A's file + row;
+           asset_B (still referenced) is left alone.
+        """
+        import os
+        from io import StringIO
+        from datetime import timedelta
+        from django.utils import timezone as _tz
+        from django.core.management import call_command
+        from apps.projects.models import ProjectAsset
+
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+
+        asset_a = self._a5_make_asset(p, minutes_ago=0)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"studio.partners.0.portrait": asset_a.file.url},
+        )
+        asset_b = self._a5_make_asset(p, minutes_ago=0)
+        # Replace the reference — A becomes orphan, B takes its place
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"studio.partners.0.portrait": asset_b.file.url},
+        )
+
+        # (4) Both inside default 24h grace → no candidates
+        orphans_fresh = services.find_unreferenced_assets(grace_hours=24)
+        self.assertEqual(orphans_fresh, [])
+
+        # (5) Backdate asset_A created_at so grace filter exposes it
+        ProjectAsset.objects.filter(pk=asset_a.pk).update(
+            created_at=_tz.now() - timedelta(hours=48),
+        )
+        orphans_backdated = services.find_unreferenced_assets(grace_hours=24)
+        self.assertEqual(len(orphans_backdated), 1)
+        self.assertEqual(orphans_backdated[0].pk, asset_a.pk)
+        # asset_b must NOT appear — still referenced
+        self.assertNotIn(asset_b, orphans_backdated)
+
+        # (6) Apply via command removes A, leaves B intact
+        a_path = asset_a.file.path
+        b_path = asset_b.file.path
+        self.assertTrue(os.path.exists(a_path))
+        self.assertTrue(os.path.exists(b_path))
+        out = StringIO()
+        call_command("gc_project_assets", "--apply", stdout=out)
+        output = out.getvalue()
+        self.assertIn("Deleted: 1 / 1", output)
+        self.assertFalse(ProjectAsset.objects.filter(pk=asset_a.pk).exists())
+        self.assertFalse(os.path.exists(a_path))
+        # Sibling asset protected
+        self.assertTrue(ProjectAsset.objects.filter(pk=asset_b.pk).exists())
+        self.assertTrue(os.path.exists(b_path))
+
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)
