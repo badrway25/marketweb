@@ -2057,8 +2057,8 @@ class FoundationModelTests(TestCase):
 
     def test_a10_lex_archetype_registered(self):
         """``classic-gold`` joins the schema + baseline template + gate
-        registries. Juris (``modern-transparent``) stays out — it is a
-        distinct archetype and will be enrolled separately as A.10b."""
+        registries. (Juris `modern-transparent` was the A.11 phase; that
+        test lives below.)"""
         from apps.editor.schema import (
             _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
             _MULTILOCALE_ENABLED_ARCHETYPES,
@@ -2070,10 +2070,6 @@ class FoundationModelTests(TestCase):
         )
         self.assertIn("classic-gold", _MULTILOCALE_ENABLED_ARCHETYPES)
         self.assertTrue(is_supported_archetype("classic-gold"))
-        # Juris / modern-transparent NOT enrolled in A.10 — guard against a
-        # future accidental enrollment without its own dedicated phase.
-        self.assertNotIn("modern-transparent", _ARCHETYPE_SCHEMAS)
-        self.assertNotIn("modern-transparent", _MULTILOCALE_ENABLED_ARCHETYPES)
 
     def test_a10_lex_schema_shape_covers_all_pages(self):
         """The Lex schema must surface groups for every Lex page slug
@@ -2249,6 +2245,318 @@ class FoundationModelTests(TestCase):
         body_proj = r_proj.content.decode("utf-8", "ignore")
         self.assertIn("editor/preview-bridge.js", body_proj)
         self.assertIn("<title>A10 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
+    # ------------------------------------------------------------------
+    # A.11 · Juris (modern-transparent archetype · law family) enrollment
+    # ------------------------------------------------------------------
+
+    def test_a11_juris_archetype_registered(self):
+        """``modern-transparent`` joins the schema + baseline template +
+        gate registries as 5th enrolled archetype. Classic-gold (Lex)
+        remains enrolled — A.11 must not displace A.10 from the gate."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("modern-transparent", _ARCHETYPE_SCHEMAS)
+        self.assertEqual(
+            _ARCHETYPE_BASELINE_TEMPLATE["modern-transparent"],
+            ("juris-avvocato-moderno", "it"),
+        )
+        self.assertIn("modern-transparent", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("modern-transparent"))
+        # Lex / classic-gold must STAY enrolled — A.11 is additive, not a
+        # replacement of A.10.
+        self.assertIn("classic-gold", _ARCHETYPE_SCHEMAS)
+        self.assertIn("classic-gold", _MULTILOCALE_ENABLED_ARCHETYPES)
+
+    def test_a11_juris_schema_shape_covers_all_pages(self):
+        """The Juris schema must surface groups for every Juris page slug
+        (home + approccio + servizi + settori + insights + contatti)
+        plus chrome-level groups (page='*')."""
+        groups = iter_groups("modern-transparent")
+        self.assertGreaterEqual(len(groups), 9)
+        pages = {g.get("page") for g in groups}
+        for slug in ("*", "home", "approccio", "servizi", "settori",
+                     "insights", "contatti"):
+            self.assertIn(slug, pages,
+                          f"Juris schema missing page slug {slug!r}")
+
+    def test_a11_juris_is_translatable_text_fields(self):
+        """Scalar copy fields distributed across every Juris page +
+        chrome. Uses only paths present on Juris so Lex / specialist /
+        Gusto / Pragma / Vertex schemas don't accidentally drift into
+        this test."""
+        from apps.editor.schema import is_translatable
+        arc = "modern-transparent"
+        distributed_paths = (
+            # home — hero + bands
+            "home.headline",
+            "home.intro",
+            "home.sprint_chip",
+            "home.sectors_heading",
+            "home.process_heading",
+            "home.metric_heading",
+            "home.insights_heading",
+            "home.cta_heading",
+            # approccio
+            "approccio.intro",
+            "approccio.manifesto_heading",
+            "approccio.story_heading",
+            "approccio.dashboard_heading",
+            # servizi
+            "servizi.headline",
+            "servizi.process_heading",
+            "servizi.faq_heading",
+            "servizi.svc_duration_label",
+            # settori
+            "settori.headline",
+            "settori.team_intro",
+            # insights
+            "insights.headline",
+            "insights.posts_intro",
+            # contatti
+            "contatti.intro",
+            "contatti.form_heading",
+            "contatti.slot_value",
+            "contatti.footnote",
+            # chrome site.* customer-copy universals
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+            "site.foot_studio",
+            "site.nav_cta",
+            "site.post_author_label",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on modern-transparent",
+            )
+
+    def test_a11_juris_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Juris — same contract
+        as Vertex / Pragma / Gusto / specialist / Lex."""
+        from apps.editor.schema import is_translatable
+        arc = "modern-transparent"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on Juris",
+            )
+
+    def test_a11_juris_schema_contains_zero_image_fields(self):
+        """USER-IMPOSED GUARDRAIL · zero-image assertion strong.
+
+        Juris advisory-modern DNA explicitly rejects founder portraits /
+        case photos / hero illustrations. The schema must contain ZERO
+        fields of ``type: "image"`` across every group + subgroup. Same
+        must hold for STRUCTURED_FIELD_SHAPES["modern-transparent"]: no
+        col can expose an image widget.
+
+        This guard is the explicit contract that prevents scope creep
+        into the pictorial layer on future A.11+ maintenance."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, STRUCTURED_FIELD_SHAPES,
+        )
+        arc = "modern-transparent"
+        # 1. Scan every group + subgroup in the flat archetype schema.
+        offenders: list[str] = []
+        for group in _ARCHETYPE_SCHEMAS[arc]:
+            for key, spec in group.get("fields", []) or []:
+                if spec.get("type") == "image":
+                    offenders.append(f"group={group['id']} key={key}")
+            for sub in group.get("subgroups", []) or []:
+                for key, spec in sub.get("fields", []) or []:
+                    if spec.get("type") == "image":
+                        offenders.append(
+                            f"group={group['id']} subgroup={sub['label']} key={key}"
+                        )
+        # 2. Scan every col of every readonly indexed list.
+        for list_path, shape in (STRUCTURED_FIELD_SHAPES.get(arc) or {}).items():
+            for col_name, spec in shape.get("cols") or []:
+                if spec.get("type") == "image":
+                    offenders.append(
+                        f"list={list_path} col={col_name}"
+                    )
+            if shape.get("cell_spec", {}).get("type") == "image":
+                offenders.append(f"list={list_path} cell_spec")
+        self.assertEqual(
+            offenders, [],
+            "modern-transparent schema MUST contain zero image fields; "
+            f"found: {offenders}",
+        )
+
+    def test_a11_juris_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL · complex-shape exclusion test.
+
+        Four categories of complex registry shapes must stay OUT of the
+        editor perimeter for A.11 (scope creep prevention while writing
+        the schema):
+
+        (1) ``approccio.dashboard_mock`` — nested dict with URL +
+            columns + cards (novel shape, not mappable to tuple/dict).
+        (2) ``home.trust_logos`` — flat list of str (marquee wordmarks).
+            ``insights.topics`` is a similar list-of-str (filter pills).
+        (3) Nested list-of-str cells inside dict rows:
+              - ``servizi.services[*].deliverables``
+              - ``settori.sectors[*].pain_points``
+              - ``settori.sectors[*].signals``
+              - ``settori.sectors[*].legal_ops`` (the BULLET LIST, not
+                the scalar partner-name col of the same key name)
+            These four must NOT appear in the parent list's dict-shape
+            ``cols`` (same exclusion policy as Lex
+            ``pratiche.services[*].scope``).
+        (4) Every path in (1)-(3) must fail ``validate_key_path`` so the
+            autosave endpoint cannot persist an override on them even if
+            a crafted payload reaches the service layer."""
+        from apps.editor.schema import (
+            STRUCTURED_FIELD_SHAPES, get_list_shape, validate_key_path,
+        )
+        arc = "modern-transparent"
+
+        # (1) dashboard_mock must not be in the schema nor the list shapes
+        validate_rejects = [
+            "approccio.dashboard_mock",
+            "approccio.dashboard_mock.columns.0.label",
+            "approccio.dashboard_mock.columns.0.cards.0.title",
+            # (2) flat list-of-str containers
+            "home.trust_logos",
+            "home.trust_logos.0",
+            "insights.topics",
+            "insights.topics.0",
+            # (3) nested bullet-list cells inside dict rows
+            "servizi.services.0.deliverables",
+            "servizi.services.0.deliverables.0",
+            "settori.sectors.0.pain_points",
+            "settori.sectors.0.pain_points.0",
+            "settori.sectors.0.signals",
+            "settori.sectors.0.signals.0",
+        ]
+        for path in validate_rejects:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"{path} MUST be rejected by validate_key_path on modern-transparent",
+            ):
+                validate_key_path(arc, path)
+
+        # (3bis) servizi.services cols must NOT expose `deliverables`
+        services_shape = get_list_shape(arc, "servizi.services")
+        self.assertIsNotNone(services_shape)
+        services_cols = {name for name, _spec in services_shape.get("cols") or []}
+        self.assertNotIn(
+            "deliverables", services_cols,
+            "modern-transparent servizi.services MUST NOT expose deliverables "
+            "(nested bullet list — stays registry-only)",
+        )
+
+        # (3ter) settori.sectors cols must NOT expose the 3 bullet lists.
+        # The `legal_ops` SCALAR col (partner-name string) IS allowed —
+        # it's the per-row person, not the list of bullet points. The
+        # list-of-str `legal_ops` at ``settori.sectors.*.legal_ops.<idx>``
+        # is rejected by validate_key_path above since no further shape
+        # descends from a scalar text col.
+        sectors_shape = get_list_shape(arc, "settori.sectors")
+        self.assertIsNotNone(sectors_shape)
+        sectors_cols = {name for name, _spec in sectors_shape.get("cols") or []}
+        for forbidden in ("pain_points", "signals"):
+            self.assertNotIn(
+                forbidden, sectors_cols,
+                f"modern-transparent settori.sectors MUST NOT expose "
+                f"{forbidden!r} (nested bullet list — stays registry-only)",
+            )
+
+    def test_a11_juris_structured_list_cells_are_global(self):
+        """The 6 readonly indexed lists on Juris stay global at cell
+        level — text cols exposed via STRUCTURED_FIELD_SHAPES are
+        customer-editable but never per-locale (same contract as every
+        other enrolled archetype)."""
+        from apps.editor.schema import is_translatable
+        arc = "modern-transparent"
+        cell_paths = (
+            "approccio.founders.0.name",
+            "approccio.founders.1.bio",
+            "approccio.story.0.title",
+            "approccio.story.4.body",
+            "approccio.manifesto.0.title",
+            "approccio.manifesto.3.body",
+            "servizi.services.0.title",
+            "servizi.services.0.blurb",
+            "servizi.services.6.engagement",
+            "settori.sectors.0.title",
+            "settori.sectors.5.case_snippet",
+            "settori.sectors.0.partner",
+            "settori.team.0.name",
+            "settori.team.9.email",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Juris",
+            )
+
+    def test_a11_juris_supported_locales_returns_canonical_five(self):
+        """Juris ships the canonical 5-locale set, same as every other
+        enrolled archetype. Audit confirmed zero IT-only parity gaps."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("modern-transparent"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a11_quintuple_regression_after_juris_joins(self):
+        """Regression guard: adding Juris to gate + schemas must not
+        disturb ANY of the five pre-existing enrollments (Vertex +
+        Pragma + Gusto + specialist + Lex/classic-gold)."""
+        from apps.editor.schema import is_translatable, supported_locales
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist", "classic-gold"):
+            self.assertTrue(
+                is_translatable(arc, "home.headline"),
+                f"{arc} home.headline must stay translatable",
+            )
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must keep the canonical 5-locale set",
+            )
+
+    def test_a11_juris_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.8/A.9/A.10 integration guardrail — the Juris
+        ``modern-transparent/_base.html`` must integrate the three
+        bridge points together: (1) preview-bridge.js conditional on
+        ``preview_project``, (2) ``<title>`` honors ``site.logo_word``,
+        (3) ``<body>`` carries the ``mw-is-editor-preview`` guard class
+        when inside the editor."""
+        juris = WebTemplate.objects.get(slug="juris-avvocato-moderno")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/lawyer/juris-avvocato-moderno/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=juris)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A11 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/lawyer/juris-avvocato-moderno/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A11 Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
@@ -4269,6 +4577,186 @@ class FoundationHttpTests(TestCase):
                     break
         self.assertIsNotNone(logo_field, "site.logo_word missing from Lex editor")
         self.assertEqual(logo_field["value"], "A10LexBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+    # ------------------------------------------------------------------
+    # A.11 · Step 2 — Juris (modern-transparent) lifecycle HTTP cross-cutting
+    # ------------------------------------------------------------------
+
+    def test_a11_juris_full_multilocale_lifecycle_end_to_end(self):
+        """Mirror of the A.7b Pragma / A.8 Gusto / A.9 specialist-single /
+        A.10 Lex lifecycle, adapted to Juris (modern-transparent archetype
+        · second template of the law family).
+
+        1. customer edits IT / EN / FR on a Juris translatable path
+        2. customer edits a global path (site.logo_word)
+        3. unedited locales (ES · AR) fall back to the authored registry —
+           NEVER to another locale's customer override
+        4. project publishes · second user visits every public preview
+           locale and sees the correct content
+        5. owner reopens the editor per locale and the sidebar prefill
+           matches the buffer for that locale.
+
+        AR response head must carry ``<html dir="rtl" lang="ar">`` so the
+        ``.jr-*`` skin inherits a green baseline for RTL. Lex
+        (classic-gold) is NOT re-exercised here — the A.10 lifecycle test
+        already covers it.
+        """
+        import json as _json
+        juris = WebTemplate.objects.get(slug="juris-avvocato-moderno")
+        p = services.create_project_from_template(owner=self.owner, template=juris)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global ──────────
+        for locale, headline in (
+            ("it", "Il diritto, <em>dalla tua parte</em> (A11Juris IT)."),
+            ("en", "The law, <em>on your side</em> (A11Juris EN)."),
+            ("fr", "Le droit, <em>de votre côté</em> (A11Juris FR)."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        # Global edit — locale tag on the request is ignored because
+        # site.logo_word is classified global.
+        r = autosave("en", {"site.logo_word": "A11JurisBrand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # Storage keys: three @<locale>:home.headline + one plain
+        # site.logo_word. No plain-key leak, no global→locale leak.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+
+        # ── 3. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 4. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale):
+            url = (
+                f"/templates/lawyer/juris-avvocato-moderno/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render — IT override visible, EN/FR markers absent.
+        body_it = preview_body("it")
+        self.assertIn("dalla tua parte", body_it)
+        self.assertIn("(A11Juris IT)", body_it)
+        self.assertNotIn("(A11Juris EN)", body_it)
+        self.assertNotIn("(A11Juris FR)", body_it)
+        self.assertIn("A11JurisBrand", body_it)
+
+        # EN render — EN override visible, IT/FR markers absent.
+        body_en = preview_body("en")
+        self.assertIn("on your side", body_en)
+        self.assertIn("(A11Juris EN)", body_en)
+        self.assertNotIn("(A11Juris IT)", body_en)
+        self.assertNotIn("(A11Juris FR)", body_en)
+        self.assertIn("A11JurisBrand", body_en)
+
+        # FR render — FR override visible.
+        body_fr = preview_body("fr")
+        self.assertIn("de votre côté", body_fr)
+        self.assertIn("(A11Juris FR)", body_fr)
+        self.assertNotIn("(A11Juris IT)", body_fr)
+        self.assertNotIn("(A11Juris EN)", body_fr)
+        self.assertIn("A11JurisBrand", body_fr)
+
+        # Unedited locales — authored fallback + global logo universal.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("(A11Juris IT)", body)
+            self.assertNotIn("(A11Juris EN)", body)
+            self.assertNotIn("(A11Juris FR)", body)
+            self.assertIn("A11JurisBrand", body)
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Juris",
+                )
+
+        # AR preview — `.jr-*` skin must emit ``<html dir="rtl" lang="ar">``.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 5. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_headline_field(groups):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == "home.headline":
+                        return f
+            self.fail("home.headline field missing from Juris editor groups")
+
+        for locale, expected_substring in (
+            ("it", "dalla tua parte"),
+            ("en", "on your side"),
+            ("fr", "de votre côté"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_headline_field(r.context["groups"])
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_headline_field(r_es.context["groups"])
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+        # Global field: overridden universally, not translatable.
+        logo_field = None
+        for g in r_es.context["groups"]:
+            for f in g["fields"]:
+                if f["key"] == "site.logo_word":
+                    logo_field = f
+                    break
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Juris editor")
+        self.assertEqual(logo_field["value"], "A11JurisBrand")
         self.assertTrue(logo_field["is_overridden"])
         self.assertFalse(logo_field["translatable"])
 
