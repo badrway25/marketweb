@@ -825,6 +825,350 @@ MEDICAL_SPECIALIST_SCHEMA: list[dict[str, Any]] = [
 #     points). Omitted from the dict shape `cols` so the registry value keeps
 #     rendering — only scalar cols exposed.
 
+# A.11 · Juris modern-transparent — 5th enrolled editor archetype, second
+# template in the lawyer category (Lex classic-gold was the first, in A.10).
+# Single-template admission: the two law templates ship distinct archetypes
+# + distinct skin folders + only ~25% content-tree overlap, so the A.9
+# shared-schema recipe does NOT apply. Juris ships ZERO image fields — the
+# advisory-modern DNA explicitly rejects founder portraits / case photos,
+# so no image widget ever reaches the editor perimeter here.
+#
+# Shape contract notes (see Step 0 audit in the A.11 phase memory):
+#   • 11 sidebar groups cover all 6 Juris pages (home, approccio, servizi,
+#     settori, insights, contatti) + chrome (brand, nav, contact_info).
+#     Skin uses `.jr-*` selectors.
+#   • Complex shapes explicitly KEPT OUT of the perimeter by design:
+#       - ``approccio.dashboard_mock`` (nested dict with columns → cards)
+#       - ``home.trust_logos`` (flat list-of-str marquee wordmarks)
+#       - ``insights.topics`` (flat list-of-str filter pills)
+#       - ``servizi.services[*].deliverables`` (nested list-of-str bullets)
+#       - ``settori.sectors[*].pain_points / signals / legal_ops``
+#         (nested list-of-str bullets) — same policy as Lex
+#         ``pratiche.services[*].scope``.
+#     These stay registry-only; the customer cannot reach them through
+#     the editor. The test suite asserts this explicitly.
+#   • Form structure blocks (contatti.form_fields · form_sections) stay
+#     OUT of the whitelist — same policy as Gusto / specialist / Lex.
+#   • blog_list (insights) surfaces only the page-level copy; per-post
+#     content (``posts[*].title`` / sections) stays registry-only.
+
+JURIS_MODERN_TRANSPARENT_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".jr-nav, .jr-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "studio", "tagline", "wordmark", "crest"],
+        "help": "Nome studio, iniziale crest e tagline advisory.",
+        "fields": [
+            ("site.logo_word",    {"label": "Nome studio", "type": "text", "max_length": 60,
+                                    "placeholder": "Martini & Partners"}),
+            ("site.logo_initial", {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",          {"label": "Tagline", "type": "text", "max_length": 100}),
+            ("site.nav_cta",      {"label": "CTA nav", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".jr-lead",
+        "page": "home",
+        "keywords": ["hero", "apertura", "headline", "eyebrow", "intro", "cta", "sprint", "slot"],
+        "help": "Primo scroll della home: eyebrow, headline, intro, CTA principali e chip prossimo slot.",
+        "fields": [
+            ("home.eyebrow",         {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("home.headline",        {"label": "Headline", "type": "richtext", "max_length": 220,
+                                       "help": "Consentiti i tag <em> per gli italici."}),
+            ("home.intro",           {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("home.primary_cta",     {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("home.primary_href",    {"label": "CTA primaria · destinazione", "type": "select",
+                                       "choices": ["home", "approccio", "servizi", "settori",
+                                                   "insights", "contatti"]}),
+            ("home.secondary_cta",   {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+            ("home.secondary_href",  {"label": "CTA secondaria · destinazione", "type": "select",
+                                       "choices": ["home", "approccio", "servizi", "settori",
+                                                   "insights", "contatti"]}),
+            ("home.sprint_chip",     {"label": "Chip · testo", "type": "text", "max_length": 120}),
+            ("home.sprint_chip_cta", {"label": "Chip · etichetta CTA", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".jr-section",
+        "page": "home",
+        "keywords": ["sectors", "settori", "process", "metric", "insights", "trust", "cta"],
+        "help": "Label, eyebrow e intro delle fasce home (settori, processo, metriche, trust, insights, CTA finale).",
+        "subgroups": [
+            {"label": "Settori · intestazione", "fields": [
+                ("home.sectors_label",     {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.sectors_heading",   {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.sectors_intro",     {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Processo · intestazione", "fields": [
+                ("home.process_label",     {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.process_heading",   {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.process_intro",     {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Metriche · intestazione", "fields": [
+                ("home.metric_label",      {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.metric_heading",    {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Trust band", "fields": [
+                ("home.trust_label",       {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ]},
+            {"label": "Insights · intestazione", "fields": [
+                ("home.insights_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.insights_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.insights_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.insights_link",     {"label": "Link · etichetta", "type": "text", "max_length": 60}),
+                ("home.insights_link_href",{"label": "Link · destinazione", "type": "select",
+                                             "choices": ["home", "approccio", "servizi", "settori",
+                                                         "insights", "contatti"]}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("home.cta_label",         {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.cta_heading",       {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.cta_intro",         {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.cta_primary",       {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_primary_href",  {"label": "CTA primaria · destinazione", "type": "select",
+                                             "choices": ["home", "approccio", "servizi", "settori",
+                                                         "insights", "contatti"]}),
+                ("home.cta_secondary",     {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_secondary_href",{"label": "CTA secondaria · destinazione", "type": "select",
+                                             "choices": ["home", "approccio", "servizi", "settori",
+                                                         "insights", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "approccio_page",
+        "label": "Pagina Approccio",
+        "icon": "bi-compass",
+        "region": ".jr-section",
+        "page": "approccio",
+        "keywords": ["approccio", "about", "manifesto", "story", "dashboard", "sedi", "fondatori"],
+        "help": "Pagina Approccio: manifesto, storia, dashboard advisory, fondatori, sedi.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("approccio.eyebrow",            {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("approccio.headline",           {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("approccio.intro",              {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Manifesto · intestazione", "fields": [
+                ("approccio.manifesto_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("approccio.manifesto_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("approccio.manifesto_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Storia · intestazione", "fields": [
+                ("approccio.story_label",        {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("approccio.story_heading",      {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Dashboard · intestazione", "fields": [
+                ("approccio.dashboard_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("approccio.dashboard_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("approccio.dashboard_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Fondatori · intestazione", "fields": [
+                ("approccio.founders_label",     {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("approccio.founders_heading",   {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Sedi · intestazione", "fields": [
+                ("approccio.offices_label",      {"label": "Eyebrow", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("approccio.cta_heading",        {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("approccio.cta_intro",          {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("approccio.cta_primary",        {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("approccio.cta_primary_href",   {"label": "CTA · destinazione", "type": "select",
+                                                    "choices": ["home", "approccio", "servizi", "settori",
+                                                                "insights", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "servizi_page",
+        "label": "Pagina Servizi",
+        "icon": "bi-briefcase",
+        "region": ".jr-section",
+        "page": "servizi",
+        "keywords": ["servizi", "services", "offerte", "processo", "faq", "prezzi"],
+        "help": "Pagina Servizi: intestazione, etichette card, processo, FAQ, CTA finale. Le 7 offerte sono editabili per riga nel blocco indicizzato `Servizi · Offerte`.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("servizi.eyebrow",               {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("servizi.headline",              {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("servizi.intro",                 {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ]},
+            {"label": "Card · etichette meta", "fields": [
+                ("servizi.svc_duration_label",    {"label": "Durata · etichetta", "type": "text", "max_length": 40}),
+                ("servizi.svc_price_label",       {"label": "Prezzo · etichetta", "type": "text", "max_length": 40}),
+                ("servizi.svc_deliverables_label",{"label": "Deliverables · etichetta", "type": "text", "max_length": 60}),
+                ("servizi.svc_engagement_label",  {"label": "Modalità · etichetta", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Processo · intestazione", "fields": [
+                ("servizi.process_label",         {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("servizi.process_heading",       {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "FAQ · intestazione", "fields": [
+                ("servizi.faq_label",             {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("servizi.faq_heading",           {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("servizi.cta_heading",           {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("servizi.cta_intro",             {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("servizi.cta_primary",           {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("servizi.cta_primary_href",      {"label": "CTA · destinazione", "type": "select",
+                                                     "choices": ["home", "approccio", "servizi", "settori",
+                                                                 "insights", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "settori_page",
+        "label": "Pagina Settori",
+        "icon": "bi-diagram-3",
+        "region": ".jr-section",
+        "page": "settori",
+        "keywords": ["settori", "sectors", "team", "aree", "partner"],
+        "help": "Pagina Settori: intestazione, heading fascia settori, heading team. Le 6 aree e il team (10 persone) sono editabili per riga nei blocchi indicizzati.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("settori.eyebrow",         {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("settori.headline",        {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("settori.intro",           {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ]},
+            {"label": "Aree · intestazione", "fields": [
+                ("settori.sectors_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("settori.sectors_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Team · intestazione", "fields": [
+                ("settori.team_label",      {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("settori.team_heading",    {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("settori.team_intro",      {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("settori.cta_heading",     {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("settori.cta_intro",       {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("settori.cta_primary",     {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("settori.cta_primary_href",{"label": "CTA · destinazione", "type": "select",
+                                              "choices": ["home", "approccio", "servizi", "settori",
+                                                          "insights", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "insights_page",
+        "label": "Pagina Insights (blog index)",
+        "icon": "bi-journal-richtext",
+        "region": ".jr-section",
+        "page": "insights",
+        "keywords": ["insights", "blog", "note", "pubblicazioni", "archivio"],
+        "help": "Pagina-indice insights. I singoli post (titolo, corpo) restano da registry.",
+        "fields": [
+            ("insights.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("insights.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("insights.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("insights.posts_intro",      {"label": "Intro sopra le card", "type": "textarea", "max_length": 400}),
+            ("insights.card_topic_label",    {"label": "Card · etichetta Area", "type": "text", "max_length": 40}),
+            ("insights.card_author_label",   {"label": "Card · etichetta Autore", "type": "text", "max_length": 40}),
+            ("insights.card_reading_label",  {"label": "Card · etichetta Lettura", "type": "text", "max_length": 40}),
+            ("insights.topics_label",     {"label": "Filtro · etichetta", "type": "text", "max_length": 40}),
+            ("insights.cta_heading",      {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("insights.cta_intro",        {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("insights.cta_primary",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ("insights.cta_primary_href", {"label": "CTA · destinazione", "type": "select",
+                                             "choices": ["home", "approccio", "servizi", "settori",
+                                                         "insights", "contatti"]}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-telephone",
+        "region": ".jr-section",
+        "page": "contatti",
+        "keywords": ["contatti", "form", "sedi", "canali", "slot", "call", "strategy"],
+        "help": "Pagina Contatti: copy, chip prossimo slot, titoli form + etichette campi indirizzo. Struttura form (campi, select, sezioni) resta da registry.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("contatti.eyebrow",              {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("contatti.headline",             {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("contatti.intro",                {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Prossimo slot · chip", "fields": [
+                ("contatti.slot_label",           {"label": "Etichetta slot", "type": "text", "max_length": 60}),
+                ("contatti.slot_value",           {"label": "Valore slot", "type": "text", "max_length": 120}),
+                ("contatti.slot_note",            {"label": "Nota slot", "type": "textarea", "max_length": 240}),
+            ]},
+            {"label": "Form · titolo e invio", "fields": [
+                ("contatti.form_label",           {"label": "Eyebrow", "type": "text", "max_length": 60}),
+                ("contatti.form_heading",         {"label": "Titolo form", "type": "richtext", "max_length": 220}),
+                ("contatti.form_intro",           {"label": "Intro form", "type": "textarea", "max_length": 500}),
+                ("contatti.form_submit_label",    {"label": "CTA submit", "type": "text", "max_length": 60}),
+                ("contatti.form_submit_note",     {"label": "Nota sotto il pulsante", "type": "textarea", "max_length": 300}),
+                ("contatti.form_consent",         {"label": "Testo consenso privacy", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Indirizzo ufficio · etichette", "fields": [
+                ("contatti.office_address_label", {"label": "Etichetta Indirizzo", "type": "text", "max_length": 40}),
+                ("contatti.office_area_label",    {"label": "Etichetta Quartiere", "type": "text", "max_length": 40}),
+                ("contatti.office_phone_label",   {"label": "Etichetta Telefono", "type": "text", "max_length": 40}),
+                ("contatti.office_email_label",   {"label": "Etichetta Email", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Sedi · intestazione", "fields": [
+                ("contatti.offices_label",        {"label": "Eyebrow", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Canali · intestazione", "fields": [
+                ("contatti.channels_label",       {"label": "Eyebrow", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Footnote", "fields": [
+                ("contatti.footnote",             {"label": "Footnote piè pagina", "type": "textarea", "max_length": 500}),
+            ]},
+        ],
+    },
+    {
+        "id": "contact_info",
+        "label": "Contatti · footer",
+        "icon": "bi-telephone-forward",
+        "region": ".jr-foot",
+        "page": "*",
+        "keywords": ["footer", "phone", "email", "indirizzo", "orari", "licenza", "hours"],
+        "help": "Dati di contatto visibili in footer + orari + licenza/P.IVA + intro voce dello studio.",
+        "fields": [
+            ("site.phone",         {"label": "Telefono", "type": "text", "max_length": 40}),
+            ("site.email",         {"label": "Email", "type": "text", "max_length": 80}),
+            ("site.address",       {"label": "Indirizzo sede primaria", "type": "text", "max_length": 120}),
+            ("site.hours_compact", {"label": "Orari sintetici", "type": "text", "max_length": 100}),
+            ("site.license",       {"label": "Licenza / P.IVA", "type": "text", "max_length": 160}),
+            ("site.footer_intro",  {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.foot_studio",   {"label": "Footer · titolo Studio", "type": "text", "max_length": 40}),
+            ("site.foot_pages",    {"label": "Footer · titolo Pagine", "type": "text", "max_length": 40}),
+            ("site.foot_contact",  {"label": "Footer · titolo Contatti", "type": "text", "max_length": 40}),
+            ("site.foot_offices",  {"label": "Footer · titolo Sedi", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "post_chrome",
+        "label": "Insights · etichette post",
+        "icon": "bi-tags",
+        "region": ".jr-section",
+        "page": "insights",
+        "keywords": ["post", "insights", "meta", "pubblicato", "lettura", "autore", "area"],
+        "help": "Etichette meta comuni a ogni post (pubblicato il, lettura, autore, area, link back).",
+        "fields": [
+            ("site.post_date_label",    {"label": "Etichetta Pubblicato", "type": "text", "max_length": 40}),
+            ("site.post_reading_label", {"label": "Etichetta Lettura", "type": "text", "max_length": 40}),
+            ("site.post_author_label",  {"label": "Etichetta Autore", "type": "text", "max_length": 40}),
+            ("site.post_topic_label",   {"label": "Etichetta Area", "type": "text", "max_length": 40}),
+            ("site.post_back_label",    {"label": "Etichetta link all'archivio", "type": "text", "max_length": 60}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -1943,6 +2287,115 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # A.11 · Juris modern-transparent — 6 readonly indexed lists. No
+    # ``mutable: True`` flag (same as Lex / Pragma / Gusto / specialist).
+    # Nested list-of-str cells inside dict rows are NEVER exposed in the
+    # dict-shape cols (stay registry-only):
+    #   - ``servizi.services[*].deliverables`` (4-bullet list per offer)
+    #   - ``settori.sectors[*].pain_points / signals / legal_ops``
+    #     (each a bullet list per area — same policy as Lex
+    #     ``pratiche.services[*].scope``).
+    # Juris ships ZERO image/portrait fields anywhere in the registry,
+    # so no col-exclusion pattern for portraits is needed.
+    "modern-transparent": {
+        "approccio.founders": {
+            "kind": "dict",
+            "page": "approccio",
+            "label": "Approccio · Fondatori",
+            "icon": "bi-people",
+            "region": ".jr-section",
+            "keywords": ["fondatori", "founders", "partner", "managing"],
+            "cols": [
+                ("name", {"label": "Nome",       "type": "text",     "max_length": 80}),
+                ("role", {"label": "Ruolo",      "type": "text",     "max_length": 120}),
+                ("bio",  {"label": "Biografia",  "type": "textarea", "max_length": 700}),
+                # credentials (list of str) intenzionalmente omesso:
+                # resta readonly al registry.
+            ],
+        },
+        "approccio.story": {
+            "kind": "tuple",
+            "page": "approccio",
+            "label": "Approccio · Storia",
+            "icon": "bi-clock-history",
+            "region": ".jr-section",
+            "keywords": ["storia", "timeline", "tappe", "cronologia"],
+            "tuple_order": ["year", "title", "body"],
+            "cols": [
+                ("year",  {"label": "Anno",   "type": "text",     "max_length": 12}),
+                ("title", {"label": "Titolo", "type": "text",     "max_length": 80}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "approccio.manifesto": {
+            "kind": "tuple",
+            "page": "approccio",
+            "label": "Approccio · Manifesto",
+            "icon": "bi-list-check",
+            "region": ".jr-section",
+            "keywords": ["manifesto", "principi", "valori", "regole"],
+            "tuple_order": ["num", "title", "body"],
+            "cols": [
+                ("num",   {"label": "Numero", "type": "text",     "max_length": 8}),
+                ("title", {"label": "Titolo principio", "type": "text", "max_length": 100}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 600}),
+            ],
+        },
+        "servizi.services": {
+            "kind": "dict",
+            "page": "servizi",
+            "label": "Servizi · Offerte",
+            "icon": "bi-briefcase",
+            "region": ".jr-section",
+            "keywords": ["offerte", "servizi", "prezzi", "durata", "modalità"],
+            "cols": [
+                ("num",        {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",      {"label": "Titolo offerta", "type": "text", "max_length": 100}),
+                ("tier",       {"label": "Tier", "type": "text", "max_length": 40}),
+                ("blurb",      {"label": "Descrizione", "type": "textarea", "max_length": 600}),
+                ("duration",   {"label": "Durata", "type": "text", "max_length": 80}),
+                ("engagement", {"label": "Modalità", "type": "text", "max_length": 120}),
+                ("price",      {"label": "Prezzo", "type": "text", "max_length": 100}),
+                # deliverables (list of str bullet points) intenzionalmente
+                # omesso: resta readonly al registry.
+            ],
+        },
+        "settori.sectors": {
+            "kind": "dict",
+            "page": "settori",
+            "label": "Settori · Aree",
+            "icon": "bi-diagram-3",
+            "region": ".jr-section",
+            "keywords": ["settori", "sectors", "aree", "partner", "legal ops"],
+            "cols": [
+                ("num",          {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",        {"label": "Titolo area", "type": "text", "max_length": 80}),
+                ("tagline",      {"label": "Tagline", "type": "text", "max_length": 160}),
+                ("case_snippet", {"label": "Caso esemplare", "type": "textarea", "max_length": 600}),
+                ("partner",      {"label": "Partner responsabile", "type": "text", "max_length": 120}),
+                ("legal_ops",    {"label": "Legal ops di riferimento", "type": "text", "max_length": 120}),
+                # pain_points / signals / legal_ops (list-of-str bullet
+                # points) intenzionalmente omessi: restano readonly al
+                # registry. Note: la col `legal_ops` qui è il campo
+                # scalar "legal ops · persona" (non la lista).
+            ],
+        },
+        "settori.team": {
+            "kind": "dict",
+            "page": "settori",
+            "label": "Settori · Team completo",
+            "icon": "bi-people",
+            "region": ".jr-section",
+            "keywords": ["team", "avvocati", "legal ops", "partner", "office"],
+            "cols": [
+                ("name",   {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",   {"label": "Ruolo", "type": "text", "max_length": 140}),
+                ("bio",    {"label": "Biografia breve", "type": "textarea", "max_length": 400}),
+                ("office", {"label": "Sede", "type": "text", "max_length": 60}),
+                ("email",  {"label": "Email", "type": "text", "max_length": 100}),
+            ],
+        },
+    },
 }
 
 
@@ -1960,6 +2413,10 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # shares exactly the same shape and gets editable "for free".
     "specialist":             ("cardio-studio-specialistico", "it"),
     "classic-gold":           ("lex-studio-legale",          "it"),
+    # A.11 · Juris (modern-transparent) joins as 5th enrolled archetype —
+    # second template in the lawyer category, distinct archetype + skin
+    # from Lex's classic-gold.
+    "modern-transparent":     ("juris-avvocato-moderno",    "it"),
 }
 
 
@@ -1973,6 +2430,11 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     "fine-dining":            GUSTO_FINE_DINING_SCHEMA,
     "specialist":             MEDICAL_SPECIALIST_SCHEMA,
     "classic-gold":           LEX_CLASSIC_GOLD_SCHEMA,
+    # A.11 · Juris — single-template admission in the 2-template lawyer
+    # category. Distinct archetype from Lex; shared-schema recipe A.9 was
+    # audited and does not apply (only ~25% content-tree overlap, distinct
+    # skin folders, distinct DNA dimensions).
+    "modern-transparent":     JURIS_MODERN_TRANSPARENT_SCHEMA,
 }
 
 
@@ -2458,6 +2920,11 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # skin folders so the A.9 shared-schema recipe does NOT apply.
     # Gated by ``test_a10_lex_full_multilocale_lifecycle_end_to_end``.
     "classic-gold",
+    # A.11 · Juris (modern-transparent archetype · law family · second
+    # template) closes the law family with a dedicated schema. Zero image
+    # fields by design. Gated by
+    # ``test_a11_juris_full_multilocale_lifecycle_end_to_end``.
+    "modern-transparent",
 })
 
 
