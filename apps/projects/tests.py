@@ -2051,6 +2051,206 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A9 Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.10 · Lex (classic-gold archetype · law family) enrollment
+    # ------------------------------------------------------------------
+
+    def test_a10_lex_archetype_registered(self):
+        """``classic-gold`` joins the schema + baseline template + gate
+        registries. Juris (``modern-transparent``) stays out — it is a
+        distinct archetype and will be enrolled separately as A.10b."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("classic-gold", _ARCHETYPE_SCHEMAS)
+        self.assertEqual(
+            _ARCHETYPE_BASELINE_TEMPLATE["classic-gold"],
+            ("lex-studio-legale", "it"),
+        )
+        self.assertIn("classic-gold", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("classic-gold"))
+        # Juris / modern-transparent NOT enrolled in A.10 — guard against a
+        # future accidental enrollment without its own dedicated phase.
+        self.assertNotIn("modern-transparent", _ARCHETYPE_SCHEMAS)
+        self.assertNotIn("modern-transparent", _MULTILOCALE_ENABLED_ARCHETYPES)
+
+    def test_a10_lex_schema_shape_covers_all_pages(self):
+        """The Lex schema must surface groups for every Lex page slug
+        (home + studio + pratiche + avvocati + notabili + contatti)
+        plus chrome-level groups (page='*')."""
+        groups = iter_groups("classic-gold")
+        self.assertGreaterEqual(len(groups), 9)
+        pages = {g.get("page") for g in groups}
+        for slug in ("*", "home", "studio", "pratiche", "avvocati",
+                     "notabili", "contatti"):
+            self.assertIn(slug, pages,
+                          f"Lex schema missing page slug {slug!r}")
+
+    def test_a10_lex_is_translatable_text_fields(self):
+        """Scalar copy fields distributed across every Lex page + chrome.
+        Uses only paths present on Lex so a future Juris enrollment
+        doesn't accidentally make this test drift."""
+        from apps.editor.schema import is_translatable
+        arc = "classic-gold"
+        distributed_paths = (
+            # home — hero + bands
+            "home.headline",
+            "home.intro",
+            "home.practice_heading",
+            "home.partners_heading",
+            "home.cta_heading",
+            # studio
+            "studio.intro",
+            "studio.history_heading",
+            "studio.values_heading",
+            # pratiche
+            "pratiche.headline",
+            "pratiche.process_heading",
+            # avvocati
+            "avvocati.intro",
+            "avvocati.lawyer_foro_label",
+            # notabili
+            "notabili.headline",
+            # contatti
+            "contatti.intro",
+            "contatti.form_heading",
+            "contatti.footnote",
+            # chrome site.* customer-copy universals
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+            "site.case_lead_label",
+            "site.foot_studio",
+            "site.nav_cta",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on classic-gold",
+            )
+
+    def test_a10_lex_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Lex — same contract
+        as Vertex / Pragma / Gusto / specialist."""
+        from apps.editor.schema import is_translatable
+        arc = "classic-gold"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on Lex",
+            )
+
+    def test_a10_lex_non_text_fields_are_global(self):
+        """Image + select fields on Lex always stay global."""
+        from apps.editor.schema import is_translatable
+        arc = "classic-gold"
+        # Scalar image field (Lex ships exactly one: notabili.lead_image)
+        self.assertFalse(is_translatable(arc, "notabili.lead_image"))
+        # Select (page-slug choice) fields
+        self.assertFalse(is_translatable(arc, "home.primary_href"))
+        self.assertFalse(is_translatable(arc, "home.secondary_href"))
+        self.assertFalse(is_translatable(arc, "home.cta_primary_href"))
+        self.assertFalse(is_translatable(arc, "home.cta_secondary_href"))
+        self.assertFalse(is_translatable(arc, "studio.cta_primary_href"))
+        self.assertFalse(is_translatable(arc, "pratiche.cta_primary_href"))
+
+    def test_a10_lex_structured_list_cells_are_global(self):
+        """The 6 readonly indexed lists on Lex stay global at cell level.
+        Lex ships no portrait fields anywhere in the registry, so no
+        col-exclusion is required (unlike Gusto produttori.items and
+        specialist medici.doctors). The ``scope`` nested list-of-str
+        inside ``pratiche.services`` rows is intentionally NOT exposed
+        in the dict shape cols — stays registry-only."""
+        from apps.editor.schema import is_translatable, get_list_shape
+        arc = "classic-gold"
+        for path in ("avvocati.lawyers.0.name",
+                     "avvocati.lawyers.13.bio",
+                     "pratiche.services.0.title",
+                     "pratiche.services.0.blurb",
+                     "pratiche.services.11.jurisdiction",
+                     "pratiche.process.0.title",
+                     "studio.history.0.title",
+                     "studio.values.0.body",
+                     "contatti.offices.0.city",
+                     "contatti.offices.1.phone"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Lex",
+            )
+        # pratiche.services: `scope` (list-of-str bullet points) must NOT
+        # appear in the dict shape cols (bullet points stay registry-only).
+        services_shape = get_list_shape(arc, "pratiche.services")
+        self.assertIsNotNone(services_shape)
+        col_names = {name for name, _spec in (services_shape.get("cols") or [])}
+        self.assertNotIn("scope", col_names,
+                         "classic-gold pratiche.services must NOT expose scope as an editable col")
+
+    def test_a10_lex_supported_locales_returns_canonical_five(self):
+        """Lex ships the canonical 5-locale set, same as Vertex / Pragma
+        / Gusto / specialist. Lex is the cleanest content registry
+        audited so far — zero IT-only parity gaps even on form_fields /
+        form_sections / upload_field."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("classic-gold"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a10_quadruple_regression_after_lex_joins(self):
+        """Regression guard: adding Lex to gate + schemas must not
+        disturb ANY of the four pre-existing enrollments (Vertex +
+        Pragma + Gusto + specialist)."""
+        from apps.editor.schema import is_translatable, supported_locales
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist"):
+            self.assertTrue(
+                is_translatable(arc, "home.headline"),
+                f"{arc} home.headline must stay translatable",
+            )
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must keep the canonical 5-locale set",
+            )
+
+    def test_a10_lex_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.8/A.9 integration guardrail — the Lex
+        ``classic-gold/_base.html`` must integrate the three bridge
+        points together: (1) preview-bridge.js conditional on
+        ``preview_project``, (2) ``<title>`` honors ``site.logo_word``,
+        (3) ``<body>`` carries the ``mw-is-editor-preview`` guard class
+        when inside the editor."""
+        lex = WebTemplate.objects.get(slug="lex-studio-legale")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/lawyer/lex-studio-legale/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=lex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A10 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/lawyer/lex-studio-legale/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A10 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
