@@ -6,6 +6,7 @@ bookkeeping centralised and keeps views thin.
 """
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import Any, Iterable
 
 from django.db import transaction
@@ -823,6 +824,131 @@ def upload_asset(
         raise AssetInvalid(f"File is not a valid image: {exc}")
 
     return asset
+
+
+# ---------------------------------------------------------------------------
+# A.5 · orphan asset garbage collection
+# ---------------------------------------------------------------------------
+#
+# A ProjectAsset is "referenced" iff its public URL
+# (``asset.file.url``) appears verbatim in at least one of:
+# - ``ProjectContent.value_json`` of the asset's project (live state)
+# - ``ProjectRevision.snapshot`` of the asset's project (historical
+#   publish/save snapshots)
+#
+# Matching is a literal substring search. The URL shape is fixed
+# by A.4 (D-094): ``<MEDIA_URL>project-assets/<project-uuid>/<hex>.<ext>``
+# — no query string, no version suffix. If Phase A.6 swaps to remote
+# storage and the URL shape changes, _build_reference_blob below
+# must adapt accordingly (test_a5_gc_ignores_referenced_asset will
+# catch any regression).
+#
+# Grace period guards the autosave race: an asset created T+0 may
+# not see its value_json persisted until T+1.2s (click → fetch →
+# debounce → autosave). A GC run inside that window would falsely
+# flag it as orphan. Default 24h grace is generous; operators can
+# tighten with ``--grace=0`` when they know no autosave is in flight
+# (e.g. offline cleanup).
+
+
+def _build_reference_blob(project: CustomerProject) -> str:
+    """Concatenate every persistent state that could reference an
+    asset URL for this project, as a single string suitable for
+    substring search.
+
+    Sources: all ProjectContent.value_json rows + all
+    ProjectRevision.snapshot payloads (JSON-encoded). Keeping this
+    defensive — a URL appearing anywhere persistent counts as a
+    reference.
+    """
+    import json as _json
+    parts: list[str] = list(
+        ProjectContent.objects.filter(project=project)
+        .values_list("value_json", flat=True)
+    )
+    for snap in ProjectRevision.objects.filter(project=project).values_list(
+        "snapshot", flat=True,
+    ):
+        try:
+            parts.append(_json.dumps(snap, ensure_ascii=False))
+        except Exception:
+            # Defensive — a malformed snapshot should never crash GC;
+            # treat it as contributing no reference strings.
+            continue
+    return "\n".join(parts)
+
+
+def find_unreferenced_assets(
+    project: CustomerProject | None = None,
+    grace_hours: float = 24,
+) -> list[ProjectAsset]:
+    """Return the ProjectAssets that are orphan under the A.5 contract.
+
+    - ``project``: when provided, scopes the scan to that project's
+      assets only. When None, scans all projects.
+    - ``grace_hours``: assets created more recently than ``now -
+      grace_hours`` are excluded to avoid racing an in-flight
+      autosave. Use 0 to disable.
+
+    Never raises on a malformed blob or a missing storage file —
+    those are handled in ``delete_unreferenced_assets``.
+    """
+    if grace_hours < 0:
+        raise ValueError("grace_hours must be >= 0")
+
+    cutoff = timezone.now() - timedelta(hours=grace_hours)
+    qs = ProjectAsset.objects.filter(created_at__lt=cutoff).select_related("project")
+    if project is not None:
+        qs = qs.filter(project=project)
+
+    blob_by_project: dict[int, str] = {}
+    orphans: list[ProjectAsset] = []
+    for asset in qs:
+        pid = asset.project_id
+        if pid not in blob_by_project:
+            blob_by_project[pid] = _build_reference_blob(asset.project)
+        if asset.file.url not in blob_by_project[pid]:
+            orphans.append(asset)
+    return orphans
+
+
+def delete_unreferenced_assets(
+    assets, *, dry_run: bool = True,
+) -> dict[str, Any]:
+    """Delete file + row for each asset in ``assets``.
+
+    Returns stats:
+    - scanned: total assets considered
+    - deleted: rows + files actually removed (0 when dry_run)
+    - skipped: delete attempts that raised (only in apply mode)
+    - bytes_freed: size sum (projected in dry_run, actual in apply)
+    - paths: list of file.name for reporting
+    - errors: list of "<asset_id>: <message>" strings, capped at 10
+
+    Filesystem delete is not transactional; errors during delete
+    are caught per-asset so one broken file cannot abort the batch.
+    """
+    stats: dict[str, Any] = {
+        "scanned": 0, "deleted": 0, "skipped": 0,
+        "bytes_freed": 0, "paths": [], "errors": [],
+    }
+    for asset in assets:
+        stats["scanned"] += 1
+        stats["paths"].append(asset.file.name)
+        if dry_run:
+            stats["bytes_freed"] += asset.size_bytes or 0
+            continue
+        try:
+            size = asset.size_bytes or 0
+            asset.file.delete(save=False)
+            asset.delete()
+            stats["deleted"] += 1
+            stats["bytes_freed"] += size
+        except Exception as exc:
+            stats["skipped"] += 1
+            if len(stats["errors"]) < 10:
+                stats["errors"].append(f"{asset.pk}: {exc}")
+    return stats
 
 
 # ---------------------------------------------------------------------------
