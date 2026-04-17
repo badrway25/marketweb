@@ -4977,3 +4977,59 @@ A.11 planning session — candidates in priority order (dedicated planning requi
 (d) **A.11 alt · editor polish / operator tools / remote storage** — defer unless customer signal or prod-launch timeline demands.
 
 Consolidation pause (this commit) precedes the choice.
+
+## Session 64 — Phase A.11 · Juris (modern-transparent) Editor + Multi-locale Enrollment (2026-04-17)
+
+### What shipped
+
+A.11 ships the sixth editable archetype: **Juris (modern-transparent · law family · second template)**. The Step-0 runtime audit pre-run in planning already settled the topology question (A.9 shared-schema recipe does NOT apply to the law family — confirmed in Session 63 A.10). A.11 implements the dedicated-schema path for Juris: its own `JURIS_MODERN_TRANSPARENT_SCHEMA`, its own skin bridge on `lawyer/modern-transparent/_base.html` with `.jr-*` prefix, and its own lifecycle regression test. **The law family is now closed completely — via two distinct archetypes, not a shared one.**
+
+Two additional runtime positives observed during the A.11 audit:
+- **Zero image fields** anywhere in the Juris registry — advisory-modern DNA explicitly rejects founder portraits / case photos / hero illustrations. A.11 is the first enrollment with a formalized "zero-image" guard: a contract test iterates the entire schema + `STRUCTURED_FIELD_SHAPES` tree and asserts no field carries `type: "image"`. This locks the DNA assumption into the test layer.
+- **5-locale parity PERFECT** (it/en/fr/es/ar all present with equivalent shape — zero IT-only gaps on any section, form structure included).
+
+### Recipe applied (single-template · A.6 + A.7b combined · with two user-imposed guardrails)
+
+Two commits on `phase-editor-a11-juris-modern-transparent-v1`.
+
+- Step 0 · runtime audit (planning artifact, no code). DNA inspection confirmed Juris uses `modern-transparent` archetype with `.jr-*` skin prefix on `lawyer/modern-transparent/_base.html` (24 `html[dir="rtl"]` rules already mature — zero RTL work needed). Content-tree shape identified 4 categories of complex registry shapes that must stay OUT of the editor perimeter: (1) `approccio.dashboard_mock` (nested dict with URL + columns + cards — novel shape not mappable to tuple/dict); (2) flat list-of-str containers `home.trust_logos` + `insights.topics`; (3) nested list-of-str cells inside dict rows (`servizi.services[*].deliverables`, `settori.sectors[*].pain_points / signals / legal_ops`-bullets) — same exclusion policy as Lex `pratiche.services[*].scope`; (4) form structure blocks (`contatti.form_fields` / `form_sections`) — same policy as Gusto / specialist / Lex.
+- `4ebbbfe` · Step 1 · `JURIS_MODERN_TRANSPARENT_SCHEMA` in `apps/editor/schema.py` (~467 LOC delta · 10 sidebar groups: brand + hero_home + home_bands + approccio_page + servizi_page + settori_page + insights_page + contatti_page + contact_info + post_chrome · ~180 scalar fields · **zero image fields**). `STRUCTURED_FIELD_SHAPES["modern-transparent"]` exposes 6 readonly indexed lists: `approccio.founders` dict 2×3 (credentials list-of-str col-excluded) · `approccio.story` tuple 5×3 · `approccio.manifesto` tuple 4×3 · `servizi.services` dict 7×7 (deliverables list-of-str col-excluded) · `settori.sectors` dict 6×6 (pain_points/signals/legal_ops-bullets list-of-str col-excluded; the scalar `partner` + scalar `legal_ops`-person cols ARE exposed) · `settori.team` dict 10×5. Registered in `_ARCHETYPE_SCHEMAS` + `_ARCHETYPE_BASELINE_TEMPLATE[("juris-avvocato-moderno","it")]` + `_MULTILOCALE_ENABLED_ARCHETYPES`. `templates/live_templates/lawyer/modern-transparent/_base.html` gets the three atomic A.6 fixes (title `site.logo_word|default:brand.brand_name` · body guard class · CSS guard block `.jr-*` + preview-bridge injection). 10 tests including `test_a11_juris_archetype_registered` (guard that `classic-gold` stays enrolled · A.11 is additive) + `test_a11_juris_schema_shape_covers_all_pages` + `test_a11_juris_is_translatable_text_fields` + `test_a11_juris_branding_and_contact_universals_are_global` + **two user-imposed guardrails**: `test_a11_juris_schema_contains_zero_image_fields` (iterates every group + subgroup + SHAPES cols + cell_spec asserting no `type: "image"` anywhere) and `test_a11_juris_complex_shapes_excluded_from_perimeter` (12 path shapes rejected via `validate_key_path` + 3 cols-exclusion explicit assertions) + `test_a11_juris_structured_list_cells_are_global` + `test_a11_juris_supported_locales_returns_canonical_five` + `test_a11_quintuple_regression_after_juris_joins` (Vertex + Pragma + Gusto + specialist + classic-gold all intact) + `test_a11_juris_preview_bridge_injected_only_with_preview_project`. The A.10 guard test `test_a10_lex_archetype_registered` was updated to drop the Juris-absence assertions now that Juris is enrolled (A.11 is additive: Lex-must-stay assertion is still in place).
+- `287534b` · Step 2 · `test_a11_juris_full_multilocale_lifecycle_end_to_end` mirror of A.7b/A.8/A.9/A.10-single-template lifecycle. 3 translatable autosaves (IT/EN/FR on `home.headline` with marker "A11Juris") + 1 global autosave (`site.logo_word` = "A11JurisBrand" EN-tagged but plain-keyed) + publish + 5 public preview renders (second user) + AR `<html dir="rtl" lang="ar">` assertion on the `.jr-*` skin + 4 editor reopens (owner). Route: `/templates/lawyer/juris-avvocato-moderno/preview/`. Passes first run.
+
+Step 3 · browser walk (no code change). 13 spot checks all green:
+- Editor `?lang=it` mount → label "Lingua attiva", 5 pills (`.ed-lang-pill[data-ed-lang]`), 110 `per lingua` badges on translatable fields, 188 global fields without badge, 6/6 expected global contract keys (`site.logo_word/logo_initial/phone/email/address/license`) correctly NON-translatable, **zero `input[type="file"]` + zero `[data-ed-kind="image"]` + zero "Immagine/URL immagine" text mentions in the sidebar** — confirms the zero-image assertion end-to-end from schema layer up to rendered editor chrome.
+- Type IT on `home.headline` + click EN pill before debounce → `@it:home.headline` persisted BEFORE iframe navigation (DB verified). Same flush-before-switch behavior EN→FR.
+- 3 locale autosaves land as distinct `@<locale>:home.headline` rows + 1 global `site.logo_word` as a plain-key row. Zero `home.headline` plain-key leak, zero `@<locale>:site.logo_word` leak.
+- ES switch · sidebar shows authored ES baseline `"El derecho, <em>de tu lado.</em>"` with `is_overridden=false`; global logo override persists universally.
+- AR switch · iframe `.ed-frame` emits `<html lang="ar" dir="rtl">` authentic on the `.jr-*` skin; `body.mw-is-editor-preview lm-ready` guard class present; AR nav labels `المنهجية / الخدمات / القطاعات / تحليلات / تواصل معنا`; AR CTA `احجز جلسة استراتيجية`; H1 `القانون إلى جانبك.`; title `WalkJurisBrand — الرئيسية` confirms `site.logo_word|default:brand.brand_name` applied on the `.jr-*` skin.
+- Sub-page spot checks (owner IT, `project=<uuid>`): `/approccio/` H1 "Non vendiamo ore…" (17 jr-section elements) · `/servizi/` H1 "Sette offerte, tempi certi…" (9 jr-sections) · `/settori/` H1 "Sei settori, un solo metodo…" (8 jr-sections) · `/insights/` H1 "Quando cambia una norma, scriviamo una nota." (8 jr-sections). All 4 carry `jr-nav` + `jr-foot` + `WalkJurisBrand` + `body.mw-is-editor-preview` + `preview-bridge.js`.
+- Publish + second-user public preview per locale: IT/EN/FR customer overrides visible on each respective locale · ES/AR authored fallback (`"El derecho"` / `"القانون"`) · AR `dir="rtl"` preserved · `WalkJurisBrand` universal across all 5 locales · **zero cross-locale leak** in any direction.
+
+### Observables
+
+- 182/182 → **193/193** server tests (+11: 10 contract/integration + 1 lifecycle).
+- Smoke 834/834 unchanged. `manage.py check` 0 issues.
+- No production code touched outside `schema.py`, `modern-transparent/_base.html` (3 minimal fixes), and `tests.py`. Zero touches to `services.py` / `rendering.py` / `views.py` / `models.py` / editor templates / `live-editor.js` / CSS / content registries / any other skin (classic-gold, specialist, fine-dining, corporate-suite, agency-creative-studio untouched).
+
+### Consequences
+
+- **Editor 6/8 archetypes editable · multi-locale 6/8 enrolled · 7 templates editable end-to-end** (Vertex + Pragma + Gusto + Cardio + Derm + Lex + **Juris**).
+- **Law family closed completely** — via two distinct archetypes (`classic-gold` Lex + `modern-transparent` Juris), not a shared schema. This is the first phase where a category closes through a pair of dedicated-schema enrollments rather than one shared schema covering multiple templates.
+- Catalog 20/20 `published_live` unchanged.
+- **No new D-number introduced**. A.11 is the fifth real application of the D-098 recipe and the first one confirming that **a family can close through multiple separate archetypes**, not only through one shared schema. The binding constraint from D-098 — dedicated lifecycle regression test per enrolled template — was satisfied for both Lex (Session 63) and Juris (this session), each with its own lifecycle test and its own archetype gate entry.
+- Branch shape: `phase-editor-a11-juris-modern-transparent-v1` merged into v15 via `--no-ff` @ `0f8bf60`. Pushed to `origin/phase-integration-baseline-v15`.
+- No explicit debt pending.
+
+### Exact next step
+
+A.12 planning session — candidates in priority order (dedicated planning required before Step 0):
+
+(a) **A.12 real-estate family (Casa + Villa) enrollment** — requires a Step-0 runtime audit to check whether Casa (`mass-market`) and Villa (`ultra-luxury-cinematic`) share archetype slug + content-tree shape or diverge like Lex/Juris. Given the documented DNA divergence (`mass-market` vs `ultra-luxury-cinematic` with distinct skin folders already observed in the A.10 planning audit), the most likely outcome is two distinct archetypes — closing the real-estate family through the A.11 dedicated-schema recipe rather than the A.9 shared-schema recipe.
+
+(b) **A.12 alt · Chiara (editorial-designer-grid)** — single template, novel `project_detail` / `series_detail` page kinds stretch the editor beyond the current home/about/services patterns. Higher risk than the continuation path but opens the "editorial publishing" adjacency.
+
+(c) **A.12 alt · Sapore / Pixel / Bottega / Luxe / Aura / Elevate / Salute / Benessere / Famiglia / Brace** — single-template archetypes that can each be enrolled individually with the A.11 recipe (single-schema, zero shared-schema gain). Each would be a small, clean phase with low architectural risk.
+
+(d) **A.12 alt · editor polish / operator tools / remote storage / media evolution** — defer unless customer signal or prod-launch timeline demands. Current value is low relative to closing more archetype families.
+
+Consolidation pause (this commit) precedes the choice.

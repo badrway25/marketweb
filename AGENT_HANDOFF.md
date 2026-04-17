@@ -1,16 +1,16 @@
 # Agent Handoff
 
-Last updated: 2026-04-17 — after **Session 63 A.10 Lex (classic-gold · law family) Editor + Multi-locale Enrollment merge** (baseline tip `ee9ebbd`, pushed to origin)
+Last updated: 2026-04-17 — after **Session 64 A.11 Juris (modern-transparent · law family) Editor + Multi-locale Enrollment merge** (baseline tip `0f8bf60`, pushed to origin)
 
 ## Current state — read this before opening any new workstream (2026-04-17)
 
-Five editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) + **specialist** (Cardio + Derm shared) + **classic-gold** (Lex only) — are all multi-locale enrolled. A.10 validated single-template enrollment in a 2-template category: Lex went in while Juris (`modern-transparent`) stays out and is explicitly guarded against accidental future enrollment in `test_a10_lex_archetype_registered`. Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **5/8 archetypes editor-supported · 5/8 multi-locale enrolled · 6 templates editable end-to-end**. All acceptance gates are green:
+Six editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) + **specialist** (Cardio + Derm shared) + **classic-gold** (Lex) + **modern-transparent** (Juris) — are all multi-locale enrolled. A.11 closes the law family completely, via TWO distinct archetypes (`classic-gold` Lex + `modern-transparent` Juris), not through a shared schema — the first phase where a category closes through a pair of dedicated-schema enrollments rather than one shared schema covering multiple templates (which is the A.9 specialist pattern). Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **6/8 archetypes editor-supported · 6/8 multi-locale enrolled · 7 templates editable end-to-end**. All acceptance gates are green:
 
 - `python manage.py check` → 0 issues
-- `python manage.py test apps` → 182/182 PASS
+- `python manage.py test apps` → 193/193 PASS
 - `python smoke_full.py` → 834/834 routes HTTP 200
 
-Baseline `phase-integration-baseline-v15` tip: **`ee9ebbd`** (A.10 merge), pushed to `origin/phase-integration-baseline-v15`.
+Baseline `phase-integration-baseline-v15` tip: **`0f8bf60`** (A.11 merge), pushed to `origin/phase-integration-baseline-v15`.
 
 ### What the editor does today
 
@@ -42,15 +42,28 @@ Baseline `phase-integration-baseline-v15` tip: **`ee9ebbd`** (A.10 merge), pushe
 - `supported_locales=["it","en","fr","es","ar"]` · identical UX surface to Vertex + Pragma + Gusto. AR preview on `.sp-*` skin renders `<html dir="rtl" lang="ar">` authentic.
 - Enrolled via A.9 Session 62 (combined A.6 schema register + A.7b gate flip in a single phase, plus **two distinct lifecycle regression tests** — `test_a9_cardio_full_multilocale_lifecycle_end_to_end` + `test_a9_derm_full_multilocale_lifecycle_end_to_end` — confirming the operational clarification to D-098: **shared-schema enrollments still require dedicated lifecycle coverage per template carried in**, there is no "free ride").
 
-**classic-gold (Lex) — editable AND multi-locale enrolled (A.10) · SINGLE-TEMPLATE FAMILY ADMISSION:**
-- **Single template**: `lex-studio-legale`. **Juris (`modern-transparent`) is explicitly NOT enrolled** — it lives in the same `lawyer` category but carries distinct DNA + distinct skin folder + ~75% divergent content-tree shape. Juris awaits A.11 or later phase with its own schema + skin bridge + dedicated lifecycle test. Guard inside `test_a10_lex_archetype_registered` asserts `modern-transparent NOT in _ARCHETYPE_SCHEMAS NOR in _MULTILOCALE_ENABLED_ARCHETYPES` so a future accidental enrollment without its own dedicated phase fails fast.
+**classic-gold (Lex) — editable AND multi-locale enrolled (A.10) · FIRST DEDICATED-SCHEMA SLOT OF THE LAW FAMILY:**
+- **Single template**: `lex-studio-legale`. At A.10 time Juris stayed out (guarded by `test_a10_lex_archetype_registered`). At A.11 time Juris was enrolled in its own phase with its own archetype — the Lex guard was updated to drop the Juris-absence assertions while keeping the Lex-must-stay regression guard. Lex and Juris together close the law family via two dedicated schemas (NOT shared-schema).
 - 9 sidebar groups · ~102 scalar fields + 1 scalar image (`notabili.lead_image` — only image in Lex registry; lawyers + partners dicts carry no portraits) + 6 readonly indexed lists:
   - `avvocati.lawyers` dict 14×(bio/foro/name/role/specialization/year) — 14 lawyers · all 6 cols exposed · no portrait col to omit
   - `pratiche.services` dict 12×(num/title/blurb/lead/jurisdiction) — 12 practice areas · `scope` nested-list-of-str bullet points intentionally omitted from cols, stays registry-only
   - `pratiche.process` tuple 4×3, `studio.history` tuple 6×3, `studio.values` tuple 4×3, `contatti.offices` dict 2×7 (full: city/tag/address/area/phone/email/hours)
 - 79 translatable fields per-template sidebar rendering (distributed across home + studio + pratiche + avvocati + notabili + contatti + site chrome)
 - `supported_locales=["it","en","fr","es","ar"]` · identical UX surface. AR preview on `.lx-*` skin renders `<html dir="rtl" lang="ar">` authentic with ledger-style RTL.
-- Enrolled via A.10 Session 63 (combined A.6 schema register + A.7b gate flip in a single phase, with `test_a10_lex_full_multilocale_lifecycle_end_to_end` as the single dedicated lifecycle regression test). Confirms D-098 scales to single-template admissions in categories where other templates remain out of the gate.
+- Enrolled via A.10 Session 63 (combined A.6 schema register + A.7b gate flip in a single phase, with `test_a10_lex_full_multilocale_lifecycle_end_to_end` as the single dedicated lifecycle regression test).
+
+**modern-transparent (Juris) — editable AND multi-locale enrolled (A.11) · CLOSES LAW FAMILY VIA SECOND DEDICATED-SCHEMA ENROLLMENT · FIRST ZERO-IMAGE ARCHETYPE:**
+- **Single template**: `juris-avvocato-moderno`. Distinct archetype from Lex — the two law templates ship distinct DNA + distinct skin folders (`lawyer/classic-gold/` vs `lawyer/modern-transparent/`) and only ~25% content-tree shape overlap. A.9 shared-schema recipe does NOT apply — the law family is closed through two separate enrollments, each with its own schema + skin bridge + lifecycle test. This is the first time a category closes through stacked dedicated-schema enrollments rather than one shared schema (Cardio+Derm specialist pattern).
+- 10 sidebar groups · ~180 scalar fields + **ZERO image fields anywhere** (advisory-modern DNA explicitly rejects portraits / case photos / hero illustrations — locked by user-imposed guardrail test `test_a11_juris_schema_contains_zero_image_fields` that iterates the entire schema + `STRUCTURED_FIELD_SHAPES` tree asserting no `type: "image"` field exists) + 6 readonly indexed lists:
+  - `approccio.founders` dict 2×(name/role/bio) — 2 managing partners · `credentials` list-of-str col intentionally omitted (stays registry-only)
+  - `approccio.story` tuple 5×3 · `approccio.manifesto` tuple 4×3
+  - `servizi.services` dict 7×(num/title/tier/blurb/duration/engagement/price) — 7 offers · `deliverables` nested-list-of-str bullet points col intentionally omitted (stays registry-only)
+  - `settori.sectors` dict 6×(num/title/tagline/case_snippet/partner/legal_ops) — 6 sectors · THREE nested-list-of-str cols intentionally omitted: `pain_points`, `signals`, `legal_ops`-bullets (all stay registry-only; the SCALAR `partner` + SCALAR `legal_ops`-person cols ARE exposed — the scalar col name collides with the bullets-list key but addresses a different shape per row)
+  - `settori.team` dict 10×(name/role/bio/office/email) — 10 people (8 lawyers + 2 legal ops)
+- 110 translatable fields + 188 global fields per-template sidebar rendering (walk-verified: `per lingua` badge count = 110 exactly, zero accidentally-translatable globals, zero image widgets in the sidebar)
+- **Complex shapes explicitly outside perimeter** (locked by user-imposed guardrail test `test_a11_juris_complex_shapes_excluded_from_perimeter`): `approccio.dashboard_mock` (nested dict with URL + columns + cards) + `home.trust_logos` / `insights.topics` (flat list-of-str marquee / filter pills) + the 4 nested-list-of-str cells listed above. All rejected by `validate_key_path` so scope creep into non-scalar widgets cannot happen silently even via crafted payloads.
+- `supported_locales=["it","en","fr","es","ar"]` · identical UX surface. AR preview on `.jr-*` skin renders `<html dir="rtl" lang="ar">` authentic with advisory-modern pill nav and confident-blue CTA ring.
+- Enrolled via A.11 Session 64 (combined A.6 schema register + A.7b gate flip in a single phase, with `test_a11_juris_full_multilocale_lifecycle_end_to_end` as the single dedicated lifecycle regression test). Confirms D-098 scales to a family-closure topology where the category closes via multiple separate archetype enrollments (not a shared schema).
 
 ### What is operator-only
 
@@ -76,9 +89,9 @@ See A.6 commits `a7177f5` · `9540d5a` · `4b9376c`. 5 contract tests + schema r
 
 All prior D-086 through D-095 (A.1 → A.5 bindings) and pre-editor decisions (D-054 premium law, D-055 tier model, D-047 chrome authoring, etc.) remain in force. See DECISIONS.md for full catalogue.
 
-### Phase A.11+ — candidates (no commitment yet)
+### Phase A.12+ — candidates (no commitment yet)
 
-Pick one when the next workstream opens. Recommended framing: **A.11 Juris (modern-transparent) enrollment** — natural continuation of the law family opened in A.10. Juris has distinct DNA from Lex so it needs its own schema + skin bridge + dedicated lifecycle test (single-template recipe already proven). Alternatives: real-estate family audit (Casa + Villa — Step-0 required to check shared-schema viability), Chiara (single template with novel page kinds), editor polish / operator tools / remote storage (defer unless customer signal or prod-launch timeline).
+Pick one when the next workstream opens. Recommended framing: **A.12 real-estate family (Casa + Villa) enrollment** — closes another of the 8 MVP categories. Requires a Step-0 runtime audit first to confirm the most likely topology (two distinct archetypes — `mass-market` Casa vs `ultra-luxury-cinematic` Villa — parallel to the Lex/Juris split rather than the shared-schema specialist pair); in that case A.12 + A.12b deliver two dedicated-schema enrollments following the A.10 + A.11 recipe. Alternatives: Chiara (single template with novel `project_detail` / `series_detail` page kinds — medium risk), Pixel (single-template imagery-heavy, straightforward), Sapore+Brace restaurant family continuation, Bottega+Luxe ecommerce family, Salute/Benessere/Famiglia medical adjacencies, Aura/Elevate individual enrollments, editor polish / operator tools / remote storage (defer unless customer signal or prod-launch timeline).
 
 See `TODO_NEXT.md` for full candidate list + red-lamps + "do NOT open" list.
 

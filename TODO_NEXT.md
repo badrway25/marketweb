@@ -1,41 +1,47 @@
 # TODO Next
 
-## 🟢 Current State (2026-04-17 · after Session 63 A.10 Lex (classic-gold · law family) Editor + Multi-locale Enrollment merge)
+## 🟢 Current State (2026-04-17 · after Session 64 A.11 Juris (modern-transparent · law family) Editor + Multi-locale Enrollment merge)
 
-Baseline `phase-integration-baseline-v15` tip is **`ee9ebbd`** (A.10 merge), pushed to origin. Five editor-supported archetypes — Vertex + Pragma + Gusto + specialist + classic-gold — are all multi-locale enrolled. Six templates are now editable end-to-end from 5 schemas:
+Baseline `phase-integration-baseline-v15` tip is **`0f8bf60`** (A.11 merge), pushed to origin. Six editor-supported archetypes — Vertex + Pragma + Gusto + specialist + classic-gold + modern-transparent — are all multi-locale enrolled. Seven templates are now editable end-to-end from 6 schemas. **The law family is CLOSED COMPLETELY**, via two distinct archetypes (`classic-gold` Lex + `modern-transparent` Juris), not through a shared schema.
 
 - **Vertex** (`agency-creative-studio`) · 1 template · 284 editable fields (81 translatable · 203 global) · 4 mutable lists · customer image upload on 2 image fields · full A.3c→A.5 feature set
 - **Pragma** (`corporate-suite`) · 1 template · ~53 scalar + 1 image + 3 readonly indexed lists · 53 translatable · no repeater mutable
 - **Gusto** (`fine-dining`) · 1 template · ~108 scalar + 2 image + 3 readonly indexed lists · 97 translatable · no repeater mutable · no image per-locale
 - **specialist** (archetype shared by `cardio-studio-specialistico` + `dermatologia-elite-roma` · 2 templates · A.9) · ~95 scalar + 5 image + 6 readonly indexed lists (portrait on medici.doctors stays registry-only) · 77 translatable fields per-template · D-064 divergent home premium sections kept registry-only · no repeater mutable · no image per-locale
-- **classic-gold** (Lex · 1 template · A.10 · single-template family admission) · ~102 scalar + 1 image (`notabili.lead_image`) + 6 readonly indexed lists (avvocati.lawyers dict 14×6 · pratiche.services dict 12×5 with `scope` nested-list-of-str registry-only · pratiche.process tuple 4×3 · studio.history tuple 6×3 · studio.values tuple 4×3 · contatti.offices dict 2×7) · 79 translatable fields · **Juris (`modern-transparent`) explicitly NOT enrolled** — reserved for A.11 or later phase with dedicated schema + skin bridge + lifecycle · `.lx-*` skin AR RTL authentic
-- **Multi-locale editor on all five** · 5 locales (it/en/fr/es/ar) with authentic RTL preview for Arabic · per-locale `@<locale>:<path>` storage · authored-only fallback · sidebar pill switcher · flush-before-switch · "per lingua" marker on translatable fields
+- **classic-gold** (Lex · 1 template · A.10 · single-template family admission) · ~102 scalar + 1 image (`notabili.lead_image`) + 6 readonly indexed lists (avvocati.lawyers dict 14×6 · pratiche.services dict 12×5 with `scope` nested-list-of-str registry-only · pratiche.process tuple 4×3 · studio.history tuple 6×3 · studio.values tuple 4×3 · contatti.offices dict 2×7) · 79 translatable fields · `.lx-*` skin AR RTL authentic
+- **modern-transparent** (Juris · 1 template · A.11 · closes law family via second dedicated-schema enrollment) · ~180 scalar + **zero image fields** + 6 readonly indexed lists (approccio.founders dict 2×3 with `credentials` list-of-str registry-only · approccio.story tuple 5×3 · approccio.manifesto tuple 4×3 · servizi.services dict 7×7 with `deliverables` list-of-str registry-only · settori.sectors dict 6×6 with `pain_points` / `signals` / `legal_ops`-bullets nested-list-of-str registry-only · settori.team dict 10×5) · 110 translatable fields · 188 global fields · `.jr-*` skin AR RTL authentic · complex shapes explicitly outside perimeter (`approccio.dashboard_mock` nested-dict + `home.trust_logos` / `insights.topics` flat lists-of-str)
+- **Multi-locale editor on all six** · 5 locales (it/en/fr/es/ar) with authentic RTL preview for Arabic · per-locale `@<locale>:<path>` storage · authored-only fallback · sidebar pill switcher · flush-before-switch · "per lingua" marker on translatable fields
 - Orphan asset GC available via `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project`, `--grace`)
-- 182/182 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
-- **5/8 archetypes editor-supported · 5/8 multi-locale enrolled · 6 templates editable end-to-end**
+- 193/193 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
+- **6/8 archetypes editor-supported · 6/8 multi-locale enrolled · 7 templates editable end-to-end**
+- **Law family CLOSED** (Lex classic-gold + Juris modern-transparent) · medical family CLOSED (specialist shared · Cardio+Derm)
+- Families still open for editor enrollment: real-estate (Casa + Villa · 2 templates) · portfolio (Chiara + Pixel · 2 templates) · restaurant (Sapore + Brace beyond Gusto · 2 templates) · medical other archetypes (Salute + Benessere + Famiglia · 3 templates) · ecommerce (Bottega + Luxe · 2 templates) · agency-secondary (Aura beyond Vertex · 1 template) · startup-saas (Elevate · 1 template)
 
 No explicitly-deferred debt is pending.
 
-### Next workstream — immediate candidates (A.11 planning session required)
+### Next workstream — immediate candidates (A.12 planning session required)
 
-- [ ] **A.11 Juris (modern-transparent) enrollment — close the law family** — natural continuation from A.10. Juris has distinct DNA + distinct skin folder + divergent page slugs from Lex, so a separate schema + separate `_base.html` preview bridge + dedicated lifecycle regression test are needed. Recipe A.6 + A.7b applied to a 2nd law template; same scope as A.10 (single-template enrollment). ~2-3 commits.
-- [ ] **A.11 alt · real-estate family (Casa + Villa)** — requires a Step-0 runtime audit first to check whether `mass-market` (Casa) and `ultra-luxury-cinematic` (Villa) content-tree shapes align (shared-schema like specialist) or diverge (single-template each like law). If divergent, choice becomes "Casa-only" or "Villa-only" in A.11 with the other deferred. Two templates potentially unlocked but only if the audit proves shared-schema viability.
-- [ ] **A.11 alt · Chiara (editorial-designer-grid)** — single template, novel `project_detail` / `series_detail` page kinds (Session 34 rollout) stretch the editor beyond current patterns. Higher risk than continuing along the established recipe path · defer unless specifically requested.
-- [ ] **A.11 alt · Sapore (trattoria-warm) or hospitality continuation** — 1 template, low risk, low value-per-commit.
-- [ ] **A.11 alt · Pixel / Bottega / Luxe** — imagery-heavy single-template archetypes, defer to dedicated planning.
-- [ ] **A.11 alt · Selective editor polish** — search Cmd-K locale-aware ranking · "solo translatable" sidebar filter · badge-per-group pre-sync at mount · palette page-slug-match boost · sticky-last-page on reopen. Low-risk, low-value — only worth opening if customer signal surfaces or a content-heavy phase needs a breather.
-- [ ] **A.11 alt · Media evolution / remote storage** — S3/Cloudinary swap of `ProjectAsset.file` backend. Must keep `/media/` accept path in parallel (D-095 binding). **Do NOT open unless a prod-launch timeline demands it**.
-- [ ] **A.11 alt · Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler, asset audit UI. Better after another scale-out consolidates the editor footprint.
-- [ ] **A.11 alt · Repeater-per-locale first wave** — flip one or two mutable Vertex lists from global to translatable-per-locale. Out-of-scope family per D-098 · opens localized repeater content only if customer signal emerges.
+- [ ] **A.12 real-estate family (Casa + Villa) enrollment** — most coherent next step. Requires a Step-0 runtime audit first to confirm the working hypothesis (from the A.10/A.11 planning audit notes) that Casa's `mass-market` archetype and Villa's `ultra-luxury-cinematic` archetype diverge too much for shared-schema (like Lex/Juris did). Most likely outcome: two dedicated-schema enrollments, closing the real-estate family through the A.11 recipe rather than the A.9 recipe. If the audit surprises with higher alignment, pivot to shared-schema. A.12 or A.12+A.12b depending on audit verdict.
+- [ ] **A.12 alt · Chiara (editorial-designer-grid)** — single template, novel `project_detail` / `series_detail` page kinds (Session 34 rollout) stretch the editor beyond current patterns. Medium risk — first phase where the editor needs to handle detail-page-scoped fields, not just section-scoped. Good choice if the real-estate audit returns a "not yet ready" verdict.
+- [ ] **A.12 alt · Pixel (cinematic-photographer)** — single template, imagery-heavy. Would test the "imagery-heavy with portrait-row exclusion" recipe further (Gusto + specialist already validate it). Low architectural novelty, straightforward continuation.
+- [ ] **A.12 alt · Sapore + Brace (restaurant-family continuation beyond Gusto)** — two templates, likely distinct archetypes (`trattoria-warm` + `street-modern` per DNA registry). Would close the restaurant family if audit confirms divergence → two dedicated-schema enrollments, same recipe A.10 + A.11.
+- [ ] **A.12 alt · Bottega + Luxe (ecommerce family)** — similar audit gate. `artisan-workshop` vs `fashion-editorial` — Session 41/42 observations already suggest wide divergence. Would close the ecommerce family.
+- [ ] **A.12 alt · Salute + Benessere + Famiglia (medical other archetypes beyond specialist)** — three single-template medical archetypes (clinic / wellness-serene / family-warm) that were rolled out to `published_live` in Session 51 but never entered the editor. A phase here could enroll one at a time (3 separate phases) or bundle the three as three dedicated schemas in one phase (risky — "one phase = one archetype" discipline has kept things clean).
+- [ ] **A.12 alt · Aura (agency-digital-studio) + Elevate (startup-saas-landing)** — two single-template single-archetype enrollments. Both went live in Session 49 / 32 respectively but are editor-unsupported. Low architectural novelty.
+- [ ] **A.12 alt · Selective editor polish** — search Cmd-K locale-aware ranking · "solo translatable" sidebar filter · badge-per-group pre-sync at mount · palette page-slug-match boost · sticky-last-page on reopen. Low-risk, low-value — only worth opening if customer signal surfaces or a content-heavy phase needs a breather.
+- [ ] **A.12 alt · Media evolution / remote storage** — S3/Cloudinary swap of `ProjectAsset.file` backend. Must keep `/media/` accept path in parallel (D-095 binding). **Do NOT open unless a prod-launch timeline demands it**.
+- [ ] **A.12 alt · Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler, asset audit UI. Better after another scale-out consolidates the editor footprint.
+- [ ] **A.12 alt · Repeater-per-locale first wave** — flip one or two mutable Vertex lists from global to translatable-per-locale. Out-of-scope family per D-098 · opens localized repeater content only if customer signal emerges.
 
-Recommended framing: **A.11 Juris enrollment** — natural continuation of the law family opened in A.10. Recipe already proven on Lex; reusing it on Juris closes the symmetric gap (Cardio+Derm specialist pair parallels the law pair once Juris lands) and brings the editor to 6/8 archetypes + 7 templates editable. Decision deferred to the dedicated A.11 planning session.
+Recommended framing: **A.12 real-estate family planning session** — closes another of the 8 MVP categories if the Step-0 audit confirms divergence (probable), two dedicated-schema enrollments following the A.10 + A.11 recipe. Decision deferred to the dedicated A.12 planning session.
 
 **What NOT to open immediately (value is low right now)**:
 - Remote asset storage (no prod-launch timeline pressure today)
 - Repeater-per-locale family (no customer request)
 - Search Cmd-K localized ranking (current behavior is correct, just not localized — polish only)
 - Editor operator tools (better after another scale-out consolidates the editor footprint)
-- Juris + any other archetype bundled into one phase (violates "one phase = one archetype decision" discipline that has kept the last 5 phases clean)
+- Any bundled multi-archetype phase (violates "one phase = one archetype decision" discipline that has kept the last 6 phases clean)
+- Coverage expansion on already-enrolled archetypes (Vertex / Pragma / Gusto / specialist / Lex / Juris) — would bloat the phase without customer pull
 
 ### Carried-forward observations (not blocking)
 
