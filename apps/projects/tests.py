@@ -1268,6 +1268,49 @@ class FoundationModelTests(TestCase):
         self.assertTrue(ProjectAsset.objects.filter(pk=asset_pk).exists())
         self.assertTrue(os.path.exists(file_path))
 
+    def test_a5_gc_command_default_dry_run(self):
+        """`manage.py gc_project_assets` without --apply must announce
+        DRY-RUN mode and leave the orphan asset in place."""
+        import os
+        from io import StringIO
+        from django.core.management import call_command
+        from apps.projects.models import ProjectAsset
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        asset = self._a5_make_asset(p, minutes_ago=60 * 48)
+        file_path = asset.file.path
+        asset_pk = asset.pk
+
+        out = StringIO()
+        call_command("gc_project_assets", stdout=out)
+        output = out.getvalue()
+        self.assertIn("DRY-RUN", output)
+        self.assertIn("Candidate orphans found: 1", output)
+        self.assertIn("No changes made", output)
+        # Not actually deleted
+        self.assertTrue(ProjectAsset.objects.filter(pk=asset_pk).exists())
+        self.assertTrue(os.path.exists(file_path))
+
+    def test_a5_gc_command_apply_actually_deletes(self):
+        """`manage.py gc_project_assets --apply` removes file + row."""
+        import os
+        from io import StringIO
+        from django.core.management import call_command
+        from apps.projects.models import ProjectAsset
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        asset = self._a5_make_asset(p, minutes_ago=60 * 48)
+        file_path = asset.file.path
+        asset_pk = asset.pk
+
+        out = StringIO()
+        call_command("gc_project_assets", "--apply", stdout=out)
+        output = out.getvalue()
+        self.assertIn("APPLY", output)
+        self.assertIn("Deleted: 1 / 1", output)
+        # Row gone
+        self.assertFalse(ProjectAsset.objects.filter(pk=asset_pk).exists())
+        # File gone
+        self.assertFalse(os.path.exists(file_path))
+
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)
