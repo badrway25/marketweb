@@ -1979,6 +1979,87 @@ class FoundationHttpTests(TestCase):
         self.assertNotIn('editor/preview-bridge.js', body2)
         self.assertNotIn('<body class="mw-is-editor-preview"', body2)
 
+    def test_a6_pragma_full_editing_lifecycle_end_to_end(self):
+        """A.6 cross-cutting integration lock — walk the four-hop
+        customer flow at the HTTP boundary so a future refactor of any
+        single piece (schema / rendering / view / autosave / validator)
+        cannot silently drop a Pragma override along the way.
+
+        upload image → autosave writes scalar override + image URL →
+        GET editor reopens with both prefilled → publish then fetch the
+        public preview as a second user → all overrides visible.
+        """
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+
+        # (1) Upload a real image for home.hero_image
+        png = self._make_png_bytes_http()
+        f = SimpleUploadedFile("pragma-board.png", png, content_type="image/png")
+        r = self.client.post(f"/projects/{p.uuid}/assets/upload/", {"file": f})
+        self.assertEqual(r.status_code, 200)
+        uploaded_url = r.json()["url"]
+        self.assertTrue(uploaded_url.startswith("/media/project-assets/"))
+
+        # (2) Autosave a scalar (home.headline) + the uploaded image URL
+        edits_payload = (
+            '{"content": {'
+            f'"home.headline": "Decisioni riservate <em>che contano</em>",'
+            f'"home.hero_image": "{uploaded_url}",'
+            f'"site.logo_word": "Pragma Test"'
+            '}, "tokens": {}}'
+        )
+        r2 = self.client.post(
+            f"/projects/{p.uuid}/autosave/",
+            data=edits_payload,
+            content_type="application/json",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(r2.status_code, 200)
+        self.assertTrue(r2.json()["ok"])
+
+        # (3) Reopen editor — all three overrides prefill the UI
+        r3 = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r3.status_code, 200)
+        body3 = r3.content.decode("utf-8", "ignore")
+        self.assertIn("Decisioni riservate", body3)
+        self.assertIn(uploaded_url, body3)
+        self.assertIn("Pragma Test", body3)
+
+        # (4) Publish, then a second authenticated user hits the public
+        #     preview and must see every override rendered.
+        services.publish_project(project=p, editor=self.owner)
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        r4 = self.client.get(
+            f"/templates/business/pragma-corporate-suite/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r4.status_code, 200)
+        body4 = r4.content.decode("utf-8", "ignore")
+        self.assertIn("Decisioni riservate", body4)
+        self.assertIn(uploaded_url, body4)
+        # Title override flows through the skin fix from Step 1
+        title_start = body4.index("<title>")
+        title_end = body4.index("</title>", title_start)
+        self.assertIn("Pragma Test", body4[title_start:title_end])
+
+    def test_a6_vertex_editor_still_ships_after_pragma_lands(self):
+        """Regression guard at the HTTP layer: Vertex editor must keep
+        rendering its 4 mutable lists + 284 fields even after the
+        second archetype (Pragma) is registered."""
+        vertex = WebTemplate.objects.get(slug="vertex-creative-agency")
+        p = services.create_project_from_template(owner=self.owner, template=vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        # Vertex-specific sidebar IDs all still present
+        for group_id in ("hero", "studio", "contatti", "contact_info", "design"):
+            self.assertIn(f'data-group-id="{group_id}"', body)
+        # All four Vertex mutable lists still carry the repeater marker
+        for list_path in ("studio.facts", "studio.partners",
+                           "studio.timeline_rows", "contatti.channels"):
+            self.assertIn(f'data-ed-list-path="{list_path}"', body)
+
     def test_a3c_editor_markup_exposes_repeater_affordances_only_on_mutable(self):
         """A.3c polish — cross-cutting integration: the editor HTTP
         response must emit the `data-ed-mutable="1"` + `[data-ed-list-path]`
