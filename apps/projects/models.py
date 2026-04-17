@@ -102,31 +102,63 @@ class CustomerProject(TimestampedModel):
             f"{self.source_template.slug}/preview/"
         )
 
-    def preview_url_for_page(self, page_slug: str | None) -> str:
+    def preview_url_for_page(
+        self, page_slug: str | None, locale: str | None = None,
+    ) -> str:
         """Preview URL for a specific page of this project's template.
 
         Home is the implicit default (no trailing segment) to match the
         catalog URL pattern ``<cat>/<slug>/preview/``. Other pages get
         ``<cat>/<slug>/preview/<page>/``. The ``?project=<uuid>`` query
         is always appended so the renderer applies the customer overlay.
+
+        A.7 Step 2: when ``locale`` is provided, ``&lang=<code>`` is
+        appended so the catalog router picks the per-locale authored
+        content and the overlay filter (``apply_project_overrides``)
+        applies only the matching-locale rows.
         """
         base = self.preview_url_path
         if page_slug and page_slug != "home":
             base += f"{page_slug}/"
-        return f"{base}?project={self.uuid}"
+        url = f"{base}?project={self.uuid}"
+        if locale:
+            url += f"&lang={locale}"
+        return url
 
-    def get_overrides_dict(self) -> dict[str, Any]:
-        """Return a nested dict of all content overrides.
+    def get_overrides_dict(self, locale: str | None = None) -> dict[str, Any]:
+        """Return a nested dict of all content overrides for a locale.
 
         key_path 'site.phone' -> {'site': {'phone': '...'}}
+
+        A.7 Step 1: rows keyed ``@<code>:<path>`` (per-locale overrides)
+        are applied only when ``code`` matches the target locale; other
+        locales are filtered out. Plain rows (no prefix) always apply.
+        When both a plain row and a target-locale row exist for the same
+        bare path, the target-locale row supersedes. Caching is keyed on
+        the locale so repeat calls for the same target are cheap.
+
+        Callers that don't care about locale (pre-A.7 code paths) can
+        omit the parameter; the project's seed locale is used.
         """
-        overrides = getattr(self, "_overrides_cache", None)
-        if overrides is not None:
-            return overrides
-        tree: dict[str, Any] = {}
+        from apps.editor.schema import decode_locale_key
+        target_locale = locale or self.locale or "it"
+        cache = getattr(self, "_overrides_cache", None)
+        if isinstance(cache, dict) and cache.get("_locale") == target_locale:
+            return cache["tree"]
+
+        plain_rows: dict[str, Any] = {}
+        locale_rows: dict[str, Any] = {}
         for row in self.content_overrides.all():
-            _set_nested(tree, row.key_path, row.value_decoded)
-        self._overrides_cache = tree
+            row_locale, bare_path = decode_locale_key(row.key_path)
+            if row_locale is None:
+                plain_rows[bare_path] = row.value_decoded
+            elif row_locale == target_locale:
+                locale_rows[bare_path] = row.value_decoded
+
+        tree: dict[str, Any] = {}
+        for bare_path, value in {**plain_rows, **locale_rows}.items():
+            _set_nested(tree, bare_path, value)
+        self._overrides_cache = {"_locale": target_locale, "tree": tree}
         return tree
 
 

@@ -19,9 +19,13 @@ from apps.editor.schema import (
     DESIGN_TOKEN_FIELDS,
     META_KEY,
     InvalidEditableField,
+    decode_locale_key,
+    encode_locale_key,
     get_list_shape,
     is_mutable_list,
     is_supported_archetype,
+    is_translatable,
+    supported_locales,
     validate_key_path,
     validate_value,
 )
@@ -155,51 +159,118 @@ def create_project_from_template(
 # Edit
 # ---------------------------------------------------------------------------
 
+class UnsupportedLocale(Exception):
+    """A translatable edit was sent for a locale the archetype doesn't support."""
+
+
+def _resolve_effective_locale(project: CustomerProject, locale: str | None) -> str:
+    """Pick the locale a translatable edit should be persisted under.
+
+    Falls back to ``project.locale`` (the seed locale the project was
+    created in) when the caller didn't specify one. A.7 legacy callers
+    — tests authored before Step 1 — send no locale, so translatable
+    writes default to the project's own locale and the behavior stays
+    equivalent to the pre-A.7 world.
+    """
+    return (locale or project.locale or "it")
+
+
+def _baseline_for_locale(project: CustomerProject, locale: str) -> dict[str, Any]:
+    """Authored registry content for ``project``'s template in ``locale``.
+
+    Falls back to the default-locale content tree when the requested
+    locale is missing. Every live template ships ``it`` so the fallback
+    always lands on a real tree.
+    """
+    slug = project.source_template.slug
+    return (
+        template_content.get_content(slug, locale)
+        or template_content.get_content(slug, project.locale)
+        or {}
+    )
+
+
 @transaction.atomic
 def save_content_edits(
     *,
     project: CustomerProject,
     edits: dict[str, Any],
     editor,
+    locale: str | None = None,
 ) -> list[str]:
     """Persist a batch of content overrides.
 
-    Silently ignores empty overrides (value equal to baseline). Raises
-    ``InvalidEditableField`` if any edit targets a DNA-locked key. The
-    full batch commits atomically — either all writes stick or the
-    transaction rolls back.
+    A.7 Step 1: for archetypes enrolled in multi-locale support, fields
+    flagged ``is_translatable`` persist under ``@<locale>:<path>`` keys
+    in ``ProjectContent`` so edits in locale A never touch the buffer
+    for locale B. Global (non-translatable) fields keep the plain
+    ``<path>`` key shape — a single override applies to every locale.
 
-    Returns the list of key_paths that were actually written (changed
-    from the previous value).
+    The ``locale`` kwarg is optional; when absent, translatable edits
+    default to ``project.locale`` so pre-A.7 test callers keep working
+    unchanged.
+
+    Silently ignores empty overrides (value equal to the baseline in
+    the effective locale). Raises ``InvalidEditableField`` on a
+    DNA-locked key, ``UnsupportedLocale`` on a translatable edit for a
+    locale the archetype doesn't support. The full batch commits
+    atomically — either all writes stick or the transaction rolls back.
+
+    Returns the list of storage keys that were actually written (may
+    include ``@<locale>:...`` prefixes for translatable rows).
     """
     archetype = project.source_archetype
-    baseline = template_content.get_content(project.source_template.slug, project.locale) or {}
+    effective_locale = _resolve_effective_locale(project, locale)
+
+    # Reject locales that the archetype hasn't enrolled in multi-locale
+    # — only matters for archetypes gated by ``supported_locales``.
+    enrolled_locales = supported_locales(archetype)
+    if enrolled_locales and effective_locale not in enrolled_locales:
+        raise UnsupportedLocale(
+            f"Locale {effective_locale!r} is not enrolled for archetype "
+            f"{archetype!r}. Supported: {enrolled_locales}."
+        )
+
+    # Baselines are locale-scoped for translatable paths (so sparse-diff
+    # collapses "value == authored[locale]" to a delete) and
+    # default-locale-scoped for globals (the global baseline doesn't
+    # vary per locale for A.7 first-wave fields).
+    default_baseline = _baseline_for_locale(project, project.locale)
+    locale_baseline = (
+        default_baseline if effective_locale == project.locale
+        else _baseline_for_locale(project, effective_locale)
+    )
 
     touched: list[str] = []
     for key_path, raw_value in edits.items():
         validate_key_path(archetype, key_path)
         cleaned = validate_value(archetype, key_path, raw_value)
 
-        baseline_value = _resolve_path(baseline, key_path, archetype)
+        if is_translatable(archetype, key_path):
+            storage_key = encode_locale_key(effective_locale, key_path)
+            baseline_value = _resolve_path(locale_baseline, key_path, archetype)
+        else:
+            storage_key = key_path
+            baseline_value = _resolve_path(default_baseline, key_path, archetype)
 
         # A value equal to baseline is persisted as "delete override" —
         # keeps the overrides table sparse and lets upstream DNA
         # polish flow through to the customer automatically.
         if _normalise(cleaned) == _normalise(baseline_value):
-            ProjectContent.objects.filter(project=project, key_path=key_path).delete()
-            touched.append(key_path)
+            ProjectContent.objects.filter(project=project, key_path=storage_key).delete()
+            touched.append(storage_key)
             continue
 
-        existing = ProjectContent.objects.filter(project=project, key_path=key_path).first()
+        existing = ProjectContent.objects.filter(project=project, key_path=storage_key).first()
         if existing is None:
-            row = ProjectContent(project=project, key_path=key_path)
+            row = ProjectContent(project=project, key_path=storage_key)
             row.set_value(cleaned)
             row.save()
-            touched.append(key_path)
+            touched.append(storage_key)
         elif _normalise(existing.value_decoded) != _normalise(cleaned):
             existing.set_value(cleaned)
             existing.save(update_fields=["value_json", "updated_at"])
-            touched.append(key_path)
+            touched.append(storage_key)
 
     if touched:
         project.save(update_fields=["updated_at"])
@@ -388,21 +459,61 @@ def _validate_token(spec: dict[str, Any], value: Any) -> str:
     return value
 
 
-def resolve_path_in_baseline(project: CustomerProject, key_path: str) -> Any:
-    """Convenience used by the editor UI to show the original value."""
-    baseline = template_content.get_content(project.source_template.slug, project.locale) or {}
+def resolve_path_in_baseline(
+    project: CustomerProject, key_path: str,
+    locale: str | None = None,
+) -> Any:
+    """Convenience used by the editor UI to show the original value.
+
+    A.7 Step 2: accepts an optional locale so the editor can prefill
+    a translatable field with the authored registry value for the
+    locale the customer is editing. Falls back to ``project.locale``
+    when omitted — keeps pre-A.7 call sites working unchanged.
+    """
+    effective_locale = locale or project.locale
+    baseline = _baseline_for_locale(project, effective_locale)
     return _resolve_path(baseline, key_path, project.source_archetype)
 
 
-def current_value_for(project: CustomerProject, key_path: str) -> Any:
-    """Value the editor should prefill: override if present, else baseline."""
-    override = next(
-        (row for row in project.content_overrides.all() if row.key_path == key_path),
+def current_value_for(
+    project: CustomerProject, key_path: str,
+    locale: str | None = None,
+) -> Any:
+    """Value the editor should prefill: override if present, else baseline.
+
+    A.7 Step 2: translatable paths look for a ``@<locale>:<path>`` row
+    first — the customer's edit for the active locale. Non-translatable
+    paths read the plain-key row as before. The baseline fallback is
+    locale-scoped through ``resolve_path_in_baseline``.
+    """
+    archetype = project.source_archetype
+    effective_locale = locale or project.locale or "it"
+
+    if is_translatable(archetype, key_path):
+        storage_key = encode_locale_key(effective_locale, key_path)
+        row = next(
+            (r for r in project.content_overrides.all() if r.key_path == storage_key),
+            None,
+        )
+        if row is not None:
+            return row.value_decoded
+        # Backward-compat: a legacy plain-keyed row on a translatable path
+        # still counts as an override until a per-locale row supersedes it.
+        legacy = next(
+            (r for r in project.content_overrides.all() if r.key_path == key_path),
+            None,
+        )
+        if legacy is not None:
+            return legacy.value_decoded
+        return resolve_path_in_baseline(project, key_path, locale=effective_locale)
+
+    plain = next(
+        (r for r in project.content_overrides.all() if r.key_path == key_path),
         None,
     )
-    if override is not None:
-        return override.value_decoded
-    return resolve_path_in_baseline(project, key_path)
+    if plain is not None:
+        return plain.value_decoded
+    return resolve_path_in_baseline(project, key_path, locale=effective_locale)
 
 
 # ---------------------------------------------------------------------------

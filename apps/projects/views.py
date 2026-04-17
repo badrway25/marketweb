@@ -36,7 +36,9 @@ from apps.editor.schema import (
     InvalidEditableField,
     LOCKED_KEYS_NOTE,
     is_supported_archetype,
+    is_translatable,
     iter_groups,
+    supported_locales,
 )
 from apps.projects import selectors, services
 
@@ -166,6 +168,17 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         project = self.project
+        archetype = project.source_archetype
+
+        # A.7 Step 2 — resolve the active editing locale. Reads `?lang=`
+        # from the editor URL; falls back to ``project.locale`` silently
+        # if the value is absent or not enrolled for the archetype.
+        supported = supported_locales(archetype)
+        raw_locale = self.request.GET.get("lang") or ""
+        if supported and raw_locale in supported:
+            active_locale = raw_locale
+        else:
+            active_locale = project.locale
         # A.2.6b: iter_groups returns curated + synthetic indexed-row
         # groups so the sidebar surfaces all 32 accordions for the
         # agency-creative-studio archetype (was 14 in A.2.6a).
@@ -173,26 +186,32 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
         # effective (post-add/remove) row list in the sidebar.
         from apps.editor.schema import STRUCTURED_FIELD_SHAPES
         meta_by_path: dict[str, dict] = {}
-        for list_path, shape in (STRUCTURED_FIELD_SHAPES.get(project.source_archetype) or {}).items():
+        for list_path, shape in (STRUCTURED_FIELD_SHAPES.get(archetype) or {}).items():
             if shape.get("mutable"):
                 meta_by_path[list_path] = services.get_list_meta(project, list_path)
-        schema = iter_groups(project.source_archetype, meta_by_path=meta_by_path)
+        schema = iter_groups(archetype, meta_by_path=meta_by_path)
 
         # Materialise the form values: override-if-present else baseline.
         # Groups may expose a flat "fields" list OR a "subgroups" list of
         # {label, fields} dicts — subgroups render as sub-headed dividers
         # inside the same accordion body.
+        # A.7 Step 2: translatable fields read/prefill from the active
+        # locale's buffer + authored registry. Global fields still read
+        # plain rows + project.locale baseline.
         def _materialise_fields(field_pairs):
             out = []
             for key_path, spec in field_pairs:
-                value = services.current_value_for(project, key_path)
-                baseline = services.resolve_path_in_baseline(project, key_path)
+                field_locale = active_locale if is_translatable(archetype, key_path) else None
+                value = services.current_value_for(project, key_path, locale=field_locale)
+                baseline = services.resolve_path_in_baseline(project, key_path, locale=field_locale)
                 out.append({
                     "key": key_path,
                     "spec": spec,
                     "value": value if value is not None else "",
                     "baseline": baseline if baseline is not None else "",
-                    "is_overridden": _has_override(project, key_path),
+                    "is_overridden": _has_override(project, key_path, locale=field_locale),
+                    # A.7 Step 2 — UI marker: which fields are locale-scoped.
+                    "translatable": is_translatable(archetype, key_path),
                 })
             return out
 
@@ -255,6 +274,9 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
         # top-strip into the editor sidebar. Build the list of locales
         # the template has actually authored (same honest-chrome rule
         # as the public live preview — D-068).
+        # A.7 Step 2 — ``is_current`` now tracks the URL-resolved
+        # ``active_locale`` (not the project's seed locale) so clicking
+        # a pill and reloading surfaces the right "selected" state.
         from apps.catalog import template_content as _tc
         from apps.catalog import template_i18n as _ti
         available_locales = _tc.get_available_locales(project.source_template.slug)
@@ -266,15 +288,19 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
                     "code": code,
                     "badge": chrome.get("lang_badge", code.upper()),
                     "label": chrome.get("lang_label", code),
-                    "is_current": code == project.locale,
+                    "is_current": code == active_locale,
                 })
 
         # A.2.5 page-aware targeting — the editor JS builds per-page
         # preview URLs client-side, so it needs the raw base path plus
         # the list of authored page slugs. The home URL stays available
         # as ``preview_url`` for the initial iframe src + backward-compat.
+        # A.7 Step 2 — palette page labels resolve from the active
+        # locale so breadcrumbs read the translated label.
         baseline_content = (
-            _tc.get_content(project.source_template.slug, project.locale) or {}
+            _tc.get_content(project.source_template.slug, active_locale)
+            or _tc.get_content(project.source_template.slug, project.locale)
+            or {}
         )
         available_pages = [p["slug"] for p in baseline_content.get("pages", [])]
 
@@ -297,13 +323,19 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
             .replace("</", "<\\/")
         )
 
+        # A.7 Step 2 — preview URL now carries ?lang=<active_locale> so
+        # the iframe router picks the matching authored registry and the
+        # overlay applies the per-locale rows only.
+        preview_url = project.preview_url_for_page("home", locale=active_locale)
+        baseline_preview_url = f"{preview_url}&baseline=1"
+
         ctx.update({
             "project": project,
             "groups": groups,
             "design_fields": design_fields,
             "locked_notes": LOCKED_KEYS_NOTE,
-            "preview_url": project.preview_url_base,
-            "baseline_preview_url": f"{project.preview_url_base}&baseline=1",
+            "preview_url": preview_url,
+            "baseline_preview_url": baseline_preview_url,
             "preview_base_path": project.preview_url_path,
             "available_pages": available_pages,
             "palette_index_json": palette_index_json,
@@ -331,7 +363,10 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
                 "projects:project_asset_upload", kwargs={"uuid": project.uuid}
             ),
             "locale_switcher": locale_switcher,
-            "current_locale": project.locale,
+            "current_locale": active_locale,
+            # A.7 Step 2 — editor_ctx contract for multi-locale editing.
+            "active_locale": active_locale,
+            "supported_locales": supported,
         })
         return ctx
 
@@ -386,6 +421,13 @@ def project_autosave(request, uuid):
 
     content_edits = payload.get("content") or {}
     token_edits = payload.get("tokens") or {}
+    # A.7 Step 2: the autosave JSON now carries an optional ``locale``
+    # string. Translatable fields in ``content_edits`` land under the
+    # ``@<locale>:<path>`` storage shape so edits in one language never
+    # dirty another. A missing or empty locale defaults to
+    # ``project.locale`` at the service layer (backward-compat).
+    raw_locale = payload.get("locale")
+    autosave_locale = raw_locale if isinstance(raw_locale, str) and raw_locale else None
 
     if not isinstance(content_edits, dict) or not isinstance(token_edits, dict):
         return HttpResponseBadRequest("content / tokens must be JSON objects.")
@@ -393,11 +435,14 @@ def project_autosave(request, uuid):
     try:
         touched_content = services.save_content_edits(
             project=project, edits=content_edits, editor=request.user,
+            locale=autosave_locale,
         )
         touched_tokens = services.save_design_token_edits(
             project=project, token_edits=token_edits,
         )
     except InvalidEditableField as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+    except services.UnsupportedLocale as exc:
         return JsonResponse({"ok": False, "error": str(exc)}, status=400)
     except Exception as exc:  # defensive — never 500 on a typing stroke
         return JsonResponse({"ok": False, "error": str(exc)}, status=400)
@@ -705,8 +750,20 @@ def project_unpublish(request, uuid):
     return redirect("projects:project_editor", uuid=project.uuid)
 
 
-def _has_override(project, key_path: str) -> bool:
-    return any(row.key_path == key_path for row in project.content_overrides.all())
+def _has_override(project, key_path: str, locale: str | None = None) -> bool:
+    """Did the customer override this path?
+
+    A.7 Step 2: translatable paths check for a ``@<locale>:`` row first,
+    then fall back to a legacy plain row (pre-A.7 projects). Global paths
+    check the plain key only. The ``locale`` kwarg is ignored for paths
+    that are not translatable so the caller never has to branch.
+    """
+    rows = list(project.content_overrides.all())
+    if locale:
+        locale_key = f"@{locale}:{key_path}"
+        if any(r.key_path == locale_key for r in rows):
+            return True
+    return any(r.key_path == key_path for r in rows)
 
 
 # ---------------------------------------------------------------------------

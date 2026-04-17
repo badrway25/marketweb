@@ -182,12 +182,17 @@
   let pendingTimer = null;
   let inFlight = false;
   let pendingAfterSave = false;
+  // A.7 Step 3 · resolvers for any awaiter waiting on the current
+  // in-flight save (e.g. the locale switcher flushing pending edits
+  // before navigating to ``?lang=<new>``).
+  let flightWaiters = [];
 
   function flushDirty() {
     if (inFlight) { pendingAfterSave = true; return; }
     if (!Object.keys(dirtyContent).length && !Object.keys(dirtyTokens).length) return;
     const sentContent = dirtyContent;
     const sentTokens  = dirtyTokens;
+    const sentLocale  = currentLang;
     dirtyContent = {};
     dirtyTokens  = {};
     inFlight = true;
@@ -200,13 +205,20 @@
         "X-CSRFToken": csrfToken,
         "X-Requested-With": "XMLHttpRequest",
       },
-      body: JSON.stringify({ content: sentContent, tokens: sentTokens }),
+      // A.7 Step 3 · tag the payload with the locale that was active
+      // when the edits accumulated, so translatable fields land in the
+      // correct ``@<locale>:`` buffer even if the customer clicks a
+      // language pill mid-debounce.
+      body: JSON.stringify({
+        content: sentContent, tokens: sentTokens, locale: sentLocale,
+      }),
       credentials: "same-origin",
     })
       .then((r) => r.json().then((data) => ({ status: r.status, data })))
       .then(({ status, data }) => {
         inFlight = false;
-        if (status >= 200 && status < 300 && data.ok) {
+        const ok = status >= 200 && status < 300 && data.ok;
+        if (ok) {
           setStatus("saved", "Salvato");
           refreshPreview();
           updateOverrideBadges(data.override_count);
@@ -221,6 +233,7 @@
           dirtyTokens  = Object.assign({}, sentTokens,  dirtyTokens);
           toast((data && data.error) || "Impossibile salvare le modifiche.", "error");
         }
+        flightWaiters.splice(0).forEach((r) => r(ok));
       })
       .catch(() => {
         inFlight = false;
@@ -228,7 +241,25 @@
         dirtyContent = Object.assign({}, sentContent, dirtyContent);
         dirtyTokens  = Object.assign({}, sentTokens,  dirtyTokens);
         toast("Connessione interrotta. Riproveremo.", "error");
+        flightWaiters.splice(0).forEach((r) => r(false));
       });
+  }
+
+  // A.7 Step 3 · await the next autosave completion. Resolves ``true``
+  // on success, ``false`` on error. If nothing is in flight and nothing
+  // is dirty, resolves immediately. Used by the locale switcher so we
+  // never leave a dirty buffer tagged to the old locale behind.
+  function awaitFlushedOrIdle() {
+    return new Promise((resolve) => {
+      const dirty = Object.keys(dirtyContent).length
+                  + Object.keys(dirtyTokens).length;
+      if (!dirty && !inFlight) { resolve(true); return; }
+      flightWaiters.push(resolve);
+      if (!inFlight) {
+        if (pendingTimer) { clearTimeout(pendingTimer); pendingTimer = null; }
+        flushDirty();
+      }
+    });
   }
 
   function queueEdit(kind, key, value) {
@@ -698,13 +729,32 @@
   // Locale switcher (sidebar, replaces preview top-strip)
   // ────────────────────────────────────────────────────────────
 
-  $$("[data-ed-lang]").forEach((btn) => {
-    btn.addEventListener("click", () => {
+  // A.7 Step 3 · clicking a locale pill now switches both the preview
+  // iframe AND the editor buffer. We (1) flush any pending autosave
+  // tagged to the OLD locale first, so edits in language A never leak
+  // into language B · (2) navigate the editor URL to ``?lang=<code>``
+  // which reloads the server-rendered sidebar with the values for the
+  // new locale. A pure client-side swap isn't enough — field values are
+  // materialised server-side from ``services.current_value_for``.
+  const langPills = $$("[data-ed-lang]");
+  let langSwitchInFlight = false;
+  langPills.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (langSwitchInFlight) return;
       const code = btn.getAttribute("data-ed-lang");
       if (code === currentLang) return;
-      currentLang = code;
-      $$("[data-ed-lang]").forEach((b) => b.classList.toggle("is-active", b === btn));
-      reloadBothFrames();
+      langSwitchInFlight = true;
+      langPills.forEach((b) => b.classList.add("is-switching"));
+      btn.classList.add("is-switching");
+      // Flush any dirty edits still in the debounce window using the
+      // OLD locale. awaitFlushedOrIdle resolves once every pending POST
+      // has settled (success OR error — we surface an error toast but
+      // still navigate, so the customer never feels frozen).
+      try { await awaitFlushedOrIdle(); }
+      catch (_e) { /* already surfaced by flushDirty */ }
+      const u = new URL(location.href);
+      u.searchParams.set("lang", code);
+      location.href = u.toString();
     });
   });
 

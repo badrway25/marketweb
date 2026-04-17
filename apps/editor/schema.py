@@ -1387,3 +1387,106 @@ def validate_value(archetype: str, key_path: str, value: Any) -> Any:
             )
 
     return value
+
+
+# ---------------------------------------------------------------------------
+# A.7 · Multi-locale contract (Step 0 — metadata only, no behaviour change)
+# ---------------------------------------------------------------------------
+#
+# Fields flagged translatable are persisted per-locale in the A.7 overlay
+# shape ({"globals": {...}, "by_locale": {"it": {...}, ...}}). Fields that
+# are not translatable live under "globals" and apply to every locale.
+#
+# Rules for this first wave (Vertex only):
+#   • Only scalar text types (text · textarea · richtext) can be translatable.
+#   • Paths in ``_GLOBAL_TEXT_PATHS`` stay global even if text-typed
+#     (branding identity + contact universals that don't change per language).
+#   • Any path belonging to a structured repeater list (baseline-indexed
+#     row cells AND added-row uid cells) stays global — repeater structure
+#     + row content are frozen out of A.7.
+#   • Archetypes that haven't opted in via ``_MULTILOCALE_ENABLED_ARCHETYPES``
+#     return False for every path (e.g. Pragma in A.7, to become A.7b).
+
+_TRANSLATABLE_TEXT_TYPES: frozenset[str] = frozenset({"text", "textarea", "richtext"})
+
+_GLOBAL_TEXT_PATHS: frozenset[str] = frozenset({
+    "site.logo_word",
+    "site.logo_initial",
+    "site.phone",
+    "site.email",
+    "site.address",
+    "site.license",
+})
+
+_MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
+    "agency-creative-studio",
+})
+
+
+def _is_under_structured_list(archetype: str, key_path: str) -> bool:
+    """True iff the path addresses a cell (baseline-index or uid) inside
+    a STRUCTURED_FIELD_SHAPES list for this archetype."""
+    shapes = STRUCTURED_FIELD_SHAPES.get(archetype) or {}
+    for list_path in shapes:
+        if key_path == list_path or key_path.startswith(list_path + "."):
+            return True
+    return False
+
+
+def is_translatable(archetype: str, key_path: str) -> bool:
+    """Return True iff an override for this key_path is persisted per-locale.
+
+    A.7 Step 0 contract: read-only classification. The service + autosave
+    layers consult this helper in Step 1/2 to route overrides into
+    ``by_locale[locale]`` vs ``globals``.
+    """
+    if archetype not in _MULTILOCALE_ENABLED_ARCHETYPES:
+        return False
+    spec = get_field_spec(archetype, key_path)
+    if spec is None:
+        return False
+    if spec.get("type") not in _TRANSLATABLE_TEXT_TYPES:
+        return False
+    if key_path in _GLOBAL_TEXT_PATHS:
+        return False
+    if _is_under_structured_list(archetype, key_path):
+        return False
+    return True
+
+
+def supported_locales(archetype: str) -> list[str]:
+    """Locales a project of this archetype can have per-locale overrides for.
+
+    Step 0 returns an empty list for non-enabled archetypes and the
+    canonical 5 for multi-locale-enabled ones. Step 2 will wire this
+    into ``editor_ctx`` so the sidebar pill strip can render it.
+    """
+    if archetype not in _MULTILOCALE_ENABLED_ARCHETYPES:
+        return []
+    return ["it", "en", "fr", "es", "ar"]
+
+
+# A.7 Step 1 · storage-key encoding for per-locale overrides. Translatable
+# rows in ProjectContent carry a ``@<locale>:`` prefix so the existing flat
+# (project, key_path) uniqueness still applies and the shape is readable
+# straight from the DB. Plain rows (no prefix) stay global — legacy
+# projects keep rendering cross-locale exactly as before.
+
+_LOCALE_KEY_RE = re.compile(r"^@([a-z]{2}):(.+)$")
+
+
+def encode_locale_key(locale: str, key_path: str) -> str:
+    """Build the storage-layer key_path for a per-locale override."""
+    return f"@{locale}:{key_path}"
+
+
+def decode_locale_key(key: str) -> tuple[str | None, str]:
+    """Return ``(locale, path)`` for a per-locale key, or ``(None, key)``.
+
+    Plain rows — the legacy shape — decode to a None locale so callers
+    can treat them as globals with no branching.
+    """
+    m = _LOCALE_KEY_RE.match(key)
+    if not m:
+        return None, key
+    return m.group(1), m.group(2)

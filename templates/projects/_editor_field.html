@@ -1,8 +1,17 @@
-{% comment %}One editable field row — shared by content groups and the design tokens group. Requires a `field` dict with {key, spec, value, baseline, is_overridden} and a `kind` ("content" | "token").{% endcomment %}<div class="ed-field {% if field.is_overridden %}is-overridden{% endif %}"
+{% comment %}One editable field row — shared by content groups and the design tokens group. Requires a `field` dict with {key, spec, value, baseline, is_overridden, translatable} and a `kind` ("content" | "token").{% endcomment %}<div class="ed-field {% if field.is_overridden %}is-overridden{% endif %}{% if field.translatable %} is-translatable{% endif %}"
      data-ed-label="{{ field.spec.label }}"
-     data-ed-key="{{ field.key }}">
+     data-ed-key="{{ field.key }}"
+     {% if field.translatable %}data-ed-translatable="1"{% endif %}>
   <div class="ed-field-head">
     <label for="ed__{{ field.key|slugify }}">{{ field.spec.label }}</label>
+    {% if field.translatable %}
+      <span class="ed-lang-badge"
+            title="Contenuto per lingua — ogni lingua si modifica indipendentemente"
+            aria-label="Campo per lingua">
+        <i class="bi bi-translate" aria-hidden="true"></i>
+        <span class="ed-lang-badge-txt">per lingua</span>
+      </span>
+    {% endif %}
     {% if field.spec.max_length and field.spec.type != "image" and field.spec.type != "color" and field.spec.type != "select" %}
       <span class="ed-count" data-max="{{ field.spec.max_length }}"
             aria-label="Caratteri utilizzati">{{ field.value|length }}/{{ field.spec.max_length }}</span>

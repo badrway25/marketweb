@@ -36,6 +36,7 @@ from typing import Any
 
 from apps.editor.schema import (
     META_KEY,
+    decode_locale_key,
     get_structured_shapes,
     is_uid,
 )
@@ -46,11 +47,18 @@ def apply_project_overrides(
     project: CustomerProject,
     content: dict[str, Any],
     theme: dict[str, str],
+    locale: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, str]]:
     """Return (merged_content, merged_theme) with project overrides applied.
 
     - `content` is the catalog-side registry block (site + pages + per-page keys).
     - `theme` is the catalog-side tokens dict (primary/secondary/accent/fonts).
+    - `locale` (A.7 Step 1) is the target render locale. When provided,
+      per-locale override rows keyed ``@<code>:<path>`` are applied only
+      when ``code == locale``; other locales' rows are skipped. Global
+      (unprefixed) rows always apply. A ``None`` locale falls back to
+      ``project.locale`` so legacy callers keep working.
+
     The returned tuple is deep-copied so callers can mutate freely.
 
     A.3a: two-phase pass. Mutable lists are rebuilt from their
@@ -60,32 +68,50 @@ def apply_project_overrides(
     merged_content = copy.deepcopy(content)
     merged_theme = dict(theme)
 
+    target_locale = locale or project.locale or "it"
+
     shapes = get_structured_shapes(project.source_archetype)
     all_overrides = list(project.content_overrides.all())
+
+    # A.7 Step 1 — split rows by their locale prefix. Rows keyed to a
+    # locale other than the render target are dropped here so they
+    # never reach the splicer. When both a plain row and a target-
+    # locale row exist for the same bare path, the target-locale row
+    # wins — per-locale edits supersede legacy shared overrides.
+    plain_rows: dict[str, Any] = {}
+    locale_rows: dict[str, Any] = {}
+    for row in all_overrides:
+        row_locale, bare_path = decode_locale_key(row.key_path)
+        if row_locale is None:
+            plain_rows[bare_path] = row.value_decoded
+        elif row_locale == target_locale:
+            locale_rows[bare_path] = row.value_decoded
+    scoped_rows: list[tuple[str, Any]] = list({
+        **plain_rows, **locale_rows,
+    }.items())
 
     # Phase A — materialize mutable lists and compute path-resolution
     # maps. Must happen BEFORE any cell override is applied so splicing
     # does not land on the pre-mutation list.
     list_maps: dict[str, dict[str, Any]] = {}
-    for row in all_overrides:
-        list_path = _extract_meta_list_path(row.key_path)
+    for bare_path, value in scoped_rows:
+        list_path = _extract_meta_list_path(bare_path)
         if list_path is None:
             continue
         shape = shapes.get(list_path)
         if not shape or not shape.get("mutable"):
             continue
-        meta = row.value_decoded
-        if not isinstance(meta, dict):
+        if not isinstance(value, dict):
             continue
-        _materialize_mutable_list(merged_content, list_path, shape, meta, list_maps)
+        _materialize_mutable_list(merged_content, list_path, shape, value, list_maps)
 
     # Phase B — apply cell overrides, routing through list_maps for
     # mutable-list paths so (baseline idx) → (effective pos) and
     # (uid) → (effective pos) resolve correctly.
-    for row in all_overrides:
-        if _extract_meta_list_path(row.key_path) is not None:
+    for bare_path, value in scoped_rows:
+        if _extract_meta_list_path(bare_path) is not None:
             continue
-        _apply_override(merged_content, row.key_path, row.value_decoded, shapes, list_maps)
+        _apply_override(merged_content, bare_path, value, shapes, list_maps)
 
     tokens = getattr(project, "tokens", None)
     if tokens is not None:
