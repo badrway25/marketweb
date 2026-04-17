@@ -1770,3 +1770,60 @@ Without the `/media/` prefix, the autosave right after a successful upload bounc
 
 - A.5 remote storage (when shipped) must keep the `/media/` accept path functional in parallel with any `https://cdn...` URLs the backend swap produces (toggle via settings, not by removing the `/media/` branch).
 - Any future image widget value that isn't one of the four accepted prefixes must be rejected with `InvalidEditableField` at the service layer — no silent acceptance of unknown schemes.
+
+---
+
+## D-096 · Per-locale Override Storage Convention (2026-04-17, Session 59)
+
+### Decision
+
+Translatable `ProjectContent` rows use the `@<locale>:<path>` key prefix (e.g. `@en:home.headline`, `@ar:home.headline`). Global rows keep the plain path shape (e.g. `site.logo_word`, `home.cover.image`). The uniqueness constraint on `(project, key_path)` in the existing flat table continues to hold. Decomposition is provided by `apps.editor.schema.decode_locale_key(key)` / `encode_locale_key(locale, path)` helpers.
+
+### Why
+
+Zero schema migration, zero new table, readable straight from the DB. Revision snapshots naturally capture locale-prefixed keys verbatim — restore is lossless across every locale. No JSON subtree nesting — sparse-diff semantics stay identical per locale. Fits the A.1 `ProjectContent` shape introduced by D-086 without changing any model or constraint.
+
+### How to apply
+
+- Future phases that touch the `ProjectContent` storage shape MUST preserve the `@<locale>:<path>` convention or provide an explicit migration.
+- `apply_project_overrides(project, content, theme, locale=X)` is the canonical reader: filters rows to plain + `@X:` only and applies locale rows on top of plain rows for the same path.
+- `save_content_edits(project, edits, editor, locale=L)` is the canonical writer: consults `is_translatable(archetype, key_path)` to route each edit to the plain or prefixed key.
+- The `@` character is reserved in editor schema paths — no schema key may contain it. Decoding regex: `r"^@([a-z]{2}):(.+)$"`.
+
+---
+
+## D-097 · No Cross-locale Customer Fallback (2026-04-17, Session 59)
+
+### Decision
+
+When rendering locale `L` for a translatable path with no `@L:<path>` customer row, the editor / preview falls back to the authored registry value for locale `L` — NEVER to another locale's customer override. Customer-side fallback is strictly authored-only, strictly locale-scoped.
+
+### Why
+
+The customer mental model is "each language is edited independently." Cascading an IT headline edit onto the FR render would break that promise and create silent surprises at publish time. The 5-locale template registry (Sessions 23→53) already guarantees an authored value for every locale on every live template, so the authored-only fallback never leaves a field empty.
+
+### How to apply
+
+- `apply_project_overrides` filters rows to plain + `@target_locale:` only. Rows for other locales are dropped BEFORE the splicer.
+- Plain rows on translatable paths (legacy pre-A.7 projects, none in current production) DO still apply to every locale until superseded by a `@L:` row — this is backward-compat, not a fallback. New writes via A.7+ `save_content_edits` always use the prefixed key on translatable paths.
+- Any future feature proposing "suggest translations from IT" or "fallback to EN if locale missing" is a PRODUCT decision, not a storage-layer default. Do not bypass D-097 at the rendering layer — surface it as an explicit UI flow instead.
+
+---
+
+## D-098 · Archetype Gate for Multi-locale Editor (2026-04-17, Session 59)
+
+### Decision
+
+`_MULTILOCALE_ENABLED_ARCHETYPES` in `apps/editor/schema.py` is the single source of truth for which archetypes expose per-locale editing. A.7 first wave enrolls only `agency-creative-studio` (Vertex). Any field on an unenrolled archetype returns `is_translatable=False` regardless of field type; saves persist under plain keys; the editor context exposes `supported_locales=[]`.
+
+### Why
+
+- Proves the shape on the most complex archetype (284 fields, 4 mutable repeaters, image uploads) before replicating on smaller surfaces.
+- Adding a second archetype (e.g. Pragma) is pure wiring — ~3 commits of contract + regression test — but each enrollment must carry its own lifecycle test mirroring `test_a7_step4_vertex_full_multilocale_lifecycle_end_to_end`.
+- Prevents accidental enrollment via a single-line flag flip without the corresponding regression coverage.
+
+### How to apply
+
+- Do NOT enroll additional archetypes in a feature commit without its own lifecycle regression test.
+- A.7b (Pragma enrollment) is the shortest path: add `"corporate-suite"` to the set, mirror the lifecycle test, browser-walk the flow, merge. No schema shape change required.
+- When enrolling a new archetype, also verify that (a) the template has authored content for every locale in `supported_locales`, (b) the skin's chrome honors D-047 (no hardcoded locale strings in `_base.html`), (c) the RTL CSS block exists for `html[dir="rtl"]`.

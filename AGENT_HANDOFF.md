@@ -1,44 +1,59 @@
 # Agent Handoff
 
-Last updated: 2026-04-17 — after **Session 57 A.5 Orphan Asset GC merge** (baseline tip `421dc44`)
+Last updated: 2026-04-17 — after **Session 59 A.7 Multi-locale Editor merge** (baseline tip `b18493d`, pushed to origin)
 
 ## Current state — read this before opening any new workstream (2026-04-17)
 
-The editor customer-facing flow on Vertex (`agency-creative-studio`) is operationally complete through Phase A.5. All acceptance gates are green:
+The editor customer-facing flow on Vertex (`agency-creative-studio`) is operationally complete through Phase A.7: 284 field, 4 mutable lists, image upload, 5-locale editing with authentic RTL preview for Arabic. Pragma (`corporate-suite`) is editable through A.6 but NOT multi-locale-enrolled yet (A.7b follow-up). All acceptance gates are green:
 
 - `python manage.py check` → 0 issues
-- `python manage.py test apps.editor apps.projects` → 97/97 PASS
+- `python manage.py test apps` → 147/147 PASS
 - `python smoke_full.py` → 834/834 routes HTTP 200
 
-Baseline `phase-integration-baseline-v15` tip: `421dc44` (A.5 merge). Catalog 20/20 `published_live` unchanged since D-082 / Session 53.
+Baseline `phase-integration-baseline-v15` tip: **`b18493d`** (A.7 merge), pushed to `origin/phase-integration-baseline-v15`. Catalog 20/20 `published_live` unchanged since D-082 / Session 53.
 
-### What the editor does today (Vertex only)
+### What the editor does today
 
-- 284 editable fields across 33 accordion groups (14 curated + 18 indexed + 1 design)
+**Vertex (`agency-creative-studio`) — multi-locale enrolled:**
+- 284 editable fields across 33 accordion groups (14 curated + 18 indexed + 1 design) — 81 translatable, 203 global
 - 4 mutable lists with full add / remove / reorder / persistence / preview sync / publish / page-preservation:
-  - `studio.facts` (tuple, 1–8 rows)
-  - `studio.partners` (dict, 2–8 rows)
-  - `contatti.channels` (tuple, 1–10 rows)
-  - `studio.timeline_rows` (tuple, 2–10 rows)
-- Customer image upload on the 2 image fields (`studio.partners[].portrait` + `home.cover.image`) persisting to `MEDIA_ROOT/project-assets/<project-uuid>/<uuid>.<ext>`
+  - `studio.facts` (tuple, 1–8 rows) · `studio.partners` (dict, 2–8 rows) · `contatti.channels` (tuple, 1–10 rows) · `studio.timeline_rows` (tuple, 2–10 rows)
+- Customer image upload on the 2 image fields (`studio.partners[].portrait` + `home.cover.image`) persisting to `MEDIA_ROOT/project-assets/<project-uuid>/<uuid>.<ext>` — global per D-098
 - Page-aware preview navigation · palette Cmd-K search · public `MWEditor.jumpField(key, kind)` API · deterministic field targeting · baseline before/after compare
+- **5-locale editing** (it/en/fr/es/ar): sidebar pill strip switches both edit buffer and preview · `@<locale>:<path>` storage per translatable row · global rows universal · authored fallback on untouched locales · RTL iframe for AR · "per lingua" marker UI on translatable fields · `editor_ctx` exposes `active_locale` + `supported_locales`.
+
+**Pragma (`corporate-suite`) — editable, not multi-locale:**
+- 7 sidebar groups · ~53 scalars + 1 image · 3 readonly indexed lists (`home.pillars`/`kpi_strip`/`leadership`) · image upload on `home.hero_image`
+- Saves persist under plain keys; `supported_locales=[]`; every field `translatable=False`
+- Pragma multi-locale enrollment is A.7b (~3 commits per D-098 recipe)
 
 ### What is operator-only
 
 - `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project=<uuid>`, `--grace=<hours>`) — removes ProjectAsset rows + files no longer referenced by any live override or publish snapshot. Not scheduled. Not auto-triggered. Manual only per D-094.
 
-### Binding decisions added through Phase A.5
+### Recipe for adding multi-locale to a new archetype (A.7 playbook)
 
-- **D-092** — A.3a first-wave repeater scope: exactly `studio.facts` + `studio.partners`.
-- **D-093** — Structural sentinel + uid-path data model: `__meta__` lives as a single ProjectContent row; added rows use `aN` uid paths.
-- **D-094** — Customer image upload storage shape: local MEDIA_ROOT, server-generated path, no FK between asset and content. Orphan cleanup deferred to GC.
-- **D-095** — `validate_value` for image fields accepts `/media/` prefix alongside http/https/data: — required by the A.4 upload → autosave round-trip.
+1. Add the archetype slug to `_MULTILOCALE_ENABLED_ARCHETYPES` in `apps/editor/schema.py`. No migration needed — the `@<locale>:<path>` storage convention is self-describing.
+2. Write a regression test mirroring `test_a7_step4_vertex_full_multilocale_lifecycle_end_to_end` (HTTP-level: IT/EN/FR autosave → publish → 5-locale public preview → owner reopen per locale → zero cross-locale leak).
+3. Browser walk validating IT ↔ EN ↔ FR ↔ AR RTL preview + flush-before-switch.
+4. Merge via `--no-ff`. Catalog → N/8 archetypes multi-locale.
+5. Total: ~3 commits (schema flip + lifecycle test + walk-validated merge).
 
-All prior D-086 through D-091 and pre-editor bindings (D-054 premium law, D-055 tier model, D-047 chrome authoring, etc.) remain in force.
+### Recipe for adding a new editor archetype (A.6 playbook)
 
-### Phase A.6 — candidates (no commitment yet)
+See A.6 commits `a7177f5` · `9540d5a` · `4b9376c`. 5 contract tests + schema registration (`_ARCHETYPE_SCHEMAS` + `_ARCHETYPE_BASELINE_TEMPLATE` + `STRUCTURED_FIELD_SHAPES`) + `_base.html` preview bridge + 2 lifecycle tests. Merge into v15 via `--no-ff`.
 
-Pick one when the next workstream opens. Recommended: **A.6a Second archetype editor support** (scale-out to Cardio/Derm or Gusto). Alternatives: A.6b remote storage (prod-launch driven), A.6c transform pipeline (signal-driven), A.6d gallery picker (request-driven).
+### Binding decisions added through Phase A.7
+
+- **D-096** — Per-locale override storage convention: translatable rows use `@<locale>:<path>` prefix, globals keep plain path. Zero schema migration, zero new table.
+- **D-097** — No cross-locale customer fallback: locale L rendering with no `@L:<path>` row falls back to authored registry value for locale L, NEVER to another locale's customer override.
+- **D-098** — Archetype gate for multi-locale editor: `_MULTILOCALE_ENABLED_ARCHETYPES` in `apps/editor/schema.py` is the single source of truth. A.7 first wave enrolls only `agency-creative-studio` (Vertex). Each enrollment requires its own lifecycle regression test.
+
+All prior D-086 through D-095 (A.1 → A.5 bindings) and pre-editor decisions (D-054 premium law, D-055 tier model, D-047 chrome authoring, etc.) remain in force. See DECISIONS.md for full catalogue.
+
+### Phase A.8+ — candidates (no commitment yet)
+
+Pick one when the next workstream opens. Recommended: **A.7b Pragma multi-locale enrollment** — lowest-risk win on the validated D-098 pattern. Alternatives: A.8 third archetype (Gusto imagery-heavy stress test), A.9 editor operator tools, A.10 remote storage (prod-launch driven).
 
 See `TODO_NEXT.md` for full candidate list + red-lamps.
 
@@ -47,6 +62,8 @@ See `TODO_NEXT.md` for full candidate list + red-lamps.
 - Per-group badges don't pre-sync at mount with persisted overrides; they start at 0 and catch up on the next autosave. Customer-cosmetic only.
 - Reopen editor always starts the iframe on `home`, not on the page the customer last viewed. `PENDING_PAGE_KEY` sessionStorage hint is one-shot for row-op reloads only, by design.
 - Orphan assets accumulate until an operator runs `gc_project_assets --apply`. This is D-094 behaviour, not neglect.
+- Plain-keyed overrides on translatable paths (legacy pre-A.7 shape) still apply cross-locale until superseded by a `@L:` row. This is backward-compat, not a fallback — current production has no such rows because A.7 writes always go through the prefixed key.
+- Editor chrome (sidebar, accordion, input widgets) is LTR-only even when editing AR. The preview iframe renders RTL authentic; the editor shell is an operator tool where browser bidi handles AR input natively. D-098 scope exclusion, not a gap.
 
 ---
 

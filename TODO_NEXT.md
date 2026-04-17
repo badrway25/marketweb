@@ -1,40 +1,52 @@
 # TODO Next
 
-## 🟢 Current State (2026-04-17 · after Session 57 A.5 Orphan Asset GC merge)
+## 🟢 Current State (2026-04-17 · after Session 59 A.7 Multi-locale Editor merge)
 
-Baseline `phase-integration-baseline-v15` tip is `421dc44` (A.5 merge). The editor flow on Vertex (`agency-creative-studio`) is operationally complete:
+Baseline `phase-integration-baseline-v15` tip is **`b18493d`** (A.7 merge), pushed to origin. The editor flow on Vertex (`agency-creative-studio`) is now operationally complete AND multi-locale:
 
-- 284 editable fields
+- 284 editable fields — 81 flagged `translatable` (customer edits per locale), 203 global
 - 4 mutable lists with full add / remove / reorder / persistence / preview sync / publish / page-preservation
-- Customer image upload on the 2 image fields (`studio.partners[].portrait` + `home.cover.image`)
+- Customer image upload on the 2 image fields (`studio.partners[].portrait` + `home.cover.image`) — global per D-098
 - Orphan asset GC available via `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project`, `--grace`)
-- 97/97 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
+- **Multi-locale editor** on Vertex: 5 locales (it/en/fr/es/ar) with authentic RTL preview for Arabic, per-locale `@<locale>:<path>` storage, authored-only fallback (no cross-locale customer leak) — Pragma NOT enrolled yet (A.7b follow-up)
+- 147/147 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
 
 No explicitly-deferred debt is pending.
 
-### Phase A.6 — immediate candidates (pick one)
+### Phase A.8 / A.7 follow-ups — immediate candidates (pick one)
 
-- [ ] **A.6a Second archetype editor support** — replica of the A.2.6a/b schema work on a second archetype. Candidates in priority order: `medical-specialist` (Cardio/Derm, 2 templates), `restaurant-fine-dining` (Gusto, 1 template), `corporate-suite` (Pragma, 1 template). About 500-800 LOC schema replica per archetype. Highest-value next strategic step: editor currently works only on 1/20 templates (Vertex).
-- [ ] **A.6b Remote asset storage** — swap `ProjectAsset.file` Django FileField backend to S3 (django-storages) or Cloudinary, settings-toggled per environment. Must keep `/media/` accept path in parallel (D-095 binding). Worth opening only when a prod-launch timeline requires it; introduces ops dependencies (credentials, bucket policy, costs).
-- [ ] **A.6c Image transform pipeline** — on-upload resize / thumbnail / WebP transcode for bandwidth optimization. Depends on real customer file-size data; premature without signal.
-- [ ] **A.6d Gallery picker** — pick from previously-uploaded assets of the same project. Needs new UI surface (list of existing `ProjectAsset` rows with thumbnails). Pure UX polish; low priority without a customer request.
+- [ ] **A.7b Pragma multi-locale enrollment** — lowest-risk win. Add `"corporate-suite"` to `_MULTILOCALE_ENABLED_ARCHETYPES`, mirror the Vertex lifecycle test on Pragma, browser-walk the flow. Catalog will reach 2/2 editor archetypes multi-locale. ~3 commits per D-098 recipe.
+- [ ] **A.8 Third editable archetype** — candidate: `fine-dining` (Gusto) as the imagery-heavy stress test of the reusability pattern. Recipe mirrors A.6 (schema register + `_base.html` preview bridge + lifecycle test). About 500-800 LOC schema replica.
+- [ ] **A.9 Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler (still manual per D-094 unless contract changes), asset audit UI. Cleans up operator experience without touching customer flows.
+- [ ] **A.10 Remote asset storage** — swap `ProjectAsset.file` Django FileField backend to S3 (django-storages) or Cloudinary, settings-toggled per environment. Must keep `/media/` accept path in parallel (D-095 binding). Worth opening only when a prod-launch timeline requires it; introduces ops dependencies (credentials, bucket policy, costs).
 
-Recommended next: **A.6a Second archetype** — it's the natural scale-out move, uses fully-validated infra, and opens editor to new template categories.
+Recommended next: **A.7b Pragma multi-locale enrollment** — pure wiring on a validated pattern, closes the "multi-locale 1/8 archetypes → 2/8" asymmetry, lets us postpone harder choices until Pragma is green.
 
-### Carried-forward observations (not A.6-blocking)
+### Carried-forward observations (not blocking)
 
-- [ ] L2 — programmatic focus on a collapsed sidebar accordion doesn't trigger iframe page-aware nav (pre-A.2.8 observation). Low impact since palette jump / click flows work; close with a public `MWEditor.jumpField` API expansion if A.6 introduces new deep-link needs.
+- [ ] L2 — programmatic focus on a collapsed sidebar accordion doesn't trigger iframe page-aware nav (pre-A.2.8 observation). Low impact since palette jump / click flows work.
 - [ ] Badge per-group not synced at mount with persisted overrides (pre-A.2.8 observation). Customer-cosmetic, no functional gap.
 - [ ] Sticky last page on reopen (currently one-shot only on row-op reloads, by design). Customer-convenience opt-in if requested.
-- [ ] Palette page-slug-match boost in ranking (Vertex-specific "studio" ambiguity). Low signal so far — reopen only if customer feedback surfaces.
+- [ ] Palette page-slug-match boost in ranking (Vertex-specific "studio" ambiguity). Low signal so far.
 - [ ] A.3d widen repeater to `manifesto.principles`, `manifesto.promise_stats`, `lavori.archive_stats` (pattern validated in A.3c). Low priority; no customer request.
+- [ ] Search Cmd-K palette could become locale-aware (show the translated label when a translatable field is selected in an active locale); not urgent — current behavior is correct, just not localized.
 
-### A.6 scope red-lamps (to resist when planning)
+### A.7 fuori-scope esplicitamente rinviati (respect when planning)
 
-- Don't bundle A.6a second archetype + A.6b remote storage in one phase — two independent work streams, merging them loses the leverage of each.
+- Repeater per-locale (struttura + row content restano globali — A.10+ only on explicit customer signal)
+- Image per-locale (asset uploaded once, universal — A.10+)
+- Full RTL editor chrome pass (editor shell stays LTR, preview iframe RTL authentic is sufficient)
+- Per-locale publish gating / approval (single atomic publish is the contract)
+- Translation memory / ML helpers (out of product scope)
+- "Solo translatable filter" UI toggle (optional polish, not required)
+
+### Scope red-lamps (to resist when planning)
+
+- Don't enroll a new archetype in multi-locale without its own lifecycle regression test (D-098 binding).
+- Don't bypass D-097 at the rendering layer — if customer requests cross-locale suggestion, surface it as explicit UI flow, not storage default.
 - Don't add cron / scheduler for A.5 GC. Management command manual is the contract per D-094.
-- Don't replace the `/media/` accept path in `validate_value` — A.6b must live in parallel (D-095 binding).
-- Don't introduce media library / gallery UI until a customer explicitly asks; premium prodotto = no admin-like panels.
+- Don't replace the `/media/` accept path in `validate_value` — A.10 must live in parallel (D-095 binding).
+- Don't bundle A.7b (Pragma enrollment) + A.8 (third archetype) in one phase — two independent streams, merging them loses leverage.
 
 ---
 

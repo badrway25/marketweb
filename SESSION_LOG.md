@@ -4704,3 +4704,73 @@ Two candidates depending on product priority:
 (b) **A.6 remote storage** — swap Django FileField backend to S3 / Cloudinary. Only worth doing when a prod-launch timeline requires it; introduces ops dependencies.
 
 No debt currently pending. Consolidation pause (this commit) precedes the choice.
+
+---
+
+## Session 58 — Phase A.6 · Second Editable Archetype Support (2026-04-17)
+
+### What shipped
+
+A.6 extends the editor from Vertex-only to Vertex + Pragma (`corporate-suite` archetype). Three commits on `phase-editor-a6-second-archetype-v1`.
+
+- `a7177f5` — Step 0 · coverage contract. 6 contract tests: `corporate-suite` registered in `_ARCHETYPE_SCHEMAS`, schema shape covers all 5 Pragma pages (chi-siamo / competenze / case-studies + chrome), `validate_key_path` accepts the whitelist / rejects outside, indexed lists are readonly (not mutable in A.6), `customize_start` creates an editable Pragma project, Vertex editor unchanged regression guard.
+- `9540d5a` — Step 1 · schema + preview bridge. `PRAGMA_CORPORATE_SUITE_SCHEMA` (7 groups · ~53 scalar + 1 image · 3 readonly indexed lists `home.pillars`/`kpi_strip`/`leadership`), `STRUCTURED_FIELD_SHAPES["corporate-suite"]` with no `mutable` flag, registered in `_ARCHETYPE_SCHEMAS` + `_ARCHETYPE_BASELINE_TEMPLATE`. `corporate-suite/_base.html` 3 atomic fixes: `logo_word` override honored in `<title>`, CSS guard block `body.mw-is-editor-preview`, conditional `preview-bridge.js`. 3 tests: logo_word override reflected in preview title, `editor_ctx` exposes sidebar + palette, editor preview injects bridge.
+- `4b9376c` — Step 2 · lifecycle validation. 2 cross-cutting HTTP tests: full customer lifecycle (upload → autosave scalar+image+brand → reopen → publish → second-user public preview) + Vertex regression guard (33 sidebar groups · 4 mutable lists · ~284 fields invariant).
+
+In-flight bugs caught + fixed: (a) page-aware navigation mismatch — initial schema used abstract page kinds, fixed to Italian slugs `chi-siamo/competenze/case-studies` matching the Pragma registry. (b) `vertex_groups` length assertion off-by-one.
+
+### Observables
+
+- 97/97 → 108/108 server tests (+11). Smoke 834/834 unchanged.
+- Browser walk on Vertex regression: 33 groups, 4 mutable lists [`contatti.channels`, `studio.facts`, `studio.partners`, `studio.timeline_rows`], 284 fields, edit persistence, zero regression.
+- `manage.py check` 0 issues.
+
+### Consequences
+
+- Editor scales to 2/8 archetypes. Pattern confirmed: schema register + preview bridge + lifecycle test = ~3 commits per archetype.
+- No new D-number introduced. A.6 honors the A.1 contract (`_ARCHETYPE_SCHEMAS` registry) + D-047 chrome-authoring + D-089 scroll-calm preview bridge.
+- Merged into v15 via `--no-ff` @ `f5cfd2a`.
+
+### Exact next step
+
+A.7 Multi-locale Editor Support (binding decision: `editor_ctx` for the catalog's 5-locale promise must be honored customer-side before widening archetype enrollment further).
+
+---
+
+## Session 59 — Phase A.7 · Multi-locale Editor Support (2026-04-17)
+
+### What shipped
+
+A.7 closes the strategic gap "editor monolingua" without destabilising the architecture. Customer edits one Vertex project in 5 locales (it/en/fr/es/ar, including authentic RTL for Arabic). Each language has an independent buffer. Global fields (brand, palette, image, repeater) stay universal. Zero cross-locale leak customer-side. Pragma remains not-enrolled (A.7b follow-up, ~3 commits). Five commits on `phase-editor-a7-multilocale-v1`.
+
+- `cc4d524` — Step 0 · schema translatable flag contract. `is_translatable(archetype, key_path)` + `supported_locales(archetype)` + archetype gate `_MULTILOCALE_ENABLED_ARCHETYPES = {"agency-creative-studio"}`. Pure metadata, zero behavior change. 7 contract tests.
+- `19ce86f` — Step 1 · overlay partition by locale. Storage-key convention `@<locale>:<path>` for translatable rows, plain key for globals — shape-compatible with the flat `ProjectContent` table, zero migration. `save_content_edits(locale=)` locale-aware + `UnsupportedLocale` exception + sparse-diff locale-scoped. `apply_project_overrides(locale=)` filters rows by target locale, locale row supersedes plain row on same path. `CustomerProject.get_overrides_dict(locale=)` locale-aware reader. 10 tests. Customer-invisible.
+- `2652e94` — Step 2 · autosave + editor context locale-aware. `/projects/<id>/autosave/` accepts `locale` in JSON body. `ProjectEditorView` reads `?lang=<code>` → `active_locale` with silent fallback to `project.locale`. Context exposes `active_locale` + `supported_locales`. Preview URL carries `&lang=<active_locale>`. 11 tests (3 service + 8 HTTP).
+- `c080dbf` — Step 3 · UI locale switcher + translatable markers. Sidebar pill becomes edit+preview stateful: click triggers `flushDirty(locale=OLD_LOCALE)` + `awaitFlushedOrIdle()` + navigate to `?lang=<new>`. Marker "PER LINGUA" (`.ed-lang-badge`) + `data-ed-translatable="1"` on every translatable field. Label "Lingua attiva" (vs legacy "Lingua anteprima"). `MW_EDITOR_CONFIG.currentLocale` + `supportedLocales` passed to JS. Autosave body now always tagged `locale: currentLang`. 2 UI markup tests.
+- `e4c2298` — Step 4 · lifecycle lock end-to-end. One HTTP-level test walks IT+EN+FR translatable edits + 1 global edit + publish + 5 public preview renders (second user) + 4 editor reopens owner-side. Locks every storage key, publish transition, cross-locale non-leak assertion, and editor prefill per locale. One Pragma regression guard: save on Pragma via autosave with `locale=en` persists plain-keyed (the gate really holds at HTTP layer), `supported_locales=[]` in context, all fields `translatable=False`.
+
+In-flight bugs caught + fixed: (a) first browser walk revealed `MW_EDITOR_CONFIG.currentLocale` missing in the template — fixed by emitting `{{ active_locale|default:'it'|escapejs }}`. (b) runserver `--noreload` didn't pick up template changes — needed manual restart (environmental, not codebase).
+
+### Observables
+
+- 115/115 → 147/147 server tests (+32: 7 Step 0 · 10 Step 1 · 11 Step 2 · 2 Step 3 · 2 Step 4). Smoke 834/834 unchanged.
+- Browser walk end-to-end as `a7_test` owner then `a7_other` second user: edit IT → click EN (debounce pending) → flush `@it:` before navigate → edit EN → FR → ES authored fallback → AR editor + RTL iframe authentic → back to IT persistence intact → publish → second user public preview per locale shows IT/EN/FR overrides, ES/AR clean authored fallback, global logo `FinaleBrand` universal. Screenshot `a7_step4_public_preview_ar_rtl.png`.
+- `manage.py check` 0 issues.
+
+### Consequences
+
+- Editor 2/8 archetypes editable · multi-locale 1/8 (Vertex).
+- Catalog 20/20 `published_live` unchanged.
+- Three new binding decisions: D-096 storage convention, D-097 fallback semantics, D-098 archetype gate. See DECISIONS.md.
+- Merged into v15 via `--no-ff` @ `b18493d` and pushed to `origin/phase-integration-baseline-v15`.
+- No explicit debt pending.
+
+### Exact next step
+
+Two candidates, no commitment:
+
+(a) **A.7b Pragma multi-locale enrollment** — lowest-risk win. Add `"corporate-suite"` to `_MULTILOCALE_ENABLED_ARCHETYPES`, mirror the lifecycle test. ~3 commits.
+
+(b) **A.8 Third archetype editor enrollment** — candidate: `fine-dining` (Gusto). Imagery-heavy stress test. Recipe identical to A.6.
+
+Consolidation pause (this commit) precedes the choice.
