@@ -1,30 +1,41 @@
 # TODO Next
 
-## 🟢 Current State (2026-04-17 · after Session 61 A.8 Gusto Editor + Multi-locale Enrollment merge)
+## 🟢 Current State (2026-04-17 · after Session 62 A.9 Medical-specialist Editor + Multi-locale Enrollment merge)
 
-Baseline `phase-integration-baseline-v15` tip is **`2e7fbed`** (A.8 merge), pushed to origin. Three editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) — are all multi-locale enrolled:
+Baseline `phase-integration-baseline-v15` tip is **`e816b87`** (A.9 merge), pushed to origin. Four editor-supported archetypes — Vertex + Pragma + Gusto + specialist — are all multi-locale enrolled. The `specialist` archetype is shared between Cardio and Derm (**first multi-template archetype**), so 5 templates are now editable end-to-end from 4 schemas:
 
-- **Vertex** · 284 editable fields (81 translatable · 203 global) · 4 mutable lists · customer image upload on 2 image fields · full A.3c→A.5 feature set
-- **Pragma** · ~53 scalar + 1 image + 3 readonly indexed lists · 53 translatable fields flagged (out of 92 sidebar entries) · no repeater mutable
-- **Gusto** · ~108 scalar + 2 image + 3 readonly indexed lists (signature_courses tuple 5×4, menu.courses tuple 8×4, produttori.items dict 4×4 with portrait stays registry-readonly) · 97 translatable fields flagged (out of 181 sidebar entries) · no repeater mutable · no image per-locale
-- **Multi-locale editor on all three** · 5 locales (it/en/fr/es/ar) with authentic RTL preview for Arabic · per-locale `@<locale>:<path>` storage · authored-only fallback (no cross-locale customer leak) · sidebar pill switcher · flush-before-switch · "per lingua" marker on translatable fields
+- **Vertex** (`agency-creative-studio`) · 1 template · 284 editable fields (81 translatable · 203 global) · 4 mutable lists · customer image upload on 2 image fields · full A.3c→A.5 feature set
+- **Pragma** (`corporate-suite`) · 1 template · ~53 scalar + 1 image + 3 readonly indexed lists · 53 translatable · no repeater mutable
+- **Gusto** (`fine-dining`) · 1 template · ~108 scalar + 2 image + 3 readonly indexed lists · 97 translatable · no repeater mutable · no image per-locale
+- **specialist** (archetype shared by `cardio-studio-specialistico` + `dermatologia-elite-roma` · 2 templates · A.9) · ~95 scalar + 5 image + 6 readonly indexed lists (portrait on medici.doctors stays registry-only) · 77 translatable fields visible in each template's sidebar (out of 171 total sidebar entries including the 6 indexed groups) · D-064 divergent home premium sections kept registry-only · no repeater mutable · no image per-locale
+- **Multi-locale editor on all four** · 5 locales (it/en/fr/es/ar) with authentic RTL preview for Arabic · per-locale `@<locale>:<path>` storage · authored-only fallback (no cross-locale customer leak) · sidebar pill switcher · flush-before-switch · "per lingua" marker on translatable fields
 - Orphan asset GC available via `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project`, `--grace`)
-- 160/160 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
-- **3/8 archetypes editor-supported · 3/8 multi-locale enrolled**
+- 172/172 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
+- **4/8 archetypes editor-supported · 4/8 multi-locale enrolled · 5 templates editable end-to-end**
 
 No explicitly-deferred debt is pending.
 
-### Next workstream — immediate candidates (planning session required)
+### Next workstream — immediate candidates (A.10 planning session required)
 
-- [ ] **A.9 Fourth archetype editor support** — scale editor to another archetype family. Candidates in priority order:
-      - `medical-specialist` (Cardio + Derm · 2 templates unlocked per schema · already rich 5-locale + RTL on public side · Session 26 premium split + Session 30 premium sections) — highest customer value per commit, first multi-template archetype
-      - `trattoria-warm` (Sapore · 1 template · hospitality continuation from Gusto · adjacent archetype) — low-risk natural adjacency
-      - `editorial-designer-grid` (Chiara · 1 template · typographic portfolio WITH novel `project_detail`/`series_detail` page kinds) — stretches the editor page-kind handling beyond current home/about/services patterns
-- [ ] **A.9 alt · Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler (still manual per D-094 unless contract changes), asset audit UI. Cleans up operator experience without touching customer flows.
-- [ ] **A.10 Remote asset storage** — swap `ProjectAsset.file` Django FileField backend to S3 (django-storages) or Cloudinary, settings-toggled per environment. Must keep `/media/` accept path in parallel (D-095 binding). Worth opening only when a prod-launch timeline requires it; introduces ops dependencies (credentials, bucket policy, costs).
-- [ ] **A.10 alt · Repeater-per-locale first wave** — flip one or two mutable lists on Vertex from global-only to translatable-per-locale (starting with `studio.facts` or `contatti.channels`). Out-of-scope family per D-098 · opens up localized repeater content if customer signal emerges.
+- [ ] **A.10 fifth archetype editor support — multi-template candidates (preferred)** — continue the A.9 "1 shared schema → 2 templates" pattern on another archetype family that already carries 2 published_live templates:
+      - `law` family (Lex + Juris · 2 templates on the same law archetype slug) — natural parallel to specialist given both templates rolled out in Session 53 with mature 5-locale + RTL · requires a Step-0-style runtime audit to confirm the content-tree parity is as aligned as specialist proved.
+      - `real-estate` family (Casa + Villa · 2 templates) — same shape question, also Session 53 rollout.
+- [ ] **A.10 alt · Single-template archetype editor support** — pick one when the priority shifts to breadth over depth:
+      - `editorial-designer-grid` (Chiara) — stretches the editor on novel page kinds `project_detail` / `series_detail` (Session 34 rollout) · higher risk than multi-template-family work · defer unless specifically requested.
+      - `trattoria-warm` (Sapore) — hospitality continuation from Gusto · 1 template · low-risk but low-value-per-commit.
+      - `cinematic-photographer` (Pixel) · `artisan-workshop` (Bottega) · `fashion-editorial` (Luxe) — all single template, imagery-heavy, defer to dedicated planning.
+- [ ] **A.10 alt · Selective editor polish** — search Cmd-K locale-aware ranking · "solo translatable" sidebar filter · badge-per-group pre-sync at mount · palette page-slug-match boost · sticky-last-page on reopen. All low-risk but also low-value — only worth opening if customer signal surfaces or a content-heavy phase needs a breather before the next archetype scale-out.
+- [ ] **A.10 alt · Media evolution / remote storage** — swap `ProjectAsset.file` Django FileField backend to S3 (django-storages) or Cloudinary, settings-toggled per environment. Must keep `/media/` accept path in parallel (D-095 binding). **Do NOT open unless a prod-launch timeline demands it** — introduces ops dependencies (credentials, bucket policy, costs) without customer value until prod.
+- [ ] **A.10 alt · Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler (still manual per D-094 unless contract changes), asset audit UI. Cleans up operator experience. Worth considering after a scale-out phase to consolidate, not before.
+- [ ] **A.10 alt · Repeater-per-locale first wave** — flip one or two mutable lists on Vertex from global-only to translatable-per-locale (starting with `studio.facts` or `contatti.channels`). Currently out-of-scope family per D-098 · opens up localized repeater content if customer signal emerges · **do not open without customer request**.
 
-Recommended framing: **A.9 medical-specialist (Cardio + Derm) editor support** — highest customer-value-per-commit ratio (1 schema → 2 templates editable) on an archetype family with mature 5-locale + RTL authoring. Decision deferred to dedicated planning session (same shape as A.8 planning).
+Recommended framing: **A.10 planning session on the law or real-estate multi-template candidate** — highest customer-value-per-commit ratio continues to be the shared-schema pattern (2 templates unlocked per phase). The A.9 Step-0 runtime audit template (compare archetype DNA + content-tree key parity across the two candidate templates) is reusable verbatim. Decision deferred to the dedicated A.10 planning session.
+
+**What NOT to open immediately (value is low right now)**:
+- Remote asset storage (no prod-launch timeline pressure today)
+- Repeater-per-locale family (no customer request)
+- Search Cmd-K localized ranking (current behavior is correct, just not localized — polish only)
+- Editor operator tools (better after another scale-out consolidates the editor footprint)
 
 ### Carried-forward observations (not blocking)
 

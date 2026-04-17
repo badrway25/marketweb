@@ -4862,3 +4862,64 @@ Two natural candidates, no enforced ordering:
 (b) **A.9 Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler, asset audit UI.
 
 Consolidation pause (this commit) precedes the choice.
+
+---
+
+## Session 62 — Phase A.9 · Medical-specialist Editor + Multi-locale Enrollment (2026-04-17)
+
+### What shipped
+
+A.9 ships the fourth editable archetype (`specialist` → Cardio + Derm) editor-enabled AND multi-locale enrolled simultaneously. **First multi-template archetype**: one shared schema unlocks two templates (`cardio-studio-specialistico` + `dermatologia-elite-roma`) thanks to 95% content-tree parity documented by the Step 0 audit. Combines the A.6 recipe (schema register + preview bridge) with the A.7b recipe (gate flip + dedicated lifecycle regression) in a single phase — no new architectural decisions. Two commits on `phase-editor-a9-medical-specialist-v1`.
+
+**Decision: Cardio + Derm insieme.** Step 0 audit (runtime inspection of the two templates' content trees + DNA) confirmed:
+- Both carry `archetype: "specialist"` in their DNA — same hero_style, navbar_style, footer_style, section_order, card_style, button_style, density, tone, conversion_pattern.
+- Same `pages` list (7 pages each: home/studio/visite/medici/pubblicazioni/contatti/richiedi-visita with identical `kind` values).
+- 100% key parity on `studio` (14), `visite` (11), `medici` (5), `pubblicazioni` (6), `contatti` (14), `richiedi-visita` (16), `site` (10).
+- 85% parity on `home` — 29 shared keys plus 5 Cardio-only (`anchor_nav`, `insurance`, `location`, `percorso`, `tecnologie`) and 5 Derm-only (`before_after`, `credentials`, `editorial_feed`, `gallery_strip`, `trattamenti_tabs`). The 10 divergent sub-blocks are D-064 Session 30 premium sections — kept registry-only in A.9 (same exclusion strategy as Gusto `prenota.form_sections`).
+
+### Recipe applied (shared-schema · A.6 + A.7b combined)
+
+- `a3589bc`-equivalent role → `8e94714` · Step 1 · `MEDICAL_SPECIALIST_SCHEMA` in `apps/editor/schema.py` (~360 LOC · 11 sidebar groups covering brand + hero + home bands + chief + 6 pages + contatti footer · ~95 scalar fields shared core). `STRUCTURED_FIELD_SHAPES["specialist"]` exposes 6 readonly indexed lists (home.facts · home.signature_visits · medici.doctors · studio.history · studio.values · visite.treatments · portrait column intentionally omitted from `medici.doctors` cols so the 3 doctor portraits stay registry-only — same pattern as Gusto produttori.items). Registered in `_ARCHETYPE_SCHEMAS` + `_ARCHETYPE_BASELINE_TEMPLATE[("cardio-studio-specialistico","it")]` (Cardio anchors baseline per Session 23 i18n pilot) + `_MULTILOCALE_ENABLED_ARCHETYPES`. `templates/live_templates/medical/specialist/_base.html` gets the three atomic A.6 fixes (title `site.logo_word` override · body guard class · CSS guard + preview-bridge injection). 10 tests: 7 shape/classification + triple regression (Vertex + Pragma + Gusto intact) + preview-bridge 3-point integration test + **user-imposed guardrail `test_a9_specialist_divergent_premium_sections_excluded`** that locks the 10 divergent home sub-blocks out of the whitelist via 4 independent check layers (is_translatable → False · validate_key_path → raises · STRUCTURED_FIELD_SHAPES does NOT contain divergent list paths · sidebar group ids do not hint divergent blocks).
+- `b9fe5ba` · Step 2 · **two distinct lifecycle tests** built on a shared `_run_specialist_lifecycle(template_slug, marker, brand)` helper:
+  - `test_a9_cardio_full_multilocale_lifecycle_end_to_end` (marker "A9Cardio" · brand "A9CardioBrand")
+  - `test_a9_derm_full_multilocale_lifecycle_end_to_end` (marker "A9Derm" · brand "A9DermBrand")
+  Each test walks 3 autosaves (IT/EN/FR) + 1 global + publish + 5 public preview renders (second user) + 4 editor reopens + AR `<html dir="rtl" lang="ar">` assertion. Distinct markers mean a regression that hits only one of the two templates surfaces with a clean name instead of collateral-damage-on-shared-test.
+
+Step 3 · browser walk (no code change). Cardio primary walk (12 spot checks) + Derm spot check (5 checks + team page RTL verification):
+- Cardio `?lang=it` mount → label "Lingua attiva" · 5 pills · 77/171 translatable fields · correct translatable/global markers
+- Type IT + global "WalkCardio" + click EN → flush `@it:home.headline` + plain `site.logo_word` before navigation (DB verified)
+- IT ↔ EN ↔ FR ↔ ES ↔ AR switches: each locale loads authored or customer buffer · zero cross-locale leak
+- AR iframe on `.sp-*` skin: `<html dir="rtl" lang="ar">` authentic · H1 arabic · nav RTL (المركز · عن المركز · etc.) · hero sidebar RTL with Arabic doctor name · logo WalkCardio in chrome
+- Publish Cardio · second-user public preview per locale: IT/EN/FR override visible · ES/AR authored fallback · AR htmlDir rtl · WalkCardio universal
+- Derm `?lang=en` spot mount · 77/171 translatable fields (same count as Cardio — confirms shared schema · the number reflects editable-field coverage independent of template) · EN authored visible · save EN + WalkDerm · switch AR · iframe `.sp-*` RTL identical pattern · DB inspection confirms **zero cross-project leak** (Cardio 4 rows / Derm 2 rows, fully isolated)
+- Publish Derm · second-user public preview: EN customer override · IT/FR/ES/AR authored fallback · WalkDerm universal · AR htmlDir rtl · zero cross-brand leak (no WalkCardio in Derm body and vice versa)
+- Title tag confirms `site.logo_word|default:brand.brand_name` applied on `.sp-*` skin (AR Cardio title = "WalkCardio — المركز")
+- Screenshots: `a9_cardio_editor_ar_rtl.png` + `a9_cardio_public_preview_ar_rtl.png`
+
+### Observables
+
+- 160/160 → **172/172** server tests (+12: 10 contract/integration + 2 lifecycle).
+- Smoke 834/834 unchanged. `manage.py check` 0 issues.
+- No production code touched outside `schema.py`, `_base.html` specialist (3 minimal fixes), and `tests.py`. Zero touches to `services.py` / `rendering.py` / `views.py` / `models.py` / editor templates / `live-editor.js` / CSS / content registries / other skins.
+
+### Consequences
+
+- **Editor 4/8 archetypes editable · multi-locale 4/8 enrolled · 5 templates editable end-to-end** (Vertex + Pragma + Gusto + Cardio + Derm). First time in project history the editor unlocks more templates than archetypes thanks to the shared-schema pattern.
+- Catalog 20/20 `published_live` unchanged.
+- **No new D-number introduced**. A.9 is the third real application of the D-098 recipe (after A.7b Pragma and A.8 Gusto) and the first case of "1 archetype schema · N templates unlocked". The D-098 operationalisation history is updated in DECISIONS.md with a brief note clarifying that each enrolled template still requires its own lifecycle regression test even when the archetype schema is shared — no silent "free ride".
+- Branch shape: `phase-editor-a9-medical-specialist-v1` merged into v15 via `--no-ff` @ `e816b87`. Pushed to `origin/phase-integration-baseline-v15`.
+- No explicit debt pending.
+
+### Exact next step
+
+A.10 planning session — candidates in priority order (dedicated planning required before Step 0):
+
+(a) **A.10 fifth archetype editor support** — natural continuation. Two candidates worth the shared-schema pattern: `law` family (Lex + Juris · 2 templates) or `real-estate` family (Casa + Villa · 2 templates). Both carry the A.9 "1 schema → 2 templates" opportunity if their DNA/content-tree shape proves as aligned as specialist did.
+
+(b) **A.10 alt · Single-template archetypes** — `editorial-designer-grid` (Chiara) stresses novel page kinds (`project_detail`/`series_detail`); `trattoria-warm` (Sapore) continues the hospitality adjacency after Gusto.
+
+(c) **A.10 alt · Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler, asset audit UI. Cleans up operator experience without touching customer flows.
+
+(d) **A.10 alt · Remote asset storage** — S3/Cloudinary swap of `ProjectAsset.file` backend. Worth opening only when a prod-launch timeline requires it.
+
+Consolidation pause (this commit) precedes the choice.

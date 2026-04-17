@@ -1,16 +1,16 @@
 # Agent Handoff
 
-Last updated: 2026-04-17 — after **Session 61 A.8 Gusto Editor + Multi-locale Enrollment merge** (baseline tip `2e7fbed`, pushed to origin)
+Last updated: 2026-04-17 — after **Session 62 A.9 Medical-specialist Editor + Multi-locale Enrollment merge** (baseline tip `e816b87`, pushed to origin)
 
 ## Current state — read this before opening any new workstream (2026-04-17)
 
-Three editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) — are all multi-locale enrolled. Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **3/8 archetypes editor-supported · 3/8 multi-locale enrolled**. All acceptance gates are green:
+Four editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) + **specialist** (shared between Cardio + Derm) — are all multi-locale enrolled. The `specialist` archetype is the **first multi-template archetype**: one shared schema unlocks two templates thanks to 95% content-tree parity between `cardio-studio-specialistico` and `dermatologia-elite-roma`. Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **4/8 archetypes editor-supported · 4/8 multi-locale enrolled · 5 templates editable end-to-end**. All acceptance gates are green:
 
 - `python manage.py check` → 0 issues
-- `python manage.py test apps` → 160/160 PASS
+- `python manage.py test apps` → 172/172 PASS
 - `python smoke_full.py` → 834/834 routes HTTP 200
 
-Baseline `phase-integration-baseline-v15` tip: **`2e7fbed`** (A.8 merge), pushed to `origin/phase-integration-baseline-v15`.
+Baseline `phase-integration-baseline-v15` tip: **`e816b87`** (A.9 merge), pushed to `origin/phase-integration-baseline-v15`.
 
 ### What the editor does today
 
@@ -33,6 +33,14 @@ Baseline `phase-integration-baseline-v15` tip: **`2e7fbed`** (A.8 merge), pushed
 - 97 translatable fields (out of 181 total sidebar entries) · `prenota.form_sections` intentionally omitted from schema (IT-only parity gap in registry, skin already has `{% if %}` graceful guard)
 - `supported_locales=["it","en","fr","es","ar"]` · identical UX surface to Vertex + Pragma. AR preview on `.fd-*` skin renders `<html dir="rtl" lang="ar">` authentic (Arabic nav labels + Arabic H1 + RTL layout)
 - Enrolled via A.8 Session 61 (combined A.6 schema register + A.7b gate flip in a single phase · `test_a8_gusto_full_multilocale_lifecycle_end_to_end` + dedicated `test_a8_gusto_preview_bridge_injected_only_with_preview_project` integration test)
+
+**specialist — editable AND multi-locale enrolled (A.9) · FIRST MULTI-TEMPLATE ARCHETYPE:**
+- **Shared between 2 templates**: `cardio-studio-specialistico` + `dermatologia-elite-roma`. Both carry `archetype: "specialist"` in their DNA. A.9 Step-0 runtime audit confirmed 95% content-tree parity — 100% on 6/7 pages (studio · visite · medici · pubblicazioni · contatti · richiedi-visita · site) and 85% on home (29 shared keys · 5 Cardio-only + 5 Derm-only premium sections from D-064 Session 30).
+- 11 sidebar groups · ~95 shared-core scalar fields + 5 scalar images (`home.chief.portrait` · `studio.studio_image` · `visite.service_image` · `pubblicazioni.lead_image`) + 6 readonly indexed lists (home.facts · home.signature_visits · medici.doctors · studio.history · studio.values · visite.treatments) · the `portrait` column on `medici.doctors` is intentionally NOT in the dict cols so the 3 doctor portraits stay registry-only (same pattern as Gusto produttori.items).
+- **Divergent home premium sections kept registry-only**: `anchor_nav`, `insurance`, `location`, `percorso`, `tecnologie` (Cardio-only) and `before_after`, `credentials`, `editorial_feed`, `gallery_strip`, `trattamenti_tabs` (Derm-only). Lock guarded by the dedicated `test_a9_specialist_divergent_premium_sections_excluded` test that enforces exclusion via 4 independent check layers (`is_translatable` False · `validate_key_path` raises · `STRUCTURED_FIELD_SHAPES` absent · sidebar group ids free of divergent hints).
+- 77 translatable fields per-template sidebar rendering (out of 171 total sidebar entries including the 6 indexed groups)
+- `supported_locales=["it","en","fr","es","ar"]` · identical UX surface to Vertex + Pragma + Gusto. AR preview on `.sp-*` skin renders `<html dir="rtl" lang="ar">` authentic.
+- Enrolled via A.9 Session 62 (combined A.6 schema register + A.7b gate flip in a single phase, plus **two distinct lifecycle regression tests** — `test_a9_cardio_full_multilocale_lifecycle_end_to_end` + `test_a9_derm_full_multilocale_lifecycle_end_to_end` — confirming the operational clarification to D-098: **shared-schema enrollments still require dedicated lifecycle coverage per template carried in**, there is no "free ride").
 
 ### What is operator-only
 
@@ -58,11 +66,11 @@ See A.6 commits `a7177f5` · `9540d5a` · `4b9376c`. 5 contract tests + schema r
 
 All prior D-086 through D-095 (A.1 → A.5 bindings) and pre-editor decisions (D-054 premium law, D-055 tier model, D-047 chrome authoring, etc.) remain in force. See DECISIONS.md for full catalogue.
 
-### Phase A.9+ — candidates (no commitment yet)
+### Phase A.10+ — candidates (no commitment yet)
 
-Pick one when the next workstream opens. Recommended framing: **A.9 medical-specialist editor support** — 1 schema unlocks 2 templates (Cardio + Derm) with mature 5-locale + RTL authoring already shipped. Alternatives: Sapore (trattoria-warm continuation), Chiara (editorial-designer-grid · tests novel page kinds), A.9-alt editor operator tools, A.10 remote storage.
+Pick one when the next workstream opens. Recommended framing: **A.10 planning session on the next multi-template archetype family** — `law` (Lex + Juris) or `real-estate` (Casa + Villa) are the natural candidates to continue the A.9 "1 shared schema → 2 templates" pattern. The A.9 Step-0 runtime audit template (compare archetype DNA + content-tree key parity) is reusable verbatim. Alternatives: Chiara (single template, novel page kinds), Sapore (hospitality adjacency), editor operator tools, remote storage (prod-launch driven only).
 
-See `TODO_NEXT.md` for full candidate list + red-lamps.
+See `TODO_NEXT.md` for full candidate list + red-lamps + "do NOT open" list.
 
 ### Things that are not debt but look like it
 
