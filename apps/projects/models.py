@@ -282,6 +282,64 @@ class ProjectRevision(TimestampedModel):
         return f"Rev {self.pk} · {self.project.name} · {self.reason}"
 
 
+def _asset_upload_path(instance: "ProjectAsset", filename: str) -> str:
+    """Upload path for ``ProjectAsset.file``.
+
+    Filename is generated server-side from a uuid + the extension
+    inferred from the content_type so that the customer never
+    controls the on-disk path (defense against path traversal /
+    clobbering). Layout:
+
+        media/project-assets/<project-uuid>/<asset-uuid>.<ext>
+    """
+    mime = (instance.content_type or "").lower()
+    ext_by_mime = {
+        "image/jpeg": "jpg",
+        "image/png":  "png",
+        "image/webp": "webp",
+    }
+    ext = ext_by_mime.get(mime, "bin")
+    return f"project-assets/{instance.project.uuid}/{uuid.uuid4().hex}.{ext}"
+
+
+class ProjectAsset(TimestampedModel):
+    """A file (currently: image) uploaded by the customer for a project.
+
+    A.4 scope: shell minimale. The asset is persisted on MEDIA_ROOT
+    under ``project-assets/<project-uuid>/<uuid>.<ext>`` and its public
+    URL is returned to the editor, which writes it into the image
+    field's ProjectContent override via the normal autosave pipeline.
+
+    There is NO link field between ProjectAsset and ProjectContent —
+    the URL travels through content as plain string. Orphan assets
+    (uploaded then unused because the customer reset the field or
+    uploaded a replacement) are acceptable in A.4; a GC job is
+    Phase A.5 scope.
+    """
+
+    project = models.ForeignKey(
+        CustomerProject,
+        on_delete=models.CASCADE,
+        related_name="assets",
+    )
+    file = models.FileField(upload_to=_asset_upload_path)
+    content_type = models.CharField(max_length=64)
+    size_bytes = models.PositiveIntegerField()
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"Asset #{self.pk} · {self.project.name} · {self.content_type}"
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

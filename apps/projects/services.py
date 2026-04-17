@@ -26,6 +26,7 @@ from apps.editor.schema import (
 )
 from apps.projects.models import (
     CustomerProject,
+    ProjectAsset,
     ProjectContent,
     ProjectDesignTokens,
     ProjectRevision,
@@ -740,6 +741,88 @@ def remove_row(
     _persist_meta(project, list_path, meta)
     project.save(update_fields=["updated_at"])
     return {"meta": meta, "effective_length": current_len - 1}
+
+
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# A.4 · customer image upload
+# ---------------------------------------------------------------------------
+
+ALLOWED_ASSET_MIME = {"image/jpeg", "image/png", "image/webp"}
+MAX_ASSET_SIZE_BYTES = 2 * 1024 * 1024  # 2 MB
+
+
+class AssetTooLarge(Exception):
+    """Uploaded file exceeds the server-side size cap."""
+
+    def __init__(self, size_bytes: int, limit_bytes: int):
+        super().__init__(f"Asset size {size_bytes} exceeds limit {limit_bytes}.")
+        self.size_bytes = size_bytes
+        self.limit_bytes = limit_bytes
+
+
+class AssetMimeRejected(Exception):
+    """Uploaded content-type is not on the whitelist."""
+
+    def __init__(self, content_type: str):
+        super().__init__(f"Content-type {content_type!r} is not allowed.")
+        self.content_type = content_type
+
+
+class AssetInvalid(Exception):
+    """Uploaded file is malformed (Pillow verify failed)."""
+
+
+@transaction.atomic
+def upload_asset(
+    *, project: CustomerProject, uploaded_file, editor,
+) -> ProjectAsset:
+    """Persist an image uploaded by the customer.
+
+    - ``uploaded_file`` is a Django ``UploadedFile`` coming from
+      ``request.FILES["file"]``.
+    - Size is capped at 2 MB server-side so a large payload can never
+      slip through the request.FILES limit.
+    - Content-type is whitelisted to jpg/png/webp.
+    - After saving, ``Pillow.Image.verify()`` is called to ensure the
+      bytes actually form a valid image (catches MIME spoofing).
+    - Orphan assets (uploaded but not referenced by any content
+      override) are acceptable in A.4 — cleanup is Phase A.5 scope.
+    """
+    size = getattr(uploaded_file, "size", None)
+    if size is None or size > MAX_ASSET_SIZE_BYTES:
+        raise AssetTooLarge(size or 0, MAX_ASSET_SIZE_BYTES)
+    content_type = (getattr(uploaded_file, "content_type", "") or "").lower()
+    if content_type not in ALLOWED_ASSET_MIME:
+        raise AssetMimeRejected(content_type)
+
+    asset = ProjectAsset(
+        project=project,
+        file=uploaded_file,
+        content_type=content_type,
+        size_bytes=size,
+        uploaded_by=editor,
+    )
+    asset.save()
+
+    # Defense against MIME spoofing: the declared content_type passed
+    # the whitelist, but the bytes might not actually be an image.
+    # Pillow.verify() reads the header without loading pixels.
+    try:
+        from PIL import Image
+        with Image.open(asset.file.path) as img:
+            img.verify()
+    except Exception as exc:  # Pillow raises various exception types
+        # Django FileField.delete() detaches + removes the file when
+        # save=False; chained with the row delete so neither the DB
+        # row nor the on-disk file survives a rejected spoof attempt.
+        asset.file.delete(save=False)
+        asset.delete()
+        raise AssetInvalid(f"File is not a valid image: {exc}")
+
+    return asset
 
 
 # ---------------------------------------------------------------------------
