@@ -459,21 +459,61 @@ def _validate_token(spec: dict[str, Any], value: Any) -> str:
     return value
 
 
-def resolve_path_in_baseline(project: CustomerProject, key_path: str) -> Any:
-    """Convenience used by the editor UI to show the original value."""
-    baseline = template_content.get_content(project.source_template.slug, project.locale) or {}
+def resolve_path_in_baseline(
+    project: CustomerProject, key_path: str,
+    locale: str | None = None,
+) -> Any:
+    """Convenience used by the editor UI to show the original value.
+
+    A.7 Step 2: accepts an optional locale so the editor can prefill
+    a translatable field with the authored registry value for the
+    locale the customer is editing. Falls back to ``project.locale``
+    when omitted — keeps pre-A.7 call sites working unchanged.
+    """
+    effective_locale = locale or project.locale
+    baseline = _baseline_for_locale(project, effective_locale)
     return _resolve_path(baseline, key_path, project.source_archetype)
 
 
-def current_value_for(project: CustomerProject, key_path: str) -> Any:
-    """Value the editor should prefill: override if present, else baseline."""
-    override = next(
-        (row for row in project.content_overrides.all() if row.key_path == key_path),
+def current_value_for(
+    project: CustomerProject, key_path: str,
+    locale: str | None = None,
+) -> Any:
+    """Value the editor should prefill: override if present, else baseline.
+
+    A.7 Step 2: translatable paths look for a ``@<locale>:<path>`` row
+    first — the customer's edit for the active locale. Non-translatable
+    paths read the plain-key row as before. The baseline fallback is
+    locale-scoped through ``resolve_path_in_baseline``.
+    """
+    archetype = project.source_archetype
+    effective_locale = locale or project.locale or "it"
+
+    if is_translatable(archetype, key_path):
+        storage_key = encode_locale_key(effective_locale, key_path)
+        row = next(
+            (r for r in project.content_overrides.all() if r.key_path == storage_key),
+            None,
+        )
+        if row is not None:
+            return row.value_decoded
+        # Backward-compat: a legacy plain-keyed row on a translatable path
+        # still counts as an override until a per-locale row supersedes it.
+        legacy = next(
+            (r for r in project.content_overrides.all() if r.key_path == key_path),
+            None,
+        )
+        if legacy is not None:
+            return legacy.value_decoded
+        return resolve_path_in_baseline(project, key_path, locale=effective_locale)
+
+    plain = next(
+        (r for r in project.content_overrides.all() if r.key_path == key_path),
         None,
     )
-    if override is not None:
-        return override.value_decoded
-    return resolve_path_in_baseline(project, key_path)
+    if plain is not None:
+        return plain.value_decoded
+    return resolve_path_in_baseline(project, key_path, locale=effective_locale)
 
 
 # ---------------------------------------------------------------------------

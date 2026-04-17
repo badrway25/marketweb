@@ -102,18 +102,28 @@ class CustomerProject(TimestampedModel):
             f"{self.source_template.slug}/preview/"
         )
 
-    def preview_url_for_page(self, page_slug: str | None) -> str:
+    def preview_url_for_page(
+        self, page_slug: str | None, locale: str | None = None,
+    ) -> str:
         """Preview URL for a specific page of this project's template.
 
         Home is the implicit default (no trailing segment) to match the
         catalog URL pattern ``<cat>/<slug>/preview/``. Other pages get
         ``<cat>/<slug>/preview/<page>/``. The ``?project=<uuid>`` query
         is always appended so the renderer applies the customer overlay.
+
+        A.7 Step 2: when ``locale`` is provided, ``&lang=<code>`` is
+        appended so the catalog router picks the per-locale authored
+        content and the overlay filter (``apply_project_overrides``)
+        applies only the matching-locale rows.
         """
         base = self.preview_url_path
         if page_slug and page_slug != "home":
             base += f"{page_slug}/"
-        return f"{base}?project={self.uuid}"
+        url = f"{base}?project={self.uuid}"
+        if locale:
+            url += f"&lang={locale}"
+        return url
 
     def get_overrides_dict(self, locale: str | None = None) -> dict[str, Any]:
         """Return a nested dict of all content overrides for a locale.
