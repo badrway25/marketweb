@@ -1354,6 +1354,32 @@ class FoundationHttpTests(TestCase):
         self.assertIn("colori", color_row["keywords"])
         self.assertIn("font", color_row["keywords"])
 
+    def test_a3c_editor_markup_exposes_repeater_affordances_only_on_mutable(self):
+        """A.3c polish — cross-cutting integration: the editor HTTP
+        response must emit the `data-ed-mutable="1"` + `[data-ed-list-path]`
+        markers on exactly the four mutable lists, and must NOT emit
+        them on any other indexed group. Guards against a future edit
+        that flips mutable=True on a list without intention.
+        """
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        # All four mutable lists must surface their list_path marker.
+        for path in (
+            "studio.facts", "studio.partners",
+            "contatti.channels", "studio.timeline_rows",
+        ):
+            self.assertIn(f'data-ed-list-path="{path}"', body,
+                          f"Mutable list '{path}' missing from editor markup.")
+        # Representative still-locked lists must NOT carry the marker.
+        for path in (
+            "manifesto.phases", "lavori.projects",
+            "home.ledger_rows", "capacita.disciplines",
+        ):
+            self.assertNotIn(f'data-ed-list-path="{path}"', body,
+                             f"Non-mutable list '{path}' leaked repeater markup.")
+
     def test_editor_renders_data_ed_page_metadata(self):
         """A.2.5: GET editor must expose page-aware group attributes
         so the JS can route iframe navigation on focus."""
