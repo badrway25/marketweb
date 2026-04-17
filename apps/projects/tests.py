@@ -1473,6 +1473,98 @@ class FoundationModelTests(TestCase):
         vertex_groups = iter_groups(arc)
         self.assertEqual(len(vertex_groups), 32)
 
+    # ------------------------------------------------------------------
+    # A.7 · Multi-locale editor — Step 0 contract
+    # ------------------------------------------------------------------
+
+    def test_a7_vertex_text_field_is_translatable(self):
+        """Scalar copy fields on Vertex — headline, intro, eyebrow, CTA
+        labels — must be flagged translatable so Step 1 routes them into
+        by_locale overlays."""
+        from apps.editor.schema import is_translatable
+        arc = "agency-creative-studio"
+        for path in ("home.headline", "home.eyebrow",
+                     "studio.standfirst", "manifesto.standfirst",
+                     "site.tag", "site.availability",
+                     "site.hours_compact", "site.footer_intro"):
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on Vertex",
+            )
+
+    def test_a7_vertex_branding_and_contact_universals_are_global(self):
+        """Logo + per-row universals (phone, email, address, license,
+        logo_initial) stay global even though they are text-typed —
+        identity and contact data don't change per language."""
+        from apps.editor.schema import is_translatable
+        arc = "agency-creative-studio"
+        for path in ("site.logo_word", "site.phone", "site.email",
+                     "site.address", "site.license"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on Vertex",
+            )
+
+    def test_a7_vertex_non_text_fields_are_global(self):
+        """Image · URL · select · color · font fields are always global —
+        only text/textarea/richtext can be flagged translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "agency-creative-studio"
+        self.assertFalse(is_translatable(arc, "home.cover.image"))          # image
+        self.assertFalse(is_translatable(arc, "site.inquiry_page_slug"))    # select
+
+    def test_a7_vertex_repeater_cells_are_global(self):
+        """Repeater row content stays global — the A.7 first wave freezes
+        both baseline-indexed cells and added-row uid cells out of the
+        multi-locale overlay. Translatable repeater row copy is a later
+        phase if customer demand emerges."""
+        from apps.editor.schema import is_translatable
+        arc = "agency-creative-studio"
+        # Baseline-indexed cell (text-typed inside studio.facts list)
+        self.assertFalse(is_translatable(arc, "studio.facts.0.label"))
+        # Added-row uid cell on a mutable list
+        self.assertFalse(is_translatable(arc, "studio.partners.a0.name"))
+        # Bare list root path — not a scalar field either way
+        self.assertFalse(is_translatable(arc, "studio.facts"))
+
+    def test_a7_pragma_is_not_multilocale_enabled_in_first_wave(self):
+        """A.7 ships Vertex only. Pragma copy must classify as global for
+        every path until A.7b opts it in — protects the overlay shape
+        from leaking into a second archetype prematurely."""
+        from apps.editor.schema import is_translatable, supported_locales
+        arc = "corporate-suite"
+        # Even clearly-copy paths must return False on Pragma
+        for path in ("home.headline", "home.eyebrow",
+                     "chi-siamo.intro", "competenze.headline"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} on Pragma must stay global in A.7 first wave",
+            )
+        self.assertEqual(supported_locales(arc), [])
+
+    def test_a7_supported_locales_for_vertex_returns_canonical_five(self):
+        """supported_locales is the contract Step 2 + editor_ctx will
+        consume to render the sidebar pill strip. Vertex — the first
+        enrolled archetype — returns exactly it/en/fr/es/ar."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("agency-creative-studio"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Unknown archetype returns empty list, never raises.
+        self.assertEqual(supported_locales("fine-dining"), [])
+
+    def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
+        """Defensive contract: unknown paths and archetypes return False
+        cleanly instead of raising — the helper is consulted from hot
+        paths in autosave + rendering, it must never error on stale
+        input."""
+        from apps.editor.schema import is_translatable
+        self.assertFalse(is_translatable("agency-creative-studio",
+                                          "nowhere.not.real"))
+        self.assertFalse(is_translatable("no-such-archetype",
+                                          "home.headline"))
+
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)
