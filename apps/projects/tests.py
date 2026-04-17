@@ -1522,6 +1522,51 @@ class FoundationHttpTests(TestCase):
         self.assertFalse(data["ok"])
         self.assertEqual(data["limit_bytes"], 2 * 1024 * 1024)
 
+    def test_a4_uploaded_image_persists_across_reload_and_publish(self):
+        """A.4 cross-cutting lock — upload → write URL into image field →
+        reopen editor → publish → public preview of another viewer:
+        the uploaded /media/... URL must survive every hop without
+        being rewritten or lost.
+        """
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        # 1. Create a fresh project + upload via the service layer
+        #    (the endpoint is already covered by the HTTP happy-path
+        #    test; here we focus on the downstream persistence).
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        png = self._make_png_bytes_http()
+        f = SimpleUploadedFile("portrait.png", png, content_type="image/png")
+        r = self.client.post(f"/projects/{p.uuid}/assets/upload/", {"file": f})
+        self.assertEqual(r.status_code, 200)
+        uploaded_url = r.json()["url"]
+        self.assertTrue(uploaded_url.startswith("/media/project-assets/"))
+
+        # 2. Write the URL into a real image field via the autosave
+        #    endpoint so the full validate_value pipeline runs.
+        r2 = self.client.post(
+            f"/projects/{p.uuid}/autosave/",
+            data='{"content":{"studio.partners.0.portrait":"' + uploaded_url + '"},"tokens":{}}',
+            content_type="application/json",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(r2.status_code, 200)
+        self.assertTrue(r2.json()["ok"])
+
+        # 3. Reopen editor — the URL must prefill the field input.
+        r3 = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r3.status_code, 200)
+        self.assertIn(uploaded_url, r3.content.decode("utf-8", "ignore"))
+
+        # 4. Publish + another (logged-in) viewer requests the live
+        #    preview — uploaded URL must appear in the rendered HTML.
+        services.publish_project(project=p, editor=self.owner)
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        r4 = self.client.get(
+            f"/templates/agency/vertex-creative-agency/preview/studio/?project={p.uuid}"
+        )
+        self.assertEqual(r4.status_code, 200)
+        self.assertIn(uploaded_url, r4.content.decode("utf-8", "ignore"))
+
     def test_a3c_editor_markup_exposes_repeater_affordances_only_on_mutable(self):
         """A.3c polish — cross-cutting integration: the editor HTTP
         response must emit the `data-ed-mutable="1"` + `[data-ed-list-path]`
