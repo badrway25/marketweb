@@ -1567,6 +1567,43 @@ class FoundationHttpTests(TestCase):
         self.assertEqual(r4.status_code, 200)
         self.assertIn(uploaded_url, r4.content.decode("utf-8", "ignore"))
 
+    def test_a4_uploaded_image_persists_on_home_cover_image_field(self):
+        """A.4 complementary lock — the persistence contract must hold
+        on BOTH image fields in the schema, not only the portrait one
+        already covered by
+        test_a4_uploaded_image_persists_across_reload_and_publish.
+
+        ``home.cover.image`` is a different path shape (dict-nested on
+        the home page, not a repeater dict column) so it exercises a
+        distinct branch of the rendering pipeline. One end-to-end hop
+        is enough: upload → autosave → public preview of home.
+        """
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        png = self._make_png_bytes_http()
+        f = SimpleUploadedFile("cover.png", png, content_type="image/png")
+        r = self.client.post(f"/projects/{p.uuid}/assets/upload/", {"file": f})
+        self.assertEqual(r.status_code, 200)
+        uploaded_url = r.json()["url"]
+
+        r2 = self.client.post(
+            f"/projects/{p.uuid}/autosave/",
+            data='{"content":{"home.cover.image":"' + uploaded_url + '"},"tokens":{}}',
+            content_type="application/json",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(r2.status_code, 200)
+        self.assertTrue(r2.json()["ok"])
+
+        services.publish_project(project=p, editor=self.owner)
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        r3 = self.client.get(
+            f"/templates/agency/vertex-creative-agency/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r3.status_code, 200)
+        self.assertIn(uploaded_url, r3.content.decode("utf-8", "ignore"))
+
     def test_a3c_editor_markup_exposes_repeater_affordances_only_on_mutable(self):
         """A.3c polish — cross-cutting integration: the editor HTTP
         response must emit the `data-ed-mutable="1"` + `[data-ed-list-path]`
