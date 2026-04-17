@@ -2580,6 +2580,54 @@ class FoundationHttpTests(TestCase):
         keys = set(p.content_overrides.values_list("key_path", flat=True))
         self.assertIn("@it:home.headline", keys)
 
+    # ------------------------------------------------------------------
+    # A.7 · Step 3 — editor UI wiring (markup contract)
+    # ------------------------------------------------------------------
+
+    def test_a7_step3_translatable_field_renders_per_lingua_badge(self):
+        """Translatable content fields must render the per-lingua marker
+        + data-ed-translatable flag. Global fields must NOT — the
+        customer needs a visual cue to tell them apart."""
+        import re as _re
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/?lang=en")
+        body = r.content.decode("utf-8", "ignore")
+        # Translatable field: opening <div class="ed-field ..."> must
+        # carry is-translatable + data-ed-translatable, and the next ~600
+        # chars (head region) must contain the per-lingua label.
+        translatable_open = _re.search(
+            r'<div class="ed-field([^"]*)"[^>]*data-ed-key="home\.headline"[^>]*>',
+            body,
+        )
+        self.assertIsNotNone(translatable_open, "home.headline field not rendered")
+        self.assertIn('is-translatable', translatable_open.group(1))
+        self.assertIn('data-ed-translatable="1"', translatable_open.group(0))
+        head_window = body[translatable_open.end():translatable_open.end() + 600]
+        self.assertIn('per lingua', head_window)
+        # Global field: opening div must NOT carry the translatable
+        # flags, and the next 400 chars must NOT contain the badge text.
+        global_open = _re.search(
+            r'<div class="ed-field([^"]*)"[^>]*data-ed-key="site\.logo_word"[^>]*>',
+            body,
+        )
+        self.assertIsNotNone(global_open, "site.logo_word field not rendered")
+        self.assertNotIn('is-translatable', global_open.group(1))
+        self.assertNotIn('data-ed-translatable', global_open.group(0))
+        head_global = body[global_open.end():global_open.end() + 400]
+        self.assertNotIn('per lingua', head_global)
+
+    def test_a7_step3_locale_switcher_label_signals_edit_and_preview(self):
+        """With multi-locale enrolled, the sidebar header must read
+        "Lingua attiva" (edit+preview) rather than "Lingua anteprima"
+        (preview-only) — signal that the switch changes what you edit."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("Lingua attiva", body)
+        self.assertIn('data-ed-lang="it"', body)
+        self.assertIn('data-ed-lang="en"', body)
+        self.assertIn('data-ed-lang="ar"', body)
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns

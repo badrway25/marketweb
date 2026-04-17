@@ -93,8 +93,11 @@
       </div>
 
       {% if locale_switcher %}
-      <div class="ed-sidebar-lang" aria-label="Lingua dell'anteprima">
-        <span class="ed-lang-label"><i class="bi bi-translate"></i> Lingua anteprima</span>
+      <div class="ed-sidebar-lang" aria-label="Lingua attiva">
+        <span class="ed-lang-label">
+          <i class="bi bi-translate"></i>
+          {% if supported_locales %}Lingua attiva{% else %}Lingua anteprima{% endif %}
+        </span>
         <div class="ed-lang-pills" role="tablist">
           {% for entry in locale_switcher %}
             <button type="button"
@@ -102,7 +105,7 @@
                     data-ed-lang="{{ entry.code }}"
                     lang="{{ entry.code }}"
                     {% if entry.code == 'ar' %}dir="rtl"{% endif %}
-                    title="{{ entry.label }}">{{ entry.badge }}</button>
+                    title="{% if supported_locales %}Modifica in {{ entry.label }} · le modifiche pendenti vengono salvate prima dello switch{% else %}{{ entry.label }}{% endif %}">{{ entry.badge }}</button>
           {% endfor %}
         </div>
       </div>
@@ -327,6 +330,11 @@
       initialPage: "home",
       csrfToken:   document.querySelector('input[name=csrfmiddlewaretoken]').value,
       justCreated: {{ just_created|yesno:"true,false" }},
+      // A.7 Step 3 — client-side locale state mirrors the server-rendered
+      // active_locale so the pill switcher + autosave tag (``locale`` in
+      // the JSON body) start coherent with the URL's ``?lang=`` param.
+      currentLocale: "{{ active_locale|default:current_locale|default:'it'|escapejs }}",
+      supportedLocales: [{% for code in supported_locales %}"{{ code|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
     };
   </script>
   <script src="{% static 'editor/live-editor.js' %}" defer></script>
