@@ -713,6 +713,11 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
                 ("label", {"label": "Etichetta", "type": "text", "max_length": 40}),
                 ("value", {"label": "Valore",    "type": "text", "max_length": 100}),
             ],
+            # A.3c — widen. min=1 allows an email-only studio; max=10
+            # keeps the sidebar channels block readable.
+            "mutable": True,
+            "min_rows": 1,
+            "max_rows": 10,
         },
     },
 }
