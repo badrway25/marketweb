@@ -797,6 +797,243 @@ MEDICAL_SPECIALIST_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# A.10 · Lex (classic-gold archetype · law family) schema
+# ---------------------------------------------------------------------------
+#
+# Fifth editable archetype. Single-template archetype (lex-studio-legale only).
+# Juris (modern-transparent) is a separate archetype and will be enrolled as
+# A.10b in its own phase — the A.9 shared-schema recipe does NOT apply here
+# because the two law templates carry distinct DNA + distinct skin folders +
+# distinct page slug sets. See A.10 Planning Session for the audit evidence.
+#
+# Shape notes from Step 0 audit:
+#   • 5-locale parity: PERFECT across every section (pages · top-level keys ·
+#     every section's key-set identical cross-locale). Zero IT-only gaps on
+#     contatti.form_fields / form_sections / upload_field (cleaner than Gusto
+#     and specialist).
+#   • Single scalar image field: notabili.lead_image (blog index hero). No
+#     portrait fields anywhere — Lex lawyers + partners dicts do NOT carry
+#     portrait URLs in the registry, so the portrait-excluded pattern used in
+#     Gusto produttori.items and specialist medici.doctors is not needed here.
+#   • RTL CSS block already mature in `classic-gold/_base.html` (lines 331+).
+#     Skin uses `.lx-*` selectors (NOT `.cg-*`).
+#   • Form structure blocks (contatti.form_fields · form_sections ·
+#     upload_field) stay OUT of the whitelist — same policy as Gusto /
+#     specialist. Their authored values keep rendering unchanged.
+#   • pratiche.services[*].scope is a `list[str]` inside the dict (bullet
+#     points). Omitted from the dict shape `cols` so the registry value keeps
+#     rendering — only scalar cols exposed.
+
+LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".lx-nav, .lx-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "studio", "tagline", "foro", "insegna"],
+        "help": "Nome studio, iniziale crest e tagline istituzionale.",
+        "fields": [
+            ("site.logo_word",    {"label": "Nome studio", "type": "text", "max_length": 60,
+                                    "placeholder": "Studio Legale Ferri"}),
+            ("site.logo_initial", {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",          {"label": "Tagline", "type": "text", "max_length": 100}),
+            ("site.nav_cta",      {"label": "CTA nav", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".lx-lead, .lx-hero",
+        "page": "home",
+        "keywords": ["hero", "apertura", "headline", "eyebrow", "intro", "cta", "credits"],
+        "help": "Primo scroll della home: eyebrow, headline, intro, CTA principali, credits direzione.",
+        "fields": [
+            ("home.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("home.headline",            {"label": "Headline", "type": "richtext", "max_length": 220,
+                                           "help": "Consentiti i tag <em> per gli italici."}),
+            ("home.intro",               {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("home.primary_cta",         {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("home.primary_href",        {"label": "CTA primaria · destinazione", "type": "select",
+                                           "choices": ["home", "studio", "pratiche", "avvocati",
+                                                       "notabili", "contatti"]}),
+            ("home.secondary_cta",       {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+            ("home.secondary_href",      {"label": "CTA secondaria · destinazione", "type": "select",
+                                           "choices": ["home", "studio", "pratiche", "avvocati",
+                                                       "notabili", "contatti"]}),
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".lx-section, .lx-cta-band",
+        "page": "home",
+        "keywords": ["pratiche", "partners", "pubblicazioni", "stats", "cta"],
+        "help": "Label, eyebrow e intro delle fasce home (pratiche, partners, pubblicazioni, stats, CTA finale).",
+        "fields": [
+            ("home.practice_label",       {"label": "Pratiche · eyebrow", "type": "text", "max_length": 80}),
+            ("home.practice_heading",     {"label": "Pratiche · titolo", "type": "richtext", "max_length": 220}),
+            ("home.practice_intro",       {"label": "Pratiche · intro", "type": "textarea", "max_length": 500}),
+            ("home.partners_label",       {"label": "Partners · eyebrow", "type": "text", "max_length": 80}),
+            ("home.partners_heading",     {"label": "Partners · titolo", "type": "richtext", "max_length": 220}),
+            ("home.partners_intro",       {"label": "Partners · intro", "type": "textarea", "max_length": 500}),
+            ("home.publications_label",   {"label": "Pubblicazioni · eyebrow", "type": "text", "max_length": 80}),
+            ("home.stats_label",          {"label": "Stats · eyebrow", "type": "text", "max_length": 80}),
+            ("home.stats_heading",        {"label": "Stats · titolo", "type": "richtext", "max_length": 220}),
+            ("home.cta_label",            {"label": "CTA finale · eyebrow", "type": "text", "max_length": 80}),
+            ("home.cta_heading",          {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("home.cta_intro",            {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("home.cta_primary",          {"label": "CTA finale · primario", "type": "text", "max_length": 60}),
+            ("home.cta_primary_href",     {"label": "CTA finale · destinazione primaria", "type": "select",
+                                            "choices": ["home", "studio", "pratiche", "avvocati",
+                                                        "notabili", "contatti"]}),
+            ("home.cta_secondary",        {"label": "CTA finale · secondario", "type": "text", "max_length": 60}),
+            ("home.cta_secondary_href",   {"label": "CTA finale · destinazione secondaria", "type": "select",
+                                            "choices": ["home", "studio", "pratiche", "avvocati",
+                                                        "notabili", "contatti"]}),
+        ],
+    },
+    {
+        "id": "studio_page",
+        "label": "Pagina Studio",
+        "icon": "bi-building",
+        "region": ".lx-section",
+        "page": "studio",
+        "keywords": ["studio", "storia", "valori", "metodo", "sedi"],
+        "help": "Pagina Lo studio: storia, valori, metodo, CTA finale.",
+        "fields": [
+            ("studio.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("studio.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("studio.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("studio.history_label",    {"label": "Storia · eyebrow", "type": "text", "max_length": 80}),
+            ("studio.history_heading",  {"label": "Storia · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.history_intro",    {"label": "Storia · intro", "type": "textarea", "max_length": 500}),
+            ("studio.values_label",     {"label": "Valori · eyebrow", "type": "text", "max_length": 80}),
+            ("studio.values_heading",   {"label": "Valori · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.values_intro",     {"label": "Valori · intro", "type": "textarea", "max_length": 500}),
+            ("studio.coordinates_label", {"label": "Sedi · eyebrow", "type": "text", "max_length": 80}),
+            ("studio.cta_heading",      {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.cta_intro",        {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("studio.cta_primary",      {"label": "CTA · pulsante primario", "type": "text", "max_length": 60}),
+            ("studio.cta_primary_href", {"label": "CTA · destinazione", "type": "select",
+                                          "choices": ["home", "studio", "pratiche", "avvocati",
+                                                      "notabili", "contatti"]}),
+        ],
+    },
+    {
+        "id": "pratiche_page",
+        "label": "Pagina Pratiche",
+        "icon": "bi-briefcase",
+        "region": ".lx-section",
+        "page": "pratiche",
+        "keywords": ["pratiche", "aree", "servizi", "processo", "iter"],
+        "help": "Pagina aree di pratica: headline, intro, processo, etichette pratica.",
+        "fields": [
+            ("pratiche.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("pratiche.headline",            {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("pratiche.intro",               {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("pratiche.process_label",       {"label": "Processo · eyebrow", "type": "text", "max_length": 80}),
+            ("pratiche.process_heading",     {"label": "Processo · titolo", "type": "richtext", "max_length": 220}),
+            ("pratiche.svc_lead_label",      {"label": "Etichetta socio responsabile", "type": "text", "max_length": 60}),
+            ("pratiche.svc_jurisdiction_label", {"label": "Etichetta foro di riferimento", "type": "text", "max_length": 60}),
+            ("pratiche.cta_heading",         {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("pratiche.cta_intro",           {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("pratiche.cta_primary",         {"label": "CTA · pulsante", "type": "text", "max_length": 60}),
+            ("pratiche.cta_primary_href",    {"label": "CTA · destinazione", "type": "select",
+                                               "choices": ["home", "studio", "pratiche", "avvocati",
+                                                           "notabili", "contatti"]}),
+        ],
+    },
+    {
+        "id": "avvocati_page",
+        "label": "Pagina Avvocati",
+        "icon": "bi-people",
+        "region": ".lx-section",
+        "page": "avvocati",
+        "keywords": ["avvocati", "team", "soci", "collaboratori", "foro", "specializzazione"],
+        "help": "Pagina team: intro + etichette colonne lista avvocati.",
+        "fields": [
+            ("avvocati.eyebrow",                     {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("avvocati.headline",                    {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("avvocati.intro",                       {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("avvocati.lawyer_foro_label",           {"label": "Etichetta Foro", "type": "text", "max_length": 40}),
+            ("avvocati.lawyer_specialization_label", {"label": "Etichetta Specializzazione", "type": "text", "max_length": 60}),
+            ("avvocati.lawyer_year_label",           {"label": "Etichetta Iscrizione", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "notabili_page",
+        "label": "Pagina Notabili (blog index)",
+        "icon": "bi-journal-richtext",
+        "region": ".lx-section",
+        "page": "notabili",
+        "keywords": ["notabili", "cause", "pubblicazioni", "blog"],
+        "help": "Pagina-indice cause notabili. I singoli post restano da registry.",
+        "fields": [
+            ("notabili.eyebrow",    {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("notabili.headline",   {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("notabili.intro",      {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("notabili.lead_image", {"label": "Immagine di testata", "type": "image", "max_length": 400}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-telephone",
+        "region": ".lx-section",
+        "page": "contatti",
+        "keywords": ["contatti", "contact", "modulo", "sedi", "canali"],
+        "help": "Pagina contatti: copy + titoli form + etichette campi indirizzi. Struttura form e upload field restano da registry.",
+        "fields": [
+            ("contatti.eyebrow",              {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("contatti.headline",             {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",                {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("contatti.footnote",             {"label": "Footnote piè pagina", "type": "textarea", "max_length": 500}),
+            ("contatti.channels_label",       {"label": "Canali · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.offices_label",        {"label": "Sedi · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.form_label",           {"label": "Form · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.form_heading",         {"label": "Form · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.form_intro",           {"label": "Form · intro", "type": "textarea", "max_length": 400}),
+            ("contatti.form_submit_label",    {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("contatti.form_submit_note",     {"label": "Form · nota submit", "type": "textarea", "max_length": 300}),
+            ("contatti.office_address_label", {"label": "Etichetta Indirizzo", "type": "text", "max_length": 40}),
+            ("contatti.office_area_label",    {"label": "Etichetta Zona", "type": "text", "max_length": 40}),
+            ("contatti.office_phone_label",   {"label": "Etichetta Telefono", "type": "text", "max_length": 40}),
+            ("contatti.office_email_label",   {"label": "Etichetta Email", "type": "text", "max_length": 40}),
+            ("contatti.office_hours_label",   {"label": "Etichetta Orario", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "contact_info",
+        "label": "Contatti · footer",
+        "icon": "bi-telephone-forward",
+        "region": ".lx-foot",
+        "page": "*",
+        "keywords": ["footer", "phone", "email", "indirizzo", "orari", "licenza", "casi"],
+        "help": "Dati di contatto visibili in footer + etichette case summary (lead/outcome/practice/year).",
+        "fields": [
+            ("site.phone",                {"label": "Telefono", "type": "text", "max_length": 40}),
+            ("site.email",                {"label": "Email", "type": "text", "max_length": 80}),
+            ("site.address",              {"label": "Indirizzo sede primaria", "type": "text", "max_length": 120}),
+            ("site.hours_compact",        {"label": "Orari sintetici", "type": "text", "max_length": 80}),
+            ("site.license",              {"label": "Licenza / Albo", "type": "text", "max_length": 120}),
+            ("site.footer_intro",         {"label": "Intro footer", "type": "textarea", "max_length": 400}),
+            ("site.case_lead_label",      {"label": "Case · etichetta Patrocinio", "type": "text", "max_length": 40}),
+            ("site.case_outcome_label",   {"label": "Case · etichetta Esito", "type": "text", "max_length": 40}),
+            ("site.case_practice_label",  {"label": "Case · etichetta Pratica", "type": "text", "max_length": 40}),
+            ("site.case_year_label",      {"label": "Case · etichetta Anno", "type": "text", "max_length": 40}),
+            ("site.foot_contact",         {"label": "Footer · titolo Contatti", "type": "text", "max_length": 40}),
+            ("site.foot_offices",         {"label": "Footer · titolo Sedi", "type": "text", "max_length": 40}),
+            ("site.foot_pages",           {"label": "Footer · titolo Pagine", "type": "text", "max_length": 40}),
+            ("site.foot_studio",          {"label": "Footer · titolo Studio", "type": "text", "max_length": 40}),
+        ],
+    },
+]
+
+
 AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -1606,6 +1843,106 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # A.10 · Lex classic-gold — 6 readonly indexed lists. No portrait column
+    # appears in ``avvocati.lawyers`` or ``home.partners`` in this registry
+    # (Lex doesn't ship lawyer portraits) so no col-exclusion is needed here.
+    # The `scope` nested-list-of-str inside ``pratiche.services`` rows stays
+    # registry-only: it's a list of bullet points, not a scalar — the dict
+    # shape `cols` enumerates only the 5 text-typed scalars.
+    "classic-gold": {
+        "avvocati.lawyers": {
+            "kind": "dict",
+            "page": "avvocati",
+            "label": "Avvocati · Team",
+            "icon": "bi-people",
+            "region": ".lx-lawyers",
+            "keywords": ["avvocati", "team", "foro", "specializzazione"],
+            "cols": [
+                ("name",           {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",           {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("specialization", {"label": "Specializzazione", "type": "text", "max_length": 160}),
+                ("foro",           {"label": "Foro", "type": "text", "max_length": 80}),
+                ("year",           {"label": "Iscrizione", "type": "text", "max_length": 120}),
+                ("bio",            {"label": "Biografia", "type": "textarea", "max_length": 800}),
+            ],
+        },
+        "pratiche.services": {
+            "kind": "dict",
+            "page": "pratiche",
+            "label": "Pratiche · Aree di pratica",
+            "icon": "bi-briefcase",
+            "region": ".lx-services",
+            "keywords": ["pratiche", "aree", "servizi", "competenze"],
+            "cols": [
+                ("num",          {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",        {"label": "Titolo area", "type": "text", "max_length": 80}),
+                ("blurb",        {"label": "Descrizione", "type": "textarea", "max_length": 600}),
+                ("lead",         {"label": "Socio responsabile", "type": "text", "max_length": 120}),
+                ("jurisdiction", {"label": "Foro di riferimento", "type": "text", "max_length": 120}),
+                # scope (list of str bullet points) intenzionalmente omesso:
+                # resta readonly al registry.
+            ],
+        },
+        "pratiche.process": {
+            "kind": "tuple",
+            "page": "pratiche",
+            "label": "Pratiche · Iter mandato",
+            "icon": "bi-list-ol",
+            "region": ".lx-process",
+            "keywords": ["processo", "iter", "fasi", "mandato"],
+            "tuple_order": ["num", "title", "body"],
+            "cols": [
+                ("num",   {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo fase", "type": "text", "max_length": 80}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "studio.history": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Cronologia",
+            "icon": "bi-clock-history",
+            "region": ".lx-history",
+            "keywords": ["storia", "timeline", "tappe", "cronologia"],
+            "tuple_order": ["year", "title", "body"],
+            "cols": [
+                ("year",  {"label": "Anno", "type": "text", "max_length": 12}),
+                ("title", {"label": "Titolo", "type": "text", "max_length": 80}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "studio.values": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Principi",
+            "icon": "bi-check2-square",
+            "region": ".lx-values",
+            "keywords": ["valori", "principi", "impegni", "regole"],
+            "tuple_order": ["num", "title", "body"],
+            "cols": [
+                ("num",   {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo principio", "type": "text", "max_length": 80}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "contatti.offices": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Sedi",
+            "icon": "bi-geo-alt",
+            "region": ".lx-offices",
+            "keywords": ["sedi", "offices", "indirizzo", "telefono"],
+            "cols": [
+                ("city",    {"label": "Città", "type": "text", "max_length": 80}),
+                ("tag",     {"label": "Etichetta sede", "type": "text", "max_length": 60}),
+                ("address", {"label": "Indirizzo", "type": "text", "max_length": 160}),
+                ("area",    {"label": "Zona", "type": "text", "max_length": 120}),
+                ("phone",   {"label": "Telefono", "type": "text", "max_length": 40}),
+                ("email",   {"label": "Email", "type": "text", "max_length": 80}),
+                ("hours",   {"label": "Orari", "type": "text", "max_length": 120}),
+            ],
+        },
+    },
 }
 
 
@@ -1622,6 +1959,7 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # lengths the sidebar uses when materializing indexed groups. Derm
     # shares exactly the same shape and gets editable "for free".
     "specialist":             ("cardio-studio-specialistico", "it"),
+    "classic-gold":           ("lex-studio-legale",          "it"),
 }
 
 
@@ -1634,6 +1972,7 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     "corporate-suite":        PRAGMA_CORPORATE_SUITE_SCHEMA,
     "fine-dining":            GUSTO_FINE_DINING_SCHEMA,
     "specialist":             MEDICAL_SPECIALIST_SCHEMA,
+    "classic-gold":           LEX_CLASSIC_GOLD_SCHEMA,
 }
 
 
@@ -2112,6 +2451,13 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # ``test_a9_derm_full_multilocale_lifecycle_end_to_end`` so each
     # template of the pair gets dedicated regression coverage.
     "specialist",
+    # A.10 · Lex (classic-gold archetype · law family · single template)
+    # joins editor + multi-locale in a single phase. Juris (modern-
+    # transparent) stays out and is the subject of a separate A.10b
+    # enrollment — the two law templates carry distinct DNA + distinct
+    # skin folders so the A.9 shared-schema recipe does NOT apply.
+    # Gated by ``test_a10_lex_full_multilocale_lifecycle_end_to_end``.
+    "classic-gold",
 })
 
 

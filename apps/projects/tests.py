@@ -2051,6 +2051,206 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A9 Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.10 · Lex (classic-gold archetype · law family) enrollment
+    # ------------------------------------------------------------------
+
+    def test_a10_lex_archetype_registered(self):
+        """``classic-gold`` joins the schema + baseline template + gate
+        registries. Juris (``modern-transparent``) stays out — it is a
+        distinct archetype and will be enrolled separately as A.10b."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("classic-gold", _ARCHETYPE_SCHEMAS)
+        self.assertEqual(
+            _ARCHETYPE_BASELINE_TEMPLATE["classic-gold"],
+            ("lex-studio-legale", "it"),
+        )
+        self.assertIn("classic-gold", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("classic-gold"))
+        # Juris / modern-transparent NOT enrolled in A.10 — guard against a
+        # future accidental enrollment without its own dedicated phase.
+        self.assertNotIn("modern-transparent", _ARCHETYPE_SCHEMAS)
+        self.assertNotIn("modern-transparent", _MULTILOCALE_ENABLED_ARCHETYPES)
+
+    def test_a10_lex_schema_shape_covers_all_pages(self):
+        """The Lex schema must surface groups for every Lex page slug
+        (home + studio + pratiche + avvocati + notabili + contatti)
+        plus chrome-level groups (page='*')."""
+        groups = iter_groups("classic-gold")
+        self.assertGreaterEqual(len(groups), 9)
+        pages = {g.get("page") for g in groups}
+        for slug in ("*", "home", "studio", "pratiche", "avvocati",
+                     "notabili", "contatti"):
+            self.assertIn(slug, pages,
+                          f"Lex schema missing page slug {slug!r}")
+
+    def test_a10_lex_is_translatable_text_fields(self):
+        """Scalar copy fields distributed across every Lex page + chrome.
+        Uses only paths present on Lex so a future Juris enrollment
+        doesn't accidentally make this test drift."""
+        from apps.editor.schema import is_translatable
+        arc = "classic-gold"
+        distributed_paths = (
+            # home — hero + bands
+            "home.headline",
+            "home.intro",
+            "home.practice_heading",
+            "home.partners_heading",
+            "home.cta_heading",
+            # studio
+            "studio.intro",
+            "studio.history_heading",
+            "studio.values_heading",
+            # pratiche
+            "pratiche.headline",
+            "pratiche.process_heading",
+            # avvocati
+            "avvocati.intro",
+            "avvocati.lawyer_foro_label",
+            # notabili
+            "notabili.headline",
+            # contatti
+            "contatti.intro",
+            "contatti.form_heading",
+            "contatti.footnote",
+            # chrome site.* customer-copy universals
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+            "site.case_lead_label",
+            "site.foot_studio",
+            "site.nav_cta",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on classic-gold",
+            )
+
+    def test_a10_lex_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Lex — same contract
+        as Vertex / Pragma / Gusto / specialist."""
+        from apps.editor.schema import is_translatable
+        arc = "classic-gold"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on Lex",
+            )
+
+    def test_a10_lex_non_text_fields_are_global(self):
+        """Image + select fields on Lex always stay global."""
+        from apps.editor.schema import is_translatable
+        arc = "classic-gold"
+        # Scalar image field (Lex ships exactly one: notabili.lead_image)
+        self.assertFalse(is_translatable(arc, "notabili.lead_image"))
+        # Select (page-slug choice) fields
+        self.assertFalse(is_translatable(arc, "home.primary_href"))
+        self.assertFalse(is_translatable(arc, "home.secondary_href"))
+        self.assertFalse(is_translatable(arc, "home.cta_primary_href"))
+        self.assertFalse(is_translatable(arc, "home.cta_secondary_href"))
+        self.assertFalse(is_translatable(arc, "studio.cta_primary_href"))
+        self.assertFalse(is_translatable(arc, "pratiche.cta_primary_href"))
+
+    def test_a10_lex_structured_list_cells_are_global(self):
+        """The 6 readonly indexed lists on Lex stay global at cell level.
+        Lex ships no portrait fields anywhere in the registry, so no
+        col-exclusion is required (unlike Gusto produttori.items and
+        specialist medici.doctors). The ``scope`` nested list-of-str
+        inside ``pratiche.services`` rows is intentionally NOT exposed
+        in the dict shape cols — stays registry-only."""
+        from apps.editor.schema import is_translatable, get_list_shape
+        arc = "classic-gold"
+        for path in ("avvocati.lawyers.0.name",
+                     "avvocati.lawyers.13.bio",
+                     "pratiche.services.0.title",
+                     "pratiche.services.0.blurb",
+                     "pratiche.services.11.jurisdiction",
+                     "pratiche.process.0.title",
+                     "studio.history.0.title",
+                     "studio.values.0.body",
+                     "contatti.offices.0.city",
+                     "contatti.offices.1.phone"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Lex",
+            )
+        # pratiche.services: `scope` (list-of-str bullet points) must NOT
+        # appear in the dict shape cols (bullet points stay registry-only).
+        services_shape = get_list_shape(arc, "pratiche.services")
+        self.assertIsNotNone(services_shape)
+        col_names = {name for name, _spec in (services_shape.get("cols") or [])}
+        self.assertNotIn("scope", col_names,
+                         "classic-gold pratiche.services must NOT expose scope as an editable col")
+
+    def test_a10_lex_supported_locales_returns_canonical_five(self):
+        """Lex ships the canonical 5-locale set, same as Vertex / Pragma
+        / Gusto / specialist. Lex is the cleanest content registry
+        audited so far — zero IT-only parity gaps even on form_fields /
+        form_sections / upload_field."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("classic-gold"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a10_quadruple_regression_after_lex_joins(self):
+        """Regression guard: adding Lex to gate + schemas must not
+        disturb ANY of the four pre-existing enrollments (Vertex +
+        Pragma + Gusto + specialist)."""
+        from apps.editor.schema import is_translatable, supported_locales
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist"):
+            self.assertTrue(
+                is_translatable(arc, "home.headline"),
+                f"{arc} home.headline must stay translatable",
+            )
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must keep the canonical 5-locale set",
+            )
+
+    def test_a10_lex_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.8/A.9 integration guardrail — the Lex
+        ``classic-gold/_base.html`` must integrate the three bridge
+        points together: (1) preview-bridge.js conditional on
+        ``preview_project``, (2) ``<title>`` honors ``site.logo_word``,
+        (3) ``<body>`` carries the ``mw-is-editor-preview`` guard class
+        when inside the editor."""
+        lex = WebTemplate.objects.get(slug="lex-studio-legale")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/lawyer/lex-studio-legale/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=lex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A10 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/lawyer/lex-studio-legale/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A10 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -3892,6 +4092,185 @@ class FoundationHttpTests(TestCase):
             marker="A9Derm",
             brand="A9DermBrand",
         )
+
+    # ------------------------------------------------------------------
+    # A.10 · Step 2 — Lex (classic-gold) lifecycle HTTP cross-cutting
+    # ------------------------------------------------------------------
+
+    def test_a10_lex_full_multilocale_lifecycle_end_to_end(self):
+        """Mirror of the A.7b Pragma / A.8 Gusto / A.9 specialist-single
+        lifecycle, adapted to Lex (classic-gold archetype · law family).
+
+        1. customer edits IT / EN / FR on a Lex translatable path
+        2. customer edits a global path (site.logo_word)
+        3. unedited locales (ES · AR) fall back to the authored registry —
+           NEVER to another locale's customer override
+        4. project publishes · second user visits every public preview
+           locale and sees the correct content
+        5. owner reopens the editor per locale and the sidebar prefill
+           matches the buffer for that locale.
+
+        AR response head must carry ``<html dir="rtl" lang="ar">`` so the
+        Step 3 browser walk inherits a green baseline for RTL on the
+        ``.lx-*`` skin. Juris (modern-transparent) is NOT exercised
+        here — it belongs to A.10b.
+        """
+        import json as _json
+        lex = WebTemplate.objects.get(slug="lex-studio-legale")
+        p = services.create_project_from_template(owner=self.owner, template=lex)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global ──────────
+        for locale, headline in (
+            ("it", "Uno studio <em>di lungo corso</em> (A10Lex IT)."),
+            ("en", "A firm <em>built to endure</em> (A10Lex EN)."),
+            ("fr", "Un cabinet <em>qui dure</em> (A10Lex FR)."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        # Global edit — locale tag on the request is ignored because
+        # site.logo_word is classified global.
+        r = autosave("en", {"site.logo_word": "A10LexBrand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # Storage keys: three @<locale>:home.headline + one plain
+        # site.logo_word. No plain-key leak, no global→locale leak.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+
+        # ── 3. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 4. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale):
+            url = (
+                f"/templates/lawyer/lex-studio-legale/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render — IT override visible, EN/FR markers absent.
+        body_it = preview_body("it")
+        self.assertIn("di lungo corso", body_it)
+        self.assertIn("(A10Lex IT)", body_it)
+        self.assertNotIn("(A10Lex EN)", body_it)
+        self.assertNotIn("(A10Lex FR)", body_it)
+        self.assertIn("A10LexBrand", body_it)
+
+        # EN render — EN override visible, IT/FR markers absent.
+        body_en = preview_body("en")
+        self.assertIn("built to endure", body_en)
+        self.assertIn("(A10Lex EN)", body_en)
+        self.assertNotIn("(A10Lex IT)", body_en)
+        self.assertNotIn("(A10Lex FR)", body_en)
+        self.assertIn("A10LexBrand", body_en)
+
+        # FR render — FR override visible.
+        body_fr = preview_body("fr")
+        self.assertIn("qui dure", body_fr)
+        self.assertIn("(A10Lex FR)", body_fr)
+        self.assertNotIn("(A10Lex IT)", body_fr)
+        self.assertNotIn("(A10Lex EN)", body_fr)
+        self.assertIn("A10LexBrand", body_fr)
+
+        # Unedited locales — authored fallback + global logo universal.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("(A10Lex IT)", body)
+            self.assertNotIn("(A10Lex EN)", body)
+            self.assertNotIn("(A10Lex FR)", body)
+            self.assertIn("A10LexBrand", body)
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Lex",
+                )
+
+        # AR preview — `.lx-*` skin must emit ``<html dir="rtl" lang="ar">``.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 5. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_headline_field(groups):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == "home.headline":
+                        return f
+            self.fail("home.headline field missing from Lex editor groups")
+
+        for locale, expected_substring in (
+            ("it", "di lungo corso"),
+            ("en", "built to endure"),
+            ("fr", "qui dure"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_headline_field(r.context["groups"])
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_headline_field(r_es.context["groups"])
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+        # Global field: overridden universally, not translatable.
+        logo_field = None
+        for g in r_es.context["groups"]:
+            for f in g["fields"]:
+                if f["key"] == "site.logo_word":
+                    logo_field = f
+                    break
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Lex editor")
+        self.assertEqual(logo_field["value"], "A10LexBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
 
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
