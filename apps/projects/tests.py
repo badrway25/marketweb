@@ -2628,6 +2628,209 @@ class FoundationHttpTests(TestCase):
         self.assertIn('data-ed-lang="en"', body)
         self.assertIn('data-ed-lang="ar"', body)
 
+    # ------------------------------------------------------------------
+    # A.7 · Step 4 — cross-cutting lifecycle + regression guard
+    # ------------------------------------------------------------------
+
+    def test_a7_step4_vertex_full_multilocale_lifecycle_end_to_end(self):
+        """Single HTTP-level test locking the full customer path across
+        five locales on Vertex:
+
+        1. customer edits IT / EN / FR scalar translatable paths
+        2. customer edits a global path (site.logo_word)
+        3. unedited locales (ES · AR) must fall back to the authored
+           registry — never to another locale's customer override
+        4. project publishes · second user visits /preview/?lang=<code>
+           for every locale and sees exactly what the first customer
+           intended — zero cross-locale leak
+        5. owner reopens ``/editor/?lang=<code>`` and the sidebar
+           prefill matches the buffer for that locale.
+        """
+        import json as _json
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global ──────────
+        for locale, headline in (
+            ("it", "Idee che <em>resistono</em> (IT)."),
+            ("en", "Ideas that <em>endure</em> (EN)."),
+            ("fr", "Des idées qui <em>durent</em> (FR)."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        r = autosave("en", {"site.logo_word": "A7Brand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # Storage keys check: three @<locale>:home.headline rows +
+        # one plain site.logo_word row. No EN override bleeds into
+        # an IT key or vice versa.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertNotIn("home.headline", keys)       # no plain-key leak
+        self.assertNotIn("@en:site.logo_word", keys)  # no global→locale leak
+
+        # ── 3. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 4. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale):
+            url = (
+                f"/templates/agency/vertex-creative-agency/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render: IT override visible, EN/FR markers absent.
+        body_it = preview_body("it")
+        self.assertIn("resistono", body_it)
+        self.assertNotIn("endure (EN)", body_it)
+        self.assertNotIn("durent (FR)", body_it)
+        self.assertIn("A7Brand", body_it)
+
+        # EN render: EN override visible, IT/FR markers absent.
+        body_en = preview_body("en")
+        self.assertIn("endure", body_en)
+        self.assertIn("Ideas that", body_en)
+        self.assertNotIn("resistono (IT)", body_en)
+        self.assertNotIn("durent (FR)", body_en)
+        self.assertIn("A7Brand", body_en)
+
+        # FR render: FR override visible.
+        body_fr = preview_body("fr")
+        self.assertIn("durent", body_fr)
+        self.assertNotIn("resistono (IT)", body_fr)
+        self.assertNotIn("endure (EN)", body_fr)
+        self.assertIn("A7Brand", body_fr)
+
+        # Unedited locales — must fall back to the authored registry
+        # for the headline (no customer override leaks from IT/EN/FR)
+        # while still picking up the GLOBAL logo override.
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("resistono (IT)", body)
+            self.assertNotIn("endure (EN)", body)
+            self.assertNotIn("durent (FR)", body)
+            self.assertIn("A7Brand", body)
+            # Authored registry for the unedited locale must be present.
+            authored = (
+                template_content.get_content(p.source_template.slug, locale) or {}
+            )
+            authored_headline_bits = authored.get("home", {}).get("headline") or ""
+            # The authored headline may contain <em> tags; check a stable
+            # substring by stripping them first.
+            stable = authored_headline_bits.replace("<em>", "").replace("</em>", "")
+            # Pick a stable word fragment that survives the skin's render.
+            first_stable_word = stable.split()[0] if stable else ""
+            if first_stable_word:
+                self.assertIn(first_stable_word, body,
+                              f"{locale} authored fallback not visible")
+
+        # ── 5. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        for locale, expected_headline in (
+            ("it", "resistono"),
+            ("en", "Ideas that"),
+            ("fr", "durent"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            hero = next(g for g in r.context["groups"] if g["id"] == "hero")
+            headline_field = next(
+                f for f in hero["fields"] if f["key"] == "home.headline"
+            )
+            self.assertIn(
+                expected_headline, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        hero_es = next(g for g in r_es.context["groups"] if g["id"] == "hero")
+        headline_es = next(f for f in hero_es["fields"] if f["key"] == "home.headline")
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+        # Global field is still overridden universally.
+        brand_es = next(g for g in r_es.context["groups"] if g["id"] == "brand")
+        logo_field = next(f for f in brand_es["fields"] if f["key"] == "site.logo_word")
+        self.assertEqual(logo_field["value"], "A7Brand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+    def test_a7_step4_pragma_editor_stays_plain_keyed_regression(self):
+        """Pragma is NOT enrolled in A.7 multi-locale. Every save on a
+        Pragma project must persist as a plain row (no ``@<locale>:``
+        prefix) even if the client cheekily passes ``locale`` in the
+        autosave payload — regression guard that the archetype gate
+        really holds end-to-end."""
+        import json as _json
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+
+        # Client sends locale=en in the payload — the server must
+        # resolve is_translatable → False (Pragma not enrolled) and
+        # ignore the locale tag, persisting plain-keyed.
+        r = self.client.post(
+            f"/projects/{p.uuid}/autosave/",
+            data=_json.dumps({
+                "locale": "en",
+                "content": {"home.headline": "Pragma homepage headline."},
+                "tokens": {},
+            }),
+            content_type="application/json",
+        )
+        self.assertEqual(r.status_code, 200)
+        body = r.json()
+        self.assertTrue(body["ok"])
+        self.assertIn("home.headline", body["content_keys"])
+        self.assertNotIn("@en:home.headline", body["content_keys"])
+
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertEqual(keys, {"home.headline"})
+        self.assertFalse(any(k.startswith("@") for k in keys),
+                         f"Pragma rows must stay plain-keyed; got {keys}")
+
+        # Editor GET on Pragma exposes supported_locales=[] so the UI
+        # doesn't promise per-locale editing for this archetype.
+        r_ed = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r_ed.status_code, 200)
+        self.assertEqual(r_ed.context["supported_locales"], [])
+        # No field on Pragma carries the translatable flag.
+        groups = r_ed.context["groups"]
+        all_translatable_flags = [
+            f["translatable"]
+            for g in groups for f in g["fields"]
+        ]
+        self.assertTrue(all(v is False for v in all_translatable_flags),
+                        "No Pragma field should be translatable in A.7 first wave")
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
