@@ -1530,20 +1530,102 @@ class FoundationModelTests(TestCase):
         # Bare list root path — not a scalar field either way
         self.assertFalse(is_translatable(arc, "studio.facts"))
 
-    def test_a7_pragma_is_not_multilocale_enabled_in_first_wave(self):
-        """A.7 ships Vertex only. Pragma copy must classify as global for
-        every path until A.7b opts it in — protects the overlay shape
-        from leaking into a second archetype prematurely."""
-        from apps.editor.schema import is_translatable, supported_locales
+    # ------------------------------------------------------------------
+    # A.7b · Pragma multi-locale enrollment — Step 0 contract
+    # ------------------------------------------------------------------
+
+    def test_a7b_pragma_is_translatable_text_fields(self):
+        """Pragma scalar copy fields must classify as translatable after
+        A.7b enrollment. The sample deliberately distributes paths across
+        every Pragma page (home · chi-siamo · competenze · case-studies ·
+        contatti/footer) so the gate can't pass by covering only ``home``."""
+        from apps.editor.schema import is_translatable
         arc = "corporate-suite"
-        # Even clearly-copy paths must return False on Pragma
-        for path in ("home.headline", "home.eyebrow",
-                     "chi-siamo.intro", "competenze.headline"):
+        distributed_paths = (
+            # home — hero + bands
+            "home.headline",
+            "home.intro",
+            "home.pillars_intro",
+            # chi-siamo
+            "chi-siamo.intro",
+            "chi-siamo.history_heading",
+            # competenze
+            "competenze.headline",
+            "competenze.cta_intro",
+            # case-studies
+            "case-studies.intro",
+            "case-studies.cta_primary",
+            # contatti chrome (site.* customer-copy universals)
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on Pragma after A.7b",
+            )
+
+    def test_a7b_pragma_branding_and_contact_universals_are_global(self):
+        """Identity + per-row contact universals (logo, phone, email,
+        address, license, logo_initial) stay global on Pragma like they
+        do on Vertex — shared ``_GLOBAL_TEXT_PATHS`` set."""
+        from apps.editor.schema import is_translatable
+        arc = "corporate-suite"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
             self.assertFalse(
                 is_translatable(arc, path),
-                f"{path} on Pragma must stay global in A.7 first wave",
+                f"{path} must remain a global override on Pragma",
             )
-        self.assertEqual(supported_locales(arc), [])
+
+    def test_a7b_pragma_non_text_fields_are_global(self):
+        """Pragma image + select fields always stay global — only
+        text/textarea/richtext may be translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "corporate-suite"
+        self.assertFalse(is_translatable(arc, "home.hero_image"))     # image
+        self.assertFalse(is_translatable(arc, "home.primary_href"))   # select
+        self.assertFalse(is_translatable(arc, "home.cta_primary_href"))
+
+    def test_a7b_pragma_structured_list_cells_are_global(self):
+        """The 3 readonly indexed lists on Pragma (pillars · kpi_strip ·
+        leadership) stay global at cell level — A.7 family explicitly
+        excludes repeater content from per-locale editing."""
+        from apps.editor.schema import is_translatable
+        arc = "corporate-suite"
+        for path in ("home.pillars.0.title", "home.pillars.0.body",
+                     "home.kpi_strip.0.number", "home.kpi_strip.0.label",
+                     "home.leadership.0.name", "home.leadership.0.role",
+                     "home.leadership.0.bio"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Pragma",
+            )
+
+    def test_a7b_pragma_supported_locales_returns_canonical_five(self):
+        """Pragma now ships the canonical 5-locale set exposed by the
+        editor context — same shape as Vertex."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("corporate-suite"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a7b_vertex_still_enrolled_after_pragma_joins(self):
+        """Regression guard: adding Pragma to the gate must not disturb
+        the Vertex classification or supported-locales contract."""
+        from apps.editor.schema import is_translatable, supported_locales
+        self.assertTrue(is_translatable("agency-creative-studio", "home.headline"))
+        self.assertFalse(is_translatable("agency-creative-studio", "site.logo_word"))
+        self.assertEqual(
+            supported_locales("agency-creative-studio"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Archetype outside the gate still returns False + empty list.
+        self.assertFalse(is_translatable("fine-dining", "home.headline"))
+        self.assertEqual(supported_locales("fine-dining"), [])
 
     def test_a7_supported_locales_for_vertex_returns_canonical_five(self):
         """supported_locales is the contract Step 2 + editor_ctx will
@@ -1734,21 +1816,6 @@ class FoundationModelTests(TestCase):
                 project=p, editor=self.owner, locale="ja",
                 edits={"home.headline": "日本語"},
             )
-
-    def test_a7_step1_pragma_save_still_uses_plain_keys(self):
-        """Pragma is not yet enrolled in multi-locale. Saves on Pragma
-        must keep the pre-A.7 plain-key shape — regression guard that
-        the translatable gate really holds at the write layer."""
-        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
-        p = services.create_project_from_template(owner=self.owner, template=pragma)
-        services.save_content_edits(
-            project=p, editor=self.owner,
-            edits={"home.headline": "Pragma override."},
-        )
-        keys = set(p.content_overrides.values_list("key_path", flat=True))
-        self.assertIn("home.headline", keys)
-        self.assertFalse(any(k.startswith("@") for k in keys),
-                         f"Pragma rows must stay plain-keyed; got {keys}")
 
     # ------------------------------------------------------------------
     # A.7 · Step 2 — autosave + editor context locale-aware (service)
@@ -2784,52 +2851,188 @@ class FoundationHttpTests(TestCase):
         self.assertTrue(logo_field["is_overridden"])
         self.assertFalse(logo_field["translatable"])
 
-    def test_a7_step4_pragma_editor_stays_plain_keyed_regression(self):
-        """Pragma is NOT enrolled in A.7 multi-locale. Every save on a
-        Pragma project must persist as a plain row (no ``@<locale>:``
-        prefix) even if the client cheekily passes ``locale`` in the
-        autosave payload — regression guard that the archetype gate
-        really holds end-to-end."""
+    # ------------------------------------------------------------------
+    # A.7b · Step 1 — Pragma lifecycle HTTP cross-cutting
+    # ------------------------------------------------------------------
+
+    def test_a7b_pragma_full_multilocale_lifecycle_end_to_end(self):
+        """Mirror of the Vertex Step-4 lifecycle, adapted to Pragma.
+
+        1. customer edits IT / EN / FR on a Pragma translatable path
+        2. customer edits a global path (site.logo_word)
+        3. unedited locales (ES · AR) must fall back to the authored
+           registry — NEVER to another locale's customer override
+        4. project publishes · second user visits the public preview for
+           every locale and sees exactly the right content
+        5. owner reopens the editor on each locale and the sidebar
+           prefill matches the buffer for that locale.
+
+        Locks D-098 at HTTP layer on the second enrolled archetype.
+        Also asserts ``<html dir="rtl">`` on the AR preview response so
+        Step 2 browser walk doesn't have to rediscover the skin-level
+        RTL contract.
+        """
         import json as _json
         pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
         p = services.create_project_from_template(owner=self.owner, template=pragma)
 
-        # Client sends locale=en in the payload — the server must
-        # resolve is_translatable → False (Pragma not enrolled) and
-        # ignore the locale tag, persisting plain-keyed.
-        r = self.client.post(
-            f"/projects/{p.uuid}/autosave/",
-            data=_json.dumps({
-                "locale": "en",
-                "content": {"home.headline": "Pragma homepage headline."},
-                "tokens": {},
-            }),
-            content_type="application/json",
-        )
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global ──────────
+        for locale, headline in (
+            ("it", "Consulenza <em>che dura</em> (IT A7b)."),
+            ("en", "Advisory that <em>endures</em> (EN A7b)."),
+            ("fr", "Conseil qui <em>dure</em> (FR A7b)."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        # Global edit — note the client passes locale="en" on purpose:
+        # the server must classify site.logo_word as global and ignore
+        # the locale tag, persisting plain-keyed.
+        r = autosave("en", {"site.logo_word": "A7bBrand"})
         self.assertEqual(r.status_code, 200)
-        body = r.json()
-        self.assertTrue(body["ok"])
-        self.assertIn("home.headline", body["content_keys"])
-        self.assertNotIn("@en:home.headline", body["content_keys"])
+        self.assertIn("site.logo_word", r.json()["content_keys"])
 
+        # Storage keys check: three @<locale>:home.headline rows + one
+        # plain site.logo_word row. Gate holds at the write layer — no
+        # EN override leaks into an IT key; no global→locale leak.
         keys = set(p.content_overrides.values_list("key_path", flat=True))
-        self.assertEqual(keys, {"home.headline"})
-        self.assertFalse(any(k.startswith("@") for k in keys),
-                         f"Pragma rows must stay plain-keyed; got {keys}")
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertNotIn("home.headline", keys)       # no plain-key leak
+        self.assertNotIn("@en:site.logo_word", keys)  # no global→locale leak
 
-        # Editor GET on Pragma exposes supported_locales=[] so the UI
-        # doesn't promise per-locale editing for this archetype.
-        r_ed = self.client.get(f"/projects/{p.uuid}/editor/")
-        self.assertEqual(r_ed.status_code, 200)
-        self.assertEqual(r_ed.context["supported_locales"], [])
-        # No field on Pragma carries the translatable flag.
-        groups = r_ed.context["groups"]
-        all_translatable_flags = [
-            f["translatable"]
-            for g in groups for f in g["fields"]
-        ]
-        self.assertTrue(all(v is False for v in all_translatable_flags),
-                        "No Pragma field should be translatable in A.7 first wave")
+        # ── 3. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 4. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale):
+            url = (
+                f"/templates/business/pragma-corporate-suite/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore"), r
+
+        # IT render: IT override visible, EN/FR markers absent.
+        body_it, _ = preview_body("it")
+        self.assertIn("Consulenza", body_it)
+        self.assertIn("che dura", body_it)
+        self.assertNotIn("endures (EN A7b)", body_it)
+        self.assertNotIn("dure (FR A7b)", body_it)
+        self.assertIn("A7bBrand", body_it)
+
+        # EN render: EN override visible, IT/FR markers absent.
+        body_en, _ = preview_body("en")
+        self.assertIn("Advisory that", body_en)
+        self.assertIn("endures", body_en)
+        self.assertNotIn("Consulenza", body_en)
+        self.assertNotIn("dure (FR A7b)", body_en)
+        self.assertIn("A7bBrand", body_en)
+
+        # FR render: FR override visible.
+        body_fr, _ = preview_body("fr")
+        self.assertIn("Conseil qui", body_fr)
+        self.assertIn("dure", body_fr)
+        self.assertNotIn("Consulenza", body_fr)
+        self.assertNotIn("Advisory that", body_fr)
+        self.assertIn("A7bBrand", body_fr)
+
+        # Unedited locales — must fall back to the authored registry
+        # (no customer headline leak from IT/EN/FR) while still
+        # carrying the global logo override.
+        for locale in ("es", "ar"):
+            body, _ = preview_body(locale)
+            self.assertNotIn("Consulenza", body)
+            self.assertNotIn("Advisory that", body)
+            self.assertNotIn("Conseil qui", body)
+            self.assertIn("A7bBrand", body)
+            # Authored registry for the unedited locale must flow
+            # through. Pick a stable substring from the authored
+            # headline (strip <em> tags first so it survives the skin).
+            from apps.catalog import template_content as _tc
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Pragma",
+                )
+
+        # AR preview — the skin must render the RTL document direction
+        # so the Step 2 browser walk inherits a green baseline for RTL.
+        body_ar, _ = preview_body("ar")
+        self.assertIn('dir="rtl"', body_ar)
+
+        # ── 5. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_headline_field(groups):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == "home.headline":
+                        return f
+            self.fail("home.headline field missing from Pragma editor groups")
+
+        for locale, expected_substring in (
+            ("it", "che dura"),
+            ("en", "Advisory that"),
+            ("fr", "Conseil qui"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_headline_field(r.context["groups"])
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_headline_field(r_es.context["groups"])
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+        # Global field: overridden universally across all locales, not
+        # translatable (same contract as Vertex).
+        logo_field = None
+        for g in r_es.context["groups"]:
+            for f in g["fields"]:
+                if f["key"] == "site.logo_word":
+                    logo_field = f
+                    break
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Pragma editor")
+        self.assertEqual(logo_field["value"], "A7bBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
 
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
