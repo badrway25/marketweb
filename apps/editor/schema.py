@@ -274,6 +274,276 @@ PRAGMA_CORPORATE_SUITE_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# A.8 · Gusto (fine-dining archetype) schema
+# ---------------------------------------------------------------------------
+#
+# Third editable archetype. Recipe mirrors A.6 Pragma: ~10 sidebar groups of
+# scalar fields + 3 STRUCTURED_FIELD_SHAPES readonly lists (signature_courses,
+# menu.courses, produttori.items). No mutable repeaters, no per-locale image,
+# no detail-page editor — those remain out of scope per A.8 planning.
+#
+# Page slugs follow the Italian fine-dining registry (home / filosofia / menu /
+# atmosfera / diario / prenota). All 5 locales use the same slugs per D-023
+# (every locale ships a `pages` list with identical slugs + kinds, only the
+# labels translate).
+#
+# Image fields exposed customer-side: home.ingredienti.image +
+# filosofia.filosofia_image. The 4 portrait URLs inside home.produttori.items
+# stay readonly at the registry level — their column is intentionally omitted
+# from the dict shape's ``cols`` so the editor cannot reach them.
+#
+# prenota.form_sections is intentionally NOT in the schema: the content
+# registry has it in IT but not in EN/FR/ES/AR (the skin has a
+# ``{% if page_data.form_sections %}`` guard). Keeping it out of the
+# editable whitelist sidesteps the parity asymmetry without a registry
+# patch — pure A.8 scope containment.
+
+GUSTO_FINE_DINING_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".fd-nav, .fd-foot",
+        "page": "*",
+        "keywords": ["logo", "nome", "ristorante", "tagline", "insegna"],
+        "help": "Nome del ristorante, iniziale logo e tagline.",
+        "fields": [
+            ("site.logo_word",    {"label": "Nome ristorante", "type": "text", "max_length": 40,
+                                    "placeholder": "Osteria Moderna"}),
+            ("site.logo_initial", {"label": "Iniziale / crest", "type": "text", "max_length": 4,
+                                    "help": "Iniziale usata nel crest del nav."}),
+            ("site.tag",          {"label": "Tagline", "type": "text", "max_length": 100}),
+            ("site.star_line",    {"label": "Riga stella / est.", "type": "text", "max_length": 80,
+                                    "help": "\"★ Una stella Michelin · est. 2018\" — appare nel chrome."}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".fd-lead",
+        "page": "home",
+        "keywords": ["hero", "apertura", "headline", "eyebrow", "copertina", "manifesto"],
+        "help": "Primo scroll della home: eyebrow, headline, intro, CTA e manifesto.",
+        "fields": [
+            ("home.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("home.headline",            {"label": "Headline", "type": "richtext", "max_length": 220,
+                                           "help": "Consentiti i tag <em> per gli italici."}),
+            ("home.intro",               {"label": "Intro", "type": "textarea", "max_length": 400}),
+            ("home.primary_cta",         {"label": "CTA primaria · etichetta", "type": "text", "max_length": 40}),
+            ("home.primary_href",        {"label": "CTA primaria · destinazione", "type": "select",
+                                           "choices": ["home", "filosofia", "menu", "atmosfera", "diario", "prenota"]}),
+            ("home.secondary_cta",       {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 40}),
+            ("home.secondary_href",      {"label": "CTA secondaria · destinazione", "type": "select",
+                                           "choices": ["home", "filosofia", "menu", "atmosfera", "diario", "prenota"]}),
+            ("home.chef_label",          {"label": "Etichetta chef · card", "type": "text", "max_length": 40}),
+            ("home.star_tag",            {"label": "Tag atto · card chef", "type": "text", "max_length": 80}),
+            ("home.photo_label",         {"label": "Etichetta foto · card", "type": "text", "max_length": 40}),
+            ("home.cuisine_label",       {"label": "Etichetta cucina · card", "type": "text", "max_length": 40}),
+            ("home.manifesto_drop_cap",  {"label": "Drop cap manifesto", "type": "text", "max_length": 2}),
+            ("home.manifesto",           {"label": "Manifesto home", "type": "textarea", "max_length": 700}),
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".fd-section, .fd-cta-band",
+        "page": "home",
+        "keywords": ["atti", "press", "pubblicato", "cta", "chef link"],
+        "help": "Label ed eyebrow delle fasce home (atti, press, CTA finali).",
+        "fields": [
+            ("home.courses_label",        {"label": "Atti · eyebrow", "type": "text", "max_length": 80}),
+            ("home.courses_footline",     {"label": "Atti · nota prezzi", "type": "text", "max_length": 140}),
+            ("home.courses_full_cta",     {"label": "Atti · CTA \"tutti\"", "type": "text", "max_length": 40}),
+            ("home.press_label",          {"label": "Pubblicato su · eyebrow", "type": "text", "max_length": 40}),
+            ("home.chef_link_filosofia",  {"label": "Link chef · filosofia", "type": "text", "max_length": 40}),
+            ("home.chef_link_diario",     {"label": "Link chef · diario", "type": "text", "max_length": 40}),
+            ("home.cta_heading",          {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("home.cta_primary",          {"label": "CTA finale · pulsante", "type": "text", "max_length": 40}),
+            ("home.cta_secondary",        {"label": "CTA finale · secondario", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "home_editorial_bands",
+        "label": "Home · chef, ingredienti, stagione",
+        "icon": "bi-person-badge",
+        "region": ".fd-ingredients, .fd-chef, .fd-season",
+        "page": "home",
+        "keywords": ["chef", "ingredienti", "materia prima", "sourcing", "stagione", "menu in corso"],
+        "help": "Card chef · banda ingredienti · card stagionale.",
+        "fields": [
+            ("home.chef.name",                 {"label": "Chef · nome", "type": "text", "max_length": 80}),
+            ("home.chef.role",                 {"label": "Chef · ruolo", "type": "text", "max_length": 120}),
+            ("home.chef.bio",                  {"label": "Chef · bio", "type": "textarea", "max_length": 600}),
+            ("home.ingredienti.label",         {"label": "Ingredienti · eyebrow", "type": "text", "max_length": 80}),
+            ("home.ingredienti.heading",       {"label": "Ingredienti · titolo", "type": "richtext", "max_length": 220}),
+            ("home.ingredienti.text",          {"label": "Ingredienti · testo", "type": "textarea", "max_length": 500}),
+            ("home.ingredienti.image",         {"label": "Ingredienti · immagine", "type": "image", "max_length": 400}),
+            ("home.ingredienti.image_caption", {"label": "Ingredienti · caption", "type": "text", "max_length": 140}),
+            ("home.stagione.label",            {"label": "Stagione · eyebrow", "type": "text", "max_length": 80}),
+            ("home.stagione.title",            {"label": "Stagione · titolo", "type": "text", "max_length": 120}),
+            ("home.stagione.subtitle",         {"label": "Stagione · sottotitolo", "type": "text", "max_length": 120}),
+            ("home.stagione.text",             {"label": "Stagione · testo", "type": "textarea", "max_length": 400}),
+            ("home.stagione.cta_label",        {"label": "Stagione · CTA", "type": "text", "max_length": 60}),
+            ("home.stagione.cta_href",         {"label": "Stagione · destinazione", "type": "select",
+                                                 "choices": ["home", "filosofia", "menu", "atmosfera", "diario", "prenota"]}),
+        ],
+    },
+    {
+        "id": "home_producers_events_wine",
+        "label": "Home · produttori, eventi, cantina",
+        "icon": "bi-award",
+        "region": ".fd-producers, .fd-private, .fd-wine",
+        "page": "home",
+        "keywords": ["produttori", "artigiani", "fornitori", "eventi privati", "chef's table",
+                     "vino", "cantina", "sommelier"],
+        "help": "Copy di apertura delle fasce produttori / eventi / cantina. Le card readonly "
+                "restano dal registry.",
+        "fields": [
+            ("home.produttori.label",            {"label": "Produttori · eyebrow", "type": "text", "max_length": 80}),
+            ("home.produttori.heading",          {"label": "Produttori · titolo", "type": "richtext", "max_length": 220}),
+            ("home.produttori.intro",            {"label": "Produttori · intro", "type": "textarea", "max_length": 500}),
+            ("home.private_dining.label",        {"label": "Eventi · eyebrow", "type": "text", "max_length": 80}),
+            ("home.private_dining.heading",      {"label": "Eventi · titolo", "type": "richtext", "max_length": 220}),
+            ("home.private_dining.intro",        {"label": "Eventi · intro", "type": "textarea", "max_length": 500}),
+            ("home.private_dining.cta_label",    {"label": "Eventi · CTA", "type": "text", "max_length": 60}),
+            ("home.private_dining.cta_href",     {"label": "Eventi · destinazione", "type": "select",
+                                                   "choices": ["home", "filosofia", "menu", "atmosfera", "diario", "prenota"]}),
+            ("home.wine_program.label",          {"label": "Cantina · eyebrow", "type": "text", "max_length": 80}),
+            ("home.wine_program.heading",        {"label": "Cantina · titolo", "type": "richtext", "max_length": 220}),
+            ("home.wine_program.intro",          {"label": "Cantina · intro", "type": "textarea", "max_length": 500}),
+            ("home.wine_program.sommelier.name", {"label": "Sommelier · nome", "type": "text", "max_length": 80}),
+            ("home.wine_program.sommelier.role", {"label": "Sommelier · ruolo", "type": "text", "max_length": 120}),
+            ("home.wine_program.sommelier.bio",  {"label": "Sommelier · bio", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "filosofia_page",
+        "label": "Pagina Filosofia",
+        "icon": "bi-book",
+        "region": ".fd-section",
+        "page": "filosofia",
+        "keywords": ["filosofia", "about", "metodo", "valori", "storia"],
+        "help": "Contenuti della pagina Filosofia.",
+        "fields": [
+            ("filosofia.eyebrow",                 {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("filosofia.headline",                {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("filosofia.intro",                   {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("filosofia.filosofia_image",         {"label": "Immagine filosofia", "type": "image", "max_length": 400}),
+            ("filosofia.filosofia_image_caption", {"label": "Caption immagine", "type": "text", "max_length": 160}),
+            ("filosofia.method_title",            {"label": "Metodo · titolo", "type": "text", "max_length": 80}),
+            ("filosofia.values_label",            {"label": "Valori · eyebrow", "type": "text", "max_length": 80}),
+            ("filosofia.values_heading",          {"label": "Valori · titolo", "type": "richtext", "max_length": 220}),
+            ("filosofia.cta_heading",             {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("filosofia.cta_menu",                {"label": "CTA · pulsante menu", "type": "text", "max_length": 60}),
+            ("filosofia.cta_prenota",             {"label": "CTA · pulsante prenota", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "menu_page",
+        "label": "Pagina Menu",
+        "icon": "bi-journal-text",
+        "region": ".fd-section, .fd-menu-list",
+        "page": "menu",
+        "keywords": ["menu", "atti", "corsi", "piatti", "vini", "carta"],
+        "help": "Contenuti della pagina Menu (otto atti + copy carta vini).",
+        "fields": [
+            ("menu.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("menu.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("menu.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("menu.courses_label",    {"label": "Atti · eyebrow", "type": "text", "max_length": 100}),
+            ("menu.wine_intro_title", {"label": "Vini · titolo", "type": "text", "max_length": 80}),
+            ("menu.wine_intro",       {"label": "Vini · intro", "type": "textarea", "max_length": 500}),
+            ("menu.footer",           {"label": "Footer note · prezzi / intolleranze", "type": "textarea", "max_length": 600}),
+        ],
+    },
+    {
+        "id": "atmosfera_page",
+        "label": "Pagina Atmosfera",
+        "icon": "bi-images",
+        "region": ".fd-section",
+        "page": "atmosfera",
+        "keywords": ["atmosfera", "sala", "ambienti", "gallery"],
+        "help": "Contenuti della pagina Atmosfera (ambienti / CTA). Le card sala restano da registry.",
+        "fields": [
+            ("atmosfera.eyebrow",        {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("atmosfera.headline",       {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("atmosfera.intro",          {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("atmosfera.cta_quote",      {"label": "Quote finale", "type": "textarea", "max_length": 240}),
+            ("atmosfera.cta_desc",       {"label": "Descrizione CTA", "type": "textarea", "max_length": 240}),
+            ("atmosfera.cta_primary",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("atmosfera.cta_secondary",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "diario_page",
+        "label": "Pagina Diario (index)",
+        "icon": "bi-newspaper",
+        "region": ".fd-section",
+        "page": "diario",
+        "keywords": ["diario", "blog", "journal", "note", "articoli"],
+        "help": "Copy della pagina-indice del diario di sala. I singoli post restano da registry.",
+        "fields": [
+            ("diario.eyebrow",  {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("diario.headline", {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("diario.intro",    {"label": "Intro", "type": "textarea", "max_length": 600}),
+        ],
+    },
+    {
+        "id": "prenota_page",
+        "label": "Pagina Prenota",
+        "icon": "bi-calendar-check",
+        "region": ".fd-section",
+        "page": "prenota",
+        "keywords": ["prenotazione", "prenota", "concierge", "form"],
+        "help": "Copy della pagina di prenotazione + card concierge. "
+                "Struttura del form + opzioni select restano da registry.",
+        "fields": [
+            ("prenota.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("prenota.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("prenota.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("prenota.process_label",    {"label": "Processo · eyebrow", "type": "text", "max_length": 80}),
+            ("prenota.process_heading",  {"label": "Processo · titolo", "type": "richtext", "max_length": 220}),
+            ("prenota.hours_label",      {"label": "Orari · eyebrow", "type": "text", "max_length": 80}),
+            ("prenota.hours_heading",    {"label": "Orari · titolo", "type": "richtext", "max_length": 220}),
+            ("prenota.private_heading",  {"label": "Privati · titolo", "type": "richtext", "max_length": 220}),
+            ("prenota.private_title",    {"label": "Privati · sub-header", "type": "text", "max_length": 120}),
+            ("prenota.private_intro",    {"label": "Privati · intro", "type": "textarea", "max_length": 500}),
+            ("prenota.form_title",       {"label": "Form · titolo", "type": "text", "max_length": 80}),
+            ("prenota.form_submit",      {"label": "Form · CTA invio", "type": "text", "max_length": 60}),
+            ("prenota.form_submit_note", {"label": "Form · nota sotto invio", "type": "textarea", "max_length": 240}),
+            ("prenota.concierge.name",   {"label": "Concierge · nome", "type": "text", "max_length": 80}),
+            ("prenota.concierge.role",   {"label": "Concierge · ruolo", "type": "text", "max_length": 120}),
+            ("prenota.concierge.email",  {"label": "Concierge · email", "type": "text", "max_length": 120}),
+            ("prenota.concierge.phone",  {"label": "Concierge · telefono", "type": "text", "max_length": 40}),
+            ("prenota.concierge.bio",    {"label": "Concierge · bio", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "contact_info",
+        "label": "Contatti · footer",
+        "icon": "bi-telephone",
+        "region": ".fd-foot",
+        "page": "*",
+        "keywords": ["footer", "contatti", "phone", "telefono", "email", "indirizzo", "address",
+                     "orari", "copyright"],
+        "help": "Dati di contatto visibili nel footer e nella pagina Prenota.",
+        "fields": [
+            ("site.phone",          {"label": "Telefono", "type": "text", "max_length": 40}),
+            ("site.email",          {"label": "Email", "type": "text", "max_length": 80}),
+            ("site.address",        {"label": "Indirizzo", "type": "text", "max_length": 120}),
+            ("site.hours_compact",  {"label": "Orari sintetici", "type": "text", "max_length": 80}),
+            ("site.footer_intro",   {"label": "Intro footer", "type": "textarea", "max_length": 400}),
+            ("site.footer_hours_1", {"label": "Footer · riga orari attivi", "type": "text", "max_length": 60}),
+            ("site.footer_hours_2", {"label": "Footer · riga orari chiusura", "type": "text", "max_length": 60}),
+            ("site.copyright",      {"label": "Copyright", "type": "text", "max_length": 160}),
+        ],
+    },
+]
+
+
 AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -939,6 +1209,58 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # A.8 · Gusto fine-dining — 3 readonly indexed lists (signature courses
+    # on home, full menu courses on menu page, producers dict on home).
+    # All tuple cells + dict cols omit any image column (portrait in
+    # produttori.items is NOT exposed so the customer cannot reach it
+    # through the editor; it stays global at the registry level).
+    "fine-dining": {
+        "home.signature_courses": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Atti in corso (piatti firma)",
+            "icon": "bi-list-ol",
+            "region": ".fd-signature-courses",
+            "keywords": ["atti", "corsi", "menu", "piatti", "signature"],
+            "tuple_order": ["num", "title", "detail", "wine"],
+            "cols": [
+                ("num",    {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",  {"label": "Titolo piatto", "type": "text", "max_length": 80}),
+                ("detail", {"label": "Dettagli", "type": "textarea", "max_length": 240}),
+                ("wine",   {"label": "Abbinamento", "type": "text", "max_length": 120}),
+            ],
+        },
+        "menu.courses": {
+            "kind": "tuple",
+            "page": "menu",
+            "label": "Menu · Otto atti",
+            "icon": "bi-journal-text",
+            "region": ".fd-menu-list",
+            "keywords": ["menu", "corsi", "piatti", "atti", "otto atti"],
+            "tuple_order": ["num", "title", "detail", "wine"],
+            "cols": [
+                ("num",    {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",  {"label": "Titolo piatto", "type": "text", "max_length": 80}),
+                ("detail", {"label": "Dettagli", "type": "textarea", "max_length": 400}),
+                ("wine",   {"label": "Abbinamento", "type": "text", "max_length": 160}),
+            ],
+        },
+        "home.produttori.items": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Produttori (copy)",
+            "icon": "bi-people",
+            "region": ".fd-producers",
+            "keywords": ["produttori", "artigiani", "fornitori"],
+            "cols": [
+                ("name",  {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",  {"label": "Ruolo / prodotto", "type": "text", "max_length": 80}),
+                ("area",  {"label": "Area / origine", "type": "text", "max_length": 80}),
+                ("blurb", {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                # portrait intenzionalmente omesso: resta readonly al registry
+            ],
+        },
+    },
 }
 
 
@@ -949,6 +1271,7 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
 _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     "agency-creative-studio": ("vertex-creative-agency", "it"),
     "corporate-suite":        ("pragma-corporate-suite", "it"),
+    "fine-dining":            ("gusto-fine-dining",     "it"),
 }
 
 
@@ -959,6 +1282,7 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
 _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     "agency-creative-studio": AGENCY_CREATIVE_STUDIO_SCHEMA,
     "corporate-suite":        PRAGMA_CORPORATE_SUITE_SCHEMA,
+    "fine-dining":            GUSTO_FINE_DINING_SCHEMA,
 }
 
 
@@ -1427,6 +1751,10 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # future one-liner flip on a new archetype cannot ship without
     # matching coverage.
     "corporate-suite",
+    # A.8 · Gusto fine-dining joins the multi-locale gate simultaneously
+    # with its editor enrollment (single phase · D-098 recipe). Gated by
+    # ``test_a8_gusto_full_multilocale_lifecycle_end_to_end``.
+    "fine-dining",
 })
 
 

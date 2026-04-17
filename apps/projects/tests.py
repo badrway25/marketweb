@@ -45,9 +45,12 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.revisions.count(), 1)
 
     def test_unsupported_archetype_raises(self):
-        gusto = WebTemplate.objects.get(slug="gusto-fine-dining")
+        # trattoria-warm has not been enrolled in _ARCHETYPE_SCHEMAS yet —
+        # Sapore still hits the UnsupportedTemplate guard. Swap this slug
+        # when trattoria-warm gets an editor schema of its own.
+        sapore = WebTemplate.objects.get(slug="sapore-trattoria-pizzeria")
         with self.assertRaises(services.UnsupportedTemplate):
-            services.create_project_from_template(owner=self.owner, template=gusto)
+            services.create_project_from_template(owner=self.owner, template=sapore)
 
     def test_schema_locks_non_whitelisted_keys(self):
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
@@ -1388,8 +1391,8 @@ class FoundationModelTests(TestCase):
         self.assertIn("corporate-suite", _ARCHETYPE_SCHEMAS)
         self.assertTrue(is_supported_archetype("corporate-suite"))
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
-        # Sanity — a third unsupported archetype still rejects.
-        self.assertFalse(is_supported_archetype("fine-dining"))
+        # Sanity — an unsupported archetype still rejects.
+        self.assertFalse(is_supported_archetype("trattoria-warm"))
 
     def test_a6_pragma_schema_shape_covers_core_pages(self):
         """The Pragma schema must surface groups for every customer-
@@ -1624,8 +1627,202 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Archetype outside the gate still returns False + empty list.
-        self.assertFalse(is_translatable("fine-dining", "home.headline"))
-        self.assertEqual(supported_locales("fine-dining"), [])
+        self.assertFalse(is_translatable("trattoria-warm", "home.headline"))
+        self.assertEqual(supported_locales("trattoria-warm"), [])
+
+    # ------------------------------------------------------------------
+    # A.8 · Gusto fine-dining enrollment — Step 1 contract
+    # ------------------------------------------------------------------
+
+    def test_a8_gusto_archetype_registered(self):
+        """``fine-dining`` joins the schema + baseline template + gate
+        registries alongside the pre-existing Vertex / Pragma entries."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("fine-dining", _ARCHETYPE_SCHEMAS)
+        self.assertEqual(
+            _ARCHETYPE_BASELINE_TEMPLATE["fine-dining"],
+            ("gusto-fine-dining", "it"),
+        )
+        self.assertIn("fine-dining", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("fine-dining"))
+
+    def test_a8_gusto_schema_shape_covers_all_pages(self):
+        """The Gusto schema must surface at least one group per Gusto
+        page slug (home + filosofia + menu + atmosfera + diario +
+        prenota) plus chrome-level groups (page='*')."""
+        groups = iter_groups("fine-dining")
+        self.assertGreaterEqual(len(groups), 10)
+        pages = {g.get("page") for g in groups}
+        for slug in ("*", "home", "filosofia", "menu",
+                     "atmosfera", "diario", "prenota"):
+            self.assertIn(slug, pages,
+                          f"Gusto schema missing page slug {slug!r}")
+
+    def test_a8_gusto_is_translatable_text_fields(self):
+        """Scalar copy fields distributed across all 5 Gusto pages +
+        chrome — the gate must not pass by covering only ``home``."""
+        from apps.editor.schema import is_translatable
+        arc = "fine-dining"
+        distributed_paths = (
+            # home — hero + editorial bands
+            "home.headline",
+            "home.manifesto",
+            "home.ingredienti.heading",
+            "home.chef.bio",
+            "home.produttori.intro",
+            # filosofia
+            "filosofia.intro",
+            "filosofia.values_heading",
+            # menu
+            "menu.headline",
+            "menu.wine_intro",
+            # atmosfera
+            "atmosfera.intro",
+            "atmosfera.cta_quote",
+            # diario
+            "diario.headline",
+            # prenota
+            "prenota.intro",
+            "prenota.concierge.bio",
+            # chrome site.* customer-copy universals
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+            "site.copyright",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on Gusto",
+            )
+
+    def test_a8_gusto_branding_and_contact_universals_are_global(self):
+        """Identity + per-row contact universals stay global on Gusto —
+        same shared ``_GLOBAL_TEXT_PATHS`` set used by Vertex + Pragma."""
+        from apps.editor.schema import is_translatable
+        arc = "fine-dining"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email", "site.address"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on Gusto",
+            )
+
+    def test_a8_gusto_non_text_fields_are_global(self):
+        """Image + select fields on Gusto always stay global — only
+        text/textarea/richtext can be flagged translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "fine-dining"
+        # Scalar image fields
+        self.assertFalse(is_translatable(arc, "home.ingredienti.image"))
+        self.assertFalse(is_translatable(arc, "filosofia.filosofia_image"))
+        # Select (page-slug choice) fields
+        self.assertFalse(is_translatable(arc, "home.primary_href"))
+        self.assertFalse(is_translatable(arc, "home.secondary_href"))
+        self.assertFalse(is_translatable(arc, "home.stagione.cta_href"))
+        self.assertFalse(is_translatable(arc, "home.private_dining.cta_href"))
+
+    def test_a8_gusto_structured_list_cells_are_global(self):
+        """The 3 readonly indexed lists on Gusto (signature_courses,
+        menu.courses, produttori.items) stay global at cell level. The
+        ``portrait`` column on produttori is intentionally NOT exposed
+        in the dict shape — customer cannot reach it through the editor."""
+        from apps.editor.schema import is_translatable, get_list_shape
+        arc = "fine-dining"
+        for path in ("home.signature_courses.0.title",
+                     "home.signature_courses.0.detail",
+                     "menu.courses.0.title",
+                     "menu.courses.7.wine",
+                     "home.produttori.items.0.name",
+                     "home.produttori.items.0.blurb"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Gusto",
+            )
+        # portrait must NOT appear among produttori cols (readonly at
+        # registry level, invisible to the editor service layer).
+        shape = get_list_shape(arc, "home.produttori.items")
+        self.assertIsNotNone(shape)
+        col_names = {name for name, _spec in (shape.get("cols") or [])}
+        self.assertNotIn("portrait", col_names,
+                         "Gusto producers dict must NOT expose portrait as an editable col")
+
+    def test_a8_vertex_and_pragma_still_enrolled_after_gusto_joins(self):
+        """Regression guard: adding Gusto to gate + schemas must not
+        disturb the Vertex or Pragma classifications."""
+        from apps.editor.schema import is_translatable, supported_locales
+        # Vertex intact
+        self.assertTrue(is_translatable("agency-creative-studio", "home.headline"))
+        self.assertEqual(
+            supported_locales("agency-creative-studio"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Pragma intact
+        self.assertTrue(is_translatable("corporate-suite", "home.headline"))
+        self.assertEqual(
+            supported_locales("corporate-suite"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Gusto now enrolled alongside them
+        self.assertEqual(
+            supported_locales("fine-dining"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
+        """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
+        `_base.html` must integrate three bridge points together:
+
+        (1) preview-bridge.js injected ONLY when ``preview_project`` is
+            set (inside the editor iframe) — never on the bare public
+            preview;
+        (2) ``<title>`` honors ``site.logo_word`` override via
+            ``|default:brand.brand_name``;
+        (3) ``<body>`` carries ``mw-is-editor-preview`` guard class
+            whenever ``preview_project`` is truthy.
+
+        This is the one test that locks the integration shape — any
+        future regression that silently reverts any of the three points
+        trips this guard instead of failing on a subtle browser walk.
+        """
+        gusto = WebTemplate.objects.get(slug="gusto-fine-dining")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/restaurant/gusto-fine-dining/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        # The guard CSS rules mention ``body.mw-is-editor-preview`` inside
+        # <style>, which is fine. What must NOT happen: the <body> tag
+        # itself carrying the class. Check the opening <body ...> span
+        # specifically.
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=gusto)
+        # Override logo_word so the title regression is measurable
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A8 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/restaurant/gusto-fine-dining/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        # (1) bridge injected
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        # (2) title honours site.logo_word override
+        self.assertIn("<title>A8 Bridge Check", body_proj)
+        # (3) body guard class present
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
     def test_a7_supported_locales_for_vertex_returns_canonical_five(self):
         """supported_locales is the contract Step 2 + editor_ctx will
@@ -1637,7 +1834,7 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Unknown archetype returns empty list, never raises.
-        self.assertEqual(supported_locales("fine-dining"), [])
+        self.assertEqual(supported_locales("trattoria-warm"), [])
 
     def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
         """Defensive contract: unknown paths and archetypes return False
@@ -1999,9 +2196,11 @@ class FoundationHttpTests(TestCase):
 
     def test_customize_start_unsupported_archetype_redirects_to_detail(self):
         """Templates without editor support bounce to detail with an info message."""
-        r = self.client.get("/projects/start/?template=gusto-fine-dining")
+        # sapore-trattoria-pizzeria (trattoria-warm archetype) is not yet
+        # enrolled. Swap when that archetype receives editor support.
+        r = self.client.get("/projects/start/?template=sapore-trattoria-pizzeria")
         self.assertEqual(r.status_code, 302)
-        # Either /templates/restaurant/gusto-fine-dining/ or template_list — both accept.
+        # Either /templates/restaurant/sapore-trattoria-pizzeria/ or template_list — both accept.
         self.assertIn("/templates/", r["Location"])
 
     def test_autosave_endpoint_rejects_locked_keys(self):
