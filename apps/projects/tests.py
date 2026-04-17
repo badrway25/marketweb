@@ -425,17 +425,22 @@ class FoundationModelTests(TestCase):
     # (dict, min=2, max=8).
     # ------------------------------------------------------------------
 
-    def test_a3a_mutable_flag_whitelists_three_lists(self):
-        """A.3a + A.3c (channels): studio.facts, studio.partners and
-        contatti.channels may accept add/remove/reorder. The other
-        indexed lists stay locked."""
+    def test_a3a_mutable_flag_whitelists_four_lists(self):
+        """A.3a + A.3c: studio.facts, studio.partners, contatti.channels
+        and studio.timeline_rows may accept add/remove/reorder. The
+        other indexed lists stay locked."""
         from apps.editor.schema import STRUCTURED_FIELD_SHAPES, is_mutable_list
         arc = "agency-creative-studio"
         mutable = {
             path for path, shape in STRUCTURED_FIELD_SHAPES[arc].items()
             if shape.get("mutable")
         }
-        self.assertEqual(mutable, {"studio.facts", "studio.partners", "contatti.channels"})
+        self.assertEqual(mutable, {
+            "studio.facts",
+            "studio.partners",
+            "contatti.channels",
+            "studio.timeline_rows",
+        })
         # Sanity — representative non-mutable lists still reject
         for path in ("manifesto.phases", "lavori.projects", "home.ledger_rows"):
             self.assertFalse(is_mutable_list(arc, path))
@@ -959,14 +964,73 @@ class FoundationModelTests(TestCase):
         self.assertEqual(ctx.exception.kind, "max")
         self.assertEqual(ctx.exception.limit, 10)
 
+    def test_a3c_timeline_rows_add_remove_move_smoke(self):
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        r = services.add_row(project=p, list_path="studio.timeline_rows", editor=self.owner)
+        uid = r["uid"]
+        self.assertEqual(r["effective_length"], 7)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={
+                f"studio.timeline_rows.{uid}.year":  "2027",
+                f"studio.timeline_rows.{uid}.title": "Secondo studio a Roma",
+                f"studio.timeline_rows.{uid}.body":  "Apertura della sede sud.",
+            },
+        )
+        for _ in range(5):
+            services.move_row(
+                project=p, list_path="studio.timeline_rows",
+                segment=uid, direction="up", editor=self.owner,
+            )
+        services.move_row(
+            project=p, list_path="studio.timeline_rows",
+            segment="0", direction="down", editor=self.owner,
+        )
+        services.remove_row(
+            project=p, list_path="studio.timeline_rows",
+            index=1, editor=self.owner,
+        )
+        baseline = template_content.get_content(p.source_template.slug, p.locale)
+        merged, _ = apply_project_overrides(p, baseline, {})
+        rows = merged["studio"]["timeline_rows"]
+        self.assertEqual(len(rows), 6)
+        years = [r[0] for r in rows]
+        self.assertIn("2027", years)
+        self.assertNotIn("2020", years)
+
+    def test_a3c_timeline_rows_boundaries(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        for idx in range(4):
+            services.remove_row(
+                project=p, list_path="studio.timeline_rows",
+                index=idx, editor=self.owner,
+            )
+        with self.assertRaises(services.RowLimitReached) as ctx:
+            services.remove_row(
+                project=p, list_path="studio.timeline_rows",
+                index=4, editor=self.owner,
+            )
+        self.assertEqual(ctx.exception.kind, "min")
+        self.assertEqual(ctx.exception.limit, 2)
+
+        p2 = services.create_project_from_template(owner=self.other, template=self.vertex)
+        for _ in range(4):
+            services.add_row(project=p2, list_path="studio.timeline_rows", editor=self.other)
+        with self.assertRaises(services.RowLimitReached) as ctx:
+            services.add_row(project=p2, list_path="studio.timeline_rows", editor=self.other)
+        self.assertEqual(ctx.exception.kind, "max")
+        self.assertEqual(ctx.exception.limit, 10)
+
     def test_a3a_uid_path_validates_only_on_mutable_lists(self):
         """validate_key_path accepts uid cell paths on mutable lists
         and rejects them on still-locked lists."""
         arc = "agency-creative-studio"
         validate_key_path(arc, "studio.partners.a0.name")
         validate_key_path(arc, "studio.facts.a3.label")
-        # A.3c channels: now mutable
+        # A.3c: contatti.channels + studio.timeline_rows now mutable
         validate_key_path(arc, "contatti.channels.a0.value")
+        validate_key_path(arc, "studio.timeline_rows.a0.year")
         # Still-locked list must reject uid cell paths
         with self.assertRaises(InvalidEditableField):
             validate_key_path(arc, "manifesto.phases.a0.title")

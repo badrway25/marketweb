@@ -569,6 +569,11 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
                 ("title", {"label": "Titolo","type": "text",     "max_length": 120}),
                 ("body",  {"label": "Body",  "type": "textarea", "max_length": 400}),
             ],
+            # A.3c — widen. min=2 preserves the narrative "un prima e
+            # un oggi" of the studio history block.
+            "mutable": True,
+            "min_rows": 2,
+            "max_rows": 10,
         },
 
         # ── CAPACITA ────────────────────────────────────────────────────
