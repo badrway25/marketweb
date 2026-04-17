@@ -3699,6 +3699,200 @@ class FoundationHttpTests(TestCase):
         self.assertTrue(logo_field["is_overridden"])
         self.assertFalse(logo_field["translatable"])
 
+    # ------------------------------------------------------------------
+    # A.9 · Step 2 — Cardio + Derm lifecycle HTTP cross-cutting
+    # ------------------------------------------------------------------
+    #
+    # Two distinct tests — one per specialist-archetype template — so a
+    # regression that hits Cardio but not Derm (or vice versa) surfaces
+    # with a clean name. Both use the shared helper _run_specialist_lifecycle
+    # to avoid duplicating 180 LOC of assertions.
+
+    def _run_specialist_lifecycle(self, template_slug, marker, brand):
+        """Shared body for Cardio + Derm lifecycle tests.
+
+        ``marker`` goes into the IT/EN/FR headline overrides so the
+        cross-locale-leak assertions can distinguish the two flows when
+        a test run persists across both.
+        ``brand`` is the global logo override — verified universal
+        across all 5 public preview locales.
+        """
+        import json as _json
+        tmpl = WebTemplate.objects.get(slug=template_slug)
+        p = services.create_project_from_template(owner=self.owner, template=tmpl)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global ──────────
+        for locale, headline in (
+            ("it", f"Una clinica <em>che ascolta</em> ({marker} IT)."),
+            ("en", f"A clinic that <em>listens</em> ({marker} EN)."),
+            ("fr", f"Une clinique qui <em>écoute</em> ({marker} FR)."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        r = autosave("en", {"site.logo_word": brand})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertNotIn("home.headline", keys)       # no plain-key leak
+        self.assertNotIn("@en:site.logo_word", keys)  # no global→locale leak
+
+        # ── 3. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 4. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale):
+            url = (
+                f"/templates/medical/{template_slug}/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render — IT override visible, EN/FR markers absent.
+        body_it = preview_body("it")
+        self.assertIn("che ascolta", body_it)
+        self.assertIn(f"({marker} IT)", body_it)
+        self.assertNotIn(f"({marker} EN)", body_it)
+        self.assertNotIn(f"({marker} FR)", body_it)
+        self.assertIn(brand, body_it)
+
+        # EN render — EN override visible, IT/FR markers absent.
+        body_en = preview_body("en")
+        self.assertIn("listens", body_en)
+        self.assertIn(f"({marker} EN)", body_en)
+        self.assertNotIn(f"({marker} IT)", body_en)
+        self.assertNotIn(f"({marker} FR)", body_en)
+        self.assertIn(brand, body_en)
+
+        # FR render — FR override visible, IT/EN markers absent.
+        body_fr = preview_body("fr")
+        self.assertIn("écoute", body_fr)
+        self.assertIn(f"({marker} FR)", body_fr)
+        self.assertNotIn(f"({marker} IT)", body_fr)
+        self.assertNotIn(f"({marker} EN)", body_fr)
+        self.assertIn(brand, body_fr)
+
+        # Unedited locales — authored fallback + global logo visible.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn(f"({marker} IT)", body)
+            self.assertNotIn(f"({marker} EN)", body)
+            self.assertNotIn(f"({marker} FR)", body)
+            self.assertIn(brand, body)
+            authored = _tc.get_content(template_slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on {template_slug}",
+                )
+
+        # AR preview — `.sp-*` skin must render `<html dir="rtl" lang="ar">`.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 5. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_headline_field(groups):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == "home.headline":
+                        return f
+            self.fail(f"home.headline missing from {template_slug} editor groups")
+
+        for locale, expected_substring in (
+            ("it", f"({marker} IT)"),
+            ("en", f"({marker} EN)"),
+            ("fr", f"({marker} FR)"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_headline_field(r.context["groups"])
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill {template_slug} locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale ES: authored baseline prefill, is_overridden=False.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_headline_field(r_es.context["groups"])
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+        # Global field stays overridden universally.
+        logo_field = None
+        for g in r_es.context["groups"]:
+            for f in g["fields"]:
+                if f["key"] == "site.logo_word":
+                    logo_field = f
+                    break
+        self.assertIsNotNone(
+            logo_field, f"site.logo_word missing from {template_slug} editor",
+        )
+        self.assertEqual(logo_field["value"], brand)
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+    def test_a9_cardio_full_multilocale_lifecycle_end_to_end(self):
+        """Lifecycle HTTP cross-cutting on Cardio — first of the two
+        specialist templates. Distinct marker + brand so a regression
+        test running both back-to-back keeps the diagnostic surface
+        isolated per template."""
+        self._run_specialist_lifecycle(
+            template_slug="cardio-studio-specialistico",
+            marker="A9Cardio",
+            brand="A9CardioBrand",
+        )
+
+    def test_a9_derm_full_multilocale_lifecycle_end_to_end(self):
+        """Lifecycle HTTP cross-cutting on Derm — second template of the
+        shared specialist archetype. Proves one schema registers both
+        templates editable end-to-end without per-template branching."""
+        self._run_specialist_lifecycle(
+            template_slug="dermatologia-elite-roma",
+            marker="A9Derm",
+            brand="A9DermBrand",
+        )
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
