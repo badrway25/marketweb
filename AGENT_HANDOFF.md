@@ -1,16 +1,16 @@
 # Agent Handoff
 
-Last updated: 2026-04-17 — after **Session 62 A.9 Medical-specialist Editor + Multi-locale Enrollment merge** (baseline tip `e816b87`, pushed to origin)
+Last updated: 2026-04-17 — after **Session 63 A.10 Lex (classic-gold · law family) Editor + Multi-locale Enrollment merge** (baseline tip `ee9ebbd`, pushed to origin)
 
 ## Current state — read this before opening any new workstream (2026-04-17)
 
-Four editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) + **specialist** (shared between Cardio + Derm) — are all multi-locale enrolled. The `specialist` archetype is the **first multi-template archetype**: one shared schema unlocks two templates thanks to 95% content-tree parity between `cardio-studio-specialistico` and `dermatologia-elite-roma`. Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **4/8 archetypes editor-supported · 4/8 multi-locale enrolled · 5 templates editable end-to-end**. All acceptance gates are green:
+Five editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) + **specialist** (Cardio + Derm shared) + **classic-gold** (Lex only) — are all multi-locale enrolled. A.10 validated single-template enrollment in a 2-template category: Lex went in while Juris (`modern-transparent`) stays out and is explicitly guarded against accidental future enrollment in `test_a10_lex_archetype_registered`. Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **5/8 archetypes editor-supported · 5/8 multi-locale enrolled · 6 templates editable end-to-end**. All acceptance gates are green:
 
 - `python manage.py check` → 0 issues
-- `python manage.py test apps` → 172/172 PASS
+- `python manage.py test apps` → 182/182 PASS
 - `python smoke_full.py` → 834/834 routes HTTP 200
 
-Baseline `phase-integration-baseline-v15` tip: **`e816b87`** (A.9 merge), pushed to `origin/phase-integration-baseline-v15`.
+Baseline `phase-integration-baseline-v15` tip: **`ee9ebbd`** (A.10 merge), pushed to `origin/phase-integration-baseline-v15`.
 
 ### What the editor does today
 
@@ -42,6 +42,16 @@ Baseline `phase-integration-baseline-v15` tip: **`e816b87`** (A.9 merge), pushed
 - `supported_locales=["it","en","fr","es","ar"]` · identical UX surface to Vertex + Pragma + Gusto. AR preview on `.sp-*` skin renders `<html dir="rtl" lang="ar">` authentic.
 - Enrolled via A.9 Session 62 (combined A.6 schema register + A.7b gate flip in a single phase, plus **two distinct lifecycle regression tests** — `test_a9_cardio_full_multilocale_lifecycle_end_to_end` + `test_a9_derm_full_multilocale_lifecycle_end_to_end` — confirming the operational clarification to D-098: **shared-schema enrollments still require dedicated lifecycle coverage per template carried in**, there is no "free ride").
 
+**classic-gold (Lex) — editable AND multi-locale enrolled (A.10) · SINGLE-TEMPLATE FAMILY ADMISSION:**
+- **Single template**: `lex-studio-legale`. **Juris (`modern-transparent`) is explicitly NOT enrolled** — it lives in the same `lawyer` category but carries distinct DNA + distinct skin folder + ~75% divergent content-tree shape. Juris awaits A.11 or later phase with its own schema + skin bridge + dedicated lifecycle test. Guard inside `test_a10_lex_archetype_registered` asserts `modern-transparent NOT in _ARCHETYPE_SCHEMAS NOR in _MULTILOCALE_ENABLED_ARCHETYPES` so a future accidental enrollment without its own dedicated phase fails fast.
+- 9 sidebar groups · ~102 scalar fields + 1 scalar image (`notabili.lead_image` — only image in Lex registry; lawyers + partners dicts carry no portraits) + 6 readonly indexed lists:
+  - `avvocati.lawyers` dict 14×(bio/foro/name/role/specialization/year) — 14 lawyers · all 6 cols exposed · no portrait col to omit
+  - `pratiche.services` dict 12×(num/title/blurb/lead/jurisdiction) — 12 practice areas · `scope` nested-list-of-str bullet points intentionally omitted from cols, stays registry-only
+  - `pratiche.process` tuple 4×3, `studio.history` tuple 6×3, `studio.values` tuple 4×3, `contatti.offices` dict 2×7 (full: city/tag/address/area/phone/email/hours)
+- 79 translatable fields per-template sidebar rendering (distributed across home + studio + pratiche + avvocati + notabili + contatti + site chrome)
+- `supported_locales=["it","en","fr","es","ar"]` · identical UX surface. AR preview on `.lx-*` skin renders `<html dir="rtl" lang="ar">` authentic with ledger-style RTL.
+- Enrolled via A.10 Session 63 (combined A.6 schema register + A.7b gate flip in a single phase, with `test_a10_lex_full_multilocale_lifecycle_end_to_end` as the single dedicated lifecycle regression test). Confirms D-098 scales to single-template admissions in categories where other templates remain out of the gate.
+
 ### What is operator-only
 
 - `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project=<uuid>`, `--grace=<hours>`) — removes ProjectAsset rows + files no longer referenced by any live override or publish snapshot. Not scheduled. Not auto-triggered. Manual only per D-094.
@@ -66,9 +76,9 @@ See A.6 commits `a7177f5` · `9540d5a` · `4b9376c`. 5 contract tests + schema r
 
 All prior D-086 through D-095 (A.1 → A.5 bindings) and pre-editor decisions (D-054 premium law, D-055 tier model, D-047 chrome authoring, etc.) remain in force. See DECISIONS.md for full catalogue.
 
-### Phase A.10+ — candidates (no commitment yet)
+### Phase A.11+ — candidates (no commitment yet)
 
-Pick one when the next workstream opens. Recommended framing: **A.10 planning session on the next multi-template archetype family** — `law` (Lex + Juris) or `real-estate` (Casa + Villa) are the natural candidates to continue the A.9 "1 shared schema → 2 templates" pattern. The A.9 Step-0 runtime audit template (compare archetype DNA + content-tree key parity) is reusable verbatim. Alternatives: Chiara (single template, novel page kinds), Sapore (hospitality adjacency), editor operator tools, remote storage (prod-launch driven only).
+Pick one when the next workstream opens. Recommended framing: **A.11 Juris (modern-transparent) enrollment** — natural continuation of the law family opened in A.10. Juris has distinct DNA from Lex so it needs its own schema + skin bridge + dedicated lifecycle test (single-template recipe already proven). Alternatives: real-estate family audit (Casa + Villa — Step-0 required to check shared-schema viability), Chiara (single template with novel page kinds), editor polish / operator tools / remote storage (defer unless customer signal or prod-launch timeline).
 
 See `TODO_NEXT.md` for full candidate list + red-lamps + "do NOT open" list.
 

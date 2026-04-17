@@ -4923,3 +4923,57 @@ A.10 planning session — candidates in priority order (dedicated planning requi
 (d) **A.10 alt · Remote asset storage** — S3/Cloudinary swap of `ProjectAsset.file` backend. Worth opening only when a prod-launch timeline requires it.
 
 Consolidation pause (this commit) precedes the choice.
+
+---
+
+## Session 63 — Phase A.10 · Lex (classic-gold) Editor + Multi-locale Enrollment (2026-04-17)
+
+### What shipped
+
+A.10 ships the fifth editable archetype: **Lex (classic-gold · law family)**. The Step-0 runtime audit settled a decisive question: Lex and Juris — both under the `lawyer` category — carry **distinct DNA archetypes** (`classic-gold` vs `modern-transparent`) with distinct skin folders (`lawyer/classic-gold/` vs `lawyer/modern-transparent/`) and only ~25% content-tree shape overlap (only `home` + `contatti` slugs shared; divergent page slugs and section shapes elsewhere). The A.9 shared-schema pattern therefore **does not apply** to the law family. Decision: A.10 enrolls **Lex only**. Juris stays explicitly out of the gate and will be addressed as A.10b in a dedicated phase with its own schema + skin bridge + lifecycle coverage.
+
+### Recipe applied (single-template · A.6 + A.7b combined)
+
+Two commits on `phase-editor-a10-lex-classic-gold-v1`.
+
+- Step 0 · runtime audit (planning artifact, no code). Verified 5-locale parity **PERFECT** on Lex across every section (zero IT-only gaps on `contatti.form_fields` / `form_sections` / `upload_field` — Lex is the cleanest content registry among the four pre-A.10 archetypes for locale parity). Only one scalar image field (`notabili.lead_image`). No portrait fields anywhere in the registry — `home.partners` + `avvocati.lawyers` dict rows carry no `portrait` col, so the portrait-excluded pattern used in Gusto produttori.items and specialist medici.doctors is **not needed** here. RTL CSS block mature on `classic-gold/_base.html` (lines 331+) using `.lx-*` prefix selectors.
+- `25da231` · Step 1 · `LEX_CLASSIC_GOLD_SCHEMA` in `apps/editor/schema.py` (~340 LOC · 9 sidebar groups covering brand + hero + home bands + 6 page groups + footer chrome · ~102 scalar fields). `STRUCTURED_FIELD_SHAPES["classic-gold"]` exposes 6 readonly indexed lists (`avvocati.lawyers` dict 14×6 all cols · `pratiche.services` dict 12×5 with `scope` nested-list-of-str intentionally omitted from cols so the bullet points stay registry-only · `pratiche.process` tuple 4×3 · `studio.history` tuple 6×3 · `studio.values` tuple 4×3 · `contatti.offices` dict 2×7). Registered in `_ARCHETYPE_SCHEMAS` + `_ARCHETYPE_BASELINE_TEMPLATE[("lex-studio-legale","it")]` + `_MULTILOCALE_ENABLED_ARCHETYPES`. `templates/live_templates/lawyer/classic-gold/_base.html` gets the three atomic A.6 fixes (title `site.logo_word|default:brand.brand_name` · body guard class · CSS guard block `.lx-*` + preview-bridge injection). 9 tests including `test_a10_lex_archetype_registered` with an **explicit guard that `modern-transparent` (Juris) is NOT in `_ARCHETYPE_SCHEMAS` nor in the multi-locale gate** — catches any future accidental Juris enrollment without its own dedicated phase. Plus quadruple regression test + preview-bridge 3-point integration test.
+- `ddfb66d` · Step 2 · `test_a10_lex_full_multilocale_lifecycle_end_to_end` mirror of A.7b/A.8/A.9-single-template on Lex: 3 translatable autosaves (IT/EN/FR on `home.headline` with marker "A10Lex") + 1 global autosave (`site.logo_word` = "A10LexBrand" EN-tagged but plain-keyed) + publish + 5 public preview renders (second user) + AR `<html dir="rtl" lang="ar">` assertion on the opening `<html>` tag + 4 editor reopens (owner). Route: `/templates/lawyer/lex-studio-legale/preview/`. Passes first run.
+
+Step 3 · browser walk (no code change). 13 spot checks all green:
+- Editor `?lang=it` mount → label "Lingua attiva", 5 pills, 79 translatable markers, correct translatable/global separation
+- Type IT + global "WalkLex" + click EN before debounce → flush `@it:home.headline` + plain `site.logo_word` before navigation (DB verified)
+- IT → EN → FR → ES → AR locale switches: each locale loads authored / customer buffer correctly · zero cross-locale leak
+- AR iframe renders `<html dir="rtl" lang="ar">` authentic on the `.lx-*` skin · Arabic H1 "كفاءة، تحفظ، نتائج." · nav RTL (المكتب / عن المكتب) · crest LF · ledger hero RTL · logo WalkLex in chrome
+- Sub-page spot checks (owner IT): `/pratiche/` renders 12 practice areas (Diritto societario visible) · `/avvocati/` renders 14 lawyers (Avv. Prof. Alberto Ferri) · `/notabili/` renders blog index with WalkLex universal
+- Publish + second-user public preview per locale: IT/EN/FR customer overrides · ES/AR authored fallback · AR htmlDir rtl · WalkLex universal · zero cross-locale leak
+- Title tag AR = "WalkLex — المكتب" confirms `site.logo_word|default:brand.brand_name` applied on `.lx-*` skin
+- Screenshots: `a10_lex_editor_ar_rtl.png` + `a10_lex_public_preview_ar_rtl.png`
+
+### Observables
+
+- 172/172 → **182/182** server tests (+10: 9 contract/integration + 1 lifecycle).
+- Smoke 834/834 unchanged. `manage.py check` 0 issues.
+- No production code touched outside `schema.py`, `classic-gold/_base.html` (3 minimal fixes), and `tests.py`. Zero touches to `services.py` / `rendering.py` / `views.py` / `models.py` / editor templates / `live-editor.js` / CSS / content registries / other skins / modern-transparent skin.
+
+### Consequences
+
+- **Editor 5/8 archetypes editable · multi-locale 5/8 enrolled · 6 templates editable end-to-end** (Vertex + Pragma + Gusto + Cardio + Derm + Lex).
+- Catalog 20/20 `published_live` unchanged.
+- **No new D-number introduced**. A.10 is the fourth real application of the D-098 recipe and confirms that **single-template enrollment remains valid** — the shared-schema pattern of A.9 is a capability, not a requirement. The actual binding constraint from D-098 is the dedicated lifecycle regression test per enrolled template, regardless of whether schemas are shared or template-specific.
+- Branch shape: `phase-editor-a10-lex-classic-gold-v1` merged into v15 via `--no-ff` @ `ee9ebbd`. Pushed to `origin/phase-integration-baseline-v15`.
+- No explicit debt pending.
+
+### Exact next step
+
+A.11 planning session — candidates in priority order (dedicated planning required before Step 0):
+
+(a) **A.11 Juris (modern-transparent) enrollment** — closes the law family opened in A.10. Separate schema + separate skin bridge + dedicated lifecycle test. Same recipe A.6 + A.7b applied to the second law template.
+
+(b) **A.11 alt · real-estate family (Casa + Villa)** — requires a Step-0 runtime audit to check whether Casa (`mass-market`) and Villa (`ultra-luxury-cinematic`) share archetype slug + content-tree shape or diverge like Lex/Juris. If the audit reveals two distinct archetypes, the choice becomes "Casa-only" or "Villa-only" for A.11 with the other deferred to A.11b.
+
+(c) **A.11 alt · Chiara (editorial-designer-grid)** — single template, novel `project_detail` / `series_detail` page kinds stretch the editor beyond the current home/about/services patterns. Higher risk than the multi-archetype continuation path.
+
+(d) **A.11 alt · editor polish / operator tools / remote storage** — defer unless customer signal or prod-launch timeline demands.
+
+Consolidation pause (this commit) precedes the choice.
