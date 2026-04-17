@@ -198,7 +198,7 @@ PRAGMA_CORPORATE_SUITE_SCHEMA: list[dict[str, Any]] = [
         "label": "Pagina Chi siamo",
         "icon": "bi-people",
         "region": ".cs-hero, .cs-history, .cs-values, .cs-team, .cs-coords",
-        "page": "about",
+        "page": "chi-siamo",
         "keywords": ["chi siamo", "studio", "storia", "valori", "team", "sedi"],
         "help": "Contenuti della pagina Chi siamo.",
         "fields": [
@@ -221,7 +221,7 @@ PRAGMA_CORPORATE_SUITE_SCHEMA: list[dict[str, Any]] = [
         "label": "Pagina Competenze",
         "icon": "bi-briefcase",
         "region": ".cs-services, .cs-process, .cs-cta-svc",
-        "page": "services",
+        "page": "competenze",
         "keywords": ["competenze", "practice", "servizi", "processo", "metodo"],
         "help": "Contenuti della pagina Competenze.",
         "fields": [
@@ -240,7 +240,7 @@ PRAGMA_CORPORATE_SUITE_SCHEMA: list[dict[str, Any]] = [
         "label": "Pagina Case studies",
         "icon": "bi-journals",
         "region": ".cs-cases-list, .cs-cta-list",
-        "page": "case_study_list",
+        "page": "case-studies",
         "keywords": ["case studies", "lavori", "portfolio", "mandati"],
         "help": "Contenuti della pagina Case studies.",
         "fields": [

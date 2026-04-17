@@ -1394,12 +1394,15 @@ class FoundationModelTests(TestCase):
         groups = iter_groups("corporate-suite")
         self.assertGreaterEqual(len(groups), 7)
         pages = {g.get("page") for g in groups}
-        # Must cover: chrome + home + about + services + case_study_list
+        # Must cover: chrome + the five Pragma page slugs. Pragma
+        # uses Italian slugs (chi-siamo / competenze / case-studies)
+        # which must match the page metadata verbatim so the JS
+        # page-aware navigation sees the same string as iframe path.
         self.assertIn("*", pages)
         self.assertIn("home", pages)
-        self.assertIn("about", pages)
-        self.assertIn("services", pages)
-        self.assertIn("case_study_list", pages)
+        self.assertIn("chi-siamo", pages)
+        self.assertIn("competenze", pages)
+        self.assertIn("case-studies", pages)
         # Every group must declare icon + region
         for g in groups:
             with self.subTest(group=g["id"]):
@@ -1908,6 +1911,73 @@ class FoundationHttpTests(TestCase):
         )
         self.assertEqual(r3.status_code, 200)
         self.assertIn(uploaded_url, r3.content.decode("utf-8", "ignore"))
+
+    def test_a6_pragma_preview_title_reflects_logo_word_override(self):
+        """A.6 mirror of A.2.7 L1: overriding site.logo_word must
+        propagate to the iframe <title>, not stay locked to the
+        catalog brand. Proves the skin title-fix was wired."""
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "Atelier Pragma"},
+        )
+        r = self.client.get(
+            f"/templates/business/pragma-corporate-suite/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        title_start = body.index("<title>")
+        title_end = body.index("</title>", title_start)
+        title = body[title_start + len("<title>"):title_end]
+        self.assertIn("Atelier Pragma", title)
+        self.assertNotIn("Pragma Advisors", title)
+
+    def test_a6_pragma_editor_ctx_exposes_sidebar_and_palette(self):
+        """The project editor GET for a Pragma project must render the
+        Pragma schema (all 7 groups · icon + region + page-aware
+        markers) and expose the palette index with Pragma field keys."""
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        # Group markup wired — one data-group-id per Pragma schema group
+        for group_id in ("brand", "hero_board", "home_bands", "about_page",
+                         "services_page", "cases_page", "contact_info"):
+            self.assertIn(f'data-group-id="{group_id}"', body,
+                          f"Pragma group '{group_id}' missing from editor markup.")
+        # Page-aware data-ed-page attributes at least for home + chrome
+        self.assertIn('data-ed-page="home"', body)
+        self.assertIn('data-ed-page="*"', body)
+        # Palette index JSON carries Pragma-specific field keys
+        self.assertIn('"key": "site.logo_word"', body)
+        self.assertIn('"key": "home.headline"', body)
+        self.assertIn('"key": "home.hero_image"', body)
+        # Preview URL points at Pragma, not Vertex
+        self.assertIn("/templates/business/pragma-corporate-suite/preview/", body)
+
+    def test_a6_pragma_editor_preview_injects_editor_bridge(self):
+        """When the live preview is requested with ?project=<uuid>, the
+        Pragma skin must inject preview-bridge.js and mark the body as
+        editor-embedded (so the marketplace top strip is hidden)."""
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+        # With project → bridge injected, body class applied
+        r = self.client.get(
+            f"/templates/business/pragma-corporate-suite/preview/?project={p.uuid}"
+        )
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn('editor/preview-bridge.js', body)
+        # Check the body class attribute specifically — the CSS rule
+        # body.mw-is-editor-preview { ... } also contains the literal
+        # string, so match on the <body class="..."> pattern only.
+        self.assertIn('<body class="mw-is-editor-preview"', body)
+        # Without project → bridge absent, body class absent (public view)
+        r2 = self.client.get("/templates/business/pragma-corporate-suite/preview/")
+        body2 = r2.content.decode("utf-8", "ignore")
+        self.assertNotIn('editor/preview-bridge.js', body2)
+        self.assertNotIn('<body class="mw-is-editor-preview"', body2)
 
     def test_a3c_editor_markup_exposes_repeater_affordances_only_on_mutable(self):
         """A.3c polish — cross-cutting integration: the editor HTTP
