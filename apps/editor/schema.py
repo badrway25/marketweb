@@ -544,6 +544,259 @@ GUSTO_FINE_DINING_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# A.9 · Medical-specialist schema (Cardio + Derm · archetype `specialist`)
+# ---------------------------------------------------------------------------
+#
+# Fourth editable archetype. First multi-template archetype: one schema
+# unlocks two templates (``cardio-studio-specialistico`` +
+# ``dermatologia-elite-roma``) because both carry ``archetype: 'specialist'``
+# in their DNA and share 95% of the content-tree shape (100% on studio /
+# visite / medici / pubblicazioni / contatti / richiedi-visita / site · 85%
+# on home — 29 shared keys · 5 Cardio-only · 5 Derm-only).
+#
+# The 10 divergent home premium sections (D-064 Session 30 split) are
+# intentionally NOT exposed here: ``home.anchor_nav``, ``home.insurance``,
+# ``home.location``, ``home.percorso``, ``home.tecnologie`` on Cardio; and
+# ``home.before_after``, ``home.credentials``, ``home.editorial_feed``,
+# ``home.gallery_strip``, ``home.trattamenti_tabs`` on Derm. Their authored
+# values keep rendering unchanged; customers simply can't edit them in A.9.
+# Dedicated regression test ``test_a9_specialist_divergent_premium_sections_excluded``
+# locks this boundary so a later coverage pass can't accidentally reopen it.
+#
+# Form-structure blocks that are IT-only in the registry
+# (``contatti.form_consent``, ``contatti.form_helpers``,
+# ``richiedi-visita.form_sections``, ``richiedi-visita.upload_field``) stay
+# out of the whitelist — same exclusion strategy Gusto A.8 used for
+# ``prenota.form_sections``.
+#
+# Image fields exposed customer-side (all global per D-098): the 5 scalar
+# images on home.chief.portrait, studio.studio_image, visite.service_image,
+# pubblicazioni.lead_image, plus the 3 doctor portraits inside
+# ``medici.doctors[*].portrait`` — the latter omitted from the dict shape
+# ``cols`` so they stay registry-only (same pattern as Gusto
+# produttori.items portrait).
+
+MEDICAL_SPECIALIST_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".sp-nav, .sp-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "studio", "tagline", "medico", "specialista"],
+        "help": "Nome dello studio, iniziale del crest e tagline.",
+        "fields": [
+            ("site.logo_word",    {"label": "Nome studio", "type": "text", "max_length": 60,
+                                    "placeholder": "Studio Marani"}),
+            ("site.logo_initial", {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",          {"label": "Tagline", "type": "text", "max_length": 100}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".sp-hero",
+        "page": "home",
+        "keywords": ["hero", "apertura", "headline", "eyebrow", "intro", "cta", "direzione clinica"],
+        "help": "Primo scroll della home: eyebrow, headline, intro, CTA principali, drop-cap + manifesto.",
+        "fields": [
+            ("home.eyebrow",           {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("home.headline",          {"label": "Headline", "type": "richtext", "max_length": 220,
+                                         "help": "Consentiti i tag <em> per gli italici."}),
+            ("home.intro",             {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("home.primary_cta",       {"label": "CTA primaria · etichetta", "type": "text", "max_length": 40}),
+            ("home.primary_href",      {"label": "CTA primaria · destinazione", "type": "select",
+                                         "choices": ["home", "studio", "visite", "medici",
+                                                     "pubblicazioni", "contatti", "richiedi-visita"]}),
+            ("home.secondary_cta",     {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 40}),
+            ("home.secondary_href",    {"label": "CTA secondaria · destinazione", "type": "select",
+                                         "choices": ["home", "studio", "visite", "medici",
+                                                     "pubblicazioni", "contatti", "richiedi-visita"]}),
+            ("home.manifesto_drop_cap", {"label": "Drop cap manifesto", "type": "text", "max_length": 2}),
+            ("home.manifesto",         {"label": "Manifesto home", "type": "textarea", "max_length": 700}),
+            ("home.press_label",       {"label": "Pubblicato su · eyebrow", "type": "text", "max_length": 40}),
+            ("home.hero_sidebar_top_label", {"label": "Sidebar hero · eyebrow", "type": "text", "max_length": 60}),
+            ("home.hero_sidebar_quote", {"label": "Sidebar hero · citazione", "type": "textarea", "max_length": 400}),
+            ("home.hero_sidebar_author", {"label": "Sidebar hero · fonte", "type": "text", "max_length": 120}),
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".sp-section",
+        "page": "home",
+        "keywords": ["visite", "signature", "chief", "direzione", "cta", "testimonianza", "faq"],
+        "help": "Label, eyebrow e intro delle fasce shared (signature visits, direzione clinica, CTA finale, testimonianza, FAQ).",
+        "fields": [
+            ("home.signature_visits_label",   {"label": "Signature visits · eyebrow", "type": "text", "max_length": 80}),
+            ("home.signature_visits_heading", {"label": "Signature visits · titolo", "type": "richtext", "max_length": 220}),
+            ("home.signature_visits_intro",   {"label": "Signature visits · intro", "type": "textarea", "max_length": 500}),
+            ("home.chief_label",              {"label": "Direzione clinica · eyebrow", "type": "text", "max_length": 80}),
+            ("home.chief_heading",            {"label": "Direzione clinica · titolo", "type": "richtext", "max_length": 220}),
+            ("home.testimonianza.quote",      {"label": "Testimonianza · citazione", "type": "textarea", "max_length": 400}),
+            ("home.testimonianza.author",     {"label": "Testimonianza · autore", "type": "text", "max_length": 120}),
+            ("home.testimonianza.context",    {"label": "Testimonianza · contesto", "type": "text", "max_length": 160}),
+            ("home.faq.label",                {"label": "FAQ · eyebrow", "type": "text", "max_length": 80}),
+            ("home.faq.heading",              {"label": "FAQ · titolo", "type": "richtext", "max_length": 220}),
+            ("home.cta_heading",              {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("home.cta_primary_label",        {"label": "CTA finale · primario", "type": "text", "max_length": 40}),
+            ("home.cta_secondary_label",      {"label": "CTA finale · secondario", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "home_chief",
+        "label": "Home · direzione clinica",
+        "icon": "bi-person-badge",
+        "region": ".sp-chief",
+        "page": "home",
+        "keywords": ["direzione", "chief", "medico", "titolare", "portrait"],
+        "help": "Card direttore clinico (nome / ruolo / bio / portrait).",
+        "fields": [
+            ("home.chief.name",     {"label": "Direzione · nome", "type": "text", "max_length": 80}),
+            ("home.chief.role",     {"label": "Direzione · ruolo", "type": "text", "max_length": 120}),
+            ("home.chief.bio",      {"label": "Direzione · bio", "type": "textarea", "max_length": 600}),
+            ("home.chief.portrait", {"label": "Direzione · ritratto (URL)", "type": "image", "max_length": 400}),
+        ],
+    },
+    {
+        "id": "studio_page",
+        "label": "Pagina Studio",
+        "icon": "bi-building",
+        "region": ".sp-section",
+        "page": "studio",
+        "keywords": ["studio", "about", "storia", "metodo", "valori", "impegni"],
+        "help": "Pagina Chi siamo: storia, metodo, valori, CTA finale.",
+        "fields": [
+            ("studio.eyebrow",              {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("studio.headline",             {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("studio.intro",                {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("studio.studio_image",         {"label": "Immagine studio", "type": "image", "max_length": 400}),
+            ("studio.studio_image_caption", {"label": "Caption immagine", "type": "text", "max_length": 160}),
+            ("studio.method_title",         {"label": "Metodo · titolo", "type": "text", "max_length": 80}),
+            ("studio.values_label",         {"label": "Valori · eyebrow", "type": "text", "max_length": 80}),
+            ("studio.values_heading",       {"label": "Valori · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.cta_heading",          {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.cta_primary_label",    {"label": "CTA · pulsante primario", "type": "text", "max_length": 60}),
+            ("studio.cta_secondary_label",  {"label": "CTA · pulsante secondario", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "visite_page",
+        "label": "Pagina Visite",
+        "icon": "bi-clipboard2-pulse",
+        "region": ".sp-section",
+        "page": "visite",
+        "keywords": ["visite", "servizi", "trattamenti", "percorsi", "clinica"],
+        "help": "Pagina Visite / servizi (lista trattamenti readonly).",
+        "fields": [
+            ("visite.eyebrow",               {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("visite.headline",              {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("visite.intro",                 {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("visite.service_image",         {"label": "Immagine servizio", "type": "image", "max_length": 400}),
+            ("visite.service_image_caption", {"label": "Caption immagine", "type": "text", "max_length": 160}),
+            ("visite.footnote",              {"label": "Nota piè pagina", "type": "textarea", "max_length": 400}),
+            ("visite.footnote_heading",      {"label": "Nota · titolo breve", "type": "text", "max_length": 80}),
+            ("visite.cta_heading",           {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("visite.cta_primary_label",     {"label": "CTA · pulsante primario", "type": "text", "max_length": 60}),
+            ("visite.cta_secondary_label",   {"label": "CTA · pulsante secondario", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "medici_page",
+        "label": "Pagina Medici",
+        "icon": "bi-people",
+        "region": ".sp-section",
+        "page": "medici",
+        "keywords": ["medici", "team", "dottori", "equipe"],
+        "help": "Pagina team: intro + lista medici readonly.",
+        "fields": [
+            ("medici.eyebrow",       {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("medici.headline",      {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("medici.intro",         {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("medici.portrait_city", {"label": "Etichetta città ritratti", "type": "text", "max_length": 80}),
+        ],
+    },
+    {
+        "id": "pubblicazioni_page",
+        "label": "Pagina Pubblicazioni",
+        "icon": "bi-journal-text",
+        "region": ".sp-section",
+        "page": "pubblicazioni",
+        "keywords": ["pubblicazioni", "articoli", "press", "blog", "journal"],
+        "help": "Pagina-indice pubblicazioni. I singoli post restano da registry.",
+        "fields": [
+            ("pubblicazioni.eyebrow",     {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("pubblicazioni.headline",    {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("pubblicazioni.intro",       {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("pubblicazioni.lead_image",  {"label": "Immagine di testata", "type": "image", "max_length": 400}),
+            ("pubblicazioni.footer_strap", {"label": "Strap footer", "type": "text", "max_length": 120}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-telephone",
+        "region": ".sp-section",
+        "page": "contatti",
+        "keywords": ["contatti", "contact", "form", "orari", "trasporti"],
+        "help": "Pagina contatti: copy, form title + intro. Struttura form / placeholder select / consenso restano da registry.",
+        "fields": [
+            ("contatti.eyebrow",            {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("contatti.headline",           {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",              {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("contatti.form_title",         {"label": "Form · titolo", "type": "text", "max_length": 80}),
+            ("contatti.form_intro",         {"label": "Form · intro", "type": "textarea", "max_length": 300}),
+            ("contatti.hours_heading",      {"label": "Orari · titolo", "type": "text", "max_length": 80}),
+            ("contatti.transport_heading",  {"label": "Trasporti · titolo", "type": "text", "max_length": 80}),
+            ("contatti.form_submit_note",   {"label": "Form · nota submit", "type": "textarea", "max_length": 240}),
+        ],
+    },
+    {
+        "id": "appointment_page",
+        "label": "Pagina Richiedi visita",
+        "icon": "bi-calendar-check",
+        "region": ".sp-section",
+        "page": "richiedi-visita",
+        "keywords": ["appointment", "prenota", "richiedi", "visita", "form"],
+        "help": "Pagina Richiedi visita: copy + card processo. Struttura form + upload field restano da registry.",
+        "fields": [
+            ("richiedi-visita.eyebrow",                 {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("richiedi-visita.headline",                {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("richiedi-visita.intro",                   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("richiedi-visita.process_label",           {"label": "Processo · eyebrow", "type": "text", "max_length": 80}),
+            ("richiedi-visita.process_heading",         {"label": "Processo · titolo", "type": "richtext", "max_length": 220}),
+            ("richiedi-visita.form_title",              {"label": "Form · titolo", "type": "text", "max_length": 80}),
+            ("richiedi-visita.form_band_side_note",     {"label": "Form · nota laterale", "type": "textarea", "max_length": 240}),
+            ("richiedi-visita.form_band_side_note_small", {"label": "Form · micro nota", "type": "text", "max_length": 60}),
+            ("richiedi-visita.submit_label",            {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("richiedi-visita.form_submit_note",        {"label": "Form · nota sotto submit", "type": "textarea", "max_length": 240}),
+            ("richiedi-visita.consent",                 {"label": "Privacy · testo consenso", "type": "textarea", "max_length": 400}),
+            ("richiedi-visita.footnote",                {"label": "Footnote piè pagina", "type": "textarea", "max_length": 400}),
+        ],
+    },
+    {
+        "id": "contact_info",
+        "label": "Contatti · footer",
+        "icon": "bi-telephone-forward",
+        "region": ".sp-foot",
+        "page": "*",
+        "keywords": ["footer", "phone", "telefono", "email", "indirizzo", "orari", "licenza"],
+        "help": "Dati di contatto + strip licenza + intro footer.",
+        "fields": [
+            ("site.phone",         {"label": "Telefono", "type": "text", "max_length": 40}),
+            ("site.email",         {"label": "Email", "type": "text", "max_length": 80}),
+            ("site.address",       {"label": "Indirizzo", "type": "text", "max_length": 120}),
+            ("site.hours_compact", {"label": "Orari sintetici", "type": "text", "max_length": 80}),
+            ("site.license",       {"label": "Licenza / albo", "type": "text", "max_length": 120}),
+            ("site.footer_intro",  {"label": "Intro footer", "type": "textarea", "max_length": 400}),
+        ],
+    },
+]
+
+
 AGENCY_CREATIVE_STUDIO_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -1261,6 +1514,98 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # A.9 · medical-specialist — 6 readonly indexed lists shared between
+    # Cardio and Derm (same shape + same paths). All exposed text/label
+    # cells stay global at the cell level per D-098. The ``portrait``
+    # column on ``medici.doctors`` is intentionally omitted from the
+    # dict shape ``cols`` so the 3 doctor portraits stay registry-only
+    # (same pattern Gusto produttori.items).
+    "specialist": {
+        "home.facts": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Fatti clinici",
+            "icon": "bi-bar-chart",
+            "region": ".sp-hero",
+            "keywords": ["fatti", "numeri", "esperienza", "visite"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 60}),
+                ("value", {"label": "Valore",    "type": "text", "max_length": 40}),
+            ],
+        },
+        "home.signature_visits": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Visite firma",
+            "icon": "bi-list-ol",
+            "region": ".sp-signature-visits",
+            "keywords": ["visite", "signature", "percorsi", "trattamenti"],
+            "tuple_order": ["num", "title", "body"],
+            "cols": [
+                ("num",   {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo visita", "type": "text", "max_length": 80}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "medici.doctors": {
+            "kind": "dict",
+            "page": "medici",
+            "label": "Medici · Team (copy)",
+            "icon": "bi-people",
+            "region": ".sp-team",
+            "keywords": ["medici", "team", "dottori", "equipe"],
+            "cols": [
+                ("name",  {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",  {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("bio",   {"label": "Biografia", "type": "textarea", "max_length": 600}),
+                ("focus", {"label": "Area focus", "type": "text", "max_length": 120}),
+                # portrait intenzionalmente omesso: resta readonly al registry
+            ],
+        },
+        "studio.history": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Cronologia",
+            "icon": "bi-clock-history",
+            "region": ".sp-history",
+            "keywords": ["storia", "timeline", "cronologia", "tappe"],
+            "tuple_order": ["year", "title", "body"],
+            "cols": [
+                ("year",  {"label": "Anno", "type": "text", "max_length": 12}),
+                ("title", {"label": "Titolo", "type": "text", "max_length": 80}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "studio.values": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Impegni / Valori",
+            "icon": "bi-check2-square",
+            "region": ".sp-values",
+            "keywords": ["valori", "impegni", "promesse", "garanzie"],
+            "tuple_order": ["title", "body"],
+            "cols": [
+                ("title", {"label": "Titolo", "type": "text", "max_length": 80}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "visite.treatments": {
+            "kind": "tuple",
+            "page": "visite",
+            "label": "Visite · Trattamenti",
+            "icon": "bi-heart-pulse",
+            "region": ".sp-treatments",
+            "keywords": ["trattamenti", "visite", "procedure", "servizi"],
+            "tuple_order": ["num", "title", "body", "duration"],
+            "cols": [
+                ("num",      {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",    {"label": "Titolo", "type": "text", "max_length": 80}),
+                ("body",     {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("duration", {"label": "Durata / nota", "type": "text", "max_length": 80}),
+            ],
+        },
+    },
 }
 
 
@@ -1272,6 +1617,11 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     "agency-creative-studio": ("vertex-creative-agency", "it"),
     "corporate-suite":        ("pragma-corporate-suite", "it"),
     "fine-dining":            ("gusto-fine-dining",     "it"),
+    # A.9 · one archetype, two templates. Baseline anchors Cardio because
+    # it was the i18n pilot (Session 23) and carries the canonical list
+    # lengths the sidebar uses when materializing indexed groups. Derm
+    # shares exactly the same shape and gets editable "for free".
+    "specialist":             ("cardio-studio-specialistico", "it"),
 }
 
 
@@ -1283,6 +1633,7 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     "agency-creative-studio": AGENCY_CREATIVE_STUDIO_SCHEMA,
     "corporate-suite":        PRAGMA_CORPORATE_SUITE_SCHEMA,
     "fine-dining":            GUSTO_FINE_DINING_SCHEMA,
+    "specialist":             MEDICAL_SPECIALIST_SCHEMA,
 }
 
 
@@ -1755,6 +2106,12 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # with its editor enrollment (single phase · D-098 recipe). Gated by
     # ``test_a8_gusto_full_multilocale_lifecycle_end_to_end``.
     "fine-dining",
+    # A.9 · medical-specialist (Cardio + Derm · first multi-template
+    # archetype) joins editor + multi-locale in a single phase. Gated by
+    # ``test_a9_cardio_full_multilocale_lifecycle_end_to_end`` AND
+    # ``test_a9_derm_full_multilocale_lifecycle_end_to_end`` so each
+    # template of the pair gets dedicated regression coverage.
+    "specialist",
 })
 
 

@@ -1772,6 +1772,285 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
 
+    # ------------------------------------------------------------------
+    # A.9 · medical-specialist enrollment (Cardio + Derm · shared schema)
+    # ------------------------------------------------------------------
+
+    def test_a9_specialist_archetype_registered(self):
+        """``specialist`` joins the schema + baseline template + gate
+        registries. Baseline anchors Cardio (i18n pilot template) but
+        the schema is shared with Derm via the DNA archetype slug."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("specialist", _ARCHETYPE_SCHEMAS)
+        self.assertEqual(
+            _ARCHETYPE_BASELINE_TEMPLATE["specialist"],
+            ("cardio-studio-specialistico", "it"),
+        )
+        self.assertIn("specialist", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("specialist"))
+
+    def test_a9_specialist_schema_shape_covers_all_shared_pages(self):
+        """The specialist schema must surface groups for every shared
+        Cardio/Derm page (home + studio + visite + medici + pubblicazioni
+        + contatti + richiedi-visita) plus chrome-level groups."""
+        groups = iter_groups("specialist")
+        self.assertGreaterEqual(len(groups), 11)
+        pages = {g.get("page") for g in groups}
+        for slug in ("*", "home", "studio", "visite", "medici",
+                     "pubblicazioni", "contatti", "richiedi-visita"):
+            self.assertIn(slug, pages,
+                          f"specialist schema missing page slug {slug!r}")
+
+    def test_a9_specialist_is_translatable_text_fields(self):
+        """Scalar copy fields distributed across every shared page +
+        chrome. Uses only paths present on BOTH Cardio and Derm so the
+        test passes independently of which template is instantiated."""
+        from apps.editor.schema import is_translatable
+        arc = "specialist"
+        distributed_paths = (
+            # hero_home + home bands
+            "home.headline",
+            "home.intro",
+            "home.manifesto",
+            "home.signature_visits_heading",
+            "home.chief.bio",
+            # studio
+            "studio.intro",
+            "studio.values_heading",
+            # visite
+            "visite.headline",
+            "visite.footnote",
+            # medici
+            "medici.intro",
+            # pubblicazioni
+            "pubblicazioni.headline",
+            # contatti
+            "contatti.intro",
+            "contatti.form_intro",
+            # richiedi-visita
+            "richiedi-visita.process_heading",
+            "richiedi-visita.consent",
+            # chrome site.*
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on specialist",
+            )
+
+    def test_a9_specialist_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on specialist, same
+        contract as Vertex / Pragma / Gusto."""
+        from apps.editor.schema import is_translatable
+        arc = "specialist"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on specialist",
+            )
+
+    def test_a9_specialist_non_text_fields_are_global(self):
+        """Image + select fields on specialist always stay global."""
+        from apps.editor.schema import is_translatable
+        arc = "specialist"
+        # Scalar image fields
+        self.assertFalse(is_translatable(arc, "home.chief.portrait"))
+        self.assertFalse(is_translatable(arc, "studio.studio_image"))
+        self.assertFalse(is_translatable(arc, "visite.service_image"))
+        self.assertFalse(is_translatable(arc, "pubblicazioni.lead_image"))
+        # Select (page-slug choice) fields
+        self.assertFalse(is_translatable(arc, "home.primary_href"))
+        self.assertFalse(is_translatable(arc, "home.secondary_href"))
+
+    def test_a9_specialist_structured_list_cells_are_global(self):
+        """The 6 readonly indexed lists on specialist stay global at
+        cell level. The ``portrait`` column on medici.doctors is
+        intentionally NOT exposed in the dict shape cols (same pattern
+        as Gusto produttori.items)."""
+        from apps.editor.schema import is_translatable, get_list_shape
+        arc = "specialist"
+        for path in ("home.facts.0.label",
+                     "home.signature_visits.0.title",
+                     "medici.doctors.0.name",
+                     "medici.doctors.0.bio",
+                     "studio.history.0.title",
+                     "studio.values.0.body",
+                     "visite.treatments.0.title",
+                     "visite.treatments.5.duration"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on specialist",
+            )
+        # portrait must NOT appear among medici.doctors cols (stays
+        # readonly at the registry level).
+        shape = get_list_shape(arc, "medici.doctors")
+        self.assertIsNotNone(shape)
+        col_names = {name for name, _spec in (shape.get("cols") or [])}
+        self.assertNotIn("portrait", col_names,
+                         "specialist medici.doctors dict must NOT expose portrait as an editable col")
+
+    def test_a9_specialist_divergent_premium_sections_excluded(self):
+        """User-imposed guardrail (A.9 planning rifinitura): the D-064
+        Session-30 premium-section split between Cardio and Derm must
+        stay OUT of the shared schema in the A.8 first wave. Neither
+        Cardio-only sub-blocks (anchor_nav · insurance · location ·
+        percorso · tecnologie) nor Derm-only sub-blocks (before_after ·
+        credentials · editorial_feed · gallery_strip · trattamenti_tabs)
+        should be writable through the editor in A.9. Each block's
+        authored registry keeps rendering unchanged.
+
+        Protects against a future coverage pass re-introducing them by
+        mistake while building out the shared schema.
+        """
+        from apps.editor.schema import (
+            is_translatable, validate_key_path, InvalidEditableField,
+            get_list_shape, _ARCHETYPE_SCHEMAS,
+        )
+        arc = "specialist"
+
+        # Paths drawn from the audit: scalar keys + known leaf keys
+        # inside the 10 divergent sub-blocks. The full sub-block roots
+        # (home.insurance, home.trattamenti_tabs etc.) are NOT valid
+        # whitelist entries on their own, but we also test their
+        # ``.items``/``.label``/``.heading`` leaves to catch a future
+        # edit that tries to expose them piecewise.
+        cardio_only_paths = (
+            "home.anchor_nav",
+            "home.insurance.label",
+            "home.insurance.items",
+            "home.location.heading",
+            "home.location.intro",
+            "home.location.map_fallback_image",
+            "home.percorso.label",
+            "home.percorso.heading",
+            "home.percorso.steps",
+            "home.tecnologie.label",
+            "home.tecnologie.heading",
+            "home.tecnologie.items",
+        )
+        derm_only_paths = (
+            "home.before_after.label",
+            "home.before_after.heading",
+            "home.credentials.label",
+            "home.credentials.items",
+            "home.editorial_feed.label",
+            "home.editorial_feed.items",
+            "home.gallery_strip.label",
+            "home.gallery_strip.images",
+            "home.trattamenti_tabs.label",
+            "home.trattamenti_tabs.heading",
+            "home.trattamenti_tabs.tabs",
+        )
+
+        # (a) is_translatable MUST return False for every divergent
+        # path — none of them sit on the translatable whitelist.
+        for path in cardio_only_paths + derm_only_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} (divergent premium section) must NOT be translatable in A.9",
+            )
+
+        # (b) validate_key_path MUST raise InvalidEditableField for
+        # every divergent path — customer autosave can't target them.
+        for path in cardio_only_paths + derm_only_paths:
+            with self.assertRaises(InvalidEditableField,
+                                    msg=f"{path} must reject validate_key_path"):
+                validate_key_path(arc, path)
+
+        # (c) None of the divergent list paths may appear in
+        # STRUCTURED_FIELD_SHAPES['specialist'] as readonly lists.
+        divergent_list_paths = (
+            "home.anchor_nav", "home.insurance.items", "home.percorso.steps",
+            "home.tecnologie.items", "home.location.details",
+            "home.before_after", "home.credentials.items",
+            "home.editorial_feed.items", "home.gallery_strip.images",
+            "home.trattamenti_tabs.tabs",
+        )
+        for list_path in divergent_list_paths:
+            self.assertIsNone(
+                get_list_shape(arc, list_path),
+                f"{list_path} must NOT be in STRUCTURED_FIELD_SHAPES['specialist']",
+            )
+
+        # (d) No sidebar group ``id`` may hint at a divergent block —
+        # purely defensive; an authoring mistake would typically
+        # surface at (a)/(b) first but this catches a future sidebar
+        # group added without corresponding fields.
+        schema_ids = {g["id"] for g in _ARCHETYPE_SCHEMAS[arc]}
+        for banned in ("home_anchor_nav", "home_insurance", "home_location",
+                       "home_percorso", "home_tecnologie",
+                       "home_before_after", "home_credentials",
+                       "home_editorial_feed", "home_gallery_strip",
+                       "home_trattamenti_tabs"):
+            self.assertNotIn(banned, schema_ids,
+                             f"sidebar group {banned!r} must not exist in A.9 first wave")
+
+    def test_a9_specialist_supported_locales_returns_canonical_five(self):
+        """specialist ships the canonical 5-locale set, same as Vertex /
+        Pragma / Gusto."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("specialist"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a9_vertex_pragma_gusto_still_enrolled_after_specialist_joins(self):
+        """Triple regression guard: adding specialist to gate + schemas
+        must not disturb any of the 3 pre-existing enrollments."""
+        from apps.editor.schema import is_translatable, supported_locales
+        for arc in ("agency-creative-studio", "corporate-suite", "fine-dining"):
+            self.assertTrue(is_translatable(arc, "home.headline"),
+                             f"{arc} home.headline must stay translatable")
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must keep the canonical 5-locale set",
+            )
+
+    def test_a9_specialist_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.8 Gusto integration guardrail — the specialist
+        ``_base.html`` must integrate the three bridge points together:
+        (1) preview-bridge.js conditional on ``preview_project``, (2)
+        ``<title>`` honors ``site.logo_word``, (3) ``<body>`` carries
+        the ``mw-is-editor-preview`` guard class when inside the editor.
+        Validated on Cardio (specialist archetype uses the same
+        _base.html for Derm)."""
+        cardio = WebTemplate.objects.get(slug="cardio-studio-specialistico")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/medical/cardio-studio-specialistico/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=cardio)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A9 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/medical/cardio-studio-specialistico/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A9 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -3419,6 +3698,200 @@ class FoundationHttpTests(TestCase):
         self.assertEqual(logo_field["value"], "A8GustoBrand")
         self.assertTrue(logo_field["is_overridden"])
         self.assertFalse(logo_field["translatable"])
+
+    # ------------------------------------------------------------------
+    # A.9 · Step 2 — Cardio + Derm lifecycle HTTP cross-cutting
+    # ------------------------------------------------------------------
+    #
+    # Two distinct tests — one per specialist-archetype template — so a
+    # regression that hits Cardio but not Derm (or vice versa) surfaces
+    # with a clean name. Both use the shared helper _run_specialist_lifecycle
+    # to avoid duplicating 180 LOC of assertions.
+
+    def _run_specialist_lifecycle(self, template_slug, marker, brand):
+        """Shared body for Cardio + Derm lifecycle tests.
+
+        ``marker`` goes into the IT/EN/FR headline overrides so the
+        cross-locale-leak assertions can distinguish the two flows when
+        a test run persists across both.
+        ``brand`` is the global logo override — verified universal
+        across all 5 public preview locales.
+        """
+        import json as _json
+        tmpl = WebTemplate.objects.get(slug=template_slug)
+        p = services.create_project_from_template(owner=self.owner, template=tmpl)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global ──────────
+        for locale, headline in (
+            ("it", f"Una clinica <em>che ascolta</em> ({marker} IT)."),
+            ("en", f"A clinic that <em>listens</em> ({marker} EN)."),
+            ("fr", f"Une clinique qui <em>écoute</em> ({marker} FR)."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        r = autosave("en", {"site.logo_word": brand})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertNotIn("home.headline", keys)       # no plain-key leak
+        self.assertNotIn("@en:site.logo_word", keys)  # no global→locale leak
+
+        # ── 3. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 4. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale):
+            url = (
+                f"/templates/medical/{template_slug}/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render — IT override visible, EN/FR markers absent.
+        body_it = preview_body("it")
+        self.assertIn("che ascolta", body_it)
+        self.assertIn(f"({marker} IT)", body_it)
+        self.assertNotIn(f"({marker} EN)", body_it)
+        self.assertNotIn(f"({marker} FR)", body_it)
+        self.assertIn(brand, body_it)
+
+        # EN render — EN override visible, IT/FR markers absent.
+        body_en = preview_body("en")
+        self.assertIn("listens", body_en)
+        self.assertIn(f"({marker} EN)", body_en)
+        self.assertNotIn(f"({marker} IT)", body_en)
+        self.assertNotIn(f"({marker} FR)", body_en)
+        self.assertIn(brand, body_en)
+
+        # FR render — FR override visible, IT/EN markers absent.
+        body_fr = preview_body("fr")
+        self.assertIn("écoute", body_fr)
+        self.assertIn(f"({marker} FR)", body_fr)
+        self.assertNotIn(f"({marker} IT)", body_fr)
+        self.assertNotIn(f"({marker} EN)", body_fr)
+        self.assertIn(brand, body_fr)
+
+        # Unedited locales — authored fallback + global logo visible.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn(f"({marker} IT)", body)
+            self.assertNotIn(f"({marker} EN)", body)
+            self.assertNotIn(f"({marker} FR)", body)
+            self.assertIn(brand, body)
+            authored = _tc.get_content(template_slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on {template_slug}",
+                )
+
+        # AR preview — `.sp-*` skin must render `<html dir="rtl" lang="ar">`.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 5. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_headline_field(groups):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == "home.headline":
+                        return f
+            self.fail(f"home.headline missing from {template_slug} editor groups")
+
+        for locale, expected_substring in (
+            ("it", f"({marker} IT)"),
+            ("en", f"({marker} EN)"),
+            ("fr", f"({marker} FR)"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_headline_field(r.context["groups"])
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill {template_slug} locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale ES: authored baseline prefill, is_overridden=False.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_headline_field(r_es.context["groups"])
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+        # Global field stays overridden universally.
+        logo_field = None
+        for g in r_es.context["groups"]:
+            for f in g["fields"]:
+                if f["key"] == "site.logo_word":
+                    logo_field = f
+                    break
+        self.assertIsNotNone(
+            logo_field, f"site.logo_word missing from {template_slug} editor",
+        )
+        self.assertEqual(logo_field["value"], brand)
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+    def test_a9_cardio_full_multilocale_lifecycle_end_to_end(self):
+        """Lifecycle HTTP cross-cutting on Cardio — first of the two
+        specialist templates. Distinct marker + brand so a regression
+        test running both back-to-back keeps the diagnostic surface
+        isolated per template."""
+        self._run_specialist_lifecycle(
+            template_slug="cardio-studio-specialistico",
+            marker="A9Cardio",
+            brand="A9CardioBrand",
+        )
+
+    def test_a9_derm_full_multilocale_lifecycle_end_to_end(self):
+        """Lifecycle HTTP cross-cutting on Derm — second template of the
+        shared specialist archetype. Proves one schema registers both
+        templates editable end-to-end without per-template branching."""
+        self._run_specialist_lifecycle(
+            template_slug="dermatologia-elite-roma",
+            marker="A9Derm",
+            brand="A9DermBrand",
+        )
 
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
