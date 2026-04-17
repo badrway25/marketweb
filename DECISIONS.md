@@ -1827,3 +1827,8 @@ The customer mental model is "each language is edited independently." Cascading 
 - Do NOT enroll additional archetypes in a feature commit without its own lifecycle regression test.
 - A.7b (Pragma enrollment) is the shortest path: add `"corporate-suite"` to the set, mirror the lifecycle test, browser-walk the flow, merge. No schema shape change required.
 - When enrolling a new archetype, also verify that (a) the template has authored content for every locale in `supported_locales`, (b) the skin's chrome honors D-047 (no hardcoded locale strings in `_base.html`), (c) the RTL CSS block exists for `html[dir="rtl"]`.
+
+### Operationalisation history
+
+- **2026-04-17 · Session 59 · A.7** — Initial enrollment: `agency-creative-studio` (Vertex) with `test_a7_step4_vertex_full_multilocale_lifecycle_end_to_end`.
+- **2026-04-17 · Session 60 · A.7b** — Second enrollment: `corporate-suite` (Pragma) with `test_a7b_pragma_full_multilocale_lifecycle_end_to_end`. No new binding introduced — A.7b is the first real application of the D-098 recipe, confirming the "one-line gate flip + dedicated lifecycle test" contract is reusable. 6 contract tests with paths distributed across all Pragma pages, 1 cross-cutting HTTP lifecycle test, browser walk with RTL iframe validation.

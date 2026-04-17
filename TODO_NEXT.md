@@ -1,26 +1,26 @@
 # TODO Next
 
-## 🟢 Current State (2026-04-17 · after Session 59 A.7 Multi-locale Editor merge)
+## 🟢 Current State (2026-04-17 · after Session 60 A.7b Pragma Multi-locale Enrollment merge)
 
-Baseline `phase-integration-baseline-v15` tip is **`b18493d`** (A.7 merge), pushed to origin. The editor flow on Vertex (`agency-creative-studio`) is now operationally complete AND multi-locale:
+Baseline `phase-integration-baseline-v15` tip is **`cc1634f`** (A.7b merge), pushed to origin. Both editor-supported archetypes — Vertex (`agency-creative-studio`) AND Pragma (`corporate-suite`) — are now multi-locale enrolled:
 
-- 284 editable fields — 81 flagged `translatable` (customer edits per locale), 203 global
-- 4 mutable lists with full add / remove / reorder / persistence / preview sync / publish / page-preservation
-- Customer image upload on the 2 image fields (`studio.partners[].portrait` + `home.cover.image`) — global per D-098
+- **Vertex** · 284 editable fields (81 translatable · 203 global) · 4 mutable lists · customer image upload on 2 image fields · full A.3c→A.5 feature set
+- **Pragma** · ~53 scalar + 1 image + 3 readonly indexed lists · 53 translatable fields flagged (out of 92 total sidebar entries)
+- **Multi-locale editor on both** · 5 locales (it/en/fr/es/ar) with authentic RTL preview for Arabic · per-locale `@<locale>:<path>` storage · authored-only fallback (no cross-locale customer leak) · sidebar pill switcher · flush-before-switch · "per lingua" marker on translatable fields
 - Orphan asset GC available via `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project`, `--grace`)
-- **Multi-locale editor** on Vertex: 5 locales (it/en/fr/es/ar) with authentic RTL preview for Arabic, per-locale `@<locale>:<path>` storage, authored-only fallback (no cross-locale customer leak) — Pragma NOT enrolled yet (A.7b follow-up)
-- 147/147 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
+- 151/151 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
+- **2/8 archetypes editor-supported · 2/8 multi-locale enrolled**
 
 No explicitly-deferred debt is pending.
 
-### Phase A.8 / A.7 follow-ups — immediate candidates (pick one)
+### Next workstream — immediate candidates (planning session required)
 
-- [ ] **A.7b Pragma multi-locale enrollment** — lowest-risk win. Add `"corporate-suite"` to `_MULTILOCALE_ENABLED_ARCHETYPES`, mirror the Vertex lifecycle test on Pragma, browser-walk the flow. Catalog will reach 2/2 editor archetypes multi-locale. ~3 commits per D-098 recipe.
-- [ ] **A.8 Third editable archetype** — candidate: `fine-dining` (Gusto) as the imagery-heavy stress test of the reusability pattern. Recipe mirrors A.6 (schema register + `_base.html` preview bridge + lifecycle test). About 500-800 LOC schema replica.
+- [ ] **A.8 Third archetype editor support** — scale editor to a new archetype family. Candidates in priority order: `fine-dining` (Gusto — imagery-heavy hospitality, stress test of reusability · 1 template), `medical-specialist` (Cardio/Derm — 2 templates, already multi-locale rich on public side), `editorial-designer-grid` (Chiara — typographic, no hero photo · 1 template). Recipe identical to A.6 (schema register + `_base.html` preview bridge + lifecycle test). About 500-800 LOC schema replica per archetype.
+- [ ] **A.8 alt · Selective multi-locale expansion** — instead of adding editor to a new archetype, promote a single-template archetype already editor-supported to multi-locale. Not applicable right now (both Vertex and Pragma are the only enrolled archetypes and both are multi-locale).
 - [ ] **A.9 Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler (still manual per D-094 unless contract changes), asset audit UI. Cleans up operator experience without touching customer flows.
 - [ ] **A.10 Remote asset storage** — swap `ProjectAsset.file` Django FileField backend to S3 (django-storages) or Cloudinary, settings-toggled per environment. Must keep `/media/` accept path in parallel (D-095 binding). Worth opening only when a prod-launch timeline requires it; introduces ops dependencies (credentials, bucket policy, costs).
 
-Recommended next: **A.7b Pragma multi-locale enrollment** — pure wiring on a validated pattern, closes the "multi-locale 1/8 archetypes → 2/8" asymmetry, lets us postpone harder choices until Pragma is green.
+Recommended framing: **A.8 (third archetype editor support)** OR **selective multi-locale expansion** — decide in a dedicated planning session. A.8 with Gusto as candidate is the natural next bet (imagery-heavy recipe validates the A.6 playbook on non-typographic archetypes).
 
 ### Carried-forward observations (not blocking)
 
@@ -31,7 +31,7 @@ Recommended next: **A.7b Pragma multi-locale enrollment** — pure wiring on a v
 - [ ] A.3d widen repeater to `manifesto.principles`, `manifesto.promise_stats`, `lavori.archive_stats` (pattern validated in A.3c). Low priority; no customer request.
 - [ ] Search Cmd-K palette could become locale-aware (show the translated label when a translatable field is selected in an active locale); not urgent — current behavior is correct, just not localized.
 
-### A.7 fuori-scope esplicitamente rinviati (respect when planning)
+### A.7 / A.7b fuori-scope esplicitamente rinviati (respect when planning)
 
 - Repeater per-locale (struttura + row content restano globali — A.10+ only on explicit customer signal)
 - Image per-locale (asset uploaded once, universal — A.10+)
@@ -39,6 +39,8 @@ Recommended next: **A.7b Pragma multi-locale enrollment** — pure wiring on a v
 - Per-locale publish gating / approval (single atomic publish is the contract)
 - Translation memory / ML helpers (out of product scope)
 - "Solo translatable filter" UI toggle (optional polish, not required)
+- Pragma coverage expansion — the current 53 translatable fields are the A.7b-closing set; any Pragma field gap is A.8+ scope
+- Search Cmd-K locale-aware ranking — current shape is correct, just not localized; polish only
 
 ### Scope red-lamps (to resist when planning)
 
@@ -46,7 +48,8 @@ Recommended next: **A.7b Pragma multi-locale enrollment** — pure wiring on a v
 - Don't bypass D-097 at the rendering layer — if customer requests cross-locale suggestion, surface it as explicit UI flow, not storage default.
 - Don't add cron / scheduler for A.5 GC. Management command manual is the contract per D-094.
 - Don't replace the `/media/` accept path in `validate_value` — A.10 must live in parallel (D-095 binding).
-- Don't bundle A.7b (Pragma enrollment) + A.8 (third archetype) in one phase — two independent streams, merging them loses leverage.
+- Don't bundle A.8 (third archetype editor support) + selective multi-locale expansion in one phase — two independent streams, merging them loses leverage.
+- Don't flip `mutable=True` on existing readonly indexed lists (Pragma pillars/kpi_strip/leadership) without a dedicated A.3-family rollout test — repeater family decisions are orthogonal to multi-locale.
 
 ---
 

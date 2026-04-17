@@ -1,16 +1,16 @@
 # Agent Handoff
 
-Last updated: 2026-04-17 — after **Session 59 A.7 Multi-locale Editor merge** (baseline tip `b18493d`, pushed to origin)
+Last updated: 2026-04-17 — after **Session 60 A.7b Pragma Multi-locale Enrollment merge** (baseline tip `cc1634f`, pushed to origin)
 
 ## Current state — read this before opening any new workstream (2026-04-17)
 
-The editor customer-facing flow on Vertex (`agency-creative-studio`) is operationally complete through Phase A.7: 284 field, 4 mutable lists, image upload, 5-locale editing with authentic RTL preview for Arabic. Pragma (`corporate-suite`) is editable through A.6 but NOT multi-locale-enrolled yet (A.7b follow-up). All acceptance gates are green:
+Both editor-supported archetypes — Vertex (`agency-creative-studio`) AND Pragma (`corporate-suite`) — are now multi-locale enrolled. Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **2/8 archetypes editor-supported · 2/8 multi-locale enrolled**. All acceptance gates are green:
 
 - `python manage.py check` → 0 issues
-- `python manage.py test apps` → 147/147 PASS
+- `python manage.py test apps` → 151/151 PASS
 - `python smoke_full.py` → 834/834 routes HTTP 200
 
-Baseline `phase-integration-baseline-v15` tip: **`b18493d`** (A.7 merge), pushed to `origin/phase-integration-baseline-v15`. Catalog 20/20 `published_live` unchanged since D-082 / Session 53.
+Baseline `phase-integration-baseline-v15` tip: **`cc1634f`** (A.7b merge), pushed to `origin/phase-integration-baseline-v15`.
 
 ### What the editor does today
 
@@ -22,10 +22,11 @@ Baseline `phase-integration-baseline-v15` tip: **`b18493d`** (A.7 merge), pushed
 - Page-aware preview navigation · palette Cmd-K search · public `MWEditor.jumpField(key, kind)` API · deterministic field targeting · baseline before/after compare
 - **5-locale editing** (it/en/fr/es/ar): sidebar pill strip switches both edit buffer and preview · `@<locale>:<path>` storage per translatable row · global rows universal · authored fallback on untouched locales · RTL iframe for AR · "per lingua" marker UI on translatable fields · `editor_ctx` exposes `active_locale` + `supported_locales`.
 
-**Pragma (`corporate-suite`) — editable, not multi-locale:**
+**Pragma (`corporate-suite`) — editable AND multi-locale enrolled (A.7b):**
 - 7 sidebar groups · ~53 scalars + 1 image · 3 readonly indexed lists (`home.pillars`/`kpi_strip`/`leadership`) · image upload on `home.hero_image`
-- Saves persist under plain keys; `supported_locales=[]`; every field `translatable=False`
-- Pragma multi-locale enrollment is A.7b (~3 commits per D-098 recipe)
+- 53 translatable fields (out of 92 total sidebar entries) · globals preserve the shared `_GLOBAL_TEXT_PATHS` set (logo, phone, email, address, license) + all image/select/structured-list cells
+- `supported_locales=["it","en","fr","es","ar"]` · same UX surface as Vertex (sidebar pill stateful · flush-before-switch · "per lingua" marker · authored-only fallback · RTL iframe authentic for AR)
+- Enrolled via A.7b Session 60 (gate flip in `_MULTILOCALE_ENABLED_ARCHETYPES` + lifecycle regression test `test_a7b_pragma_full_multilocale_lifecycle_end_to_end`)
 
 ### What is operator-only
 
@@ -53,7 +54,7 @@ All prior D-086 through D-095 (A.1 → A.5 bindings) and pre-editor decisions (D
 
 ### Phase A.8+ — candidates (no commitment yet)
 
-Pick one when the next workstream opens. Recommended: **A.7b Pragma multi-locale enrollment** — lowest-risk win on the validated D-098 pattern. Alternatives: A.8 third archetype (Gusto imagery-heavy stress test), A.9 editor operator tools, A.10 remote storage (prod-launch driven).
+Pick one when the next workstream opens. Recommended framing: **A.8 third archetype editor support** (candidate Gusto · imagery-heavy stress test of the A.6 playbook on a non-typographic archetype) OR a dedicated planning session on selective multi-locale expansion vs new editor scale-out. Alternatives: A.9 editor operator tools, A.10 remote storage (prod-launch driven).
 
 See `TODO_NEXT.md` for full candidate list + red-lamps.
 

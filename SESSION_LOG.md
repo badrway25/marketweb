@@ -4774,3 +4774,47 @@ Two candidates, no commitment:
 (b) **A.8 Third archetype editor enrollment** — candidate: `fine-dining` (Gusto). Imagery-heavy stress test. Recipe identical to A.6.
 
 Consolidation pause (this commit) precedes the choice.
+
+---
+
+## Session 60 — Phase A.7b · Pragma Multi-locale Enrollment (2026-04-17)
+
+### What shipped
+
+A.7b operationalizes D-098: Pragma (`corporate-suite`) joins `_MULTILOCALE_ENABLED_ARCHETYPES` as the second enrolled archetype alongside Vertex. Pure wiring — no schema shape change, no service layer touch, no UI change. Two commits on `phase-editor-a7b-pragma-multilocale-v1`.
+
+- `43b6609` — Step 0 · gate enrollment + 6 contract tests. `"corporate-suite"` added to `_MULTILOCALE_ENABLED_ARCHETYPES` in `apps/editor/schema.py` (+1 real line). Six contract tests lock the Pragma classification:
+  - `test_a7b_pragma_is_translatable_text_fields` — 12 paths **distributed across all five Pragma pages** (home · chi-siamo · competenze · case-studies · contatti/site.*) so the gate can't pass by covering only home.
+  - `test_a7b_pragma_branding_and_contact_universals_are_global` — 6 paths (logo, logo_initial, phone, email, address, license) stay global.
+  - `test_a7b_pragma_non_text_fields_are_global` — image (`home.hero_image`) + select (`home.primary_href`, `home.cta_primary_href`) False.
+  - `test_a7b_pragma_structured_list_cells_are_global` — 7 cells across pillars/kpi_strip/leadership False.
+  - `test_a7b_pragma_supported_locales_returns_canonical_five` — `["it","en","fr","es","ar"]`.
+  - `test_a7b_vertex_still_enrolled_after_pragma_joins` — regression guard on Vertex.
+  - Three A.7-era anti-enrollment tests removed (`test_a7_pragma_is_not_multilocale_enabled_in_first_wave`, `test_a7_step1_pragma_save_still_uses_plain_keys`, `test_a7_step4_pragma_editor_stays_plain_keyed_regression`) — they lied about the desired state after the gate flip.
+
+- `d548588` — Step 1 · Pragma lifecycle HTTP cross-cutting. `test_a7b_pragma_full_multilocale_lifecycle_end_to_end` mirrors the Vertex Step-4 lifecycle on Pragma: 3 translatable autosaves (IT/EN/FR) + 1 global autosave + publish + 5 public preview renders (second user) + 4 editor reopens (owner) + AR preview `<html dir="rtl">` assertion + zero cross-locale leak assertions. +183 LOC, passes at first run — strong signal that D-098 recipe is architecturally sound.
+
+Step 2 · browser walk. No code changes. 9 spot checks all green:
+- Pragma editor mount `?lang=it` → label "Lingua attiva" · 5 pills · 53/92 translatable fields · correct markers
+- Type IT + global + click EN → flush `@it:home.headline` + plain `site.logo_word` before navigation (DB verified)
+- IT ↔ EN ↔ FR ↔ ES ↔ AR switch lifecycle: each locale loads authored or customer buffer correctly · zero cross-locale leak
+- AR iframe renders `<html dir="rtl" lang="ar">` authentic · H1 arabic authored when unedited
+- Publish · second-user public preview per locale: IT/EN/FR customer overrides · ES/AR authored fallback · global WalkBrand universal · AR `<html dir="rtl">` confirmed
+- Screenshots: `a7b_pragma_editor_ar_rtl.png` + `a7b_pragma_public_preview_ar_rtl.png`
+
+### Observables
+
+- 147/147 → **151/151** server tests (+4 netti · +6 new A.7b contract + 1 A.7b lifecycle − 3 A.7-era obsolete). Smoke 834/834 unchanged.
+- `manage.py check` 0 issues.
+- No production code change (schema.py +7 lines is the gate + comment; no services/views/templates/JS touched).
+
+### Consequences
+
+- Editor 2/8 archetypes editable (Vertex + Pragma) · **multi-locale 2/8** (Vertex + Pragma). Catalog 20/20 `published_live` unchanged.
+- **No new D-number**. A.7b operationalizes D-098 (archetype gate contract) without introducing a new binding. The recipe — single-line gate flip + dedicated lifecycle regression test — is proven reusable for every future enrollment.
+- Merged into v15 via `--no-ff` @ `cc1634f` and pushed to `origin/phase-integration-baseline-v15`.
+- No explicit debt pending.
+
+### Exact next step
+
+**A.8 — Third archetype editor support** OR **selective multi-locale expansion**, to be decided in a dedicated planning session. Both candidates are natural continuations; no enforced ordering. See `TODO_NEXT.md` for the ranking.
