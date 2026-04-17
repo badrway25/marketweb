@@ -1069,6 +1069,23 @@ class FoundationModelTests(TestCase):
         Image.new("RGB", (size_px, size_px), (64, 200, 128)).save(buf, format="WEBP")
         return buf.getvalue()
 
+    def test_a4_validate_value_accepts_media_relative_url(self):
+        """A.4: an image field override must accept the /media/... URL
+        produced by the upload endpoint. Without this the autosave
+        round-trip right after an upload would 400 on image fields."""
+        arc = "agency-creative-studio"
+        key = "home.cover.image"
+        # http + https + data + media all accepted
+        validate_value(arc, key, "https://cdn.example.com/a.png")
+        validate_value(arc, key, "http://cdn.example.com/a.png")
+        validate_value(arc, key, "data:image/png;base64,iVBORw0KGgo=")
+        validate_value(arc, key, "/media/project-assets/abc/xyz.png")
+        # Raw paths + non-image schemes still rejected
+        with self.assertRaises(InvalidEditableField):
+            validate_value(arc, key, "/not-media/evil.png")
+        with self.assertRaises(InvalidEditableField):
+            validate_value(arc, key, "javascript:alert(1)")
+
     def test_a4_project_asset_upload_happy_path_png(self):
         from django.core.files.uploadedfile import SimpleUploadedFile
         from apps.projects.models import ProjectAsset
