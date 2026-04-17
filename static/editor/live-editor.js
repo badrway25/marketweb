@@ -518,6 +518,68 @@
     probe.src = url;
   }
 
+  // A.4 — customer image upload.
+  //
+  // The file picker no longer converts the selected file to a data-URL
+  // inline; instead it POSTs the binary to cfg.assetUploadUrl, which
+  // persists a ProjectAsset and returns a public /media/... URL. The
+  // URL is then written into the image field's URL input and the
+  // normal autosave pipeline takes over exactly as with a URL paste.
+  //
+  // Client-side guards (2MB cap + MIME whitelist) mirror the server's
+  // so the customer sees an immediate toast without a round-trip for
+  // obviously-bad files. Server remains authoritative.
+  const ASSET_MAX_BYTES = 2 * 1024 * 1024;
+  const ASSET_ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
+
+  function uploadImageFile(widget, file) {
+    const urlInput = widget.querySelector(".ed-image-url");
+    const thumb = widget.querySelector(".ed-image-thumb");
+    const pickBtn = widget.querySelector(".ed-image-pick");
+    if (!urlInput || !cfg.assetUploadUrl) return;
+
+    if (!ASSET_ALLOWED_MIME.includes(file.type)) {
+      toast("Formato non supportato. Usa JPG, PNG o WebP.", "error");
+      return;
+    }
+    if (file.size > ASSET_MAX_BYTES) {
+      toast("File troppo grande. Il limite è 2 MB.", "error");
+      return;
+    }
+
+    if (thumb) thumb.classList.add("is-uploading");
+    if (pickBtn) pickBtn.classList.add("is-uploading");
+    const formData = new FormData();
+    formData.append("file", file);
+
+    fetch(cfg.assetUploadUrl, {
+      method: "POST",
+      headers: { "X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest" },
+      credentials: "same-origin",
+      body: formData,
+    })
+      .then((r) => r.json().then((data) => ({ status: r.status, data })))
+      .then(({ status, data }) => {
+        if (thumb) thumb.classList.remove("is-uploading");
+        if (pickBtn) pickBtn.classList.remove("is-uploading");
+        if (status === 200 && data.ok && data.url) {
+          urlInput.value = data.url;
+          urlInput.dispatchEvent(new Event("input", { bubbles: true }));
+          toast("Immagine caricata", "success");
+        } else {
+          const msg = data && data.error
+            ? data.error
+            : "Impossibile caricare l'immagine.";
+          toast(msg, "error");
+        }
+      })
+      .catch(() => {
+        if (thumb) thumb.classList.remove("is-uploading");
+        if (pickBtn) pickBtn.classList.remove("is-uploading");
+        toast("Connessione interrotta durante il caricamento.", "error");
+      });
+  }
+
   $$(".ed-image").forEach((widget) => {
     const urlInput = widget.querySelector(".ed-image-url");
     const pickInput = widget.querySelector(".ed-image-pick input[type=file]");
@@ -527,16 +589,11 @@
       pickInput.addEventListener("change", () => {
         const file = pickInput.files && pickInput.files[0];
         if (!file) return;
-        // File uploads land as data-URL in the URL input for this
-        // micro-fix (no storage backend). The persisted override is
-        // the data-URL; users can replace with a real CDN URL any
-        // time. A proper upload endpoint is Phase A.3 scope.
-        const reader = new FileReader();
-        reader.onload = () => {
-          urlInput.value = String(reader.result || "");
-          urlInput.dispatchEvent(new Event("input", { bubbles: true }));
-        };
-        reader.readAsDataURL(file);
+        uploadImageFile(widget, file);
+        // Reset the file input so the same file can be re-picked
+        // (otherwise a second "Carica file" click on an identical
+        // selection is a no-op event).
+        pickInput.value = "";
       });
     }
 
@@ -547,15 +604,6 @@
       });
     }
   });
-
-  // Validate that autosave accepts data-URLs too. The schema has
-  // `type: "image"` with a URL-ish validation. Update the backend's
-  // validate_value to accept `data:` too — or we can just let the
-  // server bounce and show a toast. For now we emit a friendly
-  // warning when a local file is used, since no upload endpoint
-  // exists yet. The field still works via URL paste.
-  // NOTE: at this point we have not wired a server-side accept for
-  // data-URLs; the paste flow is fully functional.
 
   // ────────────────────────────────────────────────────────────
   // Autosave diff → overridden state sync

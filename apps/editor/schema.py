@@ -1149,16 +1149,19 @@ def validate_value(archetype: str, key_path: str, value: Any) -> Any:
             )
 
     if spec["type"] == "image":
-        # Image accepts HTTP(S) for CDN paste AND data: URIs so the
-        # micro-fix "Carica file" button can work without a separate
-        # upload endpoint. Empty resets to baseline.
+        # Accept HTTP(S) for CDN paste, data: URIs (A.2.2 inline
+        # fallback, still tolerated), and relative /media/... URLs
+        # produced by the A.4 upload endpoint. Anything else (raw
+        # file paths, javascript:, etc.) is rejected.
         if value and not (
             value.startswith("http://")
             or value.startswith("https://")
             or value.startswith("data:image/")
+            or value.startswith("/media/")
         ):
             raise InvalidEditableField(
-                f"Image value for {key_path!r} must be an HTTP(S) URL or a data:image/ URI."
+                f"Image value for {key_path!r} must be an HTTP(S) URL, a "
+                f"data:image/ URI, or a /media/ upload URL."
             )
         # Drop huge data URIs outright (keep the overrides table sane).
         if value and value.startswith("data:") and len(value) > 2_000_000:

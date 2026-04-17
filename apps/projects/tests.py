@@ -1041,6 +1041,130 @@ class FoundationModelTests(TestCase):
             # Unknown column on a mutable list
             validate_key_path(arc, "studio.partners.a0.mystery")
 
+    # ------------------------------------------------------------------
+    # A.4 · customer image upload — contract tests (Step 0, no UI).
+    # ------------------------------------------------------------------
+
+    def _make_png_bytes(self, size_px: int = 8) -> bytes:
+        """Render a tiny valid PNG with Pillow so the upload test path
+        exercises a real image header, not a fake blob."""
+        from io import BytesIO
+        from PIL import Image
+        buf = BytesIO()
+        img = Image.new("RGB", (size_px, size_px), (128, 64, 200))
+        img.save(buf, format="PNG")
+        return buf.getvalue()
+
+    def _make_jpeg_bytes(self, size_px: int = 8) -> bytes:
+        from io import BytesIO
+        from PIL import Image
+        buf = BytesIO()
+        Image.new("RGB", (size_px, size_px), (200, 64, 128)).save(buf, format="JPEG")
+        return buf.getvalue()
+
+    def _make_webp_bytes(self, size_px: int = 8) -> bytes:
+        from io import BytesIO
+        from PIL import Image
+        buf = BytesIO()
+        Image.new("RGB", (size_px, size_px), (64, 200, 128)).save(buf, format="WEBP")
+        return buf.getvalue()
+
+    def test_a4_validate_value_accepts_media_relative_url(self):
+        """A.4: an image field override must accept the /media/... URL
+        produced by the upload endpoint. Without this the autosave
+        round-trip right after an upload would 400 on image fields."""
+        arc = "agency-creative-studio"
+        key = "home.cover.image"
+        # http + https + data + media all accepted
+        validate_value(arc, key, "https://cdn.example.com/a.png")
+        validate_value(arc, key, "http://cdn.example.com/a.png")
+        validate_value(arc, key, "data:image/png;base64,iVBORw0KGgo=")
+        validate_value(arc, key, "/media/project-assets/abc/xyz.png")
+        # Raw paths + non-image schemes still rejected
+        with self.assertRaises(InvalidEditableField):
+            validate_value(arc, key, "/not-media/evil.png")
+        with self.assertRaises(InvalidEditableField):
+            validate_value(arc, key, "javascript:alert(1)")
+
+    def test_a4_project_asset_upload_happy_path_png(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from apps.projects.models import ProjectAsset
+        import os
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        png = self._make_png_bytes()
+        f = SimpleUploadedFile("photo.png", png, content_type="image/png")
+        asset = services.upload_asset(project=p, uploaded_file=f, editor=self.owner)
+        self.assertIsInstance(asset, ProjectAsset)
+        self.assertEqual(asset.content_type, "image/png")
+        self.assertEqual(asset.size_bytes, len(png))
+        self.assertTrue(os.path.exists(asset.file.path))
+        # File path convention: project-assets/<project-uuid>/<uuid>.png
+        self.assertIn(str(p.uuid), asset.file.name)
+        self.assertTrue(asset.file.name.endswith(".png"))
+
+    def test_a4_project_asset_upload_happy_path_jpeg(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        jpg = self._make_jpeg_bytes()
+        f = SimpleUploadedFile("photo.jpg", jpg, content_type="image/jpeg")
+        asset = services.upload_asset(project=p, uploaded_file=f, editor=self.owner)
+        self.assertEqual(asset.content_type, "image/jpeg")
+        self.assertTrue(asset.file.name.endswith(".jpg"))
+
+    def test_a4_project_asset_upload_happy_path_webp(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        webp = self._make_webp_bytes()
+        f = SimpleUploadedFile("photo.webp", webp, content_type="image/webp")
+        asset = services.upload_asset(project=p, uploaded_file=f, editor=self.owner)
+        self.assertEqual(asset.content_type, "image/webp")
+        self.assertTrue(asset.file.name.endswith(".webp"))
+
+    def test_a4_project_asset_upload_rejects_oversized(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # 3 MB payload — just over the 2 MB cap
+        oversized = b"\x89PNG\r\n\x1a\n" + b"\x00" * (3 * 1024 * 1024)
+        f = SimpleUploadedFile("big.png", oversized, content_type="image/png")
+        with self.assertRaises(services.AssetTooLarge) as ctx:
+            services.upload_asset(project=p, uploaded_file=f, editor=self.owner)
+        self.assertEqual(ctx.exception.limit_bytes, 2 * 1024 * 1024)
+
+    def test_a4_project_asset_upload_rejects_unsupported_mime(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        for ct, name in [("image/gif", "a.gif"), ("image/svg+xml", "a.svg"),
+                         ("application/pdf", "a.pdf"), ("text/plain", "a.txt")]:
+            f = SimpleUploadedFile(name, b"dummy", content_type=ct)
+            with self.assertRaises(services.AssetMimeRejected):
+                services.upload_asset(project=p, uploaded_file=f, editor=self.owner)
+
+    def test_a4_project_asset_upload_rejects_corrupt_image(self):
+        """File with correct mime/ext but byte payload that is not an
+        image is rejected by the Pillow.verify() check AFTER save; the
+        file + row are both cleaned up before raising."""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from apps.projects.models import ProjectAsset
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        f = SimpleUploadedFile("fake.png", b"NOT AN IMAGE", content_type="image/png")
+        with self.assertRaises(services.AssetInvalid):
+            services.upload_asset(project=p, uploaded_file=f, editor=self.owner)
+        # No orphan row left behind
+        self.assertEqual(ProjectAsset.objects.filter(project=p).count(), 0)
+
+    def test_a4_editor_ctx_exposes_asset_upload_url(self):
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        self.client.force_login(self.owner)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("assetUploadUrl", body)
+        # `escapejs` escapes forward slashes, so assert on the uuid +
+        # "assets" + "upload" tokens rather than the raw URL.
+        self.assertIn(str(p.uuid), body)
+        self.assertIn("assets", body)
+        self.assertIn("upload", body)
+
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)
@@ -1353,6 +1477,132 @@ class FoundationHttpTests(TestCase):
         self.assertEqual(color_row["page"], "*")
         self.assertIn("colori", color_row["keywords"])
         self.assertIn("font", color_row["keywords"])
+
+    def _make_png_bytes_http(self):
+        from io import BytesIO
+        from PIL import Image
+        buf = BytesIO()
+        Image.new("RGB", (4, 4), (128, 64, 200)).save(buf, format="PNG")
+        return buf.getvalue()
+
+    def test_a4_asset_upload_endpoint_happy_path(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from apps.projects.models import ProjectAsset
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        png = self._make_png_bytes_http()
+        f = SimpleUploadedFile("photo.png", png, content_type="image/png")
+        r = self.client.post(f"/projects/{p.uuid}/assets/upload/", {"file": f})
+        self.assertEqual(r.status_code, 200)
+        data = r.json()
+        self.assertTrue(data["ok"])
+        self.assertIn("asset_id", data)
+        self.assertTrue(data["url"].startswith("/media/project-assets/"))
+        self.assertEqual(data["content_type"], "image/png")
+        self.assertEqual(ProjectAsset.objects.filter(project=p).count(), 1)
+
+    def test_a4_asset_upload_endpoint_rejects_foreign_owner(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        png = self._make_png_bytes_http()
+        # Log in as "other" and try to upload to owner's project.
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        f = SimpleUploadedFile("photo.png", png, content_type="image/png")
+        r = self.client.post(f"/projects/{p.uuid}/assets/upload/", {"file": f})
+        self.assertEqual(r.status_code, 404)
+
+    def test_a4_asset_upload_endpoint_rejects_oversized(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        big = b"\x89PNG\r\n\x1a\n" + b"\x00" * (3 * 1024 * 1024)
+        f = SimpleUploadedFile("big.png", big, content_type="image/png")
+        r = self.client.post(f"/projects/{p.uuid}/assets/upload/", {"file": f})
+        self.assertEqual(r.status_code, 413)
+        data = r.json()
+        self.assertFalse(data["ok"])
+        self.assertEqual(data["limit_bytes"], 2 * 1024 * 1024)
+
+    def test_a4_uploaded_image_persists_across_reload_and_publish(self):
+        """A.4 cross-cutting lock — upload → write URL into image field →
+        reopen editor → publish → public preview of another viewer:
+        the uploaded /media/... URL must survive every hop without
+        being rewritten or lost.
+        """
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        # 1. Create a fresh project + upload via the service layer
+        #    (the endpoint is already covered by the HTTP happy-path
+        #    test; here we focus on the downstream persistence).
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        png = self._make_png_bytes_http()
+        f = SimpleUploadedFile("portrait.png", png, content_type="image/png")
+        r = self.client.post(f"/projects/{p.uuid}/assets/upload/", {"file": f})
+        self.assertEqual(r.status_code, 200)
+        uploaded_url = r.json()["url"]
+        self.assertTrue(uploaded_url.startswith("/media/project-assets/"))
+
+        # 2. Write the URL into a real image field via the autosave
+        #    endpoint so the full validate_value pipeline runs.
+        r2 = self.client.post(
+            f"/projects/{p.uuid}/autosave/",
+            data='{"content":{"studio.partners.0.portrait":"' + uploaded_url + '"},"tokens":{}}',
+            content_type="application/json",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(r2.status_code, 200)
+        self.assertTrue(r2.json()["ok"])
+
+        # 3. Reopen editor — the URL must prefill the field input.
+        r3 = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r3.status_code, 200)
+        self.assertIn(uploaded_url, r3.content.decode("utf-8", "ignore"))
+
+        # 4. Publish + another (logged-in) viewer requests the live
+        #    preview — uploaded URL must appear in the rendered HTML.
+        services.publish_project(project=p, editor=self.owner)
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        r4 = self.client.get(
+            f"/templates/agency/vertex-creative-agency/preview/studio/?project={p.uuid}"
+        )
+        self.assertEqual(r4.status_code, 200)
+        self.assertIn(uploaded_url, r4.content.decode("utf-8", "ignore"))
+
+    def test_a4_uploaded_image_persists_on_home_cover_image_field(self):
+        """A.4 complementary lock — the persistence contract must hold
+        on BOTH image fields in the schema, not only the portrait one
+        already covered by
+        test_a4_uploaded_image_persists_across_reload_and_publish.
+
+        ``home.cover.image`` is a different path shape (dict-nested on
+        the home page, not a repeater dict column) so it exercises a
+        distinct branch of the rendering pipeline. One end-to-end hop
+        is enough: upload → autosave → public preview of home.
+        """
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        png = self._make_png_bytes_http()
+        f = SimpleUploadedFile("cover.png", png, content_type="image/png")
+        r = self.client.post(f"/projects/{p.uuid}/assets/upload/", {"file": f})
+        self.assertEqual(r.status_code, 200)
+        uploaded_url = r.json()["url"]
+
+        r2 = self.client.post(
+            f"/projects/{p.uuid}/autosave/",
+            data='{"content":{"home.cover.image":"' + uploaded_url + '"},"tokens":{}}',
+            content_type="application/json",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(r2.status_code, 200)
+        self.assertTrue(r2.json()["ok"])
+
+        services.publish_project(project=p, editor=self.owner)
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        r3 = self.client.get(
+            f"/templates/agency/vertex-creative-agency/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r3.status_code, 200)
+        self.assertIn(uploaded_url, r3.content.decode("utf-8", "ignore"))
 
     def test_a3c_editor_markup_exposes_repeater_affordances_only_on_mutable(self):
         """A.3c polish — cross-cutting integration: the editor HTTP

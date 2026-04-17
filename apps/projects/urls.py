@@ -18,6 +18,8 @@ urlpatterns = [
     path("<uuid:uuid>/row/remove/", views.project_row_remove, name="project_row_remove"),
     # A.3b — reorder row (up/down one step).
     path("<uuid:uuid>/row/move/", views.project_row_move, name="project_row_move"),
+    # A.4 — customer image upload.
+    path("<uuid:uuid>/assets/upload/", views.project_asset_upload, name="project_asset_upload"),
     path("<uuid:uuid>/publish/", views.project_publish, name="project_publish"),
     path("<uuid:uuid>/unpublish/", views.project_unpublish, name="project_unpublish"),
 ]

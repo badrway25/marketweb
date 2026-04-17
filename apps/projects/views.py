@@ -326,6 +326,10 @@ class ProjectEditorView(LoginRequiredMixin, TemplateView):
             "row_move_url": reverse(
                 "projects:project_row_move", kwargs={"uuid": project.uuid}
             ),
+            # A.4 — customer image upload endpoint.
+            "asset_upload_url": reverse(
+                "projects:project_asset_upload", kwargs={"uuid": project.uuid}
+            ),
             "locale_switcher": locale_switcher,
             "current_locale": project.locale,
         })
@@ -597,6 +601,64 @@ def project_row_move(request, uuid):
         "ok": True,
         "effective_length": result["effective_length"],
         "override_count": override_count,
+    })
+
+
+@login_required
+@require_POST
+def project_asset_upload(request, uuid):
+    """A.4 — customer-facing image upload.
+
+    Request: ``multipart/form-data`` with a single ``file`` part.
+    Server-side guards: 2MB size cap, MIME whitelist (jpg/png/webp),
+    Pillow.verify() sanity check, ownership via project uuid.
+
+    Success (200)::
+        {"ok": true, "asset_id": 42, "url": "/media/project-assets/...",
+         "size_bytes": 184523, "content_type": "image/png"}
+
+    Errors:
+    - 400 on missing file / invalid image
+    - 404 on ownership mismatch
+    - 413 when size > 2MB
+    - 415 on disallowed MIME
+    """
+    project = selectors.get_project_for_owner(request.user, uuid)
+    if project is None:
+        raise Http404()
+    if not is_supported_archetype(project.source_archetype):
+        raise Http404()
+
+    uploaded = request.FILES.get("file")
+    if uploaded is None:
+        return HttpResponseBadRequest("file is required.")
+
+    try:
+        asset = services.upload_asset(
+            project=project, uploaded_file=uploaded, editor=request.user,
+        )
+    except services.AssetTooLarge as exc:
+        return JsonResponse(
+            {"ok": False, "error": str(exc),
+             "size_bytes": exc.size_bytes, "limit_bytes": exc.limit_bytes},
+            status=413,
+        )
+    except services.AssetMimeRejected as exc:
+        return JsonResponse(
+            {"ok": False, "error": str(exc), "content_type": exc.content_type},
+            status=415,
+        )
+    except services.AssetInvalid as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+    except Exception as exc:  # defensive — never 500 on a bad upload
+        return JsonResponse({"ok": False, "error": str(exc)}, status=400)
+
+    return JsonResponse({
+        "ok": True,
+        "asset_id": asset.id,
+        "url": asset.file.url,
+        "size_bytes": asset.size_bytes,
+        "content_type": asset.content_type,
     })
 
 

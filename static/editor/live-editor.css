@@ -1364,6 +1364,15 @@ button { font-family: inherit; }
   background: var(--ed-danger-soft);
   border-color: var(--ed-danger);
 }
+/* A.4 — uploading state: thumb dims + pick button becomes busy */
+.ed-image-thumb.is-uploading {
+  opacity: 0.55;
+  box-shadow: 0 0 0 2px var(--ed-accent);
+}
+.ed-image-pick.is-uploading {
+  opacity: 0.6;
+  pointer-events: none;
+}
 .ed-image-controls {
   display: flex;
   flex-direction: column;
