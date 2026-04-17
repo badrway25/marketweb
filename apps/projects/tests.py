@@ -1530,20 +1530,102 @@ class FoundationModelTests(TestCase):
         # Bare list root path — not a scalar field either way
         self.assertFalse(is_translatable(arc, "studio.facts"))
 
-    def test_a7_pragma_is_not_multilocale_enabled_in_first_wave(self):
-        """A.7 ships Vertex only. Pragma copy must classify as global for
-        every path until A.7b opts it in — protects the overlay shape
-        from leaking into a second archetype prematurely."""
-        from apps.editor.schema import is_translatable, supported_locales
+    # ------------------------------------------------------------------
+    # A.7b · Pragma multi-locale enrollment — Step 0 contract
+    # ------------------------------------------------------------------
+
+    def test_a7b_pragma_is_translatable_text_fields(self):
+        """Pragma scalar copy fields must classify as translatable after
+        A.7b enrollment. The sample deliberately distributes paths across
+        every Pragma page (home · chi-siamo · competenze · case-studies ·
+        contatti/footer) so the gate can't pass by covering only ``home``."""
+        from apps.editor.schema import is_translatable
         arc = "corporate-suite"
-        # Even clearly-copy paths must return False on Pragma
-        for path in ("home.headline", "home.eyebrow",
-                     "chi-siamo.intro", "competenze.headline"):
+        distributed_paths = (
+            # home — hero + bands
+            "home.headline",
+            "home.intro",
+            "home.pillars_intro",
+            # chi-siamo
+            "chi-siamo.intro",
+            "chi-siamo.history_heading",
+            # competenze
+            "competenze.headline",
+            "competenze.cta_intro",
+            # case-studies
+            "case-studies.intro",
+            "case-studies.cta_primary",
+            # contatti chrome (site.* customer-copy universals)
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on Pragma after A.7b",
+            )
+
+    def test_a7b_pragma_branding_and_contact_universals_are_global(self):
+        """Identity + per-row contact universals (logo, phone, email,
+        address, license, logo_initial) stay global on Pragma like they
+        do on Vertex — shared ``_GLOBAL_TEXT_PATHS`` set."""
+        from apps.editor.schema import is_translatable
+        arc = "corporate-suite"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
             self.assertFalse(
                 is_translatable(arc, path),
-                f"{path} on Pragma must stay global in A.7 first wave",
+                f"{path} must remain a global override on Pragma",
             )
-        self.assertEqual(supported_locales(arc), [])
+
+    def test_a7b_pragma_non_text_fields_are_global(self):
+        """Pragma image + select fields always stay global — only
+        text/textarea/richtext may be translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "corporate-suite"
+        self.assertFalse(is_translatable(arc, "home.hero_image"))     # image
+        self.assertFalse(is_translatable(arc, "home.primary_href"))   # select
+        self.assertFalse(is_translatable(arc, "home.cta_primary_href"))
+
+    def test_a7b_pragma_structured_list_cells_are_global(self):
+        """The 3 readonly indexed lists on Pragma (pillars · kpi_strip ·
+        leadership) stay global at cell level — A.7 family explicitly
+        excludes repeater content from per-locale editing."""
+        from apps.editor.schema import is_translatable
+        arc = "corporate-suite"
+        for path in ("home.pillars.0.title", "home.pillars.0.body",
+                     "home.kpi_strip.0.number", "home.kpi_strip.0.label",
+                     "home.leadership.0.name", "home.leadership.0.role",
+                     "home.leadership.0.bio"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Pragma",
+            )
+
+    def test_a7b_pragma_supported_locales_returns_canonical_five(self):
+        """Pragma now ships the canonical 5-locale set exposed by the
+        editor context — same shape as Vertex."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("corporate-suite"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a7b_vertex_still_enrolled_after_pragma_joins(self):
+        """Regression guard: adding Pragma to the gate must not disturb
+        the Vertex classification or supported-locales contract."""
+        from apps.editor.schema import is_translatable, supported_locales
+        self.assertTrue(is_translatable("agency-creative-studio", "home.headline"))
+        self.assertFalse(is_translatable("agency-creative-studio", "site.logo_word"))
+        self.assertEqual(
+            supported_locales("agency-creative-studio"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Archetype outside the gate still returns False + empty list.
+        self.assertFalse(is_translatable("fine-dining", "home.headline"))
+        self.assertEqual(supported_locales("fine-dining"), [])
 
     def test_a7_supported_locales_for_vertex_returns_canonical_five(self):
         """supported_locales is the contract Step 2 + editor_ctx will
@@ -1734,21 +1816,6 @@ class FoundationModelTests(TestCase):
                 project=p, editor=self.owner, locale="ja",
                 edits={"home.headline": "日本語"},
             )
-
-    def test_a7_step1_pragma_save_still_uses_plain_keys(self):
-        """Pragma is not yet enrolled in multi-locale. Saves on Pragma
-        must keep the pre-A.7 plain-key shape — regression guard that
-        the translatable gate really holds at the write layer."""
-        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
-        p = services.create_project_from_template(owner=self.owner, template=pragma)
-        services.save_content_edits(
-            project=p, editor=self.owner,
-            edits={"home.headline": "Pragma override."},
-        )
-        keys = set(p.content_overrides.values_list("key_path", flat=True))
-        self.assertIn("home.headline", keys)
-        self.assertFalse(any(k.startswith("@") for k in keys),
-                         f"Pragma rows must stay plain-keyed; got {keys}")
 
     # ------------------------------------------------------------------
     # A.7 · Step 2 — autosave + editor context locale-aware (service)
@@ -2783,53 +2850,6 @@ class FoundationHttpTests(TestCase):
         self.assertEqual(logo_field["value"], "A7Brand")
         self.assertTrue(logo_field["is_overridden"])
         self.assertFalse(logo_field["translatable"])
-
-    def test_a7_step4_pragma_editor_stays_plain_keyed_regression(self):
-        """Pragma is NOT enrolled in A.7 multi-locale. Every save on a
-        Pragma project must persist as a plain row (no ``@<locale>:``
-        prefix) even if the client cheekily passes ``locale`` in the
-        autosave payload — regression guard that the archetype gate
-        really holds end-to-end."""
-        import json as _json
-        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
-        p = services.create_project_from_template(owner=self.owner, template=pragma)
-
-        # Client sends locale=en in the payload — the server must
-        # resolve is_translatable → False (Pragma not enrolled) and
-        # ignore the locale tag, persisting plain-keyed.
-        r = self.client.post(
-            f"/projects/{p.uuid}/autosave/",
-            data=_json.dumps({
-                "locale": "en",
-                "content": {"home.headline": "Pragma homepage headline."},
-                "tokens": {},
-            }),
-            content_type="application/json",
-        )
-        self.assertEqual(r.status_code, 200)
-        body = r.json()
-        self.assertTrue(body["ok"])
-        self.assertIn("home.headline", body["content_keys"])
-        self.assertNotIn("@en:home.headline", body["content_keys"])
-
-        keys = set(p.content_overrides.values_list("key_path", flat=True))
-        self.assertEqual(keys, {"home.headline"})
-        self.assertFalse(any(k.startswith("@") for k in keys),
-                         f"Pragma rows must stay plain-keyed; got {keys}")
-
-        # Editor GET on Pragma exposes supported_locales=[] so the UI
-        # doesn't promise per-locale editing for this archetype.
-        r_ed = self.client.get(f"/projects/{p.uuid}/editor/")
-        self.assertEqual(r_ed.status_code, 200)
-        self.assertEqual(r_ed.context["supported_locales"], [])
-        # No field on Pragma carries the translatable flag.
-        groups = r_ed.context["groups"]
-        all_translatable_flags = [
-            f["translatable"]
-            for g in groups for f in g["fields"]
-        ]
-        self.assertTrue(all(v is False for v in all_translatable_flags),
-                        "No Pragma field should be translatable in A.7 first wave")
 
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``

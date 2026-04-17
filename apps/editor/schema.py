@@ -1420,6 +1420,13 @@ _GLOBAL_TEXT_PATHS: frozenset[str] = frozenset({
 
 _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     "agency-creative-studio",
+    # A.7b · Pragma joins the multi-locale gate. Enrollment is a pure
+    # set-extension per D-098: no schema shape change, no service layer
+    # touch. Gated by the dedicated lifecycle regression test
+    # ``test_a7b_pragma_full_multilocale_lifecycle_end_to_end`` so a
+    # future one-liner flip on a new archetype cannot ship without
+    # matching coverage.
+    "corporate-suite",
 })
 
 
