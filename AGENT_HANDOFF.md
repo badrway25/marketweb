@@ -1,16 +1,16 @@
 # Agent Handoff
 
-Last updated: 2026-04-17 — after **Session 60 A.7b Pragma Multi-locale Enrollment merge** (baseline tip `cc1634f`, pushed to origin)
+Last updated: 2026-04-17 — after **Session 61 A.8 Gusto Editor + Multi-locale Enrollment merge** (baseline tip `2e7fbed`, pushed to origin)
 
 ## Current state — read this before opening any new workstream (2026-04-17)
 
-Both editor-supported archetypes — Vertex (`agency-creative-studio`) AND Pragma (`corporate-suite`) — are now multi-locale enrolled. Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **2/8 archetypes editor-supported · 2/8 multi-locale enrolled**. All acceptance gates are green:
+Three editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) — are all multi-locale enrolled. Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **3/8 archetypes editor-supported · 3/8 multi-locale enrolled**. All acceptance gates are green:
 
 - `python manage.py check` → 0 issues
-- `python manage.py test apps` → 151/151 PASS
+- `python manage.py test apps` → 160/160 PASS
 - `python smoke_full.py` → 834/834 routes HTTP 200
 
-Baseline `phase-integration-baseline-v15` tip: **`cc1634f`** (A.7b merge), pushed to `origin/phase-integration-baseline-v15`.
+Baseline `phase-integration-baseline-v15` tip: **`2e7fbed`** (A.8 merge), pushed to `origin/phase-integration-baseline-v15`.
 
 ### What the editor does today
 
@@ -27,6 +27,12 @@ Baseline `phase-integration-baseline-v15` tip: **`cc1634f`** (A.7b merge), pushe
 - 53 translatable fields (out of 92 total sidebar entries) · globals preserve the shared `_GLOBAL_TEXT_PATHS` set (logo, phone, email, address, license) + all image/select/structured-list cells
 - `supported_locales=["it","en","fr","es","ar"]` · same UX surface as Vertex (sidebar pill stateful · flush-before-switch · "per lingua" marker · authored-only fallback · RTL iframe authentic for AR)
 - Enrolled via A.7b Session 60 (gate flip in `_MULTILOCALE_ENABLED_ARCHETYPES` + lifecycle regression test `test_a7b_pragma_full_multilocale_lifecycle_end_to_end`)
+
+**Gusto (`fine-dining`) — editable AND multi-locale enrolled (A.8):**
+- 11 sidebar groups · ~108 scalars + 2 scalar images (`home.ingredienti.image` + `filosofia.filosofia_image`) + 3 readonly indexed lists (`home.signature_courses` tuple 5×4 · `menu.courses` tuple 8×4 · `home.produttori.items` dict 4×4 with `portrait` intentionally NOT in cols so it stays registry-readonly)
+- 97 translatable fields (out of 181 total sidebar entries) · `prenota.form_sections` intentionally omitted from schema (IT-only parity gap in registry, skin already has `{% if %}` graceful guard)
+- `supported_locales=["it","en","fr","es","ar"]` · identical UX surface to Vertex + Pragma. AR preview on `.fd-*` skin renders `<html dir="rtl" lang="ar">` authentic (Arabic nav labels + Arabic H1 + RTL layout)
+- Enrolled via A.8 Session 61 (combined A.6 schema register + A.7b gate flip in a single phase · `test_a8_gusto_full_multilocale_lifecycle_end_to_end` + dedicated `test_a8_gusto_preview_bridge_injected_only_with_preview_project` integration test)
 
 ### What is operator-only
 
@@ -52,9 +58,9 @@ See A.6 commits `a7177f5` · `9540d5a` · `4b9376c`. 5 contract tests + schema r
 
 All prior D-086 through D-095 (A.1 → A.5 bindings) and pre-editor decisions (D-054 premium law, D-055 tier model, D-047 chrome authoring, etc.) remain in force. See DECISIONS.md for full catalogue.
 
-### Phase A.8+ — candidates (no commitment yet)
+### Phase A.9+ — candidates (no commitment yet)
 
-Pick one when the next workstream opens. Recommended framing: **A.8 third archetype editor support** (candidate Gusto · imagery-heavy stress test of the A.6 playbook on a non-typographic archetype) OR a dedicated planning session on selective multi-locale expansion vs new editor scale-out. Alternatives: A.9 editor operator tools, A.10 remote storage (prod-launch driven).
+Pick one when the next workstream opens. Recommended framing: **A.9 medical-specialist editor support** — 1 schema unlocks 2 templates (Cardio + Derm) with mature 5-locale + RTL authoring already shipped. Alternatives: Sapore (trattoria-warm continuation), Chiara (editorial-designer-grid · tests novel page kinds), A.9-alt editor operator tools, A.10 remote storage.
 
 See `TODO_NEXT.md` for full candidate list + red-lamps.
 

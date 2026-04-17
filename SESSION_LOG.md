@@ -4818,3 +4818,47 @@ Step 2 · browser walk. No code changes. 9 spot checks all green:
 ### Exact next step
 
 **A.8 — Third archetype editor support** OR **selective multi-locale expansion**, to be decided in a dedicated planning session. Both candidates are natural continuations; no enforced ordering. See `TODO_NEXT.md` for the ranking.
+
+---
+
+## Session 61 — Phase A.8 · Gusto Fine-Dining Editor + Multi-locale Enrollment (2026-04-17)
+
+### What shipped
+
+A.8 ships the third editable archetype (`fine-dining` → Gusto) editor-enabled AND multi-locale enrolled simultaneously. Applies the A.6 recipe (schema register + preview bridge) combined with the A.7b recipe (gate flip + dedicated lifecycle regression test) in a single phase — no fresh architectural decisions, pure reuse. Two commits on `phase-editor-a8-gusto-multilocale-v1`.
+
+- `a3589bc` — Step 1 · `GUSTO_FINE_DINING_SCHEMA` added to `apps/editor/schema.py` (~330 LOC, 11 sidebar groups covering brand + hero + home editorial bands + each page filosofia/menu/atmosfera/diario/prenota + contatti footer, ~108 scalar fields). `STRUCTURED_FIELD_SHAPES["fine-dining"]` exposes 3 readonly indexed lists (`home.signature_courses` tuple 5×4, `menu.courses` tuple 8×4, `home.produttori.items` dict 4×4 with portrait intentionally omitted from cols so it stays registry-readonly). Registered in `_ARCHETYPE_SCHEMAS` + `_ARCHETYPE_BASELINE_TEMPLATE[("gusto-fine-dining","it")]` + `_MULTILOCALE_ENABLED_ARCHETYPES`. `templates/live_templates/restaurant/fine-dining/_base.html` gets the three atomic A.6 fixes: `<title>` honours `site.logo_word|default:brand.brand_name`, `<body class="{% if preview_project %}mw-is-editor-preview{% endif %}">`, CSS guard block (hide `.mp-bar`, overflow guardrails on `.fd-lead h1` / `.fd-section h2` / `.fd-nav .name`), `preview-bridge.js` conditional injection before `</body>`. 8 contract tests: archetype registered + shape covers all pages + is_translatable distributes paths across every Gusto page + branding universals global + non-text fields global + structured-list cells global (portrait NOT in cols) + Vertex+Pragma regression + **1 dedicated integration test lifting the preview-bridge 3-point contract together** (`test_a8_gusto_preview_bridge_injected_only_with_preview_project` — user-imposed guardrail). 3 A.7-era tests swapped to use `trattoria-warm` / `sapore-trattoria-pizzeria` as unsupported-archetype placeholder now that Gusto is enrolled.
+
+- `94772f2` — Step 2 · `test_a8_gusto_full_multilocale_lifecycle_end_to_end` mirrors A.7b Pragma on Gusto: 3 translatable autosaves (IT/EN/FR on `home.headline`) + 1 global (`site.logo_word` EN-tagged but plain-keyed) + publish + 5 public preview renders (second user) + AR `<html dir="rtl" lang="ar">` assertion via regex on opening `<html>` tag + 4 editor reopens (owner) with prefill + is_overridden + translatable flags. Passes on the first run — strong signal the A.6+A.7b combined recipe holds on a non-typographic, imagery-heavy archetype.
+
+Step 3 · browser walk (no code change). 12 spot checks all green on a fresh Gusto project:
+- Editor mount `?lang=it` → label "Lingua attiva", 5 pills, 97/181 translatable fields, correct markers (translatable vs global)
+- IT edit + global edit + click EN before debounce → flush-before-switch verified in DB (`@it:home.headline` + plain `site.logo_word`)
+- EN → FR → ES ↔ AR locale switches: each locale loads authored / customer buffer correctly, zero cross-locale leak
+- AR iframe renders `<html dir="rtl" lang="ar">` on the `.fd-*` skin with Arabic nav labels + Arabic H1 + global logo `WalkGusto` visible in chrome
+- Publish + second-user public preview per locale: IT/EN/FR customer overrides, ES/AR authored fallback, AR with `<html dir="rtl">`, global logo universal
+- Screenshots: `a8_gusto_editor_ar_rtl.png` + `a8_gusto_public_preview_ar_rtl.png`
+
+### Observables
+
+- 151/151 → **160/160** server tests (+9: 8 contract + 1 lifecycle; 3 A.7-era placeholder-slug tests kept count-stable).
+- Smoke 834/834 unchanged. `manage.py check` 0 issues.
+- No production code touched outside `schema.py`, `_base.html` (3 minimal fixes), and `tests.py`. Zero touches to `services.py` / `rendering.py` / `views.py` / `models.py` / editor templates / `live-editor.js` / CSS.
+
+### Consequences
+
+- **Editor 3/8 archetypes editable · multi-locale 3/8** (Vertex + Pragma + Gusto all enrolled end-to-end).
+- Catalog 20/20 `published_live` unchanged.
+- **No new D-number introduced**. A.8 is the second real application of the D-098 recipe (after A.7b Pragma) — confirms the "one-line gate flip + dedicated lifecycle regression test" contract scales to archetypes with fundamentally different visual profiles (Vertex typographic-agency → Pragma corporate-text-heavy → Gusto imagery-heavy-hospitality-RTL).
+- Branch shape: `phase-editor-a8-gusto-multilocale-v1` merged into v15 via `--no-ff` @ `2e7fbed`. Pushed to `origin/phase-integration-baseline-v15`.
+- No explicit debt pending.
+
+### Exact next step
+
+Two natural candidates, no enforced ordering:
+
+(a) **A.9 Fourth archetype editor support** — candidate `medical-specialist` (Cardio + Derm · 2 templates unlocked per schema), alternatives `trattoria-warm` (Sapore) or `editorial-designer-grid` (Chiara with `project_detail`/`series_detail` novel page kinds).
+
+(b) **A.9 Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler, asset audit UI.
+
+Consolidation pause (this commit) precedes the choice.

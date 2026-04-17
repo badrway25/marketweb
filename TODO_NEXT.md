@@ -1,26 +1,30 @@
 # TODO Next
 
-## 🟢 Current State (2026-04-17 · after Session 60 A.7b Pragma Multi-locale Enrollment merge)
+## 🟢 Current State (2026-04-17 · after Session 61 A.8 Gusto Editor + Multi-locale Enrollment merge)
 
-Baseline `phase-integration-baseline-v15` tip is **`cc1634f`** (A.7b merge), pushed to origin. Both editor-supported archetypes — Vertex (`agency-creative-studio`) AND Pragma (`corporate-suite`) — are now multi-locale enrolled:
+Baseline `phase-integration-baseline-v15` tip is **`2e7fbed`** (A.8 merge), pushed to origin. Three editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) — are all multi-locale enrolled:
 
 - **Vertex** · 284 editable fields (81 translatable · 203 global) · 4 mutable lists · customer image upload on 2 image fields · full A.3c→A.5 feature set
-- **Pragma** · ~53 scalar + 1 image + 3 readonly indexed lists · 53 translatable fields flagged (out of 92 total sidebar entries)
-- **Multi-locale editor on both** · 5 locales (it/en/fr/es/ar) with authentic RTL preview for Arabic · per-locale `@<locale>:<path>` storage · authored-only fallback (no cross-locale customer leak) · sidebar pill switcher · flush-before-switch · "per lingua" marker on translatable fields
+- **Pragma** · ~53 scalar + 1 image + 3 readonly indexed lists · 53 translatable fields flagged (out of 92 sidebar entries) · no repeater mutable
+- **Gusto** · ~108 scalar + 2 image + 3 readonly indexed lists (signature_courses tuple 5×4, menu.courses tuple 8×4, produttori.items dict 4×4 with portrait stays registry-readonly) · 97 translatable fields flagged (out of 181 sidebar entries) · no repeater mutable · no image per-locale
+- **Multi-locale editor on all three** · 5 locales (it/en/fr/es/ar) with authentic RTL preview for Arabic · per-locale `@<locale>:<path>` storage · authored-only fallback (no cross-locale customer leak) · sidebar pill switcher · flush-before-switch · "per lingua" marker on translatable fields
 - Orphan asset GC available via `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project`, `--grace`)
-- 151/151 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
-- **2/8 archetypes editor-supported · 2/8 multi-locale enrolled**
+- 160/160 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
+- **3/8 archetypes editor-supported · 3/8 multi-locale enrolled**
 
 No explicitly-deferred debt is pending.
 
 ### Next workstream — immediate candidates (planning session required)
 
-- [ ] **A.8 Third archetype editor support** — scale editor to a new archetype family. Candidates in priority order: `fine-dining` (Gusto — imagery-heavy hospitality, stress test of reusability · 1 template), `medical-specialist` (Cardio/Derm — 2 templates, already multi-locale rich on public side), `editorial-designer-grid` (Chiara — typographic, no hero photo · 1 template). Recipe identical to A.6 (schema register + `_base.html` preview bridge + lifecycle test). About 500-800 LOC schema replica per archetype.
-- [ ] **A.8 alt · Selective multi-locale expansion** — instead of adding editor to a new archetype, promote a single-template archetype already editor-supported to multi-locale. Not applicable right now (both Vertex and Pragma are the only enrolled archetypes and both are multi-locale).
-- [ ] **A.9 Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler (still manual per D-094 unless contract changes), asset audit UI. Cleans up operator experience without touching customer flows.
+- [ ] **A.9 Fourth archetype editor support** — scale editor to another archetype family. Candidates in priority order:
+      - `medical-specialist` (Cardio + Derm · 2 templates unlocked per schema · already rich 5-locale + RTL on public side · Session 26 premium split + Session 30 premium sections) — highest customer value per commit, first multi-template archetype
+      - `trattoria-warm` (Sapore · 1 template · hospitality continuation from Gusto · adjacent archetype) — low-risk natural adjacency
+      - `editorial-designer-grid` (Chiara · 1 template · typographic portfolio WITH novel `project_detail`/`series_detail` page kinds) — stretches the editor page-kind handling beyond current home/about/services patterns
+- [ ] **A.9 alt · Editor operator tools** — admin-facing (zero customer surface): admin project list filters, GC scheduler (still manual per D-094 unless contract changes), asset audit UI. Cleans up operator experience without touching customer flows.
 - [ ] **A.10 Remote asset storage** — swap `ProjectAsset.file` Django FileField backend to S3 (django-storages) or Cloudinary, settings-toggled per environment. Must keep `/media/` accept path in parallel (D-095 binding). Worth opening only when a prod-launch timeline requires it; introduces ops dependencies (credentials, bucket policy, costs).
+- [ ] **A.10 alt · Repeater-per-locale first wave** — flip one or two mutable lists on Vertex from global-only to translatable-per-locale (starting with `studio.facts` or `contatti.channels`). Out-of-scope family per D-098 · opens up localized repeater content if customer signal emerges.
 
-Recommended framing: **A.8 (third archetype editor support)** OR **selective multi-locale expansion** — decide in a dedicated planning session. A.8 with Gusto as candidate is the natural next bet (imagery-heavy recipe validates the A.6 playbook on non-typographic archetypes).
+Recommended framing: **A.9 medical-specialist (Cardio + Derm) editor support** — highest customer-value-per-commit ratio (1 schema → 2 templates editable) on an archetype family with mature 5-locale + RTL authoring. Decision deferred to dedicated planning session (same shape as A.8 planning).
 
 ### Carried-forward observations (not blocking)
 
@@ -31,7 +35,7 @@ Recommended framing: **A.8 (third archetype editor support)** OR **selective mul
 - [ ] A.3d widen repeater to `manifesto.principles`, `manifesto.promise_stats`, `lavori.archive_stats` (pattern validated in A.3c). Low priority; no customer request.
 - [ ] Search Cmd-K palette could become locale-aware (show the translated label when a translatable field is selected in an active locale); not urgent — current behavior is correct, just not localized.
 
-### A.7 / A.7b fuori-scope esplicitamente rinviati (respect when planning)
+### A.7 / A.7b / A.8 fuori-scope esplicitamente rinviati (respect when planning)
 
 - Repeater per-locale (struttura + row content restano globali — A.10+ only on explicit customer signal)
 - Image per-locale (asset uploaded once, universal — A.10+)
@@ -39,7 +43,8 @@ Recommended framing: **A.8 (third archetype editor support)** OR **selective mul
 - Per-locale publish gating / approval (single atomic publish is the contract)
 - Translation memory / ML helpers (out of product scope)
 - "Solo translatable filter" UI toggle (optional polish, not required)
-- Pragma coverage expansion — the current 53 translatable fields are the A.7b-closing set; any Pragma field gap is A.8+ scope
+- Pragma coverage expansion — the current 53 translatable fields are the A.7b-closing set; any Pragma field gap is A.9+ scope
+- Gusto coverage expansion — the current 97 translatable fields are the A.8-closing set; `prenota.form_sections` intentionally omitted (IT-only parity gap · guard `{% if %}` in skin). Any Gusto gap is A.9+ scope
 - Search Cmd-K locale-aware ranking — current shape is correct, just not localized; polish only
 
 ### Scope red-lamps (to resist when planning)
