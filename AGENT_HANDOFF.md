@@ -1,6 +1,54 @@
 # Agent Handoff
 
-Last updated: 2026-04-16 — after **Session 57 Phase A.2 Editor UX + Live Preview**
+Last updated: 2026-04-17 — after **Session 57 A.5 Orphan Asset GC merge** (baseline tip `421dc44`)
+
+## Current state — read this before opening any new workstream (2026-04-17)
+
+The editor customer-facing flow on Vertex (`agency-creative-studio`) is operationally complete through Phase A.5. All acceptance gates are green:
+
+- `python manage.py check` → 0 issues
+- `python manage.py test apps.editor apps.projects` → 97/97 PASS
+- `python smoke_full.py` → 834/834 routes HTTP 200
+
+Baseline `phase-integration-baseline-v15` tip: `421dc44` (A.5 merge). Catalog 20/20 `published_live` unchanged since D-082 / Session 53.
+
+### What the editor does today (Vertex only)
+
+- 284 editable fields across 33 accordion groups (14 curated + 18 indexed + 1 design)
+- 4 mutable lists with full add / remove / reorder / persistence / preview sync / publish / page-preservation:
+  - `studio.facts` (tuple, 1–8 rows)
+  - `studio.partners` (dict, 2–8 rows)
+  - `contatti.channels` (tuple, 1–10 rows)
+  - `studio.timeline_rows` (tuple, 2–10 rows)
+- Customer image upload on the 2 image fields (`studio.partners[].portrait` + `home.cover.image`) persisting to `MEDIA_ROOT/project-assets/<project-uuid>/<uuid>.<ext>`
+- Page-aware preview navigation · palette Cmd-K search · public `MWEditor.jumpField(key, kind)` API · deterministic field targeting · baseline before/after compare
+
+### What is operator-only
+
+- `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project=<uuid>`, `--grace=<hours>`) — removes ProjectAsset rows + files no longer referenced by any live override or publish snapshot. Not scheduled. Not auto-triggered. Manual only per D-094.
+
+### Binding decisions added through Phase A.5
+
+- **D-092** — A.3a first-wave repeater scope: exactly `studio.facts` + `studio.partners`.
+- **D-093** — Structural sentinel + uid-path data model: `__meta__` lives as a single ProjectContent row; added rows use `aN` uid paths.
+- **D-094** — Customer image upload storage shape: local MEDIA_ROOT, server-generated path, no FK between asset and content. Orphan cleanup deferred to GC.
+- **D-095** — `validate_value` for image fields accepts `/media/` prefix alongside http/https/data: — required by the A.4 upload → autosave round-trip.
+
+All prior D-086 through D-091 and pre-editor bindings (D-054 premium law, D-055 tier model, D-047 chrome authoring, etc.) remain in force.
+
+### Phase A.6 — candidates (no commitment yet)
+
+Pick one when the next workstream opens. Recommended: **A.6a Second archetype editor support** (scale-out to Cardio/Derm or Gusto). Alternatives: A.6b remote storage (prod-launch driven), A.6c transform pipeline (signal-driven), A.6d gallery picker (request-driven).
+
+See `TODO_NEXT.md` for full candidate list + red-lamps.
+
+### Things that are not debt but look like it
+
+- Per-group badges don't pre-sync at mount with persisted overrides; they start at 0 and catch up on the next autosave. Customer-cosmetic only.
+- Reopen editor always starts the iframe on `home`, not on the page the customer last viewed. `PENDING_PAGE_KEY` sessionStorage hint is one-shot for row-op reloads only, by design.
+- Orphan assets accumulate until an operator runs `gc_project_assets --apply`. This is D-094 behaviour, not neglect.
+
+---
 
 ## Session 57 — Phase A.2 Editor UX + Live Preview: Read This Before Touching The Editor, Autosave, `?baseline=1`, or the Preview-Bridge Injection (2026-04-16)
 

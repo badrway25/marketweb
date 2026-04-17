@@ -1,5 +1,43 @@
 # TODO Next
 
+## 🟢 Current State (2026-04-17 · after Session 57 A.5 Orphan Asset GC merge)
+
+Baseline `phase-integration-baseline-v15` tip is `421dc44` (A.5 merge). The editor flow on Vertex (`agency-creative-studio`) is operationally complete:
+
+- 284 editable fields
+- 4 mutable lists with full add / remove / reorder / persistence / preview sync / publish / page-preservation
+- Customer image upload on the 2 image fields (`studio.partners[].portrait` + `home.cover.image`)
+- Orphan asset GC available via `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project`, `--grace`)
+- 97/97 server tests passing, smoke_full 834/834 unchanged, catalog 20/20 `published_live` unchanged
+
+No explicitly-deferred debt is pending.
+
+### Phase A.6 — immediate candidates (pick one)
+
+- [ ] **A.6a Second archetype editor support** — replica of the A.2.6a/b schema work on a second archetype. Candidates in priority order: `medical-specialist` (Cardio/Derm, 2 templates), `restaurant-fine-dining` (Gusto, 1 template), `corporate-suite` (Pragma, 1 template). About 500-800 LOC schema replica per archetype. Highest-value next strategic step: editor currently works only on 1/20 templates (Vertex).
+- [ ] **A.6b Remote asset storage** — swap `ProjectAsset.file` Django FileField backend to S3 (django-storages) or Cloudinary, settings-toggled per environment. Must keep `/media/` accept path in parallel (D-095 binding). Worth opening only when a prod-launch timeline requires it; introduces ops dependencies (credentials, bucket policy, costs).
+- [ ] **A.6c Image transform pipeline** — on-upload resize / thumbnail / WebP transcode for bandwidth optimization. Depends on real customer file-size data; premature without signal.
+- [ ] **A.6d Gallery picker** — pick from previously-uploaded assets of the same project. Needs new UI surface (list of existing `ProjectAsset` rows with thumbnails). Pure UX polish; low priority without a customer request.
+
+Recommended next: **A.6a Second archetype** — it's the natural scale-out move, uses fully-validated infra, and opens editor to new template categories.
+
+### Carried-forward observations (not A.6-blocking)
+
+- [ ] L2 — programmatic focus on a collapsed sidebar accordion doesn't trigger iframe page-aware nav (pre-A.2.8 observation). Low impact since palette jump / click flows work; close with a public `MWEditor.jumpField` API expansion if A.6 introduces new deep-link needs.
+- [ ] Badge per-group not synced at mount with persisted overrides (pre-A.2.8 observation). Customer-cosmetic, no functional gap.
+- [ ] Sticky last page on reopen (currently one-shot only on row-op reloads, by design). Customer-convenience opt-in if requested.
+- [ ] Palette page-slug-match boost in ranking (Vertex-specific "studio" ambiguity). Low signal so far — reopen only if customer feedback surfaces.
+- [ ] A.3d widen repeater to `manifesto.principles`, `manifesto.promise_stats`, `lavori.archive_stats` (pattern validated in A.3c). Low priority; no customer request.
+
+### A.6 scope red-lamps (to resist when planning)
+
+- Don't bundle A.6a second archetype + A.6b remote storage in one phase — two independent work streams, merging them loses the leverage of each.
+- Don't add cron / scheduler for A.5 GC. Management command manual is the contract per D-094.
+- Don't replace the `/media/` accept path in `validate_value` — A.6b must live in parallel (D-095 binding).
+- Don't introduce media library / gallery UI until a customer explicitly asks; premium prodotto = no admin-like panels.
+
+---
+
 ## 🟢 Phase A.2 — Editor UX + Live Preview — ✅ CLOSED (Session 57, 2026-04-16)
 
 Per D-088: the editor is now a premium app shell — debounced JSON autosave (400ms), wide device-aware preview canvas, 14-group accordion sidebar with icons + search + reset-to-baseline, hover-to-highlight via postMessage to `preview-bridge.js`, baseline before/after compare slider, clean notification hygiene (no Django-messages stacking). Rich customization widened ~doubled on Vertex (~39 editable fields across 14 grouped sections, was 23/4). 20/20 project tests green (4 new).

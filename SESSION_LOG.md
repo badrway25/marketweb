@@ -4574,3 +4574,133 @@ Every stats/facts/metrics band on the 4 new templates carries `data-lm="counter"
 Companion work (non-blocking):
 - Extend `smoke_full.py` with programmatic D-047 leak enforcement (grep rendered HTML of every locale for brand literals of *other* templates; catches cross-template leaks in chrome authoring).
 - Document the 8 archetypes + 20 templates in a public-facing catalog index (`docs/catalog.md`) for onboarding.
+
+---
+
+## Session 54 — A.3b Reorder Only · First-Wave Repeater Complete (2026-04-17)
+
+### What shipped
+
+A.3b closes the add/remove gap that A.3a left: customer can now reorder rows up/down within a mutable list. Three commits on `phase-editor-a3b-reorder-only-v1`:
+
+- `a5a4f69` — contract + services: `__meta__` gains an `order` array (list of segment strings); `services.move_row(project, list_path, segment, direction)` performs a single-step swap. Sparse-diff is preserved — when the new order equals the canonical default (baseline-ascending + added-declaration), `order` is stripped from meta. 11 contract tests.
+
+- `19e1d38` — UI: single endpoint `/projects/<uuid>/row/move/` + up/down ghost chevron buttons in each mutable subgroup header. Boundary states (`can_move_up`/`can_move_down`) come from the server, so the first row up-chevron and the last row down-chevron are pre-disabled. JS reuses the A.3a `withAutosaveFlush` + `postRowOp` + sessionStorage `PENDING_PAGE_KEY` pipeline — zero new client infra.
+
+- `2c53216` — persistence hardening: `add_row` appends the new uid to a persisted `order`; `remove_row` prunes the dropped segment and normalizes back to default if pruning restores the canonical sequence. Three new tests cover the add-after-reorder and remove-after-reorder cases that would otherwise have silently discarded a custom arrangement.
+
+### Observables
+
+Browser walk validated: move down on a baseline row keeps the iframe on `/studio/` across reload, stats band reorders, move up reverts to default (sparse-diff strips record, 0 modifiche). Add then move-up mixing baseline + added rows works end-to-end: effective order `[0, 1, 2, a0, 3]` on studio.facts renders correctly in the iframe + reopens identically + publishes to a second authenticated viewer. MWEditor.jumpField still works on uid paths after reorder — key resolution is structurally stable, only position in the effective list changes.
+
+### Consequences
+
+- First-wave repeater contract now complete: add + remove + reorder + persistence. Two lists mutable: studio.facts + studio.partners.
+- D-093 reuses the `__meta__` extension as the binding for future reorder variants. Phase A.3c widen can enable mutability on new lists without touching reorder machinery.
+- 55/55 to 69/69 server tests. Smoke 834/834 unchanged.
+
+### Exact next step
+
+Phase A.3c (widen repeater to 1-2 more lists) — pattern is validated across both tuple and dict shapes, additional lists are about 30 LOC of schema flags each.
+
+---
+
+## Session 55 — A.3c Widen Repeater Coverage · +2 Lists (2026-04-17)
+
+### What shipped
+
+A.3c enables `mutable=True` on two additional lists in Vertex, using the plumbing already validated by A.3a + A.3b. Three commits on `phase-editor-a3c-widen-repeater-v1`, strictly disciplined:
+
+- `1f86dc6` — `contatti.channels` (tuple, 2 cols, min=1 max=10) plus legacy test updates (whitelist test renamed to three-lists; non-mutable counter-example tests that previously referenced `contatti.channels` moved to `manifesto.phases`).
+
+- `895b02e` — `studio.timeline_rows` (tuple, 3 cols, min=2 max=10) plus whitelist test bumped to four-lists, uid-path validator extended for the new mutable list.
+
+- `2b9929b` — cross-cutting polish: a single HTTP-level integration test locks the contract that `data-ed-mutable="1"` + `[data-ed-list-path]` markers appear in the editor sidebar markup only for the four mutable lists, NEVER for the other 14 indexed lists. Guards against a future edit that silently flips `mutable=True` on an un-vetted list.
+
+### Observables
+
+Browser walk per list validated: `contatti.channels` → add "WhatsApp" row, move up twice, remove "LinkedIn" baseline, iframe `/contatti/` reflects correctly at every step. `studio.timeline_rows` → add 2027 row with year/title/body, move up once, remove baseline 2020, iframe `/studio/` cronologia band updates. Zero touches to services/rendering/views/JS/CSS — the schema `mutable` flag is the single gate. Pattern is genuinely universal.
+
+### Consequences
+
+- 4 mutable lists live on Vertex: studio.facts, studio.partners, studio.timeline_rows, contatti.channels. 14 still-locked.
+- 69/69 to 74/74 server tests. Smoke 834/834 unchanged.
+- First-wave repeater is officially complete: add + remove + reorder + persist + preview sync + publish + page preservation + jumpField API, covering both tuple and dict shapes across four lists.
+
+### Exact next step
+
+A.4 customer image upload — closes the gap "customer still has to paste CDN URLs" which is the biggest remaining premium-experience debt post-repeater.
+
+---
+
+## Session 56 — A.4 Customer Image Upload (2026-04-17)
+
+### What shipped
+
+A.4 introduces customer-facing image upload: file picker → POST multipart → ProjectAsset persisted on MEDIA_ROOT → public `/media/` URL feeds the existing widget URL input → autosave pipeline takes over. Four commits on `phase-editor-a4-image-upload-v1`.
+
+- `ed76cea` — backend shell. `ProjectAsset` model (+1 migration) with FileField on `project-assets/<project-uuid>/<uuid>.<ext>` path generated server-side (zero path traversal surface). `services.upload_asset` applies three guards: 2MB cap (`AssetTooLarge` → 413), MIME whitelist jpeg/png/webp (`AssetMimeRejected` → 415), and `Pillow.Image.verify()` post-save to catch MIME-spoofed bytes (`AssetInvalid` → 400 with atomic row + file cleanup). Endpoint `project_asset_upload` wraps the service with login_required + CSRF + ownership guard. 10 contract tests.
+
+- `b875383` — customer UI wiring. The A.2.2 FileReader → data-URL hack is replaced by fetch POST multipart; `uploadImageFile()` reuses the A.3a `withAutosaveFlush` pattern and adds an is-uploading visual state on thumb + pick button. Client-side guards (MIME + 2MB) reject bad files with a toast before the network hop. The `accept` attribute on `input[type=file]` is restricted to jpeg/png/webp.
+
+  A real bug was found and fixed in-flight: `validate_value` for image fields accepted only http/https/data: prefixes, so the very `/media/...` URL the endpoint returned would fail autosave on its first save. Extended the image scheme whitelist to accept `/media/` alongside existing prefixes; locked by `test_a4_validate_value_accepts_media_relative_url`.
+
+- `43341e3` — cross-cutting persistence lock via HTTP test client: upload → autosave into `studio.partners.0.portrait` → GET `/editor/` (URL prefills input, proving reopen persistence) → publish + login-as-other + GET `/preview/studio/` (URL renders in public HTML).
+
+- `45e5f5b` — complementary lock on the second image field `home.cover.image` (dict-nested path shape, different from the repeater-dict-column shape of partners.portrait), confirming the contract holds on both existing image fields.
+
+### Observables
+
+Browser walk 8/8: login → jumpField to portrait → canvas-generated PNG attached via DataTransfer → dispatch change → POST fetch → `/media/...` URL returned → URL prefills input + thumb updates + iframe studio reflects new portrait (magenta square replaces Unsplash image) → status Saved, 1 modifica. Client guards tested: GIF + 3MB blob both rejected with toasts, URL unchanged in both cases. Reopen editor → URL + thumb persisted. Public preview after publish contains `/media/` URL. Screenshot captured: `a4_upload_success.png`.
+
+### Consequences
+
+- Customer image upload flow is now end-to-end operational on the two image fields of agency-creative-studio. Upload → persist → preview sync → publish → public preview → reopen all validated.
+- Orphan asset handling deliberately deferred — see D-094 binding for A.5 scope.
+- 74/74 to 87/87 server tests. Smoke 834/834 unchanged.
+- New customer-facing premium surface: no more paste-a-CDN-URL workaround.
+
+### Exact next step
+
+A.5 orphan asset GC — honour the D-094 promise with a prudent management command before accumulated orphans become a real storage-management issue.
+
+---
+
+## Session 57 — A.5 Orphan Asset GC · D-094 Promise Closed (2026-04-17)
+
+### What shipped
+
+A.5 introduces a manual garbage collection command for ProjectAsset rows no longer referenced by any live override or publish snapshot. Three commits on `phase-editor-a5-orphan-asset-gc-v1`.
+
+- `48c03ff` — service layer. `find_unreferenced_assets(project=None, grace_hours=24)` scans ProjectAsset rows outside the grace window, builds a per-project reference blob by concatenating every `ProjectContent.value_json` and every `ProjectRevision.snapshot` (JSON-encoded), and returns the assets whose `file.url` does NOT appear as a substring of that blob. Revision snapshots count as reference — a publish history protects the asset even if the live override replaced it.
+
+  `delete_unreferenced_assets(assets, *, dry_run=True)` deletes file + row per asset with per-asset exception handling (filesystem failures never abort the batch). Returns stats: scanned, deleted, skipped, bytes_freed, paths, errors (capped at 10). Dry-run mode produces stats identical to apply mode but leaves everything intact — the operator sees exactly what --apply would remove.
+
+  Seven contract tests lock the math. The URL-shape assumption (A.4 D-094 binding: `<MEDIA_URL>project-assets/<project-uuid>/<hex>.<ext>`, no query string) is documented in the code header.
+
+- `d50f008` — `gc_project_assets` management command. Default is DRY-RUN; real deletion requires explicit `--apply`. Optional `--project=<uuid>` narrows scope, `--grace=<hours>` tunes the race guard. Output is a human-readable table of candidate paths with size + mode banner + summary line. Two command tests lock the default-dry-run and --apply behaviours.
+
+- `b753326` — cross-cutting end-to-end integration test: upload asset_A → reference it → upload asset_B → replace the reference (A orphan now, B referenced) → confirm grace window protects both → backdate A's `created_at` past grace → confirm dry-run surfaces only A → run --apply → confirm A's file + row gone, B's file + row intact.
+
+### Observables
+
+- 87/87 to 97/97 server tests. Smoke 834/834 unchanged.
+- Management command `python manage.py gc_project_assets --help` renders Django auto-generated help. Bare invocation on dev DB with zero orphans prints the "Nothing to clean up." branch cleanly.
+- Zero customer-visible surface added: A.5 is operator-facing only.
+
+### Consequences
+
+- D-094 debt closed: orphan asset cleanup now has a prudent, auditable, default-safe tool.
+- No scheduled / cron / event-based cleanup — operator runs manually per D-094 binding.
+- A.6 remote storage (if ever shipped) will need to update `_build_reference_blob` to match the new URL shape; the existing tests act as early-warning regression detectors.
+- Baseline v15 is now operationally complete for the full customer-facing editor flow on Vertex: 284 field + 4 mutable lists + image upload + orphan GC.
+
+### Exact next step
+
+Two candidates depending on product priority:
+
+(a) **A.6 second-archetype editor support** — replica of the A.2.6 schema work on medical-specialist or restaurant-fine-dining. Scales editor to 2+ template categories. About 500-800 LOC schema replica.
+
+(b) **A.6 remote storage** — swap Django FileField backend to S3 / Cloudinary. Only worth doing when a prod-launch timeline requires it; introduces ops dependencies.
+
+No debt currently pending. Consolidation pause (this commit) precedes the choice.

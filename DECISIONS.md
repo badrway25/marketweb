@@ -1682,3 +1682,91 @@ The rollout adds ~38,700 LOC (skin + IT + locales + preview compositions). Linea
 (f) **Phase 3 unblock gate MET.** Phase 3 (auth/checkout/editor/projects/commerce front-stage completion) is now unblocked.
 (g) All 8 MVP categories (agency · business · ecommerce · medical · portfolio · restaurant · lawyer · real-estate) show CHIUSA with N ≥ 2 live siblings.
 (h) D-047/D-054/D-055/D-057/D-063/D-066/D-069/D-072/D-077/D-081 all satisfied prospectively.
+
+---
+
+## D-092 · A.3a First-Wave Repeater Scope Discipline (2026-04-17, Session A.3a)
+
+### Decision
+
+A.3a ships add/remove on exactly two lists of the `agency-creative-studio` archetype: `studio.facts` (tuple, min=1 max=8) + `studio.partners` (dict, min=2 max=8). Reorder, image upload, slug-ordinal lists (`lavori.projects`, `home.ledger_rows`), other archetypes, and the remaining indexed candidates are explicitly out of first-wave scope.
+
+### Why
+
+Narrow first wave validates the contract + UX on both tuple and dict shapes; every exclusion has a concrete reason (reorder requires index remap math not worth bundling; slug lists require generation infra; wider templates multiply validation cost). Keeping the wave tight meant the full A.3a diff lands at 9 files / ~1300 additions including tests — comparable to A.2.8 in surface size.
+
+### How to apply
+
+Subsequent waves add one list at a time with its own browser walk. Reorder is A.3b; further widening is A.3c; other archetypes are A.4+. When a future phase expands mutability, it must prove the new shape's skin rendering before flipping the flag.
+
+---
+
+## D-093 · Structural Sentinel + uid-path Data Model (2026-04-17, Session A.3a)
+
+### Decision
+
+List mutability state lives in a single `ProjectContent` row keyed `<list_path>.__meta__` with value:
+
+```json
+{"removed": [int_baseline_idx], "added": [{"uid": "aN"}], "order": ["segment", ...]}
+```
+
+Added-row cell overrides use `<list_path>.aN.<col>` paths. Baseline-row cell paths (`<list_path>.N.<col>`) stay unchanged; baseline indices remain stable across remove/add/reorder.
+
+### Why
+
+No migration, no new model, no new table. Sparse-diff works by construction — empty meta (`{"removed":[], "added":[], "order": not present}`) is never persisted. `validate_key_path` accepts uid paths structurally on mutable lists only, so typo paths can't land. Monotonic uid (never recycled) makes it impossible for a stale cell override to collide with a new row.
+
+### How to apply
+
+- A.3b reorder extends `__meta__` with the `order` array rather than inventing a new storage shape.
+- A.3c new mutable lists only set `mutable=True` + `min_rows` + `max_rows` in `STRUCTURED_FIELD_SHAPES`; no schema plumbing.
+- Any future structural mutation (e.g. freeze, lock, cross-list move) must fit the `__meta__` sentinel pattern or justify a new storage shape explicitly.
+
+---
+
+## D-094 · Customer Image Upload Storage Shape (2026-04-17, Session A.4)
+
+### Decision
+
+Images uploaded by customers are persisted as `ProjectAsset` rows owned by a single project, stored on local MEDIA_ROOT under a server-generated path:
+
+```
+<MEDIA_URL>project-assets/<project-uuid>/<asset-uuid-hex>.<ext>
+```
+
+No foreign key binds a `ProjectAsset` to the `ProjectContent` that references its URL — the URL travels through overrides as a plain string.
+
+### Why
+
+Minimum contract for Phase A.4. A join table would complicate sparse-diff and rendering without buying anything the scope needed. Orphan assets (uploaded and later unused) are acceptable — cleanup is deferred to a Phase A.5 GC job that scans ProjectAsset rows whose URL does not appear in any current `ProjectContent.value_json` or `ProjectRevision.snapshot`.
+
+### How to apply
+
+- A.5 GC job: shipped in Session 57 as `gc_project_assets` management command (default dry-run, `--apply` for real delete, 24h grace period, project-scoped via `--project=<uuid>`). Closes this promise.
+- A.6 remote storage (if shipped) swaps FileField backend without touching this contract; `_build_reference_blob` in `apps/projects/services.py` must update its URL-prefix assumption if the served URL shape changes.
+- The URL shape (no query string, no version suffix) is load-bearing for the GC: any future feature that adds query params (resize, cache-bust) must update the reference-matching logic in lock-step.
+
+---
+
+## D-095 · Image Value Accepts /media/ Prefix (2026-04-17, Session A.4)
+
+### Decision
+
+`validate_value` for `type: "image"` fields now accepts four URL prefixes:
+
+- `http://`
+- `https://`
+- `data:image/` (A.2.2 inline fallback, still tolerated)
+- `/media/` (A.4 upload endpoint output)
+
+Everything else (raw paths, `javascript:`, relative paths not under `/media/`, etc.) still rejects.
+
+### Why
+
+Without the `/media/` prefix, the autosave right after a successful upload bounces on its own output — the endpoint returns `/media/project-assets/...` and the editor writes that URL into the image field via the normal autosave path. Locked by `test_a4_validate_value_accepts_media_relative_url`.
+
+### How to apply
+
+- A.5 remote storage (when shipped) must keep the `/media/` accept path functional in parallel with any `https://cdn...` URLs the backend swap produces (toggle via settings, not by removing the `/media/` branch).
+- Any future image widget value that isn't one of the four accepted prefixes must be rejected with `InvalidEditableField` at the service layer — no silent acceptance of unknown schemes.
