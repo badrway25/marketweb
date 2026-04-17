@@ -3233,6 +3233,193 @@ class FoundationHttpTests(TestCase):
         self.assertTrue(logo_field["is_overridden"])
         self.assertFalse(logo_field["translatable"])
 
+    # ------------------------------------------------------------------
+    # A.8 · Step 2 — Gusto lifecycle HTTP cross-cutting
+    # ------------------------------------------------------------------
+
+    def test_a8_gusto_full_multilocale_lifecycle_end_to_end(self):
+        """Mirror of the A.7b Pragma lifecycle, adapted to Gusto on the
+        new ``fine-dining`` archetype.
+
+        1. customer edits IT / EN / FR on a Gusto translatable path
+        2. customer edits a global path (site.logo_word)
+        3. unedited locales (ES · AR) fall back to the authored registry —
+           NEVER to another locale's customer override
+        4. project publishes · second user visits every public preview
+           locale and sees the correct content
+        5. owner reopens the editor per locale and the sidebar prefill
+           matches the buffer for that locale.
+
+        Also asserts ``<html dir="rtl">`` on the AR preview HEAD so
+        Step 3 browser walk inherits a green baseline for RTL rendering
+        on the ``.fd-*`` skin. Vertex + Pragma regression is implicit
+        via the full suite staying green.
+        """
+        import json as _json
+        gusto = WebTemplate.objects.get(slug="gusto-fine-dining")
+        p = services.create_project_from_template(owner=self.owner, template=gusto)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global ──────────
+        for locale, headline in (
+            ("it", "Una cena <em>che dura</em> (IT A8)."),
+            ("en", "A dinner that <em>endures</em> (EN A8)."),
+            ("fr", "Un dîner qui <em>dure</em> (FR A8)."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        # Global edit — the client passes locale="en" on purpose: the
+        # server must classify site.logo_word as global and ignore the
+        # locale tag, persisting plain-keyed.
+        r = autosave("en", {"site.logo_word": "A8GustoBrand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # Storage keys check: three @<locale>:home.headline rows + one
+        # plain site.logo_word row. Gate holds at the write layer.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertNotIn("home.headline", keys)       # no plain-key leak
+        self.assertNotIn("@en:site.logo_word", keys)  # no global→locale leak
+
+        # ── 3. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 4. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale):
+            url = (
+                f"/templates/restaurant/gusto-fine-dining/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render: IT override visible, EN/FR markers absent.
+        body_it = preview_body("it")
+        self.assertIn("che dura", body_it)
+        self.assertIn("Una cena", body_it)
+        self.assertNotIn("endures (EN A8)", body_it)
+        self.assertNotIn("dure (FR A8)", body_it)
+        self.assertIn("A8GustoBrand", body_it)
+
+        # EN render: EN override visible, IT/FR markers absent.
+        body_en = preview_body("en")
+        self.assertIn("A dinner that", body_en)
+        self.assertIn("endures", body_en)
+        self.assertNotIn("Una cena", body_en)
+        self.assertNotIn("dure (FR A8)", body_en)
+        self.assertIn("A8GustoBrand", body_en)
+
+        # FR render: FR override visible.
+        body_fr = preview_body("fr")
+        self.assertIn("Un dîner qui", body_fr)
+        self.assertIn("dure", body_fr)
+        self.assertNotIn("Una cena", body_fr)
+        self.assertNotIn("A dinner that", body_fr)
+        self.assertIn("A8GustoBrand", body_fr)
+
+        # Unedited locales — must fall back to the authored registry
+        # (no customer headline leak from IT/EN/FR) while still
+        # carrying the global logo override.
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Una cena", body)
+            self.assertNotIn("A dinner that", body)
+            self.assertNotIn("Un dîner qui", body)
+            self.assertIn("A8GustoBrand", body)
+            # Authored registry for the unedited locale must flow through.
+            from apps.catalog import template_content as _tc
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Gusto",
+                )
+
+        # AR preview — the ``.fd-*`` skin must emit ``<html dir="rtl">``
+        # on the document root so RTL rendering works inside the editor
+        # iframe. Pillow check on the opening <html ...> tag only, to
+        # avoid matching pill-level ``dir="rtl"`` on language switchers.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 5. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_headline_field(groups):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == "home.headline":
+                        return f
+            self.fail("home.headline field missing from Gusto editor groups")
+
+        for locale, expected_substring in (
+            ("it", "che dura"),
+            ("en", "A dinner that"),
+            ("fr", "Un dîner qui"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_headline_field(r.context["groups"])
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_headline_field(r_es.context["groups"])
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+        # Global field: overridden universally, not translatable — same
+        # contract as Vertex + Pragma.
+        logo_field = None
+        for g in r_es.context["groups"]:
+            for f in g["fields"]:
+                if f["key"] == "site.logo_word":
+                    logo_field = f
+                    break
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Gusto editor")
+        self.assertEqual(logo_field["value"], "A8GustoBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
