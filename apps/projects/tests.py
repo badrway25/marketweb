@@ -1374,6 +1374,105 @@ class FoundationModelTests(TestCase):
         self.assertTrue(ProjectAsset.objects.filter(pk=asset_b.pk).exists())
         self.assertTrue(os.path.exists(b_path))
 
+    # ------------------------------------------------------------------
+    # A.6 · Pragma (corporate-suite) second-archetype support
+    # ------------------------------------------------------------------
+
+    def test_a6_pragma_archetype_registered(self):
+        """`corporate-suite` must now appear in the supported-archetype
+        registry alongside `agency-creative-studio`."""
+        from apps.editor.schema import _ARCHETYPE_SCHEMAS
+        self.assertIn("corporate-suite", _ARCHETYPE_SCHEMAS)
+        self.assertTrue(is_supported_archetype("corporate-suite"))
+        self.assertTrue(is_supported_archetype("agency-creative-studio"))
+        # Sanity — a third unsupported archetype still rejects.
+        self.assertFalse(is_supported_archetype("fine-dining"))
+
+    def test_a6_pragma_schema_shape_covers_core_pages(self):
+        """The Pragma schema must surface groups for every customer-
+        editable page kind plus chrome-level groups (page="*")."""
+        groups = iter_groups("corporate-suite")
+        self.assertGreaterEqual(len(groups), 7)
+        pages = {g.get("page") for g in groups}
+        # Must cover: chrome + the five Pragma page slugs. Pragma
+        # uses Italian slugs (chi-siamo / competenze / case-studies)
+        # which must match the page metadata verbatim so the JS
+        # page-aware navigation sees the same string as iframe path.
+        self.assertIn("*", pages)
+        self.assertIn("home", pages)
+        self.assertIn("chi-siamo", pages)
+        self.assertIn("competenze", pages)
+        self.assertIn("case-studies", pages)
+        # Every group must declare icon + region
+        for g in groups:
+            with self.subTest(group=g["id"]):
+                self.assertIn("icon", g)
+                self.assertIn("region", g)
+
+    def test_a6_pragma_validate_key_path_accepts_whitelist_rejects_outside(self):
+        arc = "corporate-suite"
+        # Whitelisted
+        validate_key_path(arc, "site.logo_word")
+        validate_key_path(arc, "home.headline")
+        validate_key_path(arc, "home.hero_image")
+        validate_key_path(arc, "chi-siamo.intro")
+        validate_key_path(arc, "competenze.headline")
+        validate_key_path(arc, "case-studies.cta_primary")
+        validate_key_path(arc, "home.pillars.0.title")  # indexed cell
+        validate_key_path(arc, "home.leadership.1.name")
+        # Off-whitelist paths must reject
+        with self.assertRaises(InvalidEditableField):
+            validate_key_path(arc, "home.mystery_field")
+        with self.assertRaises(InvalidEditableField):
+            # Vertex path on Pragma
+            validate_key_path(arc, "studio.partners.0.name")
+        with self.assertRaises(InvalidEditableField):
+            # Structural section_order is DNA-locked per D-054
+            validate_key_path(arc, "section_order")
+
+    def test_a6_pragma_indexed_lists_are_readonly_not_mutable(self):
+        """A.6 ships 3 indexed lists on Pragma but NONE are mutable.
+        Row add/remove/move must be rejected; cell edits still work."""
+        from apps.editor.schema import STRUCTURED_FIELD_SHAPES, is_mutable_list
+        arc = "corporate-suite"
+        shapes = STRUCTURED_FIELD_SHAPES[arc]
+        expected = {"home.pillars", "home.kpi_strip", "home.leadership"}
+        self.assertEqual(set(shapes.keys()), expected)
+        for path in expected:
+            with self.subTest(path=path):
+                self.assertFalse(shapes[path].get("mutable", False),
+                                 f"{path} must not be mutable in A.6")
+                self.assertFalse(is_mutable_list(arc, path))
+
+    def test_a6_pragma_customize_start_creates_editable_project(self):
+        """Public customize entry must land the customer inside the
+        editor when the template's archetype is now supported."""
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+        self.assertEqual(p.source_archetype, "corporate-suite")
+        # The project's baseline resolution must pick up Pragma's IT content,
+        # so baseline-side of sparse-diff is wired correctly.
+        baseline = services.resolve_path_in_baseline(p, "site.logo_word")
+        self.assertEqual(baseline, "Pragma Advisors")
+
+    def test_a6_vertex_editor_unchanged(self):
+        """Regression guard: the agency-creative-studio schema must stay
+        at its A.3c shape (4 mutable lists, 15 curated groups)."""
+        from apps.editor.schema import STRUCTURED_FIELD_SHAPES
+        arc = "agency-creative-studio"
+        mutable = {
+            path for path, shape in STRUCTURED_FIELD_SHAPES[arc].items()
+            if shape.get("mutable")
+        }
+        self.assertEqual(mutable, {
+            "studio.facts", "studio.partners",
+            "studio.timeline_rows", "contatti.channels",
+        })
+        # Vertex still has 14 curated + 18 indexed = 32 groups when
+        # meta_by_path is absent (baseline mode).
+        vertex_groups = iter_groups(arc)
+        self.assertEqual(len(vertex_groups), 32)
+
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)
@@ -1812,6 +1911,154 @@ class FoundationHttpTests(TestCase):
         )
         self.assertEqual(r3.status_code, 200)
         self.assertIn(uploaded_url, r3.content.decode("utf-8", "ignore"))
+
+    def test_a6_pragma_preview_title_reflects_logo_word_override(self):
+        """A.6 mirror of A.2.7 L1: overriding site.logo_word must
+        propagate to the iframe <title>, not stay locked to the
+        catalog brand. Proves the skin title-fix was wired."""
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "Atelier Pragma"},
+        )
+        r = self.client.get(
+            f"/templates/business/pragma-corporate-suite/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        title_start = body.index("<title>")
+        title_end = body.index("</title>", title_start)
+        title = body[title_start + len("<title>"):title_end]
+        self.assertIn("Atelier Pragma", title)
+        self.assertNotIn("Pragma Advisors", title)
+
+    def test_a6_pragma_editor_ctx_exposes_sidebar_and_palette(self):
+        """The project editor GET for a Pragma project must render the
+        Pragma schema (all 7 groups · icon + region + page-aware
+        markers) and expose the palette index with Pragma field keys."""
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        # Group markup wired — one data-group-id per Pragma schema group
+        for group_id in ("brand", "hero_board", "home_bands", "about_page",
+                         "services_page", "cases_page", "contact_info"):
+            self.assertIn(f'data-group-id="{group_id}"', body,
+                          f"Pragma group '{group_id}' missing from editor markup.")
+        # Page-aware data-ed-page attributes at least for home + chrome
+        self.assertIn('data-ed-page="home"', body)
+        self.assertIn('data-ed-page="*"', body)
+        # Palette index JSON carries Pragma-specific field keys
+        self.assertIn('"key": "site.logo_word"', body)
+        self.assertIn('"key": "home.headline"', body)
+        self.assertIn('"key": "home.hero_image"', body)
+        # Preview URL points at Pragma, not Vertex
+        self.assertIn("/templates/business/pragma-corporate-suite/preview/", body)
+
+    def test_a6_pragma_editor_preview_injects_editor_bridge(self):
+        """When the live preview is requested with ?project=<uuid>, the
+        Pragma skin must inject preview-bridge.js and mark the body as
+        editor-embedded (so the marketplace top strip is hidden)."""
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+        # With project → bridge injected, body class applied
+        r = self.client.get(
+            f"/templates/business/pragma-corporate-suite/preview/?project={p.uuid}"
+        )
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn('editor/preview-bridge.js', body)
+        # Check the body class attribute specifically — the CSS rule
+        # body.mw-is-editor-preview { ... } also contains the literal
+        # string, so match on the <body class="..."> pattern only.
+        self.assertIn('<body class="mw-is-editor-preview"', body)
+        # Without project → bridge absent, body class absent (public view)
+        r2 = self.client.get("/templates/business/pragma-corporate-suite/preview/")
+        body2 = r2.content.decode("utf-8", "ignore")
+        self.assertNotIn('editor/preview-bridge.js', body2)
+        self.assertNotIn('<body class="mw-is-editor-preview"', body2)
+
+    def test_a6_pragma_full_editing_lifecycle_end_to_end(self):
+        """A.6 cross-cutting integration lock — walk the four-hop
+        customer flow at the HTTP boundary so a future refactor of any
+        single piece (schema / rendering / view / autosave / validator)
+        cannot silently drop a Pragma override along the way.
+
+        upload image → autosave writes scalar override + image URL →
+        GET editor reopens with both prefilled → publish then fetch the
+        public preview as a second user → all overrides visible.
+        """
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+
+        # (1) Upload a real image for home.hero_image
+        png = self._make_png_bytes_http()
+        f = SimpleUploadedFile("pragma-board.png", png, content_type="image/png")
+        r = self.client.post(f"/projects/{p.uuid}/assets/upload/", {"file": f})
+        self.assertEqual(r.status_code, 200)
+        uploaded_url = r.json()["url"]
+        self.assertTrue(uploaded_url.startswith("/media/project-assets/"))
+
+        # (2) Autosave a scalar (home.headline) + the uploaded image URL
+        edits_payload = (
+            '{"content": {'
+            f'"home.headline": "Decisioni riservate <em>che contano</em>",'
+            f'"home.hero_image": "{uploaded_url}",'
+            f'"site.logo_word": "Pragma Test"'
+            '}, "tokens": {}}'
+        )
+        r2 = self.client.post(
+            f"/projects/{p.uuid}/autosave/",
+            data=edits_payload,
+            content_type="application/json",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(r2.status_code, 200)
+        self.assertTrue(r2.json()["ok"])
+
+        # (3) Reopen editor — all three overrides prefill the UI
+        r3 = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r3.status_code, 200)
+        body3 = r3.content.decode("utf-8", "ignore")
+        self.assertIn("Decisioni riservate", body3)
+        self.assertIn(uploaded_url, body3)
+        self.assertIn("Pragma Test", body3)
+
+        # (4) Publish, then a second authenticated user hits the public
+        #     preview and must see every override rendered.
+        services.publish_project(project=p, editor=self.owner)
+        self.client.logout()
+        self.client.login(username="other", password="x")
+        r4 = self.client.get(
+            f"/templates/business/pragma-corporate-suite/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r4.status_code, 200)
+        body4 = r4.content.decode("utf-8", "ignore")
+        self.assertIn("Decisioni riservate", body4)
+        self.assertIn(uploaded_url, body4)
+        # Title override flows through the skin fix from Step 1
+        title_start = body4.index("<title>")
+        title_end = body4.index("</title>", title_start)
+        self.assertIn("Pragma Test", body4[title_start:title_end])
+
+    def test_a6_vertex_editor_still_ships_after_pragma_lands(self):
+        """Regression guard at the HTTP layer: Vertex editor must keep
+        rendering its 4 mutable lists + 284 fields even after the
+        second archetype (Pragma) is registered."""
+        vertex = WebTemplate.objects.get(slug="vertex-creative-agency")
+        p = services.create_project_from_template(owner=self.owner, template=vertex)
+        r = self.client.get(f"/projects/{p.uuid}/editor/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        # Vertex-specific sidebar IDs all still present
+        for group_id in ("hero", "studio", "contatti", "contact_info", "design"):
+            self.assertIn(f'data-group-id="{group_id}"', body)
+        # All four Vertex mutable lists still carry the repeater marker
+        for list_path in ("studio.facts", "studio.partners",
+                           "studio.timeline_rows", "contatti.channels"):
+            self.assertIn(f'data-ed-list-path="{list_path}"', body)
 
     def test_a3c_editor_markup_exposes_repeater_affordances_only_on_mutable(self):
         """A.3c polish — cross-cutting integration: the editor HTTP
