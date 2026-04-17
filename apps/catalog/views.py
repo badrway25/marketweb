@@ -235,7 +235,8 @@ class LiveTemplateView(TemplateView):
         content = self.content
         if self.preview_project is not None:
             content, theme = apply_project_overrides(
-                self.preview_project, self.content, theme
+                self.preview_project, self.content, theme,
+                locale=self.locale,
             )
 
         ctx["template"]  = self.template_obj

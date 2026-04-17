@@ -1464,3 +1464,29 @@ def supported_locales(archetype: str) -> list[str]:
     if archetype not in _MULTILOCALE_ENABLED_ARCHETYPES:
         return []
     return ["it", "en", "fr", "es", "ar"]
+
+
+# A.7 Step 1 · storage-key encoding for per-locale overrides. Translatable
+# rows in ProjectContent carry a ``@<locale>:`` prefix so the existing flat
+# (project, key_path) uniqueness still applies and the shape is readable
+# straight from the DB. Plain rows (no prefix) stay global — legacy
+# projects keep rendering cross-locale exactly as before.
+
+_LOCALE_KEY_RE = re.compile(r"^@([a-z]{2}):(.+)$")
+
+
+def encode_locale_key(locale: str, key_path: str) -> str:
+    """Build the storage-layer key_path for a per-locale override."""
+    return f"@{locale}:{key_path}"
+
+
+def decode_locale_key(key: str) -> tuple[str | None, str]:
+    """Return ``(locale, path)`` for a per-locale key, or ``(None, key)``.
+
+    Plain rows — the legacy shape — decode to a None locale so callers
+    can treat them as globals with no branching.
+    """
+    m = _LOCALE_KEY_RE.match(key)
+    if not m:
+        return None, key
+    return m.group(1), m.group(2)

@@ -16,7 +16,7 @@ from apps.editor.schema import (
     validate_value,
 )
 from apps.projects import services
-from apps.projects.models import CustomerProject
+from apps.projects.models import CustomerProject, ProjectContent
 
 
 User = get_user_model()
@@ -94,7 +94,10 @@ class FoundationModelTests(TestCase):
         p.refresh_from_db()
         self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
         rev = p.revisions.filter(reason="publish").first()
-        self.assertIn("home.eyebrow", rev.snapshot["content"])
+        # A.7 Step 1: translatable overrides persist under @<locale>: keys
+        # in storage. Snapshots capture the storage shape verbatim so a
+        # restore round-trip is lossless across all 5 locales.
+        self.assertIn("@it:home.eyebrow", rev.snapshot["content"])
 
     def test_schema_groups_declare_valid_page(self):
         """A.2.5: every group must carry a `page` slug matching the
@@ -1565,6 +1568,188 @@ class FoundationModelTests(TestCase):
         self.assertFalse(is_translatable("no-such-archetype",
                                           "home.headline"))
 
+    # ------------------------------------------------------------------
+    # A.7 · Step 1 — per-locale save/load service layer
+    # ------------------------------------------------------------------
+
+    def test_a7_step1_translatable_edit_persists_under_locale_key(self):
+        """A translatable edit must land on the ``@<locale>:`` storage
+        shape so edits in locale A never touch the buffer for locale B."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner, locale="en",
+            edits={"home.headline": "Ideas endure."},
+        )
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@en:home.headline", keys)
+        self.assertNotIn("home.headline", keys)
+
+    def test_a7_step1_global_edit_keeps_plain_storage_key(self):
+        """Non-translatable (global) edits must NOT carry a locale
+        prefix — a single row applies to every render locale."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # site.logo_word is explicitly flagged global in Step 0
+        services.save_content_edits(
+            project=p, editor=self.owner, locale="en",
+            edits={"site.logo_word": "MyBrand"},
+        )
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("site.logo_word", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+        self.assertNotIn("@it:site.logo_word", keys)
+
+    def test_a7_step1_save_in_locale_a_does_not_touch_locale_b(self):
+        """Saving the same translatable path in two locales creates two
+        independent rows — neither overwrites nor deletes the other."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner, locale="it",
+            edits={"home.headline": "Le idee <em>resistono</em>."},
+        )
+        services.save_content_edits(
+            project=p, editor=self.owner, locale="en",
+            edits={"home.headline": "Ideas endure."},
+        )
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertEqual(keys, {"@it:home.headline", "@en:home.headline"})
+        # Values resolved per locale through the reader contract
+        it_tree = p.get_overrides_dict(locale="it")
+        en_tree = p.get_overrides_dict(locale="en")
+        self.assertEqual(it_tree["home"]["headline"], "Le idee <em>resistono</em>.")
+        self.assertEqual(en_tree["home"]["headline"], "Ideas endure.")
+
+    def test_a7_step1_unedited_locales_fall_back_to_authored_baseline(self):
+        """Rendering a locale with no customer overrides for a
+        translatable path must fall back cleanly to the authored
+        registry value — NO cross-locale customer override leak."""
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner, locale="it",
+            edits={"home.headline": "Custom IT headline."},
+        )
+        # Render EN: the customer never edited the EN headline, so the
+        # EN authored registry value must flow through unchanged.
+        en_baseline = template_content.get_content(p.source_template.slug, "en")
+        en_authored_headline = en_baseline["home"]["headline"]
+        merged, _ = apply_project_overrides(p, en_baseline, {}, locale="en")
+        self.assertEqual(merged["home"]["headline"], en_authored_headline)
+        # IT render receives the customer override.
+        it_baseline = template_content.get_content(p.source_template.slug, "it")
+        merged_it, _ = apply_project_overrides(p, it_baseline, {}, locale="it")
+        self.assertEqual(merged_it["home"]["headline"], "Custom IT headline.")
+
+    def test_a7_step1_sparse_diff_is_locale_scoped(self):
+        """Writing a value equal to the authored baseline FOR THAT
+        LOCALE must delete the ``@<locale>:`` row, mirroring the
+        pre-A.7 sparse-diff contract but scoped per locale."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        en_authored = template_content.get_content(
+            p.source_template.slug, "en",
+        )["home"]["headline"]
+        services.save_content_edits(
+            project=p, editor=self.owner, locale="en",
+            edits={"home.headline": "Temporary EN headline."},
+        )
+        self.assertEqual(
+            p.content_overrides.filter(key_path="@en:home.headline").count(), 1,
+        )
+        # Reset to baseline — row must drop.
+        services.save_content_edits(
+            project=p, editor=self.owner, locale="en",
+            edits={"home.headline": en_authored},
+        )
+        self.assertEqual(
+            p.content_overrides.filter(key_path="@en:home.headline").count(), 0,
+        )
+
+    def test_a7_step1_global_edit_applies_to_every_locale_render(self):
+        """A global override must show up in every locale render — one
+        row, one value, every render locale."""
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "MyBrand"},
+        )
+        for locale in ("it", "en", "fr", "es", "ar"):
+            baseline = template_content.get_content(p.source_template.slug, locale)
+            merged, _ = apply_project_overrides(p, baseline, {}, locale=locale)
+            self.assertEqual(
+                merged["site"]["logo_word"], "MyBrand",
+                f"global override must apply to locale={locale}",
+            )
+
+    def test_a7_step1_legacy_plain_row_on_translatable_path_still_renders(self):
+        """Backward compat: a ProjectContent row with a plain (no locale
+        prefix) key on a translatable path — simulating a legacy pre-A.7
+        customer project — must still render across all locales until
+        a per-locale edit supersedes it."""
+        from apps.editor.rendering import apply_project_overrides
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        # Inject a legacy row directly, bypassing the A.7 save service.
+        row = ProjectContent(
+            project=p, key_path="home.headline",
+        )
+        row.set_value("Legacy override")
+        row.save()
+        for locale in ("it", "en", "fr", "es", "ar"):
+            baseline = template_content.get_content(p.source_template.slug, locale)
+            merged, _ = apply_project_overrides(p, baseline, {}, locale=locale)
+            self.assertEqual(merged["home"]["headline"], "Legacy override")
+        # Now save a per-locale override in EN only — EN render must
+        # supersede the legacy row; other locales keep the legacy value.
+        services.save_content_edits(
+            project=p, editor=self.owner, locale="en",
+            edits={"home.headline": "New EN headline"},
+        )
+        en_baseline = template_content.get_content(p.source_template.slug, "en")
+        merged_en, _ = apply_project_overrides(p, en_baseline, {}, locale="en")
+        self.assertEqual(merged_en["home"]["headline"], "New EN headline")
+        fr_baseline = template_content.get_content(p.source_template.slug, "fr")
+        merged_fr, _ = apply_project_overrides(p, fr_baseline, {}, locale="fr")
+        self.assertEqual(merged_fr["home"]["headline"], "Legacy override")
+
+    def test_a7_step1_translatable_edit_without_locale_defaults_to_project_locale(self):
+        """Pre-A.7 callers (existing tests + legacy call sites) that
+        don't pass ``locale`` must still work: translatable edits land
+        under the project's seed locale (``it`` by default)."""
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"home.headline": "Senza locale esplicito."},
+        )
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertNotIn("home.headline", keys)
+
+    def test_a7_step1_unsupported_locale_is_rejected(self):
+        """A translatable edit for a locale outside the archetype's
+        supported set must raise — avoids silently persisting rows
+        the renderer will never see."""
+        from apps.projects.services import UnsupportedLocale
+        p = services.create_project_from_template(owner=self.owner, template=self.vertex)
+        with self.assertRaises(UnsupportedLocale):
+            services.save_content_edits(
+                project=p, editor=self.owner, locale="ja",
+                edits={"home.headline": "日本語"},
+            )
+
+    def test_a7_step1_pragma_save_still_uses_plain_keys(self):
+        """Pragma is not yet enrolled in multi-locale. Saves on Pragma
+        must keep the pre-A.7 plain-key shape — regression guard that
+        the translatable gate really holds at the write layer."""
+        pragma = WebTemplate.objects.get(slug="pragma-corporate-suite")
+        p = services.create_project_from_template(owner=self.owner, template=pragma)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"home.headline": "Pragma override."},
+        )
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("home.headline", keys)
+        self.assertFalse(any(k.startswith("@") for k in keys),
+                         f"Pragma rows must stay plain-keyed; got {keys}")
+
     def test_snapshot_reflects_post_save_state(self):
         """Regression: prefetched cache must not freeze the snapshot pre-save."""
         p = services.create_project_from_template(owner=self.owner, template=self.vertex)
@@ -1574,7 +1759,8 @@ class FoundationModelTests(TestCase):
             edits={"home.eyebrow": "post-save"},
         )
         rev = services.take_manual_revision(project=p, editor=self.owner, label="smoke")
-        self.assertIn("home.eyebrow", rev.snapshot["content"])
+        # A.7 Step 1: translatable paths live under @<locale>: in storage.
+        self.assertIn("@it:home.eyebrow", rev.snapshot["content"])
 
 
 class FoundationHttpTests(TestCase):
