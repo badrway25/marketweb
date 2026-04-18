@@ -2209,6 +2209,336 @@ CHIARA_EDITORIAL_DESIGNER_GRID_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# A.13b · Pixel cinematic-photographer — 10th enrolled editor archetype,
+# second template of the portfolio family. **Closes the portfolio
+# family** opened in A.13 with Chiara. Same staged dedicated-schema
+# progression topology as real-estate (A.12+A.12b) · third family-
+# closure via staged dedicated-schema after real-estate and the
+# natural continuation of the pattern.
+#
+# Skin uses `.cp-*` selectors (chrome `.cp-nav`/`.cp-foot`, home
+# sections `.cp-hero`/`.cp-cover`/`.cp-index-band`, page sections
+# `.cp-essay`/`.cp-kit`/`.cp-awards`/`.cp-exhib`/`.cp-press`/
+# `.cp-publications`/`.cp-contact-wrap`/`.cp-form` etc.) — distinct
+# from Chiara `.ed-*` · no namespace collision with editor sidebar.
+# 38 mature `html[dir="rtl"]` rules in `_base.html`.
+#
+# Shape contract notes (Step-0 audit verified):
+#   • 5 pages: home / serie (NOVEL `series_list` kind) / biografia
+#     (about) / pubblicazioni (NOVEL `publications` kind) / contatti.
+#     5-locale parity PERFECT (154 keys × 5 locales, zero gaps).
+#     Both novel page kinds are plain string identifiers in the
+#     registry — no view layer dispatches on them.
+#   • 1 SCALAR image field only: `home.hero_image` (top-level flat
+#     path · same pattern as Pragma `home.hero_image` / Casa-level
+#     scalar images). Total editable image surface: 1.
+#   • `posts` list (3 series detail records) stays REGISTRY-ONLY —
+#     DETAIL-PAGE EDITING IS OUT OF A.13b SCOPE per the consistent
+#     perimeter policy applied to Lex `notabili` / Juris `insights`
+#     / Casa `posts` / Villa `posts` / Chiara `posts`. A.13b is the
+#     SIXTH uniform enforcement of this policy. The `posts[].cover_image`
+#     image col is explicitly rejected by `validate_key_path` via the
+#     complex-shape exclusion guardrail test — never reaches the editor.
+#   • Complex shapes explicitly KEPT OUT of the perimeter:
+#       - `serie.filters` (5 filter pills · flat list-of-str)
+#       - `biografia.statement_paragraphs` (5 bio paragraphs · flat
+#         list-of-str · could be exposed as scalar-kind indexed list
+#         in a future coverage-expansion phase; kept OUT here to avoid
+#         introducing the scalar-kind pattern as A.13b's only novelty)
+#       - `site.kit_footer_rows` (3 footer kit rows · flat list-of-str)
+#       - `contatti.form_fields` + `contatti.form_sections` + `contatti.upload_field`
+#         (form structure blocks · same policy as every prior archetype)
+#       - `posts` + all `posts[N].*` paths (per-series detail records)
+#   • 10 readonly indexed lists (9 tuple + 1 dict) · no image cols
+#     anywhere · no nested complexity. `home.filmstrip` exposes 4/5
+#     tuple cols (slug stays registry-only as structural href).
+
+PIXEL_CINEMATIC_PHOTOGRAPHER_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".cp-nav, .cp-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "fotografo", "tagline", "studio"],
+        "help": "Nome fotografo/studio, iniziale crest, logo breve, tagline, CTA nav.",
+        "fields": [
+            ("site.logo_word",    {"label": "Nome fotografo / studio", "type": "text", "max_length": 60,
+                                     "placeholder": "Lorenzo Bianchi"}),
+            ("site.logo_initial", {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.logo_short",   {"label": "Logo · forma breve", "type": "text", "max_length": 8}),
+            ("site.tag",          {"label": "Tagline (status badge nav)", "type": "text", "max_length": 120}),
+            ("site.nav_cta",      {"label": "CTA nav", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".cp-hero, .cp-cover, .cp-hero-wrap",
+        "page": "home",
+        "keywords": ["hero", "cover", "headline", "eyebrow", "subhead", "cta", "counter", "pulse"],
+        "help": "Primo scroll della home: cover image, eyebrow, headline, subhead, status pulse, CTA principali, counter serie.",
+        "subgroups": [
+            {"label": "Cover image", "fields": [
+                ("home.hero_image",     {"label": "Hero image · URL", "type": "image", "max_length": 400}),
+                ("home.hero_image_alt", {"label": "Hero image · alt text", "type": "text", "max_length": 200}),
+            ]},
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",           {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("home.headline",          {"label": "Headline", "type": "richtext", "max_length": 220,
+                                              "help": "Consentiti i tag <em> per gli italici."}),
+                ("home.subhead",           {"label": "Subhead", "type": "textarea", "max_length": 400}),
+                ("home.status_pulse",      {"label": "Status pulse (status badge)", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Series counter", "fields": [
+                ("home.series_counter_label", {"label": "Counter · label", "type": "text", "max_length": 40}),
+                ("home.series_counter_value", {"label": "Counter · valore", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "CTA hero", "fields": [
+                ("home.primary_cta",     {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.primary_href",    {"label": "CTA primaria · destinazione", "type": "select",
+                                            "choices": ["home", "serie", "biografia", "pubblicazioni", "contatti"]}),
+                ("home.secondary_cta",   {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.secondary_href",  {"label": "CTA secondaria · destinazione", "type": "select",
+                                            "choices": ["home", "serie", "biografia", "pubblicazioni", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".cp-index-band, .cp-about-excerpt, .cp-publications, .cp-cta",
+        "page": "home",
+        "keywords": ["filmstrip", "about", "publications", "cta", "fasce"],
+        "help": "Eyebrow, titoli, intro delle fasce home (filmstrip · about excerpt · publications · CTA finale).",
+        "subgroups": [
+            {"label": "Filmstrip · intestazione", "fields": [
+                ("home.filmstrip_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.filmstrip_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.filmstrip_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "About excerpt", "fields": [
+                ("home.about_label",     {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.about_heading",   {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.about_excerpt",   {"label": "Excerpt", "type": "textarea", "max_length": 500}),
+                ("home.about_cta",       {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("home.about_cta_href",  {"label": "CTA · destinazione", "type": "select",
+                                            "choices": ["home", "serie", "biografia", "pubblicazioni", "contatti"]}),
+            ]},
+            {"label": "Publications · intestazione", "fields": [
+                ("home.publications_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.publications_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("home.cta_label",          {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.cta_heading",        {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.cta_intro",          {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.cta_primary",        {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_primary_href",   {"label": "CTA primaria · destinazione", "type": "select",
+                                               "choices": ["home", "serie", "biografia", "pubblicazioni", "contatti"]}),
+                ("home.cta_secondary",      {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_secondary_href", {"label": "CTA secondaria · destinazione", "type": "select",
+                                               "choices": ["home", "serie", "biografia", "pubblicazioni", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "serie_page",
+        "label": "Pagina Serie (series_list)",
+        "icon": "bi-images",
+        "region": ".cp-index-band, .cp-filter",
+        "page": "serie",
+        "keywords": ["serie", "series_list", "filters", "index", "card", "post labels"],
+        "help": "Pagina elenco serie (novel `series_list` kind): intestazione, filter label, index, card meta labels per detail route. I 3 series detail records restano registry-only.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("serie.eyebrow",           {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("serie.headline",          {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("serie.subhead",           {"label": "Subhead", "type": "textarea", "max_length": 500}),
+                ("serie.status_pulse",      {"label": "Status pulse", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Index + filter", "fields": [
+                ("serie.index_label",       {"label": "Index · eyebrow", "type": "text", "max_length": 80}),
+                ("serie.index_intro",       {"label": "Index · intro", "type": "textarea", "max_length": 400}),
+                ("serie.filter_label",      {"label": "Filtro · etichetta", "type": "text", "max_length": 40}),
+                ("serie.card_arrow_label",  {"label": "Card · etichetta freccia", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Post meta labels (detail card)", "fields": [
+                ("serie.post_discipline_label", {"label": "Post · etichetta Disciplina", "type": "text", "max_length": 40}),
+                ("serie.post_edition_label",    {"label": "Post · etichetta Edizione", "type": "text", "max_length": 40}),
+                ("serie.post_frames_label",     {"label": "Post · etichetta Frame", "type": "text", "max_length": 40}),
+                ("serie.post_gallery_label",    {"label": "Post · etichetta Gallery", "type": "text", "max_length": 40}),
+                ("serie.post_location_label",   {"label": "Post · etichetta Location", "type": "text", "max_length": 40}),
+                ("serie.post_period_label",     {"label": "Post · etichetta Periodo", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Series counter", "fields": [
+                ("serie.series_counter_label",  {"label": "Counter · label", "type": "text", "max_length": 40}),
+                ("serie.series_counter_value",  {"label": "Counter · valore", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("serie.cta_label",            {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("serie.cta_heading",          {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("serie.cta_intro",            {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("serie.cta_primary",          {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("serie.cta_primary_href",     {"label": "CTA · destinazione", "type": "select",
+                                                  "choices": ["home", "serie", "biografia", "pubblicazioni", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "biografia_page",
+        "label": "Pagina Biografia (about)",
+        "icon": "bi-person",
+        "region": ".cp-lead, .cp-essay, .cp-kit",
+        "page": "biografia",
+        "keywords": ["biografia", "about", "statement", "kit", "timeline"],
+        "help": "Pagina biografia: intestazione, statement heading/label, kit heading/label + availability labels, timeline heading/label, series counter. I 5 statement_paragraphs restano registry-only (flat list-of-str exclusion).",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("biografia.eyebrow",      {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("biografia.headline",     {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("biografia.subhead",      {"label": "Subhead", "type": "textarea", "max_length": 500}),
+                ("biografia.status_pulse", {"label": "Status pulse", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Statement", "fields": [
+                ("biografia.statement_label",   {"label": "Statement · eyebrow", "type": "text", "max_length": 80}),
+                ("biografia.statement_heading", {"label": "Statement · titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Kit + availability", "fields": [
+                ("biografia.kit_label",              {"label": "Kit · eyebrow", "type": "text", "max_length": 80}),
+                ("biografia.kit_heading",            {"label": "Kit · titolo", "type": "richtext", "max_length": 220}),
+                ("biografia.kit_availability_label", {"label": "Kit · etichetta disponibilità", "type": "text", "max_length": 40}),
+                ("biografia.kit_availability_value", {"label": "Kit · valore disponibilità", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Timeline", "fields": [
+                ("biografia.timeline_label",   {"label": "Timeline · eyebrow", "type": "text", "max_length": 80}),
+                ("biografia.timeline_heading", {"label": "Timeline · titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Series counter", "fields": [
+                ("biografia.series_counter_label", {"label": "Counter · label", "type": "text", "max_length": 40}),
+                ("biografia.series_counter_value", {"label": "Counter · valore", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("biografia.cta_heading",      {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+                ("biografia.cta_intro",        {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+                ("biografia.cta_primary",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("biografia.cta_primary_href", {"label": "CTA · destinazione", "type": "select",
+                                                  "choices": ["home", "serie", "biografia", "pubblicazioni", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "pubblicazioni_page",
+        "label": "Pagina Pubblicazioni (publications)",
+        "icon": "bi-journal-richtext",
+        "region": ".cp-press, .cp-exhib, .cp-awards",
+        "page": "pubblicazioni",
+        "keywords": ["pubblicazioni", "publications", "press", "exhibitions", "awards"],
+        "help": "Pagina pubblicazioni (novel `publications` kind): intestazione, intro press/exhibitions/awards, series counter, CTA finale.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("pubblicazioni.eyebrow",      {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("pubblicazioni.headline",     {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("pubblicazioni.subhead",      {"label": "Subhead", "type": "textarea", "max_length": 500}),
+                ("pubblicazioni.status_pulse", {"label": "Status pulse", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Press · intestazione", "fields": [
+                ("pubblicazioni.press_label",   {"label": "Press · eyebrow", "type": "text", "max_length": 80}),
+                ("pubblicazioni.press_heading", {"label": "Press · titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Exhibitions · intestazione", "fields": [
+                ("pubblicazioni.exhibitions_label",   {"label": "Exhibitions · eyebrow", "type": "text", "max_length": 80}),
+                ("pubblicazioni.exhibitions_heading", {"label": "Exhibitions · titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Awards · intestazione", "fields": [
+                ("pubblicazioni.awards_label",   {"label": "Awards · eyebrow", "type": "text", "max_length": 80}),
+                ("pubblicazioni.awards_heading", {"label": "Awards · titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Series counter", "fields": [
+                ("pubblicazioni.series_counter_label", {"label": "Counter · label", "type": "text", "max_length": 40}),
+                ("pubblicazioni.series_counter_value", {"label": "Counter · valore", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("pubblicazioni.cta_heading",      {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+                ("pubblicazioni.cta_intro",        {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+                ("pubblicazioni.cta_primary",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("pubblicazioni.cta_primary_href", {"label": "CTA · destinazione", "type": "select",
+                                                     "choices": ["home", "serie", "biografia", "pubblicazioni", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-telephone",
+        "region": ".cp-contact-wrap, .cp-form",
+        "page": "contatti",
+        "keywords": ["contatti", "contact", "form", "studio", "channels"],
+        "help": "Pagina contatti: copy, label form (struttura form + upload restano registry-only), studio address block + row labels, channels eyebrow, footnote.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("contatti.eyebrow",      {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("contatti.headline",     {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("contatti.subhead",      {"label": "Subhead", "type": "textarea", "max_length": 500}),
+                ("contatti.status_pulse", {"label": "Status pulse", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Form · copy + submit", "fields": [
+                ("contatti.form_label",       {"label": "Form · eyebrow", "type": "text", "max_length": 60}),
+                ("contatti.form_heading",     {"label": "Form · titolo", "type": "richtext", "max_length": 220}),
+                ("contatti.form_intro",       {"label": "Form · intro", "type": "textarea", "max_length": 500}),
+                ("contatti.form_submit_label",{"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+                ("contatti.form_submit_note", {"label": "Form · nota submit", "type": "textarea", "max_length": 400}),
+                ("contatti.form_consent",     {"label": "Form · testo consenso", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Channels · intestazione", "fields": [
+                ("contatti.channels_label", {"label": "Channels · eyebrow", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Studio address block", "fields": [
+                ("contatti.studio_label",         {"label": "Studio · eyebrow", "type": "text", "max_length": 40}),
+                ("contatti.studio_address",       {"label": "Studio · indirizzo", "type": "text", "max_length": 120}),
+                ("contatti.studio_area",          {"label": "Studio · area", "type": "text", "max_length": 120}),
+                ("contatti.studio_metro",         {"label": "Studio · metro", "type": "text", "max_length": 100}),
+                ("contatti.studio_hours",         {"label": "Studio · orari", "type": "text", "max_length": 120}),
+                ("contatti.studio_row_address_label",  {"label": "Studio row · etichetta indirizzo", "type": "text", "max_length": 40}),
+                ("contatti.studio_row_entrance_label", {"label": "Studio row · etichetta entrata", "type": "text", "max_length": 40}),
+                ("contatti.studio_row_metro_label",    {"label": "Studio row · etichetta metro", "type": "text", "max_length": 40}),
+                ("contatti.studio_row_hours_label",    {"label": "Studio row · etichetta orari", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Series counter", "fields": [
+                ("contatti.series_counter_label", {"label": "Counter · label", "type": "text", "max_length": 40}),
+                ("contatti.series_counter_value", {"label": "Counter · valore", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Footnote", "fields": [
+                ("contatti.footnote", {"label": "Footnote piè pagina", "type": "textarea", "max_length": 500}),
+            ]},
+        ],
+    },
+    {
+        "id": "contact_info",
+        "label": "Contatti · footer",
+        "icon": "bi-telephone-forward",
+        "region": ".cp-foot",
+        "page": "*",
+        "keywords": ["footer", "phone", "email", "indirizzo", "license", "exif"],
+        "help": "Dati di contatto visibili in footer + intro voce + titoli sezioni footer (studio/pages/contact/kit).",
+        "fields": [
+            ("site.phone",         {"label": "Telefono", "type": "text", "max_length": 80}),
+            ("site.email",         {"label": "Email", "type": "text", "max_length": 80}),
+            ("site.address",       {"label": "Indirizzo sede primaria", "type": "text", "max_length": 160}),
+            ("site.hours_compact", {"label": "Orari sintetici", "type": "text", "max_length": 120}),
+            ("site.license",       {"label": "Licenza / P.IVA", "type": "text", "max_length": 200}),
+            ("site.footer_intro",  {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.foot_studio",   {"label": "Footer · titolo Studio", "type": "text", "max_length": 40}),
+            ("site.foot_pages",    {"label": "Footer · titolo Pagine", "type": "text", "max_length": 40}),
+            ("site.foot_contact",  {"label": "Footer · titolo Contatti", "type": "text", "max_length": 40}),
+            ("site.foot_kit",      {"label": "Footer · titolo Kit", "type": "text", "max_length": 40}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -4062,6 +4392,162 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # A.13b · Pixel cinematic-photographer — 10 readonly indexed lists
+    # (9 tuple + 1 dict). Zero image cols anywhere — Pixel's only
+    # editable image surface is the top-level scalar `home.hero_image`
+    # (exposed as a flat schema field). The `posts` list (3 series
+    # detail records incl. `posts[].cover_image` image col) stays
+    # registry-only — detail-page editing is OUT of A.13b scope, 6th
+    # uniform enforcement of the cross-archetype per-item content
+    # policy (Lex+Juris+Casa+Villa+Chiara+Pixel).
+    "cinematic-photographer": {
+        "home.hero_credit_cells": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Hero credit cells",
+            "icon": "bi-123",
+            "region": ".cp-hero",
+            "keywords": ["credit", "cells", "hero meta"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 40}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 80}),
+            ],
+        },
+        "home.filmstrip": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Filmstrip (4 serie)",
+            "icon": "bi-film",
+            "region": ".cp-index-band",
+            "keywords": ["filmstrip", "serie", "index"],
+            "tuple_order": ["num", "title", "discipline", "period", "slug"],
+            "cols": [
+                ("num",        {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",      {"label": "Titolo serie", "type": "text", "max_length": 120}),
+                ("discipline", {"label": "Disciplina", "type": "text", "max_length": 100}),
+                ("period",     {"label": "Periodo", "type": "text", "max_length": 60}),
+                # `slug` (structural href) intenzionalmente omesso:
+                # resta readonly al registry · stessa policy di Chiara
+                # `home.featured_works.items.href`.
+            ],
+        },
+        "home.publications": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Publications (3 voci)",
+            "icon": "bi-newspaper",
+            "region": ".cp-publications",
+            "keywords": ["publications", "press", "home press"],
+            "tuple_order": ["outlet", "text", "period"],
+            "cols": [
+                ("outlet", {"label": "Outlet", "type": "text", "max_length": 120}),
+                ("text",   {"label": "Descrizione", "type": "textarea", "max_length": 300}),
+                ("period", {"label": "Periodo", "type": "text", "max_length": 40}),
+            ],
+        },
+        "biografia.kit": {
+            "kind": "tuple",
+            "page": "biografia",
+            "label": "Biografia · Kit fotografico (4)",
+            "icon": "bi-camera",
+            "region": ".cp-kit",
+            "keywords": ["kit", "camera", "equipment"],
+            "tuple_order": ["num", "model", "body", "availability_label", "availability_value"],
+            "cols": [
+                ("num",                  {"label": "Numero", "type": "text", "max_length": 8}),
+                ("model",                {"label": "Modello", "type": "text", "max_length": 80}),
+                ("body",                 {"label": "Descrizione", "type": "textarea", "max_length": 600}),
+                ("availability_label",   {"label": "Availability · etichetta", "type": "text", "max_length": 40}),
+                ("availability_value",   {"label": "Availability · valore", "type": "text", "max_length": 120}),
+            ],
+        },
+        "biografia.timeline": {
+            "kind": "tuple",
+            "page": "biografia",
+            "label": "Biografia · Timeline (12 tappe)",
+            "icon": "bi-clock-history",
+            "region": ".cp-essay",
+            "keywords": ["timeline", "storia", "tappe"],
+            "tuple_order": ["year", "title", "body"],
+            "cols": [
+                ("year",  {"label": "Anno", "type": "text", "max_length": 16}),
+                ("title", {"label": "Titolo", "type": "text", "max_length": 120}),
+                ("body",  {"label": "Body", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "pubblicazioni.press": {
+            "kind": "dict",
+            "page": "pubblicazioni",
+            "label": "Pubblicazioni · Press (8 voci)",
+            "icon": "bi-newspaper",
+            "region": ".cp-press",
+            "keywords": ["press", "stampa", "magazine"],
+            "cols": [
+                ("year",    {"label": "Anno", "type": "text", "max_length": 16}),
+                ("outlet",  {"label": "Outlet", "type": "text", "max_length": 80}),
+                ("type",    {"label": "Tipologia", "type": "text", "max_length": 80}),
+                ("subject", {"label": "Soggetto", "type": "text", "max_length": 200}),
+                ("format",  {"label": "Formato", "type": "text", "max_length": 160}),
+            ],
+        },
+        "pubblicazioni.exhibitions": {
+            "kind": "tuple",
+            "page": "pubblicazioni",
+            "label": "Pubblicazioni · Exhibitions (6)",
+            "icon": "bi-easel3",
+            "region": ".cp-exhib",
+            "keywords": ["exhibitions", "mostre"],
+            "tuple_order": ["year", "title", "meta", "period"],
+            "cols": [
+                ("year",   {"label": "Anno", "type": "text", "max_length": 16}),
+                ("title",  {"label": "Titolo mostra", "type": "text", "max_length": 160}),
+                ("meta",   {"label": "Meta", "type": "text", "max_length": 200}),
+                ("period", {"label": "Periodo", "type": "text", "max_length": 80}),
+            ],
+        },
+        "pubblicazioni.awards": {
+            "kind": "tuple",
+            "page": "pubblicazioni",
+            "label": "Pubblicazioni · Awards (6)",
+            "icon": "bi-trophy",
+            "region": ".cp-awards",
+            "keywords": ["awards", "premi"],
+            "tuple_order": ["year", "title", "subject"],
+            "cols": [
+                ("year",    {"label": "Anno", "type": "text", "max_length": 16}),
+                ("title",   {"label": "Titolo award", "type": "text", "max_length": 200}),
+                ("subject", {"label": "Soggetto", "type": "text", "max_length": 200}),
+            ],
+        },
+        "contatti.channels": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Channels",
+            "icon": "bi-broadcast",
+            "region": ".cp-contact-wrap",
+            "keywords": ["channels", "canali", "email", "phone"],
+            "tuple_order": ["label", "value", "note"],
+            "cols": [
+                ("label", {"label": "Etichetta canale", "type": "text", "max_length": 60}),
+                ("value", {"label": "Valore (email/numero)", "type": "text", "max_length": 120}),
+                ("note",  {"label": "Nota", "type": "text", "max_length": 200}),
+            ],
+        },
+        "site.exif_footer": {
+            "kind": "tuple",
+            "page": "*",
+            "label": "Footer · EXIF strip (4 celle)",
+            "icon": "bi-camera-reels",
+            "region": ".cp-exif-strip",
+            "keywords": ["exif", "footer strip", "chrome"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta EXIF", "type": "text", "max_length": 40}),
+                ("value", {"label": "Valore EXIF", "type": "text", "max_length": 120}),
+            ],
+        },
+    },
 }
 
 
@@ -4102,6 +4588,15 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # detail-page editing is OUT of A.13 scope, consistent with every
     # prior family closure's per-item content policy.
     "editorial-designer-grid": ("chiara-portfolio-creativo", "it"),
+    # A.13b · Pixel (cinematic-photographer) joins as 10th enrolled
+    # archetype — closes the portfolio family opened in A.13 with
+    # Chiara. Same staged dedicated-schema progression topology as
+    # real-estate (A.12+A.12b). Simpler shape than Chiara: 1 scalar
+    # image (home.hero_image) · zero image-in-dict-row · 10 readonly
+    # indexed lists all without image cols. Posts list stays
+    # registry-only per 6th uniform enforcement of the cross-archetype
+    # per-item content policy.
+    "cinematic-photographer":  ("pixel-portfolio-fotografico", "it"),
 }
 
 
@@ -4138,6 +4633,12 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # editing (posts) stays OUT — consistent with all prior family
     # closures' per-item content policy.
     "editorial-designer-grid": CHIARA_EDITORIAL_DESIGNER_GRID_SCHEMA,
+    # A.13b · Pixel — closes the portfolio family opened in A.13.
+    # Mechanical reuse of the A.13 recipe: 1 scalar image, zero
+    # image-in-dict-row, zero deep paths, 10 readonly indexed lists
+    # without image cols. Pure 3-file enrollment, no service-layer
+    # changes required.
+    "cinematic-photographer":  PIXEL_CINEMATIC_PHOTOGRAPHER_SCHEMA,
 }
 
 
@@ -4649,6 +5150,15 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # detail-page editing is OUT of scope. Gated by
     # ``test_a13_chiara_full_multilocale_lifecycle_end_to_end``.
     "editorial-designer-grid",
+    # A.13b · Pixel (cinematic-photographer · portfolio family ·
+    # second template) joins editor + multi-locale in a single phase,
+    # closing the portfolio family. Mechanical reuse of the A.13
+    # recipe minus the deep-path complexity. 1 scalar image surface
+    # (`home.hero_image`) · zero image-in-dict-row · posts + series
+    # detail records stay registry-only (6th uniform enforcement of
+    # per-item content policy). Gated by
+    # ``test_a13b_pixel_full_multilocale_lifecycle_end_to_end``.
+    "cinematic-photographer",
 })
 
 
