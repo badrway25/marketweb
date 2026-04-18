@@ -2539,6 +2539,330 @@ PIXEL_CINEMATIC_PHOTOGRAPHER_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# A.14 · Sapore trattoria-warm — 11th enrolled editor archetype, first
+# template of the restaurant-continuation family. OPENS the family via
+# staged dedicated-schema progression (mirror of real-estate A.12+A.12b
+# and portfolio A.13+A.13b). Brace (street-modern) stays OUT until
+# A.14b. Distinct archetype from Brace: distinct skin folders
+# (restaurant/trattoria-warm/ with `.tw-*` prefix vs restaurant/street-
+# modern/ with `.sm-*`), 50% page-slug overlap (home/menu/contatti
+# shared; storia/forno/eventi Sapore vs lab/moments/ordina Brace),
+# fundamentally different menu shape (Sapore nested tuple vs Brace
+# nested dict-with-image-col), image surface ratio 1:3.5 — shared-schema
+# (A.9 recipe) is IMPOSSIBLE.
+#
+# Skin uses `.tw-*` selectors (chrome `.tw-nav`/`.tw-foot`, pages
+# `.tw-hero`/`.tw-forno`/`.tw-storia`/`.tw-eventi`/`.tw-contact` etc.).
+# 18 mature `html[dir="rtl"]` rules in `_base.html` — RTL validated
+# since Session 48 D-078 Sapore rollout.
+#
+# Shape contract notes (Step-0 audit verified):
+#   • 6 pages: home · menu · storia (about) · forno (signature · NOVEL
+#     kind) · eventi (events · NOVEL kind) · contatti. 5-locale parity
+#     PERFECT (224 keys × 5 locales, zero gaps).
+#   • 7 SCALAR image fields (home.hero_image, home.forno_image,
+#     home.tavolata_image, storia.photo_image, forno.forno_story_image,
+#     forno.dough_image, eventi.birthday_image). Plus 2 image-in-dict-row
+#     lists (home.family[].portrait × 3 rows + storia.family[].portrait
+#     × 3 rows = 6 image cells). Total editable image surface: 13
+#     (7 scalar + 6 cells). Image-in-dict-row precedent: Vertex A.3a/A.4
+#     (shallow dict-list pattern) — no new infrastructure required.
+#   • `posts` list is EMPTY in the content registry — Sapore ships no
+#     blog posts. First enrollment since A.10 without a posts list.
+#     Consequence: NO `posts.*` paths in the complex-shape exclusion
+#     guardrail (there's nothing to reject). Detail-page registry-only
+#     policy doesn't apply — the absence is structural, not a perimeter
+#     decision.
+#   • Menu rows are KEPT INSIDE the perimeter as deep-path tuple cells.
+#     `menu.sections` is a list-of-dict (5 sections) with cols
+#     (heading/label) exposed + `dishes` col EXCLUDED at the parent
+#     level. Each section's dishes (tuple 7×3: name/desc/price) are
+#     instead registered as 5 separate STRUCTURED_FIELD_SHAPES entries
+#     at deep paths `menu.sections.0.dishes` through `menu.sections.4.dishes`
+#     — each tuple 7×3. Shape is novel (nested tuple inside a dict-list
+#     parent) but requires no new infrastructure because `_resolve_path`
+#     walks arbitrary-depth dotted paths. Without menu rows in perimeter
+#     the enrollment would be fake-editable (menu is the editorial heart
+#     of the template).
+#   • Complex shapes explicitly KEPT OUT of the perimeter:
+#       - `storia.story` (4 bio paragraphs · flat list-of-str · same
+#         category as Pixel `biografia.statement_paragraphs`)
+#       - `contatti.form_sections` + `contatti.form_fields` (form
+#         structure blocks · same policy as every prior archetype with a
+#         contact form)
+#       - `contatti.occasion_options` (7 option strings for form select
+#         · flat list-of-str)
+#       - `site.hours_footer_rows` (2 hours rows · flat list-of-str)
+#       - `pages` (top-level navigation index · always out)
+#   • Zero mutable repeater — all 20 indexed lists stay readonly (cell-
+#     level edit only, no add/remove). Repeater-mutable family remains
+#     out-of-scope per D-098.
+#   • 20 readonly indexed list entries in STRUCTURED_FIELD_SHAPES
+#     (15 base lists + 5 menu.sections.{0..4}.dishes deep paths).
+#     home.family + storia.family carry the `portrait` image col
+#     (image-in-dict-row precedent — Vertex A.3a/A.4 infra).
+
+SAPORE_TRATTORIA_WARM_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".tw-nav, .tw-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "trattoria", "tagline", "chrome"],
+        "help": "Nome trattoria, iniziale crest, tagline, contatti sintetici, chrome footer, CTA di navigazione.",
+        "fields": [
+            ("site.logo_word",        {"label": "Nome trattoria", "type": "text", "max_length": 60,
+                                         "placeholder": "Trattoria Da Nonna Rosa"}),
+            ("site.logo_initial",     {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",              {"label": "Tagline (strip superiore nav)", "type": "text", "max_length": 160}),
+            ("site.phone",            {"label": "Telefono (display)", "type": "text", "max_length": 40}),
+            ("site.phone_tel",        {"label": "Telefono (tel: href)", "type": "text", "max_length": 40}),
+            ("site.whatsapp",         {"label": "WhatsApp (display)", "type": "text", "max_length": 40}),
+            ("site.whatsapp_link",    {"label": "WhatsApp · URL completo", "type": "url", "max_length": 300}),
+            ("site.email",            {"label": "Email", "type": "text", "max_length": 120}),
+            ("site.address",          {"label": "Indirizzo (una riga)", "type": "text", "max_length": 200}),
+            ("site.hours_compact",    {"label": "Orari sintetici (strip nav)", "type": "text", "max_length": 160}),
+            ("site.license",          {"label": "Licenza / P.IVA", "type": "text", "max_length": 200}),
+            ("site.footer_intro",     {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.nav_cta",          {"label": "CTA nav · etichetta", "type": "text", "max_length": 60}),
+            ("site.nav_cta_href",     {"label": "CTA nav · destinazione", "type": "select",
+                                         "choices": ["home", "menu", "storia", "forno", "eventi", "contatti"]}),
+            ("site.nav_phone_cta",    {"label": "CTA nav · telefono", "type": "text", "max_length": 80}),
+            ("site.star_line",        {"label": "Nav · strip stellina", "type": "text", "max_length": 120}),
+            ("site.copyright",        {"label": "Footer · copyright", "type": "text", "max_length": 200}),
+            ("site.footer_hours_1",   {"label": "Footer · riga orari 1", "type": "text", "max_length": 120}),
+            ("site.footer_hours_2",   {"label": "Footer · riga orari 2", "type": "text", "max_length": 120}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".tw-hero",
+        "page": "home",
+        "keywords": ["hero", "headline", "eyebrow", "intro", "cta", "stamp"],
+        "help": "Primo scroll della home: hero image, eyebrow, headline, intro, stamp, CTA principali.",
+        "subgroups": [
+            {"label": "Cover image", "fields": [
+                ("home.hero_image",    {"label": "Hero image · URL", "type": "image", "max_length": 400}),
+                ("home.hero_caption",  {"label": "Hero image · didascalia", "type": "text", "max_length": 200}),
+                ("home.hero_stamp",    {"label": "Hero stamp (dal 1987)", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",       {"label": "Eyebrow", "type": "text", "max_length": 160}),
+                ("home.headline",      {"label": "Headline", "type": "richtext", "max_length": 220,
+                                          "help": "Consentiti i tag <em> per italici."}),
+                ("home.intro",         {"label": "Intro (paragrafo sotto headline)", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "CTA hero", "fields": [
+                ("home.primary_cta",   {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.primary_href",  {"label": "CTA primaria · destinazione", "type": "select",
+                                          "choices": ["home", "menu", "storia", "forno", "eventi", "contatti"]}),
+                ("home.secondary_cta", {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".tw-chalkboard, .tw-family, .tw-forno-band, .tw-reviews, .tw-hours, .tw-tavolata, .tw-home-cta",
+        "page": "home",
+        "keywords": ["chalkboard", "famiglia", "forno", "reviews", "hours", "tavolata", "cta"],
+        "help": "Fasce copy della home: lavagna della settimana, famiglia, forno band, reviews, orari, tavolata, CTA finale.",
+        "subgroups": [
+            {"label": "Lavagna della settimana", "fields": [
+                ("home.chalkboard_label",       {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.chalkboard_heading",     {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.chalkboard_intro",       {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.chalkboard_buongiorno",  {"label": "Frase di chiusura", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Famiglia · intestazione", "fields": [
+                ("home.family_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.family_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Forno band", "fields": [
+                ("home.forno_label",     {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.forno_heading",   {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.forno_text",      {"label": "Paragrafo", "type": "textarea", "max_length": 700}),
+                ("home.forno_image",     {"label": "Forno · immagine URL", "type": "image", "max_length": 400}),
+                ("home.forno_caption",   {"label": "Forno · didascalia", "type": "text", "max_length": 200}),
+                ("home.forno_cta",       {"label": "Forno CTA · etichetta", "type": "text", "max_length": 60}),
+                ("home.forno_cta_href",  {"label": "Forno CTA · destinazione", "type": "select",
+                                            "choices": ["home", "menu", "storia", "forno", "eventi", "contatti"]}),
+            ]},
+            {"label": "Reviews · intestazione", "fields": [
+                ("home.reviews_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Orari · intestazione", "fields": [
+                ("home.hours_label",     {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.hours_note",      {"label": "Nota orari (sotto la tabella)", "type": "text", "max_length": 200}),
+            ]},
+            {"label": "Tavolata band", "fields": [
+                ("home.tavolata_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.tavolata_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.tavolata_text",     {"label": "Paragrafo", "type": "textarea", "max_length": 700}),
+                ("home.tavolata_cta",      {"label": "Tavolata CTA · etichetta", "type": "text", "max_length": 60}),
+                ("home.tavolata_cta_href", {"label": "Tavolata CTA · destinazione", "type": "select",
+                                              "choices": ["home", "menu", "storia", "forno", "eventi", "contatti"]}),
+                ("home.tavolata_image",    {"label": "Tavolata · immagine URL", "type": "image", "max_length": 400}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("home.cta_label",         {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.cta_heading",       {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.cta_intro",         {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.cta_primary",       {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_primary_href",  {"label": "CTA primaria · destinazione", "type": "select",
+                                              "choices": ["home", "menu", "storia", "forno", "eventi", "contatti"]}),
+                ("home.cta_secondary",     {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+            ]},
+        ],
+    },
+    {
+        "id": "menu_page",
+        "label": "Pagina Menu",
+        "icon": "bi-journal-text",
+        "region": ".tw-menu, .tw-menu-hero, .tw-wine-house",
+        "page": "menu",
+        "keywords": ["menu", "piatti", "vino", "allergeni"],
+        "help": "Intestazione pagina menu, vino della casa, nota allergeni. Le sezioni del menu e i piatti si modificano dai gruppi indexed `Menu · Sections` e `Menu · Sezione N · Piatti`.",
+        "fields": [
+            ("menu.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("menu.headline",            {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("menu.intro",               {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("menu.wine_house_label",    {"label": "Vino della casa · eyebrow", "type": "text", "max_length": 80}),
+            ("menu.wine_house_heading",  {"label": "Vino della casa · titolo", "type": "richtext", "max_length": 220}),
+            ("menu.wine_house_text",     {"label": "Vino della casa · paragrafo", "type": "textarea", "max_length": 600}),
+            ("menu.allergen_note",       {"label": "Nota allergeni", "type": "textarea", "max_length": 400}),
+        ],
+    },
+    {
+        "id": "storia_page",
+        "label": "Pagina Storia (about)",
+        "icon": "bi-book",
+        "region": ".tw-storia, .tw-storia-hero, .tw-timeline, .tw-values, .tw-storia-photo",
+        "page": "storia",
+        "keywords": ["storia", "about", "timeline", "valori", "rosa"],
+        "help": "Intestazione pagina storia, etichette famiglia/timeline/valori, foto in fondo. I paragrafi del racconto (`storia.story`) restano registry-only.",
+        "fields": [
+            ("storia.eyebrow",         {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("storia.headline",        {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("storia.intro",           {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("storia.timeline_label",  {"label": "Timeline · eyebrow", "type": "text", "max_length": 80}),
+            ("storia.family_label",    {"label": "Famiglia · eyebrow", "type": "text", "max_length": 80}),
+            ("storia.values_label",    {"label": "Valori · eyebrow", "type": "text", "max_length": 80}),
+            ("storia.values_heading",  {"label": "Valori · titolo", "type": "richtext", "max_length": 220}),
+            ("storia.photo_image",     {"label": "Foto in fondo · URL", "type": "image", "max_length": 400}),
+            ("storia.photo_caption",   {"label": "Foto in fondo · didascalia", "type": "text", "max_length": 200}),
+        ],
+    },
+    {
+        "id": "forno_page",
+        "label": "Pagina Forno (signature)",
+        "icon": "bi-fire",
+        "region": ".tw-forno, .tw-forno-hero, .tw-pizza-signatures, .tw-pasta-signatures, .tw-forno-story, .tw-producers",
+        "page": "forno",
+        "keywords": ["forno", "pizza", "pasta", "signature", "produttori", "dough"],
+        "help": "Pagina pizza & pasta: hero, signature di pizza e pasta, storia del forno, produttori, foto dough. Le liste dei piatti signature e dei produttori si modificano dai gruppi indexed.",
+        "fields": [
+            ("forno.eyebrow",              {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("forno.headline",             {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("forno.intro",                {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("forno.pizza_label",          {"label": "Pizza signatures · eyebrow", "type": "text", "max_length": 80}),
+            ("forno.pizza_heading",        {"label": "Pizza signatures · titolo", "type": "richtext", "max_length": 220}),
+            ("forno.pizza_intro",          {"label": "Pizza signatures · intro", "type": "textarea", "max_length": 500}),
+            ("forno.pasta_label",          {"label": "Pasta signatures · eyebrow", "type": "text", "max_length": 80}),
+            ("forno.pasta_heading",        {"label": "Pasta signatures · titolo", "type": "richtext", "max_length": 220}),
+            ("forno.pasta_intro",          {"label": "Pasta signatures · intro", "type": "textarea", "max_length": 500}),
+            ("forno.forno_story_label",    {"label": "Story forno · eyebrow", "type": "text", "max_length": 80}),
+            ("forno.forno_story_heading",  {"label": "Story forno · titolo", "type": "richtext", "max_length": 220}),
+            ("forno.forno_story_text_1",   {"label": "Story forno · paragrafo 1", "type": "textarea", "max_length": 600}),
+            ("forno.forno_story_text_2",   {"label": "Story forno · paragrafo 2", "type": "textarea", "max_length": 600}),
+            ("forno.forno_story_image",    {"label": "Story forno · immagine URL", "type": "image", "max_length": 400}),
+            ("forno.forno_story_caption",  {"label": "Story forno · didascalia", "type": "text", "max_length": 200}),
+            ("forno.producers_label",      {"label": "Producers · eyebrow", "type": "text", "max_length": 80}),
+            ("forno.producers_heading",    {"label": "Producers · titolo", "type": "richtext", "max_length": 220}),
+            ("forno.dough_image",          {"label": "Dough · immagine URL", "type": "image", "max_length": 400}),
+            ("forno.dough_caption",        {"label": "Dough · didascalia", "type": "text", "max_length": 200}),
+        ],
+    },
+    {
+        "id": "eventi_page",
+        "label": "Pagina Eventi",
+        "icon": "bi-calendar-heart",
+        "region": ".tw-eventi, .tw-eventi-hero, .tw-birthday, .tw-eventi-contact",
+        "page": "eventi",
+        "keywords": ["eventi", "tavolate", "compleanni", "anniversari"],
+        "help": "Pagina tavolate & eventi: hero, compleanni/anniversari, contact block. Le formule esperienza si modificano dal gruppo indexed `Eventi · Experiences`.",
+        "fields": [
+            ("eventi.eyebrow",            {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("eventi.headline",           {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("eventi.intro",              {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("eventi.experiences_label",  {"label": "Formule · eyebrow", "type": "text", "max_length": 80}),
+            ("eventi.meta_menu_label",    {"label": "Meta · etichetta Menu (dentro le formule)", "type": "text", "max_length": 40}),
+            ("eventi.meta_wine_label",    {"label": "Meta · etichetta Vini (dentro le formule)", "type": "text", "max_length": 40}),
+            ("eventi.birthday_label",     {"label": "Compleanni · eyebrow", "type": "text", "max_length": 80}),
+            ("eventi.birthday_heading",   {"label": "Compleanni · titolo", "type": "richtext", "max_length": 220}),
+            ("eventi.birthday_text",      {"label": "Compleanni · paragrafo", "type": "textarea", "max_length": 600}),
+            ("eventi.birthday_image",     {"label": "Compleanni · immagine URL", "type": "image", "max_length": 400}),
+            ("eventi.birthday_caption",   {"label": "Compleanni · didascalia", "type": "text", "max_length": 200}),
+            ("eventi.contact_label",      {"label": "Contact block · eyebrow", "type": "text", "max_length": 80}),
+            ("eventi.contact_heading",    {"label": "Contact block · titolo", "type": "richtext", "max_length": 220}),
+            ("eventi.contact_text",       {"label": "Contact block · paragrafo", "type": "textarea", "max_length": 500}),
+            ("eventi.contact_phone",      {"label": "Contact block · telefono", "type": "text", "max_length": 40}),
+            ("eventi.contact_whatsapp",   {"label": "Contact block · whatsapp", "type": "text", "max_length": 40}),
+            ("eventi.contact_email",      {"label": "Contact block · email", "type": "text", "max_length": 120}),
+            ("eventi.contact_cta",        {"label": "Contact block · CTA · etichetta", "type": "text", "max_length": 60}),
+            ("eventi.contact_cta_href",   {"label": "Contact block · CTA · destinazione", "type": "select",
+                                             "choices": ["home", "menu", "storia", "forno", "eventi", "contatti"]}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-geo-alt",
+        "region": ".tw-contact, .tw-contact-hero, .tw-map, .tw-transport",
+        "page": "contatti",
+        "keywords": ["contatti", "indirizzo", "orari", "mappa", "trasporti"],
+        "help": "Pagina trovaci & prenota: indirizzo, orari, contatti, form labels, mappa, trasporti. La struttura form (`form_sections`/`form_fields`/`occasion_options`) resta registry-only.",
+        "fields": [
+            ("contatti.eyebrow",                   {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("contatti.headline",                  {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",                     {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("contatti.address_label",             {"label": "Indirizzo · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.address_heading",           {"label": "Indirizzo · titolo", "type": "text", "max_length": 120}),
+            ("contatti.address_text",              {"label": "Indirizzo · paragrafo", "type": "textarea", "max_length": 500}),
+            ("contatti.address_city",              {"label": "Indirizzo · città + quartiere", "type": "text", "max_length": 120}),
+            ("contatti.hours_label",               {"label": "Orari · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.hours_heading",             {"label": "Orari · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.contact_label",             {"label": "Parla con noi · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.contact_heading",           {"label": "Parla con noi · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.contact_phone_label",       {"label": "Phone · etichetta", "type": "text", "max_length": 60}),
+            ("contatti.contact_phone_value",       {"label": "Phone · valore", "type": "text", "max_length": 40}),
+            ("contatti.contact_phone_hours",       {"label": "Phone · nota", "type": "text", "max_length": 120}),
+            ("contatti.contact_whatsapp_label",    {"label": "Whatsapp · etichetta", "type": "text", "max_length": 60}),
+            ("contatti.contact_whatsapp_value",    {"label": "Whatsapp · valore", "type": "text", "max_length": 40}),
+            ("contatti.contact_whatsapp_hours",    {"label": "Whatsapp · nota", "type": "text", "max_length": 120}),
+            ("contatti.contact_email_label",       {"label": "Email · etichetta", "type": "text", "max_length": 60}),
+            ("contatti.contact_email_value",       {"label": "Email · valore", "type": "text", "max_length": 120}),
+            ("contatti.contact_email_hours",       {"label": "Email · nota", "type": "text", "max_length": 120}),
+            ("contatti.form_label",                {"label": "Form · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.form_heading",              {"label": "Form · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.form_intro",                {"label": "Form · intro", "type": "textarea", "max_length": 500}),
+            ("contatti.consent",                   {"label": "Form · consenso (stringa sotto i field)", "type": "textarea", "max_length": 400}),
+            ("contatti.form_submit",               {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("contatti.form_submit_note",          {"label": "Form · nota post-submit", "type": "text", "max_length": 200}),
+            ("contatti.map_label",                 {"label": "Map · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.map_heading",               {"label": "Map · titolo", "type": "text", "max_length": 160}),
+            ("contatti.map_link",                  {"label": "Map · CTA esterno (label)", "type": "text", "max_length": 80}),
+            ("contatti.transport_label",           {"label": "Trasporti · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.transport_heading",         {"label": "Trasporti · titolo", "type": "richtext", "max_length": 220}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -4548,6 +4872,293 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+
+    # A.14 · Sapore trattoria-warm — 20 readonly indexed lists (15 base
+    # + 5 menu.sections.{i}.dishes deep paths). 2 dict lists carry the
+    # `portrait` image col (image-in-dict-row pattern · Vertex A.3a/A.4
+    # precedent). Menu rows stay INSIDE perimeter as deep-path tuple
+    # cells — each menu section's dishes register separately so the
+    # customer can edit dish name/desc/price without the menu being
+    # fake-editable.
+    "trattoria-warm": {
+        "home.family": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Famiglia (3 volti)",
+            "icon": "bi-people",
+            "region": ".tw-family",
+            "keywords": ["family", "famiglia", "staff", "portraits"],
+            "cols": [
+                ("name",     {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",     {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("blurb",    {"label": "Blurb", "type": "textarea", "max_length": 500}),
+                ("portrait", {"label": "Portrait · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "home.reviews": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Reviews (3 voci)",
+            "icon": "bi-quote",
+            "region": ".tw-reviews",
+            "keywords": ["reviews", "press", "quotes"],
+            "cols": [
+                ("quote",  {"label": "Citazione", "type": "textarea", "max_length": 400}),
+                ("author", {"label": "Autore / testata", "type": "text", "max_length": 200}),
+            ],
+        },
+        "home.facts": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Facts (3 celle)",
+            "icon": "bi-123",
+            "region": ".tw-hero",
+            "keywords": ["facts", "numeri", "stats"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 60}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 80}),
+            ],
+        },
+        "home.chalkboard_days": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Chalkboard (5 giorni)",
+            "icon": "bi-journal-bookmark",
+            "region": ".tw-chalkboard",
+            "keywords": ["chalkboard", "lavagna", "settimana", "piatti"],
+            "tuple_order": ["day", "dish", "side", "note"],
+            "cols": [
+                ("day",  {"label": "Giorno", "type": "text", "max_length": 40}),
+                ("dish", {"label": "Piatto del giorno", "type": "text", "max_length": 160}),
+                ("side", {"label": "Side / contorno", "type": "text", "max_length": 160}),
+                ("note", {"label": "Nota", "type": "text", "max_length": 200}),
+            ],
+        },
+        "home.hours_rows": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Hours (3 righe)",
+            "icon": "bi-clock",
+            "region": ".tw-hours",
+            "keywords": ["hours", "orari", "apertura"],
+            "tuple_order": ["days", "hours", "note"],
+            "cols": [
+                ("days",  {"label": "Giorni", "type": "text", "max_length": 80}),
+                ("hours", {"label": "Orari", "type": "text", "max_length": 80}),
+                ("note",  {"label": "Nota", "type": "text", "max_length": 200}),
+            ],
+        },
+        "menu.sections": {
+            "kind": "dict",
+            "page": "menu",
+            "label": "Menu · Sections (5 sezioni)",
+            "icon": "bi-list-ul",
+            "region": ".tw-menu-sections",
+            "keywords": ["menu", "sezioni", "categorie"],
+            "cols": [
+                ("label",   {"label": "Etichetta sezione", "type": "text", "max_length": 80}),
+                ("heading", {"label": "Titolo sezione", "type": "richtext", "max_length": 220}),
+                # `dishes` col excluded at parent level — dishes are
+                # registered as 5 separate indexed lists at deep paths
+                # `menu.sections.{0..4}.dishes` so each section's
+                # tuple cells (name/desc/price) are editable explicitly.
+            ],
+        },
+        "menu.sections.0.dishes": {
+            "kind": "tuple",
+            "page": "menu",
+            "label": "Menu · Sezione 1 · Piatti (7)",
+            "icon": "bi-egg-fried",
+            "region": ".tw-menu-sections",
+            "keywords": ["piatti", "antipasti", "dishes", "menu"],
+            "tuple_order": ["name", "desc", "price"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+            ],
+        },
+        "menu.sections.1.dishes": {
+            "kind": "tuple",
+            "page": "menu",
+            "label": "Menu · Sezione 2 · Piatti (7)",
+            "icon": "bi-egg-fried",
+            "region": ".tw-menu-sections",
+            "keywords": ["piatti", "primi", "dishes", "menu"],
+            "tuple_order": ["name", "desc", "price"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+            ],
+        },
+        "menu.sections.2.dishes": {
+            "kind": "tuple",
+            "page": "menu",
+            "label": "Menu · Sezione 3 · Piatti (6)",
+            "icon": "bi-egg-fried",
+            "region": ".tw-menu-sections",
+            "keywords": ["piatti", "pizza", "dishes", "menu"],
+            "tuple_order": ["name", "desc", "price"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+            ],
+        },
+        "menu.sections.3.dishes": {
+            "kind": "tuple",
+            "page": "menu",
+            "label": "Menu · Sezione 4 · Piatti (5)",
+            "icon": "bi-egg-fried",
+            "region": ".tw-menu-sections",
+            "keywords": ["piatti", "secondi", "dishes", "menu"],
+            "tuple_order": ["name", "desc", "price"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+            ],
+        },
+        "menu.sections.4.dishes": {
+            "kind": "tuple",
+            "page": "menu",
+            "label": "Menu · Sezione 5 · Piatti (5)",
+            "icon": "bi-egg-fried",
+            "region": ".tw-menu-sections",
+            "keywords": ["piatti", "dolci", "dishes", "menu"],
+            "tuple_order": ["name", "desc", "price"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+            ],
+        },
+        "storia.timeline": {
+            "kind": "dict",
+            "page": "storia",
+            "label": "Storia · Timeline (3 tappe)",
+            "icon": "bi-clock-history",
+            "region": ".tw-timeline",
+            "keywords": ["timeline", "tappe", "date"],
+            "cols": [
+                ("year",  {"label": "Anno", "type": "text", "max_length": 16}),
+                ("title", {"label": "Titolo tappa", "type": "text", "max_length": 160}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "storia.family": {
+            "kind": "dict",
+            "page": "storia",
+            "label": "Storia · Famiglia (3 volti)",
+            "icon": "bi-people",
+            "region": ".tw-storia-family",
+            "keywords": ["family", "famiglia", "staff", "portraits"],
+            "cols": [
+                ("name",     {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",     {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("blurb",    {"label": "Blurb", "type": "textarea", "max_length": 500}),
+                ("portrait", {"label": "Portrait · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "storia.values": {
+            "kind": "dict",
+            "page": "storia",
+            "label": "Storia · Valori (4 regole)",
+            "icon": "bi-check-circle",
+            "region": ".tw-values",
+            "keywords": ["valori", "regole", "principi"],
+            "cols": [
+                ("title", {"label": "Titolo regola", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "forno.pizza_signatures": {
+            "kind": "dict",
+            "page": "forno",
+            "label": "Forno · Pizza signatures (4)",
+            "icon": "bi-disc",
+            "region": ".tw-pizza-signatures",
+            "keywords": ["pizza", "signature", "forno"],
+            "cols": [
+                ("n",     {"label": "Numero (I/II/III/IV)", "type": "text", "max_length": 8}),
+                ("name",  {"label": "Nome pizza", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+            ],
+        },
+        "forno.pasta_signatures": {
+            "kind": "dict",
+            "page": "forno",
+            "label": "Forno · Pasta signatures (4)",
+            "icon": "bi-bounding-box-circles",
+            "region": ".tw-pasta-signatures",
+            "keywords": ["pasta", "signature", "mattarello"],
+            "cols": [
+                ("n",     {"label": "Numero (I/II/III/IV)", "type": "text", "max_length": 8}),
+                ("name",  {"label": "Nome pasta", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+            ],
+        },
+        "forno.producers": {
+            "kind": "dict",
+            "page": "forno",
+            "label": "Forno · Producers (5 fornitori)",
+            "icon": "bi-box-seam",
+            "region": ".tw-producers",
+            "keywords": ["producers", "fornitori", "ingredienti"],
+            "cols": [
+                ("name",       {"label": "Nome fornitore", "type": "text", "max_length": 120}),
+                ("place",      {"label": "Luogo", "type": "text", "max_length": 120}),
+                ("ingredient", {"label": "Ingrediente", "type": "textarea", "max_length": 300}),
+            ],
+        },
+        "eventi.experiences": {
+            "kind": "dict",
+            "page": "eventi",
+            "label": "Eventi · Experiences (3 formule)",
+            "icon": "bi-calendar-heart",
+            "region": ".tw-experiences",
+            "keywords": ["experiences", "formule", "tavolate"],
+            "cols": [
+                ("n",       {"label": "Numero (01/02/03)", "type": "text", "max_length": 8}),
+                ("title",   {"label": "Titolo formula", "type": "text", "max_length": 120}),
+                ("persons", {"label": "Persone", "type": "text", "max_length": 80}),
+                ("menu",    {"label": "Menu", "type": "textarea", "max_length": 400}),
+                ("wine",    {"label": "Vini inclusi", "type": "text", "max_length": 200}),
+                ("desc",    {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "contatti.transport": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Transport (4 modi)",
+            "icon": "bi-bus-front",
+            "region": ".tw-transport",
+            "keywords": ["transport", "trasporti", "come arrivare"],
+            "cols": [
+                ("mode", {"label": "Modo (Metro/Bus/Auto/etc.)", "type": "text", "max_length": 40}),
+                ("line", {"label": "Linea / dettaglio", "type": "text", "max_length": 160}),
+                ("note", {"label": "Nota", "type": "text", "max_length": 300}),
+            ],
+        },
+        "contatti.hours_table": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Hours table (4 righe)",
+            "icon": "bi-clock",
+            "region": ".tw-contact",
+            "keywords": ["hours", "orari", "tabella"],
+            "tuple_order": ["days", "hours", "note"],
+            "cols": [
+                ("days",  {"label": "Giorni", "type": "text", "max_length": 80}),
+                ("hours", {"label": "Orari", "type": "text", "max_length": 80}),
+                ("note",  {"label": "Nota", "type": "text", "max_length": 200}),
+            ],
+        },
+    },
 }
 
 
@@ -4597,6 +5208,20 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # registry-only per 6th uniform enforcement of the cross-archetype
     # per-item content policy.
     "cinematic-photographer":  ("pixel-portfolio-fotografico", "it"),
+    # A.14 · Sapore (trattoria-warm) joins as 11th enrolled archetype —
+    # first template of the restaurant-continuation family. OPENS the
+    # family via staged dedicated-schema progression (mirror of real-
+    # estate A.12+A.12b and portfolio A.13+A.13b). Brace (street-modern)
+    # stays OUT of the gate until A.14b — the two restaurant-
+    # continuation templates ship distinct archetypes, distinct skin
+    # folders (.tw-* vs .sm-*), 50% page-slug overlap, and menu shape
+    # fundamentally different (tuple vs dict-with-image-col); shared-
+    # schema (A.9 recipe) is impossible. Sapore exposes menu rows as
+    # DEEP-PATH tuple cells via 5 separate STRUCTURED_FIELD_SHAPES
+    # entries at `menu.sections.{i}.dishes` so the menu is NOT fake-
+    # editable. Sapore ships no posts list — first enrollment since A.10
+    # without a posts.* complex-shape exclusion path.
+    "trattoria-warm":         ("sapore-trattoria-pizzeria", "it"),
 }
 
 
@@ -4639,6 +5264,14 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # without image cols. Pure 3-file enrollment, no service-layer
     # changes required.
     "cinematic-photographer":  PIXEL_CINEMATIC_PHOTOGRAPHER_SCHEMA,
+    # A.14 · Sapore — first-template enrollment of the restaurant-
+    # continuation family. Brace (street-modern) stays out until A.14b;
+    # the two templates ship distinct archetypes, distinct skin folders,
+    # 50% page-slug overlap, and fundamentally different menu shape.
+    # Shared-schema (A.9 recipe) is impossible. First enrollment to
+    # register deep-path structured lists (menu.sections.{i}.dishes)
+    # because the menu shape requires per-section dish editability.
+    "trattoria-warm":         SAPORE_TRATTORIA_WARM_SCHEMA,
 }
 
 
@@ -4896,11 +5529,27 @@ def _baseline_content_for(archetype: str) -> dict[str, Any] | None:
 
 
 def _resolve_path(tree: Any, dotted: str) -> Any:
+    """Walk a dotted path through dicts + lists (numeric segments index
+    into lists). Mirrors the subset of ``apps.projects.services._resolve_path``
+    needed by the schema helpers; tuple column-name resolution is not
+    required here because callers only ask for the LIST at the end of
+    the path (not a cell value). Used by ``_iter_indexed_groups`` to
+    find nested lists such as Sapore's ``menu.sections.0.dishes``
+    (A.14 · tuple-inside-dict-list parent pattern)."""
     cursor: Any = tree
     for segment in dotted.split("."):
-        if not isinstance(cursor, dict):
+        if isinstance(cursor, dict):
+            cursor = cursor.get(segment)
+        elif isinstance(cursor, list):
+            try:
+                idx = int(segment)
+            except ValueError:
+                return None
+            if idx < 0 or idx >= len(cursor):
+                return None
+            cursor = cursor[idx]
+        else:
             return None
-        cursor = cursor.get(segment)
         if cursor is None:
             return None
     return cursor
@@ -5159,6 +5808,16 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # per-item content policy). Gated by
     # ``test_a13b_pixel_full_multilocale_lifecycle_end_to_end``.
     "cinematic-photographer",
+    # A.14 · Sapore (trattoria-warm · restaurant-continuation family ·
+    # first template) joins editor + multi-locale in a single phase,
+    # OPENING the restaurant-continuation family. Brace (street-modern)
+    # stays OUT of the gate until A.14b. Mechanical reuse of the A.13
+    # recipe + staged dedicated-schema topology. No posts list in the
+    # registry (first enrollment since A.10 without posts.* exclusions).
+    # Menu rows exposed as deep-path tuple cells to avoid fake-editable
+    # regressions. Gated by
+    # ``test_a14_sapore_full_multilocale_lifecycle_end_to_end``.
+    "trattoria-warm",
 })
 
 

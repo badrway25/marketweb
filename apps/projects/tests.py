@@ -45,12 +45,13 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.revisions.count(), 1)
 
     def test_unsupported_archetype_raises(self):
-        # trattoria-warm has not been enrolled in _ARCHETYPE_SCHEMAS yet —
-        # Sapore still hits the UnsupportedTemplate guard. Swap this slug
-        # when trattoria-warm gets an editor schema of its own.
-        sapore = WebTemplate.objects.get(slug="sapore-trattoria-pizzeria")
+        # street-modern (Brace) has not been enrolled in _ARCHETYPE_SCHEMAS
+        # yet — Brace still hits the UnsupportedTemplate guard. Pending
+        # A.14b enrollment. Swap this slug if/when street-modern gets an
+        # editor schema of its own.
+        brace = WebTemplate.objects.get(slug="brace-street-food-lab")
         with self.assertRaises(services.UnsupportedTemplate):
-            services.create_project_from_template(owner=self.owner, template=sapore)
+            services.create_project_from_template(owner=self.owner, template=brace)
 
     def test_schema_locks_non_whitelisted_keys(self):
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
@@ -1391,8 +1392,9 @@ class FoundationModelTests(TestCase):
         self.assertIn("corporate-suite", _ARCHETYPE_SCHEMAS)
         self.assertTrue(is_supported_archetype("corporate-suite"))
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
-        # Sanity — an unsupported archetype still rejects.
-        self.assertFalse(is_supported_archetype("trattoria-warm"))
+        # Sanity — an unsupported archetype still rejects. `street-
+        # modern` (Brace) is pending A.14b.
+        self.assertFalse(is_supported_archetype("street-modern"))
 
     def test_a6_pragma_schema_shape_covers_core_pages(self):
         """The Pragma schema must surface groups for every customer-
@@ -1627,8 +1629,10 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Archetype outside the gate still returns False + empty list.
-        self.assertFalse(is_translatable("trattoria-warm", "home.headline"))
-        self.assertEqual(supported_locales("trattoria-warm"), [])
+        # `street-modern` (Brace) is the current outside-gate reference
+        # pending A.14b enrollment.
+        self.assertFalse(is_translatable("street-modern", "home.headline"))
+        self.assertEqual(supported_locales("street-modern"), [])
 
     # ------------------------------------------------------------------
     # A.8 · Gusto fine-dining enrollment — Step 1 contract
@@ -3918,6 +3922,401 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A13b Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.14 · Sapore (trattoria-warm · restaurant-continuation family ·
+    # first template) enrollment — Step 1 contract. OPENS the family
+    # via staged dedicated-schema progression (mirror of real-estate
+    # A.12+A.12b and portfolio A.13+A.13b). Brace (`street-modern`)
+    # stays OUT until A.14b; the dual Brace-out guard at registration-
+    # time + runtime (inside the lifecycle test) will be removed in A.14b
+    # with a symmetric contract test. Menu rows stay INSIDE perimeter
+    # as deep-path tuple cells (`menu.sections.{i}.dishes`) — novel
+    # shape registered via 5 separate STRUCTURED_FIELD_SHAPES entries.
+    # Sapore ships no posts list, so there are no `posts.*` paths in
+    # the complex-shape exclusion guardrail (the absence is structural,
+    # not a perimeter decision).
+    # ------------------------------------------------------------------
+
+    def test_a14_sapore_archetype_registered(self):
+        """`trattoria-warm` joins the supported-archetype registry and
+        the multi-locale gate. Brace (`street-modern`) stays OUT at
+        BOTH layers: registration-time (_ARCHETYPE_SCHEMAS absence +
+        _ARCHETYPE_BASELINE_TEMPLATE absence + _MULTILOCALE_ENABLED_ARCHETYPES
+        absence) · runtime (see the lifecycle test end-of-test guard).
+        Every pre-A.14 archetype must still be enrolled."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
+        )
+        # Sapore IS in.
+        self.assertIn("trattoria-warm", _ARCHETYPE_SCHEMAS)
+        self.assertIn("trattoria-warm", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertIn("trattoria-warm", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("trattoria-warm"))
+        baseline_slug, baseline_locale = _ARCHETYPE_BASELINE_TEMPLATE["trattoria-warm"]
+        self.assertEqual(baseline_slug, "sapore-trattoria-pizzeria")
+        self.assertEqual(baseline_locale, "it")
+
+        # Brace OUT at 2 layers (registration + runtime). The runtime
+        # re-check lives in `test_a14_sapore_full_multilocale_lifecycle_end_to_end`.
+        self.assertNotIn("street-modern", _ARCHETYPE_SCHEMAS,
+                         "Brace (street-modern) must stay OUT until A.14b")
+        self.assertNotIn("street-modern", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertNotIn("street-modern", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertFalse(is_supported_archetype("street-modern"))
+
+        # 10 pre-A.14 archetypes still enrolled (tenfold regression).
+        for pre_slug in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+        ):
+            self.assertIn(pre_slug, _ARCHETYPE_SCHEMAS, f"{pre_slug} lost enrollment")
+            self.assertIn(pre_slug, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{pre_slug} lost multi-locale")
+
+    def test_a14_sapore_schema_shape_covers_all_pages(self):
+        """Sapore groups span the 6 page slugs + `*` chrome. Novel page
+        kinds `signature` (forno page) and `events` (eventi page) are
+        plain string identifiers in the registry — no view dispatches on
+        them; they're just informational labels."""
+        from apps.editor.schema import iter_groups
+        groups = iter_groups("trattoria-warm")
+        pages = {g.get("page") for g in groups}
+        # Must cover chrome + home + 4 secondary pages.
+        for expected in ("*", "home", "menu", "storia", "forno", "eventi", "contatti"):
+            self.assertIn(expected, pages,
+                          f"Sapore schema missing page `{expected}` coverage")
+
+    def test_a14_sapore_is_translatable_text_fields(self):
+        """A distributed sample of Sapore translatable paths — one per
+        page — must classify as translatable. Mirrors the A.10/A.11/
+        A.12/A.12b/A.13/A.13b pattern."""
+        from apps.editor.schema import is_translatable
+        arc = "trattoria-warm"
+        translatable_paths = (
+            # home
+            "home.eyebrow", "home.headline", "home.intro",
+            "home.chalkboard_heading", "home.family_heading",
+            "home.forno_heading", "home.forno_text", "home.tavolata_heading",
+            "home.cta_heading", "home.cta_intro",
+            # menu (scalar)
+            "menu.eyebrow", "menu.headline", "menu.wine_house_heading",
+            # storia
+            "storia.eyebrow", "storia.headline", "storia.intro",
+            "storia.values_heading",
+            # forno
+            "forno.eyebrow", "forno.headline", "forno.pizza_heading",
+            "forno.forno_story_heading", "forno.forno_story_text_1",
+            # eventi
+            "eventi.eyebrow", "eventi.headline", "eventi.birthday_heading",
+            "eventi.contact_heading",
+            # contatti
+            "contatti.headline", "contatti.form_heading",
+        )
+        for path in translatable_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must classify as translatable on Sapore",
+            )
+
+    def test_a14_sapore_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Sapore — same
+        contract as every previously-enrolled archetype. Non-text fields
+        (url type `site.whatsapp_link`, select type `site.nav_cta_href`)
+        are also global by type classification."""
+        from apps.editor.schema import is_translatable
+        arc = "trattoria-warm"
+        for path in (
+            "site.logo_word", "site.logo_initial",
+            "site.phone", "site.email",
+            "site.address", "site.license",
+            "site.whatsapp_link",    # url type → global by type
+            "site.nav_cta_href",     # select type → global by type
+        ):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must stay global on Sapore",
+            )
+
+    def test_a14_sapore_hero_image_scalar_exposed(self):
+        """USER-IMPOSED GUARDRAIL: positive `get_field_spec` on
+        `home.hero_image` returning `type=image`. The 7 top-level scalar
+        image fields must all expose as image widgets in the sidebar."""
+        from apps.editor.schema import get_field_spec
+        arc = "trattoria-warm"
+        image_scalars = (
+            "home.hero_image",
+            "home.forno_image",
+            "home.tavolata_image",
+            "storia.photo_image",
+            "forno.forno_story_image",
+            "forno.dough_image",
+            "eventi.birthday_image",
+        )
+        for path in image_scalars:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Sapore schema")
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} must expose as type=image",
+            )
+
+    def test_a14_sapore_image_cols_in_dict_rows_exposed(self):
+        """USER-IMPOSED GUARDRAIL: positive `get_field_spec` on
+        `home.family.0.portrait` and `storia.family.0.portrait` —
+        image-in-dict-row pattern (Vertex A.3a/A.4 precedent). Both
+        family lists carry a `portrait` col with type=image that must
+        expose at cell level (baseline rows 0..2)."""
+        from apps.editor.schema import get_field_spec, get_list_shape
+        arc = "trattoria-warm"
+
+        for list_path in ("home.family", "storia.family"):
+            shape = get_list_shape(arc, list_path)
+            self.assertIsNotNone(shape, f"{list_path} shape missing")
+            self.assertEqual(shape.get("kind"), "dict")
+            cols_dict = dict(shape.get("cols") or [])
+            self.assertIn("portrait", cols_dict,
+                          f"{list_path} must carry a `portrait` image col")
+            self.assertEqual(cols_dict["portrait"].get("type"), "image")
+
+            # Baseline rows 0..2 each expose `portrait` as type=image.
+            for i in range(3):
+                cell = get_field_spec(arc, f"{list_path}.{i}.portrait")
+                self.assertIsNotNone(
+                    cell, f"{list_path}.{i}.portrait missing from schema",
+                )
+                self.assertEqual(
+                    cell.get("type"), "image",
+                    f"{list_path}.{i}.portrait must expose as type=image",
+                )
+
+    def test_a14_sapore_menu_deep_path_cells_exposed(self):
+        """USER-IMPOSED GUARDRAIL: menu rows stay INSIDE the perimeter.
+        Each section's `dishes` tuple (name/desc/price) is registered at
+        deep path `menu.sections.{i}.dishes` so `get_field_spec` must
+        resolve first + last dishes of first + last section. Novel
+        shape: tuple-list nested inside a dict-list parent. Handled by
+        the A.14 extension to `_resolve_path` (list numeric indexing)."""
+        from apps.editor.schema import get_field_spec
+        arc = "trattoria-warm"
+        # Section content sizes (verified Step-0): 7/7/6/5/5 dishes.
+        first_section_first_dish = [
+            ("menu.sections.0.dishes.0.name",  "text"),
+            ("menu.sections.0.dishes.0.desc",  "textarea"),
+            ("menu.sections.0.dishes.0.price", "text"),
+        ]
+        last_section_last_dish = [
+            ("menu.sections.4.dishes.4.name",  "text"),   # section 4 has 5 dishes (0..4)
+            ("menu.sections.4.dishes.4.desc",  "textarea"),
+            ("menu.sections.4.dishes.4.price", "text"),
+        ]
+        # Spot-check the last dish of the largest sections (7 dishes at
+        # indices 0..6).
+        biggest_section_last_dish = [
+            ("menu.sections.0.dishes.6.name",  "text"),
+            ("menu.sections.1.dishes.6.price","text"),
+        ]
+        for path, expected_type in (
+            first_section_first_dish
+            + last_section_last_dish
+            + biggest_section_last_dish
+        ):
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec,
+                f"{path} missing — deep-path menu cell must be editable",
+            )
+            self.assertEqual(
+                spec.get("type"), expected_type,
+                f"{path} type mismatch (expected {expected_type})",
+            )
+
+        # Parent dict-list cells (`menu.sections.{i}.label` + `heading`)
+        # also expose — the parent is `menu.sections` registered as
+        # dict with label+heading cols (dishes col intentionally omitted
+        # at parent level).
+        for path in ("menu.sections.0.label", "menu.sections.4.heading"):
+            self.assertIsNotNone(get_field_spec(arc, path),
+                                 f"{path} parent cell missing")
+
+    def test_a14_sapore_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL: complex shapes and registry-only
+        paths stay outside the perimeter — `validate_key_path` rejects
+        them with `InvalidEditableField`. Sapore ships NO posts list so
+        posts.* paths are rejected structurally (no editable registration
+        of any kind), but they're still included here to lock the
+        cross-archetype policy."""
+        from apps.editor.schema import validate_key_path, InvalidEditableField
+        arc = "trattoria-warm"
+        rejected_paths = (
+            # Form structure (consistent policy)
+            "contatti.form_sections",
+            "contatti.form_fields",
+            "contatti.form_sections.0.fields",
+            "contatti.form_fields.0.name",
+            # Flat list-of-str containers
+            "storia.story",
+            "storia.story.0",
+            "contatti.occasion_options",
+            "contatti.occasion_options.0",
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            # Top-level navigation index
+            "pages",
+            "pages.0.slug",
+            # Posts list — Sapore ships no posts, but the policy still
+            # applies (6-archetype uniform enforcement).
+            "posts",
+            "posts.0.title",
+            "posts.0.cover_image",
+        )
+        for path in rejected_paths:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Sapore must reject complex-shape path: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a14_sapore_structured_list_cells_are_global(self):
+        """Every STRUCTURED_FIELD_SHAPES text cell on Sapore stays global
+        (non-translatable), including the novel deep-path menu cells.
+        Image cells (portrait) are also global — image overrides never
+        per-locale per D-098."""
+        from apps.editor.schema import is_translatable
+        arc = "trattoria-warm"
+        cell_paths = (
+            # home parent lists
+            "home.family.0.name",
+            "home.family.2.blurb",
+            "home.family.0.portrait",     # image cell · stays global
+            "home.reviews.0.quote",
+            "home.reviews.2.author",
+            "home.facts.0.label",
+            "home.facts.2.value",
+            "home.chalkboard_days.0.day",
+            "home.chalkboard_days.4.note",
+            "home.hours_rows.0.days",
+            "home.hours_rows.2.hours",
+            # menu parent dict-list
+            "menu.sections.0.label",
+            "menu.sections.4.heading",
+            # menu deep-path tuple cells (novel shape)
+            "menu.sections.0.dishes.0.name",
+            "menu.sections.0.dishes.0.price",
+            "menu.sections.4.dishes.4.name",
+            "menu.sections.4.dishes.4.price",
+            # storia parent lists
+            "storia.timeline.0.year",
+            "storia.timeline.2.desc",
+            "storia.family.0.name",
+            "storia.family.0.portrait",   # image cell · stays global
+            "storia.values.0.title",
+            "storia.values.3.desc",
+            # forno parent lists
+            "forno.pizza_signatures.0.name",
+            "forno.pizza_signatures.3.price",
+            "forno.pasta_signatures.0.name",
+            "forno.pasta_signatures.3.price",
+            "forno.producers.0.name",
+            "forno.producers.4.ingredient",
+            # eventi parent lists
+            "eventi.experiences.0.title",
+            "eventi.experiences.2.menu",
+            "eventi.experiences.0.wine",
+            # contatti parent lists
+            "contatti.transport.0.mode",
+            "contatti.transport.3.note",
+            "contatti.hours_table.0.days",
+            "contatti.hours_table.3.hours",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Sapore",
+            )
+
+    def test_a14_sapore_supported_locales_returns_canonical_five(self):
+        """Sapore ships the canonical 5-locale set. Step-0 audit confirmed
+        5-locale parity PERFECT (224 keys × 5 locales, zero gaps)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("trattoria-warm"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Brace stays out.
+        self.assertEqual(supported_locales("street-modern"), [])
+
+    def test_a14_tenfold_regression_after_sapore_joins(self):
+        """Regression guard: the 10 pre-A.14 archetype classifications
+        are unchanged after `trattoria-warm` joins the gate."""
+        from apps.editor.schema import (
+            is_translatable, supported_locales, _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        pre_a14 = (
+            "agency-creative-studio",
+            "corporate-suite",
+            "fine-dining",
+            "specialist",
+            "classic-gold",
+            "modern-transparent",
+            "mass-market",
+            "ultra-luxury-cinematic",
+            "editorial-designer-grid",
+            "cinematic-photographer",
+        )
+        for arc in pre_a14:
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} lost multi-locale enrollment")
+            # Sanity — each still returns the canonical five locales.
+            self.assertEqual(
+                supported_locales(arc), ["it", "en", "fr", "es", "ar"],
+                f"{arc} supported_locales regressed",
+            )
+        # Vertex + Pragma + Gusto still classify home.headline as
+        # translatable · logo_word as global (stable spot-check).
+        for arc in ("agency-creative-studio", "corporate-suite", "fine-dining"):
+            self.assertTrue(is_translatable(arc, "home.headline"),
+                            f"{arc} home.headline regressed")
+            self.assertFalse(is_translatable(arc, "site.logo_word"),
+                             f"{arc} site.logo_word regressed")
+
+    def test_a14_sapore_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.8/A.9/A.10/A.11/A.12/A.12b/A.13/A.13b
+        integration guardrail — the Sapore `restaurant/trattoria-warm/_base.html`
+        must integrate the three bridge points together on the `.tw-*`
+        skin: (1) preview-bridge.js conditional on ``preview_project``,
+        (2) ``<title>`` honors ``site.logo_word``, (3) ``<body>`` carries
+        the ``mw-is-editor-preview`` guard class when inside the editor."""
+        sapore = WebTemplate.objects.get(slug="sapore-trattoria-pizzeria")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/restaurant/sapore-trattoria-pizzeria/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=sapore)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A14 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/restaurant/sapore-trattoria-pizzeria/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A14 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -3980,7 +4379,9 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Unknown archetype returns empty list, never raises.
-        self.assertEqual(supported_locales("trattoria-warm"), [])
+        # `street-modern` (Brace) is the current outside-gate reference
+        # pending A.14b enrollment.
+        self.assertEqual(supported_locales("street-modern"), [])
 
     def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
         """Defensive contract: unknown paths and archetypes return False
@@ -4342,11 +4743,12 @@ class FoundationHttpTests(TestCase):
 
     def test_customize_start_unsupported_archetype_redirects_to_detail(self):
         """Templates without editor support bounce to detail with an info message."""
-        # sapore-trattoria-pizzeria (trattoria-warm archetype) is not yet
-        # enrolled. Swap when that archetype receives editor support.
-        r = self.client.get("/projects/start/?template=sapore-trattoria-pizzeria")
+        # brace-street-food-lab (street-modern archetype) is not yet
+        # enrolled. Pending A.14b. Swap when that archetype receives
+        # editor support.
+        r = self.client.get("/projects/start/?template=brace-street-food-lab")
         self.assertEqual(r.status_code, 302)
-        # Either /templates/restaurant/sapore-trattoria-pizzeria/ or template_list — both accept.
+        # Either /templates/restaurant/brace-street-food-lab/ or template_list — both accept.
         self.assertIn("/templates/", r["Location"])
 
     def test_autosave_endpoint_rejects_locked_keys(self):
@@ -7029,6 +7431,327 @@ class FoundationHttpTests(TestCase):
             with self.assertRaises(InvalidEditableField,
                                    msg=f"Pixel posts path must be rejected: {out_path}"):
                 validate_key_path("cinematic-photographer", out_path)
+
+    # ------------------------------------------------------------------
+    # A.14 · Step 2 — Sapore (trattoria-warm) lifecycle HTTP
+    # cross-cutting · OPENS the restaurant-continuation family via
+    # staged dedicated-schema progression. Brace (street-modern) stays
+    # OUT until A.14b — runtime guard re-checked at the end of this
+    # test. Novel shape exercise: deep-path menu-cell override on
+    # `menu.sections.0.dishes.0.name` (tuple-in-dict-list parent).
+    # Sapore ships no posts list, so the complex-shape exclusion at
+    # end-of-test focuses on form/story/options/hours_footer paths.
+    # ------------------------------------------------------------------
+
+    def test_a14_sapore_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the Sapore enrollment:
+
+        1. customer edits IT / EN / FR on a Sapore translatable path
+           (home.headline)
+        2. customer edits a global TEXT path (site.logo_word) via EN
+           autosave — storage MUST be plain-keyed (no @en: prefix)
+        3. customer edits the single-top-level-scalar IMAGE field
+           (home.hero_image) — storage MUST be plain-keyed across all
+           5 locales (5× explicit assertNotIn on @<locale>: prefix)
+        4. customer edits a DEEP-PATH MENU CELL on the novel nested
+           tuple-in-dict-list shape (menu.sections.0.dishes.0.name) —
+           storage MUST be plain-keyed (no @<locale>: prefix on menu
+           cells) AND the override MUST apply end-to-end at render
+           time (proves the A.14 `_resolve_path` + `_apply_indexed`
+           list-index extensions work in production, not just at
+           contract level — user-imposed blindatura).
+        5. project publishes via services.publish_project
+        6. second user visits every public preview locale:
+           - IT/EN/FR render their locale override + global logo + hero
+             image + menu dish override (home + menu pages both)
+           - ES/AR fall back to the authored registry text, still see
+             the global logo + hero image + menu dish override
+             (images + menu cells are universal)
+           - AR response head carries ``<html dir="rtl" lang="ar">``
+             on the ``.tw-*`` skin (18 RTL rules shipped since D-078
+             Session 48 Sapore rollout)
+        7. owner reopens the editor per locale; sidebar prefill matches
+           the buffer for that locale on home.headline and shows
+           site.logo_word + home.hero_image as universal overrides
+        8. perimeter invariants double-checked at the end of the walk:
+           Brace (street-modern) stays OUT of both gate sets at
+           runtime; complex-shape paths (form_sections, form_fields,
+           occasion_options, storia.story, site.hours_footer_rows,
+           pages) stay rejected by validate_key_path.
+
+        Explicitly NOT exercised here: Brace editor work, coverage
+        expansion, mutable rows, image per-locale, browser walk
+        (Step 3), helper/infra touches beyond what Step 1 already
+        introduced.
+        """
+        import json as _json
+
+        sapore = WebTemplate.objects.get(slug="sapore-trattoria-pizzeria")
+        p = services.create_project_from_template(owner=self.owner, template=sapore)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1. three translatable locales on home.headline ────────
+        for locale, headline in (
+            ("it", "Walk IT Sapore <em>A14Piatto</em>."),
+            ("en", "Walk EN Sapore <em>A14PiattoEN</em>."),
+            ("fr", "Walk FR Sapore <em>A14PiattoFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+
+        # ── 2. global plain-keyed text — site.logo_word via EN ────
+        # Global text must NOT pick up the @en: prefix even when written
+        # inside an EN-tagged autosave.
+        r = autosave("en", {"site.logo_word": "A14SaporeBrand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 3. scalar image override — home.hero_image ────────────
+        # Top-level scalar image (Pragma / Pixel single-scalar-image
+        # pattern). Images are classified NON-translatable —
+        # persistence is plain-keyed regardless of the request-tagged
+        # locale.
+        IMG_HERO = "https://walk-sapore.example/img/hero-A14.jpg"
+        r = autosave("it", {"home.hero_image": IMG_HERO})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.hero_image", r.json()["content_keys"])
+
+        # ── 4. deep-path menu cell — menu.sections.0.dishes.0.name ─
+        # NOVEL shape: tuple-in-dict-list parent. This exercises both
+        # the A.14 `_resolve_path` extension (schema side · Step 1) AND
+        # the A.14 `_apply_indexed` parent-walk extension (rendering
+        # side · Step 2) — if either fails, the override persists but
+        # never reaches the customer's preview, which is exactly what
+        # the user-imposed "blindato bene a runtime" guardrail targets.
+        DISH_NAME = "Walk Piatto A14"
+        r = autosave("it", {"menu.sections.0.dishes.0.name": DISH_NAME})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("menu.sections.0.dishes.0.name", r.json()["content_keys"])
+
+        # Storage shape: 3 @<locale>:home.headline + 3 plain-keyed
+        # globals (logo + hero image + deep-path menu cell). Zero
+        # @<locale>: on image/menu-cell paths; zero @en: on logo;
+        # zero plain-key leak on home.headline.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("home.hero_image", keys)
+        self.assertIn("menu.sections.0.dishes.0.name", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+        # Image override plain-keyed across all 5 locales.
+        for loc in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(f"@{loc}:home.hero_image", keys,
+                             f"home.hero_image must NEVER be @{loc}:-prefixed")
+        # Menu cell plain-keyed across all 5 locales.
+        for loc in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(f"@{loc}:menu.sections.0.dishes.0.name", keys,
+                             f"menu cell must NEVER be @{loc}:-prefixed")
+
+        # ── 5. publish ───────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 6. second user on every public preview locale ────────
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale, page=None):
+            # page=None fetches home; page='menu' etc. fetches a
+            # specific sub-page. The menu override is menu-page-scoped,
+            # so menu assertions need the menu page fetch.
+            suffix = f"{page}/" if page else ""
+            url = (
+                f"/templates/restaurant/sapore-trattoria-pizzeria/preview/"
+                f"{suffix}?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render (home) — IT override visible, EN/FR absent.
+        body_it = preview_body("it")
+        self.assertIn("Walk IT Sapore", body_it)
+        self.assertIn("A14Piatto", body_it)
+        self.assertNotIn("A14PiattoEN", body_it)
+        self.assertNotIn("A14PiattoFR", body_it)
+        self.assertIn("A14SaporeBrand", body_it)
+        self.assertIn(IMG_HERO, body_it)
+
+        # IT render (menu page) — menu cell override visible +
+        # universal globals.
+        body_it_menu = preview_body("it", page="menu")
+        self.assertIn("A14SaporeBrand", body_it_menu)
+        self.assertIn(DISH_NAME, body_it_menu,
+                      "menu cell override must render on menu page IT")
+        # Other dishes (not overridden) still show the authored names
+        # as sanity check that the splicer didn't wipe the row.
+        self.assertIn("Carciofo alla giudia", body_it_menu)
+
+        # EN render (home + menu)
+        body_en = preview_body("en")
+        self.assertIn("Walk EN Sapore", body_en)
+        self.assertIn("A14PiattoEN", body_en)
+        self.assertNotIn("Walk IT Sapore", body_en)
+        self.assertIn("A14SaporeBrand", body_en)
+        self.assertIn(IMG_HERO, body_en)
+        body_en_menu = preview_body("en", page="menu")
+        self.assertIn(DISH_NAME, body_en_menu,
+                      "menu cell override is global · must render on EN menu")
+
+        # FR render (home + menu spot check)
+        body_fr = preview_body("fr")
+        self.assertIn("Walk FR Sapore", body_fr)
+        self.assertIn("A14PiattoFR", body_fr)
+        self.assertIn("A14SaporeBrand", body_fr)
+        self.assertIn(IMG_HERO, body_fr)
+        body_fr_menu = preview_body("fr", page="menu")
+        self.assertIn(DISH_NAME, body_fr_menu)
+
+        # Unedited locales — authored text fallback + global chrome +
+        # image + menu cell override all universal.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Walk IT Sapore", body)
+            self.assertNotIn("Walk EN Sapore", body)
+            self.assertNotIn("Walk FR Sapore", body)
+            self.assertIn("A14SaporeBrand", body)
+            self.assertIn(IMG_HERO, body)
+            body_menu = preview_body(locale, page="menu")
+            self.assertIn(DISH_NAME, body_menu,
+                          f"menu cell override must render universally on {locale} menu")
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Sapore home",
+                )
+
+        # AR preview (home) — `.tw-*` skin must emit
+        # ``<html dir="rtl" lang="ar">`` (18 mature RTL rules shipped
+        # since Session 48 D-078 Sapore rollout · verified Step-0).
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 7. owner reopens the editor on each locale ───────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Walk IT Sapore"),
+            ("en", "Walk EN Sapore"),
+            ("fr", "Walk FR Sapore"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text: overridden universally, not translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Sapore editor")
+        self.assertEqual(logo_field["value"], "A14SaporeBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        # Scalar image: overridden universally, not translatable.
+        hero_field = find_field_by_key(r_es.context["groups"], "home.hero_image")
+        self.assertIsNotNone(hero_field, "home.hero_image missing from Sapore editor")
+        self.assertEqual(hero_field["value"], IMG_HERO)
+        self.assertTrue(hero_field["is_overridden"])
+        self.assertFalse(hero_field["translatable"])
+
+        # ── 8. perimeter invariants re-checked end-of-test ───────
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            _ARCHETYPE_SCHEMAS as _SCHEMAS,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        # Brace (street-modern) MUST stay OUT at runtime on BOTH gates —
+        # dual guard re-checked end-of-test. The guard will be removed
+        # in A.14b together with Brace's own registrations (same pattern
+        # as A.12b Villa-out and A.13b Pixel-out).
+        self.assertNotIn("street-modern", _SCHEMAS,
+                         "Brace (street-modern) must stay OUT of _ARCHETYPE_SCHEMAS until A.14b")
+        self.assertNotIn("street-modern", _ENABLED,
+                         "Brace (street-modern) must stay OUT of multi-locale gate until A.14b")
+        # 10 pre-A.14 archetypes still enrolled (runtime tenfold check).
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+        ):
+            self.assertIn(arc, _ENABLED, f"{arc} lost enrollment mid-lifecycle")
+        # Complex-shape paths stay rejected — re-verified runtime at
+        # end-of-test so a silent schema drift mid-phase is caught.
+        for out_path in (
+            "contatti.form_sections",
+            "contatti.form_sections.0.fields",
+            "contatti.form_fields",
+            "contatti.form_fields.0.name",
+            "contatti.occasion_options",
+            "contatti.occasion_options.0",
+            "storia.story",
+            "storia.story.0",
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            "pages",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Sapore complex-shape path must stay rejected: {out_path}",
+            ):
+                validate_key_path("trattoria-warm", out_path)
 
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
