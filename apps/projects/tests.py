@@ -45,14 +45,14 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.revisions.count(), 1)
 
     def test_unsupported_archetype_raises(self):
-        # artisan-workshop (Bottega) has not been enrolled in
-        # _ARCHETYPE_SCHEMAS yet — Bottega still hits the UnsupportedTemplate
-        # guard. A.14b rotated the outside-gate reference from Brace
-        # (now enrolled) to Bottega. Swap this slug if/when
-        # artisan-workshop gets an editor schema of its own.
-        bottega = WebTemplate.objects.get(slug="bottega-shop-artigianale")
+        # fashion-editorial (Luxe) has not been enrolled in
+        # _ARCHETYPE_SCHEMAS yet — Luxe still hits the UnsupportedTemplate
+        # guard. A.15 rotated the outside-gate reference from Bottega
+        # (now enrolled) to Luxe. Swap this slug if/when
+        # fashion-editorial gets an editor schema of its own (A.15b).
+        luxe = WebTemplate.objects.get(slug="luxe-fashion-store")
         with self.assertRaises(services.UnsupportedTemplate):
-            services.create_project_from_template(owner=self.owner, template=bottega)
+            services.create_project_from_template(owner=self.owner, template=luxe)
 
     def test_schema_locks_non_whitelisted_keys(self):
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
@@ -1394,9 +1394,9 @@ class FoundationModelTests(TestCase):
         self.assertTrue(is_supported_archetype("corporate-suite"))
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
         # Sanity — an unsupported archetype still rejects.
-        # `artisan-workshop` (Bottega) is the current outside-gate
-        # reference (A.14b rotated it from `street-modern`/Brace).
-        self.assertFalse(is_supported_archetype("artisan-workshop"))
+        # `fashion-editorial` (Luxe) is the current outside-gate reference
+        # (A.15 rotated it from `artisan-workshop`/Bottega which is now enrolled).
+        self.assertFalse(is_supported_archetype("fashion-editorial"))
 
     def test_a6_pragma_schema_shape_covers_core_pages(self):
         """The Pragma schema must surface groups for every customer-
@@ -1631,10 +1631,10 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Archetype outside the gate still returns False + empty list.
-        # `artisan-workshop` (Bottega) is the current outside-gate reference
-        # (A.14b rotated it from `street-modern`/Brace which is now enrolled).
-        self.assertFalse(is_translatable("artisan-workshop", "home.headline"))
-        self.assertEqual(supported_locales("artisan-workshop"), [])
+        # `fashion-editorial` (Luxe) is the current outside-gate reference
+        # (A.15 rotated it from `artisan-workshop`/Bottega which is now enrolled).
+        self.assertFalse(is_translatable("fashion-editorial", "home.headline"))
+        self.assertEqual(supported_locales("fashion-editorial"), [])
 
     # ------------------------------------------------------------------
     # A.8 · Gusto fine-dining enrollment — Step 1 contract
@@ -4238,9 +4238,9 @@ class FoundationModelTests(TestCase):
             supported_locales("trattoria-warm"),
             ["it", "en", "fr", "es", "ar"],
         )
-        # Outside-gate reference: artisan-workshop (Bottega) after A.14b
-        # rotated it from street-modern/Brace (now enrolled).
-        self.assertEqual(supported_locales("artisan-workshop"), [])
+        # Outside-gate reference: fashion-editorial (Luxe) after A.15
+        # rotated it from artisan-workshop/Bottega (now enrolled).
+        self.assertEqual(supported_locales("fashion-editorial"), [])
 
     def test_a14_tenfold_regression_after_sapore_joins(self):
         """Regression guard: the 10 pre-A.14 archetype classifications
@@ -4716,6 +4716,403 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A14b Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.15 · Bottega (artisan-workshop · ecommerce family · first
+    # template) enrollment — Step 1 contract. OPENS the ecommerce family
+    # via staged dedicated-schema progression (fourth staged opening
+    # after real-estate · portfolio · restaurant-continuation). Luxe
+    # (`fashion-editorial`) stays OUT until A.15b. Editor edits ONLY
+    # template_content registry (presentational demo showcase) · zero
+    # touches to apps.commerce (real catalog state · seller dashboard
+    # scope). 14 readonly indexed list entries · tutti parent-level.
+    # ------------------------------------------------------------------
+
+    def test_a15_bottega_archetype_registered(self):
+        """`artisan-workshop` joins the supported-archetype registry and
+        the multi-locale gate. Luxe (`fashion-editorial`) stays OUT at
+        BOTH layers: registration-time (absence from three registries) ·
+        runtime (see the lifecycle test end-of-test guard). All 12
+        pre-A.15 archetypes must still be enrolled (twelve-fold
+        regression)."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
+        )
+        self.assertIn("artisan-workshop", _ARCHETYPE_SCHEMAS)
+        self.assertIn("artisan-workshop", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertIn("artisan-workshop", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("artisan-workshop"))
+        baseline_slug, baseline_locale = _ARCHETYPE_BASELINE_TEMPLATE["artisan-workshop"]
+        self.assertEqual(baseline_slug, "bottega-shop-artigianale")
+        self.assertEqual(baseline_locale, "it")
+
+        # Luxe OUT at 2 layers (registration + runtime). Runtime re-check
+        # lives in `test_a15_bottega_full_multilocale_lifecycle_end_to_end`.
+        self.assertNotIn("fashion-editorial", _ARCHETYPE_SCHEMAS,
+                         "Luxe (fashion-editorial) must stay OUT until A.15b")
+        self.assertNotIn("fashion-editorial", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertNotIn("fashion-editorial", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertFalse(is_supported_archetype("fashion-editorial"))
+
+        # 12 pre-A.15 archetypes still enrolled.
+        for pre_slug in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+        ):
+            self.assertIn(pre_slug, _ARCHETYPE_SCHEMAS, f"{pre_slug} lost enrollment")
+            self.assertIn(pre_slug, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{pre_slug} lost multi-locale")
+
+    def test_a15_bottega_schema_shape_covers_all_pages(self):
+        """Bottega groups span the 6 page slugs + `*` chrome. Three
+        novel page kinds (`shop`, `product`, `journal`) · plain string
+        identifiers · no view dispatch."""
+        from apps.editor.schema import iter_groups
+        groups = iter_groups("artisan-workshop")
+        pages = {g.get("page") for g in groups}
+        for expected in ("*", "home", "shop", "product", "atelier", "journal", "contatti"):
+            self.assertIn(expected, pages,
+                          f"Bottega schema missing page `{expected}` coverage")
+
+    def test_a15_bottega_is_translatable_text_fields(self):
+        """Distributed sample of Bottega translatable paths — one per
+        page — must classify as translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "artisan-workshop"
+        translatable_paths = (
+            # home
+            "home.eyebrow", "home.headline", "home.intro",
+            "home.stamp_heading", "home.latest_heading",
+            "home.makers_heading", "home.makers_intro",
+            "home.provenance_heading", "home.care_heading",
+            "home.cta_heading",
+            # shop
+            "shop.eyebrow", "shop.headline", "shop.intro",
+            "shop.footer_note",
+            # product
+            "product.name", "product.subtitle", "product.intro",
+            "product.artisan_bio", "product.care_intro",
+            "product.provenance_heading",
+            # atelier
+            "atelier.eyebrow", "atelier.headline", "atelier.intro",
+            "atelier.founder_heading", "atelier.mission_heading",
+            "atelier.visit_heading",
+            # journal
+            "journal.eyebrow", "journal.headline", "journal.intro",
+            # contatti
+            "contatti.headline", "contatti.intro",
+        )
+        for path in translatable_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must classify as translatable on Bottega",
+            )
+
+    def test_a15_bottega_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths + typed fields stay global on
+        Bottega — same contract as every previously-enrolled archetype."""
+        from apps.editor.schema import is_translatable
+        arc = "artisan-workshop"
+        for path in (
+            "site.logo_word", "site.logo_initial",
+            "site.phone", "site.email",
+            "site.address", "site.license",
+            "site.whatsapp_link",  # url type
+        ):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must stay global on Bottega",
+            )
+
+    def test_a15_bottega_nested_dict_scalar_images_exposed(self):
+        """USER-IMPOSED GUARDRAIL: nested-dict scalar image fields
+        expose as type=image. Bottega has no top-level hero image
+        (artisan-workshop is typographic-led DNA · Session 42) — only
+        2 nested-dict scalar images: `product.artisan_portrait` and
+        `atelier.founder_portrait` · Chiara `studio.founder.image`
+        precedent shape."""
+        from apps.editor.schema import get_field_spec
+        arc = "artisan-workshop"
+        for path in ("product.artisan_portrait", "atelier.founder_portrait"):
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Bottega schema")
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} must expose as type=image",
+            )
+
+    def test_a15_bottega_image_cols_in_dict_rows_shallow_exposed(self):
+        """USER-IMPOSED GUARDRAIL: 4 shallow image-in-dict-row lists
+        (home.latest_items · home.makers · shop.products · product.related_items)
+        expose their image/portrait cells with `type=image`. Image-in-
+        dict-row pattern is now at 6+ precedents. shop.products covers
+        9 demo product cards · first+middle+last tested."""
+        from apps.editor.schema import get_field_spec
+        arc = "artisan-workshop"
+        image_cell_paths = (
+            "home.latest_items.0.image",
+            "home.latest_items.3.image",         # last of 4
+            "home.makers.0.portrait",
+            "home.makers.3.portrait",            # last of 4
+            "shop.products.0.image",
+            "shop.products.4.image",             # middle of 9
+            "shop.products.8.image",             # last of 9
+            "product.related_items.0.image",
+            "product.related_items.2.image",     # last of 3
+        )
+        for path in image_cell_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec, f"{path} missing from Bottega schema",
+            )
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} must expose as type=image",
+            )
+
+    def test_a15_bottega_visible_catalog_fields_kept_in(self):
+        """Stringent IN call per user Step 1 guidance: values like
+        `n`/`edition`/`icon` that LOOK technical but are editorial
+        visible content (customer-facing catalog numbering) must stay
+        IN. 'N° 042' / '3 / 8' / 'Esaurito' / '01' are visible badges
+        that a customer would typically edit — same category as Sapore
+        forno.pizza_signatures.n (roman numeral visible counter). OUT
+        only truly-structural cols (id slugs · available bool flag)."""
+        from apps.editor.schema import get_field_spec
+        arc = "artisan-workshop"
+        # These are editorial visible — IN.
+        visible_editorial = (
+            ("shop.products.0.n",           "text"),
+            ("shop.products.0.edition",     "text"),
+            ("shop.products.0.tag",         "text"),
+            ("home.latest_items.0.n",       "text"),
+            ("home.latest_items.0.edition", "text"),
+            ("home.latest_items.0.tag",     "text"),
+            ("home.provenance_items.0.icon","text"),
+            ("atelier.process_steps.0.n",   "text"),
+            ("journal.entries.0.n",         "text"),
+            ("product.related_items.0.n",   "text"),
+        )
+        for path, expected_type in visible_editorial:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec,
+                f"{path} missing — editorial-visible cell must be editable",
+            )
+            self.assertEqual(
+                spec.get("type"), expected_type,
+                f"{path} type mismatch (expected {expected_type})",
+            )
+
+    def test_a15_bottega_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL: complex shapes + structural identifiers
+        stay outside the perimeter. Bottega ships NO posts (empty · same
+        as Sapore · Brace · structural absence · detail-page policy stays
+        at 6-archetype uniform enforcement)."""
+        from apps.editor.schema import validate_key_path, InvalidEditableField
+        arc = "artisan-workshop"
+        rejected_paths = (
+            # Flat list-of-str containers
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            "site.stockists_rows",
+            "site.stockists_rows.0",
+            "home.press_items",
+            "home.press_items.0",
+            "shop.filter_groups",
+            "shop.filter_groups.0.options",
+            "shop.filter_groups.0.options.0",
+            "shop.sort_options",
+            "product.gallery",
+            "product.gallery.0",
+            "product.size_options",
+            "contatti.card_hours_rows",
+            "contatti.card_hours_rows.0",
+            # Form structure
+            "contatti.form_fields",
+            # Navigation + posts (empty)
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+            # Col-level exclusions (structural identifiers · slug + flag)
+            "shop.products.0.id",
+            "shop.products.8.id",
+            "shop.products.0.available",
+            "home.latest_items.0.id",
+            "home.latest_items.3.id",
+            "product.related_items.0.id",
+        )
+        for path in rejected_paths:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Bottega must reject complex-shape path: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a15_bottega_structured_list_cells_are_global(self):
+        """Every STRUCTURED_FIELD_SHAPES text/image cell on Bottega
+        stays global (non-translatable), including visible catalog
+        numbering (`n`/`edition`/`icon`) and image cells (portraits +
+        product photos · D-098 per-locale image out-of-scope)."""
+        from apps.editor.schema import is_translatable
+        arc = "artisan-workshop"
+        cell_paths = (
+            # home.latest_items (4 rows · 8 cols · image col)
+            "home.latest_items.0.name",
+            "home.latest_items.3.price",
+            "home.latest_items.0.image",   # image cell
+            # home.makers (4 rows · 6 cols · portrait col)
+            "home.makers.0.name",
+            "home.makers.3.quote",
+            "home.makers.2.portrait",      # image cell
+            # home.provenance_items (3 rows · 4 cols)
+            "home.provenance_items.0.icon",
+            "home.provenance_items.2.desc",
+            # home.stamp_rows (4 rows · 2 cols · tuple)
+            "home.stamp_rows.0.label",
+            "home.stamp_rows.3.value",
+            # home.care_items (4 rows · 2 cols · tuple)
+            "home.care_items.0.label",
+            "home.care_items.3.value",
+            # shop.products (9 rows · 9 cols IN · image col)
+            "shop.products.0.name",
+            "shop.products.8.price",
+            "shop.products.0.n",
+            "shop.products.4.edition",
+            "shop.products.7.tag",
+            "shop.products.5.image",       # image cell
+            # product.info_rows (tuple 8)
+            "product.info_rows.0.label",
+            "product.info_rows.7.value",
+            # product.care_items (tuple 4)
+            "product.care_items.0.label",
+            # product.provenance_steps (tuple 4 · 3 cols)
+            "product.provenance_steps.0.step",
+            "product.provenance_steps.3.desc",
+            # product.related_items (3 rows · 5 cols · image col)
+            "product.related_items.0.name",
+            "product.related_items.2.image", # image cell
+            # atelier.process_steps (5 rows · 5 cols)
+            "atelier.process_steps.0.n",
+            "atelier.process_steps.4.desc",
+            # atelier.numbers_items (tuple 4)
+            "atelier.numbers_items.0.value",
+            "atelier.numbers_items.3.label",
+            # journal.entries (6 rows · 5 cols)
+            "journal.entries.0.n",
+            "journal.entries.5.excerpt",
+            # contatti.faq_items (4 rows · 2 cols)
+            "contatti.faq_items.0.q",
+            "contatti.faq_items.3.a",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Bottega",
+            )
+
+    def test_a15_bottega_supported_locales_returns_canonical_five(self):
+        """Bottega ships the canonical 5-locale set. Step-0 audit
+        confirmed 5-locale parity PERFECT (236 keys × 5 · zero gaps)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("artisan-workshop"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a15_twelvefold_regression_after_bottega_joins(self):
+        """Regression guard: the 12 pre-A.15 archetype classifications
+        are unchanged after `artisan-workshop` joins the gate."""
+        from apps.editor.schema import (
+            is_translatable, supported_locales, _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        pre_a15 = (
+            "agency-creative-studio",
+            "corporate-suite",
+            "fine-dining",
+            "specialist",
+            "classic-gold",
+            "modern-transparent",
+            "mass-market",
+            "ultra-luxury-cinematic",
+            "editorial-designer-grid",
+            "cinematic-photographer",
+            "trattoria-warm",
+            "street-modern",
+        )
+        for arc in pre_a15:
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} lost multi-locale enrollment")
+            self.assertEqual(
+                supported_locales(arc), ["it", "en", "fr", "es", "ar"],
+                f"{arc} supported_locales regressed",
+            )
+
+    def test_a15_bottega_commerce_admin_boundary(self):
+        """USER-IMPOSED LIGHT guardrail: the editor schema for Bottega
+        must not leak into `apps.commerce` model paths. This is a LIGHT
+        smoke test, not an architectural check — it verifies that the
+        schema stays scoped to the registry content (template_content
+        prefixes: home/shop/product/atelier/journal/contatti/site) and
+        no field references apps.commerce model namespaces (e.g.
+        `storefront.`, `cart.`, `variant.`, `order.`, `payment_intent.`).
+        The real boundary is architectural: LiveTemplateView does not
+        import apps.commerce — this test just blindates that the schema
+        author didn't mistakenly add commerce-state paths."""
+        from apps.editor.schema import iter_editable_fields
+        arc = "artisan-workshop"
+        commerce_model_prefixes = (
+            "storefront.", "cart.", "variant.", "order.",
+            "payment_intent.", "checkout.", "storefront_member.",
+        )
+        for path, _spec in iter_editable_fields(arc):
+            for prefix in commerce_model_prefixes:
+                self.assertFalse(
+                    path.startswith(prefix),
+                    f"Editor schema leaks into apps.commerce namespace: "
+                    f"field `{path}` starts with `{prefix}` — editor must "
+                    f"stay on template_content registry only"
+                )
+
+    def test_a15_bottega_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the integration guardrail — Bottega
+        `ecommerce/artisan-workshop/_base.html` must integrate the three
+        bridge points together on the `.aw-*` skin: (1) preview-bridge.js
+        conditional on ``preview_project``, (2) ``<title>`` honors
+        ``site.logo_word``, (3) ``<body>`` carries ``mw-is-editor-preview``
+        guard class when inside the editor."""
+        bottega = WebTemplate.objects.get(slug="bottega-shop-artigianale")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/ecommerce/bottega-shop-artigianale/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=bottega)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A15 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/ecommerce/bottega-shop-artigianale/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A15 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -4778,9 +5175,9 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Unknown archetype returns empty list, never raises.
-        # `artisan-workshop` (Bottega) is the current outside-gate reference
-        # (A.14b rotated it from `street-modern`/Brace which is now enrolled).
-        self.assertEqual(supported_locales("artisan-workshop"), [])
+        # `fashion-editorial` (Luxe) is the current outside-gate reference
+        # (A.15 rotated it from `artisan-workshop`/Bottega which is now enrolled).
+        self.assertEqual(supported_locales("fashion-editorial"), [])
 
     def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
         """Defensive contract: unknown paths and archetypes return False
@@ -5142,13 +5539,13 @@ class FoundationHttpTests(TestCase):
 
     def test_customize_start_unsupported_archetype_redirects_to_detail(self):
         """Templates without editor support bounce to detail with an info message."""
-        # bottega-shop-artigianale (artisan-workshop archetype) is not yet
-        # enrolled. A.14b rotated the outside-gate reference from Brace
-        # (now enrolled) to Bottega. Swap when artisan-workshop receives
-        # editor support.
-        r = self.client.get("/projects/start/?template=bottega-shop-artigianale")
+        # luxe-fashion-store (fashion-editorial archetype) is not yet
+        # enrolled. A.15 rotated the outside-gate reference from Bottega
+        # (now enrolled) to Luxe. Swap when fashion-editorial receives
+        # editor support (A.15b).
+        r = self.client.get("/projects/start/?template=luxe-fashion-store")
         self.assertEqual(r.status_code, 302)
-        # Either /templates/ecommerce/bottega-shop-artigianale/ or template_list — both accept.
+        # Either /templates/ecommerce/luxe-fashion-store/ or template_list — both accept.
         self.assertIn("/templates/", r["Location"])
 
     def test_autosave_endpoint_rejects_locked_keys(self):
