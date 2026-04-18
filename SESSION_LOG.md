@@ -1,5 +1,88 @@
 # Session Log
 
+## Session 68 — Phase A.13b · Pixel (cinematic-photographer · portfolio family) Editor + Multi-locale Enrollment · CLOSES PORTFOLIO FAMILY (2026-04-18)
+
+**Summary.** Tenth archetype enrolled in the editor: `cinematic-photographer` (Pixel). Single-template phase — Pixel is the portfolio family's second archetype, complementing Chiara (A.13 `editorial-designer-grid`). Closure follows the same staged dedicated-schema progression topology already validated by real-estate (A.12 Casa → A.12b Villa): family opens in the first phase with one archetype enrolled, closes in the second phase with the second archetype enrolled, each with its own schema + skin bridge + lifecycle test. D-098 invariant holds; no new D-number introduced.
+
+Surface is intentionally narrow: Pixel exposes **1 scalar image globally** (`home.hero_image`) — no image-in-dict-row, no nested-dict image, no mutable repeaters. Posts (`posts.*` with `posts[].cover_image`) and `series_detail` stay registry-only, consistent with the **detail-page registry-only policy** now enforced uniformly across 6 archetypes (Lex · Juris · Casa · Villa · Chiara · Pixel). 3-file enrollment (schema + skin + tests) · zero changes to `services.py` / `rendering.py` / `views.py` / `models.py` / `ProjectAsset` / `/assets/upload/` / editor JS / editor CSS.
+
+**Portfolio family CLOSED.** Four families editor-complete now: law (Lex + Juris sequential dedicated-schema · A.10+A.11) · medical-specialist (Cardio+Derm shared-schema · A.9) · real-estate (Casa+Villa staged dedicated-schema · A.12+A.12b) · **portfolio (Chiara+Pixel staged dedicated-schema · A.13+A.13b)**. 10 archetype slugs enrolled · 10 multi-locale enrolled · 11 templates editable end-to-end · catalog 20/20 `published_live` unchanged. 239/239 tests · 834/834 smoke routes · Playwright walk 5-locale green.
+
+### Pixel-only scope decision
+
+The Step-0 planning session confirmed Pixel-only, rejecting three bundling alternatives:
+- Mixing Pixel with another non-portfolio archetype (restaurant-continuation / ecommerce / medical-other) — violates the "one phase = one archetype decision" discipline now 10 phases strong (A.6 → A.13b).
+- Bundling Pixel + opening detail-page-scoped editing — detail-page editing is a horizontal feature affecting 5+ archetypes with per-item content (Lex `notabili` · Juris `insights` · Casa `posts` · Villa `posts` · Chiara `posts` · Pixel `posts`/`series_detail`) and must be designed cross-archetype, not Pixel-special-cased.
+- Bundling Pixel with per-locale image policy change — out-of-scope per D-098, would open a product decision, not a planning tweak.
+
+Keeping A.13b narrow also preserves the mechanical-reuse property: Pixel's schema LOC ended at +510 (well under the 600 soft guardrail), confirming the recipe scales cleanly when the archetype is simpler than the family-opener.
+
+### Step 0 · Planning / audit decisions
+
+Runtime audit ran before any code change:
+- Archetype slug `cinematic-photographer` verified in DNA registry and skin folder `portfolio/cinematic-photographer/` with `.cp-*` CSS prefix (133 hits) · distinct from Chiara `.ed-*` · 38 mature `html[dir="rtl"]` rules already shipped with the published_live skin (Session 39 D-071 Pixel perfection pass).
+- 5 pages: `home` · `serie` (`series_list`) · `serie/<slug>/` (`series_detail`) · `biografia` (`about`) · `pubblicazioni` (`publications`) · `contatti` (`contact`). Series detail is novel but stays registry-only consistent with the detail-page policy. Publications is a new editable page kind not present in Chiara.
+- 4 image scalars in Pixel registry: `home.hero_image` (editable) and 3 `posts[].cover_image` (registry-only). Only `home.hero_image` enters the perimeter.
+- Authored content 5-locale parity PERFECT (154 keys × 5 locales, zero gaps) — same quality class as Villa and Chiara.
+- 10 readonly indexed lists chosen: `home.hero_credit_cells` tuple 4×2 · `home.filmstrip` tuple 4×5 (slug col excluded) · `home.publications` tuple 3×3 · `biografia.kit` tuple 4×5 · `biografia.timeline` tuple 12×3 · `pubblicazioni.press` dict 8×5 · `pubblicazioni.exhibitions` tuple 6×4 · `pubblicazioni.awards` tuple 6×3 · `contatti.channels` tuple 4×3 · `site.exif_footer` tuple 4×2 — the `site.exif_footer` IN/OUT decision was finalized in Step 0 (IN) and not re-litigated mid-implementation.
+
+### Step 1 · Schema + skin bridge + controlled Pixel-out guard removal
+
+- `PIXEL_CINEMATIC_PHOTOGRAPHER_SCHEMA` added in `apps/editor/schema.py` — 8 sidebar groups (brand · hero_home · home_bands · serie_page · biografia_page · pubblicazioni_page · contatti_page · contact_info) · ~140 scalar fields · 1 scalar image `home.hero_image` · 10 readonly indexed lists registered in `STRUCTURED_FIELD_SHAPES["cinematic-photographer"]`.
+- 3 gate registrations: `_ARCHETYPE_BASELINE_TEMPLATE["cinematic-photographer"] = ("pixel-portfolio-fotografico", "it")` · `_ARCHETYPE_SCHEMAS["cinematic-photographer"] = PIXEL_CINEMATIC_PHOTOGRAPHER_SCHEMA` · `"cinematic-photographer"` appended to `_MULTILOCALE_ENABLED_ARCHETYPES`.
+- 3 atomic fixes on `templates/live_templates/portfolio/cinematic-photographer/_base.html` (zero skin surgery beyond the bridge shape): `<title>` honors `site.logo_word|default:brand.brand_name` · `<body>` carries `mw-is-editor-preview` guard class when `preview_project` is truthy · CSS guard block before `</style>` with `.cp-*` selectors suppressing marketplace strip and clamping `.cp-nav .wm` to `max-width: 32ch` · `preview-bridge.js` injected only behind `{% if preview_project %}`.
+- **Controlled Pixel-out guard removal from A.13 Chiara tests** — two `assertNotIn("cinematic-photographer", ...)` assertions removed (registration-time inside `test_a13_chiara_archetype_registered` + execution-time inside `test_a13_chiara_full_multilocale_lifecycle_end_to_end`). Inversion verified by the new contract test `test_a13b_pixel_out_guard_was_removed_from_chiara_tests` so a silent regression on the removal cannot happen.
+- 11 new A.13b contract tests in `apps/projects/tests.py`: archetype registration + out-guard-removal symmetry + schema coverage across 5 pages + translatable distributed paths + global branding universals + positive `get_field_spec` for `home.hero_image` returning `type="image"` + complex-shape exclusion rejecting 23 paths including explicit `posts.0/1/2.cover_image` + structured-list cell globality + canonical 5-locale `get_supported_locales` + ninefold regression (all 9 pre-A.13b archetypes still enrolled) + preview-bridge 3-point integration on `.cp-*` skin.
+- Commit `7eb3179` · `feat: add cinematic-photographer archetype editor schema` · 3 files · +863 / −24.
+
+### Step 2 · Lifecycle HTTP test with 1 scalar image globally
+
+- `test_a13b_pixel_full_multilocale_lifecycle_end_to_end` in `apps/projects/tests.py` · cross-cutting · verifies the full editor-to-preview-to-reopen flow on Pixel:
+  1. 3 autosaves on translatable `home.headline` (IT/EN/FR) → storage `@<locale>:home.headline` × 3
+  2. 1 autosave on global `site.logo_word` via EN → storage plain-keyed (no `@en:` prefix, explicit `assertNotIn`)
+  3. 1 autosave on scalar image `home.hero_image` → storage plain-keyed across all 5 locales (`assertNotIn("@it/en/fr/es/ar:home.hero_image")`)
+  4. `services.publish_project` → status PUBLISHED
+  5. Second user visits each of the 5 public preview locales: IT/EN/FR render their override + global logo + hero image; ES/AR fall back to authored text but still see the global logo + hero image override.
+  6. AR response head carries `<html dir="rtl" lang="ar">` on the `.cp-*` skin.
+  7. Owner reopens the editor per locale; sidebar prefill on `home.headline` matches the buffer for the active locale, ES shows authored-baseline prefill; `site.logo_word` + `home.hero_image` show the universal overrides.
+  8. **Perimeter invariants re-checked end-of-test** — Chiara (`editorial-designer-grid`) still enrolled in `_MULTILOCALE_ENABLED_ARCHETYPES`; 6 `posts.*` paths (incl. `posts.0/1/2.cover_image`) rejected by `validate_key_path` raising `InvalidEditableField`.
+- Commit `cecfa4e` · `test: lock cinematic-photographer lifecycle end to end` · 1 file · +251 LOC · zero production-code touches.
+
+### Step 3 · Browser walk (5-locale · real browser)
+
+Playwright walk on a fresh Pixel draft covered every user-visible surface:
+- Editor mounts with `?lang=it` · 5 language pills with `data-ed-lang` present · label "Lingua attiva" · IT active with `.is-active` class.
+- Sidebar shows **exactly 1 file input** (image widget) → `home.hero_image` label "Hero image · URL" · 107 fields marked `data-ed-translatable="1"` with "per lingua" badge · 211 global fields without translatable marker.
+- All 6 out-of-perimeter path prefixes absent from `data-ed-field`/`data-ed-key` selectors: `posts.`, `serie.filters`, `biografia.statement_paragraphs`, `contatti.form_fields`, `contatti.form_sections`, `contatti.upload_field`.
+- Flush-before-switch verified IT→EN and EN→FR: typed on IT, clicked EN pill → `@it:home.headline` persisted before the preview iframe reloaded; same pattern EN→FR.
+- 3 locale overrides + 2 globals persisted in `content_overrides`: `@it/en/fr:home.headline` + plain-keyed `site.logo_word` + plain-keyed `home.hero_image`.
+- ES pill shows authored-baseline prefill "OBSERVAR LO QUE PERMANECE..." with zero walk-text leak; global logo and hero universal remain visible in the ES iframe.
+- AR iframe: `<html lang="ar" dir="rtl">` on `.cp-*` skin · logo "A13b Pixel Walk Brand" visible in title ("— الفهرس") · hero image override visible universally.
+- Sub-page spot check via `fetch()` on `/preview/{serie,biografia,pubblicazioni,contatti}/` — 4/4 status 200 · global logo universal · zero cross-page text leak · `.cp-*` skin ship everywhere.
+- Publish via `services.publish_project` (second user flow).
+- Second-user public preview across all 5 locales: correct per-locale text on IT/EN/FR, authored fallback on ES/AR, global logo + hero image override visible in every locale, AR `dir="rtl"` on the public iframe.
+- **Explicit verify of detail-page registry-only** — fetch `/preview/serie/{porto-vecchio-trieste,case-di-pietra-puglia,ritratti-del-po}/` for all 3 series records: status 200 · global logo chrome applied · **zero `PixelA13b` walk-text leak** in any detail page (proves `home.headline` override does NOT bleed into series detail) · `.cp-*` skin markers present (series_detail / cp-series).
+
+### Outcome
+
+- **Portfolio family CLOSED** via staged dedicated-schema progression (Chiara A.13 + Pixel A.13b), mirroring real-estate family closure (Casa A.12 + Villa A.12b). Three D-098 family-closure topologies now have ≥2 real precedents: shared-schema single-phase (A.9 specialist) · sequential dedicated-schema (A.10+A.11 law) · staged dedicated-schema (A.12+A.12b real-estate AND A.13+A.13b portfolio).
+- Detail-page registry-only policy **formally enforced uniformly on 6 archetypes** (Lex · Juris · Casa · Villa · Chiara · Pixel). Any future detail-page editing work must be a horizontal feature affecting all 6, not single-archetype special-casing.
+- Pixel is the **single-scalar-image archetype pattern precedent** — confirms that a new archetype enrollment does not need image-in-dict-row or nested-dict scalar image to be complete; mechanical reuse scales downward as cleanly as upward.
+- Chiara-out guard removal / Pixel-in inversion **verified contractually** via `test_a13b_pixel_out_guard_was_removed_from_chiara_tests` — same pattern as Villa's A.12b removal verified by `test_a12b_villa_out_guard_was_removed_from_casa_tests`.
+- Zero new binding decisions · D-096 / D-097 / D-098 unchanged. Only an operational clarification added to D-098's Operationalisation history for Session 68.
+- Acceptance gates post-merge: `python manage.py check` 0 issues · `python manage.py test apps` 239/239 PASS (227 pre-A.13b + 1 lifecycle + 11 contract) · `python smoke_full.py` 834/834 routes HTTP 200.
+- Baseline `phase-integration-baseline-v15` tip: **`1c6b561`** (A.13b merge), pushed to `origin/phase-integration-baseline-v15`.
+
+### Blockers
+
+**None.** No explicitly-deferred debt is pending.
+
+### Exact next step
+
+A.13b closes a family; it does not prescribe the next workstream. Candidates are ranked in `TODO_NEXT.md` — top pick is **restaurant-continuation (Sapore + Brace)** as the highest-leverage family still open, since it would close the restaurant category (already 1/3 enrolled via Gusto). Alternatives: ecommerce (Bottega + Luxe), medical-other (Salute + Benessere + Famiglia · three separate phases), agency-secondary (Aura individual), startup-saas (Elevate individual). MEMORY.md maintenance mini-phase remains queued as a separate housekeeping task (not bundled with an enrollment).
+
+---
+
 ## Session 57b — Phase A.2.1 · Editor UX Corrective Micro-Fix (2026-04-16)
 
 **Summary.** Micro-fix on top of Session 57's Phase A.2 shell. Nine customer-reported product gaps closed without any perimeter expansion: (1) preview top-strip (marketplace bar + duplicate lang switcher) hidden in editor mode; (2) language switcher moved into the sidebar; (3) image widget shipped with thumbnail + "Carica file" data-URL upload + clear; (4) character counters with near-limit / at-limit colouring; (5) highlight reliability — pulse animation, state preserved across autosave reloads, idle-clear moved out of iframe into editor (field-focus-aware); (6) compare slider now scroll-syncs the baseline and edited iframes; (7) preview canvas widened (sidebar 380→340px, topbar 56→52px, stage padding 20→14px); (8) schema beyond home — studio, manifesto and contatti pages now use `subgroups` structure with ~12 additional editable fields (essay heading + pullquote, partners intro, timeline intro, principles intro, promise intro, form heading); (9) overflow guardrails in the skin's `_base.html` (`overflow-wrap: anywhere` on hero headlines, nav logo clamped to 32ch). 27/27 tests green (4 new pre-existing tests still green after `iter_editable_fields` refactor to handle subgroups). Browser-authenticated Playwright re-validation end-to-end green.
