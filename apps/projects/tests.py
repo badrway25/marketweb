@@ -3259,6 +3259,348 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A12b Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.13 · Chiara (editorial-designer-grid · portfolio family)
+    # ------------------------------------------------------------------
+
+    def test_a13_chiara_archetype_registered(self):
+        """``editorial-designer-grid`` joins the schema + baseline +
+        gate registries as 9th enrolled archetype, opening the portfolio
+        family. Pixel (`cinematic-photographer`) stays explicitly OUT —
+        guard mirror of the A.12 Villa-out pattern, will be removed in
+        A.13b together with Pixel's own registrations.
+
+        All 8 previous archetypes (incl. Casa + Villa from real-estate
+        family closure) must remain enrolled — A.13 is additive.
+        """
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("editorial-designer-grid", _ARCHETYPE_SCHEMAS)
+        self.assertEqual(
+            _ARCHETYPE_BASELINE_TEMPLATE["editorial-designer-grid"],
+            ("chiara-portfolio-creativo", "it"),
+        )
+        self.assertIn("editorial-designer-grid", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("editorial-designer-grid"))
+        # Pixel-out guard — explicit assertion that Pixel stays out
+        # until A.13b. Removed in A.13b together with Pixel's own
+        # registrations (registration-time + lifecycle runtime).
+        self.assertNotIn("cinematic-photographer", _ARCHETYPE_SCHEMAS,
+                         "Pixel must stay out of _ARCHETYPE_SCHEMAS until A.13b")
+        self.assertNotIn("cinematic-photographer", _MULTILOCALE_ENABLED_ARCHETYPES,
+                         "Pixel must stay out of _MULTILOCALE_ENABLED_ARCHETYPES until A.13b")
+        # All 8 pre-existing archetypes still enrolled — A.13 is additive.
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist", "classic-gold",
+                    "modern-transparent", "mass-market",
+                    "ultra-luxury-cinematic"):
+            self.assertIn(arc, _ARCHETYPE_SCHEMAS,
+                          f"{arc} must remain enrolled after A.13 Chiara joins")
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} must keep multi-locale gate after A.13")
+
+    def test_a13_chiara_schema_shape_covers_all_pages(self):
+        """The Chiara schema must surface groups for every Chiara page
+        slug (home + studio + lavoro + processo + contatti) plus
+        chrome-level groups (page='*'). The novel `processo` page kind
+        is just a string identifier — no view dispatch on it."""
+        groups = iter_groups("editorial-designer-grid")
+        self.assertGreaterEqual(len(groups), 8)
+        pages = {g.get("page") for g in groups}
+        for slug in ("*", "home", "studio", "lavoro", "processo", "contatti"):
+            self.assertIn(slug, pages,
+                          f"Chiara schema missing page slug {slug!r}")
+
+    def test_a13_chiara_is_translatable_text_fields(self):
+        """Scalar copy fields distributed across every Chiara page +
+        chrome. Uses only paths present on Chiara so no sibling schema
+        drifts into this test."""
+        from apps.editor.schema import is_translatable
+        arc = "editorial-designer-grid"
+        distributed_paths = (
+            # home hero + ledger
+            "home.headline",
+            "home.intro",
+            "home.ledger_heading",
+            "home.featured_works.heading",
+            "home.commissions_heading",
+            "home.cta_heading",
+            # studio
+            "studio.headline",
+            "studio.founder.bio",
+            "studio.team_intro",
+            "studio.principles_intro",
+            # lavoro
+            "lavoro.headline",
+            "lavoro.ledger_intro",
+            "lavoro.cta_heading",
+            # processo (novel page kind)
+            "processo.headline",
+            "processo.process_heading",
+            "processo.capabilities_intro",
+            # contatti
+            "contatti.headline",
+            "contatti.form_consent",
+            "contatti.studio_address",
+            "contatti.footnote",
+            # chrome site.*
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+            "site.foot_studio",
+            "site.foot_clients",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on editorial-designer-grid",
+            )
+
+    def test_a13_chiara_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Chiara — same
+        contract as every previously-enrolled archetype."""
+        from apps.editor.schema import is_translatable
+        arc = "editorial-designer-grid"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on Chiara",
+            )
+
+    def test_a13_chiara_image_cols_in_dict_shapes_exposed(self):
+        """USER-IMPOSED GUARDRAIL · image cols are IN the perimeter
+        (positive mirror of zero-image guards on Juris/Casa).
+
+        Chiara is the THIRD precedent of image-in-dict-row exposure
+        after Vertex `studio.partners[].portrait` (A.3a/A.4) and Villa
+        `home.signature/territories/advisors[].image` (A.12b). Chiara's
+        case has the additional novelty of a **deep path 2 levels**
+        through the `home.featured_works` parent dict:
+        `home.featured_works.items[].image`.
+
+        Triple verification per user request:
+          (1) Positive `get_field_spec` for the deep image path
+          (2) Shape-level check: the image col exists in the cols
+              list of the indexed shape
+          (3) Plus the scalar nested-dict image
+              `studio.founder.image` (Vertex `home.cover.image`
+              precedent) returns spec with type=image.
+        """
+        from apps.editor.schema import get_field_spec, get_list_shape
+        arc = "editorial-designer-grid"
+
+        # (1) Scalar image field nested inside parent dict
+        spec_founder = get_field_spec(arc, "studio.founder.image")
+        self.assertIsNotNone(spec_founder,
+                             "studio.founder.image must be reachable via get_field_spec")
+        self.assertEqual(
+            spec_founder.get("type"), "image",
+            f"studio.founder.image must be type=image (got {spec_founder.get('type')!r})",
+        )
+
+        # (2) Image cell at deep path 2 levels (positive get_field_spec)
+        deep_paths = (
+            "home.featured_works.items.0.image",
+            "home.featured_works.items.3.image",  # last row
+        )
+        for path in deep_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec,
+                f"deep image cell {path} must be reachable via get_field_spec",
+            )
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} cell spec must be type=image (got {spec.get('type')!r})",
+            )
+
+        # (3) Shape-level check: the indexed list `home.featured_works.items`
+        # exists in STRUCTURED_FIELD_SHAPES and includes the `image` col
+        # in its cols list with type=image.
+        shape = get_list_shape(arc, "home.featured_works.items")
+        self.assertIsNotNone(
+            shape,
+            "home.featured_works.items shape must be registered in STRUCTURED_FIELD_SHAPES",
+        )
+        cols_by_name = {name: spec for name, spec in (shape.get("cols") or [])}
+        self.assertIn(
+            "image", cols_by_name,
+            "home.featured_works.items cols must include image col",
+        )
+        self.assertEqual(
+            cols_by_name["image"].get("type"), "image",
+            "home.featured_works.items.image col must be type=image",
+        )
+
+    def test_a13_chiara_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL · complex-shape exclusion test.
+
+        Five categories of complex registry shapes must stay OUT of
+        Chiara's editor perimeter:
+
+        (1) Per-project `posts` entries (3 project detail records,
+            including `posts[].sections` rich nested body) — DETAIL-PAGE
+            EDITING IS OUT OF A.13 SCOPE per the consistent perimeter
+            policy applied to Lex `notabili` / Juris `insights` / Casa
+            `posts` / Villa `posts`. This is a **coherent perimeter
+            decision**, not a missing feature.
+        (2) Nested list-of-str inside dict rows:
+              - `studio.founder.credentials` (6 credentials list inside
+                the founder dict)
+              - `processo.capabilities_full[].scope` (capability scope
+                bullets · same exclusion policy as Juris `deliverables`)
+        (3) Flat list-of-str containers:
+              - `home.clients` (8 client wordmarks · same as Juris
+                `trust_logos` · Casa `popular_tags`)
+              - `lavoro.filters` (6 filter pills · same as Casa
+                `immobili.filters`)
+        (4) Form structure blocks:
+              - `contatti.form_fields` + `contatti.form_sections`
+                + `contatti.upload_field`
+
+        Every path listed must fail `validate_key_path`.
+        """
+        from apps.editor.schema import validate_key_path
+        arc = "editorial-designer-grid"
+        validate_rejects = [
+            # (1) per-project posts entries (deep paths must reject)
+            "posts",
+            "posts.0.title",
+            "posts.0.lead",
+            "posts.0.sections",
+            "posts.0.summary",
+            "posts.0.deliverables",
+            "posts.0.credits",
+            "posts.2.next_label",
+            # (2) nested list-of-str inside dict rows
+            "studio.founder.credentials",
+            "studio.founder.credentials.0",
+            "processo.capabilities_full.0.scope",
+            "processo.capabilities_full.0.scope.0",
+            # (3) flat list-of-str containers
+            "home.clients",
+            "home.clients.0",
+            "lavoro.filters",
+            "lavoro.filters.0",
+            # (4) form structure blocks
+            "contatti.form_fields",
+            "contatti.form_fields.0.name",
+            "contatti.form_sections",
+            "contatti.form_sections.0.title",
+            "contatti.upload_field",
+            "contatti.upload_field.label",
+        ]
+        for path in validate_rejects:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"{path} MUST be rejected by validate_key_path on editorial-designer-grid",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a13_chiara_structured_list_cells_are_global(self):
+        """Text + image cells on Chiara's 11 readonly indexed lists
+        stay global at cell level (image override stays universal,
+        never per-locale)."""
+        from apps.editor.schema import is_translatable
+        arc = "editorial-designer-grid"
+        cell_paths = (
+            # text cells
+            "home.ledger_rows.0.title",
+            "home.ledger_rows.5.year",
+            "home.capabilities.0.title",
+            "home.commissions.2.blurb",
+            "home.press.0.year",
+            "home.press.2.honor",
+            "studio.team.0.name",
+            "studio.team.5.bio",
+            "studio.principles.0.title",
+            "studio.press_full.0.outlet",
+            "studio.press_full.7.work",
+            "processo.process.0.title",
+            "processo.process.4.body",
+            "processo.capabilities_full.0.title",
+            "contatti.channels.0.label",
+            # image cells (deep path 2 levels) — image overrides global too
+            "home.featured_works.items.0.image",
+            "home.featured_works.items.3.image",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Chiara",
+            )
+
+    def test_a13_chiara_supported_locales_returns_canonical_five(self):
+        """Chiara ships the canonical 5-locale set. Step-0 audit
+        confirmed PERFECT parity (164 keys × 5 locales · zero gaps)
+        plus the Session 37 D-070 Chiara perfection pass already
+        ships AR RTL CSS block + Amiri/Noto Kufi font load."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("editorial-designer-grid"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a13_octuple_regression_after_chiara_joins(self):
+        """Regression guard: adding Chiara to gate + schemas must not
+        disturb ANY of the eight pre-existing enrollments (Vertex +
+        Pragma + Gusto + specialist + classic-gold + modern-transparent
+        + mass-market + ultra-luxury-cinematic)."""
+        from apps.editor.schema import is_translatable, supported_locales
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist", "classic-gold",
+                    "modern-transparent", "mass-market",
+                    "ultra-luxury-cinematic"):
+            self.assertTrue(
+                is_translatable(arc, "home.headline"),
+                f"{arc} home.headline must stay translatable",
+            )
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must keep the canonical 5-locale set",
+            )
+
+    def test_a13_chiara_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.8/A.9/A.10/A.11/A.12/A.12b integration
+        guardrail — the Chiara ``editorial-designer-grid/_base.html``
+        must integrate the three bridge points together on the `.ed-*`
+        skin: (1) preview-bridge.js conditional on ``preview_project``,
+        (2) ``<title>`` honors ``site.logo_word``, (3) ``<body>``
+        carries the ``mw-is-editor-preview`` guard class when inside
+        the editor."""
+        chiara = WebTemplate.objects.get(slug="chiara-portfolio-creativo")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/portfolio/chiara-portfolio-creativo/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=chiara)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A13 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/portfolio/chiara-portfolio-creativo/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A13 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:

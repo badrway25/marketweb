@@ -1877,6 +1877,338 @@ VILLA_ULTRA_LUXURY_CINEMATIC_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# A.13 · Chiara editorial-designer-grid — 9th enrolled editor archetype,
+# first template of the portfolio family. Pixel (cinematic-photographer)
+# stays explicitly OUT until the dedicated A.13b phase. The two portfolio
+# templates ship distinct archetypes + distinct skin folders + only
+# `home`+`contatti` page-slug overlap (2/5) — same divergence pattern as
+# law (Lex/Juris) and real-estate (Casa/Villa). Shared-schema impossible;
+# closure follows staged dedicated-schema progression like A.12+A.12b.
+#
+# Skin uses `.ed-*` selectors (chrome `.ed-nav`/`.ed-foot`, home
+# sections `.ed-hero`/`.ed-projects`/`.ed-press`/`.ed-clients`/etc.,
+# studio sections `.ed-founder`/`.ed-team`/`.ed-principles`/etc.) — note
+# the prefix collides with the editor sidebar's own `.ed-*` namespace,
+# but the two live in DIFFERENT DOM trees (editor shell vs preview
+# iframe) so there is no functional conflict; just be aware when adding
+# CSS guard rules in `_base.html`.
+#
+# Shape contract notes (Step-0 audit verified):
+#   • 5 pages: home / studio (about) / lavoro (project_list) / processo
+#     (NOVEL `process` kind, just a string identifier — no view dispatch)
+#     / contatti (contact). 5-locale parity PERFECT (164 keys × 5).
+#   • Skin ships 46 `html[dir="rtl"]` rules (highest count of any enrolled
+#     archetype, beats Villa's 34) — RTL mature thanks to Session 37
+#     D-070 Chiara perfection pass.
+#   • 1 SCALAR image field nested inside a parent dict:
+#     `studio.founder.image` — same shape as Vertex `home.cover.image`
+#     (production since A.1).
+#   • 1 list-of-dict path with image col at deep path:
+#     `home.featured_works.items[].image` × 4 rows (path is 2 levels
+#     deep through `home.featured_works` parent dict). Third precedent
+#     of image-in-dict-row after Vertex `studio.partners[].portrait`
+#     (A.3a/A.4) and Villa `home.signature/territories/advisors[].image`
+#     (A.12b). `_resolve_path` walks any depth — verified.
+#   • Total editable image surface: 5 (1 scalar + 4 image cells).
+#   • Complex shapes explicitly KEPT OUT of the perimeter:
+#       - `studio.founder.credentials` (nested list-of-str, 6 items)
+#       - `processo.capabilities_full[].scope` (nested list-of-str
+#         inside dict rows · same exclusion policy as Juris
+#         `deliverables` and Casa `posts`)
+#       - Flat list-of-str: `home.clients` (8 wordmarks · same as Juris
+#         `trust_logos`) · `lavoro.filters` (6 filter pills · same as
+#         Casa `immobili.filters`)
+#       - Form structure blocks: `contatti.form_fields` +
+#         `contatti.form_sections` + `contatti.upload_field`
+#       - **`posts` list (3 project detail records)** — DETAIL-PAGE
+#         editing is NOT in A.13 scope. This is a coherent perimeter
+#         decision aligned with Lex `notabili`, Juris `insights`, Casa
+#         `posts`, Villa `posts` — per-item content stays registry-only
+#         across every enrolled archetype. Detail-page editing is a
+#         horizontal feature deferred to a future phase (not bundled
+#         into enrollment).
+
+CHIARA_EDITORIAL_DESIGNER_GRID_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".ed-nav, .ed-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "studio", "tagline", "wordmark"],
+        "help": "Nome studio, iniziale crest, logo breve e tagline (status badge nav).",
+        "fields": [
+            ("site.logo_word",    {"label": "Nome studio", "type": "text", "max_length": 60,
+                                    "placeholder": "Chiara Velluti"}),
+            ("site.logo_initial", {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.logo_short",   {"label": "Logo · forma breve", "type": "text", "max_length": 8}),
+            ("site.tag",          {"label": "Tagline (status badge nav)", "type": "text", "max_length": 120}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".ed-hero, .ed-hero-card",
+        "page": "home",
+        "keywords": ["hero", "headline", "eyebrow", "intro", "cta", "ledger", "registro"],
+        "help": "Primo scroll della home: eyebrow, headline, intro, CTA principali, ledger meta (popola .ed-hero-card).",
+        "subgroups": [
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",        {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("home.headline",       {"label": "Headline", "type": "richtext", "max_length": 220,
+                                          "help": "Consentiti i tag <em> per gli italici."}),
+                ("home.intro",          {"label": "Intro", "type": "textarea", "max_length": 600}),
+                ("home.primary_cta",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.primary_href",   {"label": "CTA primaria · destinazione", "type": "select",
+                                          "choices": ["home", "studio", "lavoro", "processo", "contatti"]}),
+                ("home.secondary_cta",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.secondary_href", {"label": "CTA secondaria · destinazione", "type": "select",
+                                          "choices": ["home", "studio", "lavoro", "processo", "contatti"]}),
+            ]},
+            {"label": "Ledger (popola hero card)", "fields": [
+                ("home.ledger_label",          {"label": "Ledger · eyebrow", "type": "text", "max_length": 80}),
+                ("home.ledger_heading",        {"label": "Ledger · titolo", "type": "richtext", "max_length": 220}),
+                ("home.ledger_intro",          {"label": "Ledger · intro", "type": "textarea", "max_length": 500}),
+                ("home.ledger_count_prefix",   {"label": "Ledger · prefisso conteggio", "type": "text", "max_length": 8}),
+                ("home.ledger_count_unit",     {"label": "Ledger · unità conteggio", "type": "text", "max_length": 24}),
+                ("home.ledger_full_link_label",{"label": "Ledger · link archivio · etichetta", "type": "text", "max_length": 60}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".ed-capabilities, .ed-projects, .ed-clients, .ed-press, .ed-commissions, .ed-cta",
+        "page": "home",
+        "keywords": ["capabilities", "projects", "clients", "press", "commissions", "cta finale"],
+        "help": "Eyebrow, titoli, intro delle fasce home (capabilities, featured projects, clients, press, commissions, CTA finale).",
+        "subgroups": [
+            {"label": "Capabilities · intestazione", "fields": [
+                ("home.capabilities_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.capabilities_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.capabilities_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Featured works · intestazione (parent dict scalars)", "fields": [
+                ("home.featured_works.label",       {"label": "Featured · eyebrow", "type": "text", "max_length": 80}),
+                ("home.featured_works.heading",     {"label": "Featured · titolo", "type": "richtext", "max_length": 220}),
+                ("home.featured_works.intro",       {"label": "Featured · intro", "type": "textarea", "max_length": 500}),
+                ("home.featured_works.footer_link", {"label": "Featured · footer link", "type": "text", "max_length": 80}),
+                ("home.featured_works.footer_href", {"label": "Featured · footer destinazione", "type": "select",
+                                                       "choices": ["home", "studio", "lavoro", "processo", "contatti"]}),
+            ]},
+            {"label": "Clients · intestazione", "fields": [
+                ("home.clients_label",        {"label": "Eyebrow", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Press · intestazione", "fields": [
+                ("home.press_label",          {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.press_heading",        {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Commissions · intestazione", "fields": [
+                ("home.commissions_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.commissions_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.commissions_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("home.cta_label",            {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.cta_heading",          {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.cta_intro",            {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.cta_primary",          {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_primary_href",     {"label": "CTA primaria · destinazione", "type": "select",
+                                                 "choices": ["home", "studio", "lavoro", "processo", "contatti"]}),
+                ("home.cta_secondary",        {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_secondary_href",   {"label": "CTA secondaria · destinazione", "type": "select",
+                                                 "choices": ["home", "studio", "lavoro", "processo", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "studio_page",
+        "label": "Pagina Studio",
+        "icon": "bi-building",
+        "region": ".ed-lead, .ed-founder, .ed-team, .ed-principles, .ed-press-ledger, .ed-cta-about",
+        "page": "studio",
+        "keywords": ["studio", "about", "founder", "team", "principles", "press", "credentials"],
+        "help": "Pagina studio: lead, founder block (con portrait), team intro, principles intro, press intro, CTA finale.",
+        "subgroups": [
+            {"label": "Intestazione (lead)", "fields": [
+                ("studio.eyebrow",            {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("studio.headline",           {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("studio.intro",              {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Founder block · intestazione", "fields": [
+                ("studio.founder_label",      {"label": "Founder · eyebrow", "type": "text", "max_length": 80}),
+                ("studio.founder_heading",    {"label": "Founder · titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Founder · scalar block (incl. portrait)", "fields": [
+                ("studio.founder.name",       {"label": "Founder · nome", "type": "text", "max_length": 80}),
+                ("studio.founder.role",       {"label": "Founder · ruolo", "type": "text", "max_length": 120}),
+                ("studio.founder.bio",        {"label": "Founder · biografia", "type": "textarea", "max_length": 800}),
+                ("studio.founder.image",      {"label": "Founder · ritratto (URL)", "type": "image", "max_length": 400}),
+                # `studio.founder.credentials` (list-of-str) intentionally
+                # omitted — complex-shape exclusion (registry-only).
+            ]},
+            {"label": "Team · intestazione", "fields": [
+                ("studio.team_label",         {"label": "Team · eyebrow", "type": "text", "max_length": 80}),
+                ("studio.team_heading",       {"label": "Team · titolo", "type": "richtext", "max_length": 220}),
+                ("studio.team_intro",         {"label": "Team · intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Principles · intestazione", "fields": [
+                ("studio.principles_label",   {"label": "Principles · eyebrow", "type": "text", "max_length": 80}),
+                ("studio.principles_heading", {"label": "Principles · titolo", "type": "richtext", "max_length": 220}),
+                ("studio.principles_intro",   {"label": "Principles · intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Press · intestazione", "fields": [
+                ("studio.press_label",        {"label": "Press · eyebrow", "type": "text", "max_length": 80}),
+                ("studio.press_heading",      {"label": "Press · titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("studio.cta_heading",        {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("studio.cta_intro",          {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("studio.cta_primary",        {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("studio.cta_primary_href",   {"label": "CTA · destinazione", "type": "select",
+                                                 "choices": ["home", "studio", "lavoro", "processo", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "lavoro_page",
+        "label": "Pagina Lavoro (project_list)",
+        "icon": "bi-grid-3x3",
+        "region": ".ed-section",
+        "page": "lavoro",
+        "keywords": ["lavoro", "projects", "project_list", "filtri", "ledger", "row labels", "dossier"],
+        "help": "Pagina elenco lavori: intestazione + label filtri + ledger meta + row/dossier label tile + CTA. I 3 progetti (project detail) restano registry-only — la modifica per-progetto è una feature orizzontale fuori dalla A.13.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("lavoro.eyebrow",                 {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("lavoro.headline",                {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("lavoro.intro",                   {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ]},
+            {"label": "Filter + ledger", "fields": [
+                ("lavoro.filter_label",            {"label": "Filtro · etichetta", "type": "text", "max_length": 40}),
+                ("lavoro.ledger_label",            {"label": "Ledger · eyebrow", "type": "text", "max_length": 80}),
+                ("lavoro.ledger_intro",            {"label": "Ledger · intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Row meta · etichette tile", "fields": [
+                ("lavoro.row_year_label",          {"label": "Row · etichetta Anno", "type": "text", "max_length": 40}),
+                ("lavoro.row_discipline_label",   {"label": "Row · etichetta Disciplina", "type": "text", "max_length": 40}),
+                ("lavoro.row_duration_label",     {"label": "Row · etichetta Durata", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Dossier (per-detail labels — riusati nel detail page registry-only)", "fields": [
+                ("lavoro.dossier_summary_label",        {"label": "Dossier · etichetta Sommario", "type": "text", "max_length": 60}),
+                ("lavoro.dossier_deliverables_label",   {"label": "Dossier · etichetta Deliverables (col)", "type": "text", "max_length": 60}),
+                ("lavoro.dossier_deliverables_heading", {"label": "Dossier · titolo Deliverables", "type": "text", "max_length": 60}),
+                ("lavoro.dossier_meta_year_label",      {"label": "Dossier meta · etichetta Anno", "type": "text", "max_length": 40}),
+                ("lavoro.dossier_meta_discipline_label",{"label": "Dossier meta · etichetta Disciplina", "type": "text", "max_length": 40}),
+                ("lavoro.dossier_meta_duration_label",  {"label": "Dossier meta · etichetta Durata", "type": "text", "max_length": 40}),
+                ("lavoro.dossier_meta_team_label",      {"label": "Dossier meta · etichetta Team", "type": "text", "max_length": 40}),
+                ("lavoro.dossier_colophon_label",       {"label": "Dossier · etichetta Colophon", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("lavoro.cta_label",         {"label": "CTA finale · eyebrow", "type": "text", "max_length": 80}),
+                ("lavoro.cta_heading",       {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+                ("lavoro.cta_intro",         {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+                ("lavoro.cta_primary",       {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("lavoro.cta_primary_href",  {"label": "CTA · destinazione", "type": "select",
+                                                "choices": ["home", "studio", "lavoro", "processo", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "processo_page",
+        "label": "Pagina Processo (novel kind)",
+        "icon": "bi-list-ol",
+        "region": ".ed-section",
+        "page": "processo",
+        "keywords": ["processo", "process", "fasi", "capabilities"],
+        "help": "Pagina processo (novel `process` kind, dispatchato come stringa registro · nessun view layer custom): intestazione, intro processo, intro capabilities, label step.",
+        "fields": [
+            ("processo.eyebrow",                 {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("processo.headline",                {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("processo.intro",                   {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ("processo.process_label",           {"label": "Processo · eyebrow", "type": "text", "max_length": 80}),
+            ("processo.process_heading",         {"label": "Processo · titolo", "type": "richtext", "max_length": 220}),
+            ("processo.capabilities_label",      {"label": "Capabilities · eyebrow", "type": "text", "max_length": 80}),
+            ("processo.capabilities_heading",    {"label": "Capabilities · titolo", "type": "richtext", "max_length": 220}),
+            ("processo.capabilities_intro",      {"label": "Capabilities · intro", "type": "textarea", "max_length": 500}),
+            ("processo.capability_duration_label",{"label": "Capability · etichetta Durata", "type": "text", "max_length": 40}),
+            ("processo.step_index_prefix",       {"label": "Step · prefisso indice", "type": "text", "max_length": 8}),
+            ("processo.step_index_separator",    {"label": "Step · separatore indice", "type": "text", "max_length": 4}),
+            ("processo.step_sequence_label",     {"label": "Step · etichetta sequenza", "type": "text", "max_length": 40}),
+            ("processo.cta_heading",             {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("processo.cta_intro",               {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("processo.cta_primary",             {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ("processo.cta_primary_href",        {"label": "CTA · destinazione", "type": "select",
+                                                   "choices": ["home", "studio", "lavoro", "processo", "contatti"]}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-telephone",
+        "region": ".ed-section",
+        "page": "contatti",
+        "keywords": ["contatti", "contact", "form", "canali", "studio", "indirizzo"],
+        "help": "Pagina contatti: copy, label form (struttura form + upload restano registry-only), studio address block.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("contatti.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("contatti.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("contatti.intro",            {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Form · copy + submit", "fields": [
+                ("contatti.form_label",       {"label": "Form · eyebrow", "type": "text", "max_length": 60}),
+                ("contatti.form_heading",     {"label": "Form · titolo", "type": "richtext", "max_length": 220}),
+                ("contatti.form_intro",       {"label": "Form · intro", "type": "textarea", "max_length": 500}),
+                ("contatti.form_submit_label",{"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+                ("contatti.form_submit_note", {"label": "Form · nota submit", "type": "textarea", "max_length": 400}),
+                ("contatti.form_consent",     {"label": "Form · testo consenso", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Channels · intestazione", "fields": [
+                ("contatti.channels_label",   {"label": "Channels · eyebrow", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Studio address block", "fields": [
+                ("contatti.studio_label",         {"label": "Studio · eyebrow", "type": "text", "max_length": 40}),
+                ("contatti.studio_address",       {"label": "Studio · indirizzo", "type": "text", "max_length": 120}),
+                ("contatti.studio_address_label", {"label": "Studio · etichetta indirizzo", "type": "text", "max_length": 40}),
+                ("contatti.studio_area",          {"label": "Studio · area", "type": "text", "max_length": 120}),
+                ("contatti.studio_area_label",    {"label": "Studio · etichetta area", "type": "text", "max_length": 40}),
+                ("contatti.studio_metro",         {"label": "Studio · metro", "type": "text", "max_length": 100}),
+                ("contatti.studio_metro_label",   {"label": "Studio · etichetta metro", "type": "text", "max_length": 40}),
+                ("contatti.studio_hours",         {"label": "Studio · orari", "type": "text", "max_length": 120}),
+                ("contatti.studio_hours_label",   {"label": "Studio · etichetta orari", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Footnote", "fields": [
+                ("contatti.footnote",         {"label": "Footnote piè pagina", "type": "textarea", "max_length": 500}),
+            ]},
+        ],
+    },
+    {
+        "id": "contact_info",
+        "label": "Contatti · footer",
+        "icon": "bi-telephone-forward",
+        "region": ".ed-foot",
+        "page": "*",
+        "keywords": ["footer", "phone", "email", "indirizzo", "license", "clients"],
+        "help": "Dati di contatto visibili in footer + intro voce dello studio + titoli sezioni footer.",
+        "fields": [
+            ("site.phone",         {"label": "Telefono", "type": "text", "max_length": 80}),
+            ("site.email",         {"label": "Email", "type": "text", "max_length": 80}),
+            ("site.address",       {"label": "Indirizzo sede primaria", "type": "text", "max_length": 160}),
+            ("site.hours_compact", {"label": "Orari sintetici", "type": "text", "max_length": 120}),
+            ("site.license",       {"label": "Licenza / P.IVA", "type": "text", "max_length": 200}),
+            ("site.footer_intro",  {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.foot_studio",   {"label": "Footer · titolo Studio", "type": "text", "max_length": 40}),
+            ("site.foot_pages",    {"label": "Footer · titolo Pagine", "type": "text", "max_length": 40}),
+            ("site.foot_contact",  {"label": "Footer · titolo Contatti", "type": "text", "max_length": 40}),
+            ("site.foot_clients",  {"label": "Footer · titolo Clients", "type": "text", "max_length": 40}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -3552,6 +3884,184 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # A.13 · Chiara editorial-designer-grid — 11 readonly indexed lists.
+    # `home.featured_works.items` is the **third precedent** of image-in-
+    # dict-row exposure (after Vertex `studio.partners[].portrait` and
+    # Villa `home.signature/territories/advisors[].image`). Path is 2
+    # levels deep through the `home.featured_works` parent dict, but
+    # `_resolve_path` walks any depth — verified Step-0. No service-layer
+    # / rendering / widget changes required. Posts list (3 project detail
+    # records) stays registry-only — detail-page editing is OUT of A.13
+    # scope, consistent with Lex/Juris/Casa/Villa per-item content
+    # policy. Flat list-of-str (`home.clients`, `lavoro.filters`) +
+    # nested list-of-str (`studio.founder.credentials`,
+    # `processo.capabilities_full[].scope`) + form structure
+    # (`contatti.form_fields` + `form_sections` + `upload_field`) all
+    # excluded via complex-shape policy.
+    "editorial-designer-grid": {
+        "home.ledger_rows": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Ledger rows",
+            "icon": "bi-list-ol",
+            "region": ".ed-hero-card",
+            "keywords": ["ledger", "registro", "lavori", "rows"],
+            "tuple_order": ["num", "title", "category", "year", "medium"],
+            "cols": [
+                ("num",      {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",    {"label": "Titolo lavoro", "type": "text", "max_length": 120}),
+                ("category", {"label": "Categoria", "type": "text", "max_length": 80}),
+                ("year",     {"label": "Anno", "type": "text", "max_length": 16}),
+                ("medium",   {"label": "Medium / spec", "type": "text", "max_length": 200}),
+            ],
+        },
+        "home.capabilities": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Capabilities",
+            "icon": "bi-grid-3x3-gap",
+            "region": ".ed-capabilities",
+            "keywords": ["capabilities", "discipline", "competenze"],
+            "tuple_order": ["title", "body"],
+            "cols": [
+                ("title", {"label": "Titolo capability", "type": "text", "max_length": 80}),
+                ("body",  {"label": "Body", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "home.featured_works.items": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Featured works (4 items con image)",
+            "icon": "bi-images",
+            "region": ".ed-projects",
+            "keywords": ["featured", "projects", "lavori", "image"],
+            "cols": [
+                ("year",       {"label": "Anno", "type": "text", "max_length": 16}),
+                ("discipline", {"label": "Disciplina", "type": "text", "max_length": 80}),
+                ("title",      {"label": "Titolo progetto", "type": "text", "max_length": 120}),
+                ("blurb",      {"label": "Blurb", "type": "textarea", "max_length": 400}),
+                ("image",      {"label": "Cover image · URL", "type": "image", "max_length": 400}),
+                # `href` (link slug) intenzionalmente omesso: stays
+                # registry-only · structural reference, not editorial copy.
+            ],
+        },
+        "home.press": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Press (3 entries)",
+            "icon": "bi-newspaper",
+            "region": ".ed-press",
+            "keywords": ["press", "stampa", "honor", "award"],
+            "cols": [
+                ("year",  {"label": "Anno", "type": "text", "max_length": 16}),
+                ("honor", {"label": "Onorificenza", "type": "text", "max_length": 120}),
+                ("work",  {"label": "Lavoro citato", "type": "text", "max_length": 120}),
+                ("note",  {"label": "Nota", "type": "text", "max_length": 200}),
+            ],
+        },
+        "home.commissions": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Commissions",
+            "icon": "bi-briefcase",
+            "region": ".ed-commissions",
+            "keywords": ["commissions", "incarichi", "tipologie"],
+            "tuple_order": ["title", "blurb"],
+            "cols": [
+                ("title", {"label": "Titolo commissione", "type": "text", "max_length": 120}),
+                ("blurb", {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "studio.team": {
+            "kind": "dict",
+            "page": "studio",
+            "label": "Studio · Team (6 persone)",
+            "icon": "bi-people",
+            "region": ".ed-team",
+            "keywords": ["team", "studio", "people"],
+            "cols": [
+                ("name", {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role", {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("bio",  {"label": "Biografia breve", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "studio.principles": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Principles (4)",
+            "icon": "bi-list-check",
+            "region": ".ed-principles",
+            "keywords": ["principles", "principi", "valori"],
+            "tuple_order": ["num", "title", "body"],
+            "cols": [
+                ("num",   {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo principio", "type": "text", "max_length": 120}),
+                ("body",  {"label": "Body", "type": "textarea", "max_length": 600}),
+            ],
+        },
+        "studio.press_full": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Press completa (8)",
+            "icon": "bi-journal-text",
+            "region": ".ed-press-ledger",
+            "keywords": ["press", "stampa", "completa", "press ledger"],
+            "tuple_order": ["year", "outlet", "category", "work"],
+            "cols": [
+                ("year",     {"label": "Anno", "type": "text", "max_length": 16}),
+                ("outlet",   {"label": "Outlet", "type": "text", "max_length": 80}),
+                ("category", {"label": "Categoria", "type": "text", "max_length": 100}),
+                ("work",     {"label": "Lavoro citato", "type": "text", "max_length": 200}),
+            ],
+        },
+        "processo.process": {
+            "kind": "tuple",
+            "page": "processo",
+            "label": "Processo · Steps (5)",
+            "icon": "bi-list-ol",
+            "region": ".ed-section",
+            "keywords": ["processo", "steps", "fasi"],
+            "tuple_order": ["num", "title", "body", "deliverable_label", "deliverable_value"],
+            "cols": [
+                ("num",                {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",              {"label": "Titolo step", "type": "text", "max_length": 120}),
+                ("body",               {"label": "Body", "type": "textarea", "max_length": 700}),
+                ("deliverable_label",  {"label": "Deliverable · etichetta", "type": "text", "max_length": 60}),
+                ("deliverable_value",  {"label": "Deliverable · valore", "type": "text", "max_length": 200}),
+            ],
+        },
+        "processo.capabilities_full": {
+            "kind": "dict",
+            "page": "processo",
+            "label": "Processo · Capabilities full (5)",
+            "icon": "bi-gem",
+            "region": ".ed-section",
+            "keywords": ["capabilities", "competenze", "completo"],
+            "cols": [
+                ("num",      {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",    {"label": "Titolo capability", "type": "text", "max_length": 120}),
+                ("blurb",    {"label": "Blurb", "type": "textarea", "max_length": 500}),
+                ("duration", {"label": "Durata", "type": "text", "max_length": 80}),
+                # `scope` (list-of-str bullet points) intenzionalmente
+                # omesso: complex-shape exclusion (registry-only · stesso
+                # pattern di Juris `deliverables`).
+            ],
+        },
+        "contatti.channels": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Channels",
+            "icon": "bi-broadcast",
+            "region": ".ed-section",
+            "keywords": ["channels", "canali", "email", "phone"],
+            "tuple_order": ["label", "value", "note"],
+            "cols": [
+                ("label", {"label": "Etichetta canale", "type": "text", "max_length": 60}),
+                ("value", {"label": "Valore (email/numero)", "type": "text", "max_length": 120}),
+                ("note",  {"label": "Nota", "type": "text", "max_length": 200}),
+            ],
+        },
+    },
 }
 
 
@@ -3583,6 +4093,15 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # studio.partners.portrait). 4 scalar image + 22 image cells across
     # 3 dict lists.
     "ultra-luxury-cinematic": ("villa-immobili-lusso",      "it"),
+    # A.13 · Chiara (editorial-designer-grid) joins as 9th enrolled
+    # archetype — first template of the portfolio family. Pixel
+    # (cinematic-photographer) stays OUT until A.13b. Third archetype
+    # to use image-in-dict-row (after Vertex + Villa) — `home.featured_works.items[].image`
+    # at deep path 2 levels through `home.featured_works` parent dict.
+    # Posts list (3 project detail records) stays registry-only —
+    # detail-page editing is OUT of A.13 scope, consistent with every
+    # prior family closure's per-item content policy.
+    "editorial-designer-grid": ("chiara-portfolio-creativo", "it"),
 }
 
 
@@ -3613,6 +4132,12 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # Infrastructure proven since A.3a/A.4 — no service/rendering/widget
     # changes required.
     "ultra-luxury-cinematic": VILLA_ULTRA_LUXURY_CINEMATIC_SCHEMA,
+    # A.13 · Chiara — first-template enrollment of the portfolio family.
+    # Pixel (cinematic-photographer) stays out until A.13b. Third use
+    # of image-in-dict-row pattern (after Vertex + Villa). Detail-page
+    # editing (posts) stays OUT — consistent with all prior family
+    # closures' per-item content policy.
+    "editorial-designer-grid": CHIARA_EDITORIAL_DESIGNER_GRID_SCHEMA,
 }
 
 
@@ -4116,6 +4641,14 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # / studio.advisors). Gated by
     # ``test_a12b_villa_full_multilocale_lifecycle_end_to_end``.
     "ultra-luxury-cinematic",
+    # A.13 · Chiara (editorial-designer-grid · portfolio family · first
+    # template) joins editor + multi-locale in a single phase. Third
+    # archetype to use image-in-dict-row (`home.featured_works.items[].image`).
+    # Pixel (cinematic-photographer) stays OUT of the gate until
+    # A.13b. Posts list (project detail records) stays registry-only —
+    # detail-page editing is OUT of scope. Gated by
+    # ``test_a13_chiara_full_multilocale_lifecycle_end_to_end``.
+    "editorial-designer-grid",
 })
 
 
