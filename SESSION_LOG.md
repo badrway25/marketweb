@@ -5168,3 +5168,81 @@ A.13 planning session — candidates in priority order (dedicated planning requi
 (f) **A.13 alt · editor polish / operator tools / remote storage / media evolution** — defer unless customer signal or prod-launch timeline demands.
 
 Consolidation pause (this commit) precedes the choice.
+
+## Session 67 — Phase A.13 · Chiara (editorial-designer-grid) Editor + Multi-locale Enrollment (2026-04-18)
+
+### What shipped
+
+A.13 ships the ninth editable archetype: **Chiara (editorial-designer-grid · portfolio family · first template)**. The portfolio family is now **OPEN but NOT YET CLOSED** — Chiara enrolled, Pixel (`cinematic-photographer`) held explicitly out of the gate until A.13b. Same staged dedicated-schema progression topology as real-estate (A.12+A.12b · Casa+Villa). Tenth template editable end-to-end.
+
+Three A.13-specific design points were resolved at planning time (not during implementation):
+
+1. **Detail-page editing stays OUT of the perimeter** — `posts[]` list (3 project detail records) remains registry-only. This is a **coherent perimeter decision**, not a missing feature. It's consistent with the per-item content policy applied uniformly across Lex `notabili`, Juris `insights`, Casa `posts` (property detail), Villa `posts` (series detail). Per-project detail editing would be a horizontal feature affecting every archetype with per-item content (5+ archetypes) and needs uniform cross-archetype design — not Chiara-special-casing. The customer gets a credible editor (chrome + listing pages + studio/processo editorial copy) with 3 static project records as placeholders. Disclosed honestly.
+
+2. **Deep-path image-in-dict-row** — Chiara exposes `home.featured_works.items[].image` at a path 2 levels deep through the `home.featured_works` parent dict. Third precedent of image-in-dict-row after Vertex `studio.partners[].portrait` (production since A.3a/A.4) and Villa's 3 A.12b image-col lists. The deep path works without any new infrastructure: `_resolve_path` walks arbitrary-depth dotted paths through dicts (verified Step-0 via direct code read). Infrastructure claim re-confirmed: image-in-dict-row is a reusable enrollment pattern, not a horizontal feature.
+
+3. **Nested-dict scalar image** — `studio.founder.image` lives inside the `studio.founder` parent dict (4 scalars + 1 image + 1 list-of-str credentials excluded). Same shape as Vertex `home.cover.image` (production since editor foundation A.1). Schema exposes the 4 scalars + image as flat fields with dotted paths; no sub-dict editor widget needed.
+
+### Recipe applied (single-template · A.6 + A.7b combined · Pixel-out guard + 3 user-imposed guardrails)
+
+Two commits on `phase-editor-a13-chiara-editorial-designer-grid-v1`.
+
+- Step 0 · runtime audit (planning artifact, no code). Verified Chiara skin CSS prefix `.ed-*` (148 class hits · 46 mature `html[dir="rtl"]` rules — highest count of any enrolled archetype, benefits of the Session 37 D-070 Chiara perfection pass), 5-locale parity PERFECT (164 keys × 5 locales, zero gaps), image inventory (1 scalar nested-dict + 4 image cells on `home.featured_works.items`, total 5 editable image surfaces), complex-shape exclusions (posts list + `studio.founder.credentials` list-of-str + `processo.capabilities_full[].scope` nested list-of-str + `home.clients` + `lavoro.filters` flat list-of-str + form structure blocks). The `.ed-*` prefix collision with the editor sidebar namespace noted but non-impacting (different DOM trees: editor shell vs preview iframe).
+- `2ad699d` · Step 1 · `CHIARA_EDITORIAL_DESIGNER_GRID_SCHEMA` in `apps/editor/schema.py` (+533 LOC — **under** the 600-LOC soft guardrail, margin preserved thanks to Chiara's slimmer surface: 5 pages vs Casa's 6, 11 indexed lists vs Casa's 15, 1 image scalar vs Villa's 4). 8 sidebar groups: brand + hero_home (3 subgroups) + home_bands (5 subgroups including `featured_works` parent-dict scalars + indexed list subgroup) + studio_page (5 subgroups including founder block) + lavoro_page (5 subgroups incl. dossier labels + ledger meta) + processo_page (novel `process` kind — just a string identifier, no view dispatch) + contatti_page (5 subgroups incl. studio address block) + contact_info. ~140 scalar + 1 scalar image (`studio.founder.image`). `STRUCTURED_FIELD_SHAPES["editorial-designer-grid"]` exposes 11 readonly indexed lists with image col on `home.featured_works.items` (deep path 2 levels). Implementation required 5 mid-stream schema-vs-registry alignment fixes (dropped `hero_card` subgroup non-existent in registry · dropped `clients_heading/intro` and `press_intro` non-existent · dropped `site.nav_cta`/`site.foot_offices` not in Chiara chrome · replaced with actual lavoro `dossier_*`/`row_*`/`ledger_*` keys and processo `capability_duration_label`/`step_*` keys · added `contatti.studio_*` address block) — all caught before Step-1 validation. `templates/live_templates/portfolio/editorial-designer-grid/_base.html` gets the three atomic A.6 fixes with `.ed-*` prefix CSS guard block + comment documenting the editor-sidebar namespace collision (different DOM trees, no conflict). 10 contract tests including **three user-imposed guardrails**:
+  - `test_a13_chiara_archetype_registered` — Pixel-out explicit guard (registration-time · `cinematic-photographer` NOT in `_ARCHETYPE_SCHEMAS` NOR in `_MULTILOCALE_ENABLED_ARCHETYPES`) + all 8 previous archetypes still enrolled
+  - `test_a13_chiara_image_cols_in_dict_shapes_exposed` — **triple verification** user-requested: (a) `get_field_spec` returns `type="image"` for `studio.founder.image` (nested-dict scalar precedent); (b) `get_field_spec` returns `type="image"` for deep paths `home.featured_works.items.0.image` and `home.featured_works.items.3.image` (deep-path third precedent); (c) shape-level check: `get_list_shape("editorial-designer-grid", "home.featured_works.items")` includes `image` col with `type="image"` in its cols list
+  - `test_a13_chiara_complex_shapes_excluded_from_perimeter` — 22 paths rejected by `validate_key_path` spanning 4 exclusion categories: (1) 8 `posts.*` paths (per-project detail, including `posts.0.title`, `posts.0.lead`, `posts.0.sections`, `posts.0.summary`, `posts.0.deliverables`, `posts.0.credits`, `posts.2.next_label`) — the detail-page-out policy is now tested explicitly; (2) 4 nested list-of-str paths (`studio.founder.credentials` + `processo.capabilities_full[].scope`); (3) 4 flat list-of-str paths (`home.clients` + `lavoro.filters`); (4) 6 form structure paths (`contatti.form_fields` + `form_sections` + `upload_field`)
+  - Plus shape/translatable/globals/structured-cells-global/locales/**octuple regression**/preview-bridge standard set
+
+- `12984c9` · Step 2 · `test_a13_chiara_full_multilocale_lifecycle_end_to_end` — enriched vs A.12b Villa with **page-specific image assertions** because Chiara's scalar image lives on the studio page (not home). The test helper `preview_body(locale, page=None)` fetches home OR a specific sub-page; `IMG_FEATURED0` (home-scoped) verified on home renders while `IMG_FOUNDER` (studio-scoped) verified on studio renders — same verification, different pages. 3 translatable autosaves (IT/EN/FR on `home.headline` marker "A13Chiara") + 1 global text (`site.logo_word = "A13ChiaraBrand"`) + **1 scalar image override** (`studio.founder.image` — nested-dict scalar) + **1 image-in-dict-row override at DEEP PATH** (`home.featured_works.items.0.image` — third precedent) + publish + 5 public preview renders (both home and studio pages per locale) + AR `<html dir="rtl" lang="ar">` assertion on `.ed-*` skin + 4 editor reopens (owner) + **Pixel-out runtime guard** at start AND end of test. Storage-key assertions lock that all image overrides are plain-keyed (NOT `@<locale>:`): `studio.founder.image` and `home.featured_works.items.0.image` present as plain keys; `@<locale>:studio.founder.image` and `@<locale>:home.featured_works.items.0.image` absent. Route: `/templates/portfolio/chiara-portfolio-creativo/preview/`. Passed at second run — first run caught a test-design error (not a code bug): the initial script asserted `IMG_FOUNDER` on home body, but founder.image renders on the studio page not home · fix: switched to page-specific `preview_body()` helper. Zero application code change.
+
+Step 3 · browser walk (no code change). 16 spot checks all green:
+- Editor `?lang=it` mount → 5 pills, 112 `per lingua` badges on translatable fields, 212 global fields without badge, 6/6 expected global contract keys correctly NON-translatable, **5 `input[type="file"]` image upload widgets in sidebar** (exactly matching 1 scalar + 4 image cells across 1 dict list · deep-path image-in-dict-row end-to-end verified)
+- `studio.founder.image` widget present (nested-dict scalar, Vertex-cover precedent)
+- `home.featured_works.items.0.image` widget present (deep-path image-in-dict-row, third precedent)
+- **Posts/exclusion leak check**: zero `posts`/`posts.0.*` selectors found in sidebar · zero `home.clients` / `lavoro.filters` / `studio.founder.credentials` / `processo.capabilities_full.0.scope` selectors — exclusion perimeter verified end-to-end
+- Type IT + click EN before debounce → `@it:home.headline` persisted BEFORE iframe navigation · same EN→FR
+- FR flush with 4 fields in one pass (headline FR + global logo + scalar image founder + image-in-dict-row featured_works.items.0) → 6 DB overrides persisted (3 `@<locale>:home.headline` + 3 plain-keyed globals) · zero leak
+- ES switch · sidebar shows authored ES baseline `"Formas que perduran, una página a la vez."` (is_overridden=false, translatable=true) · all 3 global overrides persist (is_overridden=true, translatable=false on all three)
+- AR switch · iframe `.ed-frame` emits `<html lang="ar" dir="rtl">` authentic on `.ed-*` skin · 32 ed-classed elements · body guard + lm-ready · H1 AR `"أشكالٌ تَبقى، صفحةً تلوَ الأخرى."` · title `"WalkChiaraBrand — الاستوديو"` confirms `site.logo_word|default` on Chiara skin · `featured[0]` image visible on home · `founder` image verified on `/studio/` AR page separately
+- Sub-page spot check (owner IT): `/studio/` "Uno studio guidato dall'art director..." (9 ed-classes) · `/lavoro/` "Quarantasette progetti firmati..." (8) · `/processo/` "Cinque fasi, un solo file per progetto." (7) · `/contatti/` "Trenta minuti con l'AD, niente impegno." (7) · all with ed-nav + ed-foot + WalkChiaraBrand + body.mw-is-editor-preview + preview-bridge.js
+- Publish + second-user public preview per locale: IT/EN/FR text overrides visible per locale · ES/AR authored text fallback · AR `dir="rtl"` preserved · `WalkChiaraBrand` universal · `IMG_FEATURED0` visible on home renders across all 5 locales · `IMG_FOUNDER` visible on studio renders across all 5 locales · zero cross-locale leak · titles localized (Studio/Studio/Studio/Estudio/الاستوديو)
+- **Detail-page registry-only verify** (user-imposed): 3/3 project detail routes `/lavoro/<slug>/` return HTTP 200 rendering **static registry content** (project title + lead unchanged from IT baseline) with global brand chrome override (`WalkChiaraBrand`). No per-project override was attempted; none would be persistable (validate_key_path rejects). Policy coerente: posts/detail restano registry-only per decisione di perimetro.
+
+### Observables
+
+- 216/216 → **227/227** server tests (+11: 10 contract/integration + 1 lifecycle).
+- Smoke 834/834 unchanged. `manage.py check` 0 issues.
+- Schema LOC delta +533 · **under** the 600-LOC soft guardrail (vs Casa's +604 exception, Villa's +587 under-guardrail).
+- No production code touched outside `schema.py`, `editorial-designer-grid/_base.html` (3 minimal fixes + comment on `.ed-*` namespace collision), and `tests.py`. Zero touches to `services.py` / `rendering.py` / `views.py` / `models.py` / editor templates / `live-editor.js` / CSS / ProjectAsset / `/assets/upload/` / any other skin.
+
+### Consequences
+
+- **Editor 9 archetype slugs enrolled · multi-locale 9 enrolled · 10 templates editable end-to-end** (Vertex + Pragma + Gusto + Cardio + Derm + Lex + Juris + Casa + Villa + **Chiara**).
+- **Portfolio family OPEN but NOT YET CLOSED** — Chiara landed, Pixel deferred to A.13b. Same staged dedicated-schema progression pattern as real-estate (A.12+A.12b).
+- **Detail-page-out policy consolidated across 5 family closures + 1 open family**: Lex notabili · Juris insights · Casa posts · Villa posts · Chiara posts all registry-only uniformly. Pattern now strong enough to be cited in every future enrollment planning as "per-item detail stays registry-only unless a horizontal feature phase opens detail-page-scoped editing across all archetypes with per-item content".
+- **Deep-path image-in-dict-row precedent confirmed**: `_resolve_path` walks arbitrary depth through dicts; no infrastructure work needed for paths like `home.featured_works.items.0.image`.
+- Catalog 20/20 `published_live` unchanged.
+- **No new D-number introduced**. A.13 is the eighth real application of the D-098 recipe.
+- Branch shape: `phase-editor-a13-chiara-editorial-designer-grid-v1` merged into v15 via `--no-ff` @ `e55d55b`. Pushed to `origin/phase-integration-baseline-v15`.
+- No explicit debt pending. Pixel-out guard transitory (not debt).
+
+### Exact next step
+
+A.13b planning session — candidates in priority order:
+
+(a) **A.13b Pixel (cinematic-photographer) enrollment — close the portfolio family** — natural continuation from A.13, mirrors A.12→A.12b real-estate closure. Pixel has `series_list` + `publications` novel page kinds (2 novel kinds vs Chiara's 1 `process`) but simpler shape overall (mostly list-of-tuple, 1 scalar image on `home.hero_image`, no image-in-dict-row exposed since posts stays registry-only). Lighter enrollment than Chiara · recipe mechanical reuse.
+
+(b) **A.13b alt · restaurant-continuation (Sapore + Brace beyond Gusto)** — likely distinct archetypes (`trattoria-warm` + `street-modern`). Staged dedicated-schema closure like real-estate.
+
+(c) **A.13b alt · ecommerce family (Bottega + Luxe)** — `artisan-workshop` vs `fashion-editorial`. Session 41/42 observations suggest wide divergence. Bottega has commerce-foundation overlap (Phase 3a+3b seeded both) — worth Step-0 check on whether editor schema needs to avoid overlap with commerce-managed content.
+
+(d) **A.13b alt · medical-other family (Salute + Benessere + Famiglia)** — 3 separate phases (one-phase-one-archetype discipline is 9 phases strong A.6→A.13).
+
+(e) **A.13b alt · Aura / Elevate individual enrollments** — low-novelty single-template each.
+
+(f) **A.13b alt · editor polish / operator tools / remote storage / media evolution** — defer unless customer signal or prod-launch timeline demands.
+
+(g) **MEMORY.md maintenance mini-phase** — auto-memory index ~27-28KB sopra warning-soglia 24.4KB dal post-A.11 · candidato housekeeping separato, NOT bundled with an enrollment.
+
+Consolidation pause (this commit) precedes the choice.
