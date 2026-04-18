@@ -5084,6 +5084,191 @@ class FoundationHttpTests(TestCase):
         self.assertTrue(logo_field["is_overridden"])
         self.assertFalse(logo_field["translatable"])
 
+    # ------------------------------------------------------------------
+    # A.12 · Step 2 — Casa (mass-market) lifecycle HTTP cross-cutting
+    # ------------------------------------------------------------------
+
+    def test_a12_casa_full_multilocale_lifecycle_end_to_end(self):
+        """Mirror of the A.7b Pragma / A.8 Gusto / A.9 specialist-single /
+        A.10 Lex / A.11 Juris lifecycle, adapted to Casa (mass-market
+        archetype · first template of the real-estate family).
+
+        1. customer edits IT / EN / FR on a Casa translatable path
+        2. customer edits a global path (site.logo_word)
+        3. unedited locales (ES · AR) fall back to the authored registry —
+           NEVER to another locale's customer override
+        4. project publishes · second user visits every public preview
+           locale and sees the correct content
+        5. owner reopens the editor per locale and the sidebar prefill
+           matches the buffer for that locale.
+
+        AR response head must carry ``<html dir="rtl" lang="ar">`` so the
+        ``.dm-*`` skin inherits a green baseline for RTL. Villa
+        (ultra-luxury-cinematic) is NOT exercised here — it belongs to
+        A.12b. A guard check inside this test asserts Villa stays out
+        of `_MULTILOCALE_ENABLED_ARCHETYPES` at runtime.
+        """
+        import json as _json
+        from apps.editor.schema import _MULTILOCALE_ENABLED_ARCHETYPES
+        # Villa guard — must stay out of the gate throughout this phase.
+        self.assertNotIn("ultra-luxury-cinematic", _MULTILOCALE_ENABLED_ARCHETYPES)
+
+        casa = WebTemplate.objects.get(slug="casa-agenzia-immobiliare")
+        p = services.create_project_from_template(owner=self.owner, template=casa)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global ──────────
+        for locale, headline in (
+            ("it", "La casa <em>giusta</em> (A12Casa IT)."),
+            ("en", "The home <em>that fits</em> (A12Casa EN)."),
+            ("fr", "La maison <em>qui vous ressemble</em> (A12Casa FR)."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        # Global edit — locale tag on the request is ignored because
+        # site.logo_word is classified global.
+        r = autosave("en", {"site.logo_word": "A12CasaBrand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # Storage keys: three @<locale>:home.headline + one plain
+        # site.logo_word. No plain-key leak, no global→locale leak.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+
+        # ── 3. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 4. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale):
+            url = (
+                f"/templates/real-estate/casa-agenzia-immobiliare/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render — IT override visible, EN/FR markers absent.
+        body_it = preview_body("it")
+        self.assertIn("casa <em>giusta</em>", body_it)
+        self.assertIn("(A12Casa IT)", body_it)
+        self.assertNotIn("(A12Casa EN)", body_it)
+        self.assertNotIn("(A12Casa FR)", body_it)
+        self.assertIn("A12CasaBrand", body_it)
+
+        # EN render — EN override visible, IT/FR markers absent.
+        body_en = preview_body("en")
+        self.assertIn("that fits", body_en)
+        self.assertIn("(A12Casa EN)", body_en)
+        self.assertNotIn("(A12Casa IT)", body_en)
+        self.assertNotIn("(A12Casa FR)", body_en)
+        self.assertIn("A12CasaBrand", body_en)
+
+        # FR render — FR override visible.
+        body_fr = preview_body("fr")
+        self.assertIn("qui vous ressemble", body_fr)
+        self.assertIn("(A12Casa FR)", body_fr)
+        self.assertNotIn("(A12Casa IT)", body_fr)
+        self.assertNotIn("(A12Casa EN)", body_fr)
+        self.assertIn("A12CasaBrand", body_fr)
+
+        # Unedited locales — authored fallback + global logo universal.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("(A12Casa IT)", body)
+            self.assertNotIn("(A12Casa EN)", body)
+            self.assertNotIn("(A12Casa FR)", body)
+            self.assertIn("A12CasaBrand", body)
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Casa",
+                )
+
+        # AR preview — `.dm-*` skin must emit ``<html dir="rtl" lang="ar">``.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 5. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_headline_field(groups):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == "home.headline":
+                        return f
+            self.fail("home.headline field missing from Casa editor groups")
+
+        for locale, expected_substring in (
+            ("it", "giusta"),
+            ("en", "that fits"),
+            ("fr", "qui vous ressemble"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_headline_field(r.context["groups"])
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_headline_field(r_es.context["groups"])
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+        # Global field: overridden universally, not translatable.
+        logo_field = None
+        for g in r_es.context["groups"]:
+            for f in g["fields"]:
+                if f["key"] == "site.logo_word":
+                    logo_field = f
+                    break
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Casa editor")
+        self.assertEqual(logo_field["value"], "A12CasaBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
