@@ -6213,6 +6213,264 @@ class FoundationHttpTests(TestCase):
         self.assertIn("mass-market", _MULTILOCALE_ENABLED_ARCHETYPES,
                       "Casa enrollment must persist past Villa lifecycle")
 
+    # ------------------------------------------------------------------
+    # A.13 · Step 2 — Chiara (editorial-designer-grid) lifecycle HTTP
+    # cross-cutting · covers scalar nested-dict image + image-in-dict-row
+    # at deep path 2 levels (third precedent after Vertex + Villa).
+    # Posts/detail-page editing stays registry-only per consistent
+    # perimeter policy applied to Lex/Juris/Casa/Villa.
+    # ------------------------------------------------------------------
+
+    def test_a13_chiara_full_multilocale_lifecycle_end_to_end(self):
+        """Mirror of the A.12b Villa lifecycle, adapted to Chiara's
+        image surface shape:
+
+        1. customer edits IT / EN / FR on a Chiara translatable path
+        2. customer edits a global TEXT path (site.logo_word)
+        3. customer edits a SCALAR IMAGE field nested inside a parent
+           dict (studio.founder.image · Vertex home.cover.image
+           precedent)
+        4. customer edits an IMAGE CELL inside a list-of-dict at DEEP
+           PATH 2 levels (home.featured_works.items.0.image · third
+           precedent after Vertex studio.partners[].portrait and
+           Villa home.signature/territories/advisors[].image)
+        5. unedited locales (ES · AR) fall back to the authored registry
+        6. project publishes · second user visits every public preview
+           locale and sees the correct content + both image overrides
+        7. owner reopens the editor per locale and the sidebar prefill
+           matches buffer for that locale
+
+        AR response head must carry ``<html dir="rtl" lang="ar">`` on
+        the `.ed-*` skin (the prefix collides with the editor sidebar
+        namespace but lives in a different DOM tree · no functional
+        conflict · verified Step-0). **Pixel (cinematic-photographer)
+        must remain OUT of the gate throughout** — runtime guard at
+        start AND end of test. **Posts/detail-page editing is NOT
+        exercised here** — it's a coherent perimeter decision
+        consistent with Lex/Juris/Casa/Villa per-item content policy,
+        deferred to a future horizontal phase if customer signal emerges.
+        """
+        import json as _json
+        from apps.editor.schema import _MULTILOCALE_ENABLED_ARCHETYPES
+
+        # Pixel guard — must stay OUT throughout A.13 lifecycle.
+        self.assertNotIn("cinematic-photographer", _MULTILOCALE_ENABLED_ARCHETYPES,
+                         "Pixel must remain OUT of multi-locale gate until A.13b")
+
+        chiara = WebTemplate.objects.get(slug="chiara-portfolio-creativo")
+        p = services.create_project_from_template(owner=self.owner, template=chiara)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global text ─────
+        for locale, headline in (
+            ("it", "Forme Chiara walk IT <em>A13Chiara</em>."),
+            ("en", "Forms Chiara walk EN <em>A13ChiaraEN</em>."),
+            ("fr", "Formes Chiara walk FR <em>A13ChiaraFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        r = autosave("en", {"site.logo_word": "A13ChiaraBrand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 3. Scalar image override (nested-dict scalar · Vertex
+        # `home.cover.image` precedent) ────────────────────────────
+        # `studio.founder.image` lives inside the `studio.founder`
+        # parent dict — Vertex `home.cover.image` shape. Image fields
+        # are classified NON-translatable so the override persists with
+        # a plain key regardless of the request locale tag.
+        IMG_FOUNDER = "https://walk-chiara.example/img/founder-A13.jpg"
+        r = autosave("it", {"studio.founder.image": IMG_FOUNDER})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("studio.founder.image", r.json()["content_keys"])
+
+        # ── 4. Image-in-dict-row override at DEEP PATH 2 levels ────
+        # `home.featured_works.items.0.image` — third precedent of
+        # image-in-dict-row after Vertex studio.partners[].portrait
+        # and Villa home.signature/territories/advisors[].image.
+        # Path is 2 levels deep through the `home.featured_works`
+        # parent dict. `_resolve_path` walks any depth.
+        IMG_FEATURED0 = "https://walk-chiara.example/img/featured-row0-A13.jpg"
+        r = autosave("it", {"home.featured_works.items.0.image": IMG_FEATURED0})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.featured_works.items.0.image", r.json()["content_keys"])
+
+        # Storage keys: 3 @<locale>:home.headline (per-locale) + 3
+        # plain-keyed globals (logo + 2 images including the deep-path
+        # image cell). No leak of image overrides into @<locale>:
+        # namespace · no plain-key leak for home.headline.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("studio.founder.image", keys)
+        self.assertIn("home.featured_works.items.0.image", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@it:studio.founder.image", keys)
+        self.assertNotIn("@it:home.featured_works.items.0.image", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+
+        # ── 5. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 6. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale, page=None):
+            # page=None fetches home via live_template_home; page='studio'
+            # etc. fetches a specific sub-page. Images live on different
+            # pages (home.featured_works on home, studio.founder on
+            # studio), so image assertions need page-specific fetches.
+            suffix = f"{page}/" if page else ""
+            url = (
+                f"/templates/portfolio/chiara-portfolio-creativo/preview/"
+                f"{suffix}?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render (home) — IT override visible, EN/FR markers absent.
+        # Global logo + home-scoped image (featured_works) visible.
+        body_it = preview_body("it")
+        self.assertIn("Chiara walk IT", body_it)
+        self.assertIn("A13Chiara", body_it)
+        self.assertNotIn("A13ChiaraEN", body_it)
+        self.assertNotIn("A13ChiaraFR", body_it)
+        self.assertIn("A13ChiaraBrand", body_it)
+        # home.featured_works.items.0.image is a home-scoped asset.
+        self.assertIn(IMG_FEATURED0, body_it)
+
+        # IT render (studio page) — studio.founder.image visible here.
+        body_it_studio = preview_body("it", page="studio")
+        self.assertIn("A13ChiaraBrand", body_it_studio)
+        self.assertIn(IMG_FOUNDER, body_it_studio)
+
+        # EN render (home)
+        body_en = preview_body("en")
+        self.assertIn("Chiara walk EN", body_en)
+        self.assertIn("A13ChiaraEN", body_en)
+        self.assertNotIn("Chiara walk IT", body_en)
+        self.assertIn("A13ChiaraBrand", body_en)
+        self.assertIn(IMG_FEATURED0, body_en)
+        # Studio-scoped image check on EN studio page.
+        body_en_studio = preview_body("en", page="studio")
+        self.assertIn(IMG_FOUNDER, body_en_studio)
+
+        # FR render (home) + studio spot check
+        body_fr = preview_body("fr")
+        self.assertIn("Chiara walk FR", body_fr)
+        self.assertIn("A13ChiaraFR", body_fr)
+        self.assertIn("A13ChiaraBrand", body_fr)
+        self.assertIn(IMG_FEATURED0, body_fr)
+        body_fr_studio = preview_body("fr", page="studio")
+        self.assertIn(IMG_FOUNDER, body_fr_studio)
+
+        # Unedited locales — authored text fallback + global images universal.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Chiara walk IT", body)
+            self.assertNotIn("Chiara walk EN", body)
+            self.assertNotIn("Chiara walk FR", body)
+            self.assertIn("A13ChiaraBrand", body)
+            # Home-scoped image override persists across unedited locales.
+            self.assertIn(IMG_FEATURED0, body)
+            # Studio-scoped image override on studio page too.
+            body_studio = preview_body(locale, page="studio")
+            self.assertIn(IMG_FOUNDER, body_studio)
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Chiara home",
+                )
+
+        # AR preview (home) — `.ed-*` skin must emit ``<html dir="rtl" lang="ar">``.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 7. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Chiara walk IT"),
+            ("en", "Chiara walk EN"),
+            ("fr", "Chiara walk FR"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text field: overridden universally, not translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Chiara editor")
+        self.assertEqual(logo_field["value"], "A13ChiaraBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        # Nested-dict scalar image: overridden universally, not translatable.
+        founder_img_field = find_field_by_key(r_es.context["groups"], "studio.founder.image")
+        self.assertIsNotNone(founder_img_field,
+                             "studio.founder.image missing from Chiara editor")
+        self.assertEqual(founder_img_field["value"], IMG_FOUNDER)
+        self.assertTrue(founder_img_field["is_overridden"])
+        self.assertFalse(founder_img_field["translatable"])
+
+        # Pixel guard (re-check end-of-test) — must still be OUT.
+        self.assertNotIn("cinematic-photographer", _MULTILOCALE_ENABLED_ARCHETYPES,
+                         "Pixel must stay OUT of gate past Chiara lifecycle · removal is A.13b")
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
