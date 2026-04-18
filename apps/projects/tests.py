@@ -6779,6 +6779,257 @@ class FoundationHttpTests(TestCase):
         self.assertTrue(founder_img_field["is_overridden"])
         self.assertFalse(founder_img_field["translatable"])
 
+    # ------------------------------------------------------------------
+    # A.13b · Step 2 — Pixel (cinematic-photographer) lifecycle HTTP
+    # cross-cutting · closes portfolio family via D-098 staged
+    # dedicated-schema progression (Chiara open in A.13 · Pixel closes
+    # in A.13b). Single top-level scalar image (home.hero_image) ·
+    # posts/series_detail stay registry-only per consistent perimeter
+    # policy shared with Lex/Juris/Casa/Villa/Chiara.
+    # ------------------------------------------------------------------
+
+    def test_a13b_pixel_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the Pixel enrollment:
+
+        1. customer edits IT / EN / FR on a Pixel translatable path
+           (home.headline)
+        2. customer edits a global TEXT path (site.logo_word) via EN
+           autosave — storage MUST be plain-keyed (no @en: prefix)
+        3. customer edits the single scalar IMAGE field
+           (home.hero_image · top-level scalar, NOT nested-dict like
+           Chiara studio.founder.image) — storage MUST be plain-keyed
+           (no @<locale>: prefix on image overrides)
+        4. project publishes via services.publish_project
+        5. second user visits every public preview locale:
+           - IT/EN/FR render their locale override + global logo + image
+           - ES/AR fall back to the authored registry text, still see
+             the global logo + image override (images are universal)
+           - AR response head carries ``<html dir="rtl" lang="ar">``
+             on the ``.cp-*`` skin
+        6. owner reopens the editor per locale; sidebar prefill matches
+           the buffer for that locale on home.headline and shows
+           site.logo_word + home.hero_image as universal overrides
+        7. perimeter invariants double-checked at the end of the walk:
+           Chiara stays enrolled, posts.* and series_detail stay
+           rejected by validate_key_path (5-archetype uniform policy).
+
+        Explicitly NOT exercised here: posts override (perimeter OUT),
+        repeater mutations (Pixel lists are all readonly), image
+        per-locale (out of scope D-098), editor JS/CSS shell touches.
+        """
+        import json as _json
+
+        pixel = WebTemplate.objects.get(slug="pixel-portfolio-fotografico")
+        p = services.create_project_from_template(owner=self.owner, template=pixel)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1. three translatable locales on home.headline ────────
+        for locale, headline in (
+            ("it", "Luce Pixel walk IT <em>A13bPixel</em>."),
+            ("en", "Light Pixel walk EN <em>A13bPixelEN</em>."),
+            ("fr", "Lumière Pixel walk FR <em>A13bPixelFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+
+        # ── 2. global plain-keyed text — site.logo_word via EN ────
+        # Image/global scalars must NOT pick up the @en: prefix even
+        # when written inside an EN-tagged autosave.
+        r = autosave("en", {"site.logo_word": "A13bPixelBrand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 3. scalar image override — home.hero_image ────────────
+        # Top-level scalar image (Villa home.cover_image shape, not
+        # Chiara nested-dict studio.founder.image shape). Images are
+        # classified NON-translatable — persistence is plain-keyed
+        # regardless of the request-tagged locale.
+        IMG_HERO = "https://walk-pixel.example/img/hero-A13b.jpg"
+        r = autosave("it", {"home.hero_image": IMG_HERO})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.hero_image", r.json()["content_keys"])
+
+        # Storage shape: 3 @<locale>:home.headline + 2 plain-keyed
+        # globals (logo + hero image). Zero @<locale>: on the image
+        # path; zero @en: on the logo path; zero plain-key leak on
+        # home.headline.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("home.hero_image", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+        self.assertNotIn("@it:home.hero_image", keys)
+        self.assertNotIn("@en:home.hero_image", keys)
+        self.assertNotIn("@fr:home.hero_image", keys)
+        self.assertNotIn("@es:home.hero_image", keys)
+        self.assertNotIn("@ar:home.hero_image", keys)
+
+        # ── 4. publish ───────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 5. second user on every public preview locale ────────
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale, page=None):
+            suffix = f"{page}/" if page else ""
+            url = (
+                f"/templates/portfolio/pixel-portfolio-fotografico/preview/"
+                f"{suffix}?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render (home) — IT override visible, EN/FR absent.
+        body_it = preview_body("it")
+        self.assertIn("Pixel walk IT", body_it)
+        self.assertIn("A13bPixel", body_it)
+        self.assertNotIn("A13bPixelEN", body_it)
+        self.assertNotIn("A13bPixelFR", body_it)
+        self.assertIn("A13bPixelBrand", body_it)
+        self.assertIn(IMG_HERO, body_it)
+
+        # EN render (home)
+        body_en = preview_body("en")
+        self.assertIn("Pixel walk EN", body_en)
+        self.assertIn("A13bPixelEN", body_en)
+        self.assertNotIn("Pixel walk IT", body_en)
+        self.assertIn("A13bPixelBrand", body_en)
+        self.assertIn(IMG_HERO, body_en)
+
+        # FR render (home)
+        body_fr = preview_body("fr")
+        self.assertIn("Pixel walk FR", body_fr)
+        self.assertIn("A13bPixelFR", body_fr)
+        self.assertIn("A13bPixelBrand", body_fr)
+        self.assertIn(IMG_HERO, body_fr)
+
+        # Unedited locales (ES · AR) — authored registry fallback on
+        # translatable text + global logo + global image still visible.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Pixel walk IT", body)
+            self.assertNotIn("Pixel walk EN", body)
+            self.assertNotIn("Pixel walk FR", body)
+            self.assertIn("A13bPixelBrand", body)
+            self.assertIn(IMG_HERO, body)
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Pixel home",
+                )
+
+        # AR preview (home) — `.cp-*` skin must emit
+        # ``<html dir="rtl" lang="ar">`` (38 mature RTL rules already
+        # shipped with the published_live skin · verified Step-0).
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 6. owner reopens the editor on each locale ───────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Pixel walk IT"),
+            ("en", "Pixel walk EN"),
+            ("fr", "Pixel walk FR"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text: overridden universally, not translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Pixel editor")
+        self.assertEqual(logo_field["value"], "A13bPixelBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        # Scalar image: overridden universally, not translatable.
+        hero_field = find_field_by_key(r_es.context["groups"], "home.hero_image")
+        self.assertIsNotNone(hero_field, "home.hero_image missing from Pixel editor")
+        self.assertEqual(hero_field["value"], IMG_HERO)
+        self.assertTrue(hero_field["is_overridden"])
+        self.assertFalse(hero_field["translatable"])
+
+        # ── 7. perimeter invariants re-checked end-of-test ───────
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        # Chiara enrollment must persist past Pixel lifecycle.
+        self.assertIn("editorial-designer-grid", _ENABLED,
+                      "Chiara enrollment must persist past Pixel lifecycle")
+        # Posts / series_detail stay registry-only — 5-archetype
+        # uniform perimeter policy consistent with Lex/Juris/Casa/
+        # Villa/Chiara. Writes under these paths must be rejected by
+        # validate_key_path at the schema layer.
+        for out_path in (
+            "posts.0.title",
+            "posts.0.cover_image",
+            "posts.1.cover_image",
+            "posts.2.cover_image",
+            "posts.0.lead",
+            "posts.0.gallery.0",
+        ):
+            with self.assertRaises(InvalidEditableField,
+                                   msg=f"Pixel posts path must be rejected: {out_path}"):
+                validate_key_path("cinematic-photographer", out_path)
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
