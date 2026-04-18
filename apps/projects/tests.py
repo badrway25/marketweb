@@ -45,13 +45,14 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.revisions.count(), 1)
 
     def test_unsupported_archetype_raises(self):
-        # street-modern (Brace) has not been enrolled in _ARCHETYPE_SCHEMAS
-        # yet — Brace still hits the UnsupportedTemplate guard. Pending
-        # A.14b enrollment. Swap this slug if/when street-modern gets an
-        # editor schema of its own.
-        brace = WebTemplate.objects.get(slug="brace-street-food-lab")
+        # artisan-workshop (Bottega) has not been enrolled in
+        # _ARCHETYPE_SCHEMAS yet — Bottega still hits the UnsupportedTemplate
+        # guard. A.14b rotated the outside-gate reference from Brace
+        # (now enrolled) to Bottega. Swap this slug if/when
+        # artisan-workshop gets an editor schema of its own.
+        bottega = WebTemplate.objects.get(slug="bottega-shop-artigianale")
         with self.assertRaises(services.UnsupportedTemplate):
-            services.create_project_from_template(owner=self.owner, template=brace)
+            services.create_project_from_template(owner=self.owner, template=bottega)
 
     def test_schema_locks_non_whitelisted_keys(self):
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
@@ -1392,9 +1393,10 @@ class FoundationModelTests(TestCase):
         self.assertIn("corporate-suite", _ARCHETYPE_SCHEMAS)
         self.assertTrue(is_supported_archetype("corporate-suite"))
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
-        # Sanity — an unsupported archetype still rejects. `street-
-        # modern` (Brace) is pending A.14b.
-        self.assertFalse(is_supported_archetype("street-modern"))
+        # Sanity — an unsupported archetype still rejects.
+        # `artisan-workshop` (Bottega) is the current outside-gate
+        # reference (A.14b rotated it from `street-modern`/Brace).
+        self.assertFalse(is_supported_archetype("artisan-workshop"))
 
     def test_a6_pragma_schema_shape_covers_core_pages(self):
         """The Pragma schema must surface groups for every customer-
@@ -1629,10 +1631,10 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Archetype outside the gate still returns False + empty list.
-        # `street-modern` (Brace) is the current outside-gate reference
-        # pending A.14b enrollment.
-        self.assertFalse(is_translatable("street-modern", "home.headline"))
-        self.assertEqual(supported_locales("street-modern"), [])
+        # `artisan-workshop` (Bottega) is the current outside-gate reference
+        # (A.14b rotated it from `street-modern`/Brace which is now enrolled).
+        self.assertFalse(is_translatable("artisan-workshop", "home.headline"))
+        self.assertEqual(supported_locales("artisan-workshop"), [])
 
     # ------------------------------------------------------------------
     # A.8 · Gusto fine-dining enrollment — Step 1 contract
@@ -3938,12 +3940,11 @@ class FoundationModelTests(TestCase):
     # ------------------------------------------------------------------
 
     def test_a14_sapore_archetype_registered(self):
-        """`trattoria-warm` joins the supported-archetype registry and
-        the multi-locale gate. Brace (`street-modern`) stays OUT at
-        BOTH layers: registration-time (_ARCHETYPE_SCHEMAS absence +
-        _ARCHETYPE_BASELINE_TEMPLATE absence + _MULTILOCALE_ENABLED_ARCHETYPES
-        absence) · runtime (see the lifecycle test end-of-test guard).
-        Every pre-A.14 archetype must still be enrolled."""
+        """`trattoria-warm` is in the supported-archetype registry and
+        the multi-locale gate. Pre-A.14 archetypes must all remain
+        enrolled. (Brace-out guard was lifted in A.14b when Brace
+        joined — see `test_a14b_brace_out_guard_was_removed_from_sapore_tests`
+        for the contract that verifies the inversion.)"""
         from apps.editor.schema import (
             _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
             _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
@@ -3956,14 +3957,6 @@ class FoundationModelTests(TestCase):
         baseline_slug, baseline_locale = _ARCHETYPE_BASELINE_TEMPLATE["trattoria-warm"]
         self.assertEqual(baseline_slug, "sapore-trattoria-pizzeria")
         self.assertEqual(baseline_locale, "it")
-
-        # Brace OUT at 2 layers (registration + runtime). The runtime
-        # re-check lives in `test_a14_sapore_full_multilocale_lifecycle_end_to_end`.
-        self.assertNotIn("street-modern", _ARCHETYPE_SCHEMAS,
-                         "Brace (street-modern) must stay OUT until A.14b")
-        self.assertNotIn("street-modern", _ARCHETYPE_BASELINE_TEMPLATE)
-        self.assertNotIn("street-modern", _MULTILOCALE_ENABLED_ARCHETYPES)
-        self.assertFalse(is_supported_archetype("street-modern"))
 
         # 10 pre-A.14 archetypes still enrolled (tenfold regression).
         for pre_slug in (
@@ -4245,8 +4238,9 @@ class FoundationModelTests(TestCase):
             supported_locales("trattoria-warm"),
             ["it", "en", "fr", "es", "ar"],
         )
-        # Brace stays out.
-        self.assertEqual(supported_locales("street-modern"), [])
+        # Outside-gate reference: artisan-workshop (Bottega) after A.14b
+        # rotated it from street-modern/Brace (now enrolled).
+        self.assertEqual(supported_locales("artisan-workshop"), [])
 
     def test_a14_tenfold_regression_after_sapore_joins(self):
         """Regression guard: the 10 pre-A.14 archetype classifications
@@ -4317,6 +4311,411 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A14 Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.14b · Brace (street-modern · restaurant-continuation family ·
+    # second template) enrollment — Step 1 contract. CLOSES the
+    # restaurant-continuation family opened in A.14. Third staged
+    # dedicated-schema closure (after real-estate A.12+A.12b and
+    # portfolio A.13+A.13b). Zero new infrastructure required: menu
+    # rows via deep-path dict-in-dict-list parent (Chiara precedent),
+    # ordina routes lines via deep-path tuple-in-dict-list parent
+    # (Sapore precedent via A.14 Step 2 render-side f66ac24 fix).
+    # ------------------------------------------------------------------
+
+    def test_a14b_brace_archetype_registered(self):
+        """`street-modern` joins the supported-archetype registry and
+        the multi-locale gate. All 11 pre-A.14b archetypes (incl. Sapore)
+        must still be enrolled (eleven-fold regression)."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
+        )
+        self.assertIn("street-modern", _ARCHETYPE_SCHEMAS)
+        self.assertIn("street-modern", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertIn("street-modern", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("street-modern"))
+        baseline_slug, baseline_locale = _ARCHETYPE_BASELINE_TEMPLATE["street-modern"]
+        self.assertEqual(baseline_slug, "brace-street-food-lab")
+        self.assertEqual(baseline_locale, "it")
+
+        # 11 pre-A.14b archetypes still enrolled.
+        for pre_slug in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm",
+        ):
+            self.assertIn(pre_slug, _ARCHETYPE_SCHEMAS, f"{pre_slug} lost enrollment")
+            self.assertIn(pre_slug, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{pre_slug} lost multi-locale")
+
+    def test_a14b_brace_out_guard_was_removed_from_sapore_tests(self):
+        """USER-IMPOSED SYMMETRIC GUARDRAIL · mirror of A.12b Villa-out-
+        removed and A.13b Pixel-out-removed contracts. Verifies that the
+        Brace-out guards that lived in the A.14 Sapore tests (both
+        registration-time inside `test_a14_sapore_archetype_registered`
+        AND runtime at end-of-lifecycle-test) were correctly inverted
+        when Brace joined, rather than forgotten. Silent regression on
+        the inversion cannot happen."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
+        )
+        # Brace IS now in all three registries.
+        self.assertIn("street-modern", _ARCHETYPE_SCHEMAS,
+                      "Brace (street-modern) must be IN after A.14b")
+        self.assertIn("street-modern", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertIn("street-modern", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("street-modern"))
+
+        # Sapore still enrolled (the archetype whose tests used to host
+        # the Brace-out guard).
+        self.assertIn("trattoria-warm", _ARCHETYPE_SCHEMAS,
+                      "Sapore must stay enrolled after Brace joins")
+        self.assertIn("trattoria-warm", _MULTILOCALE_ENABLED_ARCHETYPES)
+
+    def test_a14b_brace_schema_shape_covers_all_pages(self):
+        """Brace groups span the 6 page slugs + `*` chrome. Novel page
+        kind `order` (ordina page) is a plain string identifier in the
+        registry — no view dispatch."""
+        from apps.editor.schema import iter_groups
+        groups = iter_groups("street-modern")
+        pages = {g.get("page") for g in groups}
+        for expected in ("*", "home", "menu", "lab", "moments", "ordina", "contatti"):
+            self.assertIn(expected, pages,
+                          f"Brace schema missing page `{expected}` coverage")
+
+    def test_a14b_brace_is_translatable_text_fields(self):
+        """A distributed sample of Brace translatable paths — one per
+        page — must classify as translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "street-modern"
+        translatable_paths = (
+            # home
+            "home.eyebrow", "home.headline", "home.intro",
+            "home.hero_badge_label", "home.counter_label",
+            "home.menu_strip_heading", "home.manifesto_heading",
+            "home.crew_heading", "home.atmo_heading", "home.final_heading",
+            # menu
+            "menu.eyebrow", "menu.headline", "menu.intro",
+            "menu.producers_heading",
+            # lab
+            "lab.eyebrow", "lab.headline", "lab.intro",
+            "lab.manifesto_label", "lab.process_heading",
+            # moments
+            "moments.eyebrow", "moments.headline",
+            "moments.featured_quote", "moments.featured_author",
+            # ordina
+            "ordina.eyebrow", "ordina.headline", "ordina.intro",
+            "ordina.routes_heading", "ordina.partners_heading",
+            "ordina.faq_heading",
+            # contatti
+            "contatti.headline", "contatti.jobs_heading",
+            "contatti.form_heading",
+        )
+        for path in translatable_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must classify as translatable on Brace",
+            )
+
+    def test_a14b_brace_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths + typed fields (url/select) stay
+        global on Brace — same contract as every previously-enrolled
+        archetype."""
+        from apps.editor.schema import is_translatable
+        arc = "street-modern"
+        for path in (
+            "site.logo_word", "site.logo_initial",
+            "site.phone", "site.email",
+            "site.address", "site.license",
+            "site.whatsapp_link",   # url type
+            "site.nav_cta_href",    # select type
+            "site.instagram_link",  # url type
+            "site.tiktok_link",     # url type
+        ):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must stay global on Brace",
+            )
+
+    def test_a14b_brace_hero_image_scalars_exposed(self):
+        """USER-IMPOSED GUARDRAIL: positive `get_field_spec` on the 3
+        top-level scalar image fields (home.hero_image, lab.hero_image,
+        moments.featured_image) returning `type=image`."""
+        from apps.editor.schema import get_field_spec
+        arc = "street-modern"
+        for path in ("home.hero_image", "lab.hero_image", "moments.featured_image"):
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Brace schema")
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} must expose as type=image",
+            )
+
+    def test_a14b_brace_image_cols_in_dict_rows_shallow_exposed(self):
+        """USER-IMPOSED GUARDRAIL: 5 shallow image-in-dict-row lists
+        (home.menu_strip_items, home.crew, home.atmo_strip, lab.crew,
+        moments.grid) expose their image/portrait cells with
+        `type=image`. Image-in-dict-row pattern (Vertex A.3a/A.4
+        precedent + Villa A.12b precedent + Chiara A.13 precedent +
+        Sapore A.14 precedent) · fifth archetype to exercise it."""
+        from apps.editor.schema import get_field_spec
+        arc = "street-modern"
+        image_cell_paths = (
+            "home.menu_strip_items.0.image",
+            "home.menu_strip_items.5.image",   # last of 6
+            "home.crew.0.portrait",
+            "home.crew.2.portrait",
+            "home.atmo_strip.0.image",
+            "home.atmo_strip.2.image",
+            "lab.crew.0.portrait",
+            "lab.crew.3.portrait",             # last of 4
+            "moments.grid.0.image",
+            "moments.grid.5.image",            # last of 6
+        )
+        for path in image_cell_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec, f"{path} missing from Brace schema",
+            )
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} must expose as type=image",
+            )
+
+    def test_a14b_brace_menu_items_deep_path_image_exposed(self):
+        """USER-IMPOSED GUARDRAIL · **nodo principale A.14b Step 0**:
+        `menu.sections.{0..4}.items[].image` resolves at deep path
+        2 levels (dict-in-dict-list parent shape · Chiara precedent).
+        Each of the 5 sections registers a separate shape entry; first +
+        last dish of first + last section must all expose `type=image`.
+        Section sizes verified Step 0: 4/4/4/4/3."""
+        from apps.editor.schema import get_field_spec
+        arc = "street-modern"
+        # First section, first dish — all 5 cols.
+        first_section_first_dish = (
+            ("menu.sections.0.items.0.name",  "text"),
+            ("menu.sections.0.items.0.desc",  "textarea"),
+            ("menu.sections.0.items.0.price", "text"),
+            ("menu.sections.0.items.0.tag",   "text"),
+            ("menu.sections.0.items.0.image", "image"),
+        )
+        # Last section (size 3), last dish index 2 — all 5 cols.
+        last_section_last_dish = (
+            ("menu.sections.4.items.2.name",  "text"),
+            ("menu.sections.4.items.2.desc",  "textarea"),
+            ("menu.sections.4.items.2.price", "text"),
+            ("menu.sections.4.items.2.tag",   "text"),
+            ("menu.sections.4.items.2.image", "image"),
+        )
+        # Largest sections (0..3, size 4) · last dish index 3.
+        biggest_section_last_dish = (
+            ("menu.sections.0.items.3.image", "image"),
+            ("menu.sections.3.items.3.price", "text"),
+        )
+        for path, expected_type in (
+            first_section_first_dish
+            + last_section_last_dish
+            + biggest_section_last_dish
+        ):
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec,
+                f"{path} missing — deep-path menu item cell must be editable",
+            )
+            self.assertEqual(
+                spec.get("type"), expected_type,
+                f"{path} type mismatch (expected {expected_type})",
+            )
+
+    def test_a14b_brace_ordina_routes_deep_path_tuple_exposed(self):
+        """USER-IMPOSED GUARDRAIL · **correction di ipotesi Step 0
+        audit**: `ordina.routes.{0..2}.lines` expose tuple cells at
+        deep path 2 levels (tuple-in-dict-list parent shape · Sapore
+        precedent via A.14 f66ac24 render fix). Each of the 3 routes
+        registers a separate shape entry; first + last line of first +
+        last route must expose cols `label`/`value`. Initial hypothesis
+        was OUT; audit demonstrated editorial value (address/phone/
+        partner-names)."""
+        from apps.editor.schema import get_field_spec
+        arc = "street-modern"
+        for path in (
+            "ordina.routes.0.lines.0.label",
+            "ordina.routes.0.lines.0.value",
+            "ordina.routes.0.lines.2.label",   # last of 3
+            "ordina.routes.0.lines.2.value",
+            "ordina.routes.2.lines.0.label",   # last route, first line
+            "ordina.routes.2.lines.2.value",   # last route, last line
+        ):
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec,
+                f"{path} missing — deep-path route line cell must be editable",
+            )
+            self.assertEqual(
+                spec.get("type"), "text",
+                f"{path} type mismatch (expected text)",
+            )
+
+    def test_a14b_brace_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL: complex shapes + registry-only paths
+        stay outside the perimeter. Brace ships NO form structures
+        (smaller out-policy set than Sapore) and NO posts list (same as
+        Sapore · detail-page policy structurally inapplicable)."""
+        from apps.editor.schema import validate_key_path, InvalidEditableField
+        arc = "street-modern"
+        rejected_paths = (
+            # Flat list-of-str containers
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            "home.manifesto_paragraphs",
+            "home.manifesto_paragraphs.0",
+            "moments.categories",
+            "moments.categories.0",
+            # Col-level exclusions (structural identifiers / routing flags)
+            "menu.sections.0.id",
+            "menu.sections.4.id",
+            "moments.grid.0.filename",
+            "moments.grid.5.filename",
+            "ordina.routes.0.id",
+            "ordina.routes.0.cta_kind",
+            "ordina.routes.2.cta_kind",
+            "contatti.channels.0.icon",
+            "contatti.channels.0.kind",
+            "contatti.channels.2.kind",
+            # Top-level navigation + empty posts
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+        )
+        for path in rejected_paths:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Brace must reject complex-shape path: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a14b_brace_structured_list_cells_are_global(self):
+        """Every STRUCTURED_FIELD_SHAPES text/image cell on Brace stays
+        global (non-translatable), including the novel deep-path menu
+        items (dict-in-dict-list) and ordina routes lines (tuple-in-
+        dict-list). Image cells are also global per D-098."""
+        from apps.editor.schema import is_translatable
+        arc = "street-modern"
+        cell_paths = (
+            # home parent lists
+            "home.stats.0.value",
+            "home.stats.3.label",
+            "home.menu_strip_items.0.name",
+            "home.menu_strip_items.5.price",
+            "home.menu_strip_items.0.image",   # image cell
+            "home.delivery_partners.0.name",
+            "home.delivery_partners.3.eta",
+            "home.crew.0.name",
+            "home.crew.2.portrait",            # image cell
+            "home.atmo_strip.0.cap",
+            "home.atmo_strip.2.image",         # image cell
+            # menu parent dict-list
+            "menu.sections.0.label",
+            "menu.sections.4.title",
+            # menu deep-path dict-in-dict-list cells (novel shape)
+            "menu.sections.0.items.0.name",
+            "menu.sections.0.items.0.image",   # image cell
+            "menu.sections.4.items.2.price",
+            "menu.sections.4.items.2.image",   # image cell
+            # menu.producers
+            "menu.producers.0.name",
+            "menu.producers.2.role",
+            # lab parent lists
+            "lab.manifesto_paragraphs.0.title",
+            "lab.manifesto_paragraphs.3.text",
+            "lab.process.0.num",
+            "lab.process.2.desc",
+            "lab.crew.0.name",
+            "lab.crew.3.portrait",             # image cell
+            "lab.values.0.title",
+            "lab.values.3.desc",
+            "lab.kitchen_specs.0.value",
+            "lab.kitchen_specs.5.label",
+            # moments.grid
+            "moments.grid.0.cap",
+            "moments.grid.5.image",            # image cell
+            # ordina parent + nested
+            "ordina.routes.0.title",
+            "ordina.routes.2.cta_label",
+            # ordina deep-path tuple cells (novel shape)
+            "ordina.routes.0.lines.0.label",
+            "ordina.routes.0.lines.2.value",
+            "ordina.routes.2.lines.2.label",
+            # ordina other lists
+            "ordina.partners.0.name",
+            "ordina.partners.3.zone",
+            "ordina.hours_rows.0.day",
+            "ordina.hours_rows.6.hours",
+            "ordina.faq.0.q",
+            "ordina.faq.3.a",
+            # contatti lists
+            "contatti.channels.0.label",
+            "contatti.channels.2.value",
+            "contatti.hours_rows.0.days",
+            "contatti.transport_rows.0.mode",
+            "contatti.jobs.0.role",
+            "contatti.social.0.platform",
+            "contatti.social.1.href",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Brace",
+            )
+
+    def test_a14b_brace_supported_locales_returns_canonical_five(self):
+        """Brace ships the canonical 5-locale set. Step-0 audit
+        confirmed 5-locale parity PERFECT (273 keys × 5 locales)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("street-modern"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a14b_brace_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the integration guardrail — Brace
+        `restaurant/street-modern/_base.html` must integrate the three
+        bridge points together on the `.sm-*` skin: (1) preview-bridge.js
+        conditional on ``preview_project``, (2) ``<title>`` honors
+        ``site.logo_word``, (3) ``<body>`` carries the
+        ``mw-is-editor-preview`` guard class when inside the editor."""
+        brace = WebTemplate.objects.get(slug="brace-street-food-lab")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/restaurant/brace-street-food-lab/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=brace)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A14b Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/restaurant/brace-street-food-lab/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A14b Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -4379,9 +4778,9 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Unknown archetype returns empty list, never raises.
-        # `street-modern` (Brace) is the current outside-gate reference
-        # pending A.14b enrollment.
-        self.assertEqual(supported_locales("street-modern"), [])
+        # `artisan-workshop` (Bottega) is the current outside-gate reference
+        # (A.14b rotated it from `street-modern`/Brace which is now enrolled).
+        self.assertEqual(supported_locales("artisan-workshop"), [])
 
     def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
         """Defensive contract: unknown paths and archetypes return False
@@ -4743,12 +5142,13 @@ class FoundationHttpTests(TestCase):
 
     def test_customize_start_unsupported_archetype_redirects_to_detail(self):
         """Templates without editor support bounce to detail with an info message."""
-        # brace-street-food-lab (street-modern archetype) is not yet
-        # enrolled. Pending A.14b. Swap when that archetype receives
+        # bottega-shop-artigianale (artisan-workshop archetype) is not yet
+        # enrolled. A.14b rotated the outside-gate reference from Brace
+        # (now enrolled) to Bottega. Swap when artisan-workshop receives
         # editor support.
-        r = self.client.get("/projects/start/?template=brace-street-food-lab")
+        r = self.client.get("/projects/start/?template=bottega-shop-artigianale")
         self.assertEqual(r.status_code, 302)
-        # Either /templates/restaurant/brace-street-food-lab/ or template_list — both accept.
+        # Either /templates/ecommerce/bottega-shop-artigianale/ or template_list — both accept.
         self.assertIn("/templates/", r["Location"])
 
     def test_autosave_endpoint_rejects_locked_keys(self):
@@ -7434,10 +7834,12 @@ class FoundationHttpTests(TestCase):
 
     # ------------------------------------------------------------------
     # A.14 · Step 2 — Sapore (trattoria-warm) lifecycle HTTP
-    # cross-cutting · OPENS the restaurant-continuation family via
-    # staged dedicated-schema progression. Brace (street-modern) stays
-    # OUT until A.14b — runtime guard re-checked at the end of this
-    # test. Novel shape exercise: deep-path menu-cell override on
+    # cross-cutting · OPENED the restaurant-continuation family via
+    # staged dedicated-schema progression. Brace (street-modern) joined
+    # the gate in A.14b — the Brace-out runtime guard that lived at the
+    # end of this test was removed and its inversion is contract-tested
+    # by `test_a14b_brace_out_guard_was_removed_from_sapore_tests`.
+    # Novel shape exercise: deep-path menu-cell override on
     # `menu.sections.0.dishes.0.name` (tuple-in-dict-list parent).
     # Sapore ships no posts list, so the complex-shape exclusion at
     # end-of-test focuses on form/story/options/hours_footer paths.
@@ -7474,10 +7876,11 @@ class FoundationHttpTests(TestCase):
            the buffer for that locale on home.headline and shows
            site.logo_word + home.hero_image as universal overrides
         8. perimeter invariants double-checked at the end of the walk:
-           Brace (street-modern) stays OUT of both gate sets at
-           runtime; complex-shape paths (form_sections, form_fields,
-           occasion_options, storia.story, site.hours_footer_rows,
-           pages) stay rejected by validate_key_path.
+           10 pre-A.14 archetypes still enrolled; complex-shape paths
+           (form_sections, form_fields, occasion_options, storia.story,
+           site.hours_footer_rows, pages) stay rejected by
+           validate_key_path. (Brace-out runtime guard was lifted in
+           A.14b — see companion symmetric-removal contract test.)
 
         Explicitly NOT exercised here: Brace editor work, coverage
         expansion, mutable rows, image per-locale, browser walk
@@ -7712,19 +8115,13 @@ class FoundationHttpTests(TestCase):
         # ── 8. perimeter invariants re-checked end-of-test ───────
         from apps.editor.schema import (
             _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
-            _ARCHETYPE_SCHEMAS as _SCHEMAS,
             InvalidEditableField,
             validate_key_path,
         )
-        # Brace (street-modern) MUST stay OUT at runtime on BOTH gates —
-        # dual guard re-checked end-of-test. The guard will be removed
-        # in A.14b together with Brace's own registrations (same pattern
-        # as A.12b Villa-out and A.13b Pixel-out).
-        self.assertNotIn("street-modern", _SCHEMAS,
-                         "Brace (street-modern) must stay OUT of _ARCHETYPE_SCHEMAS until A.14b")
-        self.assertNotIn("street-modern", _ENABLED,
-                         "Brace (street-modern) must stay OUT of multi-locale gate until A.14b")
         # 10 pre-A.14 archetypes still enrolled (runtime tenfold check).
+        # The Brace-out dual guard that lived here during A.14 was
+        # removed in A.14b — its inversion is contract-tested by
+        # `test_a14b_brace_out_guard_was_removed_from_sapore_tests`.
         for arc in (
             "agency-creative-studio", "corporate-suite", "fine-dining",
             "specialist", "classic-gold", "modern-transparent",

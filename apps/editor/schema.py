@@ -2863,6 +2863,360 @@ SAPORE_TRATTORIA_WARM_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# A.14b · Brace street-modern — 12th enrolled editor archetype, second
+# template of the restaurant-continuation family. **Closes the
+# restaurant-continuation family** opened in A.14 with Sapore. Same
+# staged dedicated-schema progression topology as real-estate
+# (A.12+A.12b) and portfolio (A.13+A.13b) — third staged closure.
+#
+# Skin uses `.sm-*` selectors (chrome `.sm-nav`/`.sm-foot`, pages
+# `.sm-hero`/`.sm-menu`/`.sm-lab`/`.sm-moments`/`.sm-ordina`/
+# `.sm-contact` etc.). 24 mature `html[dir="rtl"]` rules in
+# `_base.html` since D-078 Brace rollout.
+#
+# Shape contract notes (Step-0 audit verified):
+#   • 6 pages: home · menu · lab (about) · moments (gallery) · ordina
+#     (**novel `order` kind**) · contatti. 5-locale parity PERFECT
+#     (273 keys × 5 locales, zero gaps).
+#   • 3 SCALAR image fields (home.hero_image, lab.hero_image,
+#     moments.featured_image) + 41 image cells across 6 image-in-dict-
+#     row lists: home.menu_strip_items[].image × 6, home.crew[].portrait
+#     × 3, home.atmo_strip[].image × 3, lab.crew[].portrait × 4,
+#     moments.grid[].image × 6, **menu.sections.{0..4}.items[].image
+#     × 19 (deep-path 2-level · Chiara precedent mechanical reuse)**.
+#     Total editable image surface: 44 (3 scalar + 41 cells · 3.4×
+#     Sapore, 2.4× Villa).
+#   • Menu rows stay INSIDE perimeter via 5 deep-path shape entries
+#     `menu.sections.{i}.items` · shape identical to Chiara
+#     `home.featured_works.items` (dict-in-dict-list parent) — same
+#     depth, same infra. **Tag col IN** (Step-0 audit: 'TOP'/'NEW'/
+#     'VEG' editorial badges visible, not structural).
+#   • **Ordina routes nested lines stay INSIDE perimeter** via 3
+#     deep-path shape entries `ordina.routes.{i}.lines` · shape
+#     identical to Sapore `menu.sections.{i}.dishes` (tuple-in-dict-list
+#     parent) — same infra via commit f66ac24. **Correzione ipotesi
+#     Step-0 audit**: initial hypothesis was "OUT default unless audit
+#     proves editorial value"; audit demonstrated strong editorial
+#     value (address/phone/delivery partners values · customer would
+#     absolutely change them). IN.
+#   • `posts` list EMPTY (same as Sapore · structural absence · detail-
+#     page policy stays at 6-archetype uniform enforcement: Lex/Juris/
+#     Casa/Villa/Chiara/Pixel).
+#   • **No form structures** — Brace ships NO `contatti.form_sections`/
+#     `form_fields` list structures; only scalar form labels. Smaller
+#     out-policy set than Sapore.
+#   • Complex shapes explicitly KEPT OUT of the perimeter:
+#       - `site.hours_footer_rows` (2 rows · flat list-of-str)
+#       - `home.manifesto_paragraphs` (3 paragraphs · flat list-of-str)
+#       - `moments.categories` (6 filter pills · flat list-of-str)
+#       - `pages` (top-level navigation index)
+#   • Col-level exclusions (structural identifiers / routing flags):
+#       - `menu.sections[].id` (section slug like 'burger'/'fritti')
+#       - `moments.grid[].filename` (structural ID like 'MO-001')
+#       - `ordina.routes[].id` + `ordina.routes[].cta_kind` (structural)
+#       - `contatti.channels[].icon` + `contatti.channels[].kind`
+#   • Zero mutable repeater · zero image per-locale · pure enrollment.
+#   • 30 readonly indexed list entries in STRUCTURED_FIELD_SHAPES
+#     (22 parent + 5 menu.sections.{i}.items + 3 ordina.routes.{i}.lines).
+
+BRACE_STREET_MODERN_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".sm-nav, .sm-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "brace", "tagline", "chrome", "social"],
+        "help": "Nome lab, iniziale crest, contatti sintetici, chrome footer, social handles, CTA navigazione.",
+        "fields": [
+            ("site.logo_word",        {"label": "Nome lab", "type": "text", "max_length": 60,
+                                         "placeholder": "BRACE STREET LAB"}),
+            ("site.logo_initial",     {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",              {"label": "Tagline (strip superiore nav)", "type": "text", "max_length": 160}),
+            ("site.phone",            {"label": "Telefono (display breve)", "type": "text", "max_length": 40}),
+            ("site.phone_tel",        {"label": "Telefono (tel: href)", "type": "text", "max_length": 40}),
+            ("site.phone_display",    {"label": "Telefono (display esteso)", "type": "text", "max_length": 40}),
+            ("site.whatsapp",         {"label": "WhatsApp (display)", "type": "text", "max_length": 40}),
+            ("site.whatsapp_link",    {"label": "WhatsApp · URL completo", "type": "url", "max_length": 300}),
+            ("site.email",            {"label": "Email", "type": "text", "max_length": 120}),
+            ("site.address",          {"label": "Indirizzo (una riga)", "type": "text", "max_length": 200}),
+            ("site.hours_compact",    {"label": "Orari sintetici (strip nav)", "type": "text", "max_length": 200}),
+            ("site.license",          {"label": "Licenza / P.IVA", "type": "text", "max_length": 200}),
+            ("site.footer_intro",     {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.nav_cta",          {"label": "CTA nav · etichetta", "type": "text", "max_length": 60}),
+            ("site.nav_cta_href",     {"label": "CTA nav · destinazione", "type": "select",
+                                         "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+            ("site.nav_phone_cta",    {"label": "CTA nav · telefono", "type": "text", "max_length": 80}),
+            ("site.star_line",        {"label": "Nav · strip stellina", "type": "text", "max_length": 120}),
+            ("site.copyright",        {"label": "Footer · copyright", "type": "text", "max_length": 200}),
+            ("site.footer_hours_1",   {"label": "Footer · riga orari 1", "type": "text", "max_length": 120}),
+            ("site.footer_hours_2",   {"label": "Footer · riga orari 2", "type": "text", "max_length": 120}),
+            ("site.instagram_handle", {"label": "Instagram · handle", "type": "text", "max_length": 40}),
+            ("site.instagram_link",   {"label": "Instagram · URL", "type": "url", "max_length": 300}),
+            ("site.tiktok_handle",    {"label": "TikTok · handle", "type": "text", "max_length": 40}),
+            ("site.tiktok_link",      {"label": "TikTok · URL", "type": "url", "max_length": 300}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".sm-hero",
+        "page": "home",
+        "keywords": ["hero", "headline", "eyebrow", "intro", "badge", "counter", "cta"],
+        "help": "Primo scroll della home: hero image, eyebrow, headline, intro, badge prezzo, counter stato banco, CTA.",
+        "subgroups": [
+            {"label": "Cover image", "fields": [
+                ("home.hero_image", {"label": "Hero image · URL", "type": "image", "max_length": 400}),
+                ("home.hero_alt",   {"label": "Hero image · alt text", "type": "text", "max_length": 200}),
+            ]},
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",  {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("home.headline", {"label": "Headline", "type": "richtext", "max_length": 220,
+                                     "help": "Consentiti i tag <em> per italici."}),
+                ("home.intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Hero badge (piatto in vetrina)", "fields": [
+                ("home.hero_badge_price", {"label": "Badge · prezzo", "type": "text", "max_length": 40}),
+                ("home.hero_badge_label", {"label": "Badge · nome piatto", "type": "text", "max_length": 80}),
+                ("home.hero_badge_tag",   {"label": "Badge · tag", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Counter stato banco", "fields": [
+                ("home.counter_label",         {"label": "Counter · etichetta coda", "type": "text", "max_length": 60}),
+                ("home.counter_value",         {"label": "Counter · valore coda", "type": "text", "max_length": 40}),
+                ("home.counter_kitchen_label", {"label": "Counter · etichetta cucina", "type": "text", "max_length": 60}),
+                ("home.counter_kitchen_value", {"label": "Counter · valore cucina", "type": "text", "max_length": 40}),
+                ("home.counter_last_label",    {"label": "Counter · etichetta ultimo ordine", "type": "text", "max_length": 60}),
+                ("home.counter_last_value",    {"label": "Counter · valore ultimo ordine", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "CTA hero", "fields": [
+                ("home.primary_cta",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.primary_href",   {"label": "CTA primaria · destinazione", "type": "select",
+                                           "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+                ("home.secondary_cta",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.secondary_href", {"label": "CTA secondaria · destinazione", "type": "select",
+                                           "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".sm-menu-strip, .sm-delivery, .sm-manifesto, .sm-crew, .sm-atmo, .sm-final",
+        "page": "home",
+        "keywords": ["menu strip", "delivery", "manifesto", "crew", "atmo", "final", "cta"],
+        "help": "Fasce copy della home: stats, menu strip, delivery, manifesto, crew, atmo, CTA finale.",
+        "subgroups": [
+            {"label": "Stats intestazione", "fields": [
+                ("home.stats_label", {"label": "Stats · eyebrow", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Menu strip band", "fields": [
+                ("home.menu_strip_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.menu_strip_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.menu_strip_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.menu_strip_cta",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("home.menu_strip_cta_href", {"label": "CTA · destinazione", "type": "select",
+                                                "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+            ]},
+            {"label": "Delivery band", "fields": [
+                ("home.delivery_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.delivery_subtitle", {"label": "Subtitle", "type": "text", "max_length": 160}),
+            ]},
+            {"label": "Manifesto band", "fields": [
+                ("home.manifesto_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.manifesto_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.manifesto_cta",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("home.manifesto_cta_href", {"label": "CTA · destinazione", "type": "select",
+                                                "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+            ]},
+            {"label": "Crew intestazione", "fields": [
+                ("home.crew_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.crew_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Atmo intestazione", "fields": [
+                ("home.atmo_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.atmo_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Final CTA", "fields": [
+                ("home.final_label",         {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.final_heading",       {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.final_intro",         {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.final_primary_cta",   {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.final_primary_href",  {"label": "CTA primaria · destinazione", "type": "select",
+                                                "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+                ("home.final_phone_cta",     {"label": "CTA telefono · etichetta", "type": "text", "max_length": 60}),
+                ("home.final_phone_href",    {"label": "CTA telefono · href (tel:)", "type": "text", "max_length": 40}),
+            ]},
+        ],
+    },
+    {
+        "id": "menu_page",
+        "label": "Pagina Menu",
+        "icon": "bi-journal-text",
+        "region": ".sm-menu, .sm-menu-hero, .sm-producers",
+        "page": "menu",
+        "keywords": ["menu", "piatti", "producers", "allergeni"],
+        "help": "Intestazione pagina menu, allergeni, producers intestazione. Le sezioni del menu e i piatti si modificano dai gruppi indexed `Menu · Sections` e `Menu · Sezione N · Items`.",
+        "fields": [
+            ("menu.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("menu.headline",            {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("menu.intro",               {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("menu.allergen_label",      {"label": "Allergeni · label", "type": "text", "max_length": 80}),
+            ("menu.allergen_text",       {"label": "Allergeni · testo", "type": "textarea", "max_length": 400}),
+            ("menu.producers_label",     {"label": "Producers · eyebrow", "type": "text", "max_length": 80}),
+            ("menu.producers_heading",   {"label": "Producers · titolo", "type": "richtext", "max_length": 220}),
+            ("menu.producers_intro",     {"label": "Producers · intro", "type": "textarea", "max_length": 400}),
+            ("menu.final_label",         {"label": "Final · eyebrow", "type": "text", "max_length": 80}),
+            ("menu.final_heading",       {"label": "Final · titolo", "type": "richtext", "max_length": 220}),
+            ("menu.final_primary_cta",   {"label": "Final · CTA primaria etichetta", "type": "text", "max_length": 60}),
+            ("menu.final_primary_href",  {"label": "Final · CTA primaria destinazione", "type": "select",
+                                            "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+            ("menu.final_secondary_cta", {"label": "Final · CTA secondaria etichetta", "type": "text", "max_length": 60}),
+            ("menu.final_secondary_href",{"label": "Final · CTA secondaria destinazione", "type": "select",
+                                            "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+        ],
+    },
+    {
+        "id": "lab_page",
+        "label": "Pagina Lab (about)",
+        "icon": "bi-fire",
+        "region": ".sm-lab, .sm-lab-hero, .sm-process, .sm-values, .sm-kitchen",
+        "page": "lab",
+        "keywords": ["lab", "manifesto", "process", "values", "kitchen", "crew"],
+        "help": "Pagina il Lab: hero, manifesto, processo, valori, scheda tecnica cucina. Le crew/values/manifesto/process dettaglio si modificano dai gruppi indexed.",
+        "fields": [
+            ("lab.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("lab.headline",            {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("lab.intro",               {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("lab.hero_image",          {"label": "Hero image · URL", "type": "image", "max_length": 400}),
+            ("lab.hero_caption",        {"label": "Hero image · didascalia", "type": "text", "max_length": 200}),
+            ("lab.manifesto_label",     {"label": "Manifesto · eyebrow", "type": "text", "max_length": 80}),
+            ("lab.process_label",       {"label": "Process · eyebrow", "type": "text", "max_length": 80}),
+            ("lab.process_heading",     {"label": "Process · titolo", "type": "richtext", "max_length": 220}),
+            ("lab.crew_label",          {"label": "Crew · eyebrow", "type": "text", "max_length": 80}),
+            ("lab.crew_heading",        {"label": "Crew · titolo", "type": "richtext", "max_length": 220}),
+            ("lab.values_label",        {"label": "Values · eyebrow", "type": "text", "max_length": 80}),
+            ("lab.values_heading",      {"label": "Values · titolo", "type": "richtext", "max_length": 220}),
+            ("lab.kitchen_label",       {"label": "Kitchen · eyebrow", "type": "text", "max_length": 80}),
+            ("lab.kitchen_heading",     {"label": "Kitchen · titolo", "type": "richtext", "max_length": 220}),
+            ("lab.final_label",         {"label": "Final · eyebrow", "type": "text", "max_length": 80}),
+            ("lab.final_heading",       {"label": "Final · titolo", "type": "richtext", "max_length": 220}),
+            ("lab.final_intro",         {"label": "Final · intro", "type": "textarea", "max_length": 500}),
+            ("lab.final_primary_cta",   {"label": "Final · CTA primaria etichetta", "type": "text", "max_length": 60}),
+            ("lab.final_primary_href",  {"label": "Final · CTA primaria destinazione", "type": "select",
+                                            "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+            ("lab.final_secondary_cta", {"label": "Final · CTA secondaria etichetta", "type": "text", "max_length": 60}),
+            ("lab.final_secondary_href",{"label": "Final · CTA secondaria destinazione", "type": "select",
+                                            "choices": ["home", "menu", "lab", "moments", "ordina", "contatti"]}),
+        ],
+    },
+    {
+        "id": "moments_page",
+        "label": "Pagina Moments (gallery)",
+        "icon": "bi-images",
+        "region": ".sm-moments, .sm-moments-hero, .sm-featured",
+        "page": "moments",
+        "keywords": ["moments", "gallery", "diary", "featured"],
+        "help": "Pagina Moments: hero, categoria etichette, featured quote, CTA social. La griglia delle foto si modifica dal gruppo indexed `Moments · Grid`.",
+        "fields": [
+            ("moments.eyebrow",                {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("moments.headline",               {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("moments.intro",                  {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("moments.categories_label",       {"label": "Categories · label", "type": "text", "max_length": 40}),
+            ("moments.categories_all_label",   {"label": "Categories · label \"Tutti\"", "type": "text", "max_length": 40}),
+            ("moments.featured_image",         {"label": "Featured · immagine URL", "type": "image", "max_length": 400}),
+            ("moments.featured_quote",         {"label": "Featured · quote", "type": "textarea", "max_length": 500}),
+            ("moments.featured_author",        {"label": "Featured · autore", "type": "text", "max_length": 200}),
+            ("moments.featured_filename",      {"label": "Featured · filename (label visibile)", "type": "text", "max_length": 40}),
+            ("moments.final_label",            {"label": "Final · eyebrow", "type": "text", "max_length": 80}),
+            ("moments.final_heading",          {"label": "Final · titolo", "type": "richtext", "max_length": 220}),
+            ("moments.final_intro",            {"label": "Final · intro", "type": "textarea", "max_length": 500}),
+            ("moments.final_instagram_cta",    {"label": "Final · Instagram CTA", "type": "text", "max_length": 80}),
+            ("moments.final_tiktok_cta",       {"label": "Final · TikTok CTA", "type": "text", "max_length": 80}),
+        ],
+    },
+    {
+        "id": "ordina_page",
+        "label": "Pagina Ordina (order · NOVEL kind)",
+        "icon": "bi-basket",
+        "region": ".sm-ordina, .sm-routes, .sm-partners, .sm-phone, .sm-faq",
+        "page": "ordina",
+        "keywords": ["ordina", "order", "routes", "partners", "phone", "faq"],
+        "help": "Pagina Ordina: hero, counter stato banco, etichette routes/partners/hours/phone/FAQ. Rotte, partners, hours, FAQ si modificano dai gruppi indexed.",
+        "fields": [
+            ("ordina.eyebrow",                {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("ordina.headline",               {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("ordina.intro",                  {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("ordina.counter_status_label",   {"label": "Counter · stato label", "type": "text", "max_length": 60}),
+            ("ordina.counter_queue_label",    {"label": "Counter · coda label", "type": "text", "max_length": 60}),
+            ("ordina.counter_queue_value",    {"label": "Counter · coda valore", "type": "text", "max_length": 40}),
+            ("ordina.counter_kitchen_label",  {"label": "Counter · cucina label", "type": "text", "max_length": 60}),
+            ("ordina.counter_kitchen_value",  {"label": "Counter · cucina valore", "type": "text", "max_length": 40}),
+            ("ordina.counter_last_label",     {"label": "Counter · ultimo ordine label", "type": "text", "max_length": 60}),
+            ("ordina.counter_last_value",     {"label": "Counter · ultimo ordine valore", "type": "text", "max_length": 40}),
+            ("ordina.routes_label",           {"label": "Routes · eyebrow", "type": "text", "max_length": 80}),
+            ("ordina.routes_heading",         {"label": "Routes · titolo", "type": "richtext", "max_length": 220}),
+            ("ordina.partners_label",         {"label": "Partners · eyebrow", "type": "text", "max_length": 80}),
+            ("ordina.partners_heading",       {"label": "Partners · titolo", "type": "richtext", "max_length": 220}),
+            ("ordina.hours_label",            {"label": "Hours · eyebrow", "type": "text", "max_length": 80}),
+            ("ordina.hours_heading",          {"label": "Hours · titolo", "type": "richtext", "max_length": 220}),
+            ("ordina.hours_note",             {"label": "Hours · nota", "type": "textarea", "max_length": 300}),
+            ("ordina.allergen_label",         {"label": "Allergeni · label", "type": "text", "max_length": 80}),
+            ("ordina.allergen_text",          {"label": "Allergeni · testo", "type": "textarea", "max_length": 400}),
+            ("ordina.phone_label",            {"label": "Phone · eyebrow", "type": "text", "max_length": 80}),
+            ("ordina.phone_heading",          {"label": "Phone · titolo", "type": "richtext", "max_length": 220}),
+            ("ordina.phone_intro",            {"label": "Phone · intro", "type": "textarea", "max_length": 500}),
+            ("ordina.phone_cta_label",        {"label": "Phone · CTA etichetta", "type": "text", "max_length": 60}),
+            ("ordina.phone_cta_href",         {"label": "Phone · CTA tel:href", "type": "text", "max_length": 40}),
+            ("ordina.faq_label",              {"label": "FAQ · eyebrow", "type": "text", "max_length": 80}),
+            ("ordina.faq_heading",            {"label": "FAQ · titolo", "type": "richtext", "max_length": 220}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-geo-alt",
+        "region": ".sm-contact, .sm-contact-hero, .sm-map, .sm-transport, .sm-jobs",
+        "page": "contatti",
+        "keywords": ["contatti", "indirizzo", "mappa", "jobs", "social", "form"],
+        "help": "Pagina contatti: indirizzo, mappa, channels label, jobs, social label, form scalars. Channels/hours/transport/jobs/social list si modificano dai gruppi indexed.",
+        "fields": [
+            ("contatti.eyebrow",                         {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("contatti.headline",                        {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",                           {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("contatti.address_label",                   {"label": "Indirizzo · label", "type": "text", "max_length": 60}),
+            ("contatti.address_value",                   {"label": "Indirizzo · valore", "type": "text", "max_length": 200}),
+            ("contatti.address_note",                    {"label": "Indirizzo · nota", "type": "text", "max_length": 200}),
+            ("contatti.map_lat",                         {"label": "Mappa · latitudine", "type": "text", "max_length": 20}),
+            ("contatti.map_lon",                         {"label": "Mappa · longitudine", "type": "text", "max_length": 20}),
+            ("contatti.map_zoom",                        {"label": "Mappa · zoom", "type": "text", "max_length": 8}),
+            ("contatti.map_label",                       {"label": "Mappa · label", "type": "text", "max_length": 160}),
+            ("contatti.channels_label",                  {"label": "Channels · eyebrow", "type": "text", "max_length": 80}),
+            ("contatti.hours_label",                     {"label": "Hours · eyebrow", "type": "text", "max_length": 80}),
+            ("contatti.hours_note",                      {"label": "Hours · nota", "type": "textarea", "max_length": 300}),
+            ("contatti.transport_label",                 {"label": "Transport · eyebrow", "type": "text", "max_length": 80}),
+            ("contatti.jobs_label",                      {"label": "Jobs · eyebrow", "type": "text", "max_length": 80}),
+            ("contatti.jobs_heading",                    {"label": "Jobs · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.jobs_intro",                      {"label": "Jobs · intro", "type": "textarea", "max_length": 500}),
+            ("contatti.jobs_cta_label",                  {"label": "Jobs · CTA etichetta", "type": "text", "max_length": 60}),
+            ("contatti.jobs_cta_href",                   {"label": "Jobs · CTA href (email)", "type": "text", "max_length": 120}),
+            ("contatti.social_label",                    {"label": "Social · eyebrow", "type": "text", "max_length": 80}),
+            ("contatti.form_label",                      {"label": "Form · eyebrow", "type": "text", "max_length": 80}),
+            ("contatti.form_heading",                    {"label": "Form · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.form_intro",                      {"label": "Form · intro", "type": "textarea", "max_length": 500}),
+            ("contatti.form_field_name",                 {"label": "Form · campo Nome label", "type": "text", "max_length": 60}),
+            ("contatti.form_field_email",                {"label": "Form · campo Email label", "type": "text", "max_length": 60}),
+            ("contatti.form_field_phone",                {"label": "Form · campo Telefono label", "type": "text", "max_length": 60}),
+            ("contatti.form_field_message",              {"label": "Form · campo Messaggio label", "type": "text", "max_length": 60}),
+            ("contatti.form_field_message_placeholder",  {"label": "Form · Messaggio placeholder", "type": "text", "max_length": 200}),
+            ("contatti.form_submit_label",               {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("contatti.form_submit_note",                {"label": "Form · nota post-submit", "type": "text", "max_length": 300}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -5159,6 +5513,445 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+
+    # A.14b · Brace street-modern — 30 readonly indexed lists (22 parent
+    # + 5 menu.sections.{i}.items deep-path + 3 ordina.routes.{i}.lines
+    # deep-path). Image cols on 6 lists (home.menu_strip_items + home.crew
+    # + home.atmo_strip + lab.crew + moments.grid + menu.sections.{i}.items
+    # × 5). Total editable image surface: 44 (3 scalar + 41 cells). Menu
+    # rows inside perimeter as deep-path dict-in-dict-list parent (Chiara
+    # precedent · same depth · same infra). Ordina routes lines inside
+    # perimeter as deep-path tuple-in-dict-list parent (Sapore precedent ·
+    # same infra via commit f66ac24 A.14 Step 2 contract-alignment fix).
+    # Complex-shape exclusion: site.hours_footer_rows + home.manifesto_paragraphs
+    # + moments.categories + pages + posts (empty). Col-exclusion:
+    # menu.sections[].id (structural slug) · moments.grid[].filename (ID) ·
+    # ordina.routes[].id + cta_kind (structural) · contatti.channels[].icon
+    # + kind (structural). Zero form structures (Brace ships no form).
+    "street-modern": {
+        "home.stats": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Stats (4 celle)",
+            "icon": "bi-bar-chart",
+            "region": ".sm-stats",
+            "keywords": ["stats", "numeri", "metrics"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 60}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 80}),
+            ],
+        },
+        "home.menu_strip_items": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Menu strip items (6 piatti)",
+            "icon": "bi-egg-fried",
+            "region": ".sm-menu-strip",
+            "keywords": ["menu", "strip", "items", "piatti"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 80}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 300}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+                ("tag",   {"label": "Tag (TOP/NEW/VEG)", "type": "text", "max_length": 40}),
+                ("image", {"label": "Image · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "home.delivery_partners": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Delivery partners (4)",
+            "icon": "bi-bicycle",
+            "region": ".sm-delivery",
+            "keywords": ["delivery", "partners", "consegna"],
+            "tuple_order": ["name", "eta", "min"],
+            "cols": [
+                ("name", {"label": "Nome partner", "type": "text", "max_length": 60}),
+                ("eta",  {"label": "ETA", "type": "text", "max_length": 40}),
+                ("min",  {"label": "Minimo ordine", "type": "text", "max_length": 60}),
+            ],
+        },
+        "home.crew": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Crew (3 volti)",
+            "icon": "bi-people",
+            "region": ".sm-crew",
+            "keywords": ["crew", "staff", "portraits"],
+            "cols": [
+                ("name",     {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",     {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("quote",    {"label": "Quote", "type": "textarea", "max_length": 500}),
+                ("portrait", {"label": "Portrait · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "home.atmo_strip": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Atmo strip (3 foto)",
+            "icon": "bi-image",
+            "region": ".sm-atmo",
+            "keywords": ["atmo", "atmosphere", "strip", "foto"],
+            "cols": [
+                ("cap",   {"label": "Caption", "type": "text", "max_length": 200}),
+                ("image", {"label": "Image · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "menu.sections": {
+            "kind": "dict",
+            "page": "menu",
+            "label": "Menu · Sections (5 sezioni)",
+            "icon": "bi-list-ul",
+            "region": ".sm-menu-sections",
+            "keywords": ["menu", "sezioni", "categorie"],
+            "cols": [
+                ("label", {"label": "Etichetta sezione ('01'/'02'/...)", "type": "text", "max_length": 40}),
+                ("title", {"label": "Titolo sezione", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione sezione", "type": "textarea", "max_length": 300}),
+                # `id` col excluded (structural slug · 'burger'/'fritti'/etc.
+                # used for routing). `items` col excluded at parent level —
+                # dishes registered as 5 separate deep-path entries below so
+                # each section's items (dict-with-image-col) are editable.
+            ],
+        },
+        "menu.producers": {
+            "kind": "dict",
+            "page": "menu",
+            "label": "Menu · Producers (3 fornitori)",
+            "icon": "bi-box-seam",
+            "region": ".sm-producers",
+            "keywords": ["producers", "fornitori"],
+            "cols": [
+                ("name", {"label": "Nome fornitore", "type": "text", "max_length": 120}),
+                ("city", {"label": "Città", "type": "text", "max_length": 120}),
+                ("role", {"label": "Ruolo / descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "lab.manifesto_paragraphs": {
+            "kind": "dict",
+            "page": "lab",
+            "label": "Lab · Manifesto (4 paragrafi)",
+            "icon": "bi-journal",
+            "region": ".sm-manifesto",
+            "keywords": ["manifesto", "paragrafi"],
+            "cols": [
+                ("title", {"label": "Titolo paragrafo", "type": "text", "max_length": 120}),
+                ("text",  {"label": "Testo", "type": "textarea", "max_length": 600}),
+            ],
+        },
+        "lab.process": {
+            "kind": "dict",
+            "page": "lab",
+            "label": "Lab · Process (3 step)",
+            "icon": "bi-arrow-right-circle",
+            "region": ".sm-process",
+            "keywords": ["process", "step"],
+            "cols": [
+                ("num",   {"label": "Numero ('01'/'02'/...)", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo step", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "lab.crew": {
+            "kind": "dict",
+            "page": "lab",
+            "label": "Lab · Crew completa (4 volti)",
+            "icon": "bi-people",
+            "region": ".sm-crew",
+            "keywords": ["crew", "staff", "portraits", "lab"],
+            "cols": [
+                ("name",     {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",     {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("quote",    {"label": "Quote", "type": "textarea", "max_length": 500}),
+                ("portrait", {"label": "Portrait · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "lab.values": {
+            "kind": "dict",
+            "page": "lab",
+            "label": "Lab · Values (4 regole)",
+            "icon": "bi-check-circle",
+            "region": ".sm-values",
+            "keywords": ["values", "regole", "principi"],
+            "cols": [
+                ("title", {"label": "Titolo regola", "type": "text", "max_length": 120}),
+                ("tag",   {"label": "Tag", "type": "text", "max_length": 40}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "lab.kitchen_specs": {
+            "kind": "tuple",
+            "page": "lab",
+            "label": "Lab · Kitchen specs (6 celle)",
+            "icon": "bi-tools",
+            "region": ".sm-kitchen",
+            "keywords": ["kitchen", "specs", "scheda tecnica"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 60}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 80}),
+            ],
+        },
+        "moments.grid": {
+            "kind": "dict",
+            "page": "moments",
+            "label": "Moments · Grid (6 foto)",
+            "icon": "bi-grid",
+            "region": ".sm-grid",
+            "keywords": ["moments", "grid", "gallery"],
+            "cols": [
+                ("cap",   {"label": "Caption", "type": "textarea", "max_length": 300}),
+                ("tag",   {"label": "Tag (COUNTER QUEUE/DJ NIGHTS/...)", "type": "text", "max_length": 60}),
+                ("image", {"label": "Image · URL", "type": "image", "max_length": 400}),
+                # `filename` col excluded (structural ID · 'MO-001'/etc.).
+            ],
+        },
+        "ordina.routes": {
+            "kind": "dict",
+            "page": "ordina",
+            "label": "Ordina · Routes (3 rotte)",
+            "icon": "bi-signpost-2",
+            "region": ".sm-routes",
+            "keywords": ["routes", "rotte", "ordina"],
+            "cols": [
+                ("title",      {"label": "Titolo rotta", "type": "text", "max_length": 120}),
+                ("subtitle",   {"label": "Subtitle", "type": "text", "max_length": 120}),
+                ("desc",       {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+                ("cta_label",  {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("cta_href",   {"label": "CTA · href (URL/tel/anchor)", "type": "text", "max_length": 300}),
+                # `id` col excluded (structural '01'/'02'/'03').
+                # `cta_kind` col excluded (structural 'external'/'tel'/'anchor').
+                # `lines` col excluded at parent level — registered as 3 separate
+                # deep-path entries below so each route's nested tuple
+                # (label/value) cells are editable.
+            ],
+        },
+        "ordina.partners": {
+            "kind": "dict",
+            "page": "ordina",
+            "label": "Ordina · Partners (4 partner delivery)",
+            "icon": "bi-bicycle",
+            "region": ".sm-partners",
+            "keywords": ["partners", "delivery", "consegna"],
+            "cols": [
+                ("name", {"label": "Nome partner", "type": "text", "max_length": 60}),
+                ("eta",  {"label": "ETA", "type": "text", "max_length": 40}),
+                ("min",  {"label": "Minimo ordine", "type": "text", "max_length": 60}),
+                ("zone", {"label": "Zona copertura", "type": "text", "max_length": 160}),
+            ],
+        },
+        "ordina.hours_rows": {
+            "kind": "tuple",
+            "page": "ordina",
+            "label": "Ordina · Hours (7 giorni)",
+            "icon": "bi-clock",
+            "region": ".sm-ordina",
+            "keywords": ["hours", "orari"],
+            "tuple_order": ["day", "hours"],
+            "cols": [
+                ("day",   {"label": "Giorno", "type": "text", "max_length": 40}),
+                ("hours", {"label": "Orari", "type": "text", "max_length": 80}),
+            ],
+        },
+        "ordina.faq": {
+            "kind": "dict",
+            "page": "ordina",
+            "label": "Ordina · FAQ (4 domande)",
+            "icon": "bi-question-circle",
+            "region": ".sm-faq",
+            "keywords": ["faq", "domande"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 200}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "contatti.channels": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Channels (3 canali)",
+            "icon": "bi-broadcast",
+            "region": ".sm-channels",
+            "keywords": ["channels", "canali"],
+            "cols": [
+                ("label", {"label": "Etichetta canale", "type": "text", "max_length": 60}),
+                ("value", {"label": "Valore (numero/email)", "type": "text", "max_length": 120}),
+                ("note",  {"label": "Nota", "type": "text", "max_length": 200}),
+                ("href",  {"label": "Href", "type": "text", "max_length": 300}),
+                # `icon` col excluded (structural icon slug 'phone'/'mail'/etc.).
+                # `kind` col excluded (structural routing flag 'tel'/'email'/...).
+            ],
+        },
+        "contatti.hours_rows": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Hours (3 righe)",
+            "icon": "bi-clock",
+            "region": ".sm-contact",
+            "keywords": ["hours", "orari"],
+            "tuple_order": ["days", "hours"],
+            "cols": [
+                ("days",  {"label": "Giorni", "type": "text", "max_length": 80}),
+                ("hours", {"label": "Orari", "type": "text", "max_length": 80}),
+            ],
+        },
+        "contatti.transport_rows": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Transport (4 modi)",
+            "icon": "bi-bus-front",
+            "region": ".sm-transport",
+            "keywords": ["transport", "trasporti"],
+            "tuple_order": ["mode", "note"],
+            "cols": [
+                ("mode", {"label": "Modo (BUS/TRENO/...)", "type": "text", "max_length": 40}),
+                ("note", {"label": "Nota", "type": "text", "max_length": 200}),
+            ],
+        },
+        "contatti.jobs": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Jobs (3 posizioni)",
+            "icon": "bi-briefcase",
+            "region": ".sm-jobs",
+            "keywords": ["jobs", "lavoro"],
+            "cols": [
+                ("role", {"label": "Ruolo", "type": "text", "max_length": 80}),
+                ("type", {"label": "Tipologia (FULL TIME/...)", "type": "text", "max_length": 40}),
+                ("city", {"label": "Città", "type": "text", "max_length": 60}),
+            ],
+        },
+        "contatti.social": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Social (2 account)",
+            "icon": "bi-instagram",
+            "region": ".sm-social",
+            "keywords": ["social", "instagram", "tiktok"],
+            "cols": [
+                ("platform", {"label": "Piattaforma", "type": "text", "max_length": 60}),
+                ("handle",   {"label": "Handle", "type": "text", "max_length": 60}),
+                ("href",     {"label": "URL completo", "type": "url", "max_length": 300}),
+            ],
+        },
+        # --- Menu deep-path · 5 separate entries (dict-in-dict-list
+        # parent · Chiara precedent) · each items list has image col ---
+        "menu.sections.0.items": {
+            "kind": "dict",
+            "page": "menu",
+            "label": "Menu · Sezione 1 · Items (4 piatti con foto)",
+            "icon": "bi-egg-fried",
+            "region": ".sm-menu-sections",
+            "keywords": ["piatti", "burger", "items", "menu"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+                ("tag",   {"label": "Tag (TOP/NEW/VEG)", "type": "text", "max_length": 40}),
+                ("image", {"label": "Image · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "menu.sections.1.items": {
+            "kind": "dict",
+            "page": "menu",
+            "label": "Menu · Sezione 2 · Items (4 piatti con foto)",
+            "icon": "bi-egg-fried",
+            "region": ".sm-menu-sections",
+            "keywords": ["piatti", "fritti", "items", "menu"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+                ("tag",   {"label": "Tag", "type": "text", "max_length": 40}),
+                ("image", {"label": "Image · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "menu.sections.2.items": {
+            "kind": "dict",
+            "page": "menu",
+            "label": "Menu · Sezione 3 · Items (4 piatti con foto)",
+            "icon": "bi-egg-fried",
+            "region": ".sm-menu-sections",
+            "keywords": ["piatti", "pizza", "items", "menu"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+                ("tag",   {"label": "Tag", "type": "text", "max_length": 40}),
+                ("image", {"label": "Image · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "menu.sections.3.items": {
+            "kind": "dict",
+            "page": "menu",
+            "label": "Menu · Sezione 4 · Items (4 piatti con foto)",
+            "icon": "bi-egg-fried",
+            "region": ".sm-menu-sections",
+            "keywords": ["piatti", "drink", "items", "menu"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+                ("tag",   {"label": "Tag", "type": "text", "max_length": 40}),
+                ("image", {"label": "Image · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "menu.sections.4.items": {
+            "kind": "dict",
+            "page": "menu",
+            "label": "Menu · Sezione 5 · Items (3 piatti con foto)",
+            "icon": "bi-egg-fried",
+            "region": ".sm-menu-sections",
+            "keywords": ["piatti", "dolci", "items", "menu"],
+            "cols": [
+                ("name",  {"label": "Nome piatto", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo", "type": "text", "max_length": 40}),
+                ("tag",   {"label": "Tag", "type": "text", "max_length": 40}),
+                ("image", {"label": "Image · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        # --- Ordina.routes deep-path · 3 separate entries (tuple-in-dict-list
+        # parent · Sapore precedent · same infra via f66ac24 A.14 Step 2) ---
+        "ordina.routes.0.lines": {
+            "kind": "tuple",
+            "page": "ordina",
+            "label": "Ordina · Route 1 · Lines (3 righe)",
+            "icon": "bi-signpost",
+            "region": ".sm-routes",
+            "keywords": ["lines", "indirizzo", "banco"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta (INDIRIZZO/TELEFONO/...)", "type": "text", "max_length": 60}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 300}),
+            ],
+        },
+        "ordina.routes.1.lines": {
+            "kind": "tuple",
+            "page": "ordina",
+            "label": "Ordina · Route 2 · Lines (3 righe)",
+            "icon": "bi-signpost",
+            "region": ".sm-routes",
+            "keywords": ["lines", "takeaway", "telefono"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 60}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 300}),
+            ],
+        },
+        "ordina.routes.2.lines": {
+            "kind": "tuple",
+            "page": "ordina",
+            "label": "Ordina · Route 3 · Lines (3 righe)",
+            "icon": "bi-signpost",
+            "region": ".sm-routes",
+            "keywords": ["lines", "delivery", "partner"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 60}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 300}),
+            ],
+        },
+    },
 }
 
 
@@ -5222,6 +6015,19 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # editable. Sapore ships no posts list — first enrollment since A.10
     # without a posts.* complex-shape exclusion path.
     "trattoria-warm":         ("sapore-trattoria-pizzeria", "it"),
+    # A.14b · Brace (street-modern) joins as 12th enrolled archetype —
+    # second template of the restaurant-continuation family. **Closes
+    # the family** opened in A.14 with Sapore · third staged dedicated-
+    # schema closure after real-estate (A.12+A.12b) and portfolio
+    # (A.13+A.13b). Distinct archetype from Sapore: 50% page-slug
+    # overlap, menu shape fundamentally different (dict-with-image-col
+    # vs nested tuple), image surface 3.4× larger, zero form structures.
+    # Reuses infra fully: deep-path dict-in-dict-list parent (Chiara
+    # precedent for menu.sections.{i}.items) + deep-path tuple-in-dict-
+    # list parent (Sapore precedent for ordina.routes.{i}.lines via
+    # f66ac24 A.14 Step 2 render-side contract-alignment fix). Zero
+    # new infrastructure required.
+    "street-modern":          ("brace-street-food-lab", "it"),
 }
 
 
@@ -5272,6 +6078,13 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # register deep-path structured lists (menu.sections.{i}.dishes)
     # because the menu shape requires per-section dish editability.
     "trattoria-warm":         SAPORE_TRATTORIA_WARM_SCHEMA,
+    # A.14b · Brace — closes the restaurant-continuation family opened
+    # in A.14 with Sapore. Third staged dedicated-schema closure.
+    # Mechanical reuse of all A.14-established infra: deep-path tuple-
+    # in-dict-list (Sapore) + deep-path dict-in-dict-list (Chiara) +
+    # image-in-dict-row (Vertex/Villa). Zero service-layer / rendering /
+    # editor-widget changes required — pure enrollment on 3-file surface.
+    "street-modern":          BRACE_STREET_MODERN_SCHEMA,
 }
 
 
@@ -5818,6 +6631,19 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # regressions. Gated by
     # ``test_a14_sapore_full_multilocale_lifecycle_end_to_end``.
     "trattoria-warm",
+    # A.14b · Brace (street-modern · restaurant-continuation family ·
+    # second template) joins editor + multi-locale in a single phase,
+    # CLOSING the restaurant-continuation family opened by A.14 Sapore.
+    # Third staged dedicated-schema closure topology (real-estate and
+    # portfolio closed · restaurant-continuation now third). Mechanical
+    # reuse of A.14 recipe: menu rows via deep-path dict-in-dict-list
+    # parent (Chiara precedent), ordina routes via deep-path tuple-in-
+    # dict-list parent (Sapore precedent via f66ac24 fix). No posts
+    # list in the registry (first enrollment since A.10 to share this
+    # structural absence with Sapore). No form structures (Brace ships
+    # zero). Gated by
+    # ``test_a14b_brace_full_multilocale_lifecycle_end_to_end``.
+    "street-modern",
 })
 
 
