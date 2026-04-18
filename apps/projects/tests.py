@@ -3266,9 +3266,8 @@ class FoundationModelTests(TestCase):
     def test_a13_chiara_archetype_registered(self):
         """``editorial-designer-grid`` joins the schema + baseline +
         gate registries as 9th enrolled archetype, opening the portfolio
-        family. Pixel (`cinematic-photographer`) stays explicitly OUT —
-        guard mirror of the A.12 Villa-out pattern, will be removed in
-        A.13b together with Pixel's own registrations.
+        family. (Pixel `cinematic-photographer` was the A.13b phase;
+        that test lives below.)
 
         All 8 previous archetypes (incl. Casa + Villa from real-estate
         family closure) must remain enrolled — A.13 is additive.
@@ -3284,13 +3283,6 @@ class FoundationModelTests(TestCase):
         )
         self.assertIn("editorial-designer-grid", _MULTILOCALE_ENABLED_ARCHETYPES)
         self.assertTrue(is_supported_archetype("editorial-designer-grid"))
-        # Pixel-out guard — explicit assertion that Pixel stays out
-        # until A.13b. Removed in A.13b together with Pixel's own
-        # registrations (registration-time + lifecycle runtime).
-        self.assertNotIn("cinematic-photographer", _ARCHETYPE_SCHEMAS,
-                         "Pixel must stay out of _ARCHETYPE_SCHEMAS until A.13b")
-        self.assertNotIn("cinematic-photographer", _MULTILOCALE_ENABLED_ARCHETYPES,
-                         "Pixel must stay out of _MULTILOCALE_ENABLED_ARCHETYPES until A.13b")
         # All 8 pre-existing archetypes still enrolled — A.13 is additive.
         for arc in ("agency-creative-studio", "corporate-suite",
                     "fine-dining", "specialist", "classic-gold",
@@ -3599,6 +3591,331 @@ class FoundationModelTests(TestCase):
         body_proj = r_proj.content.decode("utf-8", "ignore")
         self.assertIn("editor/preview-bridge.js", body_proj)
         self.assertIn("<title>A13 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
+    # ------------------------------------------------------------------
+    # A.13b · Pixel (cinematic-photographer · portfolio family)
+    # ------------------------------------------------------------------
+
+    def test_a13b_pixel_archetype_registered(self):
+        """``cinematic-photographer`` joins the schema + baseline +
+        gate registries as 10th enrolled archetype, closing the
+        portfolio family opened in A.13 with Chiara. Same staged
+        dedicated-schema progression pattern as real-estate
+        (A.12+A.12b). Chiara (`editorial-designer-grid`) must stay
+        enrolled — A.13b is additive.
+        """
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("cinematic-photographer", _ARCHETYPE_SCHEMAS)
+        self.assertEqual(
+            _ARCHETYPE_BASELINE_TEMPLATE["cinematic-photographer"],
+            ("pixel-portfolio-fotografico", "it"),
+        )
+        self.assertIn("cinematic-photographer", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("cinematic-photographer"))
+        # Chiara (editorial-designer-grid) must STAY enrolled.
+        self.assertIn("editorial-designer-grid", _ARCHETYPE_SCHEMAS)
+        self.assertIn("editorial-designer-grid", _MULTILOCALE_ENABLED_ARCHETYPES)
+        # All 8 pre-A.13 archetypes still enrolled — A.13b is additive.
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist", "classic-gold",
+                    "modern-transparent", "mass-market",
+                    "ultra-luxury-cinematic"):
+            self.assertIn(arc, _ARCHETYPE_SCHEMAS,
+                          f"{arc} must remain enrolled after A.13b Pixel joins")
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} must keep multi-locale gate after A.13b")
+
+    def test_a13b_pixel_out_guard_was_removed_from_chiara_tests(self):
+        """USER-IMPOSED GUARDRAIL · verifies controlled removal of the
+        Pixel-out guard that lived in A.13 Chiara tests.
+
+        The proof is indirect but airtight: if the Pixel-out assertions
+        had been left in place while Pixel joined the gate, the Chiara
+        tests (`test_a13_chiara_archetype_registered` +
+        `test_a13_chiara_full_multilocale_lifecycle_end_to_end`) would
+        fail at the ``assertNotIn("cinematic-photographer", ...)`` step
+        because Pixel IS now in both gate sets. A green run of those
+        two Chiara tests implies the guard was removed correctly. This
+        test makes the implication explicit by checking the gate state
+        the Chiara tests now rely on: Pixel MUST be in
+        `_ARCHETYPE_SCHEMAS` AND in `_MULTILOCALE_ENABLED_ARCHETYPES`
+        AND Chiara MUST still be in both.
+
+        Mirror of A.12b `test_a12b_villa_out_guard_was_removed_from_casa_tests`.
+        """
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("cinematic-photographer", _ARCHETYPE_SCHEMAS,
+                      "Pixel must be in _ARCHETYPE_SCHEMAS post-A.13b")
+        self.assertIn("cinematic-photographer", _MULTILOCALE_ENABLED_ARCHETYPES,
+                      "Pixel must be in _MULTILOCALE_ENABLED_ARCHETYPES post-A.13b")
+        self.assertIn("editorial-designer-grid", _ARCHETYPE_SCHEMAS,
+                      "Chiara must still be in _ARCHETYPE_SCHEMAS post-A.13b")
+        self.assertIn("editorial-designer-grid", _MULTILOCALE_ENABLED_ARCHETYPES,
+                      "Chiara must still be in _MULTILOCALE_ENABLED_ARCHETYPES post-A.13b")
+
+    def test_a13b_pixel_schema_shape_covers_all_pages(self):
+        """The Pixel schema must surface groups for every Pixel page
+        slug (home + serie + biografia + pubblicazioni + contatti)
+        plus chrome-level groups (page='*'). The novel `series_list`
+        and `publications` page kinds are plain string identifiers —
+        no view dispatch."""
+        groups = iter_groups("cinematic-photographer")
+        self.assertGreaterEqual(len(groups), 8)
+        pages = {g.get("page") for g in groups}
+        for slug in ("*", "home", "serie", "biografia",
+                     "pubblicazioni", "contatti"):
+            self.assertIn(slug, pages,
+                          f"Pixel schema missing page slug {slug!r}")
+
+    def test_a13b_pixel_is_translatable_text_fields(self):
+        """Scalar copy fields distributed across every Pixel page +
+        chrome."""
+        from apps.editor.schema import is_translatable
+        arc = "cinematic-photographer"
+        distributed_paths = (
+            # home
+            "home.headline",
+            "home.subhead",
+            "home.filmstrip_heading",
+            "home.about_excerpt",
+            "home.cta_heading",
+            # serie (novel series_list kind)
+            "serie.headline",
+            "serie.subhead",
+            "serie.index_intro",
+            "serie.cta_heading",
+            # biografia
+            "biografia.headline",
+            "biografia.subhead",
+            "biografia.statement_heading",
+            "biografia.kit_heading",
+            "biografia.timeline_heading",
+            # pubblicazioni (novel publications kind)
+            "pubblicazioni.headline",
+            "pubblicazioni.subhead",
+            "pubblicazioni.press_heading",
+            "pubblicazioni.exhibitions_heading",
+            "pubblicazioni.awards_heading",
+            # contatti
+            "contatti.headline",
+            "contatti.form_consent",
+            "contatti.studio_address",
+            "contatti.footnote",
+            # chrome site.*
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+            "site.foot_studio",
+            "site.foot_kit",
+            "site.nav_cta",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on cinematic-photographer",
+            )
+
+    def test_a13b_pixel_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Pixel — same
+        contract as every previously-enrolled archetype."""
+        from apps.editor.schema import is_translatable
+        arc = "cinematic-photographer"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on Pixel",
+            )
+
+    def test_a13b_pixel_hero_image_scalar_exposed(self):
+        """USER-IMPOSED GUARDRAIL · `home.hero_image` IS exposed as a
+        scalar image field (the only editable image surface in A.13b
+        first wave).
+
+        Positive assertion: `get_field_spec` returns a spec with
+        `type="image"` for `home.hero_image`. No image-in-dict-row
+        is exposed on Pixel in A.13b (unlike Chiara's
+        `home.featured_works.items[].image` at deep path 2 levels).
+        All image cells that exist in the registry (`posts[*].cover_image`)
+        live under `posts` which stays registry-only — see the
+        complex-shape exclusion test.
+        """
+        from apps.editor.schema import get_field_spec
+        arc = "cinematic-photographer"
+        spec = get_field_spec(arc, "home.hero_image")
+        self.assertIsNotNone(spec,
+                             "home.hero_image must be reachable via get_field_spec")
+        self.assertEqual(
+            spec.get("type"), "image",
+            f"home.hero_image must carry type='image' (got {spec.get('type')!r})",
+        )
+
+    def test_a13b_pixel_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL · complex-shape exclusion test.
+
+        Four categories of complex registry shapes must stay OUT of
+        Pixel's editor perimeter (6th uniform enforcement across
+        Lex/Juris/Casa/Villa/Chiara/Pixel):
+
+        (1) **Per-series `posts` entries** (3 series detail records)
+            INCLUDING the `posts[].cover_image` image col which must
+            never reach the editor. This is the explicit
+            detail-page-out policy enforcement for Pixel. Same
+            perimeter policy applied to Lex `notabili`, Juris
+            `insights`, Casa `posts`, Villa `posts`, Chiara `posts`.
+
+        (2) Flat list-of-str containers:
+              - `serie.filters` (5 filter pills)
+              - `biografia.statement_paragraphs` (5 bio paragraphs)
+              - `site.kit_footer_rows` (3 footer kit rows)
+
+        (3) Form structure blocks:
+              - `contatti.form_fields` + `contatti.form_sections`
+                + `contatti.upload_field`
+
+        Every path listed must fail `validate_key_path`.
+        """
+        from apps.editor.schema import validate_key_path
+        arc = "cinematic-photographer"
+        validate_rejects = [
+            # (1) per-series posts entries (incl. cover_image explicit)
+            "posts",
+            "posts.0.title",
+            "posts.0.lead",
+            "posts.0.sections",
+            "posts.0.gallery",
+            "posts.0.print_meta",
+            "posts.0.exif_credits",
+            "posts.0.cover_image",  # image col that must stay registry-only
+            "posts.1.cover_image",
+            "posts.2.cover_image",
+            "posts.2.next_label",
+            # (2) flat list-of-str containers
+            "serie.filters",
+            "serie.filters.0",
+            "biografia.statement_paragraphs",
+            "biografia.statement_paragraphs.0",
+            "site.kit_footer_rows",
+            "site.kit_footer_rows.0",
+            # (3) form structure blocks
+            "contatti.form_fields",
+            "contatti.form_fields.0.name",
+            "contatti.form_sections",
+            "contatti.form_sections.0.title",
+            "contatti.upload_field",
+            "contatti.upload_field.label",
+        ]
+        for path in validate_rejects:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"{path} MUST be rejected by validate_key_path on cinematic-photographer",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a13b_pixel_structured_list_cells_are_global(self):
+        """The 10 readonly indexed lists on Pixel stay global at cell
+        level — text cols exposed via STRUCTURED_FIELD_SHAPES are
+        customer-editable but never per-locale."""
+        from apps.editor.schema import is_translatable
+        arc = "cinematic-photographer"
+        cell_paths = (
+            "home.hero_credit_cells.0.label",
+            "home.hero_credit_cells.3.value",
+            "home.filmstrip.0.title",
+            "home.filmstrip.3.discipline",
+            "home.publications.0.outlet",
+            "home.publications.2.period",
+            "biografia.kit.0.model",
+            "biografia.kit.3.body",
+            "biografia.timeline.0.year",
+            "biografia.timeline.11.body",
+            "pubblicazioni.press.0.year",
+            "pubblicazioni.press.7.outlet",
+            "pubblicazioni.exhibitions.0.title",
+            "pubblicazioni.exhibitions.5.period",
+            "pubblicazioni.awards.0.title",
+            "pubblicazioni.awards.5.subject",
+            "contatti.channels.0.label",
+            "contatti.channels.3.note",
+            "site.exif_footer.0.label",
+            "site.exif_footer.3.value",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Pixel",
+            )
+
+    def test_a13b_pixel_supported_locales_returns_canonical_five(self):
+        """Pixel ships the canonical 5-locale set. Step-0 audit
+        confirmed PERFECT parity (154 keys × 5 locales, zero gaps)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("cinematic-photographer"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a13b_ninefold_regression_after_pixel_joins(self):
+        """Regression guard: adding Pixel to gate + schemas must not
+        disturb ANY of the nine pre-existing enrollments (Vertex +
+        Pragma + Gusto + specialist + classic-gold + modern-transparent
+        + mass-market + ultra-luxury-cinematic + editorial-designer-grid)."""
+        from apps.editor.schema import is_translatable, supported_locales
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist", "classic-gold",
+                    "modern-transparent", "mass-market",
+                    "ultra-luxury-cinematic", "editorial-designer-grid"):
+            self.assertTrue(
+                is_translatable(arc, "home.headline"),
+                f"{arc} home.headline must stay translatable",
+            )
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must keep the canonical 5-locale set",
+            )
+
+    def test_a13b_pixel_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.8/A.9/A.10/A.11/A.12/A.12b/A.13 integration
+        guardrail — the Pixel ``cinematic-photographer/_base.html``
+        must integrate the three bridge points together on the `.cp-*`
+        skin: (1) preview-bridge.js conditional on ``preview_project``,
+        (2) ``<title>`` honors ``site.logo_word``, (3) ``<body>``
+        carries the ``mw-is-editor-preview`` guard class when inside
+        the editor."""
+        pixel = WebTemplate.objects.get(slug="pixel-portfolio-fotografico")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/portfolio/pixel-portfolio-fotografico/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=pixel)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A13b Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/portfolio/pixel-portfolio-fotografico/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A13b Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
@@ -6243,19 +6560,14 @@ class FoundationHttpTests(TestCase):
         AR response head must carry ``<html dir="rtl" lang="ar">`` on
         the `.ed-*` skin (the prefix collides with the editor sidebar
         namespace but lives in a different DOM tree · no functional
-        conflict · verified Step-0). **Pixel (cinematic-photographer)
-        must remain OUT of the gate throughout** — runtime guard at
-        start AND end of test. **Posts/detail-page editing is NOT
+        conflict · verified Step-0). **Posts/detail-page editing is NOT
         exercised here** — it's a coherent perimeter decision
         consistent with Lex/Juris/Casa/Villa per-item content policy,
         deferred to a future horizontal phase if customer signal emerges.
+        The Pixel-out runtime guard that lived here until A.13 was
+        removed in A.13b together with Pixel's own registrations.
         """
         import json as _json
-        from apps.editor.schema import _MULTILOCALE_ENABLED_ARCHETYPES
-
-        # Pixel guard — must stay OUT throughout A.13 lifecycle.
-        self.assertNotIn("cinematic-photographer", _MULTILOCALE_ENABLED_ARCHETYPES,
-                         "Pixel must remain OUT of multi-locale gate until A.13b")
 
         chiara = WebTemplate.objects.get(slug="chiara-portfolio-creativo")
         p = services.create_project_from_template(owner=self.owner, template=chiara)
@@ -6466,10 +6778,6 @@ class FoundationHttpTests(TestCase):
         self.assertEqual(founder_img_field["value"], IMG_FOUNDER)
         self.assertTrue(founder_img_field["is_overridden"])
         self.assertFalse(founder_img_field["translatable"])
-
-        # Pixel guard (re-check end-of-test) — must still be OUT.
-        self.assertNotIn("cinematic-photographer", _MULTILOCALE_ENABLED_ARCHETYPES,
-                         "Pixel must stay OUT of gate past Chiara lifecycle · removal is A.13b")
 
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
