@@ -1,5 +1,103 @@
 # Session Log
 
+## Session 69 — Phase A.14 · Sapore (trattoria-warm · restaurant-continuation family · first template) Editor + Multi-locale Enrollment · OPENS RESTAURANT-CONTINUATION FAMILY (2026-04-18)
+
+**Summary.** Eleventh archetype enrolled in the editor: `trattoria-warm` (Sapore). Single-template phase — Sapore opens the restaurant-continuation family via the same staged dedicated-schema progression topology already used twice (real-estate A.12→A.12b · portfolio A.13→A.13b). Brace (`street-modern`) stays OUT until A.14b, guarded by a dual registration-time + runtime absence check. Menu rows stay **inside the perimeter** as deep-path tuple cells — novel shape (tuple-in-dict-list parent) required a contract-alignment bugfix on the render side so the 3 editor layers (save · schema · render) now speak the same language on list numeric indexing. 252/252 tests · 834/834 smoke · 5-locale browser walk green including end-to-end menu cell override verification. Catalog 20/20 `published_live` unchanged.
+
+**Restaurant-continuation family is now OPEN but NOT YET CLOSED.** Four families fully editor-complete (law · medical-specialist · real-estate · portfolio) + 1 family partially open with Sapore IN · Brace pending A.14b. 11 archetype slugs enrolled · 11 multi-locale enrolled · 12 templates editable end-to-end. 8 templates still editor-unsupported across 5 residual open families (Brace · 3 medical-other · 2 ecommerce · Aura · Elevate).
+
+### Sapore-first scope decision
+
+Step-0 planning audit confirmed shared-schema IMPOSSIBLE (50% page-slug overlap · menu shape fundamentally different: Sapore nested tuple vs Brace nested dict-with-image-col · image surface ratio 1:3.5 · form structure presence inverted). Staged dedicated-schema progression is the correct topology — mirrors real-estate (Casa/Villa) and portfolio (Chiara/Pixel) precedents. Sapore-first chosen over Brace-first because: lighter shape (12 lists-of-dict vs 18) · simpler menu (tuple vs dict-with-image-col) · smaller image surface (13 vs ~45 surfaces) · Gusto (A.8) provides more direct pattern reuse for `trattoria-warm` than for `street-modern`.
+
+Three bundling alternatives explicitly rejected (all violate "one phase = one archetype decision" discipline now 12 phases strong A.6 → A.14):
+- Mixing Sapore + Brace in single phase — family closure would be fine in a DIFFERENT topology (shared-schema), but shared-schema impossible here.
+- Bundling detail-page editing — detail-page policy is horizontal feature affecting 6+ archetypes with per-item content, not A.14-special-casing.
+- Bundling per-locale image — D-098 invariant, product decision not planning tweak.
+
+### Step 0 · Planning / audit decisions
+
+Runtime audit before any code change:
+- Archetype slug `trattoria-warm` · skin `restaurant/trattoria-warm/` · CSS `.tw-*` (60 hits) · 18 mature `html[dir="rtl"]` rules since D-078 Sapore rollout (Session 48).
+- 6 pages: home · menu · storia (about) · forno (**signature · novel kind**) · eventi (**events · novel kind**) · contatti. Novel kinds are plain string identifiers in the registry — no view dispatch, no new infra.
+- 5-locale parity PERFECT (224 keys × 5 locales, zero gaps).
+- 7 top-level scalar image fields + 2 image-in-dict-row lists (home.family + storia.family × 3 portraits each) = **13 total editable image surfaces**.
+- **`posts` list EMPTY** on Sapore — first enrollment since A.10 without posts, so no `posts.*` paths to reject (absence is structural).
+- **Menu rows kept inside perimeter** via 5 deep-path entries `menu.sections.{0..4}.dishes` — section sizes verified runtime (7/7/6/5/5). This is the novel shape: tuple-list nested inside a dict-list parent (not Chiara's dict-list nested inside a dict parent).
+
+### Step 1 · Schema + skin bridge + contract tests (+ schema._resolve_path extension)
+
+- `SAPORE_TRATTORIA_WARM_SCHEMA` added in `apps/editor/schema.py` — 8 sidebar groups (brand · hero_home · home_bands · menu_page · storia_page · forno_page · eventi_page · contatti_page) · ~141 scalar fields · 7 scalar image fields.
+- `STRUCTURED_FIELD_SHAPES["trattoria-warm"]` with 20 readonly indexed lists: 15 base (home.family/reviews/facts/chalkboard_days/hours_rows · menu.sections parent · storia.timeline/family/values · forno.pizza_signatures/pasta_signatures/producers · eventi.experiences · contatti.transport/hours_table) + **5 deep-path `menu.sections.{i}.dishes` entries** (novel nested-tuple-in-dict-list parent shape).
+- 3 gate registrations · `_ARCHETYPE_BASELINE_TEMPLATE["trattoria-warm"] = ("sapore-trattoria-pizzeria", "it")` + `_ARCHETYPE_SCHEMAS["trattoria-warm"] = SAPORE_TRATTORIA_WARM_SCHEMA` + `"trattoria-warm"` in `_MULTILOCALE_ENABLED_ARCHETYPES`.
+- 3 atomic fixes on `templates/live_templates/restaurant/trattoria-warm/_base.html`: title `site.logo_word|default:brand.brand_name` · body `mw-is-editor-preview` guard class · `.tw-*` CSS guard block suppressing marketplace strip + clamping wordmark · preview-bridge.js conditional on `preview_project`.
+- **Narrow schema-helper extension** `apps/editor/schema.py::_resolve_path` — +8 lines to handle list numeric indexing (mirror of already-existing `apps/projects/services.py::_resolve_path` capability). Required for `_iter_indexed_groups` to resolve the novel deep-path `menu.sections.{i}.dishes` lists. Zero impact on 10 archetypes pre-A.14 (their paths are dict-only); strict backwards-compat.
+- **Brace-out dual guard** — 2 `assertNotIn("street-modern", ...)` layers in `test_a14_sapore_archetype_registered` (registration-time) + runtime re-check at end of the lifecycle test. Matches A.12b Villa-out + A.13b Pixel-out pattern.
+- **5 pre-existing unsupported-archetype fixtures updated** to reference `street-modern`/`brace-street-food-lab` (previously referenced `trattoria-warm`/`sapore-trattoria-pizzeria`). Housekeeping — Brace is now the outside-gate reference.
+- 12 new A.14 contract tests covering archetype registration + schema shape + translatable distribution + universals-are-global + positive spec on hero image + image-in-dict-row positive · deep-path menu positive · complex-shape exclusion · structured-list cells globality · supported_locales · tenfold regression · preview-bridge 3-point integration on `.tw-*`.
+- Commit `ef74b4e` · `feat: add trattoria-warm archetype editor schema` · 3 files · +1087 / −18.
+
+### Step 2 · Render-side contract-alignment fix + lifecycle HTTP test (2 commits)
+
+**Discovered mid-Step-2**: `apps/editor/rendering.py::_apply_indexed` parent-walk assumed dict-only — silently returned early when the parent chain crossed a list (e.g. Sapore's `menu.sections.0.dishes` where `sections` is a list). Consequence: menu-cell overrides were **accepted by the save layer** (persisted correctly via `content_overrides` table because `services._resolve_path` already supported list-indexing) but **never applied at render time**. The customer would see the authored dish name, not their edit. Silent drop — exactly the kind of runtime incoherence Step-2 was supposed to "blindare bene a runtime" per user guardrail.
+
+This is **NOT a new feature**. It's a contract-alignment bugfix across three layers that ALREADY had to speak the same language:
+- `apps/projects/services.py::_resolve_path` (save / sparse-diff / prefill): **already** supported dict + list + tuple-col
+- `apps/editor/schema.py::_resolve_path` (schema helper): extended in Step 1 (narrow mirror)
+- `apps/editor/rendering.py::_apply_indexed` (render-time splicer): was the outlier · **now fixed**
+
+The fix is minimal (8-line extension of the parent-walk in `_apply_indexed`: dict parent → `.get(seg)`, list parent → `int(seg)` → `list[idx]`, other → return) and fully backwards-compat (10 archetypes pre-A.14 never exercise the list branch because their `STRUCTURED_FIELD_SHAPES` keys have dict-only parent chains).
+
+**2-commit split** adopted for clean history:
+- Commit `f66ac24` · `fix: apply indexed overrides through list parents in renderer` · 1 file · +19 / −3 · production-code bug fix isolated
+- Commit `7a8e1c3` · `test: lock trattoria-warm lifecycle end to end` · 1 file · +321 LOC · test-only, blocks the regression via end-to-end menu cell override verification
+
+Lifecycle test `test_a14_sapore_full_multilocale_lifecycle_end_to_end` covers:
+1. 3 autosaves IT/EN/FR on `home.headline` → `@<locale>:home.headline` × 3
+2. Global `site.logo_word` via EN autosave → plain-keyed (explicit `assertNotIn("@en:")`)
+3. Scalar image `home.hero_image` → plain-keyed across all 5 locales (5× `assertNotIn("@<locale>:home.hero_image")`)
+4. **Deep-path menu cell `menu.sections.0.dishes.0.name`** → plain-keyed across all 5 locales (5× `assertNotIn`) · **proves the render-side fix applies end-to-end**
+5. Publish · 5-locale second-user public preview with `IMG_HERO` + `DISH_NAME` + global logo universali
+6. IT/EN/FR render their locale override · ES/AR authored fallback + universals preserved
+7. AR `<html dir="rtl" lang="ar">` on `.tw-*` skin (18 RTL rules mature)
+8. Owner reopen per locale · prefill corretto
+9. End-of-test perimeter invariants · Brace OUT dual + 10 archetypes pre-A.14 still enrolled + 11 complex-shape paths rejected
+
+### Step 3 · Browser walk (5-locale · real browser)
+
+Playwright walk on fresh Sapore draft covered every user-visible surface:
+- Editor mount with `?lang=it` · 5 pills `data-ed-lang` · IT active · label "Lingua attiva"
+- **13 image widgets in sidebar · match esatto del piano** (7 scalar: home.hero_image · home.forno_image · home.tavolata_image · storia.photo_image · forno.forno_story_image · forno.dough_image · eventi.birthday_image + 6 cells: home.family.{0,1,2}.portrait + storia.family.{0,1,2}.portrait)
+- 29 sidebar groups (8 scalar + 20 indexed + 1 tokens) · 121 translatable fields · 417 total field wrappers
+- **5 out-of-perimeter prefixes absent** (`contatti.form_sections`, `contatti.form_fields`, `contatti.occasion_options`, `storia.story`, `site.hours_footer_rows` · 0 hits each)
+- Flush-before-switch verified IT→EN and EN→FR · EN prefill "At Nonna Rosa's, like family." · FR prefill "Chez Nonna Rosa, comme à la maison."
+- 3 locale overrides + 3 plain-keyed globals persisted including **deep-path menu cell `menu.sections.0.dishes.0.name → "A14 Walk Piatto Signature"`**
+- ES fallback authored "En casa de Nonna Rosa, como en casa." · zero walk-text leak · 3 universals visible in ES iframe
+- AR iframe `<html lang="ar" dir="rtl">` on `.tw-*` skin (8 `.tw-*` elements) · title "A14 Sapore Walk Brand — الرئيسية"
+- Publish via `services.publish_project`
+- **Second-user public preview 5 locali · menu cell override visible on every locale's menu page** (IT/EN/FR/ES/AR all ✅) · other dishes in section 0 stay authored (Carciofo alla giudia) · proves the splicer touched only the `.0.0` cell without corrupting the other tuple cells · IT/EN/FR home render their locale override · ES/AR home authored fallback · AR `dir="rtl"` on public iframe
+- **Blindatura del render-side fix runtime-dimostrata** — without commit `f66ac24`, `menu_has_dish_override` would be `false` for all 5 locales; instead it's `true` for all 5.
+
+### Outcome
+
+- **Restaurant-continuation family OPEN** via staged dedicated-schema first step (Sapore A.14 · Brace A.14b pending). Same topology pattern as real-estate (A.12→A.12b) and portfolio (A.13→A.13b). Staged dedicated-schema closure now has 3 precedents total (2 closed + 1 in-progress).
+- **Menu rows inside perimeter** via deep-path tuple-in-dict-list parent shape (novel) · render-side contract-alignment bugfix enables end-to-end flow · precedent set for future restaurant-family enrollments where the menu is the editorial heart.
+- **Three editor layers speak the same language on list numeric indexing**: `services._resolve_path` (was always ok) · `schema._resolve_path` (Step 1 extension) · `rendering._apply_indexed` (Step 2 fix). No incoherence anymore.
+- Sapore is 11th archetype enrolled · 11 templates editable · 12 editable end-to-end.
+- Zero new binding decisions · D-096 / D-097 / D-098 unchanged. Only operational clarification added to D-098 for Session 69.
+- Acceptance gates post-merge: `python manage.py check` 0 issues · `python manage.py test apps` 252/252 PASS (239 pre-A.14 + 12 contract + 1 lifecycle) · `python smoke_full.py` 834/834 routes HTTP 200.
+- Baseline `phase-integration-baseline-v15` tip: **`8fae2df`** (A.14 merge), pushed to `origin/phase-integration-baseline-v15`.
+
+### Blockers
+
+**None.** No explicitly-deferred debt is pending.
+
+### Exact next step
+
+A.14 opens a family; it does not close one. Top candidate is **A.14b Brace (street-modern)** · closes restaurant-continuation family via the sibling archetype enrollment. Brace has a heavier shape than Sapore (18 lists-of-dict vs 12 · 5 image-in-dict-row lists vs 2 · ~45 image surfaces vs 13) but no new infrastructure needed because the A.14 render-side fix + schema helper extensions already cover all Brace shape patterns (dict-with-image-col deep path was already in use on Chiara/Villa). Expected recipe mechanical-reuse of A.14 Sapore pattern. Alternatives: ecommerce (Bottega+Luxe) · medical-other (Salute+Benessere+Famiglia · 3 separate phases) · Aura individual enrollment · Elevate individual enrollment. MEMORY.md maintenance mini-phase remains queued as a separate housekeeping task (not bundled).
+
+---
+
 ## Session 68 — Phase A.13b · Pixel (cinematic-photographer · portfolio family) Editor + Multi-locale Enrollment · CLOSES PORTFOLIO FAMILY (2026-04-18)
 
 **Summary.** Tenth archetype enrolled in the editor: `cinematic-photographer` (Pixel). Single-template phase — Pixel is the portfolio family's second archetype, complementing Chiara (A.13 `editorial-designer-grid`). Closure follows the same staged dedicated-schema progression topology already validated by real-estate (A.12 Casa → A.12b Villa): family opens in the first phase with one archetype enrolled, closes in the second phase with the second archetype enrolled, each with its own schema + skin bridge + lifecycle test. D-098 invariant holds; no new D-number introduced.
