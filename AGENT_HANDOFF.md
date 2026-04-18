@@ -1,16 +1,16 @@
 # Agent Handoff
 
-Last updated: 2026-04-17 — after **Session 64 A.11 Juris (modern-transparent · law family) Editor + Multi-locale Enrollment merge** (baseline tip `0f8bf60`, pushed to origin)
+Last updated: 2026-04-18 — after **Session 65 A.12 Casa (mass-market · real-estate family) Editor + Multi-locale Enrollment merge** (baseline tip `a93c50d`, pushed to origin)
 
-## Current state — read this before opening any new workstream (2026-04-17)
+## Current state — read this before opening any new workstream (2026-04-18)
 
-Six editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) + **specialist** (Cardio + Derm shared) + **classic-gold** (Lex) + **modern-transparent** (Juris) — are all multi-locale enrolled. A.11 closes the law family completely, via TWO distinct archetypes (`classic-gold` Lex + `modern-transparent` Juris), not through a shared schema — the first phase where a category closes through a pair of dedicated-schema enrollments rather than one shared schema covering multiple templates (which is the A.9 specialist pattern). Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **6/8 archetypes editor-supported · 6/8 multi-locale enrolled · 7 templates editable end-to-end**. All acceptance gates are green:
+Seven editor-supported archetypes — Vertex (`agency-creative-studio`) + Pragma (`corporate-suite`) + Gusto (`fine-dining`) + **specialist** (Cardio + Derm shared) + **classic-gold** (Lex) + **modern-transparent** (Juris) + **mass-market** (Casa) — are all multi-locale enrolled. The law family (Lex + Juris) is CLOSED via two dedicated-schema enrollments. The **real-estate family is OPEN but not yet closed**: A.12 enrolled Casa only, with Villa (`ultra-luxury-cinematic`) explicitly held out until the dedicated A.12b phase — staged family progression is a valid D-098 topology alongside shared-schema (A.9) and sequential closure (A.10+A.11). Catalog 20/20 `published_live` unchanged since D-082 / Session 53. Editor footprint: **7/8 archetypes editor-supported · 7/8 multi-locale enrolled · 8 templates editable end-to-end**. All acceptance gates are green:
 
 - `python manage.py check` → 0 issues
-- `python manage.py test apps` → 193/193 PASS
+- `python manage.py test apps` → 204/204 PASS
 - `python smoke_full.py` → 834/834 routes HTTP 200
 
-Baseline `phase-integration-baseline-v15` tip: **`0f8bf60`** (A.11 merge), pushed to `origin/phase-integration-baseline-v15`.
+Baseline `phase-integration-baseline-v15` tip: **`a93c50d`** (A.12 merge), pushed to `origin/phase-integration-baseline-v15`.
 
 ### What the editor does today
 
@@ -65,6 +65,22 @@ Baseline `phase-integration-baseline-v15` tip: **`0f8bf60`** (A.11 merge), pushe
 - `supported_locales=["it","en","fr","es","ar"]` · identical UX surface. AR preview on `.jr-*` skin renders `<html dir="rtl" lang="ar">` authentic with advisory-modern pill nav and confident-blue CTA ring.
 - Enrolled via A.11 Session 64 (combined A.6 schema register + A.7b gate flip in a single phase, with `test_a11_juris_full_multilocale_lifecycle_end_to_end` as the single dedicated lifecycle regression test). Confirms D-098 scales to a family-closure topology where the category closes via multiple separate archetype enrollments (not a shared schema).
 
+**mass-market (Casa) — editable AND multi-locale enrolled (A.12) · FIRST DEDICATED-SCHEMA SLOT OF THE REAL-ESTATE FAMILY · SECOND ZERO-IMAGE ARCHETYPE:**
+- **Single template**: `casa-agenzia-immobiliare`. Distinct archetype from Villa — the two real-estate templates ship distinct DNA + distinct skin folders (`real-estate/mass-market/` with `.dm-*` prefix vs `real-estate/ultra-luxury-cinematic/` with `.vp-*`) and ~0% non-home page-slug overlap (Casa: home/immobili/quartieri/agenzia/valutazione/contatti vs Villa: home/collezione/territorio/studio/esperienza/concierge — only `home` shared). Shared-schema recipe does NOT apply; real-estate is progressing in a staged way (Casa now, Villa in A.12b) — the third valid D-098 family-progression topology alongside shared-schema (A.9) and sequential closure (A.10+A.11).
+- 10 sidebar groups · ~185 scalar fields + **ZERO image fields anywhere** (mass-market DNA is image-free — the same `test_a12_casa_schema_contains_zero_image_fields` guardrail as Juris ships unchanged, locking the DNA constraint end-to-end) + 15 readonly indexed lists:
+  - **home (5 lists)**: `featured_listings` tuple 4×(title/location/price/badge) — 4 cols exposed of 8 tuple positions · `neighborhoods` tuple 6×4 · `stats` tuple 4×3 · `agents_preview` tuple 4×4 · `valuation_proof` tuple 3×2
+  - **immobili (1 list)**: `map_cells` tuple 5×2
+  - **quartieri (2 lists)**: `guides` tuple 8×(name/tagline/price/inventory/description/agent_note) — 6 cols of 9 (transit/green/tone stay registry-only) · `faq` tuple 4×2
+  - **agenzia (2 lists)**: `agents` dict 9×(name/role/area/years/languages/speciality/phone/email/quote) — 9 cols of 10 (`whatsapp_href` stays registry-only) · `facts` tuple 4×3
+  - **valutazione (3 lists)**: `how_it_works` tuple 3×3 · `proof` tuple 4×2 · `faq` tuple 4×2
+  - **contatti (2 lists)**: `channels` tuple 5×3 · `offices` dict 2×(name/address/metro/hours/phone/email/lead_agent/parking/note) — 9 cols of 13 (whatsapp/whatsapp_href/map_link/map_href stay registry-only)
+- **`search_widget` flattened into the `hero_home` group** as 14 scalar fields across 4 subgroups (hero copy · widget intestazione · 4 label+value campi · CTA). `popular_tags` flat list-of-str stays registry-only. This is A.12's only non-trivial design decision vs the A.11 pattern — the nested-dict shape is exposed as scalars, not as a sub-editor, keeping the perimeter consistent.
+- 134 translatable fields + 313 global fields per-template sidebar rendering (walk-verified: `per lingua` badge count = 134 exactly, zero accidentally-translatable globals, zero image widgets in the sidebar).
+- **Complex shapes explicitly outside perimeter** (locked by user-imposed guardrail test `test_a12_casa_complex_shapes_excluded_from_perimeter`): `home.search_widget.popular_tags` + `immobili.filters` + `immobili.sort_options` (flat list-of-str containers) · `valutazione.form_fields` + `form_sections` + `contatti.form_fields` + `form_sections` (form structure blocks) · `posts` list entries (12 per-property records, stay registry-only like Lex `notabili` / Juris `insights` posts). All rejected by `validate_key_path` so scope creep into non-scalar widgets cannot happen silently even via crafted payloads.
+- `supported_locales=["it","en","fr","es","ar"]` · identical UX surface. AR preview on `.dm-*` skin renders `<html dir="rtl" lang="ar">` authentic with light/tile grid density and title `"WalkCasaBrand — الرئيسية"` confirming `site.logo_word|default:brand.brand_name` applied correctly.
+- **Villa (`ultra-luxury-cinematic`) explicitly NOT enrolled** — guard inside `test_a12_casa_archetype_registered` asserts `ultra-luxury-cinematic NOT in _ARCHETYPE_SCHEMAS NOR in _MULTILOCALE_ENABLED_ARCHETYPES` + all 6 previous archetypes still enrolled. Additionally, the lifecycle test runs a runtime `assertNotIn("ultra-luxury-cinematic", _MULTILOCALE_ENABLED_ARCHETYPES)` at execution time, so a future accidental enrollment without its own dedicated A.12b phase fails fast on either layer. Both guards will be removed in A.12b together with Villa's own registrations.
+- Enrolled via A.12 Session 65 (combined A.6 schema register + A.7b gate flip in a single phase, with `test_a12_casa_full_multilocale_lifecycle_end_to_end` as the single dedicated lifecycle regression test). Schema LOC delta +604 (slightly over the 600-LOC soft guardrail) recorded as a non-blocking exception — reflects Casa's structural richness (15 indexed lists vs Juris's 6), no new scope opened, no service-layer touch, tests green first-run. Confirms D-098 scales to a third family-progression topology (staged enrollment: one dedicated schema now, the sibling in a later phase).
+
 ### What is operator-only
 
 - `python manage.py gc_project_assets` (default dry-run, `--apply`, `--project=<uuid>`, `--grace=<hours>`) — removes ProjectAsset rows + files no longer referenced by any live override or publish snapshot. Not scheduled. Not auto-triggered. Manual only per D-094.
@@ -89,9 +105,9 @@ See A.6 commits `a7177f5` · `9540d5a` · `4b9376c`. 5 contract tests + schema r
 
 All prior D-086 through D-095 (A.1 → A.5 bindings) and pre-editor decisions (D-054 premium law, D-055 tier model, D-047 chrome authoring, etc.) remain in force. See DECISIONS.md for full catalogue.
 
-### Phase A.12+ — candidates (no commitment yet)
+### Phase A.12b+ — candidates (no commitment yet)
 
-Pick one when the next workstream opens. Recommended framing: **A.12 real-estate family (Casa + Villa) enrollment** — closes another of the 8 MVP categories. Requires a Step-0 runtime audit first to confirm the most likely topology (two distinct archetypes — `mass-market` Casa vs `ultra-luxury-cinematic` Villa — parallel to the Lex/Juris split rather than the shared-schema specialist pair); in that case A.12 + A.12b deliver two dedicated-schema enrollments following the A.10 + A.11 recipe. Alternatives: Chiara (single template with novel `project_detail` / `series_detail` page kinds — medium risk), Pixel (single-template imagery-heavy, straightforward), Sapore+Brace restaurant family continuation, Bottega+Luxe ecommerce family, Salute/Benessere/Famiglia medical adjacencies, Aura/Elevate individual enrollments, editor polish / operator tools / remote storage (defer unless customer signal or prod-launch timeline).
+Pick one when the next workstream opens. Recommended framing: **A.12b Villa (ultra-luxury-cinematic) enrollment** — closes the real-estate family opened in A.12. Villa ships 26 image fields including image-inside-list-of-dict-row shapes (`signature[i].image`, `territories[i].image`, `advisors[i].portrait`) which is a NOVEL widget pattern — no currently-enrolled archetype exposes image cols inside dict rows (Gusto / specialist apply col-EXCLUSION for portraits). Step 0 must decide: expose image cols in the dict shape vs keep them registry-only. Likely ~3-4 commits (schema + bridge + lifecycle + possibly a small service-layer touch if image-in-row needs glue). Alternatives: Chiara (single template with novel `project_detail` / `series_detail` page kinds — medium risk), Pixel (single-template imagery-heavy, no list-of-dict image novelty), Sapore+Brace restaurant family continuation, Bottega+Luxe ecommerce family, Salute/Benessere/Famiglia medical adjacencies, Aura/Elevate individual enrollments, editor polish / operator tools / remote storage (defer unless customer signal or prod-launch timeline).
 
 See `TODO_NEXT.md` for full candidate list + red-lamps + "do NOT open" list.
 
