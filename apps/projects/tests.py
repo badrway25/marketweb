@@ -8150,6 +8150,368 @@ class FoundationHttpTests(TestCase):
             ):
                 validate_key_path("trattoria-warm", out_path)
 
+    # ------------------------------------------------------------------
+    # A.14b · Step 2 — Brace (street-modern) lifecycle HTTP cross-cutting
+    # · CLOSES the restaurant-continuation family opened in A.14 with
+    # Sapore. Third staged dedicated-schema closure (after real-estate
+    # A.12+A.12b and portfolio A.13+A.13b). Exercises BOTH deep-path
+    # shapes end-to-end:
+    #   - `menu.sections.{i}.items[].image` (dict-in-dict-list parent ·
+    #     Chiara A.13 precedent)
+    #   - `ordina.routes.{i}.lines[].value` (tuple-in-dict-list parent ·
+    #     Sapore A.14 precedent via f66ac24 render-side fix)
+    # Brace ships zero posts list + zero form structures — complex-shape
+    # exclusion at end-of-test focuses on flat list-of-str (manifesto
+    # paragraphs, hours footer, categories) + navigation + posts guard.
+    # ------------------------------------------------------------------
+
+    def test_a14b_brace_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the Brace enrollment:
+
+        1. customer edits IT / EN / FR on a Brace translatable path
+           (home.headline)
+        2. customer edits a global TEXT path (site.logo_word) via EN
+           autosave — storage MUST be plain-keyed (no @en: prefix)
+        3. customer edits a top-level scalar IMAGE field
+           (home.hero_image) — storage MUST be plain-keyed across all
+           5 locales (5× explicit assertNotIn on @<locale>: prefix)
+        4. customer edits a DEEP-PATH MENU CELL image on the dict-in-
+           dict-list parent shape (menu.sections.0.items.0.image) —
+           storage MUST be plain-keyed (5× assertNotIn) AND the
+           override MUST render end-to-end on the menu page in all 5
+           public-preview locales (user-imposed runtime blindatura ·
+           Chiara-precedent shape, mechanical reuse)
+        5. customer edits a DEEP-PATH ORDINA ROUTE LINE VALUE on the
+           tuple-in-dict-list parent shape (ordina.routes.0.lines.0.value)
+           — storage MUST be plain-keyed (5× assertNotIn) AND the
+           override MUST render end-to-end on the ordina page in all 5
+           public-preview locales (Sapore-precedent shape via A.14
+           f66ac24 render-side fix · mechanical reuse)
+        6. project publishes via services.publish_project
+        7. second user visits every public preview locale:
+           - IT/EN/FR render their locale override + global logo + hero
+             image + menu dish image override + ordina line override
+           - ES/AR fall back to the authored registry text, still see
+             the global logo + hero image + menu dish image + ordina
+             line override (images + deep-path cells are universal)
+           - AR response head carries ``<html dir="rtl" lang="ar">`` on
+             the ``.sm-*`` skin (24 RTL rules in Brace _base.html)
+        8. owner reopens the editor per locale; sidebar prefill matches
+           the buffer for that locale on home.headline and shows
+           site.logo_word + home.hero_image as universal overrides
+        9. perimeter invariants double-checked at the end of the walk:
+           Brace (street-modern) IS enrolled in both gates at runtime
+           (opposite assertion vs the former Brace-out guard),
+           Sapore (trattoria-warm) still enrolled (verifies the Sapore-
+           out-guard was not accidentally introduced in A.14b),
+           complex-shape paths (home.manifesto_paragraphs, moments.categories,
+           site.hours_footer_rows, pages, posts) stay rejected by
+           validate_key_path.
+
+        Explicitly NOT exercised here: browser walk (Step 3), coverage
+        expansion, mutable rows, image per-locale, further infra
+        touches. Zero production-code changes in this Step 2 commit.
+        """
+        import json as _json
+
+        brace = WebTemplate.objects.get(slug="brace-street-food-lab")
+        p = services.create_project_from_template(owner=self.owner, template=brace)
+
+        # ── 0. perimeter invariants verified at TEST START ────────
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            _ARCHETYPE_SCHEMAS as _SCHEMAS,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        self.assertIn("street-modern", _SCHEMAS,
+                      "Brace (street-modern) must be enrolled at lifecycle start")
+        self.assertIn("street-modern", _ENABLED,
+                      "Brace (street-modern) must be in multi-locale gate at start")
+        self.assertIn("trattoria-warm", _SCHEMAS,
+                      "Sapore (trattoria-warm) must still be enrolled at start")
+        self.assertIn("trattoria-warm", _ENABLED)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1. three translatable locales on home.headline ────────
+        for locale, headline in (
+            ("it", "Walk IT Brace <em>A14bLine</em>."),
+            ("en", "Walk EN Brace <em>A14bLineEN</em>."),
+            ("fr", "Walk FR Brace <em>A14bLineFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+
+        # ── 2. global plain-keyed text — site.logo_word via EN ────
+        r = autosave("en", {"site.logo_word": "A14bBraceBrand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 3. scalar image override — home.hero_image ────────────
+        IMG_HERO = "https://walk-brace.example/img/hero-A14b.jpg"
+        r = autosave("it", {"home.hero_image": IMG_HERO})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.hero_image", r.json()["content_keys"])
+
+        # ── 4. deep-path MENU image override on dict-in-dict-list ─
+        # `menu.sections.0.items.0.image` — Chiara precedent shape.
+        # Proves the A.14 render-side fix (commit f66ac24) also applies
+        # to dict-in-dict-list parent walks (not just tuple-in-dict-list
+        # which was exercised by Sapore).
+        IMG_DISH = "https://walk-brace.example/img/dish-A14b.jpg"
+        r = autosave("it", {"menu.sections.0.items.0.image": IMG_DISH})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("menu.sections.0.items.0.image", r.json()["content_keys"])
+
+        # ── 5. deep-path ORDINA route line override on tuple-in-dict-list ─
+        # `ordina.routes.0.lines.0.value` — Sapore precedent shape
+        # (tuple-in-dict-list parent). Mechanical reuse of A.14 infra.
+        LINE_VALUE = "A14b Walk Indirizzo Bologna"
+        r = autosave("it", {"ordina.routes.0.lines.0.value": LINE_VALUE})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("ordina.routes.0.lines.0.value", r.json()["content_keys"])
+
+        # Storage shape: 3 @<locale>:home.headline + 4 plain-keyed
+        # globals (logo + hero image + menu deep-path image + ordina
+        # deep-path tuple value). Zero @<locale>: on image or deep-path
+        # cell paths; zero @en: on logo; zero plain-key leak on
+        # home.headline.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("home.hero_image", keys)
+        self.assertIn("menu.sections.0.items.0.image", keys)
+        self.assertIn("ordina.routes.0.lines.0.value", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+        # Image override plain-keyed across all 5 locales.
+        for loc in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(f"@{loc}:home.hero_image", keys,
+                             f"home.hero_image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:menu.sections.0.items.0.image", keys,
+                             f"deep-path menu image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:ordina.routes.0.lines.0.value", keys,
+                             f"deep-path route line value must NEVER be @{loc}:-prefixed")
+
+        # ── 6. publish ───────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 7. second user on every public preview locale ────────
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale, page=None):
+            suffix = f"{page}/" if page else ""
+            url = (
+                f"/templates/restaurant/brace-street-food-lab/preview/"
+                f"{suffix}?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render (home) — IT override visible, EN/FR absent.
+        body_it = preview_body("it")
+        self.assertIn("Walk IT Brace", body_it)
+        self.assertIn("A14bLine", body_it)
+        self.assertNotIn("A14bLineEN", body_it)
+        self.assertNotIn("A14bLineFR", body_it)
+        self.assertIn("A14bBraceBrand", body_it)
+        self.assertIn(IMG_HERO, body_it)
+
+        # IT render (menu page) — menu deep-path image override visible
+        # + universal globals. Also check that other dishes in section 0
+        # still render the authored image (proves splicer touched ONLY
+        # the .0.0 cell without corrupting other rows).
+        body_it_menu = preview_body("it", page="menu")
+        self.assertIn("A14bBraceBrand", body_it_menu)
+        self.assertIn(IMG_DISH, body_it_menu,
+                      "menu deep-path image override must render on menu page IT")
+
+        # IT render (ordina page) — ordina deep-path tuple value visible
+        # + universal globals.
+        body_it_ordina = preview_body("it", page="ordina")
+        self.assertIn("A14bBraceBrand", body_it_ordina)
+        self.assertIn(LINE_VALUE, body_it_ordina,
+                      "ordina deep-path route line value must render on ordina page IT")
+
+        # EN render (home + menu + ordina)
+        body_en = preview_body("en")
+        self.assertIn("Walk EN Brace", body_en)
+        self.assertIn("A14bLineEN", body_en)
+        self.assertNotIn("Walk IT Brace", body_en)
+        self.assertIn("A14bBraceBrand", body_en)
+        self.assertIn(IMG_HERO, body_en)
+        body_en_menu = preview_body("en", page="menu")
+        self.assertIn(IMG_DISH, body_en_menu,
+                      "menu deep-path image override is global · must render on EN menu")
+        body_en_ordina = preview_body("en", page="ordina")
+        self.assertIn(LINE_VALUE, body_en_ordina,
+                      "ordina deep-path value is global · must render on EN ordina")
+
+        # FR render
+        body_fr = preview_body("fr")
+        self.assertIn("Walk FR Brace", body_fr)
+        self.assertIn("A14bLineFR", body_fr)
+        self.assertIn("A14bBraceBrand", body_fr)
+        self.assertIn(IMG_HERO, body_fr)
+        body_fr_menu = preview_body("fr", page="menu")
+        self.assertIn(IMG_DISH, body_fr_menu)
+        body_fr_ordina = preview_body("fr", page="ordina")
+        self.assertIn(LINE_VALUE, body_fr_ordina)
+
+        # Unedited locales — authored text fallback + global chrome +
+        # image + deep-path cells all universal.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Walk IT Brace", body)
+            self.assertNotIn("Walk EN Brace", body)
+            self.assertNotIn("Walk FR Brace", body)
+            self.assertIn("A14bBraceBrand", body)
+            self.assertIn(IMG_HERO, body)
+            body_menu = preview_body(locale, page="menu")
+            self.assertIn(IMG_DISH, body_menu,
+                          f"menu deep-path image must render universally on {locale} menu")
+            body_ordina = preview_body(locale, page="ordina")
+            self.assertIn(LINE_VALUE, body_ordina,
+                          f"ordina deep-path value must render universally on {locale} ordina")
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Brace home",
+                )
+
+        # AR preview (home) — `.sm-*` skin must emit
+        # ``<html dir="rtl" lang="ar">`` (24 mature RTL rules verified
+        # Step 0).
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 8. owner reopens the editor on each locale ───────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Walk IT Brace"),
+            ("en", "Walk EN Brace"),
+            ("fr", "Walk FR Brace"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text: overridden universally, not translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Brace editor")
+        self.assertEqual(logo_field["value"], "A14bBraceBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        # Scalar image: overridden universally, not translatable.
+        hero_field = find_field_by_key(r_es.context["groups"], "home.hero_image")
+        self.assertIsNotNone(hero_field, "home.hero_image missing from Brace editor")
+        self.assertEqual(hero_field["value"], IMG_HERO)
+        self.assertTrue(hero_field["is_overridden"])
+        self.assertFalse(hero_field["translatable"])
+
+        # ── 9. perimeter invariants re-checked end-of-test ───────
+        # Brace enrolled on BOTH gates at end-of-test (opposite of the
+        # former Brace-out guard in the A.14 Sapore lifecycle).
+        self.assertIn("street-modern", _SCHEMAS,
+                      "Brace must still be enrolled at end-of-lifecycle")
+        self.assertIn("street-modern", _ENABLED,
+                      "Brace must still be in multi-locale gate at end")
+        # Sapore (trattoria-warm) still enrolled (no accidental removal).
+        self.assertIn("trattoria-warm", _SCHEMAS,
+                      "Sapore enrollment must persist past Brace lifecycle")
+        self.assertIn("trattoria-warm", _ENABLED)
+        # 10 pre-A.14 archetypes also still enrolled (eleven-fold with
+        # Sapore · 12-fold including Brace itself).
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+        ):
+            self.assertIn(arc, _ENABLED, f"{arc} lost enrollment mid-lifecycle")
+        # Complex-shape paths stay rejected — re-verified runtime at
+        # end-of-test so a silent schema drift mid-phase is caught.
+        for out_path in (
+            # Flat list-of-str containers
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            "home.manifesto_paragraphs",
+            "home.manifesto_paragraphs.0",
+            "moments.categories",
+            "moments.categories.0",
+            # Top-level navigation + empty posts
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+            # Col-level exclusions (structural identifiers / routing flags)
+            "menu.sections.0.id",
+            "moments.grid.0.filename",
+            "ordina.routes.0.cta_kind",
+            "contatti.channels.0.icon",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Brace complex-shape path must stay rejected: {out_path}",
+            ):
+                validate_key_path("street-modern", out_path)
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
