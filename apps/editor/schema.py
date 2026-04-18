@@ -1520,6 +1520,363 @@ CASA_MASS_MARKET_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# A.12b · Villa ultra-luxury-cinematic — 8th enrolled editor archetype,
+# second template of the real-estate family. Closes the real-estate
+# family opened in A.12 with Casa (mass-market). The two real-estate
+# templates ship distinct archetypes + distinct skin folders
+# (`real-estate/mass-market/` with `.dm-*` vs `real-estate/
+# ultra-luxury-cinematic/` with `.vp-*`) and ~0% non-home page-slug
+# overlap (Casa: home/immobili/quartieri/agenzia/valutazione/contatti
+# vs Villa: home/collezione/territorio/studio/esperienza/concierge —
+# only `home` shared). Shared-schema (A.9 recipe) is impossible; Casa
+# + Villa close the family via the staged dedicated-schema progression
+# D-098 topology (A.12 first, A.12b second).
+#
+# Villa is IMAGERY-HEAVY (the DNA is cinematographic editorial luxury).
+# Shape contract notes:
+#   • 4 SCALAR image fields: ``home.cover_image`` · ``home.advisor_portrait``
+#     · ``studio.director_portrait`` · ``collezione.lead_image``.
+#   • 4 LIST-OF-DICT paths expose an image col (22 total image cells):
+#       - ``home.signature[].image`` (4 signature properties)
+#       - ``territorio.territories[].image`` (6 territory hero images)
+#       - ``studio.advisors[].portrait`` (4 advisor portraits)
+#       - ``posts[].image`` — INTENTIONALLY OUT of perimeter (posts stay
+#         registry-only like Lex notabili / Juris insights / Casa posts)
+#     Image-in-dict-row is NOT a novel widget pattern — Vertex has shipped
+#     it since A.3a/A.4 (`studio.partners[].portrait`, production since
+#     Session 58). Villa is the second archetype to use it, with a
+#     strictly smaller surface because Villa's lists are non-mutable
+#     (no add/remove row, just cell-level edits).
+#   • Complex shapes explicitly KEPT OUT of the perimeter:
+#       - ``collezione.filter_groups[].options`` (nested list-of-str,
+#         8 filter options per group)
+#       - ``concierge.form_fields[].options`` (nested list-of-str,
+#         4 select options per field)
+#       - Flat list-of-str containers: ``site.hours_footer_rows``,
+#         ``site.offices_footer_rows``, ``site.office_rows``,
+#         ``home.territory`` (7 territory wordmarks),
+#         ``home.press_items`` (5 press wordmarks),
+#         ``collezione.sort_options``
+#       - ``concierge.form_fields`` structure block (form structure
+#         stays registry-only, same policy as every prior archetype)
+#       - ``posts`` list entries (8 blog post records, same policy as
+#         Lex/Juris/Casa)
+#   • 14 readonly indexed lists (4 with image cols). No `mutable: True`.
+
+VILLA_ULTRA_LUXURY_CINEMATIC_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".vp-nav, .vp-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "villa", "tagline", "advisory", "private"],
+        "help": "Nome studio, iniziale crest, sottolinea e tagline.",
+        "fields": [
+            ("site.logo_word",    {"label": "Nome studio", "type": "text", "max_length": 60,
+                                    "placeholder": "Villa Prestige"}),
+            ("site.logo_initial", {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.logo_subline", {"label": "Sottolinea (anno / claim breve)", "type": "text", "max_length": 80}),
+            ("site.tag",          {"label": "Tagline / portfolio header", "type": "text", "max_length": 120}),
+            ("site.nav_cta",      {"label": "CTA nav", "type": "text", "max_length": 60}),
+            ("site.nav_cta_short",{"label": "CTA nav · variante breve", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".vp-hero",
+        "page": "home",
+        "keywords": ["hero", "cover", "headline", "series", "counter", "cta", "credit"],
+        "help": "Primo scroll della home: cover image + crediti, hero copy, serie/counter, CTA, credit cells.",
+        "subgroups": [
+            {"label": "Cover image + credit", "fields": [
+                ("home.cover_image",         {"label": "Cover image · URL", "type": "image", "max_length": 400}),
+                ("home.cover_location",      {"label": "Cover · location", "type": "text", "max_length": 120}),
+                ("home.cover_image_credit",  {"label": "Cover · credit", "type": "text", "max_length": 160}),
+            ]},
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("home.headline",            {"label": "Headline", "type": "richtext", "max_length": 220,
+                                                "help": "Consentiti i tag <em> per gli italici."}),
+                ("home.sub",                 {"label": "Sottotitolo", "type": "textarea", "max_length": 500}),
+                ("home.hero_wordmark",       {"label": "Wordmark hero", "type": "text", "max_length": 40}),
+                ("home.hero_location",       {"label": "Location hero", "type": "text", "max_length": 120}),
+            ]},
+            {"label": "Counter + series", "fields": [
+                ("home.hero_counter_label",  {"label": "Counter · label", "type": "text", "max_length": 60}),
+                ("home.hero_counter_value",  {"label": "Counter · valore", "type": "text", "max_length": 40}),
+                ("home.hero_series_label",   {"label": "Series · label", "type": "text", "max_length": 40}),
+                ("home.hero_series_title",   {"label": "Series · titolo", "type": "text", "max_length": 120}),
+                ("home.hero_series_note",    {"label": "Series · nota", "type": "textarea", "max_length": 300}),
+            ]},
+            {"label": "CTA hero", "fields": [
+                ("home.primary_cta",         {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.primary_cta_href",    {"label": "CTA primaria · destinazione", "type": "select",
+                                                "choices": ["home", "collezione", "territorio", "studio",
+                                                            "esperienza", "concierge"]}),
+                ("home.secondary_cta",       {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.secondary_cta_href",  {"label": "CTA secondaria · destinazione", "type": "select",
+                                                "choices": ["home", "collezione", "territorio", "studio",
+                                                            "esperienza", "concierge"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".vp-section",
+        "page": "home",
+        "keywords": ["signature", "territory", "advisor", "numbers", "press", "private", "fasce"],
+        "help": "Eyebrow, titoli, intro delle fasce home (signature · territory · advisor · numbers · press · private CTA).",
+        "subgroups": [
+            {"label": "Signature · intestazione", "fields": [
+                ("home.signature_label",      {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.signature_heading",    {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.signature_intro",      {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.signature_link_all",   {"label": "Link all'archivio · etichetta", "type": "text", "max_length": 80}),
+                ("home.signature_link_href",  {"label": "Link · destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "territorio", "studio",
+                                                             "esperienza", "concierge"]}),
+            ]},
+            {"label": "Territory · intestazione", "fields": [
+                ("home.territory_label",      {"label": "Eyebrow", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Advisor · featured", "fields": [
+                ("home.advisor_label",        {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.advisor_heading",      {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.advisor_intro",        {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.advisor_name",         {"label": "Nome advisor", "type": "text", "max_length": 80}),
+                ("home.advisor_role",         {"label": "Ruolo advisor", "type": "text", "max_length": 120}),
+                ("home.advisor_bio",          {"label": "Bio advisor", "type": "textarea", "max_length": 500}),
+                ("home.advisor_portrait",     {"label": "Advisor · ritratto (URL)", "type": "image", "max_length": 400}),
+                ("home.advisor_cta",          {"label": "CTA advisor · etichetta", "type": "text", "max_length": 60}),
+                ("home.advisor_cta_href",     {"label": "CTA advisor · destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "territorio", "studio",
+                                                             "esperienza", "concierge"]}),
+            ]},
+            {"label": "Numbers · intestazione", "fields": [
+                ("home.numbers_label",        {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.numbers_heading",      {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.numbers_note",         {"label": "Nota in calce", "type": "textarea", "max_length": 240}),
+            ]},
+            {"label": "Press · intestazione", "fields": [
+                ("home.press_label",          {"label": "Eyebrow", "type": "text", "max_length": 60}),
+                ("home.press_intro",          {"label": "Intro breve", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Private CTA band", "fields": [
+                ("home.private_label",        {"label": "Eyebrow", "type": "text", "max_length": 60}),
+                ("home.private_heading",      {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.private_intro",        {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.private_primary",      {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.private_primary_href", {"label": "CTA primaria · destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "territorio", "studio",
+                                                             "esperienza", "concierge"]}),
+                ("home.private_secondary",    {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.private_secondary_href", {"label": "CTA secondaria · destinazione", "type": "select",
+                                                   "choices": ["home", "collezione", "territorio", "studio",
+                                                               "esperienza", "concierge"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "collezione_page",
+        "label": "Pagina Collezione (blog-list)",
+        "icon": "bi-collection",
+        "region": ".vp-section",
+        "page": "collezione",
+        "keywords": ["collezione", "blog-list", "archivio", "filter", "sort", "lead"],
+        "help": "Pagina collezione: intestazione, lead image, meta sort/filter, label post-card. I post (blog detail) restano registry-only.",
+        "fields": [
+            ("collezione.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("collezione.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("collezione.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("collezione.lead_image",       {"label": "Lead image · URL", "type": "image", "max_length": 400}),
+            ("collezione.filter_label",     {"label": "Filtro · etichetta", "type": "text", "max_length": 40}),
+            ("collezione.sort_label",       {"label": "Ordina · etichetta", "type": "text", "max_length": 40}),
+            ("collezione.posts_intro",      {"label": "Intro sopra le card", "type": "textarea", "max_length": 400}),
+            ("collezione.card_territory_label", {"label": "Card · etichetta Territorio", "type": "text", "max_length": 40}),
+            ("collezione.card_read_label",  {"label": "Card · etichetta Lettura", "type": "text", "max_length": 40}),
+            ("collezione.cta_heading",      {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("collezione.cta_intro",        {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("collezione.cta_primary",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ("collezione.cta_primary_href", {"label": "CTA · destinazione", "type": "select",
+                                               "choices": ["home", "collezione", "territorio", "studio",
+                                                           "esperienza", "concierge"]}),
+        ],
+    },
+    {
+        "id": "territorio_page",
+        "label": "Pagina Territorio (about)",
+        "icon": "bi-map",
+        "region": ".vp-section",
+        "page": "territorio",
+        "keywords": ["territorio", "regioni", "provenance", "about", "stats"],
+        "help": "Pagina territori: intestazione, intro fascia territori, intro statistiche. Le 6 territorie (con image col) sono editabili per riga.",
+        "fields": [
+            ("territorio.eyebrow",         {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("territorio.headline",        {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("territorio.intro",           {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("territorio.territories_label",   {"label": "Territori · eyebrow", "type": "text", "max_length": 80}),
+            ("territorio.territories_heading", {"label": "Territori · titolo", "type": "richtext", "max_length": 220}),
+            ("territorio.territories_intro",   {"label": "Territori · intro", "type": "textarea", "max_length": 500}),
+            ("territorio.stats_label",     {"label": "Stats · eyebrow", "type": "text", "max_length": 80}),
+            ("territorio.stats_heading",   {"label": "Stats · titolo", "type": "richtext", "max_length": 220}),
+            ("territorio.cta_heading",     {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("territorio.cta_intro",       {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("territorio.cta_primary",     {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ("territorio.cta_primary_href",{"label": "CTA · destinazione", "type": "select",
+                                              "choices": ["home", "collezione", "territorio", "studio",
+                                                          "esperienza", "concierge"]}),
+        ],
+    },
+    {
+        "id": "studio_page",
+        "label": "Pagina Studio (team)",
+        "icon": "bi-people",
+        "region": ".vp-section",
+        "page": "studio",
+        "keywords": ["studio", "advisor", "partner", "press", "director", "team", "storia"],
+        "help": "Pagina studio: intestazione, director block + portrait, intro advisors/partners/press/numbers. I 4 advisor (con portrait col) sono editabili per riga.",
+        "fields": [
+            ("studio.eyebrow",         {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("studio.headline",        {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("studio.intro",           {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ("studio.director_name",   {"label": "Director · nome", "type": "text", "max_length": 80}),
+            ("studio.director_role",   {"label": "Director · ruolo", "type": "text", "max_length": 120}),
+            ("studio.director_bio",    {"label": "Director · bio", "type": "textarea", "max_length": 800}),
+            ("studio.director_portrait", {"label": "Director · ritratto (URL)", "type": "image", "max_length": 400}),
+            ("studio.advisors_label",  {"label": "Advisors · eyebrow", "type": "text", "max_length": 80}),
+            ("studio.advisors_heading",{"label": "Advisors · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.advisors_intro",  {"label": "Advisors · intro", "type": "textarea", "max_length": 500}),
+            ("studio.partners_label",  {"label": "Partners · eyebrow", "type": "text", "max_length": 80}),
+            ("studio.partners_heading",{"label": "Partners · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.partners_intro",  {"label": "Partners · intro", "type": "textarea", "max_length": 500}),
+            ("studio.press_label",     {"label": "Press · eyebrow", "type": "text", "max_length": 80}),
+            ("studio.press_heading",   {"label": "Press · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.numbers_label",   {"label": "Numbers · eyebrow", "type": "text", "max_length": 80}),
+            ("studio.numbers_heading", {"label": "Numbers · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.cta_heading",     {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.cta_intro",       {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("studio.cta_primary",     {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ("studio.cta_primary_href",{"label": "CTA · destinazione", "type": "select",
+                                          "choices": ["home", "collezione", "territorio", "studio",
+                                                      "esperienza", "concierge"]}),
+        ],
+    },
+    {
+        "id": "esperienza_page",
+        "label": "Pagina Esperienza (services)",
+        "icon": "bi-gem",
+        "region": ".vp-section",
+        "page": "esperienza",
+        "keywords": ["esperienza", "services", "processo", "faq"],
+        "help": "Pagina esperienza: intestazione, intro processo, intro FAQ. I 5 step + le 6 FAQ sono editabili per riga.",
+        "fields": [
+            ("esperienza.eyebrow",         {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("esperienza.headline",        {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("esperienza.intro",           {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ("esperienza.process_label",   {"label": "Processo · eyebrow", "type": "text", "max_length": 80}),
+            ("esperienza.process_heading", {"label": "Processo · titolo", "type": "richtext", "max_length": 220}),
+            ("esperienza.process_intro",   {"label": "Processo · intro", "type": "textarea", "max_length": 500}),
+            ("esperienza.faq_label",       {"label": "FAQ · eyebrow", "type": "text", "max_length": 80}),
+            ("esperienza.faq_heading",     {"label": "FAQ · titolo", "type": "richtext", "max_length": 220}),
+            ("esperienza.cta_heading",     {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("esperienza.cta_intro",       {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("esperienza.cta_primary",     {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ("esperienza.cta_primary_href",{"label": "CTA · destinazione", "type": "select",
+                                              "choices": ["home", "collezione", "territorio", "studio",
+                                                          "esperienza", "concierge"]}),
+        ],
+    },
+    {
+        "id": "concierge_page",
+        "label": "Pagina Concierge (contact)",
+        "icon": "bi-telephone",
+        "region": ".vp-section",
+        "page": "concierge",
+        "keywords": ["concierge", "contact", "form", "sedi", "press", "telefono", "email"],
+        "help": "Pagina concierge: intestazione, label form (struttura campi resta registry-only), sedi e press contact. Etichette campi indirizzo.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("concierge.eyebrow",         {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("concierge.headline",        {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("concierge.intro",           {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Phone band", "fields": [
+                ("concierge.phone_label",     {"label": "Phone band · etichetta", "type": "text", "max_length": 60}),
+                ("concierge.phone_intro",     {"label": "Phone band · intro", "type": "textarea", "max_length": 400}),
+            ]},
+            {"label": "Form · copy e submit", "fields": [
+                ("concierge.form_section_label", {"label": "Form · eyebrow", "type": "text", "max_length": 60}),
+                ("concierge.form_section_intro", {"label": "Form · intro", "type": "textarea", "max_length": 400}),
+                ("concierge.form_helper_required", {"label": "Form · helper campi obbligatori", "type": "text", "max_length": 120}),
+                ("concierge.form_submit_button", {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+                ("concierge.form_submit_note", {"label": "Form · nota submit", "type": "textarea", "max_length": 400}),
+            ]},
+            {"label": "Sedi", "fields": [
+                ("concierge.offices_label",   {"label": "Sedi · eyebrow", "type": "text", "max_length": 60}),
+                ("concierge.offices_heading", {"label": "Sedi · titolo", "type": "richtext", "max_length": 220}),
+                ("concierge.offices_intro",   {"label": "Sedi · intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Press contact", "fields": [
+                ("concierge.press_contact_label", {"label": "Press · etichetta", "type": "text", "max_length": 60}),
+                ("concierge.press_contact_text",  {"label": "Press · testo", "type": "textarea", "max_length": 500}),
+                ("concierge.press_contact_email", {"label": "Press · email", "type": "text", "max_length": 80}),
+            ]},
+        ],
+    },
+    {
+        "id": "contact_info",
+        "label": "Contatti · footer",
+        "icon": "bi-telephone-forward",
+        "region": ".vp-foot",
+        "page": "*",
+        "keywords": ["footer", "phone", "email", "indirizzo", "orari", "licenza"],
+        "help": "Dati di contatto visibili in footer + intro voce dello studio + titoli sezioni footer.",
+        "fields": [
+            ("site.phone",         {"label": "Telefono", "type": "text", "max_length": 80}),
+            ("site.email",         {"label": "Email", "type": "text", "max_length": 80}),
+            ("site.email_label",   {"label": "Email · etichetta", "type": "text", "max_length": 40}),
+            ("site.phone_label",   {"label": "Telefono · etichetta", "type": "text", "max_length": 60}),
+            ("site.address",       {"label": "Indirizzo sede primaria", "type": "text", "max_length": 160}),
+            ("site.hours_compact", {"label": "Orari sintetici", "type": "text", "max_length": 120}),
+            ("site.license",       {"label": "Licenza / P.IVA", "type": "text", "max_length": 200}),
+            ("site.footer_intro",  {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.foot_studio",   {"label": "Footer · titolo Studio", "type": "text", "max_length": 40}),
+            ("site.foot_pages",    {"label": "Footer · titolo Pagine", "type": "text", "max_length": 40}),
+            ("site.foot_contact",  {"label": "Footer · titolo Contatti", "type": "text", "max_length": 40}),
+            ("site.foot_offices",  {"label": "Footer · titolo Sedi", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "tile_labels",
+        "label": "Etichette dossier / tile",
+        "icon": "bi-tag",
+        "region": ".vp-tile",
+        "page": "*",
+        "keywords": ["dossier", "portfolio", "territorio", "superficie", "provenance", "access", "availability", "tile"],
+        "help": "Etichette riusate su ogni card immobile/dossier + note legali chrome.",
+        "fields": [
+            ("site.dossier_label",       {"label": "Dossier · etichetta", "type": "text", "max_length": 40}),
+            ("site.portfolio_label",     {"label": "Portafoglio · etichetta", "type": "text", "max_length": 40}),
+            ("site.territorio_label",    {"label": "Territorio · etichetta", "type": "text", "max_length": 40}),
+            ("site.superficie_label",    {"label": "Superficie · etichetta", "type": "text", "max_length": 40}),
+            ("site.provenance_label",    {"label": "Provenance · etichetta", "type": "text", "max_length": 40}),
+            ("site.access_label",        {"label": "Accesso · etichetta", "type": "text", "max_length": 40}),
+            ("site.availability_label",  {"label": "Disponibilità · etichetta", "type": "text", "max_length": 40}),
+            ("site.price_note",          {"label": "Prezzo · nota default", "type": "text", "max_length": 80}),
+            ("site.nda_required_label",  {"label": "NDA · etichetta", "type": "text", "max_length": 80}),
+            ("site.viewing_on_request",  {"label": "Viewing · nota default", "type": "text", "max_length": 80}),
+            ("site.referent_label",      {"label": "Referente · etichetta", "type": "text", "max_length": 60}),
+            ("site.concierge_line_label",{"label": "Linea concierge · etichetta", "type": "text", "max_length": 60}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -2983,6 +3340,218 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # A.12b · Villa ultra-luxury-cinematic — 14 readonly indexed lists,
+    # FOUR with image cols (home.signature.image · territorio.territories.image
+    # · studio.advisors.portrait · + home scalar image fields separately in
+    # the flat schema). The image-in-dict-row pattern is NOT novel — it
+    # mirrors Vertex ``studio.partners.portrait`` (production since A.3a/A.4).
+    # No ``mutable: True`` flag (same as every archetype except Vertex).
+    # Flat list-of-str containers (`home.territory`, `home.press_items`,
+    # `collezione.sort_options`) intentionally NOT exposed. Nested
+    # list-of-str inside dict rows (`collezione.filter_groups[].options`,
+    # `concierge.form_fields[].options`) intentionally NOT exposed.
+    # The `posts` list (8 blog entries, incl. image col) stays
+    # registry-only — same policy as Lex/Juris/Casa per-post entries.
+    "ultra-luxury-cinematic": {
+        "home.signature": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Signature (4 dimore)",
+            "icon": "bi-gem",
+            "region": ".vp-section",
+            "keywords": ["signature", "dimore", "immobili", "featured"],
+            "cols": [
+                ("index",        {"label": "Index / N°", "type": "text", "max_length": 12}),
+                ("title",        {"label": "Titolo dimora", "type": "text", "max_length": 120}),
+                ("territorio",   {"label": "Territorio", "type": "text", "max_length": 80}),
+                ("superficie",   {"label": "Superficie", "type": "text", "max_length": 60}),
+                ("provenance",   {"label": "Provenance", "type": "text", "max_length": 120}),
+                ("availability", {"label": "Disponibilità", "type": "text", "max_length": 120}),
+                ("image",        {"label": "Cover image · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "home.hero_credit_cells": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Hero credit cells",
+            "icon": "bi-123",
+            "region": ".vp-hero",
+            "keywords": ["credit", "cells", "hero meta"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 40}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 40}),
+            ],
+        },
+        "home.numbers": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Numbers",
+            "icon": "bi-bar-chart",
+            "region": ".vp-section",
+            "keywords": ["numbers", "stats", "metriche"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 16}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "collezione.filter_groups": {
+            "kind": "dict",
+            "page": "collezione",
+            "label": "Collezione · Filter groups (label)",
+            "icon": "bi-funnel",
+            "region": ".vp-section",
+            "keywords": ["filtri", "filter groups", "label"],
+            "cols": [
+                ("label", {"label": "Label gruppo filtri", "type": "text", "max_length": 60}),
+                # `options` (list-of-str len=8 per row) intenzionalmente
+                # omesso: resta readonly al registry (complex-shape
+                # exclusion · stesso pattern di Juris deliverables).
+            ],
+        },
+        "territorio.territories": {
+            "kind": "dict",
+            "page": "territorio",
+            "label": "Territorio · Territori (6 con image)",
+            "icon": "bi-geo",
+            "region": ".vp-section",
+            "keywords": ["territori", "regioni", "provenance"],
+            "cols": [
+                ("name",       {"label": "Nome territorio", "type": "text", "max_length": 80}),
+                ("region",     {"label": "Regione", "type": "text", "max_length": 80}),
+                ("history",    {"label": "History / descrizione", "type": "textarea", "max_length": 500}),
+                ("architects", {"label": "Architetti / registi", "type": "text", "max_length": 200}),
+                ("count",      {"label": "Count immobili", "type": "text", "max_length": 40}),
+                ("since",      {"label": "Dal (anno)", "type": "text", "max_length": 40}),
+                ("image",      {"label": "Hero image · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "territorio.stats": {
+            "kind": "tuple",
+            "page": "territorio",
+            "label": "Territorio · Stats",
+            "icon": "bi-bar-chart",
+            "region": ".vp-section",
+            "keywords": ["stats", "numeri", "territorio"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 16}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "studio.advisors": {
+            "kind": "dict",
+            "page": "studio",
+            "label": "Studio · Advisors (4 con portrait)",
+            "icon": "bi-people",
+            "region": ".vp-section",
+            "keywords": ["advisors", "team", "portrait"],
+            "cols": [
+                ("name",       {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",       {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("bio",        {"label": "Biografia", "type": "textarea", "max_length": 600}),
+                ("territories",{"label": "Territori (scalar)", "type": "text", "max_length": 200}),
+                ("since",      {"label": "In studio dal", "type": "text", "max_length": 40}),
+                ("portrait",   {"label": "Ritratto · URL", "type": "image", "max_length": 400}),
+                ("langs",      {"label": "Lingue", "type": "text", "max_length": 120}),
+            ],
+        },
+        "studio.partners": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Partners istituzionali",
+            "icon": "bi-building",
+            "region": ".vp-section",
+            "keywords": ["partners", "studi", "notarili", "istituzionali"],
+            "tuple_order": ["name", "note"],
+            "cols": [
+                ("name", {"label": "Nome partner", "type": "text", "max_length": 120}),
+                ("note", {"label": "Nota / contesto", "type": "text", "max_length": 160}),
+            ],
+        },
+        "studio.press_items": {
+            "kind": "dict",
+            "page": "studio",
+            "label": "Studio · Press",
+            "icon": "bi-newspaper",
+            "region": ".vp-section",
+            "keywords": ["press", "stampa", "magazine"],
+            "cols": [
+                ("magazine", {"label": "Magazine", "type": "text", "max_length": 80}),
+                ("issue",    {"label": "Issue / numero", "type": "text", "max_length": 80}),
+                ("title",    {"label": "Titolo pezzo", "type": "text", "max_length": 200}),
+                ("byline",   {"label": "Firma", "type": "text", "max_length": 120}),
+            ],
+        },
+        "studio.numbers": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Numbers",
+            "icon": "bi-bar-chart",
+            "region": ".vp-section",
+            "keywords": ["numbers", "fatti", "kpi"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 16}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "esperienza.process": {
+            "kind": "dict",
+            "page": "esperienza",
+            "label": "Esperienza · Processo (5 step)",
+            "icon": "bi-list-ol",
+            "region": ".vp-section",
+            "keywords": ["processo", "fasi", "esperienza"],
+            "cols": [
+                ("n",        {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title",    {"label": "Titolo fase", "type": "text", "max_length": 120}),
+                ("duration", {"label": "Durata", "type": "text", "max_length": 60}),
+                ("text",     {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "esperienza.faq_items": {
+            "kind": "dict",
+            "page": "esperienza",
+            "label": "Esperienza · FAQ",
+            "icon": "bi-question-circle",
+            "region": ".vp-section",
+            "keywords": ["faq", "domande", "esperienza"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 240}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 700}),
+            ],
+        },
+        "concierge.phone_rows": {
+            "kind": "tuple",
+            "page": "concierge",
+            "label": "Concierge · Phone rows",
+            "icon": "bi-telephone",
+            "region": ".vp-section",
+            "keywords": ["phone", "canali", "concierge"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore (email/telefono)", "type": "text", "max_length": 120}),
+            ],
+        },
+        "concierge.offices": {
+            "kind": "dict",
+            "page": "concierge",
+            "label": "Concierge · Sedi",
+            "icon": "bi-geo-alt",
+            "region": ".vp-section",
+            "keywords": ["sedi", "offices", "concierge"],
+            "cols": [
+                ("city",    {"label": "Città", "type": "text", "max_length": 80}),
+                ("address", {"label": "Indirizzo", "type": "text", "max_length": 160}),
+                ("hours",   {"label": "Orari", "type": "text", "max_length": 160}),
+                ("email",   {"label": "Email", "type": "text", "max_length": 80}),
+                ("role",    {"label": "Ruolo sede", "type": "text", "max_length": 120}),
+            ],
+        },
+    },
 }
 
 
@@ -3008,6 +3577,12 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # template of the real-estate family. Villa (ultra-luxury-cinematic)
     # stays OUT until A.12b. Second zero-image archetype after Juris.
     "mass-market":            ("casa-agenzia-immobiliare",  "it"),
+    # A.12b · Villa (ultra-luxury-cinematic) joins as 8th enrolled
+    # archetype — closes the real-estate family opened in A.12. Second
+    # archetype to use image-in-dict-row exposure (after Vertex
+    # studio.partners.portrait). 4 scalar image + 22 image cells across
+    # 3 dict lists.
+    "ultra-luxury-cinematic": ("villa-immobili-lusso",      "it"),
 }
 
 
@@ -3033,6 +3608,11 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # shared-schema (A.9 recipe) is impossible. Casa is the second
     # zero-image archetype after Juris.
     "mass-market":            CASA_MASS_MARKET_SCHEMA,
+    # A.12b · Villa — closes the real-estate family. Second archetype
+    # to expose image cols inside dict rows (after Vertex studio.partners).
+    # Infrastructure proven since A.3a/A.4 — no service/rendering/widget
+    # changes required.
+    "ultra-luxury-cinematic": VILLA_ULTRA_LUXURY_CINEMATIC_SCHEMA,
 }
 
 
@@ -3529,6 +4109,13 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # stays out of the gate until A.12b. Gated by
     # ``test_a12_casa_full_multilocale_lifecycle_end_to_end``.
     "mass-market",
+    # A.12b · Villa (ultra-luxury-cinematic archetype · real-estate
+    # family · second template) joins editor + multi-locale in a single
+    # phase, closing the real-estate family. Image-in-dict-row pattern
+    # exposed on 3 indexed lists (home.signature / territorio.territories
+    # / studio.advisors). Gated by
+    # ``test_a12b_villa_full_multilocale_lifecycle_end_to_end``.
+    "ultra-luxury-cinematic",
 })
 
 

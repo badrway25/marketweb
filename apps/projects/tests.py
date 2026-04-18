@@ -2582,13 +2582,11 @@ class FoundationModelTests(TestCase):
         )
         self.assertIn("mass-market", _MULTILOCALE_ENABLED_ARCHETYPES)
         self.assertTrue(is_supported_archetype("mass-market"))
-        # Villa / ultra-luxury-cinematic NOT enrolled in A.12 — guard
-        # against a future accidental enrollment without its own
-        # dedicated A.12b phase. Removing this assertion is the single
-        # line change A.12b will make, together with the registrations.
-        self.assertNotIn("ultra-luxury-cinematic", _ARCHETYPE_SCHEMAS)
-        self.assertNotIn("ultra-luxury-cinematic", _MULTILOCALE_ENABLED_ARCHETYPES)
-        # Previous six archetypes must remain enrolled — A.12 is additive.
+        # A.12b · Villa (ultra-luxury-cinematic) has joined the gate;
+        # the Villa-out guard that used to live here is now the
+        # responsibility of `test_a12b_villa_archetype_registered`
+        # which asserts Villa IN + Casa still IN. The Casa-must-stay
+        # regression guard below is preserved.
         for arc in ("agency-creative-studio", "corporate-suite",
                     "fine-dining", "specialist", "classic-gold",
                     "modern-transparent"):
@@ -2881,6 +2879,384 @@ class FoundationModelTests(TestCase):
         body_proj = r_proj.content.decode("utf-8", "ignore")
         self.assertIn("editor/preview-bridge.js", body_proj)
         self.assertIn("<title>A12 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
+    # ------------------------------------------------------------------
+    # A.12b · Villa (ultra-luxury-cinematic archetype · real-estate family)
+    # ------------------------------------------------------------------
+
+    def test_a12b_villa_archetype_registered(self):
+        """``ultra-luxury-cinematic`` joins the schema + baseline template
+        + gate registries as 8th enrolled archetype, closing the
+        real-estate family opened in A.12 with Casa.
+
+        This test also **verifies the controlled removal of the
+        Villa-out guard** that lived in `test_a12_casa_archetype_registered`
+        until A.12 · the Villa-absence assertions were dropped in A.12b
+        (the runtime Villa-out assertion inside the Casa lifecycle test
+        was also removed). Casa (mass-market) must stay enrolled — A.12b
+        is additive.
+        """
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("ultra-luxury-cinematic", _ARCHETYPE_SCHEMAS)
+        self.assertEqual(
+            _ARCHETYPE_BASELINE_TEMPLATE["ultra-luxury-cinematic"],
+            ("villa-immobili-lusso", "it"),
+        )
+        self.assertIn("ultra-luxury-cinematic", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("ultra-luxury-cinematic"))
+        # Casa (mass-market) must STAY enrolled — A.12b is additive.
+        self.assertIn("mass-market", _ARCHETYPE_SCHEMAS)
+        self.assertIn("mass-market", _MULTILOCALE_ENABLED_ARCHETYPES)
+        # All 6 pre-Casa archetypes still enrolled.
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist", "classic-gold",
+                    "modern-transparent"):
+            self.assertIn(arc, _ARCHETYPE_SCHEMAS)
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES)
+
+    def test_a12b_villa_out_guard_was_removed_from_casa_tests(self):
+        """USER-IMPOSED GUARDRAIL · verifies controlled removal of the
+        Villa-out guard that lived in A.12 Casa tests.
+
+        The proof is indirect but airtight: if the Villa-out assertions
+        had been left in place while Villa joined the gate, the Casa
+        tests (`test_a12_casa_archetype_registered` +
+        `test_a12_casa_full_multilocale_lifecycle_end_to_end`) would
+        fail at the ``assertNotIn("ultra-luxury-cinematic", ...)`` step
+        because Villa IS now in both gate sets. Therefore a green run
+        of those two Casa tests implies the guard was removed
+        correctly. This test makes that implication explicit by
+        checking the gate state the Casa tests now rely on: Villa MUST
+        be in `_ARCHETYPE_SCHEMAS` AND in `_MULTILOCALE_ENABLED_ARCHETYPES`
+        AND Casa MUST still be in both."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("ultra-luxury-cinematic", _ARCHETYPE_SCHEMAS,
+                      "Villa must be in _ARCHETYPE_SCHEMAS post-A.12b")
+        self.assertIn("ultra-luxury-cinematic", _MULTILOCALE_ENABLED_ARCHETYPES,
+                      "Villa must be in _MULTILOCALE_ENABLED_ARCHETYPES post-A.12b")
+        self.assertIn("mass-market", _ARCHETYPE_SCHEMAS,
+                      "Casa must still be in _ARCHETYPE_SCHEMAS post-A.12b")
+        self.assertIn("mass-market", _MULTILOCALE_ENABLED_ARCHETYPES,
+                      "Casa must still be in _MULTILOCALE_ENABLED_ARCHETYPES post-A.12b")
+
+    def test_a12b_villa_schema_shape_covers_all_pages(self):
+        """The Villa schema must surface groups for every Villa page slug
+        (home + collezione + territorio + studio + esperienza + concierge)
+        plus chrome-level groups (page='*')."""
+        groups = iter_groups("ultra-luxury-cinematic")
+        self.assertGreaterEqual(len(groups), 10)
+        pages = {g.get("page") for g in groups}
+        for slug in ("*", "home", "collezione", "territorio", "studio",
+                     "esperienza", "concierge"):
+            self.assertIn(slug, pages,
+                          f"Villa schema missing page slug {slug!r}")
+
+    def test_a12b_villa_is_translatable_text_fields(self):
+        """Scalar copy fields distributed across every Villa page +
+        chrome. Uses only paths present on Villa so no sibling schema
+        drifts into this test."""
+        from apps.editor.schema import is_translatable
+        arc = "ultra-luxury-cinematic"
+        distributed_paths = (
+            # home hero + bands
+            "home.headline",
+            "home.sub",
+            "home.hero_series_note",
+            "home.signature_heading",
+            "home.advisor_bio",
+            "home.numbers_heading",
+            "home.private_heading",
+            # collezione
+            "collezione.headline",
+            "collezione.posts_intro",
+            # territorio
+            "territorio.headline",
+            "territorio.territories_intro",
+            "territorio.stats_heading",
+            # studio
+            "studio.headline",
+            "studio.director_bio",
+            "studio.advisors_intro",
+            # esperienza
+            "esperienza.headline",
+            "esperienza.process_heading",
+            "esperienza.faq_heading",
+            # concierge
+            "concierge.headline",
+            "concierge.intro",
+            "concierge.form_section_intro",
+            "concierge.press_contact_text",
+            # chrome + tile labels
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+            "site.foot_studio",
+            "site.nav_cta",
+            "site.dossier_label",
+            "site.provenance_label",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on ultra-luxury-cinematic",
+            )
+
+    def test_a12b_villa_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Villa — same contract
+        as every previously-enrolled archetype."""
+        from apps.editor.schema import is_translatable
+        arc = "ultra-luxury-cinematic"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on Villa",
+            )
+
+    def test_a12b_villa_image_cols_in_dict_shapes_exposed(self):
+        """USER-IMPOSED GUARDRAIL · image cols are IN the perimeter
+        (opposite contract of the zero-image guards on Juris/Casa).
+
+        Villa's DNA is cinematographic luxury — the imagery IS the
+        editorial content. The image-in-dict-row pattern is not novel
+        (Vertex `studio.partners.portrait` has shipped since A.3a/A.4),
+        but A.12b is the second archetype to use it. This test asserts
+        each of the expected image surfaces IS reachable through the
+        schema:
+
+        (1) 4 scalar image fields on flat groups:
+              - home.cover_image · home.advisor_portrait
+              - studio.director_portrait · collezione.lead_image
+        (2) 3 image cols inside dict rows (non-mutable lists):
+              - home.signature.0.image (sample row 0)
+              - territorio.territories.0.image
+              - studio.advisors.0.portrait
+
+        Per-row image override paths resolve to a spec with
+        `type == "image"` via `get_field_spec`. This is the positive
+        mirror of the Juris/Casa zero-image guards.
+        """
+        from apps.editor.schema import get_field_spec, get_list_shape
+        arc = "ultra-luxury-cinematic"
+        # (1) Scalar image fields
+        scalar_image_paths = (
+            "home.cover_image",
+            "home.advisor_portrait",
+            "studio.director_portrait",
+            "collezione.lead_image",
+        )
+        for path in scalar_image_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"scalar image field {path} must be exposed")
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} must carry type='image' (got {spec.get('type')!r})",
+            )
+        # (2) Image cols inside dict rows (baseline row 0 sample)
+        image_cell_paths = (
+            "home.signature.0.image",
+            "territorio.territories.0.image",
+            "studio.advisors.0.portrait",
+        )
+        for path in image_cell_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec,
+                f"image cell {path} must be reachable via get_field_spec",
+            )
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} cell spec must carry type='image' (got {spec.get('type')!r})",
+            )
+        # (3) The dict shapes must ACTUALLY have the image col in their
+        # cols list (shape-level check complementary to the cell-level
+        # check above).
+        for list_path, expected_col in (
+            ("home.signature", "image"),
+            ("territorio.territories", "image"),
+            ("studio.advisors", "portrait"),
+        ):
+            shape = get_list_shape(arc, list_path)
+            self.assertIsNotNone(shape)
+            cols_by_name = {name: spec for name, spec in (shape.get("cols") or [])}
+            self.assertIn(
+                expected_col, cols_by_name,
+                f"{list_path} shape cols must include image col {expected_col!r}",
+            )
+            self.assertEqual(
+                cols_by_name[expected_col].get("type"), "image",
+                f"{list_path}.{expected_col} col must be type='image'",
+            )
+
+    def test_a12b_villa_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL · complex-shape exclusion test.
+
+        Four categories of complex registry shapes must stay OUT of
+        Villa's editor perimeter (scope creep prevention):
+
+        (1) Nested list-of-str inside dict rows:
+              - `collezione.filter_groups[].options` (8 filter options
+                per group)
+              - `concierge.form_fields[].options` (4 form select
+                options per field)
+            Same exclusion policy as Juris `deliverables`.
+
+        (2) Flat list-of-str containers:
+              - `home.territory` (7 territory wordmarks)
+              - `home.press_items` (5 press wordmarks)
+              - `collezione.sort_options` (4 sort options)
+              - `site.hours_footer_rows` / `site.offices_footer_rows`
+                / `site.office_rows` (footer rows)
+            Same policy as Juris `trust_logos`/`topics` and Casa
+            `immobili.filters`/`sort_options`.
+
+        (3) Form structure blocks:
+              - `concierge.form_fields` list + its nested dict rows
+            Same policy as every prior archetype.
+
+        (4) Per-post `posts` entries (8 blog post records with image
+            col). Stays registry-only — same policy as Lex notabili,
+            Juris insights, Casa posts.
+
+        Every path listed must fail `validate_key_path`.
+        """
+        from apps.editor.schema import validate_key_path
+        arc = "ultra-luxury-cinematic"
+        validate_rejects = [
+            # (1) nested list-of-str inside dict rows
+            "collezione.filter_groups.0.options",
+            "collezione.filter_groups.0.options.0",
+            "concierge.form_fields.0.options",
+            "concierge.form_fields.0.options.0",
+            # (2) flat list-of-str containers
+            "home.territory",
+            "home.territory.0",
+            "home.press_items",
+            "home.press_items.0",
+            "collezione.sort_options",
+            "collezione.sort_options.0",
+            "site.hours_footer_rows",
+            "site.offices_footer_rows",
+            "site.office_rows",
+            # (3) form structure blocks
+            "concierge.form_fields",
+            "concierge.form_fields.0.name",
+            "concierge.form_fields.0.label",
+            # (4) per-post posts entries (including post image col)
+            "posts",
+            "posts.0.title",
+            "posts.0.image",
+            "posts.0.body",
+        ]
+        for path in validate_rejects:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"{path} MUST be rejected by validate_key_path on ultra-luxury-cinematic",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a12b_villa_structured_list_cells_are_global(self):
+        """The 14 readonly indexed lists on Villa stay global at cell
+        level — text AND image cells both non-translatable (per-row
+        image override is universal, never per-locale)."""
+        from apps.editor.schema import is_translatable
+        arc = "ultra-luxury-cinematic"
+        cell_paths = (
+            # text cells
+            "home.signature.0.title",
+            "home.signature.3.territorio",
+            "home.hero_credit_cells.0.label",
+            "home.numbers.0.label",
+            "collezione.filter_groups.0.label",
+            "territorio.territories.0.name",
+            "territorio.territories.5.history",
+            "studio.advisors.0.name",
+            "studio.advisors.3.bio",
+            "studio.press_items.0.magazine",
+            "esperienza.process.4.title",
+            "esperienza.faq_items.5.a",
+            "concierge.offices.0.city",
+            "concierge.offices.2.address",
+            # image cells (per-row image override stays global too)
+            "home.signature.0.image",
+            "territorio.territories.0.image",
+            "studio.advisors.0.portrait",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Villa",
+            )
+
+    def test_a12b_villa_supported_locales_returns_canonical_five(self):
+        """Villa ships the canonical 5-locale set. Step-0 audit
+        confirmed PERFECT parity (185 keys × 5 locales, zero gaps)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("ultra-luxury-cinematic"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a12b_septuple_regression_after_villa_joins(self):
+        """Regression guard: adding Villa to gate + schemas must not
+        disturb ANY of the seven pre-existing enrollments (Vertex +
+        Pragma + Gusto + specialist + classic-gold + modern-transparent
+        + mass-market)."""
+        from apps.editor.schema import is_translatable, supported_locales
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist", "classic-gold",
+                    "modern-transparent", "mass-market"):
+            self.assertTrue(
+                is_translatable(arc, "home.headline"),
+                f"{arc} home.headline must stay translatable",
+            )
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must keep the canonical 5-locale set",
+            )
+
+    def test_a12b_villa_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.8/A.9/A.10/A.11/A.12 integration guardrail —
+        the Villa ``ultra-luxury-cinematic/_base.html`` must integrate
+        the three bridge points together on the `.vp-*` skin:
+        (1) preview-bridge.js conditional on ``preview_project``,
+        (2) ``<title>`` honors ``site.logo_word``,
+        (3) ``<body>`` carries the ``mw-is-editor-preview`` guard class
+        when inside the editor."""
+        villa = WebTemplate.objects.get(slug="villa-immobili-lusso")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/real-estate/villa-immobili-lusso/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=villa)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A12b Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/real-estate/villa-immobili-lusso/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A12b Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
@@ -5104,14 +5480,11 @@ class FoundationHttpTests(TestCase):
 
         AR response head must carry ``<html dir="rtl" lang="ar">`` so the
         ``.dm-*`` skin inherits a green baseline for RTL. Villa
-        (ultra-luxury-cinematic) is NOT exercised here — it belongs to
-        A.12b. A guard check inside this test asserts Villa stays out
-        of `_MULTILOCALE_ENABLED_ARCHETYPES` at runtime.
+        (ultra-luxury-cinematic) has joined the gate in A.12b; the
+        runtime Villa-out assertion that used to live here has been
+        removed now that Villa is enrolled with its own lifecycle test.
         """
         import json as _json
-        from apps.editor.schema import _MULTILOCALE_ENABLED_ARCHETYPES
-        # Villa guard — must stay out of the gate throughout this phase.
-        self.assertNotIn("ultra-luxury-cinematic", _MULTILOCALE_ENABLED_ARCHETYPES)
 
         casa = WebTemplate.objects.get(slug="casa-agenzia-immobiliare")
         p = services.create_project_from_template(owner=self.owner, template=casa)
@@ -5268,6 +5641,235 @@ class FoundationHttpTests(TestCase):
         self.assertEqual(logo_field["value"], "A12CasaBrand")
         self.assertTrue(logo_field["is_overridden"])
         self.assertFalse(logo_field["translatable"])
+
+    # ------------------------------------------------------------------
+    # A.12b · Step 2 — Villa (ultra-luxury-cinematic) lifecycle HTTP
+    # cross-cutting · includes scalar image override + image-in-dict-row
+    # override coverage (Villa is the second archetype to expose image
+    # cols inside dict rows, after Vertex studio.partners.portrait).
+    # ------------------------------------------------------------------
+
+    def test_a12b_villa_full_multilocale_lifecycle_end_to_end(self):
+        """Mirror of the A.12 Casa lifecycle, enriched to cover Villa's
+        image-handling surface:
+
+        1. customer edits IT / EN / FR on a Villa translatable path
+        2. customer edits a global TEXT path (site.logo_word)
+        3. customer edits a SCALAR IMAGE field (home.cover_image)
+        4. customer edits an IMAGE CELL inside a dict row
+           (home.signature.0.image) — this is the A.12b-specific
+           surface that mirrors Vertex studio.partners[].portrait
+        5. unedited locales (ES · AR) fall back to the authored registry
+        6. project publishes · second user visits every public preview
+           locale and sees the correct content
+        7. owner reopens the editor per locale and the sidebar prefill
+           matches the buffer for that locale — translatable (per-locale)
+           AND image overrides (plain-keyed, universal).
+
+        AR response head must carry ``<html dir="rtl" lang="ar">`` on
+        the `.vp-*` skin. **Casa (mass-market) must remain enrolled +
+        intact** throughout — asserted at the start as a runtime guard.
+        """
+        import json as _json
+        from apps.editor.schema import _MULTILOCALE_ENABLED_ARCHETYPES
+
+        # Casa guard — must stay enrolled throughout A.12b.
+        self.assertIn("mass-market", _MULTILOCALE_ENABLED_ARCHETYPES,
+                      "Casa must remain enrolled during A.12b lifecycle")
+
+        villa = WebTemplate.objects.get(slug="villa-immobili-lusso")
+        p = services.create_project_from_template(owner=self.owner, template=villa)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 1-2. three translatable locales + one global text ─────
+        for locale, headline in (
+            ("it", "Dimore Villa walk IT <em>A12bVilla</em>."),
+            ("en", "Signature Villa walk EN <em>A12bVillaEN</em>."),
+            ("fr", "Demeures Villa walk FR <em>A12bVillaFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+        r = autosave("en", {"site.logo_word": "A12bVillaBrand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 3. Scalar image override (home.cover_image) ───────────
+        # Image fields are classified NON-translatable (type != text/
+        # textarea/richtext) so the override is persisted with a plain
+        # key regardless of the locale on the request.
+        IMG_COVER = "https://images.pexels.com/photos/9999001/cover-A12b.jpg"
+        r = autosave("it", {"home.cover_image": IMG_COVER})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.cover_image", r.json()["content_keys"])
+
+        # ── 4. Image cell inside dict row (home.signature.0.image) ─
+        # This is the A.12b-specific coverage: image col inside a
+        # list-of-dict row. Same widget infra as Vertex
+        # studio.partners[].portrait, production since A.3a/A.4.
+        IMG_SIG = "https://images.pexels.com/photos/9999002/signature-row0.jpg"
+        r = autosave("it", {"home.signature.0.image": IMG_SIG})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.signature.0.image", r.json()["content_keys"])
+
+        # Storage keys: three @<locale>:home.headline (per-locale) +
+        # three plain-keyed globals (logo + 2 images). No leak of image
+        # overrides into @<locale>: namespace · no plain-key leak for
+        # home.headline.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("home.cover_image", keys)
+        self.assertIn("home.signature.0.image", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@it:home.cover_image", keys)
+        self.assertNotIn("@it:home.signature.0.image", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+
+        # ── 5. publish ────────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 6. second user sees the right thing on every locale ───
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale):
+            url = (
+                f"/templates/real-estate/villa-immobili-lusso/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render — IT override visible, EN/FR markers absent.
+        body_it = preview_body("it")
+        self.assertIn("Villa walk IT", body_it)
+        self.assertIn("A12bVilla", body_it)
+        self.assertNotIn("A12bVillaEN", body_it)
+        self.assertNotIn("A12bVillaFR", body_it)
+        self.assertIn("A12bVillaBrand", body_it)
+        # Image overrides are universal — both must appear in IT render.
+        self.assertIn(IMG_COVER, body_it)
+        self.assertIn(IMG_SIG, body_it)
+
+        # EN render
+        body_en = preview_body("en")
+        self.assertIn("Villa walk EN", body_en)
+        self.assertIn("A12bVillaEN", body_en)
+        self.assertNotIn("Villa walk IT", body_en)
+        self.assertIn("A12bVillaBrand", body_en)
+        self.assertIn(IMG_COVER, body_en)
+        self.assertIn(IMG_SIG, body_en)
+
+        # FR render
+        body_fr = preview_body("fr")
+        self.assertIn("Villa walk FR", body_fr)
+        self.assertIn("A12bVillaFR", body_fr)
+        self.assertIn("A12bVillaBrand", body_fr)
+        self.assertIn(IMG_COVER, body_fr)
+        self.assertIn(IMG_SIG, body_fr)
+
+        # Unedited locales — authored text fallback + global images universal.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Villa walk IT", body)
+            self.assertNotIn("Villa walk EN", body)
+            self.assertNotIn("Villa walk FR", body)
+            self.assertIn("A12bVillaBrand", body)
+            # Image overrides must still appear (global · universal).
+            self.assertIn(IMG_COVER, body)
+            self.assertIn(IMG_SIG, body)
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Villa",
+                )
+
+        # AR preview — `.vp-*` skin must emit ``<html dir="rtl" lang="ar">``.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 7. owner reopens the editor on each locale ────────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Villa walk IT"),
+            ("en", "Villa walk EN"),
+            ("fr", "Villa walk FR"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text field: overridden universally, not translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Villa editor")
+        self.assertEqual(logo_field["value"], "A12bVillaBrand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        # Scalar image field: overridden universally, not translatable.
+        cover_field = find_field_by_key(r_es.context["groups"], "home.cover_image")
+        self.assertIsNotNone(cover_field, "home.cover_image missing from Villa editor")
+        self.assertEqual(cover_field["value"], IMG_COVER)
+        self.assertTrue(cover_field["is_overridden"])
+        self.assertFalse(cover_field["translatable"])
+
+        # Casa guard (re-check end-of-test) — must still be enrolled.
+        self.assertIn("mass-market", _MULTILOCALE_ENABLED_ARCHETYPES,
+                      "Casa enrollment must persist past Villa lifecycle")
 
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
