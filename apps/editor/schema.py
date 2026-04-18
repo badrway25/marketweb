@@ -1169,6 +1169,357 @@ JURIS_MODERN_TRANSPARENT_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# A.12 · Casa mass-market — 7th enrolled editor archetype, first template
+# of the real-estate family (`real-estate` category). Villa
+# (`ultra-luxury-cinematic`) stays explicitly OUT of this phase and is
+# reserved for a separate A.12b enrollment with its own schema + skin
+# bridge + lifecycle test. The two real-estate templates carry distinct
+# archetypes + distinct skin folders + ZERO non-home page-slug overlap
+# (Casa: home/immobili/quartieri/agenzia/valutazione/contatti vs Villa:
+# home/collezione/territorio/studio/esperienza/concierge), so the A.9
+# shared-schema recipe does NOT apply here — A.12/A.12b mirrors the
+# A.10/A.11 law-family closure topology (two dedicated schemas).
+#
+# Casa is the SECOND zero-image archetype after Juris (A.11) — DNA
+# mass-market doesn't ship any image fields in the registry. This is
+# locked by the user-imposed guardrail test
+# `test_a12_casa_schema_contains_zero_image_fields` that iterates the
+# entire schema + `STRUCTURED_FIELD_SHAPES` tree asserting no field
+# carries `type: "image"`.
+#
+# Shape contract notes (see mini-audit in the A.12 planning memo):
+#   • 10 sidebar groups cover all 6 Casa pages (home, immobili, quartieri,
+#     agenzia, valutazione, contatti) + chrome (brand, contact_info,
+#     post_chrome). Skin uses `.dm-*` selectors (23 mature html[dir="rtl"]
+#     rules already in `real-estate/mass-market/_base.html`).
+#   • ``home.search_widget`` (nested dict, 15 keys) is FLATTENED into
+#     scalar fields inside the ``hero_home`` group per the A.12 planning
+#     decision (14 scalars IN — no sub-dict editor widget is introduced).
+#     Its ``popular_tags`` list-of-str stays registry-only.
+#   • Complex shapes explicitly KEPT OUT of the perimeter by design:
+#       - ``home.search_widget.popular_tags`` (flat list-of-str)
+#       - ``immobili.filters`` + ``immobili.sort_options`` (flat
+#         list-of-str — same exclusion pattern as Juris trust_logos)
+#       - Property-detail entries in ``posts`` (12 property records with
+#         per-property copy like Lex ``notabili``) — stays registry-only
+#   • Form structure blocks (``valutazione.form_fields`` +
+#     ``form_sections``, ``contatti.form_fields`` + ``form_sections``)
+#     stay OUT — same policy as Gusto / specialist / Lex / Juris.
+#   • 15 readonly indexed lists (more than Juris's 6 because Casa is
+#     structurally richer — 5 home lists + 3 quartieri lists + 2 agenzia
+#     lists + 3 valutazione lists + 1 immobili list + 1 contatti list).
+#     No `mutable: True` flag anywhere (same as every archetype except
+#     Vertex A.3a).
+
+CASA_MASS_MARKET_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".dm-nav, .dm-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "agenzia", "tagline", "insegna"],
+        "help": "Nome agenzia, iniziale crest e tagline.",
+        "fields": [
+            ("site.logo_word",    {"label": "Nome agenzia", "type": "text", "max_length": 60,
+                                    "placeholder": "Domus Immobiliare"}),
+            ("site.logo_initial", {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",          {"label": "Tagline", "type": "text", "max_length": 100}),
+            ("site.nav_cta",      {"label": "CTA nav", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home · search widget",
+        "icon": "bi-easel",
+        "region": ".dm-hero, .dm-search",
+        "page": "home",
+        "keywords": ["hero", "apertura", "headline", "eyebrow", "intro", "cta", "search", "ricerca", "widget"],
+        "help": "Primo scroll della home: eyebrow, headline, intro, CTA principali e widget di ricerca (label + valori dei 4 campi + CTA + nota).",
+        "subgroups": [
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("home.headline",            {"label": "Headline", "type": "richtext", "max_length": 220,
+                                                "help": "Consentiti i tag <em> per gli italici."}),
+                ("home.intro",               {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.primary_cta",         {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.primary_href",        {"label": "CTA primaria · destinazione", "type": "select",
+                                                "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                            "valutazione", "contatti"]}),
+                ("home.secondary_cta",       {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.secondary_href",      {"label": "CTA secondaria · destinazione", "type": "select",
+                                                "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                            "valutazione", "contatti"]}),
+                ("home.hero_availability",   {"label": "Disponibilità (pill)", "type": "text", "max_length": 80}),
+                ("home.hero_response",       {"label": "Tempo risposta (pill)", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Search widget · intestazione", "fields": [
+                ("home.search_widget.label",           {"label": "Etichetta widget", "type": "text", "max_length": 60}),
+                ("home.search_widget.intro",           {"label": "Intro widget", "type": "textarea", "max_length": 200}),
+            ]},
+            {"label": "Search widget · 4 campi", "fields": [
+                ("home.search_widget.location_label",  {"label": "Dove · etichetta", "type": "text", "max_length": 40}),
+                ("home.search_widget.location_value",  {"label": "Dove · valore mostrato", "type": "text", "max_length": 80}),
+                ("home.search_widget.type_label",      {"label": "Tipo · etichetta", "type": "text", "max_length": 40}),
+                ("home.search_widget.type_value",      {"label": "Tipo · valore mostrato", "type": "text", "max_length": 80}),
+                ("home.search_widget.price_label",     {"label": "Prezzo · etichetta", "type": "text", "max_length": 40}),
+                ("home.search_widget.price_value",     {"label": "Prezzo · valore mostrato", "type": "text", "max_length": 80}),
+                ("home.search_widget.rooms_label",     {"label": "Camere · etichetta", "type": "text", "max_length": 40}),
+                ("home.search_widget.rooms_value",     {"label": "Camere · valore mostrato", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Search widget · CTA", "fields": [
+                ("home.search_widget.cta",             {"label": "Cerca · CTA", "type": "text", "max_length": 60}),
+                ("home.search_widget.cta_href",        {"label": "Cerca · destinazione", "type": "select",
+                                                         "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                                     "valutazione", "contatti"]}),
+                ("home.search_widget.secondary_note", {"label": "Nota secondaria (WhatsApp)", "type": "textarea", "max_length": 200}),
+                ("home.search_widget.popular_label",   {"label": "Popolari · etichetta", "type": "text", "max_length": 40}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".dm-section",
+        "page": "home",
+        "keywords": ["featured", "neighborhoods", "stats", "agents", "valuation", "testimonial", "cta", "fasce", "quartieri home"],
+        "help": "Eyebrow, titoli, intro delle fasce home (featured · quartieri · stats · agenti · valutazione · testimonial).",
+        "subgroups": [
+            {"label": "Featured listings · intestazione", "fields": [
+                ("home.featured_label",        {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.featured_heading",      {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.featured_intro",        {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.featured_link",         {"label": "Link all'elenco · etichetta", "type": "text", "max_length": 60}),
+                ("home.featured_link_href",    {"label": "Link · destinazione", "type": "select",
+                                                 "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                             "valutazione", "contatti"]}),
+            ]},
+            {"label": "Quartieri · intestazione", "fields": [
+                ("home.neighborhoods_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.neighborhoods_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.neighborhoods_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.neighborhoods_cta",     {"label": "CTA · etichetta", "type": "text", "max_length": 80}),
+                ("home.neighborhoods_cta_href",{"label": "CTA · destinazione", "type": "select",
+                                                 "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                             "valutazione", "contatti"]}),
+            ]},
+            {"label": "Stats · intestazione", "fields": [
+                ("home.stats_label",           {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.stats_heading",         {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.stats_intro",           {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.stats_note",            {"label": "Nota in calce", "type": "textarea", "max_length": 240}),
+            ]},
+            {"label": "Agenti · intestazione", "fields": [
+                ("home.agents_label",          {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.agents_heading",        {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.agents_intro",          {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.agents_cta",            {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("home.agents_cta_href",       {"label": "CTA · destinazione", "type": "select",
+                                                 "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                             "valutazione", "contatti"]}),
+            ]},
+            {"label": "Valutazione · CTA band", "fields": [
+                ("home.valuation_label",       {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.valuation_heading",     {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.valuation_intro",       {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.valuation_cta",         {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.valuation_cta_href",    {"label": "CTA primaria · destinazione", "type": "select",
+                                                 "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                             "valutazione", "contatti"]}),
+                ("home.valuation_secondary",   {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.valuation_secondary_href", {"label": "CTA secondaria · destinazione", "type": "select",
+                                                    "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                                "valutazione", "contatti"]}),
+            ]},
+            {"label": "Testimonial", "fields": [
+                ("home.testimonial_label",     {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.testimonial_quote",     {"label": "Citazione", "type": "textarea", "max_length": 400}),
+                ("home.testimonial_author",    {"label": "Autore", "type": "text", "max_length": 80}),
+                ("home.testimonial_meta",      {"label": "Meta (ruolo/contesto)", "type": "text", "max_length": 120}),
+            ]},
+        ],
+    },
+    {
+        "id": "immobili_page",
+        "label": "Pagina Immobili",
+        "icon": "bi-buildings",
+        "region": ".dm-section",
+        "page": "immobili",
+        "keywords": ["immobili", "annunci", "listings", "filtri", "ordina", "properties"],
+        "help": "Pagina elenco immobili: intestazione + etichette filtri/ordina. I 12 immobili e i filtri (list-of-str) restano registry-only.",
+        "fields": [
+            ("immobili.eyebrow",           {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("immobili.headline",          {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("immobili.intro",             {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("immobili.filter_label",      {"label": "Etichetta filtro", "type": "text", "max_length": 40}),
+            ("immobili.sort_label",        {"label": "Etichetta ordina", "type": "text", "max_length": 40}),
+            ("immobili.map_label",         {"label": "Mappa · eyebrow", "type": "text", "max_length": 60}),
+            ("immobili.map_heading",       {"label": "Mappa · titolo", "type": "richtext", "max_length": 220}),
+            ("immobili.map_intro",         {"label": "Mappa · intro", "type": "textarea", "max_length": 400}),
+            ("immobili.cta_heading",       {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("immobili.cta_intro",         {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("immobili.cta_primary",       {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ("immobili.cta_primary_href",  {"label": "CTA · destinazione", "type": "select",
+                                             "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                         "valutazione", "contatti"]}),
+        ],
+    },
+    {
+        "id": "quartieri_page",
+        "label": "Pagina Quartieri",
+        "icon": "bi-geo",
+        "region": ".dm-section",
+        "page": "quartieri",
+        "keywords": ["quartieri", "neighborhoods", "guide", "faq", "aree"],
+        "help": "Pagina quartieri: intestazione, label sezioni guide/faq, CTA finale.",
+        "fields": [
+            ("quartieri.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("quartieri.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("quartieri.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("quartieri.guides_label",     {"label": "Guide · eyebrow", "type": "text", "max_length": 80}),
+            ("quartieri.guides_heading",   {"label": "Guide · titolo", "type": "richtext", "max_length": 220}),
+            ("quartieri.guides_intro",     {"label": "Guide · intro", "type": "textarea", "max_length": 500}),
+            ("quartieri.faq_label",        {"label": "FAQ · eyebrow", "type": "text", "max_length": 80}),
+            ("quartieri.faq_heading",      {"label": "FAQ · titolo", "type": "richtext", "max_length": 220}),
+            ("quartieri.cta_heading",      {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("quartieri.cta_intro",        {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("quartieri.cta_primary",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ("quartieri.cta_primary_href", {"label": "CTA · destinazione", "type": "select",
+                                             "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                         "valutazione", "contatti"]}),
+        ],
+    },
+    {
+        "id": "agenzia_page",
+        "label": "Pagina Agenzia",
+        "icon": "bi-people",
+        "region": ".dm-section",
+        "page": "agenzia",
+        "keywords": ["agenzia", "team", "agenti", "fatti", "storia"],
+        "help": "Pagina agenzia: intestazione, label sezioni agenti/fatti, CTA finale. 9 agenti e 4 facts editabili per riga nei blocchi indicizzati.",
+        "fields": [
+            ("agenzia.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("agenzia.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("agenzia.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("agenzia.agents_label",     {"label": "Agenti · eyebrow", "type": "text", "max_length": 80}),
+            ("agenzia.agents_heading",   {"label": "Agenti · titolo", "type": "richtext", "max_length": 220}),
+            ("agenzia.facts_label",      {"label": "Fatti · eyebrow", "type": "text", "max_length": 80}),
+            ("agenzia.facts_heading",    {"label": "Fatti · titolo", "type": "richtext", "max_length": 220}),
+            ("agenzia.cta_heading",      {"label": "CTA finale · titolo", "type": "richtext", "max_length": 220}),
+            ("agenzia.cta_intro",        {"label": "CTA finale · intro", "type": "textarea", "max_length": 500}),
+            ("agenzia.cta_primary",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ("agenzia.cta_primary_href", {"label": "CTA · destinazione", "type": "select",
+                                           "choices": ["home", "immobili", "quartieri", "agenzia",
+                                                       "valutazione", "contatti"]}),
+        ],
+    },
+    {
+        "id": "valutazione_page",
+        "label": "Pagina Valutazione",
+        "icon": "bi-calculator",
+        "region": ".dm-section",
+        "page": "valutazione",
+        "keywords": ["valutazione", "services", "stima", "come-funziona", "faq", "prove", "form"],
+        "help": "Pagina valutazione: intestazione, label sezioni how_it_works/proof/faq, label sopra il form + nota invio + testo consenso. Struttura form (campi/sezioni) resta registry-only.",
+        "fields": [
+            ("valutazione.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("valutazione.headline",            {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("valutazione.intro",               {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("valutazione.how_it_works_label",  {"label": "Processo · eyebrow", "type": "text", "max_length": 80}),
+            ("valutazione.how_it_works_heading",{"label": "Processo · titolo", "type": "richtext", "max_length": 220}),
+            ("valutazione.proof_label",         {"label": "Prove · eyebrow", "type": "text", "max_length": 80}),
+            ("valutazione.proof_heading",       {"label": "Prove · titolo", "type": "richtext", "max_length": 220}),
+            ("valutazione.faq_label",           {"label": "FAQ · eyebrow", "type": "text", "max_length": 80}),
+            ("valutazione.faq_heading",         {"label": "FAQ · titolo", "type": "richtext", "max_length": 220}),
+            ("valutazione.form_label",          {"label": "Form · eyebrow", "type": "text", "max_length": 80}),
+            ("valutazione.form_heading",        {"label": "Form · titolo", "type": "richtext", "max_length": 220}),
+            ("valutazione.form_intro",          {"label": "Form · intro", "type": "textarea", "max_length": 500}),
+            ("valutazione.form_submit_label",   {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("valutazione.form_submit_note",    {"label": "Form · nota submit", "type": "textarea", "max_length": 300}),
+            ("valutazione.form_consent",        {"label": "Form · testo consenso", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-telephone",
+        "region": ".dm-section",
+        "page": "contatti",
+        "keywords": ["contatti", "contact", "sedi", "canali", "form", "ufficio"],
+        "help": "Pagina contatti: copy + label sezione sedi/canali + label form. Struttura form resta registry-only.",
+        "fields": [
+            ("contatti.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("contatti.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",            {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ("contatti.offices_label",    {"label": "Sedi · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.offices_heading",  {"label": "Sedi · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.channels_label",   {"label": "Canali · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.channels_heading", {"label": "Canali · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.form_label",       {"label": "Form · eyebrow", "type": "text", "max_length": 60}),
+            ("contatti.form_heading",     {"label": "Form · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.form_intro",       {"label": "Form · intro", "type": "textarea", "max_length": 500}),
+            ("contatti.form_submit_label",{"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("contatti.form_submit_note", {"label": "Form · nota submit", "type": "textarea", "max_length": 300}),
+            ("contatti.form_consent",     {"label": "Form · testo consenso", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "contact_info",
+        "label": "Contatti · footer",
+        "icon": "bi-telephone-forward",
+        "region": ".dm-foot",
+        "page": "*",
+        "keywords": ["footer", "phone", "email", "indirizzo", "orari", "licenza", "whatsapp"],
+        "help": "Dati di contatto visibili in footer + intro voce dell'agenzia + titoli sezioni footer + etichette tile immobili (riusate nel listing).",
+        "fields": [
+            ("site.phone",             {"label": "Telefono", "type": "text", "max_length": 40}),
+            ("site.email",             {"label": "Email", "type": "text", "max_length": 80}),
+            ("site.address",           {"label": "Indirizzo sede primaria", "type": "text", "max_length": 120}),
+            ("site.address_short",     {"label": "Indirizzo compatto", "type": "text", "max_length": 60}),
+            ("site.hours_compact",     {"label": "Orari sintetici", "type": "text", "max_length": 100}),
+            ("site.phone_label",       {"label": "Telefono · etichetta", "type": "text", "max_length": 40}),
+            ("site.whatsapp",          {"label": "WhatsApp · numero", "type": "text", "max_length": 40}),
+            ("site.whatsapp_note",     {"label": "WhatsApp · nota", "type": "textarea", "max_length": 200}),
+            ("site.license",           {"label": "Licenza / P.IVA", "type": "text", "max_length": 160}),
+            ("site.footer_intro",      {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.foot_studio",       {"label": "Footer · titolo Agenzia", "type": "text", "max_length": 40}),
+            ("site.foot_pages",        {"label": "Footer · titolo Pagine", "type": "text", "max_length": 40}),
+            ("site.foot_contact",      {"label": "Footer · titolo Contatti", "type": "text", "max_length": 40}),
+            ("site.foot_offices",      {"label": "Footer · titolo Sedi", "type": "text", "max_length": 40}),
+            ("site.visit_request_label",{"label": "CTA Visita · etichetta", "type": "text", "max_length": 60}),
+            ("site.showings_schedule", {"label": "Visite · disponibilità", "type": "text", "max_length": 160}),
+        ],
+    },
+    {
+        "id": "tile_labels",
+        "label": "Etichette tile immobile",
+        "icon": "bi-tag",
+        "region": ".dm-tile",
+        "page": "*",
+        "keywords": ["tile", "card", "immobile", "etichette", "rooms", "surface", "bathrooms", "reference", "energy"],
+        "help": "Etichette riusate su ogni card immobile (camere, superficie, bagni, classe energetica, piano, prezzo, rif.).",
+        "fields": [
+            ("site.tile_rooms_label",      {"label": "Camere · etichetta", "type": "text", "max_length": 40}),
+            ("site.tile_surface_label",    {"label": "Superficie · etichetta", "type": "text", "max_length": 40}),
+            ("site.tile_bathrooms_label",  {"label": "Bagni · etichetta", "type": "text", "max_length": 40}),
+            ("site.tile_surface_unit",     {"label": "Superficie · unità", "type": "text", "max_length": 16}),
+            ("site.tile_visit_cta",        {"label": "Card · CTA visita", "type": "text", "max_length": 60}),
+            ("site.tile_reference_label",  {"label": "Rif. · etichetta", "type": "text", "max_length": 40}),
+            ("site.price_label",           {"label": "Prezzo · etichetta", "type": "text", "max_length": 40}),
+            ("site.energy_class_label",    {"label": "Classe energetica · etichetta", "type": "text", "max_length": 60}),
+            ("site.floor_label",           {"label": "Piano · etichetta", "type": "text", "max_length": 40}),
+            ("site.parking_label",         {"label": "Posto auto · etichetta", "type": "text", "max_length": 40}),
+            ("site.elevator_label",        {"label": "Ascensore · etichetta", "type": "text", "max_length": 40}),
+            ("site.filter_label",          {"label": "Filtro · etichetta", "type": "text", "max_length": 40}),
+            ("site.sort_label",            {"label": "Ordina · etichetta", "type": "text", "max_length": 40}),
+            ("site.viewings_unit",         {"label": "Visite · unità", "type": "text", "max_length": 60}),
+            ("site.surface_short",         {"label": "Superficie · unità breve", "type": "text", "max_length": 16}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -2396,6 +2747,242 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # A.12 · Casa mass-market — 15 readonly indexed lists (second zero-image
+    # archetype after Juris). No image cols anywhere — Casa registry ships
+    # no portrait / photo / image fields. No ``mutable: True`` flag (same
+    # policy as Lex / Pragma / Gusto / specialist / Juris). Flat
+    # list-of-str fields (``immobili.filters``, ``immobili.sort_options``,
+    # ``home.search_widget.popular_tags``) are intentionally NOT exposed
+    # as indexed lists — they stay registry-only per the A.11 complex-shape
+    # exclusion pattern. The ``posts`` list (12 property entries) also
+    # stays registry-only — per-property detail editing is out of the
+    # A.12 perimeter (same policy as Lex ``notabili`` posts / Juris
+    # ``insights`` posts).
+    "mass-market": {
+        "home.featured_listings": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Immobili in evidenza",
+            "icon": "bi-buildings",
+            "region": ".dm-section",
+            "keywords": ["immobili", "featured", "evidenza", "prezzo"],
+            "tuple_order": ["price", "title", "location", "rooms", "surface", "bathrooms", "badge", "reference"],
+            "cols": [
+                ("title",    {"label": "Titolo annuncio", "type": "text", "max_length": 120}),
+                ("location", {"label": "Località", "type": "text", "max_length": 100}),
+                ("price",    {"label": "Prezzo", "type": "text", "max_length": 40}),
+                ("badge",    {"label": "Badge (Esclusiva/Novità)", "type": "text", "max_length": 40}),
+            ],
+        },
+        "home.neighborhoods": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Quartieri",
+            "icon": "bi-geo",
+            "region": ".dm-section",
+            "keywords": ["quartieri", "neighborhoods", "aree"],
+            "tuple_order": ["name", "tagline", "meta", "price_from"],
+            "cols": [
+                ("name",       {"label": "Nome quartiere", "type": "text", "max_length": 80}),
+                ("tagline",    {"label": "Tagline", "type": "text", "max_length": 120}),
+                ("meta",       {"label": "Meta (immobili disponibili)", "type": "text", "max_length": 80}),
+                ("price_from", {"label": "Prezzo da", "type": "text", "max_length": 40}),
+            ],
+        },
+        "home.stats": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Statistiche",
+            "icon": "bi-bar-chart",
+            "region": ".dm-section",
+            "keywords": ["stats", "numeri", "fatti", "kpi"],
+            "tuple_order": ["number", "suffix", "label"],
+            "cols": [
+                ("number", {"label": "Numero", "type": "text", "max_length": 16}),
+                ("suffix", {"label": "Suffisso (+ · k · %)", "type": "text", "max_length": 8}),
+                ("label",  {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "home.agents_preview": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Agenti in anteprima",
+            "icon": "bi-people",
+            "region": ".dm-section",
+            "keywords": ["agenti", "team home", "agents"],
+            "tuple_order": ["name", "role", "area", "years"],
+            "cols": [
+                ("name",  {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",  {"label": "Ruolo", "type": "text", "max_length": 80}),
+                ("area",  {"label": "Area", "type": "text", "max_length": 80}),
+                ("years", {"label": "Anni esperienza", "type": "text", "max_length": 40}),
+            ],
+        },
+        "home.valuation_proof": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Valutazione · prove",
+            "icon": "bi-shield-check",
+            "region": ".dm-section",
+            "keywords": ["valutazione", "prove", "kpi", "tempo"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 40}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "immobili.map_cells": {
+            "kind": "tuple",
+            "page": "immobili",
+            "label": "Immobili · Mappa · celle città",
+            "icon": "bi-map",
+            "region": ".dm-section",
+            "keywords": ["mappa", "città", "map"],
+            "tuple_order": ["area", "count_label"],
+            "cols": [
+                ("area",        {"label": "Area", "type": "text", "max_length": 80}),
+                ("count_label", {"label": "Conteggio immobili", "type": "text", "max_length": 80}),
+            ],
+        },
+        "quartieri.guides": {
+            "kind": "tuple",
+            "page": "quartieri",
+            "label": "Quartieri · Guide",
+            "icon": "bi-journal-text",
+            "region": ".dm-section",
+            "keywords": ["guide", "quartiere", "dettaglio"],
+            "tuple_order": ["name", "tagline", "price", "inventory", "transit", "green", "tone", "description", "agent_note"],
+            "cols": [
+                ("name",        {"label": "Nome quartiere", "type": "text", "max_length": 80}),
+                ("tagline",     {"label": "Tagline", "type": "text", "max_length": 140}),
+                ("price",       {"label": "Prezzo al m²", "type": "text", "max_length": 40}),
+                ("inventory",   {"label": "Immobili disponibili", "type": "text", "max_length": 80}),
+                ("description", {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+                ("agent_note",  {"label": "Nota agente residente", "type": "textarea", "max_length": 300}),
+            ],
+        },
+        "quartieri.faq": {
+            "kind": "tuple",
+            "page": "quartieri",
+            "label": "Quartieri · FAQ",
+            "icon": "bi-question-circle",
+            "region": ".dm-section",
+            "keywords": ["faq", "domande", "quartieri"],
+            "tuple_order": ["question", "answer"],
+            "cols": [
+                ("question", {"label": "Domanda", "type": "text", "max_length": 200}),
+                ("answer",   {"label": "Risposta", "type": "textarea", "max_length": 600}),
+            ],
+        },
+        "agenzia.agents": {
+            "kind": "dict",
+            "page": "agenzia",
+            "label": "Agenzia · Team agenti",
+            "icon": "bi-people-fill",
+            "region": ".dm-section",
+            "keywords": ["agenti", "team", "agenzia", "bio"],
+            "cols": [
+                ("name",       {"label": "Nome", "type": "text", "max_length": 80}),
+                ("role",       {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("area",       {"label": "Area di competenza", "type": "text", "max_length": 100}),
+                ("years",      {"label": "Anni di esperienza", "type": "text", "max_length": 40}),
+                ("languages",  {"label": "Lingue", "type": "text", "max_length": 120}),
+                ("speciality", {"label": "Specialità", "type": "text", "max_length": 160}),
+                ("phone",      {"label": "Telefono", "type": "text", "max_length": 40}),
+                ("email",      {"label": "Email", "type": "text", "max_length": 80}),
+                ("quote",      {"label": "Citazione personale", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "agenzia.facts": {
+            "kind": "tuple",
+            "page": "agenzia",
+            "label": "Agenzia · Fatti chiave",
+            "icon": "bi-123",
+            "region": ".dm-section",
+            "keywords": ["fatti", "numeri", "kpi", "storia"],
+            "tuple_order": ["number", "suffix", "label"],
+            "cols": [
+                ("number", {"label": "Numero", "type": "text", "max_length": 16}),
+                ("suffix", {"label": "Suffisso", "type": "text", "max_length": 8}),
+                ("label",  {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "valutazione.how_it_works": {
+            "kind": "tuple",
+            "page": "valutazione",
+            "label": "Valutazione · Come funziona",
+            "icon": "bi-list-ol",
+            "region": ".dm-section",
+            "keywords": ["processo", "come funziona", "fasi"],
+            "tuple_order": ["num", "title", "body"],
+            "cols": [
+                ("num",   {"label": "Numero", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo fase", "type": "text", "max_length": 100}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "valutazione.proof": {
+            "kind": "tuple",
+            "page": "valutazione",
+            "label": "Valutazione · Prove",
+            "icon": "bi-shield-check",
+            "region": ".dm-section",
+            "keywords": ["prove", "numeri", "valutazione"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 40}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "valutazione.faq": {
+            "kind": "tuple",
+            "page": "valutazione",
+            "label": "Valutazione · FAQ",
+            "icon": "bi-question-circle",
+            "region": ".dm-section",
+            "keywords": ["faq", "domande", "valutazione"],
+            "tuple_order": ["question", "answer"],
+            "cols": [
+                ("question", {"label": "Domanda", "type": "text", "max_length": 200}),
+                ("answer",   {"label": "Risposta", "type": "textarea", "max_length": 600}),
+            ],
+        },
+        "contatti.channels": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Canali diretti",
+            "icon": "bi-broadcast",
+            "region": ".dm-section",
+            "keywords": ["canali", "telefono", "email", "contatti"],
+            "tuple_order": ["label", "value", "note"],
+            "cols": [
+                ("label", {"label": "Etichetta canale", "type": "text", "max_length": 40}),
+                ("value", {"label": "Valore (numero/email)", "type": "text", "max_length": 120}),
+                ("note",  {"label": "Nota", "type": "text", "max_length": 200}),
+            ],
+        },
+        "contatti.offices": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Sedi",
+            "icon": "bi-geo-alt",
+            "region": ".dm-section",
+            "keywords": ["sedi", "offices", "indirizzo"],
+            "cols": [
+                ("name",       {"label": "Nome sede", "type": "text", "max_length": 80}),
+                ("address",    {"label": "Indirizzo", "type": "text", "max_length": 160}),
+                ("metro",      {"label": "Metro / trasporti", "type": "text", "max_length": 120}),
+                ("hours",      {"label": "Orari", "type": "text", "max_length": 120}),
+                ("phone",      {"label": "Telefono", "type": "text", "max_length": 40}),
+                ("email",      {"label": "Email", "type": "text", "max_length": 80}),
+                ("lead_agent", {"label": "Agente responsabile", "type": "text", "max_length": 80}),
+                ("parking",    {"label": "Parcheggio", "type": "text", "max_length": 120}),
+                ("note",       {"label": "Nota", "type": "textarea", "max_length": 300}),
+                # whatsapp / whatsapp_href / map_link / map_href stay
+                # registry-only (structural href cells, not editorial copy).
+            ],
+        },
+    },
 }
 
 
@@ -2417,6 +3004,10 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # second template in the lawyer category, distinct archetype + skin
     # from Lex's classic-gold.
     "modern-transparent":     ("juris-avvocato-moderno",    "it"),
+    # A.12 · Casa (mass-market) joins as 7th enrolled archetype — first
+    # template of the real-estate family. Villa (ultra-luxury-cinematic)
+    # stays OUT until A.12b. Second zero-image archetype after Juris.
+    "mass-market":            ("casa-agenzia-immobiliare",  "it"),
 }
 
 
@@ -2435,6 +3026,13 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # audited and does not apply (only ~25% content-tree overlap, distinct
     # skin folders, distinct DNA dimensions).
     "modern-transparent":     JURIS_MODERN_TRANSPARENT_SCHEMA,
+    # A.12 · Casa — first-template enrollment of the real-estate family.
+    # Villa (ultra-luxury-cinematic) stays out until A.12b — the two
+    # real-estate templates ship distinct archetypes, distinct skin
+    # folders (dm-* vs vp-*) and ZERO non-home page-slug overlap, so
+    # shared-schema (A.9 recipe) is impossible. Casa is the second
+    # zero-image archetype after Juris.
+    "mass-market":            CASA_MASS_MARKET_SCHEMA,
 }
 
 
@@ -2925,6 +3523,12 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # fields by design. Gated by
     # ``test_a11_juris_full_multilocale_lifecycle_end_to_end``.
     "modern-transparent",
+    # A.12 · Casa (mass-market archetype · real-estate family · first
+    # template) joins editor + multi-locale in a single phase. Second
+    # zero-image archetype after Juris. Villa (ultra-luxury-cinematic)
+    # stays out of the gate until A.12b. Gated by
+    # ``test_a12_casa_full_multilocale_lifecycle_end_to_end``.
+    "mass-market",
 })
 
 

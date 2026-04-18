@@ -2559,6 +2559,330 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A11 Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.12 · Casa (mass-market archetype · real-estate family) enrollment
+    # ------------------------------------------------------------------
+
+    def test_a12_casa_archetype_registered(self):
+        """``mass-market`` joins the schema + baseline template + gate
+        registries as 7th enrolled archetype. Villa (``ultra-luxury-
+        cinematic``) stays explicitly OUT — it is a distinct archetype
+        and will be enrolled separately as A.12b with its own schema +
+        skin bridge + lifecycle test. The guard here mirrors the A.10
+        Lex pattern of explicitly locking a sibling archetype out of
+        the gate."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        self.assertIn("mass-market", _ARCHETYPE_SCHEMAS)
+        self.assertEqual(
+            _ARCHETYPE_BASELINE_TEMPLATE["mass-market"],
+            ("casa-agenzia-immobiliare", "it"),
+        )
+        self.assertIn("mass-market", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("mass-market"))
+        # Villa / ultra-luxury-cinematic NOT enrolled in A.12 — guard
+        # against a future accidental enrollment without its own
+        # dedicated A.12b phase. Removing this assertion is the single
+        # line change A.12b will make, together with the registrations.
+        self.assertNotIn("ultra-luxury-cinematic", _ARCHETYPE_SCHEMAS)
+        self.assertNotIn("ultra-luxury-cinematic", _MULTILOCALE_ENABLED_ARCHETYPES)
+        # Previous six archetypes must remain enrolled — A.12 is additive.
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist", "classic-gold",
+                    "modern-transparent"):
+            self.assertIn(arc, _ARCHETYPE_SCHEMAS)
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES)
+
+    def test_a12_casa_schema_shape_covers_all_pages(self):
+        """The Casa schema must surface groups for every Casa page slug
+        (home + immobili + quartieri + agenzia + valutazione + contatti)
+        plus chrome-level groups (page='*')."""
+        groups = iter_groups("mass-market")
+        self.assertGreaterEqual(len(groups), 10)
+        pages = {g.get("page") for g in groups}
+        for slug in ("*", "home", "immobili", "quartieri", "agenzia",
+                     "valutazione", "contatti"):
+            self.assertIn(slug, pages,
+                          f"Casa schema missing page slug {slug!r}")
+
+    def test_a12_casa_is_translatable_text_fields(self):
+        """Scalar copy fields distributed across every Casa page +
+        chrome. Uses only paths present on Casa so neither Lex nor
+        Juris nor any other schema accidentally drifts into this test."""
+        from apps.editor.schema import is_translatable
+        arc = "mass-market"
+        distributed_paths = (
+            # home — hero + search widget + bands
+            "home.headline",
+            "home.intro",
+            "home.search_widget.label",
+            "home.search_widget.location_label",
+            "home.search_widget.location_value",
+            "home.search_widget.cta",
+            "home.featured_heading",
+            "home.neighborhoods_heading",
+            "home.stats_heading",
+            "home.agents_heading",
+            "home.valuation_heading",
+            "home.testimonial_quote",
+            # immobili
+            "immobili.headline",
+            "immobili.filter_label",
+            "immobili.map_heading",
+            # quartieri
+            "quartieri.headline",
+            "quartieri.guides_heading",
+            "quartieri.faq_heading",
+            # agenzia
+            "agenzia.headline",
+            "agenzia.agents_heading",
+            "agenzia.facts_heading",
+            # valutazione
+            "valutazione.headline",
+            "valutazione.how_it_works_heading",
+            "valutazione.form_heading",
+            "valutazione.form_consent",
+            # contatti
+            "contatti.headline",
+            "contatti.offices_heading",
+            "contatti.channels_heading",
+            # chrome site.* + tile labels
+            "site.tag",
+            "site.hours_compact",
+            "site.footer_intro",
+            "site.foot_studio",
+            "site.nav_cta",
+            "site.tile_rooms_label",
+            "site.energy_class_label",
+        )
+        for path in distributed_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be translatable on mass-market",
+            )
+
+    def test_a12_casa_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Casa — same contract
+        as every previously-enrolled archetype."""
+        from apps.editor.schema import is_translatable
+        arc = "mass-market"
+        for path in ("site.logo_word", "site.logo_initial",
+                     "site.phone", "site.email",
+                     "site.address", "site.license"):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must remain a global override on Casa",
+            )
+
+    def test_a12_casa_schema_contains_zero_image_fields(self):
+        """USER-IMPOSED GUARDRAIL · zero-image assertion strong.
+
+        Casa is the second zero-image archetype after Juris (A.11).
+        The mass-market DNA doesn't ship any image / portrait / photo
+        fields in the registry (verified by the A.12 Step-0 audit:
+        Casa.IT has zero image-like scalars across all pages, contra
+        Villa.IT which has 26). The schema must contain ZERO fields of
+        ``type: "image"`` across every group + subgroup. Same holds
+        for STRUCTURED_FIELD_SHAPES["mass-market"]: no col or
+        cell_spec can expose an image widget.
+
+        This guard locks the DNA constraint into the test layer and
+        prevents scope creep into the pictorial layer on future A.12+
+        maintenance."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, STRUCTURED_FIELD_SHAPES,
+        )
+        arc = "mass-market"
+        offenders: list[str] = []
+        for group in _ARCHETYPE_SCHEMAS[arc]:
+            for key, spec in group.get("fields", []) or []:
+                if spec.get("type") == "image":
+                    offenders.append(f"group={group['id']} key={key}")
+            for sub in group.get("subgroups", []) or []:
+                for key, spec in sub.get("fields", []) or []:
+                    if spec.get("type") == "image":
+                        offenders.append(
+                            f"group={group['id']} subgroup={sub['label']} key={key}"
+                        )
+        for list_path, shape in (STRUCTURED_FIELD_SHAPES.get(arc) or {}).items():
+            for col_name, spec in shape.get("cols") or []:
+                if spec.get("type") == "image":
+                    offenders.append(f"list={list_path} col={col_name}")
+            if shape.get("cell_spec", {}).get("type") == "image":
+                offenders.append(f"list={list_path} cell_spec")
+        self.assertEqual(
+            offenders, [],
+            "mass-market schema MUST contain zero image fields; "
+            f"found: {offenders}",
+        )
+
+    def test_a12_casa_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL · complex-shape exclusion test.
+
+        Three categories of complex registry shapes must stay OUT of
+        the Casa editor perimeter (scope creep prevention while writing
+        the schema):
+
+        (1) Flat list-of-str containers:
+              - ``home.search_widget.popular_tags`` (popular search
+                suggestion wordmarks)
+              - ``immobili.filters`` (11 filter pills)
+              - ``immobili.sort_options`` (4 sort order labels)
+            All same exclusion policy as Juris ``home.trust_logos`` +
+            ``insights.topics``.
+
+        (2) Form structure blocks:
+              - ``valutazione.form_fields`` + ``form_sections``
+              - ``contatti.form_fields`` + ``form_sections``
+            Same policy as Gusto / specialist / Lex / Juris.
+
+        (3) Property-detail entries under ``posts`` (12 property
+            records with per-property copy like Lex ``notabili``
+            posts). Stays registry-only — detail-page editing is NOT
+            in A.12 scope.
+
+        Every path listed must fail ``validate_key_path`` so the
+        autosave endpoint cannot persist an override on them even if
+        a crafted payload reaches the service layer."""
+        from apps.editor.schema import validate_key_path
+        arc = "mass-market"
+        validate_rejects = [
+            # (1) flat list-of-str containers
+            "home.search_widget.popular_tags",
+            "home.search_widget.popular_tags.0",
+            "immobili.filters",
+            "immobili.filters.0",
+            "immobili.sort_options",
+            "immobili.sort_options.0",
+            # (2) form structure blocks
+            "valutazione.form_fields",
+            "valutazione.form_fields.0.name",
+            "valutazione.form_sections",
+            "valutazione.form_sections.0.title",
+            "contatti.form_fields",
+            "contatti.form_fields.0.label",
+            "contatti.form_sections",
+            # (3) property-detail entries
+            "posts",
+            "posts.0.title",
+            "posts.0.price",
+            "posts.0.description",
+        ]
+        for path in validate_rejects:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"{path} MUST be rejected by validate_key_path on mass-market",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a12_casa_structured_list_cells_are_global(self):
+        """The 15 readonly indexed lists on Casa stay global at cell
+        level — text cols exposed via STRUCTURED_FIELD_SHAPES are
+        customer-editable but never per-locale (same contract as every
+        other enrolled archetype)."""
+        from apps.editor.schema import is_translatable
+        arc = "mass-market"
+        cell_paths = (
+            # home lists
+            "home.featured_listings.0.title",
+            "home.featured_listings.3.price",
+            "home.neighborhoods.0.name",
+            "home.neighborhoods.5.tagline",
+            "home.stats.0.number",
+            "home.stats.3.label",
+            "home.agents_preview.0.name",
+            "home.valuation_proof.0.value",
+            # immobili
+            "immobili.map_cells.0.area",
+            # quartieri
+            "quartieri.guides.0.name",
+            "quartieri.guides.7.description",
+            "quartieri.faq.0.question",
+            # agenzia
+            "agenzia.agents.0.name",
+            "agenzia.agents.8.email",
+            "agenzia.facts.0.number",
+            # valutazione
+            "valutazione.how_it_works.0.title",
+            "valutazione.proof.0.value",
+            "valutazione.faq.3.answer",
+            # contatti
+            "contatti.channels.0.label",
+            "contatti.offices.0.name",
+            "contatti.offices.1.address",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Casa",
+            )
+
+    def test_a12_casa_supported_locales_returns_canonical_five(self):
+        """Casa ships the canonical 5-locale set, same as every other
+        enrolled archetype. Step-0 audit confirmed zero IT-only parity
+        gaps (215 keys × 5 locales, perfect parity)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("mass-market"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a12_sextuple_regression_after_casa_joins(self):
+        """Regression guard: adding Casa to gate + schemas must not
+        disturb ANY of the six pre-existing enrollments (Vertex +
+        Pragma + Gusto + specialist + classic-gold + modern-
+        transparent)."""
+        from apps.editor.schema import is_translatable, supported_locales
+        for arc in ("agency-creative-studio", "corporate-suite",
+                    "fine-dining", "specialist", "classic-gold",
+                    "modern-transparent"):
+            self.assertTrue(
+                is_translatable(arc, "home.headline"),
+                f"{arc} home.headline must stay translatable",
+            )
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must keep the canonical 5-locale set",
+            )
+
+    def test_a12_casa_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.8/A.9/A.10/A.11 integration guardrail — the
+        Casa ``mass-market/_base.html`` must integrate the three bridge
+        points together: (1) preview-bridge.js conditional on
+        ``preview_project``, (2) ``<title>`` honors ``site.logo_word``,
+        (3) ``<body>`` carries the ``mw-is-editor-preview`` guard class
+        when inside the editor."""
+        casa = WebTemplate.objects.get(slug="casa-agenzia-immobiliare")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/real-estate/casa-agenzia-immobiliare/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=casa)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A12 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/real-estate/casa-agenzia-immobiliare/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A12 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
