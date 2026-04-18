@@ -5098,3 +5098,73 @@ A.12b planning session — candidates in priority order (dedicated planning requ
 (f) **A.12b alt · editor polish / operator tools / remote storage / media evolution** — defer unless customer signal or prod-launch timeline demands. Real-estate family being half-open is a stronger signal than polish ROI.
 
 Consolidation pause (this commit) precedes the choice.
+
+## Session 66 — Phase A.12b · Villa (ultra-luxury-cinematic) Editor + Multi-locale Enrollment (2026-04-18)
+
+### What shipped
+
+A.12b ships the eighth editable archetype: **Villa (ultra-luxury-cinematic · real-estate family · second template)**. The real-estate family is now **CLOSED COMPLETELY** — Casa (mass-market, A.12) + Villa (ultra-luxury-cinematic, A.12b) delivered as two dedicated-schema enrollments in staged progression. Third family to close in the editor after law (A.10+A.11, sequential dedicated-schema) and medical-specialist (A.9, shared-schema). All three family-closure topologies now have ≥1 real precedent.
+
+The central planning question — "is image-inside-list-of-dict-row a novel widget pattern?" — was resolved **negative** during the A.12b Step-0 runtime audit: Vertex has shipped image cols inside dict rows since A.3a/A.4 via `studio.partners[].portrait` (`type: "image"` col with `mutable: True`, production-hardened through the ProjectAsset + `/assets/upload/` flow). Villa became the second archetype to use the pattern, with a *smaller* surface because Villa's lists are non-mutable (cell-level edit only, no add/remove). Zero changes to service-layer / rendering / editor widget / model required — a pure enrollment phase, same 3-file surface as A.10/A.11/A.12 (`schema.py` + skin `_base.html` + `tests.py`).
+
+### Recipe applied (single-template · A.6 + A.7b combined · Villa-out guard REMOVAL + 3 user-imposed guardrails)
+
+Two commits on `phase-editor-a12b-villa-ultra-luxury-cinematic-v1`.
+
+- Step 0 · runtime audit (planning artifact, no code). DNA inspection confirmed Villa's `.vp-*` skin ships 34 mature `html[dir="rtl"]` rules (highest count of any enrolled archetype). 5-locale parity PERFECT (185 keys × 5 locales, zero gaps). Image inventory: 4 scalar image fields (`home.cover_image`, `home.advisor_portrait`, `studio.director_portrait`, `collezione.lead_image`) + 4 image-in-dict-row paths (`home.signature[].image` × 4 rows, `territorio.territories[].image` × 6 rows, `studio.advisors[].portrait` × 4 rows, `posts[].image` × 8 rows). Decision: expose image cols in 3 of the 4 dict lists (home.signature + territorio.territories + studio.advisors); `posts` stays registry-only per the consistent Lex/Juris/Casa blog-list policy. Real editable image surface: **18** (4 scalar + 14 image cells). Complex-shape exclusions identified: `collezione.filter_groups[].options` + `concierge.form_fields[].options` (nested list-of-str) · flat list-of-str containers (`home.territory`, `home.press_items`, `collezione.sort_options`, footer row lists) · form structure (`concierge.form_fields`) · per-post `posts` entries.
+- `85105b2` · Step 1 · `VILLA_ULTRA_LUXURY_CINEMATIC_SCHEMA` in `apps/editor/schema.py` (~587 LOC delta — under the 600-LOC soft guardrail, margin preserved vs Casa's +604 exception). 11 sidebar groups: brand + hero_home (4 subgroups including cover-image + CTAs) + home_bands (6 subgroups) + 5 page groups + contact_info + tile_labels. ~175 scalar fields + 4 scalar image fields. `STRUCTURED_FIELD_SHAPES["ultra-luxury-cinematic"]` exposes 14 readonly indexed lists, with image cols on 3 of them (home.signature.image · territorio.territories.image · studio.advisors.portrait). No `mutable: True` flag. `templates/live_templates/real-estate/ultra-luxury-cinematic/_base.html` gets the three atomic A.6 fixes with `.vp-*` prefix CSS guard block + preview-bridge injection. **Villa-out guards REMOVED from A.12 Casa tests** — 2 assertions dropped (registration-time `assertNotIn("ultra-luxury-cinematic", ...)` inside `test_a12_casa_archetype_registered` and the runtime `assertNotIn` inside `test_a12_casa_full_multilocale_lifecycle_end_to_end`). 10 contract tests including **three user-imposed guardrails**:
+  - `test_a12b_villa_archetype_registered` — Villa IN all 3 gates, Casa stays enrolled, 6 pre-Casa archetypes intact
+  - `test_a12b_villa_out_guard_was_removed_from_casa_tests` — positive contract that explicitly verifies Villa IS in `_ARCHETYPE_SCHEMAS` AND `_MULTILOCALE_ENABLED_ARCHETYPES` + Casa still in both
+  - `test_a12b_villa_image_cols_in_dict_shapes_exposed` — **positive mirror** of the Juris/Casa zero-image guard: asserts 4 scalar image paths + 3 image cells (`home.signature.0.image`, `territorio.territories.0.image`, `studio.advisors.0.portrait`) return `type == "image"` via `get_field_spec`, AND each of the 3 dict shapes has the image col in its `cols` list
+  - `test_a12b_villa_complex_shapes_excluded_from_perimeter` — 19 path rejects via `validate_key_path`: nested list-of-str (filter_groups.options + form_fields.options) · flat list-of-str (territory, press_items, sort_options, footer rows) · form structure (concierge.form_fields) · per-post `posts` entries (including posts.image col)
+  - `test_a12b_villa_structured_list_cells_are_global` — text + image cells both non-translatable (image override stays global, never per-locale)
+  - `test_a12b_septuple_regression_after_villa_joins` — 7 pre-existing archetypes intact on `is_translatable("home.headline")` + `supported_locales`
+  - Plus shape/translatable/locales/preview-bridge standard set
+
+- `16d03d1` · Step 2 · `test_a12b_villa_full_multilocale_lifecycle_end_to_end` — enriched vs A.12 Casa with the **A.12b-specific image-handling coverage**: 3 translatable autosaves (IT/EN/FR marker "A12bVilla") + 1 global text autosave (`site.logo_word = "A12bVillaBrand"`) + **1 scalar image override** (`home.cover_image`) + **1 image-in-dict-row override** (`home.signature.0.image`) + publish + 5 public preview renders (second user) asserting BOTH image overrides visible universally across every locale + AR `<html dir="rtl" lang="ar">` assertion on `.vp-*` skin + owner reopen per locale + Casa-stays-enrolled runtime guard at start AND end. Storage-key assertions lock that image overrides are plain-keyed (NOT `@<locale>:`): `home.cover_image` + `home.signature.0.image` present as plain keys; `@it:home.cover_image` + `@it:home.signature.0.image` + `home.headline` (plain) + `@en:site.logo_word` all absent. Route: `/templates/real-estate/villa-immobili-lusso/preview/`. Passes first run.
+
+Step 3 · browser walk (no code change). 15 spot checks all green:
+- Editor `?lang=it` mount → 5 pills, 128 `per lingua` badges on translatable fields, 247 global fields without badge, 6/6 expected global contract keys correctly NON-translatable, **18 `input[type="file"]` image upload widgets in sidebar** (exactly matching 4 scalar + 14 image cells on 3 non-mutable dict lists · image-in-dict-row end-to-end verified)
+- All 4 scalar image fields present in sidebar; all 3 image cells (row 0 of each dict list) present in sidebar
+- Type IT on `home.headline` + click EN pill before debounce → `@it:home.headline` persisted BEFORE iframe navigation. Same flush EN→FR
+- On FR: 4 fields typed in same flush (headline FR, global logo, scalar image cover, image-in-dict-row signature.0.image) · after debounce all 6 overrides persisted (3 @<locale>:home.headline + 3 plain-keyed globals including 2 images) · zero leak (no `@<locale>:` image paths, no plain `home.headline`, no `@en:site.logo_word`)
+- ES switch · sidebar shows authored ES baseline `"Residencias de autor, para quienes saben reconocerlas."` (is_overridden=false, translatable=true) · global logo + cover + signature image overrides persist universally (is_overridden=true, translatable=false on all three)
+- AR switch · iframe `.ed-frame` emits `<html lang="ar" dir="rtl">` authentic on the `.vp-*` skin; `body.mw-is-editor-preview lm-ready` guard class present; 34 vp-classed elements render; AR H1 `"منازل ذات توقيع، لمن يُحسن قراءتها."`; title `"WalkVillaBrand — المنازل"` confirms `site.logo_word|default` on `.vp-*`; **both image overrides visible in AR iframe HTML**
+- Sub-page spot checks (owner IT, `project=<uuid>`): `/collezione/` H1 "Quattordici dimore d'autore..." (15 vp-classes) · `/territorio/` "Il paesaggio è la prima firma..." (14) · `/studio/` "Nove advisor, mai più di otto mandati..." (14) · `/esperienza/` "Dal primo dossier alla firma notarile." (14) · `/concierge/` "Su appuntamento soltanto." (11). All 5 carry `vp-nav` + `vp-foot` + `WalkVillaBrand` + `body.mw-is-editor-preview` + `preview-bridge.js`
+- Publish + second-user public preview per locale: IT/EN/FR text overrides visible per locale · ES/AR authored text fallback · AR `dir="rtl"` preserved · `WalkVillaBrand` universal · **both image overrides (cover + signature.0) visible on ALL 5 public renders** · zero cross-locale leak in any direction · titles localized per locale (Dimore/Residences/Demeures/Residencias/المنازل) with brand override prefix
+
+### Observables
+
+- 204/204 → **216/216** server tests (+12: 10 contract/integration + 1 lifecycle · the existing 2 Casa tests were updated in Step 1 to drop the Villa-out assertions, their test count is unchanged).
+- Smoke 834/834 unchanged. `manage.py check` 0 issues.
+- Schema LOC delta +587 · **under** the 600-LOC soft guardrail (vs Casa's +604 non-blocking exception). Villa turned out lower than Casa despite image cols because Villa has 14 indexed lists vs Casa's 15, and fewer tile/site scalar labels.
+- No production code touched outside `schema.py`, `ultra-luxury-cinematic/_base.html` (3 minimal fixes), and `tests.py`. Zero touches to `services.py` / `rendering.py` / `views.py` / `models.py` / editor templates / `live-editor.js` / CSS / ProjectAsset / `/assets/upload/` / any other skin (Casa skin left intact, all 6 earlier archetypes left intact).
+
+### Consequences
+
+- **Editor 8 archetype slugs enrolled · multi-locale 8 enrolled · 9 templates editable end-to-end** (Vertex + Pragma + Gusto + Cardio + Derm + Lex + Juris + Casa + **Villa**). Note: "8 archetype slugs enrolled" does NOT mean "every catalog archetype covered" — the DNA registry carries additional archetype slugs (trattoria-warm, street-modern, cinematic-photographer, editorial-designer-grid, medical-clinic, wellness-serene, family-warm, agency-digital-studio, startup-saas-landing, artisan-workshop, fashion-editorial) that remain editor-unsupported.
+- **Real-estate family CLOSED COMPLETELY** via staged dedicated-schema progression (A.12 + A.12b · Casa + Villa), the third family-closure after law (A.10+A.11 sequential) and medical-specialist (A.9 shared). All three D-098 topologies have ≥1 precedent.
+- **Image-in-dict-row formalized as a reusable enrollment pattern**: Villa is the second archetype to use it (after Vertex), proving the infrastructure supports non-mutable dict-row image cols as cleanly as mutable ones. No service-layer changes were ever required — the path was always production-ready since A.3a/A.4. The "novel widget" framing in the A.12 planning memo is corrected retroactively: image-in-dict-row is the same widget, applied to a new archetype.
+- **Image overrides stay global/plain-keyed** even inside dict rows. A per-locale image policy remains out-of-scope per D-098 · an explicit product decision would be needed to change this (not a planning tweak).
+- Catalog 20/20 `published_live` unchanged.
+- **No new D-number introduced**. A.12b is the seventh real application of the D-098 recipe and closes the family that A.12 opened. The operational clarification added to D-098 now codifies all three topologies and the image-in-dict-row precedent.
+- Branch shape: `phase-editor-a12b-villa-ultra-luxury-cinematic-v1` merged into v15 via `--no-ff` @ `258fa56`. Pushed to `origin/phase-integration-baseline-v15`.
+- No explicit debt pending.
+
+### Exact next step
+
+A.13 planning session — candidates in priority order (dedicated planning required before Step 0):
+
+(a) **A.13 portfolio family (Chiara + Pixel) enrollment** — natural next closure candidate. Chiara ships `editorial-designer-grid` with novel `project_detail` / `series_detail` page kinds (Session 34 rollout); Pixel ships `cinematic-photographer` with imagery-heavy single-template shape. Step-0 audit decides whether project_detail page-scoped fields enter the perimeter (probably out — detail editing stays registry-only consistent with all prior blog-list/post-detail policies) and whether the two templates need shared-schema (unlikely — distinct DNA) or staged dedicated-schema (probable · same recipe as A.12+A.12b).
+
+(b) **A.13 alt · restaurant family continuation (Sapore + Brace beyond Gusto)** — two templates, likely distinct archetypes (`trattoria-warm` + `street-modern`). Would close the restaurant category if audit confirms divergence (staged dedicated-schema like real-estate).
+
+(c) **A.13 alt · ecommerce family (Bottega + Luxe)** — `artisan-workshop` vs `fashion-editorial`. Session 41/42 observations already suggest wide divergence. Would close the ecommerce category with staged enrollments.
+
+(d) **A.13 alt · medical-other family (Salute + Benessere + Famiglia)** — three single-template medical archetypes (`medical-clinic` / `wellness-serene` / `family-warm`) that went `published_live` in Session 51 but never entered the editor. Three separate phases preferred over bundling (one-phase-one-archetype discipline is 8 phases strong and should not be relaxed for three simultaneous openings).
+
+(e) **A.13 alt · agency-secondary / startup-saas individual enrollments** (Aura `agency-digital-studio` or Elevate `startup-saas-landing`) — low novelty, low risk, single-template each.
+
+(f) **A.13 alt · editor polish / operator tools / remote storage / media evolution** — defer unless customer signal or prod-launch timeline demands.
+
+Consolidation pause (this commit) precedes the choice.
