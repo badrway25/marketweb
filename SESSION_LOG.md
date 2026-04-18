@@ -1,5 +1,97 @@
 # Session Log
 
+## Session 70 — Phase A.14b · Brace (street-modern · restaurant-continuation family · second template) Editor + Multi-locale Enrollment · CLOSES RESTAURANT-CONTINUATION FAMILY (2026-04-19)
+
+**Summary.** Twelfth archetype enrolled in the editor: `street-modern` (Brace). Single-template phase — Brace is the restaurant-continuation family's second archetype, completing the staged dedicated-schema progression opened in A.14 by Sapore (`trattoria-warm`). **Fifth family editor-complete** (law · medical-specialist · real-estate · portfolio · restaurant-continuation). Staged dedicated-schema closure topology now with **3 real precedents** (all closed): real-estate (A.12+A.12b) · portfolio (A.13+A.13b) · **restaurant-continuation (A.14+A.14b)**.
+
+Brace exercises BOTH deep-path shapes end-to-end: `menu.sections.{i}.items[].image` (dict-in-dict-list parent · Chiara A.13 precedent) for 19 food-photo cells across 5 sections, AND `ordina.routes.{i}.lines[].value` (tuple-in-dict-list parent · Sapore A.14 precedent via commit `f66ac24`) for address/phone/partner-line content. The A.14 Step 2 render-side fix is now **contract-confirmed cross-pattern** — both shape families work without additional infrastructure changes. 3-file pure enrollment surface (schema + _base.html + tests). Zero touches to `services.py` / `rendering.py` / `views.py` / `models.py` / ProjectAsset / `/assets/upload/` / editor JS-CSS shell.
+
+**Restaurant-continuation family CLOSED.** 12 archetype slugs enrolled · 12 multi-locale enrolled · 13 templates editable end-to-end · catalog 20/20 `published_live` unchanged. 7 templates still editor-unsupported across 4 open families (3 medical-other · 2 ecommerce · 1 agency-secondary · 1 startup-saas). 266/266 tests · 834/834 smoke · browser walk 5-locale green with explicit verification that neighbor items (`.0.1.name`) stay untouched when adjacent item (`.0.0.name`) is overridden.
+
+### Context initial post-A.14
+
+Baseline entering Session 70 was `8a40f3a` (post-A.14 Sapore opened the restaurant-continuation family, Brace-out dual guard active at registration-time + runtime). 11 archetype slugs enrolled · 12 templates editable · 1 family half-open. Restaurant-continuation pending closure via A.14b Brace.
+
+### Brace-only scope decision
+
+Step-0 runtime audit confirmed shared-schema IMPOSSIBILE: 50% page-slug overlap (home+menu+contatti shared; lab/moments/ordina Brace vs storia/forno/eventi Sapore diverge entirely), menu shape fundamentally different (Sapore nested tuple no-image vs Brace nested dict-with-image-col), image surface ratio 1:3.4 (Sapore 13 vs Brace 44), form structure presence inverted (Sapore has form_sections · Brace has none). Staged dedicated-schema progression is the correct topology (third consecutive application after real-estate and portfolio). Brace-only chosen per "one phase = one archetype decision" discipline now 13 phases strong (A.6 → A.14b).
+
+### Step 0 · Planning / audit findings chiave
+
+- Archetype slug `street-modern` · skin `restaurant/street-modern/` · CSS **`.sm-*`** (87 hits) · `_base.html` 547 LOC
+- **24 mature `html[dir="rtl"]` rules** (vs Sapore 18 · Chiara 46)
+- 6 pages: home · menu · lab (about) · moments (gallery) · ordina (**novel `order` kind**) · contatti
+- **5-locale parity PERFETTA** (273 keys × 5 locales · 0 missing · 0 extra)
+- Image surface inventory runtime-verified: **44 editable surfaces** (3 scalar top-level + 41 image cells across 6 image-in-dict-row lists incl. 19 cells from `menu.sections.{0..4}.items[].image` deep-path)
+- **`menu.sections.{i}.items[].image` è interamente coperto dall'infra post-A.14** (Chiara-precedent shape: dict-in-dict-list parent · render via `_apply_indexed` fix f66ac24 A.14 Step 2 · schema via `_resolve_path` list-index A.14 Step 1)
+- **`ordina.routes[].lines` correzione ipotesi pre-audit → IN**: initial hypothesis "OUT default finché l'audit non dimostra valore editoriale" respinta dall'evidenza runtime. `routes.0.lines = [['INDIRIZZO', 'Via Indipendenza 42'], ['CODA STIMATA', '~4 MIN'], ['ORARI', '12:00-24:00']]` — contenuto chiaramente editoriale (address/phone/partner-names · customer reale cambierebbe sicuramente). Registrato come 3 deep-path tuple-in-dict-list entries (Sapore-precedent shape).
+- `posts` list empty (same as Sapore · structural absence · detail-page policy stays at 6-archetype uniform enforcement)
+- No form structures (Brace ships zero · smaller out-policy set than Sapore)
+
+### Step 1 · Schema + bridge + gate + contract tests
+
+- `BRACE_STREET_MODERN_SCHEMA` added in `apps/editor/schema.py` — 8 sidebar groups · 170 scalar fields · 3 scalar image + coverage for 6 image-in-dict-row lists.
+- `STRUCTURED_FIELD_SHAPES["street-modern"]` with **30 entries**: 22 parent lists + 5 `menu.sections.{0..4}.items` deep-path (dict-in-dict-list · 4/4/4/4/3 rows) + 3 `ordina.routes.{0..2}.lines` deep-path (tuple-in-dict-list · 3 rows × (label/value)).
+- 3 gate registrations · `_ARCHETYPE_BASELINE_TEMPLATE["street-modern"] = ("brace-street-food-lab", "it")` + `_ARCHETYPE_SCHEMAS["street-modern"] = BRACE_STREET_MODERN_SCHEMA` + `"street-modern"` in `_MULTILOCALE_ENABLED_ARCHETYPES`.
+- Col-level exclusions (structural identifiers / routing flags): `menu.sections[].id` · `moments.grid[].filename` · `ordina.routes[].id` + `ordina.routes[].cta_kind` · `contatti.channels[].icon` + `contatti.channels[].kind`.
+- Complex-shape exclusion (flat list-of-str + navigation): `site.hours_footer_rows` · `home.manifesto_paragraphs` · `moments.categories` · `pages` · `posts` (empty).
+- **Brace-out guard removal** dai test A.14 Sapore · 2 location simmetriche:
+  - `test_a14_sapore_archetype_registered`: rimosse 4 `assertNotIn("street-modern", ...)` + `assertFalse(is_supported_archetype("street-modern"))`
+  - `test_a14_sapore_full_multilocale_lifecycle_end_to_end` end-of-test: rimosse 2 `assertNotIn("street-modern", ...)` runtime
+- **Unsupported fixture rotation** in 6 location pre-existing: `street-modern`/`brace-street-food-lab` → **`artisan-workshop`/`bottega-shop-artigianale`** (ecommerce candidate A.15) · comment aggiornati sulla rotation history
+- 3 atomic fixes su `templates/live_templates/restaurant/street-modern/_base.html`: title `site.logo_word|default:brand.brand_name` · body `mw-is-editor-preview` guard class · `.sm-*` CSS guard block suppressing marketplace strip + clamping wordmark · preview-bridge.js conditional on `preview_project`.
+- 13 new A.14b contract tests incl. `test_a14b_brace_out_guard_was_removed_from_sapore_tests` (symmetric inversion verification · mirror A.12b Villa-out + A.13b Pixel-out pattern).
+- **Schema LOC delta +826** — documented exception over 600-LOC soft guardrail, non-blocking: overshoot riflette 8 deep-path entries (5 menu-items + 3 ordina-routes-lines) + volume 3.4× Sapore (44 image surfaces vs 13 · 30 list entries vs 20). Alternative respinte in Step 0 (menu fake-editable OR pseudo-path scalar flat entrambe inferiori).
+- Commit `fabea8a` · `feat: add street-modern archetype editor schema` · 3 files · +1286 / −55.
+
+### Step 2 · Lifecycle HTTP end-to-end
+
+- `test_a14b_brace_full_multilocale_lifecycle_end_to_end` cross-cutting · 9 phases · covers:
+  1. 3 autosaves IT/EN/FR on `home.headline` → `@<locale>:home.headline` × 3
+  2. Global `site.logo_word` via EN autosave → plain-keyed (explicit `assertNotIn("@en:")`)
+  3. Scalar image `home.hero_image` → plain-keyed across all 5 locales (5× `assertNotIn`)
+  4. **Deep-path dict-in-dict-list** `menu.sections.0.items.0.image` → plain-keyed (5× `assertNotIn`) + **visible in public preview menu page across all 5 locales**
+  5. **Deep-path tuple-in-dict-list** `ordina.routes.0.lines.0.value` → plain-keyed (5× `assertNotIn`) + **visible in public preview ordina page across all 5 locales**
+  6. Publish · 5-locale second-user preview on home/menu/ordina with full universals verification
+  7. IT/EN/FR home render locale override · ES/AR authored fallback + universals preserved
+  8. AR `<html dir="rtl" lang="ar">` on `.sm-*` skin
+  9. Perimeter invariants · Brace + Sapore both still enrolled at start AND end-of-test · 14 rejected paths re-verified
+- Commit `4fd677b` · `test: lock street-modern lifecycle end to end` · 1 file · +362 LOC · zero production-code touches.
+
+### Step 3 · Browser walk (Playwright · 5-locale · real browser)
+
+Playwright walk on fresh Brace draft covered every user-visible surface · all checks green:
+- Editor mount `?lang=it` · 5 pills `data-ed-lang` · IT active · "Lingua attiva" label
+- **44 image widgets nel sidebar** con distinzione esplicita: 3 scalar top-level (home/lab/moments hero + featured) + 41 dict-row cells (home.menu_strip_items × 6 + home.crew × 3 + home.atmo_strip × 3 + lab.crew × 4 + moments.grid × 6 + menu.sections.{0..4}.items × 19)
+- **5 out-of-perimeter absenti** (`site.hours_footer_rows` · `home.manifesto_paragraphs` · `moments.categories` · `pages` · `posts` · tutti 0 hits in sidebar)
+- Flush-before-switch verified IT→EN→FR→ES→AR · EN prefill authored "FIRED ON LIVE FLAME" · FR prefill "AU FEU VIF" · ES prefill "AL FUEGO VIVO" · zero walk-text leak
+- **Menu deep-path edit real**: `menu.sections.0.items.0.name` + `.image` overridden → browser verified visible on IT/EN/FR/ES/AR menu page
+- **Ordina deep-path edit real**: `ordina.routes.0.lines.0.value` → visible on IT/EN/FR/ES/AR ordina page
+- AR iframe `<html lang="ar" dir="rtl">` on `.sm-*` skin · title "A14b Brace Walk Brand — الرئيسية"
+- Publish via `services.publish_project`
+- **No neighbor corruption** explicitly verified · `menu.sections.0.items.1.name` ("SMASH CLASSICO" IT/EN/FR/AR · "SMASH CLASICO" ES · proper Spanish translation) stays authored-rendered when `.0.0` overridden · splicer touches ONLY the addressed cell
+- Second-user public preview 5 locales · dish image override + route line override + logo universal + hero image universal all visible in every locale
+
+### Outcome
+
+- **Restaurant-continuation family CLOSED** via staged dedicated-schema progression (Sapore A.14 · Brace A.14b) · third consecutive staged closure after real-estate and portfolio. D-098 staged topology now with 3 real closed precedents.
+- **Fix `f66ac24` (A.14 Step 2) è cross-pattern confermato operativamente**: covers both tuple-in-dict-list parent (Sapore menu) and dict-in-dict-list parent (Brace menu) via the same render-layer extension. Three editor layers (`services._resolve_path` · `schema._resolve_path` · `rendering._apply_indexed`) now speak the same language on list-index deep paths — contract-alignment bugfix thesis validated.
+- **Guard removal pattern consolidated across 3 precedents**: Villa-out (A.12b) · Pixel-out (A.13b) · **Brace-out (A.14b)** · each removal contract-tested via symmetric `test_*_was_removed_from_*_tests`.
+- Brace is 12th archetype enrolled · 13 templates editable · 5 families closed · 4 open.
+- Zero new binding decisions · D-096 / D-097 / D-098 unchanged. Only operational clarification added to D-098 for Session 70.
+- Acceptance gates post-merge: `python manage.py check` 0 issues · `python manage.py test apps` 266/266 PASS · `python smoke_full.py` 834/834 routes HTTP 200.
+- Baseline `phase-integration-baseline-v15` tip: **`7c064f8`** (A.14b merge), pushed to `origin/phase-integration-baseline-v15`.
+
+### Blockers
+
+**None.** No explicitly-deferred debt is pending.
+
+### Exact next step
+
+A.14b closed a family; it does not prescribe the next workstream. Top candidate is **A.15 ecommerce family (Bottega `artisan-workshop` + Luxe `fashion-editorial`)** — two templates with potential commerce-foundation overlap check (Phase 3a+3b already landed `apps/commerce/` seed for both · editor should edit presentational content, not commerce-admin state). Alternatives: medical-other (3 separate phases) · Aura individual enrollment · Elevate individual enrollment · MEMORY.md maintenance mini-phase (separate, not bundled).
+
+---
+
 ## Session 69 — Phase A.14 · Sapore (trattoria-warm · restaurant-continuation family · first template) Editor + Multi-locale Enrollment · OPENS RESTAURANT-CONTINUATION FAMILY (2026-04-18)
 
 **Summary.** Eleventh archetype enrolled in the editor: `trattoria-warm` (Sapore). Single-template phase — Sapore opens the restaurant-continuation family via the same staged dedicated-schema progression topology already used twice (real-estate A.12→A.12b · portfolio A.13→A.13b). Brace (`street-modern`) stays OUT until A.14b, guarded by a dual registration-time + runtime absence check. Menu rows stay **inside the perimeter** as deep-path tuple cells — novel shape (tuple-in-dict-list parent) required a contract-alignment bugfix on the render side so the 3 editor layers (save · schema · render) now speak the same language on list numeric indexing. 252/252 tests · 834/834 smoke · 5-locale browser walk green including end-to-end menu cell override verification. Catalog 20/20 `published_live` unchanged.
