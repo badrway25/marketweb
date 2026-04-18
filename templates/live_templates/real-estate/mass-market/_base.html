@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{ brand.brand_name }} — {{ page.label }}</title>
+<title>{{ site.logo_word|default:brand.brand_name }} — {{ page.label }}</title>
 <meta name="description" content="{{ brand.tagline }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -606,9 +606,27 @@
 
   /* Page-specific extension hook */
   {% block extra_css %}{% endblock %}
+
+  /* A.12 — Editor-embedded preview parity with Vertex + Pragma + Gusto +
+     specialist + Lex + Juris: when the live route is loaded inside the
+     customer editor iframe (identified by `preview_project` being
+     non-null), suppress the marketplace top strip, remove its reserved
+     padding, and add overflow guardrails for long customer titles on
+     the `.dm-*` skin. */
+  body.mw-is-editor-preview .mp-bar { display: none !important; }
+  body.mw-is-editor-preview { padding-top: 0 !important; }
+  body.mw-is-editor-preview .dm-hero h1,
+  body.mw-is-editor-preview .dm-section h2,
+  body.mw-is-editor-preview .dm-nav .brand,
+  body.mw-is-editor-preview .dm-foot .brand {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  body.mw-is-editor-preview .dm-nav .brand { max-width: 32ch; }
 </style>
 </head>
-<body>{% endspaceless %}
+<body class="{% if preview_project %}mw-is-editor-preview{% endif %}">{% endspaceless %}
 
 <div class="mp-bar">
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
@@ -725,5 +743,6 @@
 <script src="{% static 'js/live-motion.js' %}" defer></script>
 <script src="{% static 'js/live-interactions.js' %}" defer></script>
 <script src="{% static 'js/live-forms.js' %}" defer></script>
+{% if preview_project %}<script src="{% static 'editor/preview-bridge.js' %}" defer></script>{% endif %}
 </body>
 </html>
