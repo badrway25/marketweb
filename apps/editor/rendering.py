@@ -318,11 +318,27 @@ def _apply_indexed(
     list_path = ".".join(parts[:list_prefix_len])
     shape = shapes[list_path]
 
-    parent = tree
+    # A.14 · parent walk supports numeric-index into lists (mirror of
+    # ``apps.projects.services._resolve_path`` and the A.14 extension to
+    # ``schema._resolve_path``). Sapore's menu rows are registered at
+    # deep paths like ``menu.sections.0.dishes`` — the parent chain
+    # crosses a dict-list at ``menu.sections`` and the '0' segment
+    # indexes into it. Backwards-compat: a dict parent still walks via
+    # ``parent.get(seg)`` so all 10 pre-A.14 archetypes stay unchanged.
+    parent: Any = tree
     for seg in parts[: list_prefix_len - 1]:
-        if not isinstance(parent, dict):
+        if isinstance(parent, dict):
+            parent = parent.get(seg)
+        elif isinstance(parent, list):
+            try:
+                idx = int(seg)
+            except ValueError:
+                return
+            if idx < 0 or idx >= len(parent):
+                return
+            parent = parent[idx]
+        else:
             return
-        parent = parent.get(seg)
         if parent is None:
             return
     last_segment = parts[list_prefix_len - 1]
