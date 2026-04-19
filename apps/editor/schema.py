@@ -4332,6 +4332,244 @@ BENESSERE_WELLNESS_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# A.16c · family (Famiglia · famiglia-pediatria) — CLOSER phase of the
+# medical-other 3-phase staged dedicated-schema progression (A.16 Salute
+# opener · A.16b Benessere middle · A.16c Famiglia closer). **CLOSES the
+# medical-other family** · removes family-out guard residuo from A.16
+# Salute tests (6th precedent of guard removal pattern · completes the
+# 2-removal-phase sub-recipe variant established in A.16b). Distinct
+# skin folder (.fm-*) · 6 pages with novel `faq` page kind · NO
+# `appointment` kind (phone-and-WhatsApp CTA pattern). 16 image surfaces
+# all rendered (3 scalar + 13 image-in-dict-row cells across 3 lists).
+# **DEEP-PATH shape `crescita.topics[].items`** (4 sections × 4 tuples ×
+# 2 cols = 32 cells · Sapore `menu.sections.{i}.dishes` precedent mirror ·
+# mechanical reuse of f66ac24 render-side contract-alignment fix · zero
+# new infra needed · 4 sub-path entries mirror Sapore's 5). Novel col
+# name `src` (vs prior `image`/`portrait`/`avatar`) on home.gallery —
+# mechanical reuse via col registration. Zero raw SVG (icons are short
+# Bootstrap text refs · customer-editable IN). Zero bool flags (no
+# scheduler-state). NO `form_fields` list-of-dict (form exposed as
+# flat scalars · simpler than Benessere).
+# ---------------------------------------------------------------------------
+FAMIGLIA_FAMILY_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".fm-nav, .fm-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "studio", "tagline", "chrome", "pediatria"],
+        "help": "Nome studio pediatrico, iniziale crest, tagline, contatti (telefono · WhatsApp · email · indirizzo · emergenze), orari sintetici, license (P.IVA · iscrizione OMCeO).",
+        "fields": [
+            ("site.logo_word",      {"label": "Nome studio", "type": "text", "max_length": 60,
+                                       "placeholder": "Pediatria Famiglia Plus"}),
+            ("site.logo_initial",   {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",            {"label": "Tagline (nav + strip)", "type": "text", "max_length": 160}),
+            ("site.nav_cta_wa",     {"label": "CTA nav · etichetta WhatsApp", "type": "text", "max_length": 40}),
+            ("site.phone",          {"label": "Telefono (display)", "type": "text", "max_length": 40}),
+            ("site.phone_tel",      {"label": "Telefono · tel: URL", "type": "text", "max_length": 40}),
+            ("site.whatsapp",       {"label": "WhatsApp (display)", "type": "text", "max_length": 40}),
+            ("site.whatsapp_link",  {"label": "WhatsApp · URL completo", "type": "url", "max_length": 300}),
+            ("site.email",          {"label": "Email", "type": "text", "max_length": 120}),
+            ("site.address",        {"label": "Indirizzo (una riga)", "type": "text", "max_length": 200}),
+            ("site.emergency_tel",  {"label": "Urgenze · tel: URL", "type": "text", "max_length": 40}),
+            ("site.hours_compact",  {"label": "Orari sintetici", "type": "text", "max_length": 160}),
+            ("site.license",        {"label": "Licenza / P.IVA / iscrizione OMCeO", "type": "text", "max_length": 240}),
+            ("site.footer_intro",   {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".fm-hero",
+        "page": "home",
+        "keywords": ["hero", "headline", "eyebrow", "subhead", "cta", "ribbon", "stamp"],
+        "help": "Primo scroll della home · scalar hero_image (rendered) + alt · eyebrow + headline + subhead + CTA primaria (telefono) + CTA secondaria (WhatsApp) + ribbon convenzionato + stamp pediatra di turno.",
+        "subgroups": [
+            {"label": "Cover (rendered scalar image)", "fields": [
+                ("home.hero_image",     {"label": "Hero image · URL (rendered)", "type": "image", "max_length": 400}),
+                ("home.hero_image_alt", {"label": "Hero image · alt text", "type": "textarea", "max_length": 300}),
+            ]},
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",        {"label": "Eyebrow", "type": "text", "max_length": 160}),
+                ("home.headline",       {"label": "Headline", "type": "richtext", "max_length": 220,
+                                           "help": "Consentiti i tag <em> per italici."}),
+                ("home.subhead",        {"label": "Subhead", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "CTA hero", "fields": [
+                ("home.primary_cta",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.secondary_cta",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Ribbon + stamp decorative", "fields": [
+                ("home.hero_ribbon",         {"label": "Ribbon ('Convenzionato SSN')", "type": "text", "max_length": 80}),
+                ("home.hero_stamp_initial",  {"label": "Stamp · iniziale pediatra", "type": "text", "max_length": 4}),
+                ("home.hero_stamp_name",     {"label": "Stamp · nome pediatra in turno", "type": "text", "max_length": 120}),
+                ("home.hero_stamp_meta",     {"label": "Stamp · meta (orario)", "type": "text", "max_length": 160}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".fm-section",
+        "page": "home",
+        "keywords": ["team", "journey", "faq", "gallery", "hours", "urgency", "cta"],
+        "help": "Fasce copy della home: team ribbon · journey · FAQ · gallery · hours · urgency · CTA finale. Le liste indexed si modificano dai gruppi indexed corrispondenti.",
+        "subgroups": [
+            {"label": "Team ribbon intestazione", "fields": [
+                ("home.team_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.team_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.team_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.team_note",    {"label": "Nota team (professioniste extra)", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Journey intestazione", "fields": [
+                ("home.journey_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.journey_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.journey_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "FAQ intestazione", "fields": [
+                ("home.faq_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.faq_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.faq_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Gallery intestazione", "fields": [
+                ("home.gallery_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.gallery_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.gallery_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Hours intestazione", "fields": [
+                ("home.hours_heading", {"label": "Hours · titolo", "type": "text", "max_length": 120}),
+            ]},
+            {"label": "Urgency band", "fields": [
+                ("home.urgency_label", {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.urgency_title", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.urgency_text",  {"label": "Paragrafo", "type": "textarea", "max_length": 500}),
+                ("home.urgency_phone", {"label": "Urgenze · numero display", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("home.cta_heading",      {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.cta_lead",         {"label": "Lead", "type": "textarea", "max_length": 500}),
+                ("home.cta_phone_label",  {"label": "CTA · telefono label", "type": "text", "max_length": 60}),
+                ("home.cta_or",           {"label": "CTA · connettore (es. 'oppure')", "type": "text", "max_length": 20}),
+                ("home.cta_wa_label",     {"label": "CTA · WhatsApp label", "type": "text", "max_length": 60}),
+            ]},
+        ],
+    },
+    {
+        "id": "studio_page",
+        "label": "Pagina Studio (about)",
+        "icon": "bi-building",
+        "region": ".fm-studio, .fm-studio-hero, .fm-values, .fm-photo, .fm-history, .fm-cta",
+        "page": "studio",
+        "keywords": ["studio", "about", "values", "photo", "history", "cta"],
+        "help": "Pagina about · hero · values intestazione · photo block (scalar image rendered · caption) · history intestazione · cta finale. Values e history rows si modificano dai gruppi indexed.",
+        "fields": [
+            ("studio.eyebrow",              {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("studio.headline",             {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("studio.intro",                {"label": "Intro", "type": "textarea", "max_length": 800}),
+            ("studio.studio_image",         {"label": "Photo · URL (scalar rendered image)", "type": "image", "max_length": 400}),
+            ("studio.studio_image_caption", {"label": "Photo · didascalia", "type": "text", "max_length": 200}),
+            ("studio.history_label",        {"label": "History · label", "type": "text", "max_length": 60}),
+            ("studio.history_heading",      {"label": "History · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.history_intro",        {"label": "History · intro", "type": "textarea", "max_length": 500}),
+            ("studio.cta_heading",          {"label": "CTA · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.cta_lead",             {"label": "CTA · lead", "type": "textarea", "max_length": 500}),
+            ("studio.cta_primary_label",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("studio.cta_secondary_label",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "visite_page",
+        "label": "Pagina Visite (services)",
+        "icon": "bi-clipboard-heart",
+        "region": ".fm-visite, .fm-visite-hero, .fm-visits, .fm-tips, .fm-cta",
+        "page": "visite",
+        "keywords": ["visite", "services", "visits", "tips", "cta"],
+        "help": "Pagina servizi · hero · tips intestazione · cta finale. Visits e tips si modificano dai gruppi indexed.",
+        "fields": [
+            ("visite.eyebrow",              {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("visite.headline",             {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("visite.intro",                {"label": "Intro", "type": "textarea", "max_length": 800}),
+            ("visite.tips_label",           {"label": "Tips · label", "type": "text", "max_length": 60}),
+            ("visite.tips_heading",         {"label": "Tips · titolo", "type": "richtext", "max_length": 220}),
+            ("visite.tips_intro",           {"label": "Tips · intro", "type": "textarea", "max_length": 500}),
+            ("visite.cta_heading",          {"label": "CTA · titolo", "type": "richtext", "max_length": 220}),
+            ("visite.cta_primary_label",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("visite.cta_secondary_label",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "crescita_page",
+        "label": "Pagina Crescita (novel `faq` kind · DEEP-PATH)",
+        "icon": "bi-question-circle",
+        "region": ".fm-crescita, .fm-crescita-hero, .fm-topics, .fm-materials, .fm-cta",
+        "page": "crescita",
+        "keywords": ["crescita", "faq", "topics", "materials", "cta"],
+        "help": "Pagina FAQ (novel kind · plain string identifier · no dispatch) · hero · materials intestazione · cta finale. Topics (4 aree) si modificano dal gruppo indexed parent · le 4 Q&A per topic si modificano dai 4 gruppi DEEP-PATH `crescita.topics.{i}.items` (mechanical reuse di Sapore menu.sections.{i}.dishes · f66ac24 render-side fix).",
+        "fields": [
+            ("crescita.eyebrow",              {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("crescita.headline",             {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("crescita.intro",                {"label": "Intro", "type": "textarea", "max_length": 800}),
+            ("crescita.materials_label",      {"label": "Materials · label", "type": "text", "max_length": 60}),
+            ("crescita.materials_heading",    {"label": "Materials · titolo", "type": "richtext", "max_length": 220}),
+            ("crescita.materials_intro",      {"label": "Materials · intro", "type": "textarea", "max_length": 500}),
+            ("crescita.cta_heading",          {"label": "CTA · titolo", "type": "richtext", "max_length": 220}),
+            ("crescita.cta_lead",             {"label": "CTA · lead", "type": "textarea", "max_length": 500}),
+            ("crescita.cta_primary_label",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("crescita.cta_secondary_label",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "pediatre_page",
+        "label": "Pagina Pediatre (team)",
+        "icon": "bi-people",
+        "region": ".fm-pediatre, .fm-pediatre-hero, .fm-doctors, .fm-extra",
+        "page": "pediatre",
+        "keywords": ["pediatre", "team", "doctors", "extra"],
+        "help": "Pagina team · hero · extra block (professioniste non-pediatriche). Doctors (4 pediatre) si modificano dal gruppo indexed (`specs` nested list-of-str OUT).",
+        "fields": [
+            ("pediatre.eyebrow",     {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("pediatre.headline",    {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("pediatre.intro",       {"label": "Intro", "type": "textarea", "max_length": 800}),
+            ("pediatre.extra_title", {"label": "Extra · titolo", "type": "text", "max_length": 200}),
+            ("pediatre.extra_text",  {"label": "Extra · paragrafo", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-geo-alt",
+        "region": ".fm-contact, .fm-contact-hero, .fm-travel, .fm-hours, .fm-form",
+        "page": "contatti",
+        "keywords": ["contatti", "travel", "orari", "form-labels"],
+        "help": "Pagina contatti · hero · address block · map scalar image · travel intestazione · hours intestazione · form scalar labels (struttura form OUT · contatti.form_placeholders + contatti.form_helpers nested-dicts registry-only). NO list-of-dict form_fields (form shown con scalari label_*).",
+        "fields": [
+            ("contatti.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("contatti.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("contatti.address_label",    {"label": "Address · label", "type": "text", "max_length": 60}),
+            ("contatti.address_line",     {"label": "Address · via", "type": "text", "max_length": 200}),
+            ("contatti.address_sub",      {"label": "Address · sub (cap · quartiere)", "type": "text", "max_length": 200}),
+            ("contatti.phone_label",      {"label": "Phone · label", "type": "text", "max_length": 60}),
+            ("contatti.email_label",      {"label": "Email · label", "type": "text", "max_length": 60}),
+            ("contatti.map_image",        {"label": "Map · URL (scalar rendered image)", "type": "image", "max_length": 400}),
+            ("contatti.travel_heading",   {"label": "Travel · titolo", "type": "text", "max_length": 120}),
+            ("contatti.hours_heading",    {"label": "Hours · titolo", "type": "text", "max_length": 120}),
+            ("contatti.form_title",       {"label": "Form · titolo", "type": "text", "max_length": 120}),
+            ("contatti.form_intro",       {"label": "Form · intro", "type": "textarea", "max_length": 500}),
+            ("contatti.label_parent_name",{"label": "Form · label nome genitore", "type": "text", "max_length": 80}),
+            ("contatti.label_child_age",  {"label": "Form · label età bambino", "type": "text", "max_length": 80}),
+            ("contatti.label_reason",     {"label": "Form · label motivo", "type": "text", "max_length": 80}),
+            ("contatti.form_consent",     {"label": "Form · consenso privacy", "type": "textarea", "max_length": 500}),
+            ("contatti.form_submit_note", {"label": "Form · nota post-submit", "type": "textarea", "max_length": 300}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -8041,6 +8279,308 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # -----------------------------------------------------------------
+    # A.16c · Famiglia family. Twenty indexed lists · 16 parent-level
+    # (12 dict + 4 tuple) + 4 DEEP-PATH (`crescita.topics.{0..3}.items`
+    # · mechanical reuse of Sapore `menu.sections.{0..4}.dishes` pattern ·
+    # f66ac24 render-side contract-alignment fix already covers path
+    # walk). Image-in-dict-row on 3 lists (home.doctors × 4 + home.gallery
+    # × 5 + pediatre.doctors × 4 = 13 image cells) · plus 3 scalar
+    # top-level (home.hero_image + studio.studio_image + contatti.map_image)
+    # = 16 image surfaces total · all rendered (pediatric skin · no
+    # storage-only split). Novel col name `src` on home.gallery (vs
+    # prior `image`/`portrait`/`avatar` · mechanical reuse via col
+    # registration). Stringent IN col-level 7th archetype: `meta`
+    # (editorial area labels) · `icon` (Bootstrap text refs · NOT raw
+    # SVG) · `tag`/`exp_label`/`exp_value`/`wa_label`/`age` (editorial
+    # visible). Stringent OUT col-level: `items` on home.age_groups +
+    # `specs` on pediatre.doctors (nested list-of-str · Juris precedent) ·
+    # `items` on crescita.topics parent (deep-path excluded at parent
+    # level · IN via 4 sub-path entries). Zero raw SVG · zero bool
+    # flags · zero form_fields list-of-dict (form exposed as flat
+    # scalars · simpler than Benessere).
+    # -----------------------------------------------------------------
+    "family": {
+        "home.trust_items": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Trust items (3 chip iniziali)",
+            "icon": "bi-patch-check",
+            "region": ".fm-trust",
+            "keywords": ["trust", "home", "convenzioni"],
+            "cols": [
+                ("icon",  {"label": "Icon (Bootstrap icon name · es. 'clock')", "type": "text", "max_length": 40}),
+                ("label", {"label": "Label", "type": "text", "max_length": 200}),
+            ],
+        },
+        "home.age_groups": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Age groups (3 fasce di età)",
+            "icon": "bi-diagram-3",
+            "region": ".fm-age-groups",
+            "keywords": ["age", "groups", "fasce"],
+            "cols": [
+                ("icon",  {"label": "Icon (Bootstrap icon name)", "type": "text", "max_length": 40}),
+                ("range", {"label": "Range età (editorial visible · '0–2 anni')", "type": "text", "max_length": 60}),
+                ("title", {"label": "Titolo fascia", "type": "text", "max_length": 160}),
+                ("blurb", {"label": "Blurb", "type": "textarea", "max_length": 600}),
+                # `items` col excluded (nested list-of-str · 3 per row · Juris precedent)
+            ],
+        },
+        "home.doctors": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Doctors (4 pediatre in home)",
+            "icon": "bi-person-heart",
+            "region": ".fm-team-ribbon",
+            "keywords": ["doctors", "team", "home", "pediatre"],
+            "cols": [
+                ("name",     {"label": "Nome pediatra", "type": "text", "max_length": 120}),
+                ("role",     {"label": "Ruolo", "type": "text", "max_length": 160}),
+                ("spec",     {"label": "Specializzazione", "type": "text", "max_length": 160}),
+                ("wa_label", {"label": "WhatsApp · etichetta CTA", "type": "text", "max_length": 60}),
+                ("portrait", {"label": "Portrait · URL (rendered)", "type": "image", "max_length": 400}),
+            ],
+        },
+        "home.journey_steps": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Journey steps (5 tappe crescita)",
+            "icon": "bi-arrow-right-circle",
+            "region": ".fm-journey",
+            "keywords": ["journey", "steps", "crescita"],
+            "cols": [
+                ("age",   {"label": "Range età ('0–2'/'3–5'/...)", "type": "text", "max_length": 60}),
+                ("title", {"label": "Titolo tappa", "type": "text", "max_length": 160}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "home.faq": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · FAQ (8 domande genitori)",
+            "icon": "bi-question-circle",
+            "region": ".fm-faq",
+            "keywords": ["faq", "home", "domande"],
+            "tuple_order": ["q", "a"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 240}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 600}),
+            ],
+        },
+        "home.gallery": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Gallery (5 immagini studio)",
+            "icon": "bi-images",
+            "region": ".fm-gallery",
+            "keywords": ["gallery", "home", "studio"],
+            "cols": [
+                ("cap", {"label": "Didascalia", "type": "text", "max_length": 200}),
+                ("src", {"label": "Image · URL (rendered · novel col name)", "type": "image", "max_length": 400}),
+            ],
+        },
+        "home.hours": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Hours (4 righe orari)",
+            "icon": "bi-clock",
+            "region": ".fm-hours",
+            "keywords": ["hours", "home", "orari"],
+            "tuple_order": ["day", "value"],
+            "cols": [
+                ("day",   {"label": "Giorno / range", "type": "text", "max_length": 120}),
+                ("value", {"label": "Orario", "type": "text", "max_length": 120}),
+            ],
+        },
+        "studio.values": {
+            "kind": "dict",
+            "page": "studio",
+            "label": "Studio · Values (4 valori)",
+            "icon": "bi-stars",
+            "region": ".fm-values",
+            "keywords": ["values", "studio", "valori"],
+            "cols": [
+                ("icon",  {"label": "Icon (Bootstrap icon name)", "type": "text", "max_length": 40}),
+                ("title", {"label": "Titolo valore", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "studio.history": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · History (4 tappe storiche)",
+            "icon": "bi-clock-history",
+            "region": ".fm-history",
+            "keywords": ["history", "storia", "tappe"],
+            "tuple_order": ["year", "desc"],
+            "cols": [
+                ("year", {"label": "Anno / range", "type": "text", "max_length": 60}),
+                ("desc", {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "visite.visits": {
+            "kind": "dict",
+            "page": "visite",
+            "label": "Visite · Visits (8 tipi di visita)",
+            "icon": "bi-clipboard-pulse",
+            "region": ".fm-visits",
+            "keywords": ["visits", "visite"],
+            "cols": [
+                ("icon",        {"label": "Icon (Bootstrap icon name)", "type": "text", "max_length": 40}),
+                ("title",       {"label": "Titolo visita", "type": "text", "max_length": 160}),
+                ("duration",    {"label": "Durata (display · '45 min · 0–12 mesi')", "type": "text", "max_length": 200}),
+                ("desc",        {"label": "Descrizione", "type": "textarea", "max_length": 700}),
+                ("bring_label", {"label": "Bring · label", "type": "text", "max_length": 60}),
+                ("bring",       {"label": "Bring · cose da portare", "type": "textarea", "max_length": 400}),
+                ("cta_label",   {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ],
+        },
+        "visite.tips": {
+            "kind": "dict",
+            "page": "visite",
+            "label": "Visite · Tips (3 consigli)",
+            "icon": "bi-info-circle",
+            "region": ".fm-tips",
+            "keywords": ["tips", "consigli"],
+            "cols": [
+                ("title", {"label": "Titolo consiglio", "type": "text", "max_length": 160}),
+                ("text",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "crescita.topics": {
+            "kind": "dict",
+            "page": "crescita",
+            "label": "Crescita · Topics (4 aree · DEEP-PATH parent)",
+            "icon": "bi-grid-3x3",
+            "region": ".fm-topics",
+            "keywords": ["crescita", "topics", "aree", "faq"],
+            "cols": [
+                ("icon",  {"label": "Icon (Bootstrap icon name)", "type": "text", "max_length": 40}),
+                ("meta",  {"label": "Meta (editorial · 'Area 01')", "type": "text", "max_length": 60}),
+                ("title", {"label": "Titolo area", "type": "text", "max_length": 160}),
+                ("intro", {"label": "Intro area", "type": "textarea", "max_length": 700}),
+                # `items` col excluded at parent level (deep-path · Q&A
+                # tuples editable via 4 sub-path entries sotto)
+            ],
+        },
+        # DEEP-PATH entries · mechanical reuse of Sapore menu.sections.{i}.dishes
+        # pattern via f66ac24 render-side contract-alignment fix · 4 topics ×
+        # 4 tuple-rows × 2 cols = 32 editable cells total. Each topic's
+        # `items` list is a tuple-in-dict-list (list-parent walk via f66ac24).
+        "crescita.topics.0.items": {
+            "kind": "tuple",
+            "page": "crescita",
+            "label": "Crescita · Topic 1 · Items (4 Q&A)",
+            "icon": "bi-patch-question",
+            "region": ".fm-topics",
+            "keywords": ["crescita", "items", "qa", "topic1"],
+            "tuple_order": ["q", "a"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 240}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 700}),
+            ],
+        },
+        "crescita.topics.1.items": {
+            "kind": "tuple",
+            "page": "crescita",
+            "label": "Crescita · Topic 2 · Items (4 Q&A)",
+            "icon": "bi-patch-question",
+            "region": ".fm-topics",
+            "keywords": ["crescita", "items", "qa", "topic2"],
+            "tuple_order": ["q", "a"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 240}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 700}),
+            ],
+        },
+        "crescita.topics.2.items": {
+            "kind": "tuple",
+            "page": "crescita",
+            "label": "Crescita · Topic 3 · Items (4 Q&A)",
+            "icon": "bi-patch-question",
+            "region": ".fm-topics",
+            "keywords": ["crescita", "items", "qa", "topic3"],
+            "tuple_order": ["q", "a"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 240}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 700}),
+            ],
+        },
+        "crescita.topics.3.items": {
+            "kind": "tuple",
+            "page": "crescita",
+            "label": "Crescita · Topic 4 · Items (4 Q&A)",
+            "icon": "bi-patch-question",
+            "region": ".fm-topics",
+            "keywords": ["crescita", "items", "qa", "topic4"],
+            "tuple_order": ["q", "a"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 240}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 700}),
+            ],
+        },
+        "crescita.materials": {
+            "kind": "dict",
+            "page": "crescita",
+            "label": "Crescita · Materials (3 PDF scaricabili)",
+            "icon": "bi-file-earmark-pdf",
+            "region": ".fm-materials",
+            "keywords": ["materials", "pdf", "download"],
+            "cols": [
+                ("title",    {"label": "Titolo materiale", "type": "text", "max_length": 160}),
+                ("desc",     {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("size",     {"label": "Size (display · '2.1 MB')", "type": "text", "max_length": 40}),
+                ("dl_label", {"label": "Download · etichetta CTA", "type": "text", "max_length": 60}),
+            ],
+        },
+        "pediatre.doctors": {
+            "kind": "dict",
+            "page": "pediatre",
+            "label": "Pediatre · Doctors (4 pediatre)",
+            "icon": "bi-people",
+            "region": ".fm-doctors",
+            "keywords": ["doctors", "pediatre", "team"],
+            "cols": [
+                ("name",      {"label": "Nome pediatra", "type": "text", "max_length": 120}),
+                ("role",      {"label": "Ruolo", "type": "text", "max_length": 200}),
+                ("tag",       {"label": "Tag editorial ('Fondatrice')", "type": "text", "max_length": 60}),
+                ("bio",       {"label": "Bio estesa", "type": "textarea", "max_length": 800}),
+                ("exp_label", {"label": "Experience · label", "type": "text", "max_length": 60}),
+                ("exp_value", {"label": "Experience · value", "type": "text", "max_length": 200}),
+                ("wa_label",  {"label": "WhatsApp · etichetta CTA", "type": "text", "max_length": 60}),
+                ("portrait",  {"label": "Portrait · URL (rendered)", "type": "image", "max_length": 400}),
+                # `specs` col excluded (nested list-of-str · 3 per doctor · Juris precedent)
+            ],
+        },
+        "contatti.travel": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Travel (3 modalità)",
+            "icon": "bi-signpost",
+            "region": ".fm-travel",
+            "keywords": ["travel", "come-raggiungerci"],
+            "cols": [
+                ("icon",  {"label": "Icon (Bootstrap icon name)", "type": "text", "max_length": 40}),
+                ("title", {"label": "Titolo modalità", "type": "text", "max_length": 120}),
+                ("text",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "contatti.hours": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Hours (4 righe orari)",
+            "icon": "bi-clock",
+            "region": ".fm-contact-hours",
+            "keywords": ["hours", "contatti", "orari"],
+            "tuple_order": ["day", "value"],
+            "cols": [
+                ("day",   {"label": "Giorno / range", "type": "text", "max_length": 120}),
+                ("value", {"label": "Orario", "type": "text", "max_length": 120}),
+            ],
+        },
+    },
 }
 
 
@@ -8177,6 +8717,29 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # precedent in existing archetypes · whole list OUT · future
     # expansion candidate after infra verification).
     "wellness":               ("benessere-centro-olistico", "it"),
+    # A.16c · Famiglia (family) joins as 17th enrolled archetype —
+    # third template of the medical-other family · CLOSER phase of
+    # 3-phase staged dedicated-schema progression (Salute A.16 opener ·
+    # Benessere A.16b middle · Famiglia A.16c closer). **CLOSES the
+    # medical-other family** · removes family-out guard residuo planted
+    # in A.16 Salute (6th precedent of guard removal pattern · completes
+    # the 2-removal-phase sub-recipe variant established in A.16b).
+    # Distinct skin folder (.fm-*) · 6 pages (1 fewer than Salute/
+    # Benessere) with novel `faq` page kind · NO `appointment` kind
+    # (phone-and-WhatsApp CTA pattern). 16 image surfaces all rendered
+    # (3 scalar + 13 image-in-dict-row cells across 3 lists: home.doctors
+    # × 4 + home.gallery × 5 + pediatre.doctors × 4). **DEEP-PATH shape
+    # crescita.topics[].items** (4 sections × 4 tuples × 2 cols = 32
+    # cells · Sapore menu.sections.{i}.dishes precedent mirror ·
+    # mechanical reuse of f66ac24 render-side contract-alignment fix ·
+    # zero new infra needed). Novel col name `src` on home.gallery
+    # (mechanical reuse via col registration). Zero raw SVG (icons are
+    # Bootstrap text refs · customer-editable IN). Zero bool flags.
+    # NO form_fields list-of-dict (form as flat scalars · simpler than
+    # Benessere). 5th staged dedicated-schema family closure (after
+    # real-estate + portfolio + restaurant-continuation + ecommerce +
+    # medical-other).
+    "family":                 ("famiglia-pediatria", "it"),
 }
 
 
@@ -8278,6 +8841,23 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # list OUT first-wave). Zero deep-path · zero tocchi a apps/commerce
     # · services.py · rendering.py · editor shell.
     "wellness":               BENESSERE_WELLNESS_SCHEMA,
+    # A.16c · Famiglia — CLOSER phase of the medical-other 3-phase
+    # progression · CLOSES the medical-other family (5th staged
+    # dedicated-schema closure after real-estate + portfolio + restaurant-
+    # continuation + ecommerce). Removes family-out guard residuo from
+    # A.16 Salute tests · 6th precedent of guard removal pattern ·
+    # completes the 2-removal-phase sub-recipe variant established in
+    # A.16b. Distinct skin folder (.fm-*) · 6 pages (1 fewer than
+    # siblings) with novel `faq` page kind · NO `appointment` kind.
+    # 16 image surfaces all rendered. **DEEP-PATH shape crescita.topics[].
+    # items** (tuple-in-dict-list · Sapore precedent mirror · mechanical
+    # reuse of f66ac24 render-side fix · zero new infra needed · 4 sub-
+    # path entries in STRUCTURED_FIELD_SHAPES). Novel col name `src` on
+    # home.gallery (vs prior image/portrait/avatar · mechanical reuse).
+    # Zero raw SVG · zero bool flags · NO form_fields list-of-dict
+    # (form as flat scalars · simpler OUT policy). Zero tocchi a
+    # apps/commerce · services.py · rendering.py · editor shell.
+    "family":                 FAMIGLIA_FAMILY_SCHEMA,
 }
 
 
@@ -8898,6 +9478,26 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # home.ambients tuple-with-image novel shape (whole list OUT first-
     # wave). Gated by ``test_a16b_benessere_full_multilocale_lifecycle_end_to_end``.
     "wellness",
+    # A.16c · Famiglia (family · medical-other family · third template)
+    # joins editor + multi-locale in a single phase · **CLOSER phase**
+    # of the 3-phase staged progression · **CLOSES the medical-other
+    # family**. Removes family-out guard residuo from A.16 Salute tests
+    # (6th precedent of guard removal pattern via
+    # `test_a16c_family_out_guard_was_removed_from_salute_tests` ·
+    # completes the 2-removal-phase sub-recipe variant established in
+    # A.16b). 5th staged dedicated-schema family closure (real-estate +
+    # portfolio + restaurant-continuation + ecommerce + medical-other).
+    # Distinct skin (.fm-*) · 6 pages (1 fewer than siblings) with
+    # novel `faq` page kind · NO `appointment` kind (phone-and-WhatsApp
+    # CTA pattern). 16 image surfaces all rendered (3 scalar + 13
+    # image-in-dict-row cells · 3 lists · pediatric skin). 20 indexed
+    # list entries (12 dict + 4 tuple + **4 DEEP-PATH** crescita.topics.
+    # {0..3}.items · Sapore menu.sections.{i}.dishes precedent mirror ·
+    # mechanical reuse of f66ac24 render-side fix). Zero raw SVG · zero
+    # bool flags · NO form_fields list-of-dict (form as flat scalars).
+    # Novel col name `src` on home.gallery (mechanical reuse). Gated by
+    # ``test_a16c_family_full_multilocale_lifecycle_end_to_end``.
+    "family",
 })
 
 

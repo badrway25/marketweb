@@ -45,16 +45,17 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.revisions.count(), 1)
 
     def test_unsupported_archetype_raises(self):
-        # `family` (Famiglia) has not been enrolled in _ARCHETYPE_SCHEMAS
-        # yet — Famiglia still hits the UnsupportedTemplate guard. A.16b
-        # rotated the outside-gate reference from Benessere (wellness ·
-        # now enrolled) to Famiglia (family · still out). Famiglia is the
-        # closer of the medical-other 3-phase staged progression · will
-        # receive editor support in A.16c. Swap this slug when `family`
-        # receives editor support.
-        famiglia = WebTemplate.objects.get(slug="famiglia-pediatria")
+        # `agency-digital-studio` (Aura) has not been enrolled in
+        # _ARCHETYPE_SCHEMAS yet — Aura still hits the UnsupportedTemplate
+        # guard. A.16c rotated the outside-gate reference from Famiglia
+        # (family · now enrolled · CLOSES medical-other family) to Aura
+        # (agency-digital-studio · still out). Aura closes agency-
+        # secondary category (Vertex already enrolled as agency-creative-
+        # studio). Swap this slug when `agency-digital-studio` receives
+        # editor support.
+        aura = WebTemplate.objects.get(slug="aura-digital-studio")
         with self.assertRaises(services.UnsupportedTemplate):
-            services.create_project_from_template(owner=self.owner, template=famiglia)
+            services.create_project_from_template(owner=self.owner, template=aura)
 
     def test_schema_locks_non_whitelisted_keys(self):
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
@@ -1396,9 +1397,10 @@ class FoundationModelTests(TestCase):
         self.assertTrue(is_supported_archetype("corporate-suite"))
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
         # Sanity — an unsupported archetype still rejects.
-        # `family` (Famiglia) is the current outside-gate reference
-        # (A.16b rotated it from `wellness`/Benessere which is now enrolled).
-        self.assertFalse(is_supported_archetype("family"))
+        # `agency-digital-studio` (Aura) is the current outside-gate
+        # reference (A.16c rotated it from `family`/Famiglia which is
+        # now enrolled · CLOSES medical-other family).
+        self.assertFalse(is_supported_archetype("agency-digital-studio"))
 
     def test_a6_pragma_schema_shape_covers_core_pages(self):
         """The Pragma schema must surface groups for every customer-
@@ -1633,10 +1635,11 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Archetype outside the gate still returns False + empty list.
-        # `family` (Famiglia) is the current outside-gate reference
-        # (A.16b rotated it from `wellness`/Benessere which is now enrolled).
-        self.assertFalse(is_translatable("family", "home.headline"))
-        self.assertEqual(supported_locales("family"), [])
+        # `agency-digital-studio` (Aura) is the current outside-gate
+        # reference (A.16c rotated it from `family`/Famiglia which is
+        # now enrolled · CLOSES medical-other family).
+        self.assertFalse(is_translatable("agency-digital-studio", "home.headline"))
+        self.assertEqual(supported_locales("agency-digital-studio"), [])
 
     # ------------------------------------------------------------------
     # A.8 · Gusto fine-dining enrollment — Step 1 contract
@@ -4240,9 +4243,10 @@ class FoundationModelTests(TestCase):
             supported_locales("trattoria-warm"),
             ["it", "en", "fr", "es", "ar"],
         )
-        # Outside-gate reference: family (Famiglia) after A.16b rotated
-        # it from wellness/Benessere (now enrolled).
-        self.assertEqual(supported_locales("family"), [])
+        # Outside-gate reference: agency-digital-studio (Aura) after
+        # A.16c rotated it from family/Famiglia (now enrolled · CLOSES
+        # medical-other family).
+        self.assertEqual(supported_locales("agency-digital-studio"), [])
 
     def test_a14_tenfold_regression_after_sapore_joins(self):
         """Regression guard: the 10 pre-A.14 archetype classifications
@@ -5580,19 +5584,14 @@ class FoundationModelTests(TestCase):
         self.assertEqual(baseline_slug, "salute-studio-medico")
         self.assertEqual(baseline_locale, "it")
 
-        # FAMILY-OUT GUARD: `family` stays OUT until A.16c closer.
-        # Runtime re-check lives in
-        # `test_a16_salute_full_multilocale_lifecycle_end_to_end`.
-        # Will be removed in A.16c via symmetric inversion test
-        # `test_a16c_family_out_guard_was_removed_from_salute_tests`
-        # (6th precedent · closes medical-other family).
-        # Wellness-out guard removed in A.16b via symmetric inversion —
-        # see `test_a16b_benessere_out_guard_was_removed_from_salute_tests`.
-        self.assertNotIn("family", _ARCHETYPE_SCHEMAS,
-                         "Famiglia (family) must stay OUT until A.16c")
-        self.assertNotIn("family", _ARCHETYPE_BASELINE_TEMPLATE)
-        self.assertNotIn("family", _MULTILOCALE_ENABLED_ARCHETYPES)
-        self.assertFalse(is_supported_archetype("family"))
+        # DUAL-OUT GUARD fully removed in A.16b + A.16c:
+        # - Wellness-out guard removed in A.16b · see
+        #   `test_a16b_benessere_out_guard_was_removed_from_salute_tests`
+        # - Family-out guard removed in A.16c · see
+        #   `test_a16c_family_out_guard_was_removed_from_salute_tests`
+        # Medical-other family OFFICIALLY CLOSED after A.16c · 5th
+        # staged dedicated-schema family closure (after real-estate +
+        # portfolio + restaurant-continuation + ecommerce + medical-other).
 
         # 14 pre-A.16 archetypes still enrolled.
         for pre_slug in (
@@ -6001,12 +6000,9 @@ class FoundationModelTests(TestCase):
         self.assertEqual(baseline_slug, "benessere-centro-olistico")
         self.assertEqual(baseline_locale, "it")
 
-        # FAMILY-OUT GUARD preserved for A.16c closer.
-        self.assertNotIn("family", _ARCHETYPE_SCHEMAS,
-                         "Famiglia (family) must stay OUT until A.16c")
-        self.assertNotIn("family", _ARCHETYPE_BASELINE_TEMPLATE)
-        self.assertNotIn("family", _MULTILOCALE_ENABLED_ARCHETYPES)
-        self.assertFalse(is_supported_archetype("family"))
+        # Family-out guard removed in A.16c · medical-other family CLOSED.
+        # See `test_a16c_family_out_guard_was_removed_from_salute_tests`
+        # for the 6th precedent of guard removal pattern.
 
         # 15 pre-A.16b archetypes still enrolled (14 pre-A.16 + Salute).
         for pre_slug in (
@@ -6048,12 +6044,11 @@ class FoundationModelTests(TestCase):
                       "Salute must stay enrolled after Benessere joins")
         self.assertIn("clinic", _MULTILOCALE_ENABLED_ARCHETYPES)
 
-        # Famiglia STILL OUT (A.16c closer preserves family-out guard).
-        self.assertNotIn("family", _ARCHETYPE_SCHEMAS,
-                         "Famiglia (family) must stay OUT until A.16c")
-        self.assertNotIn("family", _ARCHETYPE_BASELINE_TEMPLATE)
-        self.assertNotIn("family", _MULTILOCALE_ENABLED_ARCHETYPES)
-        self.assertFalse(is_supported_archetype("family"))
+        # Famiglia enrolled in A.16c · medical-other family CLOSED.
+        # Original test preserved family-out guard · updated after A.16c.
+        self.assertIn("family", _ARCHETYPE_SCHEMAS,
+                      "Famiglia must be enrolled after A.16c closer")
+        self.assertIn("family", _MULTILOCALE_ENABLED_ARCHETYPES)
 
     def test_a16b_benessere_schema_shape_covers_all_pages(self):
         """Benessere groups span the 7 page slugs + `*` chrome. One
@@ -6460,6 +6455,469 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A16b Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.16c · Famiglia (family · medical-other family · third template ·
+    # CLOSER phase of 3-phase staged progression) enrollment — Step 1
+    # contract. **CLOSES the medical-other family** · removes family-out
+    # guard residuo from A.16 Salute tests (6th precedent of guard
+    # removal pattern · completes the 2-removal-phase sub-recipe variant
+    # established in A.16b). 5th staged dedicated-schema family closure
+    # (after real-estate + portfolio + restaurant-continuation + ecommerce).
+    # 20 readonly indexed list entries · **4 DEEP-PATH** crescita.topics.
+    # {0..3}.items (Sapore menu.sections.{i}.dishes precedent mirror ·
+    # f66ac24 render-side fix mechanical reuse). 16 image surfaces all
+    # rendered. Novel col name `src` on home.gallery (mechanical reuse).
+    # Zero raw SVG · zero bool flags · NO form_fields list-of-dict
+    # (form as flat scalars · simpler OUT policy than Benessere).
+    # ------------------------------------------------------------------
+
+    def test_a16c_family_archetype_registered(self):
+        """`family` joins the supported-archetype registry and the
+        multi-locale gate. All 16 pre-A.16c archetypes (including Salute
+        + Benessere) must still be enrolled (sixteen-fold regression).
+        Medical-other family CLOSED · no out-guard active."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
+        )
+        self.assertIn("family", _ARCHETYPE_SCHEMAS)
+        self.assertIn("family", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertIn("family", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("family"))
+        baseline_slug, baseline_locale = _ARCHETYPE_BASELINE_TEMPLATE["family"]
+        self.assertEqual(baseline_slug, "famiglia-pediatria")
+        self.assertEqual(baseline_locale, "it")
+
+        # 16 pre-A.16c archetypes still enrolled (14 pre-A.16 + Salute + Benessere).
+        for pre_slug in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop", "fashion-editorial",
+            "clinic", "wellness",
+        ):
+            self.assertIn(pre_slug, _ARCHETYPE_SCHEMAS, f"{pre_slug} lost enrollment")
+            self.assertIn(pre_slug, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{pre_slug} lost multi-locale")
+
+    def test_a16c_family_out_guard_was_removed_from_salute_tests(self):
+        """USER-IMPOSED SYMMETRIC GUARDRAIL · **6th precedent** after
+        Villa/Pixel/Brace/Luxe/Wellness · **CLOSES the 2-removal-phase
+        sub-recipe** established in A.16b. First 3-phase staged
+        progression completes (A.16 Salute planted DUAL-OUT GUARD for
+        wellness + family · A.16b removed wellness-out · A.16c removes
+        family-out · medical-other family OFFICIALLY CLOSED).
+        Sub-recipe pattern generalizes from "one-opener-one-closer"
+        (2-phase) to "one-opener-two-closers" (3-phase) · both variants
+        preserve D-098 invariant."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
+        )
+        # Family IS now in all three registries
+        self.assertIn("family", _ARCHETYPE_SCHEMAS,
+                      "Famiglia (family) must be IN after A.16c")
+        self.assertIn("family", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertIn("family", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("family"))
+
+        # Salute + Benessere still enrolled (medical-other family CLOSED)
+        for sibling in ("clinic", "wellness"):
+            self.assertIn(sibling, _ARCHETYPE_SCHEMAS,
+                          f"{sibling} must stay enrolled after Famiglia closes the family")
+            self.assertIn(sibling, _MULTILOCALE_ENABLED_ARCHETYPES)
+
+    def test_a16c_medical_other_family_closed(self):
+        """USER-IMPOSED GUARDRAIL: medical-other family CLOSED ·
+        all 3 archetypes IN (clinic + wellness + family) · no out-guard
+        active. 5th staged dedicated-schema family closure (after
+        real-estate + portfolio + restaurant-continuation + ecommerce)."""
+        from apps.editor.schema import _ARCHETYPE_SCHEMAS, _MULTILOCALE_ENABLED_ARCHETYPES
+        for arc in ("clinic", "wellness", "family"):
+            self.assertIn(arc, _ARCHETYPE_SCHEMAS,
+                          f"{arc} must be enrolled · medical-other CLOSED")
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} must be multi-locale · medical-other CLOSED")
+
+    def test_a16c_family_schema_shape_covers_all_pages(self):
+        """Famiglia groups span the 6 page slugs + `*` chrome. Novel
+        `faq` kind (crescita page) · NO `appointment` kind · plain
+        string identifiers · no view dispatch."""
+        from apps.editor.schema import iter_groups
+        groups = iter_groups("family")
+        pages = {g.get("page") for g in groups}
+        for expected in ("*", "home", "studio", "visite", "crescita", "pediatre", "contatti"):
+            self.assertIn(expected, pages,
+                          f"Famiglia schema missing page `{expected}` coverage")
+
+    def test_a16c_family_is_translatable_text_fields(self):
+        """Distributed sample of Famiglia translatable paths — one per
+        page — must classify as translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "family"
+        translatable_paths = (
+            # home
+            "home.eyebrow", "home.headline", "home.subhead",
+            "home.team_heading", "home.journey_heading",
+            "home.faq_heading", "home.gallery_heading",
+            "home.urgency_title", "home.urgency_text",
+            "home.cta_heading",
+            # studio
+            "studio.eyebrow", "studio.headline", "studio.intro",
+            "studio.history_heading", "studio.cta_heading",
+            # visite
+            "visite.eyebrow", "visite.headline", "visite.intro",
+            "visite.tips_heading", "visite.cta_heading",
+            # crescita
+            "crescita.eyebrow", "crescita.headline", "crescita.intro",
+            "crescita.materials_heading", "crescita.cta_heading",
+            # pediatre
+            "pediatre.eyebrow", "pediatre.headline", "pediatre.intro",
+            "pediatre.extra_text",
+            # contatti
+            "contatti.headline", "contatti.intro",
+            "contatti.form_title", "contatti.form_intro",
+        )
+        for path in translatable_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must classify as translatable on Famiglia",
+            )
+
+    def test_a16c_family_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Famiglia — same
+        contract as every previously-enrolled archetype."""
+        from apps.editor.schema import is_translatable
+        arc = "family"
+        for path in (
+            "site.logo_word", "site.logo_initial",
+            "site.phone", "site.email",
+            "site.address", "site.license",
+            "site.whatsapp_link",   # url type · precedent
+        ):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must stay global on Famiglia",
+            )
+
+    def test_a16c_family_scalar_and_image_in_dict_rows_exposed(self):
+        """USER-IMPOSED GUARDRAIL: Famiglia ships 3 scalar top-level
+        images (`home.hero_image` + `studio.studio_image` +
+        `contatti.map_image`) + 13 image cells across 3 image-in-dict-row
+        lists (`home.doctors[].portrait` × 4 + `home.gallery[].src` × 5 +
+        `pediatre.doctors[].portrait` × 4). Novel col name `src` on
+        home.gallery. All 16 image surfaces rendered (pediatric skin ·
+        no storage-only split)."""
+        from apps.editor.schema import get_field_spec
+        arc = "family"
+        scalar_image_paths = (
+            "home.hero_image",
+            "studio.studio_image",
+            "contatti.map_image",
+        )
+        for path in scalar_image_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Famiglia schema")
+            self.assertEqual(spec.get("type"), "image",
+                             f"{path} must expose as type=image")
+        image_cell_paths = (
+            # home.doctors × 4 (portrait col)
+            "home.doctors.0.portrait",
+            "home.doctors.3.portrait",
+            # home.gallery × 5 (NOVEL `src` col name)
+            "home.gallery.0.src",
+            "home.gallery.4.src",
+            # pediatre.doctors × 4 (portrait col)
+            "pediatre.doctors.0.portrait",
+            "pediatre.doctors.3.portrait",
+        )
+        for path in image_cell_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Famiglia schema")
+            self.assertEqual(spec.get("type"), "image",
+                             f"{path} must expose as type=image")
+
+    def test_a16c_family_deep_path_crescita_topics_items_exposed(self):
+        """USER-IMPOSED GUARDRAIL (NOVEL for Famiglia · Sapore precedent
+        mirror): `crescita.topics[].items` is tuple-in-dict-list deep-
+        path · registered as 4 separate STRUCTURED_FIELD_SHAPES entries
+        mirroring Sapore `menu.sections.{0..4}.dishes` pattern.
+        Mechanical reuse of f66ac24 render-side contract-alignment fix ·
+        zero new infra needed. Verified via:
+        (a) All 4 deep-path entries registered in STRUCTURED_FIELD_SHAPES
+        (b) Sample cells (q/a positional) resolvable via `get_field_spec`
+            through both list indexes (topic index + item index)
+        (c) Each deep-path shape is `tuple` kind with `tuple_order: [q,a]`
+        """
+        from apps.editor.schema import STRUCTURED_FIELD_SHAPES, get_field_spec
+        arc = "family"
+        shapes = STRUCTURED_FIELD_SHAPES.get(arc, {})
+        # (a) 4 deep-path entries registered
+        for i in range(4):
+            key = f"crescita.topics.{i}.items"
+            self.assertIn(key, shapes, f"{key} must be registered deep-path shape")
+            shape = shapes[key]
+            # (c) tuple kind + tuple_order
+            self.assertEqual(shape.get("kind"), "tuple",
+                             f"{key} must be tuple kind")
+            self.assertEqual(shape.get("tuple_order"), ["q", "a"],
+                             f"{key} must have tuple_order [q, a]")
+        # (b) sample cells resolvable
+        sample_cells = (
+            ("crescita.topics.0.items.0.q", "text"),
+            ("crescita.topics.0.items.0.a", "textarea"),
+            ("crescita.topics.0.items.3.q", "text"),    # last of 4 tuples
+            ("crescita.topics.3.items.0.q", "text"),    # last of 4 topics
+            ("crescita.topics.3.items.3.a", "textarea"),
+        )
+        for path, expected_type in sample_cells:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} deep-path cell missing from Famiglia schema")
+            self.assertEqual(
+                spec.get("type"), expected_type,
+                f"{path} type mismatch (expected {expected_type})",
+            )
+
+    def test_a16c_family_visible_catalog_fields_kept_in(self):
+        """Stringent IN call (audit-driven · 7th archetype precedent
+        chain after Sapore/Brace/Bottega/Luxe/Salute/Benessere):
+        visible editorial numbering/labels stay IN. Famiglia brings
+        `meta` (area label), `tag`, `exp_label`/`exp_value`, `wa_label`,
+        `age` (range label), and icon text-refs as editorial visible
+        IN candidates."""
+        from apps.editor.schema import get_field_spec
+        arc = "family"
+        visible_editorial = (
+            ("crescita.topics.0.meta",       "text"),
+            ("crescita.topics.3.meta",       "text"),
+            ("crescita.topics.0.icon",       "text"),
+            ("home.age_groups.0.range",      "text"),
+            ("home.journey_steps.0.age",     "text"),
+            ("home.doctors.0.wa_label",      "text"),
+            ("pediatre.doctors.0.tag",       "text"),
+            ("pediatre.doctors.0.exp_label", "text"),
+            ("pediatre.doctors.0.exp_value", "text"),
+            ("pediatre.doctors.0.wa_label",  "text"),
+            ("home.trust_items.0.icon",      "text"),
+            ("contatti.travel.0.icon",       "text"),
+        )
+        for path, expected_type in visible_editorial:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec,
+                f"{path} missing — editorial-visible cell must be editable",
+            )
+            self.assertEqual(
+                spec.get("type"), expected_type,
+                f"{path} type mismatch (expected {expected_type})",
+            )
+
+    def test_a16c_family_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL: complex shapes stay outside the
+        perimeter. Famiglia ships NO posts (empty · structural absence ·
+        detail-page policy stays at 6-archetype uniform enforcement)."""
+        from apps.editor.schema import validate_key_path, InvalidEditableField
+        arc = "family"
+        rejected_paths = (
+            # Flat list-of-str
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            "contatti.reason_options",
+            "contatti.reason_options.0",
+            # Form-related nested-dicts (Juris/Gusto/Bottega/Luxe/Salute/Benessere precedent)
+            "contatti.form_placeholders",
+            "contatti.form_placeholders.parent_name",
+            "contatti.form_helpers",
+            "contatti.form_helpers.email",
+            # Nested list-of-str inside dict rows (Juris precedent)
+            "home.age_groups.0.items",
+            "home.age_groups.0.items.0",
+            "pediatre.doctors.0.specs",
+            "pediatre.doctors.0.specs.0",
+            # Deep-path parent `items` col (OUT at parent · IN via 4 sub-path shape entries)
+            "crescita.topics.0.items.keyword",  # non-existent subkey sanity
+            # Top-level navigation + empty posts
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+        )
+        for path in rejected_paths:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Famiglia must reject complex-shape path: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a16c_family_structured_list_cells_are_global(self):
+        """Every STRUCTURED_FIELD_SHAPES text/image cell on Famiglia
+        stays global (non-translatable · D-098 per-locale image out-of-
+        scope · including deep-path cells `crescita.topics.{i}.items.{j}.{q,a}`)."""
+        from apps.editor.schema import is_translatable
+        arc = "family"
+        cell_paths = (
+            # home.trust_items (dict 3 · 2 cols)
+            "home.trust_items.0.icon",
+            "home.trust_items.2.label",
+            # home.age_groups (dict 3 · 4 cols IN)
+            "home.age_groups.0.range",
+            "home.age_groups.2.blurb",
+            # home.doctors (dict 4 · 5 cols · portrait image)
+            "home.doctors.0.name",
+            "home.doctors.3.portrait",                 # image cell
+            # home.journey_steps (dict 5 · 3 cols)
+            "home.journey_steps.0.age",
+            "home.journey_steps.4.desc",
+            # home.faq (tuple 8 · 2 cols)
+            "home.faq.0.q",
+            "home.faq.7.a",
+            # home.gallery (dict 5 · 2 cols · src image · novel col name)
+            "home.gallery.0.cap",
+            "home.gallery.4.src",                      # image cell · novel col
+            # home.hours (tuple 4 · 2 cols)
+            "home.hours.0.day",
+            "home.hours.3.value",
+            # studio.values (dict 4 · 3 cols)
+            "studio.values.0.title",
+            "studio.values.3.desc",
+            # studio.history (tuple 4 · 2 cols)
+            "studio.history.0.year",
+            "studio.history.3.desc",
+            # visite.visits (dict 8 · 7 cols)
+            "visite.visits.0.title",
+            "visite.visits.7.desc",
+            # visite.tips (dict 3 · 2 cols)
+            "visite.tips.0.title",
+            "visite.tips.2.text",
+            # crescita.topics (parent dict 4 · 4 cols IN)
+            "crescita.topics.0.meta",
+            "crescita.topics.3.title",
+            # crescita.topics.{i}.items (deep-path tuple · 4 × 4 × 2 = 32 cells)
+            "crescita.topics.0.items.0.q",             # deep-path cell
+            "crescita.topics.0.items.3.a",             # deep-path last tuple
+            "crescita.topics.3.items.0.q",             # deep-path last topic
+            "crescita.topics.3.items.3.a",
+            # crescita.materials (dict 3 · 4 cols)
+            "crescita.materials.0.title",
+            "crescita.materials.2.dl_label",
+            # pediatre.doctors (dict 4 · 8 cols IN · portrait)
+            "pediatre.doctors.0.name",
+            "pediatre.doctors.3.portrait",             # image cell
+            # contatti.travel (dict 3 · 3 cols)
+            "contatti.travel.0.icon",
+            "contatti.travel.2.text",
+            # contatti.hours (tuple 4 · 2 cols)
+            "contatti.hours.0.day",
+            "contatti.hours.3.value",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Famiglia",
+            )
+
+    def test_a16c_family_supported_locales_returns_canonical_five(self):
+        """Famiglia ships the canonical 5-locale set. Step-0 audit
+        confirmed 5-locale parity PERFECT (376 keys × 5 · zero gaps)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("family"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a16c_sixteenfold_regression_after_family_joins(self):
+        """Regression guard: the 16 pre-A.16c archetype classifications
+        (14 pre-A.16 + Salute + Benessere) are unchanged after `family`
+        joins the gate."""
+        from apps.editor.schema import (
+            is_translatable, supported_locales, _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        pre_a16c = (
+            "agency-creative-studio",
+            "corporate-suite",
+            "fine-dining",
+            "specialist",
+            "classic-gold",
+            "modern-transparent",
+            "mass-market",
+            "ultra-luxury-cinematic",
+            "editorial-designer-grid",
+            "cinematic-photographer",
+            "trattoria-warm",
+            "street-modern",
+            "artisan-workshop",
+            "fashion-editorial",
+            "clinic",
+            "wellness",
+        )
+        for arc in pre_a16c:
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} lost multi-locale enrollment")
+            self.assertEqual(
+                supported_locales(arc), ["it", "en", "fr", "es", "ar"],
+                f"{arc} supported_locales regressed",
+            )
+
+    def test_a16c_family_clinic_admin_boundary(self):
+        """USER-IMPOSED LIGHT guardrail (mirrors A.16/A.16b clinic-admin
+        boundary · 3rd medical-other archetype to confirm boundary
+        uniform across the family): the editor schema for Famiglia must
+        not leak into scheduler/booking/patient/calendar-slot/etc.
+        namespaces. Schema stays scoped to the registry content
+        (template_content prefixes: home/studio/visite/crescita/pediatre/
+        contatti/site)."""
+        from apps.editor.schema import iter_editable_fields
+        arc = "family"
+        admin_model_prefixes = (
+            "appointment.", "booking.", "patient.", "scheduler.",
+            "calendar_slot.", "medical_record.", "prescription.",
+        )
+        for path, _spec in iter_editable_fields(arc):
+            for prefix in admin_model_prefixes:
+                self.assertFalse(
+                    path.startswith(prefix),
+                    f"Editor schema leaks into pseudo-admin namespace: "
+                    f"field `{path}` starts with `{prefix}` — editor must "
+                    f"stay on template_content registry only"
+                )
+
+    def test_a16c_family_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.16/A.16b bridge-guard — Famiglia
+        `medical/family/_base.html` must integrate the three bridge
+        points together on the `.fm-*` skin: (1) preview-bridge.js
+        conditional on ``preview_project``, (2) ``<title>`` honors
+        ``site.logo_word``, (3) ``<body>`` carries ``mw-is-editor-preview``
+        guard class when inside the editor."""
+        famiglia = WebTemplate.objects.get(slug="famiglia-pediatria")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/medical/famiglia-pediatria/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=famiglia)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A16c Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/medical/famiglia-pediatria/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A16c Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -6522,9 +6980,10 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Unknown archetype returns empty list, never raises.
-        # `family` (Famiglia) is the current outside-gate reference
-        # (A.16b rotated it from `wellness`/Benessere which is now enrolled).
-        self.assertEqual(supported_locales("family"), [])
+        # `agency-digital-studio` (Aura) is the current outside-gate
+        # reference (A.16c rotated it from `family`/Famiglia which is
+        # now enrolled · CLOSES medical-other family).
+        self.assertEqual(supported_locales("agency-digital-studio"), [])
 
     def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
         """Defensive contract: unknown paths and archetypes return False
@@ -6886,13 +7345,14 @@ class FoundationHttpTests(TestCase):
 
     def test_customize_start_unsupported_archetype_redirects_to_detail(self):
         """Templates without editor support bounce to detail with an info message."""
-        # famiglia-pediatria (family archetype) is not yet enrolled.
-        # A.16b rotated the outside-gate reference from Benessere
-        # (wellness · now enrolled) to Famiglia (family · still out).
-        # Swap when `family` receives editor support (A.16c closer).
-        r = self.client.get("/projects/start/?template=famiglia-pediatria")
+        # aura-digital-studio (agency-digital-studio archetype) is not
+        # yet enrolled. A.16c rotated the outside-gate reference from
+        # Famiglia (family · now enrolled · CLOSES medical-other) to
+        # Aura (agency-digital-studio · still out). Swap when
+        # `agency-digital-studio` receives editor support.
+        r = self.client.get("/projects/start/?template=aura-digital-studio")
         self.assertEqual(r.status_code, 302)
-        # Either /templates/medical/famiglia-pediatria/ or template_list — both accept.
+        # Either /templates/agency/aura-digital-studio/ or template_list — both accept.
         self.assertIn("/templates/", r["Location"])
 
     def test_autosave_endpoint_rejects_locked_keys(self):
@@ -11097,11 +11557,13 @@ class FoundationHttpTests(TestCase):
     # A.16 · Step 2 — Salute (clinic) lifecycle HTTP cross-cutting ·
     # OPENS the medical-other family via staged dedicated-schema
     # progression extended to 3-phase variant (A.16 Salute opener ·
-    # A.16b Benessere · A.16c Famiglia closure). First 3-template
-    # staged progression. **FAMILY-OUT GUARD**: `family` held OUT at
-    # start AND end (will be removed in A.16c closer via symmetric
-    # inversion test). Wellness-out guard was removed in A.16b —
-    # see `test_a16b_benessere_out_guard_was_removed_from_salute_tests`.
+    # A.16b Benessere middle · A.16c Famiglia closer · medical-other
+    # family CLOSED post-A.16c). First 3-template staged progression.
+    # DUAL-OUT GUARD fully removed in A.16b + A.16c:
+    # - Wellness-out removed in A.16b via
+    #   `test_a16b_benessere_out_guard_was_removed_from_salute_tests`.
+    # - Family-out removed in A.16c via
+    #   `test_a16c_family_out_guard_was_removed_from_salute_tests`.
     # Exercises 3 image surfaces end-to-end:
     #   - studio.photo_src (scalar top-level · rendered on studio page)
     #   - home.team_ribbon_people.0.avatar (image-in-dict-row · rendered
@@ -11123,9 +11585,8 @@ class FoundationHttpTests(TestCase):
         image surface across 5 locales × 3 pages.
 
         Phases:
-        1. perimeter invariants at TEST START — Salute IN +
-           Famiglia still OUT (family-out guard · wellness-out removed
-           in A.16b)
+        1. perimeter invariants at TEST START — Salute IN (DUAL-OUT
+           GUARD fully removed post-A.16c · medical-other CLOSED)
         2. customer edits IT / EN / FR on home.headline
         3. customer edits global site.logo_word via EN — plain-keyed
            no @en: prefix
@@ -11146,11 +11607,12 @@ class FoundationHttpTests(TestCase):
         10. owner reopens the editor per locale · prefill + universals
         11. perimeter invariants re-checked end-of-test:
             - Salute + 14 pre-A.16 archetypes still enrolled
-            - Famiglia STILL OUT of both gate sets
-              (family-out guard re-enforced · will be removed in A.16c
-              closer via symmetric inversion · wellness-out guard was
-              removed in A.16b · first 3-template staged progression ·
-              sub-recipe extends to 2 removal phases)
+            - Medical-other family CLOSED post-A.16c · DUAL-OUT GUARD
+              fully consumed (wellness-out removed in A.16b ·
+              family-out removed in A.16c · sub-recipe 2-removal-phase
+              variant complete · 5th staged dedicated-schema closure
+              after real-estate + portfolio + restaurant-continuation +
+              ecommerce)
             - Sensitive OUT paths REJECTED (raw icon_svg + bool
               is_popular + nested includes/items/tags + form structures
               + flat str-lists + pages + posts)
@@ -11176,14 +11638,12 @@ class FoundationHttpTests(TestCase):
                       "Salute must be enrolled at lifecycle start")
         self.assertIn("clinic", _ENABLED,
                       "Salute must be in multi-locale gate at start")
-        # FAMILY-OUT GUARD at BOTH gates (leak check duro · start).
-        # Wellness-out guard removed in A.16b via symmetric inversion —
-        # see `test_a16b_benessere_out_guard_was_removed_from_salute_tests`.
-        # Family-out guard will be removed in A.16c closer.
-        self.assertNotIn("family", _SCHEMAS,
-                         "Famiglia (family) must be OUT of _ARCHETYPE_SCHEMAS at start")
-        self.assertNotIn("family", _ENABLED,
-                         "Famiglia (family) must be OUT of multi-locale gate at start")
+        # DUAL-OUT GUARD fully removed in A.16b + A.16c:
+        # - Wellness-out guard removed in A.16b via symmetric inversion —
+        #   see `test_a16b_benessere_out_guard_was_removed_from_salute_tests`.
+        # - Family-out guard removed in A.16c via symmetric inversion —
+        #   see `test_a16c_family_out_guard_was_removed_from_salute_tests`.
+        # Medical-other family OFFICIALLY CLOSED after A.16c.
 
         def autosave(locale, content, tokens=None):
             return self.client.post(
@@ -11410,16 +11870,13 @@ class FoundationHttpTests(TestCase):
         self.assertFalse(photo_field["translatable"])
 
         # ── 11. perimeter invariants re-checked end-of-test ──────
-        # FAMILY-OUT GUARD re-enforced end-of-test (leak check duro):
-        # Famiglia must STILL be OUT at runtime on BOTH gates ·
-        # removed in A.16c via symmetric inversion test. First 3-
-        # template staged progression · sub-recipe extends to 2
-        # removal phases. Wellness-out guard removed in A.16b via
-        # `test_a16b_benessere_out_guard_was_removed_from_salute_tests`.
-        self.assertNotIn("family", _SCHEMAS,
-                         "Famiglia (family) must stay OUT of _ARCHETYPE_SCHEMAS until A.16c")
-        self.assertNotIn("family", _ENABLED,
-                         "Famiglia (family) must stay OUT of multi-locale gate until A.16c")
+        # DUAL-OUT GUARD fully removed in A.16b + A.16c · medical-other
+        # family OFFICIALLY CLOSED. Sub-recipe 2-removal-phase variant
+        # (first 3-template staged progression) completed.
+        # - Wellness-out guard removed in A.16b via
+        #   `test_a16b_benessere_out_guard_was_removed_from_salute_tests`
+        # - Family-out guard removed in A.16c via
+        #   `test_a16c_family_out_guard_was_removed_from_salute_tests`
         # Salute still enrolled (no accidental removal).
         self.assertIn("clinic", _SCHEMAS,
                       "Salute enrollment must persist through lifecycle")
@@ -11489,10 +11946,10 @@ class FoundationHttpTests(TestCase):
     #     rendered on team page · DIFFERENT list + DIFFERENT page
     #     from ambienti.rooms)
     # All 3 image paths plain-keyed across all 5 locales (D-098 image
-    # per-locale out-of-scope). **FAMILY-OUT GUARD**: Famiglia stays
-    # OUT at start AND end (wellness-out guard was removed in A.16b ·
-    # family-out will be removed in A.16c closer · first 3-template
-    # staged progression · sub-recipe 2-removal-phase variant).
+    # per-locale out-of-scope). DUAL-OUT GUARD fully removed post-A.16c
+    # (wellness-out removed in A.16b · family-out removed in A.16c ·
+    # medical-other family CLOSED · first 3-template staged progression
+    # complete).
     # ------------------------------------------------------------------
 
     def test_a16b_benessere_full_multilocale_lifecycle_end_to_end(self):
@@ -11507,9 +11964,9 @@ class FoundationHttpTests(TestCase):
 
         Phases:
         1. perimeter invariants at TEST START — Benessere IN +
-           Salute still IN + Famiglia OUT (family-out guard · wellness-
-           out guard was removed in A.16b · first 3-template staged
-           progression · sub-recipe 2-removal-phase variant)
+           Salute still IN (DUAL-OUT GUARD fully removed post-A.16c ·
+           medical-other family CLOSED · sub-recipe 2-removal-phase
+           variant complete)
         2. customer edits IT / EN / FR on home.headline
         3. customer edits global site.logo_word via EN — plain-keyed
            no @en: prefix
@@ -11531,18 +11988,18 @@ class FoundationHttpTests(TestCase):
         10. owner reopens the editor per locale · prefill + universals
         11. perimeter invariants re-checked end-of-test:
             - Benessere + Salute + 14 pre-A.16 archetypes still enrolled
-            - Famiglia STILL OUT of both gate sets
-              (family-out guard re-enforced · will be removed in A.16c
-              closer via symmetric inversion)
+            - Medical-other family CLOSED post-A.16c · DUAL-OUT GUARD
+              fully consumed (wellness-out removed in A.16b ·
+              family-out removed in A.16c · sub-recipe 2-removal-phase
+              variant complete)
             - Sensitive OUT paths REJECTED (calendar bool flags × 4 +
               nested str-lists × 4 + form structures × 5 + home.ambients
               tuple-with-image × 3 + flat str-lists × 4 + pages/posts × 2)
 
-        Explicitly NOT exercised here: browser walk (Step 3), Famiglia
-        editor work (A.16c), coverage expansion, home.ambients tuple-
-        with-image (deferred), mutable rows, image per-locale,
-        apps.commerce / clinic-admin touches. Zero production-code
-        changes.
+        Explicitly NOT exercised here: browser walk (Step 3), coverage
+        expansion, home.ambients tuple-with-image (deferred), mutable
+        rows, image per-locale, apps.commerce / clinic-admin touches.
+        Zero production-code changes.
         """
         import json as _json
 
@@ -11565,13 +12022,8 @@ class FoundationHttpTests(TestCase):
                       "Salute must still be enrolled at Benessere lifecycle start")
         self.assertIn("clinic", _ENABLED,
                       "Salute must still be in multi-locale gate at start")
-        # FAMILY-OUT GUARD at BOTH gates (leak check duro · start).
-        # Wellness-out guard was removed in A.16b · family-out will be
-        # removed in A.16c closer.
-        self.assertNotIn("family", _SCHEMAS,
-                         "Famiglia (family) must be OUT of _ARCHETYPE_SCHEMAS at start")
-        self.assertNotIn("family", _ENABLED,
-                         "Famiglia (family) must be OUT of multi-locale gate at start")
+        # Family-out guard removed in A.16c · medical-other family CLOSED ·
+        # see `test_a16c_family_out_guard_was_removed_from_salute_tests`.
 
         def autosave(locale, content, tokens=None):
             return self.client.post(
@@ -11800,13 +12252,8 @@ class FoundationHttpTests(TestCase):
         self.assertFalse(hero_field["translatable"])
 
         # ── 11. perimeter invariants re-checked end-of-test ──────
-        # FAMILY-OUT GUARD re-enforced end-of-test (leak check duro):
-        # Famiglia must STILL be OUT at runtime on BOTH gates · removed
-        # in A.16c closer via symmetric inversion test.
-        self.assertNotIn("family", _SCHEMAS,
-                         "Famiglia (family) must stay OUT of _ARCHETYPE_SCHEMAS until A.16c")
-        self.assertNotIn("family", _ENABLED,
-                         "Famiglia (family) must stay OUT of multi-locale gate until A.16c")
+        # Family-out guard removed in A.16c · medical-other family CLOSED ·
+        # see `test_a16c_family_out_guard_was_removed_from_salute_tests`.
         # Benessere + Salute still enrolled (no accidental removal).
         self.assertIn("wellness", _SCHEMAS,
                       "Benessere enrollment must persist through lifecycle")
