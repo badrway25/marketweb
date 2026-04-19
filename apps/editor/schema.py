@@ -3849,6 +3849,235 @@ LUXE_FASHION_EDITORIAL_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# A.16 · clinic (Salute · salute-studio-medico) — OPENS the medical-other
+# family via staged dedicated-schema progression (extended to 3-phase
+# variant: A.16 Salute opener · A.16b Benessere · A.16c Famiglia closure).
+# First 3-template staged progression · guard-removal sub-recipe extended
+# to 2 removal phases (wellness-out removed in A.16b · family-out removed
+# in A.16c). Distinct skin folder (.cl-*) · 7 pages with 2 novel kinds
+# (prevention + appointment). Clinic-shape distinctives: 18 raw icon_svg
+# fields (OUT col-level · 5th OUT category precedent) · 2 form structures
+# (contatti.form_fields + prenota.form_fields + prenota.form_sections ·
+# Juris/Bottega/Luxe precedent) · 1 bool flag `prevenzione.packages.is_popular`
+# (OUT col-level · preserves customer editability of popular_label text
+# without adding bool field type · Luxe available precedent). Stringent
+# IN col-level: num + popular_label IN (editorial visible numbering +
+# badge · precedent chain Sapore→Brace→Bottega→Luxe→Salute). 15 image
+# surfaces all rendered (1 scalar + 14 image-in-dict-row cells).
+# ---------------------------------------------------------------------------
+SALUTE_CLINIC_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".cl-nav, .cl-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "poliambulatorio", "tagline", "chrome"],
+        "help": "Nome studio, iniziale crest, tagline, contatti (numero verde · email · indirizzo), orari sintetici, license sanitaria, label footer/contatti.",
+        "fields": [
+            ("site.logo_word",        {"label": "Nome studio", "type": "text", "max_length": 60,
+                                         "placeholder": "SaluteVita"}),
+            ("site.logo_initial",     {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",              {"label": "Tagline (nav + strip)", "type": "text", "max_length": 160}),
+            ("site.phone_label",      {"label": "Label · numero verde", "type": "text", "max_length": 60}),
+            ("site.phone",            {"label": "Numero telefono (display)", "type": "text", "max_length": 40}),
+            ("site.phone_tel",        {"label": "Numero telefono · tel: URL", "type": "text", "max_length": 40}),
+            ("site.email",            {"label": "Email", "type": "text", "max_length": 120}),
+            ("site.address",          {"label": "Indirizzo (una riga)", "type": "text", "max_length": 200}),
+            ("site.hours_compact",    {"label": "Orari sintetici", "type": "text", "max_length": 160}),
+            ("site.foot_extra_label", {"label": "Footer · titolo extra (es. 'Convenzioni')", "type": "text", "max_length": 60}),
+            ("site.license",          {"label": "Licenza / P.IVA / iscrizione registro", "type": "text", "max_length": 240}),
+            ("site.footer_intro",     {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".cl-hero",
+        "page": "home",
+        "keywords": ["hero", "headline", "eyebrow", "subhead", "cta", "trust"],
+        "help": "Primo scroll della home · eyebrow + headline + subhead + CTA primaria (Prenota) + CTA secondaria (Numero verde) + trust note.",
+        "fields": [
+            ("home.eyebrow",        {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("home.headline",       {"label": "Headline", "type": "richtext", "max_length": 220,
+                                       "help": "Consentiti i tag <em> per italici."}),
+            ("home.subhead",        {"label": "Subhead", "type": "textarea", "max_length": 500}),
+            ("home.primary_cta",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("home.primary_href",   {"label": "CTA primaria · destinazione", "type": "select",
+                                       "choices": ["home", "studio", "servizi", "prevenzione", "medici", "contatti", "prenota"]}),
+            ("home.secondary_cta",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 80}),
+            ("home.secondary_href", {"label": "CTA secondaria · destinazione", "type": "select",
+                                       "choices": ["home", "studio", "servizi", "prevenzione", "medici", "contatti", "prenota"]}),
+            ("home.trust_note",     {"label": "Trust note (sotto CTA)", "type": "text", "max_length": 160}),
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".cl-section",
+        "page": "home",
+        "keywords": ["specialties", "journey", "prevenzione", "team", "partners"],
+        "help": "Fasce copy della home: specialties · journey · prevenzione cards · team ribbon · partners. Le liste indexed si modificano dai gruppi indexed corrispondenti.",
+        "subgroups": [
+            {"label": "Specialties intestazione", "fields": [
+                ("home.specialties_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.specialties_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.specialties_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Journey intestazione", "fields": [
+                ("home.journey_label",        {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.journey_heading",      {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.journey_intro",        {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Prevenzione cards intestazione", "fields": [
+                ("home.prevenzione_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.prevenzione_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.prevenzione_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Team ribbon intestazione", "fields": [
+                ("home.team_label",           {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.team_heading",         {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.team_intro",           {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.team_footnote_prefix", {"label": "Footnote prefix", "type": "text", "max_length": 200}),
+                ("home.team_footnote_link",   {"label": "Footnote · link label", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Partners intestazione", "fields": [
+                ("home.partners_label",       {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.partners_heading",     {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+        ],
+    },
+    {
+        "id": "studio_page",
+        "label": "Pagina Studio (about)",
+        "icon": "bi-building",
+        "region": ".cl-studio, .cl-studio-hero, .cl-values, .cl-photo, .cl-timeline",
+        "page": "studio",
+        "keywords": ["studio", "about", "values", "photo", "timeline"],
+        "help": "Pagina about · hero · values intestazione · photo block (con scalar image rendered) · timeline intestazione. Values e timeline rows si modificano dai gruppi indexed corrispondenti.",
+        "fields": [
+            ("studio.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("studio.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("studio.intro",            {"label": "Intro", "type": "textarea", "max_length": 800}),
+            ("studio.values_label",     {"label": "Values · label", "type": "text", "max_length": 60}),
+            ("studio.values_heading",   {"label": "Values · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.photo_label",      {"label": "Photo · label", "type": "text", "max_length": 60}),
+            ("studio.photo_heading",    {"label": "Photo · titolo", "type": "richtext", "max_length": 220}),
+            ("studio.photo_body",       {"label": "Photo · paragrafo", "type": "textarea", "max_length": 600}),
+            ("studio.photo_caption",    {"label": "Photo · didascalia", "type": "text", "max_length": 200}),
+            ("studio.photo_src",        {"label": "Photo · URL (scalar rendered image)", "type": "image", "max_length": 400}),
+            ("studio.timeline_label",   {"label": "Timeline · label", "type": "text", "max_length": 60}),
+            ("studio.timeline_heading", {"label": "Timeline · titolo", "type": "richtext", "max_length": 220}),
+        ],
+    },
+    {
+        "id": "servizi_page",
+        "label": "Pagina Servizi",
+        "icon": "bi-clipboard-pulse",
+        "region": ".cl-servizi, .cl-servizi-hero, .cl-pricelist, .cl-faq",
+        "page": "servizi",
+        "keywords": ["servizi", "services", "prezzi", "faq", "price"],
+        "help": "Pagina servizi · hero · pricelist intestazione + label prezzo/CTA book · FAQ intestazione. Services e FAQs si modificano dai gruppi indexed (icon_svg + items OUT col-level).",
+        "fields": [
+            ("servizi.eyebrow",     {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("servizi.headline",    {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("servizi.intro",       {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("servizi.svc_label",   {"label": "Services · label", "type": "text", "max_length": 60}),
+            ("servizi.svc_heading", {"label": "Services · titolo", "type": "richtext", "max_length": 220}),
+            ("servizi.price_label", {"label": "Price · label (es. 'Prima visita')", "type": "text", "max_length": 60}),
+            ("servizi.book_cta",    {"label": "Book · CTA etichetta", "type": "text", "max_length": 60}),
+            ("servizi.faq_label",   {"label": "FAQ · label", "type": "text", "max_length": 60}),
+            ("servizi.faq_heading", {"label": "FAQ · titolo", "type": "richtext", "max_length": 220}),
+        ],
+    },
+    {
+        "id": "prevenzione_page",
+        "label": "Pagina Prevenzione (novel `prevention` kind)",
+        "icon": "bi-heart-pulse",
+        "region": ".cl-prevenzione, .cl-prevenzione-hero, .cl-packages, .cl-how",
+        "page": "prevenzione",
+        "keywords": ["prevenzione", "prevention", "check-up", "pacchetti"],
+        "help": "Pagina check-up prevenzione · hero · packages intestazione + label duration/exams · how_steps intestazione. Packages si modificano dal gruppo indexed (is_popular + includes OUT col-level).",
+        "fields": [
+            ("prevenzione.eyebrow",         {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("prevenzione.headline",        {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("prevenzione.intro",           {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("prevenzione.pack_label",      {"label": "Packages · label", "type": "text", "max_length": 60}),
+            ("prevenzione.pack_heading",    {"label": "Packages · titolo", "type": "richtext", "max_length": 220}),
+            ("prevenzione.duration_label",  {"label": "Duration · label", "type": "text", "max_length": 60}),
+            ("prevenzione.exams_label",     {"label": "Exams · label", "type": "text", "max_length": 60}),
+            ("prevenzione.how_label",       {"label": "How · label", "type": "text", "max_length": 60}),
+            ("prevenzione.how_heading",     {"label": "How · titolo", "type": "richtext", "max_length": 220}),
+        ],
+    },
+    {
+        "id": "medici_page",
+        "label": "Pagina Medici (team)",
+        "icon": "bi-people",
+        "region": ".cl-medici, .cl-medici-hero, .cl-doctors, .cl-footnote",
+        "page": "medici",
+        "keywords": ["medici", "team", "doctors", "specialisti"],
+        "help": "Pagina team · hero · book CTA · footnote. Doctor cards si modificano dal gruppo indexed (tags OUT col-level).",
+        "fields": [
+            ("medici.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("medici.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("medici.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("medici.book_cta",         {"label": "Book · CTA etichetta", "type": "text", "max_length": 80}),
+            ("medici.footnote_strong",  {"label": "Footnote · testo forte", "type": "text", "max_length": 200}),
+            ("medici.footnote_body",    {"label": "Footnote · paragrafo", "type": "textarea", "max_length": 500}),
+            ("medici.footnote_link",    {"label": "Footnote · link label", "type": "text", "max_length": 80}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-geo-alt",
+        "region": ".cl-contact, .cl-contact-hero, .cl-map, .cl-hours, .cl-access, .cl-form",
+        "page": "contatti",
+        "keywords": ["contatti", "mappa", "orari", "accesso", "form-labels"],
+        "help": "Pagina contatti · hero · map labels + caption · hours intestazione · form scalar labels (struttura form OUT · contatti.form_fields registry-only).",
+        "fields": [
+            ("contatti.eyebrow",       {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("contatti.headline",      {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",         {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("contatti.map_aria",      {"label": "Mappa · ARIA label", "type": "text", "max_length": 200}),
+            ("contatti.map_stamp",     {"label": "Mappa · stamp (caption)", "type": "text", "max_length": 160}),
+            ("contatti.address_label", {"label": "Address · label", "type": "text", "max_length": 60}),
+            ("contatti.email_label",   {"label": "Email · label", "type": "text", "max_length": 60}),
+            ("contatti.hours_heading", {"label": "Hours · titolo", "type": "text", "max_length": 120}),
+            ("contatti.form_title",    {"label": "Form · titolo", "type": "text", "max_length": 120}),
+            ("contatti.form_intro",    {"label": "Form · intro", "type": "textarea", "max_length": 400}),
+            ("contatti.consent",       {"label": "Form · consenso privacy", "type": "textarea", "max_length": 500}),
+            ("contatti.submit_label",  {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("contatti.form_note",     {"label": "Form · nota post-submit", "type": "textarea", "max_length": 300}),
+        ],
+    },
+    {
+        "id": "prenota_page",
+        "label": "Pagina Prenota (novel `appointment` kind)",
+        "icon": "bi-calendar-check",
+        "region": ".cl-prenota, .cl-prenota-hero, .cl-form, .cl-help, .cl-alt",
+        "page": "prenota",
+        "keywords": ["prenota", "appointment", "form", "help", "numero-verde"],
+        "help": "Pagina prenotazione · hero · form scalar labels (struttura form OUT · prenota.form_fields + prenota.form_sections registry-only) · help intestazione · alt block (numero verde). Help steps si modificano dal gruppo indexed.",
+        "fields": [
+            ("prenota.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("prenota.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("prenota.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("prenota.consent",          {"label": "Form · consenso privacy", "type": "textarea", "max_length": 500}),
+            ("prenota.submit_label",     {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("prenota.form_submit_note", {"label": "Form · nota post-submit", "type": "text", "max_length": 200}),
+            ("prenota.help_title",       {"label": "Help · titolo", "type": "text", "max_length": 160}),
+            ("prenota.alt_title",        {"label": "Alt block · titolo", "type": "text", "max_length": 160}),
+            ("prenota.alt_body",         {"label": "Alt block · paragrafo", "type": "textarea", "max_length": 500}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -7061,6 +7290,248 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # -----------------------------------------------------------------
+    # A.16 · Salute clinic. Sixteen indexed lists · tutti parent-level ·
+    # ZERO deep-path. Image-in-dict-row on 2 lists (home.team_ribbon_people ·
+    # medici.doctors = 14 image cells) · plus 1 scalar top-level
+    # `studio.photo_src` = 15 image surfaces total · ALL RENDERED (clinic
+    # skin renders all portraits · specialist-family precedent).
+    # Stringent IN col-level (editorial visible): num (journey/how/help
+    # steps) · popular_label (customer-facing badge text). Stringent
+    # OUT col-level: is_popular (bool flag · no type support · Luxe
+    # available precedent) · nested list-of-str (includes · items · tags ·
+    # Juris precedent) · raw icon_svg (new 5th OUT category · safety +
+    # poor UX for raw SVG XML editing).
+    # -----------------------------------------------------------------
+    "clinic": {
+        "home.stats": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Stats (3 celle hero)",
+            "icon": "bi-123",
+            "region": ".cl-stats",
+            "keywords": ["stats", "cifre", "hero"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 60}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "home.stats_strip": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Stats strip (4 celle)",
+            "icon": "bi-bar-chart",
+            "region": ".cl-stats-strip",
+            "keywords": ["stats", "cifre", "strip"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 60}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "home.specialties": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Specialties (8 reparti)",
+            "icon": "bi-grid",
+            "region": ".cl-specialties",
+            "keywords": ["specialties", "reparti", "specialità"],
+            "cols": [
+                ("title",      {"label": "Titolo reparto", "type": "text", "max_length": 120}),
+                ("blurb",      {"label": "Blurb", "type": "textarea", "max_length": 400}),
+                ("link_label", {"label": "Link · etichetta", "type": "text", "max_length": 60}),
+                # `icon_svg` col excluded (raw SVG XML · OUT per raw-SVG policy)
+            ],
+        },
+        "home.journey_steps": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Journey steps (4 passi)",
+            "icon": "bi-arrow-right-circle",
+            "region": ".cl-journey",
+            "keywords": ["journey", "percorso", "steps"],
+            "cols": [
+                ("num",   {"label": "Step ('01'/'02'/...)", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo step", "type": "text", "max_length": 160}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "home.prevenzione_cards": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Prevenzione cards (3 pacchetti)",
+            "icon": "bi-heart-pulse",
+            "region": ".cl-prev-cards",
+            "keywords": ["prevenzione", "cards", "pacchetti"],
+            "cols": [
+                ("eyebrow",         {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("title",           {"label": "Titolo pacchetto", "type": "text", "max_length": 160}),
+                ("desc",            {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+                ("duration_label",  {"label": "Duration · label", "type": "text", "max_length": 40}),
+                ("duration",        {"label": "Duration · valore", "type": "text", "max_length": 80}),
+                ("price_label",     {"label": "Price · label", "type": "text", "max_length": 60}),
+                ("price",           {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                ("cta",             {"label": "CTA etichetta", "type": "text", "max_length": 60}),
+                # `includes` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "home.team_ribbon_people": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Team ribbon (8 medici in home)",
+            "icon": "bi-person-circle",
+            "region": ".cl-team-ribbon",
+            "keywords": ["team", "ribbon", "medici", "home"],
+            "cols": [
+                ("name",      {"label": "Nome medico", "type": "text", "max_length": 120}),
+                ("specialty", {"label": "Specialità", "type": "text", "max_length": 120}),
+                ("avatar",    {"label": "Avatar · URL (rendered)", "type": "image", "max_length": 400}),
+            ],
+        },
+        "studio.values": {
+            "kind": "dict",
+            "page": "studio",
+            "label": "Studio · Values (4 valori)",
+            "icon": "bi-stars",
+            "region": ".cl-values",
+            "keywords": ["values", "valori", "studio"],
+            "cols": [
+                ("title", {"label": "Titolo valore", "type": "text", "max_length": 120}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "studio.timeline": {
+            "kind": "dict",
+            "page": "studio",
+            "label": "Studio · Timeline (4 tappe storiche)",
+            "icon": "bi-clock-history",
+            "region": ".cl-timeline",
+            "keywords": ["timeline", "storia", "tappe"],
+            "cols": [
+                ("year",  {"label": "Anno", "type": "text", "max_length": 40}),
+                ("title", {"label": "Titolo tappa", "type": "text", "max_length": 160}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "servizi.services": {
+            "kind": "dict",
+            "page": "servizi",
+            "label": "Servizi · Services (10 visite)",
+            "icon": "bi-clipboard-pulse",
+            "region": ".cl-services",
+            "keywords": ["servizi", "services", "visite"],
+            "cols": [
+                ("eyebrow", {"label": "Eyebrow (specialità)", "type": "text", "max_length": 80}),
+                ("title",   {"label": "Titolo visita", "type": "text", "max_length": 200}),
+                ("desc",    {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+                ("price",   {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                # `icon_svg` col excluded (raw SVG XML · OUT)
+                # `items` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "servizi.faqs": {
+            "kind": "tuple",
+            "page": "servizi",
+            "label": "Servizi · FAQs (3 domande)",
+            "icon": "bi-question-circle",
+            "region": ".cl-faq",
+            "keywords": ["faq", "domande"],
+            "tuple_order": ["q", "a"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 200}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 600}),
+            ],
+        },
+        "prevenzione.packages": {
+            "kind": "dict",
+            "page": "prevenzione",
+            "label": "Prevenzione · Packages (3 check-up)",
+            "icon": "bi-heart-pulse",
+            "region": ".cl-packages",
+            "keywords": ["packages", "check-up", "prevenzione"],
+            "cols": [
+                ("eyebrow",       {"label": "Eyebrow (fascia età)", "type": "text", "max_length": 80}),
+                ("title",         {"label": "Titolo pacchetto", "type": "text", "max_length": 160}),
+                ("desc",          {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+                ("price",         {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                ("price_meta",    {"label": "Prezzo · meta (es. 'tutto incluso')", "type": "text", "max_length": 80}),
+                ("duration",      {"label": "Durata", "type": "text", "max_length": 80}),
+                ("exams_count",   {"label": "Numero esami (display)", "type": "text", "max_length": 40}),
+                ("cta",           {"label": "CTA etichetta", "type": "text", "max_length": 60}),
+                ("popular_label", {"label": "Badge 'popular' etichetta", "type": "text", "max_length": 60}),
+                # `is_popular` col excluded (bool flag · Luxe available precedent · preserves popular_label editability)
+                # `includes` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "prevenzione.how_steps": {
+            "kind": "dict",
+            "page": "prevenzione",
+            "label": "Prevenzione · How steps (4 passi)",
+            "icon": "bi-arrow-right-circle",
+            "region": ".cl-how-steps",
+            "keywords": ["how", "steps", "passi"],
+            "cols": [
+                ("num",   {"label": "Step ('01'/'02'/...)", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo step", "type": "text", "max_length": 160}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "medici.doctors": {
+            "kind": "dict",
+            "page": "medici",
+            "label": "Medici · Doctors (6 specialisti)",
+            "icon": "bi-people",
+            "region": ".cl-doctors",
+            "keywords": ["medici", "doctors", "specialisti"],
+            "cols": [
+                ("name",        {"label": "Nome medico", "type": "text", "max_length": 120}),
+                ("role",        {"label": "Ruolo / specializzazione", "type": "text", "max_length": 200}),
+                ("credentials", {"label": "Credenziali / bio", "type": "textarea", "max_length": 800}),
+                ("portrait",    {"label": "Portrait · URL (rendered)", "type": "image", "max_length": 400}),
+                # `tags` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "contatti.hours_table": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Hours (4 righe)",
+            "icon": "bi-clock",
+            "region": ".cl-hours-table",
+            "keywords": ["hours", "orari"],
+            "tuple_order": ["day", "value"],
+            "cols": [
+                ("day",   {"label": "Giorno / range", "type": "text", "max_length": 120}),
+                ("value", {"label": "Orario", "type": "text", "max_length": 120}),
+            ],
+        },
+        "contatti.access": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Access (4 modalità)",
+            "icon": "bi-signpost",
+            "region": ".cl-access",
+            "keywords": ["access", "come-raggiungerci", "parcheggio"],
+            "cols": [
+                ("icon",  {"label": "Icon nome (Bootstrap icon · es. 'car')", "type": "text", "max_length": 40}),
+                ("title", {"label": "Titolo", "type": "text", "max_length": 120}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "prenota.help_steps": {
+            "kind": "dict",
+            "page": "prenota",
+            "label": "Prenota · Help steps (4 passi)",
+            "icon": "bi-info-circle",
+            "region": ".cl-help-steps",
+            "keywords": ["help", "steps", "passi"],
+            "cols": [
+                ("num",   {"label": "Step ('01'/'02'/...)", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo step", "type": "text", "max_length": 160}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+    },
 }
 
 
@@ -7161,6 +7632,22 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # badges) · id/available OUT (structural routing + commerce-state-
     # like boolean).
     "fashion-editorial":      ("luxe-fashion-store", "it"),
+    # A.16 · Salute (clinic) joins as 15th enrolled archetype — first
+    # template of the medical-other family. **Opens the family** via
+    # staged dedicated-schema progression extended to 3-phase variant
+    # (A.16 Salute opener · A.16b Benessere · A.16c Famiglia closer).
+    # First 3-template family to enroll · guard-removal sub-recipe
+    # extends to 2 removal phases (wellness-out removed in A.16b ·
+    # family-out removed in A.16c). Distinct skin folder (.cl-*) · 7
+    # pages with 2 novel kinds (prevention + appointment). 15 image
+    # surfaces all rendered (1 scalar + 14 image-in-dict-row cells ·
+    # specialist-precedent skin). Stringent IN col-level: num +
+    # popular_label IN (editorial visible numbering + badge text).
+    # Stringent OUT col-level: is_popular bool (Luxe available
+    # precedent) · nested list-of-str includes/items/tags (Juris
+    # precedent) · raw icon_svg fields (new 5th OUT category precedent ·
+    # safety + poor UX for raw SVG XML editing).
+    "clinic":                 ("salute-studio-medico", "it"),
 }
 
 
@@ -7236,6 +7723,17 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # Zero tocchi a apps/commerce · services.py · rendering.py · editor
     # shell — pure 3-file enrollment on the established surface.
     "fashion-editorial":      LUXE_FASHION_EDITORIAL_SCHEMA,
+    # A.16 · Salute — first-template enrollment of the medical-other
+    # family. Benessere (`wellness`) + Famiglia (`family`) stay OUT
+    # until A.16b + A.16c. First 3-template staged progression. Same
+    # shared-schema infeasibility as Bottega/Luxe ecommerce (content-
+    # tree overlap ~0% across all 3). Clinic has 2 novel page kinds
+    # (prevention + appointment). 18 raw icon_svg fields OUT col-level
+    # (5th OUT category precedent · safety + poor UX). 2 form structures
+    # OUT (contatti.form_fields + prenota.form_fields + form_sections ·
+    # Juris/Gusto/Bottega/Luxe precedent). Zero deep-path · zero tocchi
+    # a apps/commerce · services.py · rendering.py · editor shell.
+    "clinic":                 SALUTE_CLINIC_SCHEMA,
 }
 
 
@@ -7827,6 +8325,20 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # rendering.py · editor shell. Gated by
     # ``test_a15b_luxe_full_multilocale_lifecycle_end_to_end``.
     "fashion-editorial",
+    # A.16 · Salute (clinic · medical-other family · first template)
+    # joins editor + multi-locale in a single phase, OPENING the
+    # medical-other family. Benessere (`wellness`) + Famiglia (`family`)
+    # stay OUT of the gate until A.16b + A.16c. **First 3-template
+    # staged progression** — dual-out guard planted for both siblings ·
+    # guard-removal sub-recipe extends to 2 removal phases (wellness-out
+    # removed in A.16b via `test_a16b_benessere_out_guard_was_removed_from_salute_tests` ·
+    # family-out removed in A.16c via `test_a16c_family_out_guard_was_removed_from_salute_tests`).
+    # 15 image surfaces all rendered · 16 indexed list entries · zero
+    # deep-path. Novel contributions: raw icon_svg col-level OUT (5th
+    # OUT category precedent) · bool flag OUT (is_popular · preserves
+    # popular_label text editability). Gated by
+    # ``test_a16_salute_full_multilocale_lifecycle_end_to_end``.
+    "clinic",
 })
 
 
