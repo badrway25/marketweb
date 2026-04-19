@@ -1,5 +1,103 @@
 # Session Log
 
+## Session 71 — Phase A.15 · Bottega (artisan-workshop · ecommerce family · first template) Editor + Multi-locale Enrollment · OPENS ECOMMERCE FAMILY (2026-04-19)
+
+**Summary.** Thirteenth archetype enrolled in the editor: `artisan-workshop` (Bottega). Single-template phase — Bottega opens the ecommerce family via staged dedicated-schema progression (fourth staged opening after real-estate A.12 · portfolio A.13 · restaurant-continuation A.14). Luxe (`fashion-editorial`) stays OUT until A.15b. **13 archetype slugs enrolled · 13 multi-locale enrolled · 14 templates editable end-to-end.** Catalog 20/20 `published_live` unchanged.
+
+Two critical framings for this session:
+
+1. **Bottega enrollment is SHOWCASE / template-content editing, NOT commerce-admin editing.** The editor edits the presentational demo content in `template_content_bottega.py` (registry) · `apps/commerce/` (real catalog: Storefront/Product/Variant/Cart/Order/PaymentIntent · seller dashboard Phase 3a/3b) stays completely out-of-scope. Boundary runtime-verified Step 0: `apps/catalog/views.py::LiveTemplateView` does NOT import from `apps.commerce` · the two surfaces are ORTHOGONAL. The editor customer personalizes the template showcase (demo product cards · hero copy · journal entries); the seller customer manages the real storefront catalog via seller dashboard. Zero cross-contamination by design.
+
+2. **22 image widgets in sidebar = 16 rendered + 6 storage-only is INTENTIONAL, not a bug.** Bottega's `.aw-*` skin was converted to typographic-first in Session 42 D-073 (DNA-honest artisan-workshop treatment: no portrait photos; crest-mark glyphs + monogram stamps). The 6 storage-only image fields (`product.artisan_portrait` · `atelier.founder_portrait` · `home.makers.{0..3}.portrait`) stay EXPOSED in the editor sidebar because the registry data is preserved for future skin variants / customer swap. The 16 rendered fields (`home.latest_items.{0..3}.image` · `shop.products.{0..8}.image` · `product.related_items.{0..2}.image`) are product-thumbnail dict-row cells the skin actually paints via `background-image:url('{{ x.image }}')`. Storage contract (plain-key per-locale) is blindato identical for both categories; only VISIBILITY differs per skin rendering.
+
+### Context initial post-A.14b
+
+Baseline entering Session 71 was `7b365bb` (post-A.14b Brace closed restaurant-continuation; 12 archetypes enrolled). Ecommerce pending as next family-closure candidate · no workstream prescribed.
+
+### Bottega-only scope decision
+
+Step-0 audit confirmed shared-schema IMPOSSIBILE with Luxe: 50% page-slug overlap (home/product/contatti shared; shop/journal vs collection/lookbook diverge), `shop.products` 11 cols vs `collezione.products` 9 cols (different editorial surfaces), image surface ratio 1:1.4 (Bottega 22 vs Luxe 31), journal editorial notes vs lookbook image gallery completely different. Staged dedicated-schema progression (Bottega A.15 + Luxe A.15b) is the correct topology · fourth consecutive application of the staged pattern · mirror of real-estate · portfolio · restaurant-continuation. Bottega-first chosen over Luxe-first because: simpler shape (10 lists-of-dict vs 12 · 22 image surfaces vs 31), outside-gate fixture already at Bottega post-A.14b (continuity), `.aw-*` skin RTL more mature (31 rules vs Luxe 21), typographic-first DNA translates cleaner to schema (fewer image-in-dict-row lists than Luxe's 6).
+
+### Step 0 · Planning / audit findings chiave
+
+- Archetype slug `artisan-workshop` · skin `ecommerce/artisan-workshop/` · CSS **`.aw-*`** (97 hits) · 31 mature `html[dir="rtl"]` rules · `_base.html` 541 LOC
+- 6 pages: home · **shop** (novel) · **product** (novel) · atelier (about) · **journal** (novel) · contatti — **3 novel page kinds** · plain string identifiers · no view dispatch
+- 5-locale parity PERFETTA (236 keys × 5 locales · zero gaps)
+- **`apps/catalog/views.py::LiveTemplateView` has ZERO imports from `apps.commerce`** · boundary runtime-verified
+- **Template_content registry** renders `/templates/ecommerce/bottega-shop-artigianale/preview/<page>/` · **NOT apps.commerce** · real catalog lives at `/shop/...` and is separate
+- Image surface runtime-verified: 22 editable surfaces (0 scalar top-level · 2 nested-dict scalar · 20 image cells across 4 image-in-dict-row lists)
+- 10 lists-of-dict (4 with image col · 0 deep-path · pure parent-level registration)
+- 6 lists-of-tuple · 8 flat list-of-str (all OUT for policy) · 1 form structure (`contatti.form_fields` OUT)
+- **Posts list empty** (same as Sapore · Brace · structural absence · detail-page policy stays at 6-archetype uniform enforcement)
+- **Stringent IN/OUT call on "technical-looking" cols** per user Step 1 guidance: `n`/`edition`/`icon`/`tag` all classified **IN** (editorial visible: 'N° 042'/'3 / 8'/'Esaurito'/'01'/'TOP'); `id`/`available` classified **OUT** (structural slug + bool flag). Documented in-file and in dedicated contract test.
+
+### Step 1 · Schema + bridge + gate + contract tests
+
+- `BOTTEGA_ARTISAN_WORKSHOP_SCHEMA` added in `apps/editor/schema.py` — 8 sidebar groups · 141 scalar fields.
+- `STRUCTURED_FIELD_SHAPES["artisan-workshop"]` with **14 entries · tutti parent · ZERO deep-path** (Bottega has no list-nested-in-list-parent · simpler than Sapore/Brace).
+- Image-in-dict-row lists (4): `home.latest_items[].image` × 4 · `home.makers[].portrait` × 4 · `shop.products[].image` × 9 · `product.related_items[].image` × 3 = 20 image cells.
+- Nested-dict scalar images (2): `product.artisan_portrait` · `atelier.founder_portrait` (Chiara `studio.founder.image` precedent shape).
+- 3 gate registrations simultanee · `_ARCHETYPE_BASELINE_TEMPLATE["artisan-workshop"] = ("bottega-shop-artigianale", "it")` + `_ARCHETYPE_SCHEMAS["artisan-workshop"] = BOTTEGA_ARTISAN_WORKSHOP_SCHEMA` + `"artisan-workshop"` in `_MULTILOCALE_ENABLED_ARCHETYPES`.
+- **Col-level exclusions** (structural): `shop.products[].id` + `.available` · `home.latest_items[].id` · `product.related_items[].id`.
+- **Complex-shape exclusion** (flat list-of-str + form + nested): `site.hours_footer_rows` · `site.stockists_rows` · `home.press_items` · `shop.filter_groups` + `.0.options` · `shop.sort_options` · `product.gallery` · `product.size_options` · `contatti.card_hours_rows` · `contatti.form_fields` · `pages` · `posts` (empty).
+- 3 atomic fixes on `templates/live_templates/ecommerce/artisan-workshop/_base.html`: title `site.logo_word` · body `mw-is-editor-preview` guard · `.aw-*` CSS guard block · preview-bridge.js conditional.
+- **Luxe-out guard dual layer** in `test_a15_bottega_archetype_registered` (registration-time + runtime via lifecycle end-of-test check).
+- **Outside-gate fixture rotation** (6 location): `artisan-workshop`/`bottega-shop-artigianale` → `fashion-editorial`/`luxe-fashion-store` (A.15b pending candidate).
+- 13 new A.15 contract tests incl. **`test_a15_bottega_visible_catalog_fields_kept_in`** (stringent IN call on n/edition/icon/tag · audit-driven · NOT-for-inertia) + **`test_a15_bottega_commerce_admin_boundary`** (light smoke check: no editor paths reference `apps.commerce` model namespaces like `storefront.`/`cart.`/`variant.`/`order.`/`payment_intent.`).
+- **Schema LOC delta +585** · **sotto 600 soft guardrail** (lighter than initial estimate 650 · 14 entries without deep-path = leaner than Brace +826 and Sapore +663).
+- Commit `cff68a1` · `feat: add artisan-workshop archetype editor schema` · 3 files · +1018 / −28.
+
+### Step 2 · Lifecycle HTTP end-to-end
+
+- `test_a15_bottega_full_multilocale_lifecycle_end_to_end` cross-cutting · 11 phases · exercises FIVE image overrides (3 rendered + 2 storage-only) to blindare ALL distinct patterns:
+  1. Perimeter invariants at TEST START (Bottega in · Luxe out on both gates · leak check duro)
+  2. 3 autosaves IT/EN/FR on `home.headline` → `@<locale>:home.headline` × 3
+  3. Global `site.logo_word` via EN → plain-keyed (explicit `assertNotIn("@en:")`)
+  4. Nested-dict scalar image `product.artisan_portrait` (storage blindatura · not rendered in typographic skin) → 5× `assertNotIn`
+  5. Image-in-dict-row `shop.products.0.image` → 5× `assertNotIn` + render on public shop page all 5 locales
+  6. Image-in-dict-row `home.makers.0.portrait` (storage blindatura · not rendered) → 5× `assertNotIn`
+  7. Image-in-dict-row `home.latest_items.0.image` (second list shape · rendered) → 5× `assertNotIn` + render on public home page all 5 locales
+  8. Image-in-dict-row `product.related_items.0.image` (third list shape · rendered) → 5× `assertNotIn` + render on public product page all 5 locales
+  9. Publish · 5-locale public preview on home/shop/product (3 pages) · AR `<html dir="rtl" lang="ar">` on `.aw-*`
+  10. Owner reopen per locale · prefill + universals
+  11. End-of-test · Luxe out at both gates (leak check duro 2x) · 12 pre-A.15 still enrolled · 14 rejected paths (sensitive OUT · col-level + complex-shape)
+- Commit `7764f40` · `test: lock artisan-workshop lifecycle end to end` · 1 file · +421 LOC · zero production-code touches.
+- **In-flight adjustment documented**: during first test run, `home.makers.0.portrait` visibility assertion failed because the typographic-first skin paints a crest-mark glyph, not the portrait URL. Per user Step 2 guidance ("tenuto coerente il comportamento reale"), storage blindatura kept identical (5× `assertNotIn`) and visibility check pivoted to `home.latest_items.0.image` (different list shape · rendered). The storage-only classification is intentional: registry data preserved, skin doesn't paint.
+
+### Step 3 · Browser walk (Playwright · 5-locale · real browser)
+
+Playwright walk on fresh Bottega draft · all checks green:
+- Editor mount `?lang=it` · 5 pills · "Lingua attiva" label · IT active
+- **22 image widgets** · distinzione netta: **16 rendered** (`home.latest_items.{0..3}.image` × 4 + `shop.products.{0..8}.image` × 9 + `product.related_items.{0..2}.image` × 3) + **6 storage-only** (`product.artisan_portrait` + `atelier.founder_portrait` + `home.makers.{0..3}.portrait`). Zero unclassified.
+- **11 out-of-perimeter prefixes assenti** dal sidebar (`site.hours_footer_rows` · `site.stockists_rows` · `home.press_items` · `shop.filter_groups` · `shop.sort_options` · `product.gallery` · `product.size_options` · `contatti.card_hours_rows` · `contatti.form_fields` · `pages` · `posts` · tutti 0 hits)
+- **4 col-level OUT assenti** dal sidebar (`shop.products.0.id` · `.available` · `home.latest_items.0.id` · `product.related_items.0.id`)
+- Flush-before-switch verified IT→EN→FR→ES→AR · EN prefill "One-of-a-kind pieces stitched, thrown and woven..." · FR prefill "Des pièces uniques cousues, tournées et tissées..." · ES prefill "Piezas únicas cosidas, torneadas y tejidas..." · zero walk-text leak cross-locale
+- 5 image overrides persistiti · 4 rendered verified visibili in sidebar + iframe
+- AR iframe `<html lang="ar" dir="rtl">` on `.aw-*` skin · 6 `.aw-nav/.aw-foot/.aw-section` hits · title `"A15 Bottega Walk Brand — الورشة"`
+- Publish via `services.publish_project`
+- Second-user public preview 5 locali su home/shop/product · all 200 · 3 rendered image overrides visibili universalmente in tutti 5 locali · ES/AR authored fallback su translatable text · universals (logo + 3 image) preservati
+
+### Outcome
+
+- **Ecommerce family OPEN** via staged dedicated-schema first step (Bottega A.15 · Luxe A.15b pending). Fourth consecutive staged opening after real-estate · portfolio · restaurant-continuation.
+- **Boundary editor-vs-commerce-admin runtime-confirmed pulito**: editor enrollment touches ONLY template_content registry · `apps/commerce` state managed separately via seller dashboard · zero cross-reference · zero test coupling · zero URL overlap.
+- **Rendered vs storage-only image distinction validated**: 16 rendered (paint visible) + 6 storage-only (registry-preserved, skin-typographic-converted) · NOT a bug · intentional result of Session 42 D-073 DNA-honest conversion · editor contract blindato identical for both.
+- **Stringent IN/OUT on "technical-looking" fields** paid off: `n`/`edition`/`icon` kept IN (editorial visible · customer-facing badges · same category as Sapore forno.pizza_signatures.n roman numeral counter) · `id`/`available` OUT (truly structural) · documented in-file + contract test.
+- Bottega is 13th archetype enrolled · 14 templates editable · 5 families closed + 1 half-open (ecommerce) + 3 aperte residue.
+- Zero new binding decisions · D-096 / D-097 / D-098 unchanged. Only operational clarification added to D-098 for Session 71.
+- Acceptance gates post-merge: `python manage.py check` 0 issues · `python manage.py test apps` 280/280 PASS · `python smoke_full.py` 834/834 routes HTTP 200.
+- Baseline `phase-integration-baseline-v15` tip: **`fab3ebc`** (A.15 merge), pushed to `origin/phase-integration-baseline-v15`.
+
+### Blockers
+
+**None.** No explicitly-deferred debt is pending.
+
+### Exact next step
+
+A.15 opens a family; it does not close one. Top candidate is **A.15b Luxe (`fashion-editorial`)** · closes ecommerce family · fourth consecutive staged closure after real-estate · portfolio · restaurant-continuation. Luxe has heavier shape than Bottega (12 lists-of-dict vs 10 · 6 image-in-dict-row lists vs 4 · 31 image surfaces vs 22 · lookbook adds image-heavy editorial band) but **no new infrastructure needed** · full mechanical-reuse of A.15 Bottega recipe. Alternatives: medical-other (3 separate phases) · Aura individual · Elevate individual · MEMORY.md maintenance mini-phase (separate, not bundled). MEMORY.md index now ~32KB sopra warning-soglia 24.4KB.
+
+---
+
 ## Session 70 — Phase A.14b · Brace (street-modern · restaurant-continuation family · second template) Editor + Multi-locale Enrollment · CLOSES RESTAURANT-CONTINUATION FAMILY (2026-04-19)
 
 **Summary.** Twelfth archetype enrolled in the editor: `street-modern` (Brace). Single-template phase — Brace is the restaurant-continuation family's second archetype, completing the staged dedicated-schema progression opened in A.14 by Sapore (`trattoria-warm`). **Fifth family editor-complete** (law · medical-specialist · real-estate · portfolio · restaurant-continuation). Staged dedicated-schema closure topology now with **3 real precedents** (all closed): real-estate (A.12+A.12b) · portfolio (A.13+A.13b) · **restaurant-continuation (A.14+A.14b)**.
