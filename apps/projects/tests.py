@@ -22,6 +22,49 @@ from apps.projects.models import CustomerProject, ProjectContent
 User = get_user_model()
 
 
+# ---------------------------------------------------------------------------
+# A.17b · Outside-gate retirement sentinel.
+#
+# Pre-A.17b, the "outside-gate" tests — i.e. the assertions that
+# ``is_supported_archetype()`` / ``is_translatable()`` / ``supported_
+# locales()`` reject non-enrolled archetypes — used a real unenrolled
+# archetype slug as reference (rotated across 7 precedents from
+# A.13 to A.17).
+#
+# A.17b enrolls Elevate (``startup-saas-landing``) as the 18th and
+# LAST archetype, bringing the catalog to 20/20 editable · 9/9 families
+# closed · zero non-enrolled archetypes remaining. The real-archetype
+# outside-gate fixture therefore runs out of candidates.
+#
+# **Retirement strategy · Strategy A hybrid** (decided in A.17b Step 0):
+#   1. **Archetype-level negative-path tests** use this synthetic
+#      sentinel string. The helper functions in ``apps.editor.schema``
+#      accept arbitrary strings and return False/[] independently of
+#      whether the string maps to a real catalog archetype — which
+#      IS the negative-path contract. Using an explicitly synthetic
+#      string removes any ambiguity with future catalog additions
+#      and preserves the "helper rejects unknown input" invariant.
+#   2. **Template-level tests** (those that required a real
+#      WebTemplate row with an unsupported archetype) are either
+#      converted into positive-registry assertions
+#      (``test_every_enrolled_archetype_creates_project``) or
+#      deleted when made redundant by the catalog closure
+#      (``test_customize_start_unsupported_archetype_redirects_to_
+#      detail`` · redundant with the unknown-template redirect
+#      test which still covers the missing-template bounce).
+#   3. The sentinel is **NEVER** registered in any real catalog
+#      fixture (seed_categories / seed_templates / DB row). It is a
+#      pure runtime string passed only to the archetype-lookup
+#      helpers.
+#
+# Binding invariant verified by
+# ``test_a17b_outside_gate_retirement_sentinel_strategy``:
+# the sentinel must NOT match any real archetype slug in the
+# DNA registry or the editor ``_ARCHETYPE_SCHEMAS`` / `_MULTILOCALE_
+# ENABLED_ARCHETYPES` gates.
+_OUTSIDE_GATE_SENTINEL = "__unsupported_archetype_sentinel__"
+
+
 def _seed_catalog():
     call_command("seed_categories", verbosity=0)
     call_command("seed_templates", verbosity=0)
@@ -44,21 +87,43 @@ class FoundationModelTests(TestCase):
         self.assertIsNotNone(p.tokens)
         self.assertEqual(p.revisions.count(), 1)
 
-    def test_unsupported_archetype_raises(self):
-        # `startup-saas-landing` (Elevate) has not been enrolled in
-        # _ARCHETYPE_SCHEMAS yet — Elevate still hits the
-        # UnsupportedTemplate guard. A.17 rotated the outside-gate
-        # reference from Aura (agency-digital-studio · now enrolled ·
-        # CLOSES agency-secondary family) to Elevate (startup-saas-
-        # landing · still out). Elevate is the LAST non-enrolled
-        # archetype — A.17b will close startup-saas family with a
-        # single-template phase and retire this gate altogether.
-        # Swap this slug when `startup-saas-landing` receives editor
-        # support (or migrate this test to a null-slug sentinel once
-        # the catalog reaches 20/20 enrolled).
-        elevate = WebTemplate.objects.get(slug="elevate-startup-landing")
-        with self.assertRaises(services.UnsupportedTemplate):
-            services.create_project_from_template(owner=self.owner, template=elevate)
+    def test_every_enrolled_archetype_creates_project(self):
+        """A.17b: post-catalog-closure positive reframing of the former
+        ``test_unsupported_archetype_raises``.
+
+        Pre-A.17b this test picked a real archetype that had NOT yet
+        been enrolled (Aura A.17 → Elevate A.17b) and asserted that
+        ``create_project_from_template`` raised ``UnsupportedTemplate``.
+        Post-A.17b no archetype remains outside the gate — the negative
+        path is preserved by the synthetic sentinel tests below (see
+        ``test_a17b_outside_gate_retirement_sentinel_strategy``).
+
+        This test flips the perspective: every archetype registered in
+        the editor schema + multi-locale gate must successfully create
+        a project when fed its baseline template. Zero registration
+        missing · zero archetype half-enrolled. This is the positive
+        counterpart that makes the outside-gate retirement safe.
+        """
+        from apps.editor.schema import (
+            _ARCHETYPE_BASELINE_TEMPLATE,
+            _ARCHETYPE_SCHEMAS,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        # Every archetype in _ARCHETYPE_SCHEMAS must also be in
+        # _ARCHETYPE_BASELINE_TEMPLATE + _MULTILOCALE_ENABLED_ARCHETYPES
+        # · uniform enrollment contract.
+        for arc in _ARCHETYPE_SCHEMAS:
+            self.assertIn(arc, _ARCHETYPE_BASELINE_TEMPLATE,
+                          f"{arc} missing from _ARCHETYPE_BASELINE_TEMPLATE")
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} missing from _MULTILOCALE_ENABLED_ARCHETYPES")
+            slug, locale = _ARCHETYPE_BASELINE_TEMPLATE[arc]
+            tpl = WebTemplate.objects.get(slug=slug)
+            p = services.create_project_from_template(owner=self.owner, template=tpl)
+            self.assertEqual(p.source_archetype, arc,
+                             f"{arc} baseline template created project with wrong archetype")
+            self.assertIsNotNone(p.tokens)
+            self.assertEqual(p.revisions.count(), 1)
 
     def test_schema_locks_non_whitelisted_keys(self):
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
@@ -1400,10 +1465,13 @@ class FoundationModelTests(TestCase):
         self.assertTrue(is_supported_archetype("corporate-suite"))
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
         # Sanity — an unsupported archetype still rejects.
-        # `startup-saas-landing` (Elevate) is the current outside-gate
-        # reference (A.17 rotated it from `agency-digital-studio`/Aura
-        # which is now enrolled · CLOSES agency-secondary family).
-        self.assertFalse(is_supported_archetype("startup-saas-landing"))
+        # A.17b: post-catalog-closure the outside-gate reference is
+        # the synthetic ``__unsupported_archetype_sentinel__`` · no
+        # real non-enrolled archetype remains (20/20 editable · 9/9
+        # families closed). See the module-level ``_OUTSIDE_GATE_
+        # SENTINEL`` docstring for the full retirement-strategy
+        # rationale.
+        self.assertFalse(is_supported_archetype(_OUTSIDE_GATE_SENTINEL))
 
     def test_a6_pragma_schema_shape_covers_core_pages(self):
         """The Pragma schema must surface groups for every customer-
@@ -1638,11 +1706,11 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Archetype outside the gate still returns False + empty list.
-        # `startup-saas-landing` (Elevate) is the current outside-gate
-        # reference (A.17 rotated it from `agency-digital-studio`/Aura
-        # which is now enrolled · CLOSES agency-secondary family).
-        self.assertFalse(is_translatable("startup-saas-landing", "home.headline"))
-        self.assertEqual(supported_locales("startup-saas-landing"), [])
+        # A.17b: post-catalog-closure the outside-gate reference is
+        # the synthetic ``_OUTSIDE_GATE_SENTINEL`` · no real non-
+        # enrolled archetype remains.
+        self.assertFalse(is_translatable(_OUTSIDE_GATE_SENTINEL, "home.headline"))
+        self.assertEqual(supported_locales(_OUTSIDE_GATE_SENTINEL), [])
 
     # ------------------------------------------------------------------
     # A.8 · Gusto fine-dining enrollment — Step 1 contract
@@ -4246,10 +4314,10 @@ class FoundationModelTests(TestCase):
             supported_locales("trattoria-warm"),
             ["it", "en", "fr", "es", "ar"],
         )
-        # Outside-gate reference: startup-saas-landing (Elevate) after
-        # A.17 rotated it from agency-digital-studio/Aura (now enrolled
-        # · CLOSES agency-secondary family).
-        self.assertEqual(supported_locales("startup-saas-landing"), [])
+        # A.17b: post-catalog-closure the outside-gate reference is
+        # the synthetic ``_OUTSIDE_GATE_SENTINEL`` · no real non-
+        # enrolled archetype remains.
+        self.assertEqual(supported_locales(_OUTSIDE_GATE_SENTINEL), [])
 
     def test_a14_tenfold_regression_after_sapore_joins(self):
         """Regression guard: the 10 pre-A.14 archetype classifications
@@ -6970,27 +7038,44 @@ class FoundationModelTests(TestCase):
             self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
                           f"{arc} must stay in multi-locale gate after A.17")
 
-    def test_a17_aura_out_guard_was_removed_from_prior_tests(self):
-        """A.17 rotates the outside-gate fixture from `agency-digital-
-        studio`/Aura (now enrolled · CLOSES agency-secondary family) to
-        `startup-saas-landing`/Elevate (LAST non-enrolled archetype ·
-        will close with A.17b). Verifies the 7 rotated call-sites no
-        longer name Aura as outside-gate (7th precedent of guard removal
-        pattern · extends 6-precedent chain from A.16c).
+    def test_a17b_elevate_enrollment_and_outside_gate_retirement(self):
+        """A.17b enrolls Elevate (startup-saas-landing · LAST non-
+        enrolled archetype) AND retires the outside-gate pattern via
+        synthetic archetype sentinel (Strategy A hybrid).
+
+        Renamed from ``test_a17_aura_out_guard_was_removed_from_prior_
+        tests`` since A.17 already rotated the fixture from Aura to
+        Elevate · A.17b closes the chain with program-level closure
+        (20/20 editable · 9/9 families closed · zero non-enrolled
+        archetypes) + retirement.
+
+        Contract:
+        - Aura stays IN (A.17 enrollment preserved)
+        - **Elevate joins IN** (A.17b enrollment)
+        - ``_OUTSIDE_GATE_SENTINEL`` stays OUT (helper-level negative
+          path preserved via synthetic string)
         """
         from apps.editor.schema import is_supported_archetype, is_translatable, supported_locales
-        # Aura must be IN after A.17.
+        # Aura (A.17 enrollment) still IN.
         self.assertTrue(is_supported_archetype("agency-digital-studio"),
-                        "Aura must be enrolled after A.17 closer")
+                        "Aura must stay enrolled after A.17b")
         self.assertTrue(is_translatable("agency-digital-studio", "home.headline"))
         self.assertEqual(
             supported_locales("agency-digital-studio"),
             ["it", "en", "fr", "es", "ar"],
         )
-        # Elevate is the new outside-gate reference.
-        self.assertFalse(is_supported_archetype("startup-saas-landing"))
-        self.assertFalse(is_translatable("startup-saas-landing", "home.headline"))
-        self.assertEqual(supported_locales("startup-saas-landing"), [])
+        # **Elevate (A.17b enrollment) now IN** · no longer outside-gate.
+        self.assertTrue(is_supported_archetype("startup-saas-landing"),
+                        "Elevate must be enrolled after A.17b closer · catalog 20/20")
+        self.assertTrue(is_translatable("startup-saas-landing", "home.headline"))
+        self.assertEqual(
+            supported_locales("startup-saas-landing"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Synthetic sentinel is the new outside-gate reference · stays OUT.
+        self.assertFalse(is_supported_archetype(_OUTSIDE_GATE_SENTINEL))
+        self.assertFalse(is_translatable(_OUTSIDE_GATE_SENTINEL, "home.headline"))
+        self.assertEqual(supported_locales(_OUTSIDE_GATE_SENTINEL), [])
 
     def test_a17_agency_secondary_family_closed(self):
         """A.17 CLOSES agency-secondary family with a single phase ·
@@ -7320,10 +7405,9 @@ class FoundationModelTests(TestCase):
             supported_locales("agency-digital-studio"),
             ["it", "en", "fr", "es", "ar"],
         )
-        # Outside-gate reference: startup-saas-landing (Elevate)
-        # after A.17 rotated it from agency-digital-studio/Aura
-        # (now enrolled · CLOSES agency-secondary family).
-        self.assertEqual(supported_locales("startup-saas-landing"), [])
+        # A.17b: synthetic sentinel replaces real outside-gate template
+        # (post-catalog-closure · no real non-enrolled archetype remains).
+        self.assertEqual(supported_locales(_OUTSIDE_GATE_SENTINEL), [])
 
     def test_a17_seventeenfold_regression_after_aura_joins(self):
         """Enrolling Aura must not affect the pre-A.17 17 archetypes.
@@ -7444,6 +7528,594 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A17 Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.17b · Elevate (startup-saas-landing · startup-saas family ·
+    # SINGLE-TEMPLATE CLOSER · CLOSES the editor enrollment program)
+    # enrollment — Step 1 contract. **CLOSES the editor enrollment
+    # program** · post-A.17b catalog 20/20 editable · 9/9 families
+    # closed · zero non-enrolled archetypes. 2nd single-template
+    # dedicated-schema precedent after A.17 Aura. Outside-gate pattern
+    # RETIRED via synthetic archetype sentinel (Strategy A hybrid ·
+    # see ``_OUTSIDE_GATE_SENTINEL`` module docstring).
+    # ------------------------------------------------------------------
+
+    def test_a17b_elevate_archetype_registered(self):
+        """`startup-saas-landing` joins the supported-archetype registry
+        and the multi-locale gate. All 18 pre-A.17b archetypes must
+        still be enrolled (eighteen-fold regression)."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+            is_supported_archetype,
+            supported_locales,
+        )
+        self.assertIn("startup-saas-landing", _ARCHETYPE_SCHEMAS)
+        self.assertIn("startup-saas-landing", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("startup-saas-landing"))
+        self.assertEqual(
+            supported_locales("startup-saas-landing"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # 18 pre-A.17b archetypes still enrolled.
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop", "fashion-editorial",
+            "clinic", "wellness", "family",
+            "agency-digital-studio",
+        ):
+            self.assertIn(arc, _ARCHETYPE_SCHEMAS,
+                          f"{arc} must stay enrolled after A.17b Elevate joins")
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} must stay in multi-locale gate after A.17b")
+
+    def test_a17b_outside_gate_retirement_sentinel_strategy(self):
+        """**A.17b RETIREMENT-CONTRACT TEST · Strategy A hybrid**.
+
+        Post-A.17b no real archetype remains non-enrolled (20/20
+        catalog editable · 9/9 families closed). The outside-gate
+        pattern is retired via synthetic archetype sentinel
+        ``_OUTSIDE_GATE_SENTINEL``. This test blindates the sentinel
+        contract:
+
+        (a) sentinel must NOT match any real archetype slug in
+            _ARCHETYPE_SCHEMAS or _MULTILOCALE_ENABLED_ARCHETYPES
+            (so it can never accidentally become a real archetype)
+        (b) all 3 archetype-lookup helpers return the negative path
+            for the sentinel (is_supported_archetype=False ·
+            is_translatable=False · supported_locales=[])
+        (c) sentinel passed to validate_key_path raises
+            InvalidEditableField (schema returns None · no registration)
+        """
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+            InvalidEditableField,
+            is_supported_archetype,
+            is_translatable,
+            supported_locales,
+            validate_key_path,
+        )
+        # (a) sentinel is NOT a real archetype.
+        self.assertNotIn(_OUTSIDE_GATE_SENTINEL, _ARCHETYPE_SCHEMAS,
+                         "sentinel must never appear in _ARCHETYPE_SCHEMAS")
+        self.assertNotIn(_OUTSIDE_GATE_SENTINEL, _MULTILOCALE_ENABLED_ARCHETYPES,
+                         "sentinel must never appear in _MULTILOCALE_ENABLED_ARCHETYPES")
+        # Sentinel string carries a double-underscore prefix/suffix to
+        # make it unambiguously synthetic (unlikely collision with any
+        # future real archetype slug, which follow kebab-case).
+        self.assertTrue(_OUTSIDE_GATE_SENTINEL.startswith("__"))
+        self.assertTrue(_OUTSIDE_GATE_SENTINEL.endswith("__"))
+        self.assertNotIn("-", _OUTSIDE_GATE_SENTINEL,
+                         "sentinel must not use kebab-case (real archetypes do)")
+        # (b) helper-level negative path.
+        self.assertFalse(is_supported_archetype(_OUTSIDE_GATE_SENTINEL))
+        self.assertFalse(is_translatable(_OUTSIDE_GATE_SENTINEL, "home.headline"))
+        self.assertEqual(supported_locales(_OUTSIDE_GATE_SENTINEL), [])
+        # (c) validate_key_path rejects any path on sentinel.
+        for path in ("home.headline", "site.logo_word", "anything"):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"sentinel + {path!r} must raise InvalidEditableField",
+            ):
+                validate_key_path(_OUTSIDE_GATE_SENTINEL, path)
+
+    def test_a17b_all_archetypes_enrolled_catalog_complete(self):
+        """**A.17b FINAL-PROGRAM-CLOSURE GUARDRAIL**.
+
+        Post-A.17b contract: every archetype in the DNA registry
+        MUST be enrolled in the editor gate. No archetype remains
+        outside the gate · catalog 20/20 editable · 9/9 families
+        closed. This test locks the program closure.
+
+        If a future phase adds a NEW archetype to the DNA registry
+        without enrolling it, this test fires — forcing explicit
+        re-opening of the program (with a planning phase) rather
+        than silent drift.
+        """
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        from apps.catalog.template_dna import TEMPLATE_DNA
+        dna_archetypes = {dna["archetype"] for dna in TEMPLATE_DNA.values()
+                          if dna.get("archetype")}
+        enrolled = set(_ARCHETYPE_SCHEMAS.keys())
+        missing = dna_archetypes - enrolled
+        self.assertEqual(
+            missing, set(),
+            f"A.17b closes the enrollment program. "
+            f"Archetypes {missing!r} appear in DNA registry but NOT "
+            f"in _ARCHETYPE_SCHEMAS. Either enroll them via a new "
+            f"planning phase (A.18+) OR remove them from DNA registry. "
+            f"Do NOT silently drift."
+        )
+        # Multi-locale gate uniform with schemas gate.
+        self.assertEqual(
+            enrolled, set(_MULTILOCALE_ENABLED_ARCHETYPES),
+            "_ARCHETYPE_SCHEMAS and _MULTILOCALE_ENABLED_ARCHETYPES "
+            "must have identical keysets · every enrolled archetype is "
+            "also multi-locale enabled (D-098 binding)."
+        )
+        # Baseline template registry covers all enrolled archetypes.
+        from apps.editor.schema import _ARCHETYPE_BASELINE_TEMPLATE
+        self.assertEqual(
+            enrolled, set(_ARCHETYPE_BASELINE_TEMPLATE.keys()),
+            "_ARCHETYPE_BASELINE_TEMPLATE must map every enrolled archetype"
+        )
+
+    def test_a17b_startup_saas_family_closed(self):
+        """A.17b CLOSES startup-saas family · 2nd single-template family
+        closure precedent after A.17 Aura. Elevate occupies startup-saas
+        alone. 9 families closed total after A.17b (law · medical-
+        specialist · real-estate · portfolio · restaurant-continuation ·
+        ecommerce · medical-other · agency-secondary · startup-saas)."""
+        from apps.editor.schema import _ARCHETYPE_SCHEMAS
+        self.assertIn("startup-saas-landing", _ARCHETYPE_SCHEMAS,
+                      "Elevate (startup-saas-landing) must be enrolled after A.17b")
+
+    def test_a17b_elevate_schema_shape_covers_all_pages(self):
+        """Elevate schema surfaces at least one group for every customer-
+        facing page (9 groups · one per page region + overlapping
+        home trio brand/hero/mockup/product_demo/bands)."""
+        from apps.editor.schema import _ARCHETYPE_SCHEMAS
+        schema = _ARCHETYPE_SCHEMAS["startup-saas-landing"]
+        group_ids = {g["id"] for g in schema}
+        for expected in (
+            "brand", "hero_home", "mockup_home", "product_demo_home",
+            "home_bands", "prodotto_page", "prezzi_page",
+            "demo_page", "contatti_page",
+        ):
+            self.assertIn(expected, group_ids,
+                          f"Elevate schema missing expected group `{expected}`")
+
+    def test_a17b_elevate_is_translatable_text_fields(self):
+        """Customer-editable text fields that are NOT under a structured
+        list are per-locale-translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "startup-saas-landing"
+        translatable_samples = (
+            "home.headline",
+            "home.intro",
+            "home.product_demo_card.heading",
+            "home.product_demo_card.intro",
+            "prodotto.standfirst" if False else "prodotto.intro",
+            "prezzi.headline",
+            "prezzi.intro",
+            "demo.async_body" if False else "demo.async_intro",
+            "contatti.team_intro",
+        )
+        for path in translatable_samples:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be per-locale translatable on Elevate",
+            )
+
+    def test_a17b_elevate_branding_and_contact_universals_are_global(self):
+        """site.* universals in _GLOBAL_TEXT_PATHS stay plain-key global.
+        Select-type routing fields also stay global."""
+        from apps.editor.schema import is_translatable
+        arc = "startup-saas-landing"
+        global_paths = (
+            # _GLOBAL_TEXT_PATHS entries
+            "site.logo_word",
+            "site.logo_initial",
+            "site.phone",
+            "site.email",
+            "site.address",
+            # Select type
+            "home.primary_href",
+            "home.secondary_href",
+            "home.banner_href",
+            "home.product_demo_card.primary_href",
+        )
+        for path in global_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must stay global on Elevate",
+            )
+
+    def test_a17b_elevate_scalar_image_surface_exposed(self):
+        """USER-IMPOSED GUARDRAIL: Elevate ships ONE image surface only
+        · `home.product_demo_card.poster` (nested-dict scalar image ·
+        rendered on home page as background-image). Simplest image
+        profile of any enrolled archetype (vs Aura 12 · Famiglia 16 ·
+        Luxe 31). Pattern: Pragma-equivalent single-image-nested-dict."""
+        from apps.editor.schema import get_field_spec
+        arc = "startup-saas-landing"
+        spec = get_field_spec(arc, "home.product_demo_card.poster")
+        self.assertIsNotNone(spec, "poster missing from Elevate schema")
+        self.assertEqual(spec.get("type"), "image",
+                         "poster must expose as type=image")
+
+    def test_a17b_elevate_visible_catalog_fields_kept_in(self):
+        """Stringent IN call (audit-driven · 9th archetype precedent
+        chain): visible editorial technical-looking labels stay IN.
+        Elevate brings shiplog.version · shiplog_release_value/chip ·
+        modules.num · tiers.annual_period · highlight_badge/annual_prefix ·
+        banner_label/text · mockup.chrome_label/feature_label."""
+        from apps.editor.schema import get_field_spec, validate_key_path
+        arc = "startup-saas-landing"
+        visible_editorial = (
+            "home.banner_label",
+            "home.banner_text",
+            "home.shiplog_release_value",
+            "home.shiplog_release_chip",
+            "home.mockup.chrome_label",
+            "home.mockup.feature_label",
+            "prezzi.highlight_badge",
+            "prezzi.annual_prefix",
+            # Structured-list cells (IN col-level)
+            "home.shiplog.0.version",
+            "prodotto.modules.0.num",
+            "prezzi.tiers.0.annual_period",
+        )
+        for path in visible_editorial:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Elevate schema")
+            validate_key_path(arc, path)
+
+    def test_a17b_elevate_billing_toggle_options_kept_out_explicit(self):
+        """**AUDIT-BINDING · explicit A.17b Step 0 decision**:
+        `prezzi.billing_toggle_options` is OUT entire · form-state
+        scaffolding · **6th form-structure OUT precedent after Gusto/
+        Juris/Casa/Villa/Aura**.
+
+        Rationale: the tuple `(id, label)` holds a form-option-value
+        `id` ("monthly"/"annual") which is a billing-state form-schema
+        concern (toggling billing period is a customer subscription-
+        state operation NOT a template copy edit). Label ("Mensile" /
+        "Annuale · –17%") is editorially visible but the LIST IDENTITY
+        is a billing-schema concern.
+
+        Enforced by:
+          (a) `prezzi.billing_toggle_options` is NOT registered in
+              STRUCTURED_FIELD_SHAPES (list-level OUT)
+          (b) `prezzi.billing_toggle_options` + sub-paths raise
+              InvalidEditableField
+        """
+        from apps.editor.schema import (
+            STRUCTURED_FIELD_SHAPES,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        arc = "startup-saas-landing"
+        shapes = STRUCTURED_FIELD_SHAPES.get(arc, {})
+        # (a) billing_toggle_options NOT registered.
+        self.assertNotIn(
+            "prezzi.billing_toggle_options", shapes,
+            "prezzi.billing_toggle_options must stay OUT entire · "
+            "6th form-structure precedent after Aura brief.slots",
+        )
+        # (b) sub-paths raise InvalidEditableField.
+        for out_path in (
+            "prezzi.billing_toggle_options",
+            "prezzi.billing_toggle_options.0",
+            "prezzi.billing_toggle_options.0.0",   # tuple id
+            "prezzi.billing_toggle_options.0.1",   # tuple label
+            "prezzi.billing_toggle_options.1.0",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"billing_toggle_options path must stay rejected: {out_path}",
+            ):
+                validate_key_path(arc, out_path)
+
+    def test_a17b_elevate_form_scaffolding_out_entire(self):
+        """Form-structure scaffolding on demo page stays OUT entire ·
+        7th form-structure OUT precedent · consistent with Gusto/Juris/
+        Casa/Villa/Aura/Elevate-billing-toggle chain:
+          • demo.form_fields    (list-of-dict · field metadata)
+          • demo.form_sections  (list-of-dict · form step grouping)
+          • demo.upload_field   (nested dict · upload metadata)
+        """
+        from apps.editor.schema import InvalidEditableField, validate_key_path
+        arc = "startup-saas-landing"
+        for out_path in (
+            "demo.form_fields",
+            "demo.form_fields.0",
+            "demo.form_fields.0.name",
+            "demo.form_fields.0.type",
+            "demo.form_fields.0.options",
+            "demo.form_sections",
+            "demo.form_sections.0",
+            "demo.form_sections.0.fields",
+            "demo.upload_field",
+            "demo.upload_field.accept",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"demo form scaffolding path must stay rejected: {out_path}",
+            ):
+                validate_key_path(arc, out_path)
+
+    def test_a17b_elevate_complex_shapes_excluded_from_perimeter(self):
+        """Nested list-of-str inside dict rows, flat list-of-str,
+        structural identifiers, bool flags all rejected."""
+        from apps.editor.schema import InvalidEditableField, validate_key_path
+        arc = "startup-saas-landing"
+        out_paths = (
+            # Nested list-of-str inside dict rows (Juris precedent · OUT col-level)
+            "home.pricing_teaser.0.perks",
+            "home.pricing_teaser.0.perks.0",
+            "prodotto.modules.0.highlights",
+            "prodotto.modules.0.highlights.0",
+            # Nested list-of-tuple perks inside prezzi.tiers (no sub-list kind)
+            "prezzi.tiers.0.perks",
+            "prezzi.tiers.0.perks.0",
+            # bool flags (OUT col-level)
+            "home.pricing_teaser.0.highlight",
+            "prezzi.tiers.0.highlight",
+            # Structural slug/href (OUT · Aura slug precedent)
+            "prezzi.tiers.0.cta_href",
+            # Flat list-of-str · OUT entire
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            "site.shiplog_footer_rows",
+            "home.trust_logos",
+            "home.trust_logos.0",
+            "home.feature_pills",
+            "home.feature_pills.3",
+            "home.mockup.chrome_dots",
+            "home.mockup.perks",
+            # Pages list
+            "pages",
+            "pages.0.slug",
+            # Posts list (absent by design · not in registry)
+            "posts",
+            "posts.0",
+        )
+        for path in out_paths:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Elevate OUT path must stay rejected: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a17b_elevate_structured_list_cells_are_global(self):
+        """Every STRUCTURED_FIELD_SHAPES cell on Elevate stays global
+        (non-translatable · D-098 structured-list policy · uniform
+        across all 19 enrolled archetypes)."""
+        from apps.editor.schema import is_translatable
+        arc = "startup-saas-landing"
+        cell_paths = (
+            # home.features (dict 6)
+            "home.features.0.icon",
+            "home.features.5.desc",
+            # home.metric_strip (tuple 4)
+            "home.metric_strip.0.num",
+            "home.metric_strip.3.label",
+            # home.integrations (tuple 8)
+            "home.integrations.0.name",
+            "home.integrations.7.desc",
+            # home.pricing_teaser (dict 3)
+            "home.pricing_teaser.0.name",
+            "home.pricing_teaser.2.price",
+            # home.founders (dict 2)
+            "home.founders.0.name",
+            "home.founders.1.quote",
+            # home.shiplog (dict 5)
+            "home.shiplog.0.version",
+            "home.shiplog.4.desc",
+            # prodotto.modules (dict 6)
+            "prodotto.modules.0.num",
+            "prodotto.modules.5.blurb",
+            # prodotto.integrations_full (dict 12)
+            "prodotto.integrations_full.0.name",
+            "prodotto.integrations_full.11.desc",
+            # prodotto.stack (tuple 8)
+            "prodotto.stack.0.label",
+            "prodotto.stack.7.desc",
+            # prezzi.tiers (dict 3)
+            "prezzi.tiers.0.name",
+            "prezzi.tiers.2.blurb",
+            # prezzi.comparison (tuple 4)
+            "prezzi.comparison.0.title",
+            "prezzi.comparison.3.desc",
+            # prezzi.faq (tuple 6)
+            "prezzi.faq.0.q",
+            "prezzi.faq.5.a",
+            # demo.trust_items (tuple 3)
+            "demo.trust_items.0.id",
+            "demo.trust_items.2.desc",
+            # contatti.channels (dict 4)
+            "contatti.channels.0.title",
+            "contatti.channels.3.desc",
+            # contatti.team (dict 3)
+            "contatti.team.0.name",
+            "contatti.team.2.bio",
+            # contatti.office.schedule (tuple 4 · nested)
+            "contatti.office.schedule.0.label",
+            "contatti.office.schedule.3.value",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Elevate",
+            )
+
+    def test_a17b_elevate_supported_locales_returns_canonical_five(self):
+        """Elevate ships the canonical 5-locale set. Step-0 audit
+        confirmed 5-locale parity PERFECT (333 keys × 5 locales)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("startup-saas-landing"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Outside-gate reference post-A.17b: synthetic sentinel
+        # (no real non-enrolled archetype remains).
+        self.assertEqual(supported_locales(_OUTSIDE_GATE_SENTINEL), [])
+
+    def test_a17b_eighteenfold_regression_after_elevate_joins(self):
+        """Enrolling Elevate must not affect the pre-A.17b 18 archetypes.
+        Sample spot-checks across each family (9 families closed total
+        post-A.17b)."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS,
+            is_supported_archetype,
+            is_translatable,
+            supported_locales,
+        )
+        samples = (
+            ("agency-creative-studio",   "home.headline", "vertex-creative-agency"),
+            ("corporate-suite",          "home.headline", "pragma-corporate-suite"),
+            ("fine-dining",              "home.headline", "gusto-fine-dining"),
+            ("specialist",               "home.headline", "cardio-studio-specialistico"),
+            ("classic-gold",             "home.headline", "lex-studio-legale"),
+            ("modern-transparent",       "home.headline", "juris-avvocato-moderno"),
+            ("mass-market",              "home.headline", "casa-agenzia-immobiliare"),
+            ("ultra-luxury-cinematic",   "home.headline", "villa-immobili-lusso"),
+            ("editorial-designer-grid",  "home.headline", "chiara-portfolio-creativo"),
+            ("cinematic-photographer",   "home.headline", "pixel-portfolio-fotografico"),
+            ("trattoria-warm",           "home.headline", "sapore-trattoria-pizzeria"),
+            ("street-modern",            "home.headline", "brace-street-food-lab"),
+            ("artisan-workshop",         "home.headline", "bottega-artisan-workshop"),
+            ("fashion-editorial",        "home.headline", "luxe-boutique-fashion"),
+            ("clinic",                   "home.headline", "salute-studio-medico"),
+            ("wellness",                 "home.headline", "benessere-centro-olistico"),
+            ("family",                   "home.headline", "famiglia-pediatria"),
+            ("agency-digital-studio",    "home.headline", "aura-digital-studio"),
+        )
+        for arc, path, slug in samples:
+            self.assertIn(arc, _ARCHETYPE_SCHEMAS,
+                          f"{arc} (slug {slug}) must stay enrolled after A.17b")
+            self.assertTrue(is_supported_archetype(arc))
+            self.assertTrue(is_translatable(arc, path),
+                            f"{arc}.{path} must stay translatable after A.17b")
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must stay in 5-locale gate after A.17b",
+            )
+
+    def test_a17b_elevate_posts_absent_by_design(self):
+        """Elevate's content registry has NO `posts` key (different
+        from Aura which has posts registry-only). Posts list is
+        absent by design · no `project_detail` kind · no related
+        detail routes. validate_key_path still rejects posts paths
+        (defensive)."""
+        from apps.catalog import template_content
+        from apps.editor.schema import InvalidEditableField, validate_key_path
+        arc = "startup-saas-landing"
+        content = template_content.get_content("elevate-startup-landing", "it")
+        self.assertNotIn("posts", content,
+                         "Elevate content must not carry posts key")
+        for path in ("posts", "posts.0", "posts.0.title"):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Elevate posts path must stay rejected: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a17b_elevate_editor_vs_product_admin_boundary(self):
+        """**A.17b · 3rd category-class boundary formalized** after
+        commerce-admin (A.15/A.15b) and clinic-admin (A.16/A.16b/A.16c).
+
+        Editor scope = template_content registry presentational content
+        only (marketing-editorial copy).
+
+        OUT (by design · not in schema):
+          - billing state (Stripe customer record · subscription status)
+          - plan availability (feature enablement)
+          - subscription lifecycle (trial days · cancellation)
+          - auth state (signup flow · 2FA · sessions)
+          - usage/telemetry (analytics events · feature flag state)
+          - product admin (dashboards · team management)
+
+        Light guardrail (mirror of Salute clinic-admin test):
+        `apps/catalog/views.py::LiveTemplateView` MUST NOT import from
+        product-admin namespaces. No schema path starts with these
+        prefixes.
+        """
+        import inspect
+        from apps.catalog import views as catalog_views
+        from apps.editor.schema import _ARCHETYPE_SCHEMAS
+        view_source = inspect.getsource(catalog_views.LiveTemplateView)
+        forbidden_prefixes = (
+            "stripe.", "subscription.", "billing.", "payment.",
+            "usage.", "telemetry.", "feature_flag.",
+            "admin.", "dashboard.", "session.",
+        )
+        for prefix in forbidden_prefixes:
+            self.assertNotIn(
+                prefix, view_source,
+                f"LiveTemplateView must not reference product-admin "
+                f"namespace `{prefix}`",
+            )
+        # Elevate schema must not register any path starting with these prefixes.
+        schema = _ARCHETYPE_SCHEMAS["startup-saas-landing"]
+        for group in schema:
+            all_fields = list(group.get("fields", []))
+            for sub in group.get("subgroups") or []:
+                all_fields.extend(sub.get("fields", []))
+            for path, _spec in all_fields:
+                for prefix in forbidden_prefixes:
+                    self.assertFalse(
+                        path.startswith(prefix),
+                        f"Editor schema leaks into product-admin namespace: "
+                        f"field `{path}` starts with `{prefix}` — editor must "
+                        f"stay on template_content registry only",
+                    )
+
+    def test_a17b_elevate_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of A.16/A.16b/A.16c/A.17 bridge-guard — Elevate
+        `business/startup-saas-landing/_base.html` must integrate the
+        three bridge points together on the `.sl-*` skin:
+        (1) preview-bridge.js conditional on ``preview_project``,
+        (2) ``<title>`` honors ``site.logo_word``,
+        (3) ``<body>`` carries ``mw-is-editor-preview`` guard class
+            when inside the editor iframe."""
+        elevate = WebTemplate.objects.get(slug="elevate-startup-landing")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/business/elevate-startup-landing/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=elevate)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A17b Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/business/elevate-startup-landing/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A17b Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -7506,10 +8178,10 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Unknown archetype returns empty list, never raises.
-        # `startup-saas-landing` (Elevate) is the current outside-gate
-        # reference (A.17 rotated it from `agency-digital-studio`/Aura
-        # which is now enrolled · CLOSES agency-secondary family).
-        self.assertEqual(supported_locales("startup-saas-landing"), [])
+        # A.17b: post-catalog-closure the outside-gate reference is
+        # the synthetic ``_OUTSIDE_GATE_SENTINEL`` · no real non-
+        # enrolled archetype remains.
+        self.assertEqual(supported_locales(_OUTSIDE_GATE_SENTINEL), [])
 
     def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
         """Defensive contract: unknown paths and archetypes return False
@@ -7869,18 +8541,14 @@ class FoundationHttpTests(TestCase):
         self.assertEqual(r.status_code, 302)
         self.assertIn("/templates/", r["Location"])
 
-    def test_customize_start_unsupported_archetype_redirects_to_detail(self):
-        """Templates without editor support bounce to detail with an info message."""
-        # elevate-startup-landing (startup-saas-landing archetype) is
-        # not yet enrolled. A.17 rotated the outside-gate reference
-        # from Aura (agency-digital-studio · now enrolled · CLOSES
-        # agency-secondary) to Elevate (startup-saas-landing · still
-        # out · LAST non-enrolled archetype). Swap when `startup-saas-
-        # landing` receives editor support (A.17b).
-        r = self.client.get("/projects/start/?template=elevate-startup-landing")
-        self.assertEqual(r.status_code, 302)
-        # Either /templates/business/elevate-startup-landing/ or template_list — both accept.
-        self.assertIn("/templates/", r["Location"])
+    # A.17b · Deleted: ``test_customize_start_unsupported_archetype_
+    # redirects_to_detail``. Post-catalog-closure no real catalog
+    # template has an unsupported archetype (20/20 editable · 9/9
+    # families closed). The template-level unknown-path bounce is
+    # still covered by ``test_customize_start_unknown_template_
+    # redirects_to_catalog`` above (uses a genuinely non-existent
+    # slug ``does-not-exist``). See ``_OUTSIDE_GATE_SENTINEL`` for
+    # the retirement strategy rationale.
 
     def test_autosave_endpoint_rejects_locked_keys(self):
         """D-088: autosave must reject DNA-locked paths with 400."""
@@ -13276,9 +13944,12 @@ class FoundationHttpTests(TestCase):
             rejects with 400 · posts cover_image × 6 stays registry-
             only (7th uniform enforcement)
         (d) Outside-gate fixture still OUT at end-of-test:
-            - startup-saas-landing is_supported_archetype → False
+            - synthetic sentinel ``_OUTSIDE_GATE_SENTINEL``
+              is_supported_archetype → False
             - supported_locales → []
             - is_translatable → False
+            (A.17b rotated this from real-archetype to synthetic
+            sentinel · see ``_OUTSIDE_GATE_SENTINEL`` module docstring)
         (e) Perimeter invariants re-checked: agency-digital-studio
             IN · all 17 pre-A.17 archetypes IN · 18 enrolled total
 
@@ -13305,7 +13976,8 @@ class FoundationHttpTests(TestCase):
         10. owner reopens the editor per locale · prefill + universals
         11. perimeter invariants re-checked end-of-test:
             - agency-digital-studio still IN
-            - startup-saas-landing still OUT (outside-gate preserved)
+            - synthetic ``_OUTSIDE_GATE_SENTINEL`` still OUT
+              (outside-gate preserved · A.17b retirement)
             - 17 pre-A.17 archetypes still enrolled
             - Posts + brief form-structure + flat-list-of-str still
               rejected
@@ -13328,11 +14000,13 @@ class FoundationHttpTests(TestCase):
 
         # ── 1. perimeter invariants at TEST START ────────────────
         aura_arc = "agency-digital-studio"
-        out_arc = "startup-saas-landing"
+        # A.17b: outside-gate reference is now the synthetic sentinel
+        # (no real non-enrolled archetype remains post-catalog-closure).
+        out_arc = _OUTSIDE_GATE_SENTINEL
         self.assertIn(aura_arc, _SCHEMAS, "Aura must be enrolled at lifecycle start")
         self.assertIn(aura_arc, _ENABLED, "Aura must be in multi-locale gate at start")
-        # Outside-gate sanity (Elevate).
-        self.assertNotIn(out_arc, _SCHEMAS, "Elevate must stay OUT at lifecycle start")
+        # Outside-gate sanity (sentinel).
+        self.assertNotIn(out_arc, _SCHEMAS, "sentinel must stay OUT at lifecycle start")
         self.assertFalse(is_supported_archetype(out_arc))
         self.assertEqual(supported_locales(out_arc), [])
         self.assertFalse(is_translatable(out_arc, "home.headline"))
@@ -13574,17 +14248,17 @@ class FoundationHttpTests(TestCase):
                           f"{locale} editor reopen must prefill global site.logo_word")
 
         # ── 11. perimeter invariants re-checked END-OF-TEST ──────
-        # Aura still IN, Elevate still OUT — outside-gate preserved.
+        # Aura still IN, sentinel still OUT — outside-gate preserved.
         self.assertIn(aura_arc, _SCHEMAS, "Aura must stay enrolled at lifecycle end")
         self.assertIn(aura_arc, _ENABLED, "Aura must stay in multi-locale gate at end")
         self.assertNotIn(out_arc, _SCHEMAS,
-                         "Elevate must stay OUT at lifecycle end · outside-gate preserved")
+                         "sentinel must stay OUT at lifecycle end · outside-gate preserved")
         self.assertFalse(is_supported_archetype(out_arc),
-                         "startup-saas-landing must stay unsupported at lifecycle end")
+                         "sentinel must stay unsupported at lifecycle end")
         self.assertEqual(supported_locales(out_arc), [],
-                         "startup-saas-landing supported_locales must stay [] at end")
+                         "sentinel supported_locales must stay [] at end")
         self.assertFalse(is_translatable(out_arc, "home.headline"),
-                         "startup-saas-landing home.headline must stay non-translatable at end")
+                         "sentinel home.headline must stay non-translatable at end")
         # 17 pre-A.17 archetypes still enrolled.
         for arc in (
             "agency-creative-studio", "corporate-suite", "fine-dining",

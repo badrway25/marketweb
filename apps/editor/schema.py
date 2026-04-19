@@ -4874,6 +4874,396 @@ AURA_AGENCY_DIGITAL_STUDIO_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# A.17b · Elevate (startup-saas-landing) — single-template closer of the
+# startup-saas family. **CLOSES the editor enrollment program** (A.6→A.17b
+# · 20/20 catalog editable · 9/9 families closed · zero non-enrolled
+# archetypes). 2nd single-template dedicated-schema precedent after A.17.
+#
+# **Form-structure 6th precedent · prezzi.billing_toggle_options OUT
+# entire** (tuple `(monthly, annual)` · id="monthly"/"annual" is a
+# billing-state form-option-value · list identity is a billing-schema
+# concern · same rationale as Aura brief.slots A.17).
+#
+# **Form-structure scaffolding on demo page stays OUT entire** · 7th
+# form-structure OUT precedent · consistent with Gusto/Juris/Casa/Villa/
+# Aura:
+#   • demo.form_fields     (list-of-dict · field metadata)
+#   • demo.form_sections   (list-of-dict · form step grouping)
+#   • demo.upload_field    (nested dict · upload metadata)
+# demo.form_submit_label / submit_note / form_consent stay IN as
+# editorial button copy + privacy consent text.
+#
+# **Editor-vs-product-admin boundary** · 3rd category-class boundary
+# formalized (after commerce-admin A.15/A.15b + clinic-admin A.16/A.16b/
+# A.16c). Elevate pricing/tier/subscription content is ALL marketing-
+# editorial (prezzi.tiers.{i}.price = editorial "€ 29" label · NOT
+# Stripe.Product.price). OUT-of-scope: billing state · subscription
+# lifecycle · plan availability · usage/telemetry · auth state · product
+# admin. Dedicated test `test_a17b_elevate_editor_vs_product_admin_
+# boundary` mirrors A.15/A.16 pattern.
+#
+# Flat list-of-str OUT entire (standard policy):
+#   • site.hours_footer_rows · site.shiplog_footer_rows
+#   • home.trust_logos · home.feature_pills · home.mockup.chrome_dots
+#   • home.mockup.perks (flat-list-of-str nested in dict)
+#
+# Nested list-of-str inside dict rows stay OUT col-level (Juris precedent
+# · 7th archetype chain):
+#   • home.pricing_teaser.{i}.perks
+#   • prodotto.modules.{i}.highlights
+#
+# Nested list-of-tuple OUT col-level (no sub-list kind · Aura precedent):
+#   • prezzi.tiers.{i}.perks (list of `(icon, text)` tuples)
+#
+# Bool flags OUT col-level (5th bool OUT precedent):
+#   • home.pricing_teaser.{i}.highlight · prezzi.tiers.{i}.highlight
+#
+# Structural identifiers OUT col-level:
+#   • prezzi.tiers.{i}.cta_href (Aura slug precedent)
+#
+# Stringent IN · 9th archetype precedent chain:
+#   • home.banner_label · banner_text (editorial launch banner)
+#   • home.shiplog.{i}.version (editorial changelog version tags)
+#   • home.shiplog_release_value · release_chip
+#   • prodotto.modules.{i}.num (editorial step numbering)
+#   • prezzi.tiers.{i}.annual_period (visible pricing descriptor)
+#   • prezzi.highlight_badge · annual_prefix
+#   • home.mockup.chrome_label · feature_label (editorial URL-like / tier name)
+#
+# 1 image surface · simplest profile of any enrolled archetype:
+#   • home.product_demo_card.poster (nested-dict scalar image · rendered)
+#
+# Zero deep-path · zero raw SVG · zero scheduler-state · zero novel shape
+# · posts list absent by design (not registry-only · truly absent).
+# Outside-gate retirement via synthetic archetype sentinel (Strategy A
+# hybrid) · 8 call-sites rotated · 1 test renamed · 1 test deleted · 1
+# test positively reframed · 1 new retirement-contract test added.
+# ---------------------------------------------------------------------------
+
+ELEVATE_STARTUP_SAAS_LANDING_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".sl-nav, .sl-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "studio", "tagline", "chrome", "footer", "nav cta"],
+        "help": "Nome prodotto, logo initial (iniziale per crest), tagline conversion-first, CTA pill header, dati di contatto e voce footer (async-first · Slack 9-19 CET).",
+        "fields": [
+            ("site.logo_word",     {"label": "Nome prodotto (logo word)", "type": "text", "max_length": 60,
+                                       "placeholder": "Elevate"}),
+            ("site.logo_initial",  {"label": "Logo initial (iniziale crest)", "type": "text", "max_length": 4}),
+            ("site.tag",           {"label": "Tagline (sub-logo · footer)", "type": "text", "max_length": 160}),
+            ("site.nav_cta",       {"label": "CTA pill header · etichetta", "type": "text", "max_length": 40}),
+            ("site.phone",         {"label": "Telefono / Slack handle", "type": "text", "max_length": 60}),
+            ("site.email",         {"label": "Email", "type": "text", "max_length": 120}),
+            ("site.address",       {"label": "Indirizzo", "type": "text", "max_length": 200}),
+            ("site.hours_compact", {"label": "Orari sintetici (async-first)", "type": "text", "max_length": 160}),
+            ("site.license",       {"label": "Licenza / P.IVA (opz.)", "type": "text", "max_length": 200}),
+            ("site.footer_intro",  {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.foot_studio",   {"label": "Footer · titolo colonna prodotto", "type": "text", "max_length": 40}),
+            ("site.foot_pages",    {"label": "Footer · titolo colonna pagine", "type": "text", "max_length": 40}),
+            ("site.foot_contact",  {"label": "Footer · titolo colonna contatti", "type": "text", "max_length": 40}),
+            ("site.foot_offices",  {"label": "Footer · titolo colonna ship log", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-stars",
+        "region": ".sl-hero, .sl-banner",
+        "page": "home",
+        "keywords": ["hero", "banner", "headline", "eyebrow", "intro", "cta", "trust", "primo scroll"],
+        "help": "Primo scroll della home: banner di lancio in cima · eyebrow + headline + intro + CTA primaria/secondaria · trust label sotto le CTA (logo wall).",
+        "subgroups": [
+            {"label": "Banner di lancio (top)", "fields": [
+                ("home.banner_label", {"label": "Banner · label (stringent IN · es. 'Serie A · Q2 2026')", "type": "text", "max_length": 80}),
+                ("home.banner_text",  {"label": "Banner · testo (stringent IN)", "type": "textarea", "max_length": 240}),
+                ("home.banner_href",  {"label": "Banner · pagina destinazione", "type": "select",
+                                         "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+            ]},
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",   {"label": "Eyebrow", "type": "text", "max_length": 160}),
+                ("home.headline",  {"label": "Headline", "type": "richtext", "max_length": 220,
+                                     "help": "Consentiti i tag <em> per italici."}),
+                ("home.intro",     {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "CTA hero", "fields": [
+                ("home.primary_cta",     {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.primary_href",    {"label": "CTA primaria · pagina destinazione", "type": "select",
+                                            "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+                ("home.secondary_cta",   {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.secondary_href",  {"label": "CTA secondaria · pagina destinazione", "type": "select",
+                                            "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+            ]},
+            {"label": "Trust label (logo wall intestazione)", "fields": [
+                ("home.trust_label", {"label": "Trust label (logo wall)", "type": "text", "max_length": 200}),
+            ]},
+        ],
+    },
+    {
+        "id": "mockup_home",
+        "label": "Mockup dashboard · home",
+        "icon": "bi-speedometer2",
+        "region": ".sl-mockup",
+        "page": "home",
+        "keywords": ["mockup", "dashboard", "metric", "home", "chrome"],
+        "help": "Tile product mockup dashboard sotto l'hero · chrome label (URL-like editorial) · badge A/B · metrica primaria e secondaria con label/desc · feature label (tier name).",
+        "fields": [
+            ("home.mockup.chrome_label",     {"label": "Chrome label (editorial URL-like · stringent IN)", "type": "text", "max_length": 160}),
+            ("home.mockup.badge",            {"label": "Badge (es. 'Live A/B')", "type": "text", "max_length": 40}),
+            ("home.mockup.metric_primary",   {"label": "Metrica primaria (es. '↑ 38%')", "type": "text", "max_length": 40}),
+            ("home.mockup.metric_label",     {"label": "Metrica primaria · label", "type": "text", "max_length": 200}),
+            ("home.mockup.metric_desc",      {"label": "Metrica primaria · descrizione", "type": "text", "max_length": 200}),
+            ("home.mockup.secondary_metric", {"label": "Metrica secondaria", "type": "text", "max_length": 40}),
+            ("home.mockup.secondary_label",  {"label": "Metrica secondaria · label", "type": "text", "max_length": 200}),
+            ("home.mockup.secondary_desc",   {"label": "Metrica secondaria · descrizione", "type": "text", "max_length": 200}),
+            ("home.mockup.feature_label",    {"label": "Feature label (tier name · stringent IN · 'Plan Launch · € 29 / mese')", "type": "text", "max_length": 160}),
+        ],
+    },
+    {
+        "id": "product_demo_home",
+        "label": "Product demo card · home",
+        "icon": "bi-play-circle",
+        "region": ".sl-demo-card",
+        "page": "home",
+        "keywords": ["demo", "walkthrough", "card", "home", "poster", "image"],
+        "help": "Card invito walkthrough live · label · heading · intro · caption · **poster image (rendered)** · CTA primaria (demo booking) · CTA secondaria (product tour).",
+        "fields": [
+            ("home.product_demo_card.label",          {"label": "Eyebrow card", "type": "text", "max_length": 120}),
+            ("home.product_demo_card.heading",        {"label": "Titolo (richtext · <em>)", "type": "richtext", "max_length": 200}),
+            ("home.product_demo_card.intro",          {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("home.product_demo_card.poster",         {"label": "Poster image · URL (rendered)", "type": "image", "max_length": 400}),
+            ("home.product_demo_card.caption",        {"label": "Caption overlay", "type": "text", "max_length": 160}),
+            ("home.product_demo_card.primary_cta",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("home.product_demo_card.primary_href",   {"label": "CTA primaria · pagina destinazione", "type": "select",
+                                                         "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+            ("home.product_demo_card.secondary_cta",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+            ("home.product_demo_card.secondary_href", {"label": "CTA secondaria · pagina destinazione", "type": "select",
+                                                         "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".sl-section",
+        "page": "home",
+        "keywords": ["features", "metric", "integrations", "pricing-teaser", "founders", "shiplog", "cta", "bands"],
+        "help": "Intestazioni delle fasce copy della home · features · metric strip · integrations · pricing teaser · founders · ship log · CTA finale. Le liste (features · metric_strip · integrations · pricing_teaser · founders · shiplog) si modificano dai gruppi indexed.",
+        "subgroups": [
+            {"label": "Features · intestazione", "fields": [
+                ("home.features_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.features_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.features_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Metric strip · intestazione", "fields": [
+                ("home.metric_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.metric_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Integrations · intestazione", "fields": [
+                ("home.integrations_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.integrations_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Pricing teaser · intestazione + CTA", "fields": [
+                ("home.pricing_teaser_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.pricing_teaser_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.pricing_teaser_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.pricing_teaser_cta",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("home.pricing_teaser_cta_href", {"label": "CTA · pagina destinazione", "type": "select",
+                                                    "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+            ]},
+            {"label": "Founders proof · intestazione", "fields": [
+                ("home.founders_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.founders_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Ship log · intestazione + release", "fields": [
+                ("home.shiplog_label",          {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.shiplog_heading",        {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.shiplog_intro",          {"label": "Intro", "type": "textarea", "max_length": 600}),
+                ("home.shiplog_cta",            {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("home.shiplog_cta_href",       {"label": "CTA · pagina destinazione", "type": "select",
+                                                   "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+                ("home.shiplog_release_label",  {"label": "Release · label", "type": "text", "max_length": 60}),
+                ("home.shiplog_release_value",  {"label": "Release · value (stringent IN · es. 'v3.0 · lun')", "type": "text", "max_length": 160}),
+                ("home.shiplog_release_chip",   {"label": "Release · chip (es. 'RC live')", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "CTA finale home", "fields": [
+                ("home.cta_label",           {"label": "Eyebrow", "type": "text", "max_length": 60}),
+                ("home.cta_heading",         {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.cta_intro",           {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.cta_primary",         {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_primary_href",    {"label": "CTA primaria · pagina destinazione", "type": "select",
+                                                "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+                ("home.cta_secondary",       {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_secondary_href",  {"label": "CTA secondaria · pagina destinazione", "type": "select",
+                                                "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "prodotto_page",
+        "label": "Pagina Prodotto (product tour)",
+        "icon": "bi-box-seam",
+        "region": ".sl-section",
+        "page": "prodotto",
+        "keywords": ["prodotto", "product", "tour", "modules", "integrations", "stack"],
+        "help": "Pagina product tour · eyebrow/headline/intro · intestazione modules + integrations + stack · CTA finale. Le liste (modules · integrations_full · stack) si modificano dai gruppi indexed.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("prodotto.eyebrow",  {"label": "Eyebrow", "type": "text", "max_length": 160}),
+                ("prodotto.headline", {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("prodotto.intro",    {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Modules · intestazione", "fields": [
+                ("prodotto.modules_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("prodotto.modules_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Integrations · intestazione", "fields": [
+                ("prodotto.integrations_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("prodotto.integrations_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("prodotto.integrations_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Stack · intestazione", "fields": [
+                ("prodotto.stack_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("prodotto.stack_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("prodotto.stack_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("prodotto.cta_heading",        {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("prodotto.cta_intro",          {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("prodotto.cta_primary",        {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("prodotto.cta_primary_href",   {"label": "CTA primaria · pagina destinazione", "type": "select",
+                                                   "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+                ("prodotto.cta_secondary",      {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("prodotto.cta_secondary_href", {"label": "CTA secondaria · pagina destinazione", "type": "select",
+                                                   "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "prezzi_page",
+        "label": "Pagina Prezzi (pricing)",
+        "icon": "bi-tag",
+        "region": ".sl-section",
+        "page": "prezzi",
+        "keywords": ["prezzi", "pricing", "tiers", "piani", "comparison", "faq"],
+        "help": "Pagina pricing · header · highlight badge + annual prefix + billing toggle label · comparison + FAQ intestazioni · CTA finale. Le liste (tiers · comparison · faq) si modificano dai gruppi indexed. **billing_toggle_options OUT entire** (form-option-value structural · 6° form-structure precedent dopo Aura brief.slots).",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("prezzi.eyebrow",  {"label": "Eyebrow", "type": "text", "max_length": 160}),
+                ("prezzi.headline", {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("prezzi.intro",    {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Badge + toggle label (stringent IN)", "fields": [
+                ("prezzi.highlight_badge",      {"label": "Highlight badge (es. 'Più scelto')", "type": "text", "max_length": 40}),
+                ("prezzi.annual_prefix",        {"label": "Annual prefix (es. 'o')", "type": "text", "max_length": 20}),
+                ("prezzi.billing_toggle_label", {"label": "Billing toggle · label (es. 'Fatturazione')", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Comparison · intestazione", "fields": [
+                ("prezzi.comparison_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("prezzi.comparison_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "FAQ · intestazione", "fields": [
+                ("prezzi.faq_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("prezzi.faq_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("prezzi.cta_heading",        {"label": "Titolo", "type": "text", "max_length": 220}),
+                ("prezzi.cta_intro",          {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("prezzi.cta_primary",        {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("prezzi.cta_primary_href",   {"label": "CTA primaria · pagina destinazione", "type": "select",
+                                                 "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+                ("prezzi.cta_secondary",      {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("prezzi.cta_secondary_href", {"label": "CTA secondaria · pagina destinazione", "type": "select",
+                                                 "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "demo_page",
+        "label": "Pagina Demo (lead form)",
+        "icon": "bi-calendar-event",
+        "region": ".sl-section",
+        "page": "demo",
+        "keywords": ["demo", "form", "walkthrough", "async", "trust", "loom"],
+        "help": "Pagina demo · header · form intestazioni (submit label/note/consent) · async block · trust intestazione · footnote. **Form scaffolding (form_fields · form_sections · upload_field) OUT entire** · 7° form-structure precedent dopo Gusto/Juris/Casa/Villa/Aura. trust_items si modifica dal gruppo indexed.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("demo.eyebrow",  {"label": "Eyebrow", "type": "text", "max_length": 160}),
+                ("demo.headline", {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("demo.intro",    {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Form · intestazione + submit + consent", "fields": [
+                ("demo.form_label",        {"label": "Form · label", "type": "text", "max_length": 120}),
+                ("demo.form_heading",      {"label": "Form · titolo", "type": "text", "max_length": 220}),
+                ("demo.form_intro",        {"label": "Form · intro", "type": "textarea", "max_length": 500}),
+                ("demo.form_submit_label", {"label": "Submit · etichetta pulsante", "type": "text", "max_length": 60}),
+                ("demo.form_submit_note",  {"label": "Submit · nota sotto il pulsante", "type": "textarea", "max_length": 400}),
+                ("demo.form_consent",      {"label": "Form · consenso privacy", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Async block", "fields": [
+                ("demo.async_label",    {"label": "Eyebrow", "type": "text", "max_length": 60}),
+                ("demo.async_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("demo.async_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("demo.async_cta",      {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+                ("demo.async_cta_href", {"label": "CTA · pagina destinazione", "type": "select",
+                                           "choices": ["home", "prodotto", "prezzi", "demo", "contatti"]}),
+            ]},
+            {"label": "Trust strip · intestazione", "fields": [
+                ("demo.trust_label", {"label": "Eyebrow (es. 'Cosa aspettarti dalla demo')", "type": "text", "max_length": 200}),
+            ]},
+            {"label": "Footnote", "fields": [
+                ("demo.footnote", {"label": "Footnote (paragrafo finale)", "type": "textarea", "max_length": 700}),
+            ]},
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-envelope",
+        "region": ".sl-section",
+        "page": "contatti",
+        "keywords": ["contatti", "channels", "team", "office", "founder", "async"],
+        "help": "Pagina contatti · header · channels intestazione · team + office intestazioni + meta labels · office block (address/transport/hours scalar) · footnote. Le liste (channels · team · office.schedule) si modificano dai gruppi indexed.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("contatti.eyebrow",  {"label": "Eyebrow", "type": "text", "max_length": 160}),
+                ("contatti.headline", {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("contatti.intro",    {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Channels · intestazione", "fields": [
+                ("contatti.channels_label", {"label": "Eyebrow channels", "type": "text", "max_length": 200}),
+            ]},
+            {"label": "Team · intestazione", "fields": [
+                ("contatti.team_label",   {"label": "Eyebrow team", "type": "text", "max_length": 80}),
+                ("contatti.team_heading", {"label": "Titolo team", "type": "richtext", "max_length": 220}),
+                ("contatti.team_intro",   {"label": "Intro team", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Office · intestazione", "fields": [
+                ("contatti.office_label",   {"label": "Eyebrow office", "type": "text", "max_length": 80}),
+                ("contatti.office_heading", {"label": "Titolo office", "type": "richtext", "max_length": 220}),
+                ("contatti.office_intro",   {"label": "Intro office", "type": "textarea", "max_length": 600}),
+            ]},
+            {"label": "Office · meta labels", "fields": [
+                ("contatti.office_address_label",   {"label": "Meta label · Sede", "type": "text", "max_length": 40}),
+                ("contatti.office_transport_label", {"label": "Meta label · Trasporti", "type": "text", "max_length": 40}),
+                ("contatti.office_model_label",     {"label": "Meta label · Modello", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Office block (nested scalars)", "fields": [
+                ("contatti.office.address",   {"label": "Office · indirizzo", "type": "text", "max_length": 200}),
+                ("contatti.office.transport", {"label": "Office · trasporti", "type": "text", "max_length": 200}),
+                ("contatti.office.hours",     {"label": "Office · orari modello", "type": "text", "max_length": 200}),
+            ]},
+            {"label": "Footnote", "fields": [
+                ("contatti.footnote", {"label": "Footnote (paragrafo finale)", "type": "textarea", "max_length": 700}),
+            ]},
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -9180,6 +9570,262 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+
+    # A.17b · Elevate (startup-saas-landing) — 16 indexed lists · 1 image
+    # surface (home.product_demo_card.poster nested-dict scalar · simplest
+    # image profile of any enrolled archetype). Zero deep-path. Nested
+    # list-of-str cols (perks · highlights · options) excluded (Juris
+    # precedent · 7th archetype chain). Nested list-of-tuple `perks`
+    # inside prezzi.tiers excluded col-level (no sub-list kind · Aura
+    # precedent). bool `highlight` cols excluded (5th bool OUT precedent).
+    # `cta_href` inside prezzi.tiers excluded (structural · Aura slug
+    # precedent). Stringent IN: shiplog.version · modules.num · tiers.
+    # annual_period.
+    "startup-saas-landing": {
+
+        # ── HOME ────────────────────────────────────────────────────────
+        "home.features": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Features (6 moduli)",
+            "icon": "bi-grid-3x3-gap",
+            "region": ".sl-features .card",
+            "keywords": ["features", "moduli", "home"],
+            "cols": [
+                ("icon",  {"label": "Icon (typographic Unicode · '→', '$', '▲')", "type": "text", "max_length": 4}),
+                ("title", {"label": "Titolo modulo", "type": "text", "max_length": 160}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "home.metric_strip": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Metric strip (4 tuple)",
+            "icon": "bi-bar-chart",
+            "region": ".sl-metric-band",
+            "keywords": ["metric", "strip", "home", "band"],
+            "tuple_order": ["num", "label"],
+            "cols": [
+                ("num",   {"label": "Numero (es. '3.1 ×')", "type": "text", "max_length": 40}),
+                ("label", {"label": "Label",                 "type": "text", "max_length": 160}),
+            ],
+        },
+        "home.integrations": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Integrations (8 tuple)",
+            "icon": "bi-plug",
+            "region": ".sl-integrations",
+            "keywords": ["integrations", "stack", "home"],
+            "tuple_order": ["name", "desc"],
+            "cols": [
+                ("name", {"label": "Nome integrazione",  "type": "text", "max_length": 60}),
+                ("desc", {"label": "Descrizione",        "type": "text", "max_length": 200}),
+            ],
+        },
+        "home.pricing_teaser": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Pricing teaser (3 tier preview)",
+            "icon": "bi-tag",
+            "region": ".sl-pricing-teaser .card",
+            "keywords": ["pricing", "teaser", "home", "tier"],
+            "cols": [
+                ("name",   {"label": "Nome tier", "type": "text", "max_length": 40}),
+                ("price",  {"label": "Prezzo (es. '€ 29')", "type": "text", "max_length": 40}),
+                ("period", {"label": "Periodo (es. '/ mese')", "type": "text", "max_length": 40}),
+                ("tag",    {"label": "Tag editoriale (es. 'Per founder solitari')", "type": "text", "max_length": 120}),
+                # `highlight` col excluded (bool · 5th bool OUT precedent)
+                # `perks` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "home.founders": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Founders proof (2 quote)",
+            "icon": "bi-chat-quote",
+            "region": ".sl-founders .card",
+            "keywords": ["founders", "proof", "testimonial", "home"],
+            "cols": [
+                ("name",           {"label": "Nome founder", "type": "text", "max_length": 120}),
+                ("role",           {"label": "Ruolo · Startup", "type": "text", "max_length": 200}),
+                ("quote",          {"label": "Quote", "type": "textarea", "max_length": 700}),
+                ("metric_primary", {"label": "Metrica primaria (es. '+ € 4.2K')", "type": "text", "max_length": 40}),
+                ("metric_label",   {"label": "Metrica · label", "type": "text", "max_length": 200}),
+            ],
+        },
+        "home.shiplog": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Ship log (5 righe)",
+            "icon": "bi-terminal",
+            "region": ".sl-shiplog .entry",
+            "keywords": ["shiplog", "changelog", "home"],
+            "cols": [
+                ("version", {"label": "Version (stringent IN · 'v2.9')", "type": "text", "max_length": 20}),
+                ("date",    {"label": "Date (es. 'Venerdì')", "type": "text", "max_length": 60}),
+                ("title",   {"label": "Titolo feature", "type": "text", "max_length": 160}),
+                ("desc",    {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+
+        # ── PRODOTTO (product tour) ─────────────────────────────────────
+        "prodotto.modules": {
+            "kind": "dict",
+            "page": "prodotto",
+            "label": "Prodotto · Modules (6 moduli core)",
+            "icon": "bi-boxes",
+            "region": ".sl-modules .card",
+            "keywords": ["modules", "prodotto", "core"],
+            "cols": [
+                ("num",   {"label": "Numero (stringent IN · '01')", "type": "text", "max_length": 4}),
+                ("title", {"label": "Titolo modulo", "type": "text", "max_length": 200}),
+                ("blurb", {"label": "Blurb", "type": "textarea", "max_length": 600}),
+                # `highlights` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "prodotto.integrations_full": {
+            "kind": "dict",
+            "page": "prodotto",
+            "label": "Prodotto · Integrations full (12 integrazioni)",
+            "icon": "bi-plug",
+            "region": ".sl-integrations-full",
+            "keywords": ["integrations", "prodotto", "stack"],
+            "cols": [
+                ("name",     {"label": "Nome integrazione", "type": "text", "max_length": 60}),
+                ("category", {"label": "Categoria (es. 'Pagamenti')", "type": "text", "max_length": 60}),
+                ("desc",     {"label": "Descrizione", "type": "text", "max_length": 200}),
+            ],
+        },
+        "prodotto.stack": {
+            "kind": "tuple",
+            "page": "prodotto",
+            "label": "Prodotto · Stack (8 righe architecture)",
+            "icon": "bi-stack",
+            "region": ".sl-stack",
+            "keywords": ["stack", "architecture", "prodotto"],
+            "tuple_order": ["label", "desc"],
+            "cols": [
+                ("label", {"label": "Layer (es. 'Frontend')", "type": "text", "max_length": 60}),
+                ("desc",  {"label": "Tecnologie",              "type": "text", "max_length": 200}),
+            ],
+        },
+
+        # ── PREZZI (pricing) ────────────────────────────────────────────
+        # prezzi.billing_toggle_options stays OUT entire · tuple `(id, label)`
+        # where id="monthly"/"annual" is a billing-state form-option-value ·
+        # 6th form-structure OUT precedent after Aura brief.slots A.17.
+        "prezzi.tiers": {
+            "kind": "dict",
+            "page": "prezzi",
+            "label": "Prezzi · Tiers (3 piani)",
+            "icon": "bi-tag",
+            "region": ".sl-tiers .tier",
+            "keywords": ["tiers", "piani", "prezzi"],
+            "cols": [
+                ("name",          {"label": "Nome tier", "type": "text", "max_length": 40}),
+                ("tag",           {"label": "Tag editoriale", "type": "text", "max_length": 120}),
+                ("price",         {"label": "Prezzo mensile (es. '€ 29')", "type": "text", "max_length": 40}),
+                ("annual",        {"label": "Prezzo annuale (es. '€ 24')", "type": "text", "max_length": 40}),
+                ("period",        {"label": "Periodo mensile (es. '/ mese')", "type": "text", "max_length": 40}),
+                ("annual_period", {"label": "Periodo annuale (stringent IN · '/ mese · pagato annualmente')", "type": "text", "max_length": 160}),
+                ("blurb",         {"label": "Blurb", "type": "textarea", "max_length": 500}),
+                ("cta",           {"label": "CTA · etichetta", "type": "text", "max_length": 40}),
+                # `highlight` col excluded (bool · 5th bool OUT precedent)
+                # `perks` col excluded (nested list-of-tuple · no sub-list kind · Aura lavori.projects.kpi precedent)
+                # `cta_href` col excluded (structural · Aura slug precedent)
+            ],
+        },
+        "prezzi.comparison": {
+            "kind": "tuple",
+            "page": "prezzi",
+            "label": "Prezzi · Comparison (4 righe · cosa NON c'è)",
+            "icon": "bi-dash-circle",
+            "region": ".sl-comparison",
+            "keywords": ["comparison", "trasparenza", "prezzi"],
+            "tuple_order": ["title", "desc"],
+            "cols": [
+                ("title", {"label": "Titolo punto", "type": "text", "max_length": 80}),
+                ("desc",  {"label": "Descrizione",   "type": "textarea", "max_length": 600}),
+            ],
+        },
+        "prezzi.faq": {
+            "kind": "tuple",
+            "page": "prezzi",
+            "label": "Prezzi · FAQ (6 domande)",
+            "icon": "bi-question-circle",
+            "region": ".sl-faq",
+            "keywords": ["faq", "prezzi", "domande"],
+            "tuple_order": ["q", "a"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 240}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 700}),
+            ],
+        },
+
+        # ── DEMO (lead form) ────────────────────────────────────────────
+        # demo.form_fields / form_sections / upload_field stay OUT entire ·
+        # 7th form-structure OUT precedent · Gusto/Juris/Casa/Villa/Aura chain.
+        "demo.trust_items": {
+            "kind": "tuple",
+            "page": "demo",
+            "label": "Demo · Trust items (3 righe · cosa aspettarti)",
+            "icon": "bi-shield-check",
+            "region": ".sl-demo-trust",
+            "keywords": ["trust", "demo", "aspettarti"],
+            "tuple_order": ["id", "title", "desc"],
+            "cols": [
+                ("id",    {"label": "ID (es. '01')", "type": "text", "max_length": 4}),
+                ("title", {"label": "Titolo",        "type": "text", "max_length": 160}),
+                ("desc",  {"label": "Descrizione",   "type": "textarea", "max_length": 500}),
+            ],
+        },
+
+        # ── CONTATTI ────────────────────────────────────────────────────
+        "contatti.channels": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Channels (4 canali)",
+            "icon": "bi-broadcast",
+            "region": ".sl-channels .card",
+            "keywords": ["channels", "contatti", "canali"],
+            "cols": [
+                ("icon",  {"label": "Icon (typographic Unicode)", "type": "text", "max_length": 4}),
+                ("title", {"label": "Titolo canale", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore (email · URL · orario)", "type": "text", "max_length": 200}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+                ("cta",   {"label": "CTA · etichetta", "type": "text", "max_length": 60}),
+            ],
+        },
+        "contatti.team": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Team (3 co-founder)",
+            "icon": "bi-people",
+            "region": ".sl-team .card",
+            "keywords": ["team", "founder", "contatti"],
+            "cols": [
+                ("name",  {"label": "Nome co-founder", "type": "text", "max_length": 120}),
+                ("role",  {"label": "Ruolo", "type": "text", "max_length": 120}),
+                ("email", {"label": "Email diretta (editorial display)", "type": "text", "max_length": 120}),
+                ("tag",   {"label": "Tag · ambito (es. 'Domande prodotto')", "type": "text", "max_length": 120}),
+                ("bio",   {"label": "Bio", "type": "textarea", "max_length": 600}),
+            ],
+        },
+        "contatti.office.schedule": {
+            "kind": "tuple",
+            "page": "contatti",
+            "label": "Contatti · Office schedule (4 righe · nested)",
+            "icon": "bi-calendar-week",
+            "region": ".sl-office-schedule",
+            "keywords": ["office", "schedule", "orari", "contatti"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Canale (es. 'Slack')", "type": "text", "max_length": 60}),
+                ("value", {"label": "Orari / disponibilità", "type": "text", "max_length": 200}),
+            ],
+        },
+    },
 }
 
 
@@ -9350,6 +9996,19 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # brief page OUT entire (step1/2/3 · labels · placeholders ·
     # scope_options · slots) · 5th form-structure OUT precedent.
     "agency-digital-studio":  ("aura-digital-studio", "it"),
+    # A.17b · Elevate (startup-saas-landing) — **CLOSES the editor
+    # enrollment program** · 2nd single-template dedicated-schema
+    # precedent after A.17 Aura. Post-A.17b: 20/20 catalog editable ·
+    # 9/9 families closed · zero non-enrolled archetypes. Outside-gate
+    # fixture RETIRED via synthetic archetype sentinel (Strategy A
+    # hybrid · `__unsupported_archetype_sentinel__`). 1 image surface
+    # (nested-dict scalar poster · simplest profile) · 16 indexed
+    # lists · zero deep-path · zero novel shape. Form-structure 7th
+    # precedent (demo.form_fields/sections/upload_field OUT entire) +
+    # billing-state 6th precedent (prezzi.billing_toggle_options OUT
+    # entire). Editor-vs-product-admin boundary 3rd category-class
+    # formalized (after commerce-admin + clinic-admin).
+    "startup-saas-landing":   ("elevate-startup-landing", "it"),
 }
 
 
@@ -9476,6 +10135,15 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # (form-structure · 5th precedent). Zero tocchi a services.py ·
     # rendering.py · editor shell.
     "agency-digital-studio":  AURA_AGENCY_DIGITAL_STUDIO_SCHEMA,
+    # A.17b · Elevate — CLOSES the editor enrollment program (20/20
+    # catalog · 9/9 families). Pure 3-file surface · 9 sidebar groups ·
+    # ~100 scalar + 16 indexed lists · 1 image (nested-dict scalar ·
+    # `home.product_demo_card.poster`). Form-scaffolding OUT entire on
+    # demo page + billing_toggle_options OUT entire on prezzi page.
+    # Zero tocchi a services.py · rendering.py · editor shell · other
+    # 18 enrolled archetypes. Outside-gate retired via synthetic
+    # archetype sentinel.
+    "startup-saas-landing":   ELEVATE_STARTUP_SAAS_LANDING_SCHEMA,
 }
 
 
@@ -10122,6 +10790,17 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # ``test_a17_aura_full_multilocale_lifecycle_end_to_end``. Pure
     # 3-file surface · zero horizontal touches.
     "agency-digital-studio",
+    # A.17b · Elevate (startup-saas-landing) — CLOSES the editor
+    # enrollment program. 5-locale content pre-authored (333-key
+    # parity). Gated by ``test_a17b_elevate_full_multilocale_lifecycle_
+    # end_to_end``. Outside-gate pattern retired via synthetic
+    # archetype sentinel (`__unsupported_archetype_sentinel__`) —
+    # Strategy A hybrid: 8 call-sites rotated to sentinel · 1 test
+    # renamed (A.17 out-guard → A.17b enrollment + retirement) · 1
+    # test deleted (redundant post-20/20) · 1 test positively
+    # reframed (from unsupported-archetype-raises to every-enrolled-
+    # creates-project) · 1 new dedicated retirement-contract test.
+    "startup-saas-landing",
 })
 
 
