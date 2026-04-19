@@ -1,5 +1,178 @@
 # Session Log
 
+## Session 75 — Phase A.16c · Famiglia (family · medical-other family · third template · CLOSER PHASE) Editor + Multi-locale Enrollment · CLOSES MEDICAL-OTHER FAMILY (2026-04-19)
+
+**Summary.** Seventeenth archetype enrolled in the editor: `family` (Famiglia). Single-template phase — Famiglia enters as **closer phase** of the medical-other 3-phase staged dedicated-schema progression (A.16 Salute opener · A.16b Benessere middle · A.16c Famiglia closer). **Removes family-out guard residuo** from A.16 Salute tests (6th precedent of guard removal pattern · completes the 2-removal-phase sub-recipe variant established in A.16b). **5th staged dedicated-schema family closure** (after real-estate + portfolio + restaurant-continuation + ecommerce + medical-other). **17 archetype slugs enrolled · 17 multi-locale enrolled · 18 templates editable end-to-end.** Catalog 20/20 `published_live` unchanged. Baseline `49f1f25` → merge `761044c` on `phase-integration-baseline-v15` · pushed origin. **Medical-other family OFFICIALLY CLOSED** · zero half-open families remain.
+
+Three critical framings for this session:
+
+1. **2-removal-phase sub-recipe variant COMPLETED · first 3-template staged progression closed**. A.16 Salute planted DUAL-OUT GUARD for both `wellness` + `family` · A.16b removed wellness-out via 5th precedent · A.16c removes family-out via 6th precedent via `test_a16c_family_out_guard_was_removed_from_salute_tests`. First time a 3-phase staged progression completes: "one-opener-two-closers" topology closure complete (vs prior "one-opener-one-closer" 2-phase topologies · Villa/Pixel/Brace/Luxe). D-098 invariant preserved throughout: one lifecycle test per enrolled template regardless of phase count. 5th staged dedicated-schema family closure brings total closed families to 7.
+
+2. **Deep-path Sapore precedent re-used mechanically · zero infra needed**. `crescita.topics[].items` is tuple-in-dict-list parent (4 sections × 4 tuples × 2 cols = 32 cells) · identical shape to Sapore's `menu.sections.{i}.dishes`. Registered as 4 separate STRUCTURED_FIELD_SHAPES entries mirroring Sapore's 5-entry pattern. **f66ac24 render-side contract-alignment fix already covers the path walk** · zero new infrastructure required. Browser walk verified end-to-end: deep-path override `crescita.topics.0.items.0.q` edits only the target cell (surgical isolation across 32 cells · sibling `.a`, sibling `.items.1.q`, sibling next topic, sibling farthest cell, parent scalars all UNCHANGED · both pre-publish draft and published public preview states).
+
+3. **Deep-path cells are plain-key globals per D-098 structured-list policy · NOT per-locale**. Discovery during lifecycle test writing: deep-path text cells (`crescita.topics.0.items.0.q`) classify as structured-list cells under `_is_under_structured_list()` · therefore non-translatable · stored as plain-key globals (mechanical reuse of Sapore precedent · verified via browser walk rendering universally on all 5 locales). This is uniform policy across 17 enrolled archetypes (every indexed-list cell is global · image or text · D-098 binding).
+
+### Context initial post-A.16b
+
+Baseline entering Session 75 was `49f1f25` (post-A.16b Benessere enrollment + consolidation; 16 archetypes enrolled, medical-other half-open with Famiglia pending). Outside-gate fixture already rotated to `family`/`famiglia-pediatria` in A.16b as closer candidate signal.
+
+### Famiglia-only scope decision
+
+Step-0 audit (planning session) ran comparative analysis vs Salute + Benessere already enrolled. Famiglia confirmed as closer phase: **smallest structural footprint** (446 LOC base · 61 CSS hits · 6 RTL rules) but carries the **deep-path complexity** deferred from Benessere (crescita.topics.items · Sapore-precedent shape). Schema shared with Salute/Benessere impossible (content-tree overlap ~0% · 3 distinct skin folders · 3 distinct DNA). Staged 3-phase variant invariant preserved from A.16 opener decision.
+
+### Step 0 · Planning / audit findings chiave
+
+- Archetype slug `family` · skin `medical/family/` · CSS **`.fm-*`** (61 hits · lowest of medical-other) · **6** `html[dir="rtl"]` rules (lowest of enrolled archetypes) · `_base.html` 446 LOC
+- 6 pages: home · studio(about) · visite(services) · **crescita** (novel `faq` kind) · pediatre(team) · contatti(contact) — **1 fewer page than Salute/Benessere** · **NO `appointment` kind** (phone-and-WhatsApp CTA pattern)
+- 5-locale parity PERFETTA (376 keys × 5 locales · zero gaps)
+- `apps/catalog/views.py::LiveTemplateView` ZERO imports da scheduler/booking/patient namespaces · boundary preserved runtime-verified (3rd medical-other archetype)
+- Image surface runtime-verified: 16 editable surfaces (3 scalar top-level + 13 image-in-dict-row cells across 3 lists: `home.doctors[].portrait` × 4 + `home.gallery[].src` × 5 + `pediatre.doctors[].portrait` × 4) · **ALL RENDERED** (pediatric skin · no storage-only split)
+- 12 lists-of-dict IN + 4 lists-of-tuple IN = 16 parent-level entries · **+ 4 DEEP-PATH `crescita.topics.{0..3}.items`** · total **20 STRUCTURED_FIELD_SHAPES entries**
+- 2 nested-dict OUT (form-related): `contatti.form_placeholders` · `contatti.form_helpers`
+- 2 flat list-of-str OUT (policy): `site.hours_footer_rows` · `contatti.reason_options`
+- 2 nested list-of-str inside dict rows OUT (Juris precedent): `home.age_groups[].items` · `pediatre.doctors[].specs`
+- **NO `form_fields` list-of-dict** (form exposed as flat scalars · simpler than Benessere · contatti has direct `label_parent_name`/`label_child_age`/`label_reason` + `form_title`/`form_intro`/`form_consent`/`form_submit_note` all scalar IN)
+- **Zero raw SVG fields** (icons are short Bootstrap text refs like `baby`/`apple`/`clock`/`metro` · customer-editable IN)
+- **Zero bool flags** (no scheduler-state on Famiglia · unlike Benessere calendar)
+- **Novel col name `src`** on `home.gallery` (vs prior `image`/`portrait`/`avatar` · mechanical reuse via col registration)
+- **Posts list empty** (structural absence)
+
+### Step 1 · Schema + bridge + gate + contract tests
+
+- `FAMIGLIA_FAMILY_SCHEMA` added in `apps/editor/schema.py` — **8 sidebar groups · 102 scalar fields**.
+- `STRUCTURED_FIELD_SHAPES["family"]` with **20 entries**:
+  - 12 lists-of-dict (home.trust_items, home.age_groups, home.doctors, home.journey_steps, home.gallery, studio.values, visite.visits, visite.tips, crescita.topics (parent), crescita.materials, pediatre.doctors, contatti.travel)
+  - 4 lists-of-tuple (home.faq, home.hours, studio.history, contatti.hours)
+  - **4 DEEP-PATH `crescita.topics.{0..3}.items`** (mirroring Sapore's `menu.sections.{0..4}.dishes` pattern · tuple-in-dict-list parent)
+- Image-in-dict-row lists (3): `home.doctors[].portrait` × 4 · `home.gallery[].src` × 5 (novel col name `src`) · `pediatre.doctors[].portrait` × 4 = 13 image cells.
+- Scalar top-level images (3): `home.hero_image` · `studio.studio_image` · `contatti.map_image`.
+- 3 gate registrations simultanee · `_ARCHETYPE_BASELINE_TEMPLATE["family"] = ("famiglia-pediatria", "it")` + `_ARCHETYPE_SCHEMAS["family"] = FAMIGLIA_FAMILY_SCHEMA` + `"family"` in `_MULTILOCALE_ENABLED_ARCHETYPES`.
+- **Col-level exclusions**: `home.age_groups[].items` + `pediatre.doctors[].specs` (nested list-of-str · Juris precedent) · `crescita.topics[].items` (parent col OUT · sub-path IN via 4 deep-path entries).
+- **Complex-shape exclusion** (form + flat + empty): 2 nested-dict form structures · 2 flat list-of-str · `pages` · `posts` (empty).
+- 3 atomic fixes on `templates/live_templates/medical/family/_base.html`: title `site.logo_word|default:brand.brand_name` · body `mw-is-editor-preview` guard · `.fm-*` CSS guard block (`.fm-nav .wm` clamp 32ch) · preview-bridge.js conditional on `preview_project`.
+- **Family-out guard REMOVED** from A.16 Salute tests at 3 locations: registration-time in `test_a16_salute_archetype_registered` + runtime at start AND end of `test_a16_salute_full_multilocale_lifecycle_end_to_end`. **Wellness-out guard stays removed** (was removed in A.16b).
+- **NEW test** `test_a16c_family_out_guard_was_removed_from_salute_tests` · **6th precedent** of guard removal pattern after Villa/Pixel/Brace/Luxe/Wellness · **completes the 2-removal-phase sub-recipe variant** established in A.16b.
+- **NEW test** `test_a16c_medical_other_family_closed` · family-closure guardrail · asserts all 3 medical-other archetypes (clinic + wellness + family) IN.
+- **Outside-gate fixture rotation** (6 location): `family`/`famiglia-pediatria` → `agency-digital-studio`/`aura-digital-studio` (A.17 candidate).
+
+### Step 2 · Lifecycle HTTP end-to-end test
+
+- `test_a16c_family_full_multilocale_lifecycle_end_to_end` added (pure test-only change · +412 LOC · zero production code).
+- 12 phases blindates: perimeter start (ALL 3 medical-other archetypes IN · family CLOSED) · 3 translatable locales on `home.headline` · global plain-key `site.logo_word` · 3 image paths across 3 distinct pages (scalar `home.hero_image` on home + `home.gallery.0.src` on home novel `src` col + `pediatre.doctors.0.portrait` on pediatre page) · **DEEP-PATH text override** `crescita.topics.0.items.0.q` (structured-list policy · plain-key global · not per-locale · Sapore precedent) · publish · second-user preview walk 5 locales × 3 pages incl. novel `faq` page kind · AR `<html dir="rtl" lang="ar">` · owner re-opens editor with per-locale prefill · perimeter end (ALL 3 medical-other IN · family CLOSED) + **18 OUT paths rejected**.
+- **Triple-invariant**: Salute + Benessere + Famiglia all IN at start AND end of test · medical-other family CLOSED.
+- **Initial test-writing discovery**: deep-path cells are plain-key globals per D-098 structured-list policy (not per-locale · same as Sapore menu cells). Test fixed to match policy · verified via browser walk that override renders universally on all 5 locales.
+
+### Step 3 · Playwright browser walk
+
+- Sidebar inventory: **385 total editable fields · 16 image widgets exact · 32 deep-path cells exact** (4 topics × 4 tuples × 2 cols · Sapore-precedent shape mirror) · 5 lang pills · 29 group slots (8 sidebar + 20 indexed + 1 design).
+- **20 critical IN paths present** in sidebar: 3 scalar images · 6 image-in-dict-row cells · 4 deep-path cell samples (items.0.q/a on topic 0 + items.3.q/a on topic 3 farthest) · `meta`/`age`/`range`/`tag`/`exp_label`/`exp_value`/`wa_label` editorial IN.
+- **12 sensitive OUT paths absent** (home.age_groups.items · pediatre.doctors.specs · contatti.form_placeholders/helpers · site.hours_footer_rows · contatti.reason_options · pages · posts).
+- 5-locale flush walk IT→EN→FR→ES→AR · per-locale `home.headline` authored baselines verified:
+  - IT: `Cresciamo insieme ai vostri bambini.`
+  - EN: `Growing up alongside your little ones.`
+  - FR: `Grandir aux côtés de vos enfants.`
+  - ES: `Crecemos junto a sus hijos.`
+  - AR: `ننمو إلى جانب أطفالكم.`
+- **FOCUS A · AR visual RTL on `.fm-*` with 6 rules**: editor iframe body/nav/hero all computed direction: `rtl` · text-align: `start` · `topics` section on crescita page computed `rtl` · 16 `<details>` elements (4 topics × 4 Q&A exact) · public preview `<html lang="ar" dir="rtl">` on home + crescita · 5420/4537 Arabic chars · 6 RTL rules SUFFICIENT for base layout.
+- **FOCUS B · Deep-path edit isolation verified (draft + published)**: after editing `crescita.topics.0.items.0.q` only, verified UNCHANGED:
+  - Sibling `.a` (same tuple · different col)
+  - Sibling `.items.1.q` (next tuple · same topic)
+  - Sibling `crescita.topics.1.items.0.q` (first Q of next topic)
+  - Sibling `crescita.topics.3.items.3.q` (farthest deep-path cell)
+  - Parent scalars `crescita.topics.0.meta` + `.title`
+  - **Zero collateral pollution** across 32 deep-path cells.
+- **Storage shape after publish (8 overrides)**: 3 per-locale translatable (`@it/@en/@fr:home.headline`) + 5 plain-key globals (`site.logo_word` · `home.hero_image` · `home.gallery.0.src` · `pediatre.doctors.0.portrait` · **`crescita.topics.0.items.0.q` deep-path**). Zero `@<locale>:` on any image or logo or deep-path cell across 5 locales.
+- **Render matrix 5 locales × 3 pages = 15/15 green**: logo×4 universal · hero+gallery on home · portrait on pediatre · **deepQ renders universally on all 5 crescita locales (plain-key global confirmed end-to-end)** · zero cross-page bleed · zero cross-locale leak.
+
+### Tests + smoke (post-merge)
+
+- `manage.py check` → 0 issues
+- `manage.py test apps` → **341/341 PASS** (325 pre-A.16c + 15 contract + 1 lifecycle)
+- `smoke_full.py` → **834/834 routes HTTP 200**
+- Browser walk 5-locale green (sidebar + flush + storage + render matrix + AR RTL + FOCUS A + FOCUS B)
+
+### File delta
+
+- `apps/editor/schema.py` **+600 LOC** (Famiglia schema + 20 shapes incl. 4 deep-path + 3 gate registrations · right AT 600 soft guardrail · Sapore precedent was +663 for similar deep-path shape)
+- `apps/projects/tests.py` **+~972 / -~115** (15 contract tests + 1 lifecycle test + family-out guard REMOVED from 3 A.16 Salute test locations + A.16b wellness-out test UPDATED to confirm family now IN + 6 outside-gate fixture rotations)
+- `templates/live_templates/medical/family/_base.html` **+10 / -2** (3 atomic fixes on `.fm-*` skin)
+
+**Pure 3-file enrollment surface · zero tocchi a `apps/commerce` · `services.py` · `rendering.py` · `views.py` · `models.py` · editor shell · widgets · ProjectAsset · upload endpoint. Pattern confirmed sub-recipe standard after 7 consecutive applications.**
+
+### Medical-other family CLOSED · 7 families editor-complete
+
+- Staged dedicated-schema closure **5 of N**: real-estate (A.12+A.12b) · portfolio (A.13+A.13b) · restaurant-continuation (A.14+A.14b) · ecommerce (A.15+A.15b) · **medical-other (A.16+A.16b+A.16c · first 3-phase variant · CLOSED)**.
+- **7 families editor-complete** (up from 6 post-A.16b): law + medical-specialist + real-estate + portfolio + restaurant-continuation + ecommerce + medical-other.
+- **Zero half-open families remain**.
+- 2 templates editor-only-pending residui: Aura (`agency-digital-studio`) · Elevate (`startup-saas-landing`).
+- Catalog 20/20 `published_live` · **18/20 enrolled editor** (was 17/20 post-A.16b · +1 Famiglia).
+
+### Guard removal pattern · 6 precedents consolidated
+
+- Villa-out (A.12b via `test_a12b_villa_out_guard_was_removed_from_casa_tests`)
+- Pixel-out (A.13b via `test_a13b_pixel_out_guard_was_removed_from_chiara_tests`)
+- Brace-out (A.14b via `test_a14b_brace_out_guard_was_removed_from_sapore_tests`)
+- Luxe-out (A.15b via `test_a15b_luxe_out_guard_was_removed_from_bottega_tests`)
+- Wellness-out (A.16b via `test_a16b_benessere_out_guard_was_removed_from_salute_tests`)
+- **Family-out (A.16c via `test_a16c_family_out_guard_was_removed_from_salute_tests`)** ← 6th precedent · **COMPLETES 2-removal-phase sub-recipe variant**
+
+Sub-recipe consolidated · supports both 2-phase (one-opener-one-closer · 5 precedents) and 3-phase (one-opener-two-closers · 1 precedent · medical-other) topologies. No pending removals.
+
+### Outside-gate fixture rotation history
+
+- A.16b: `wellness`/`benessere-centro-olistico` → `family`/`famiglia-pediatria`
+- **A.16c: `family`/`famiglia-pediatria` → `agency-digital-studio`/`aura-digital-studio`** (A.17 candidate)
+
+6 fixture rotate · 4 `supported_locales`/`is_translatable` + 1 `is_supported_archetype` + 1 `customize_start` redirect.
+
+### Decisioni binding in vigore post-A.16c
+
+- D-086 → D-095 (A.1 → A.5)
+- D-096 · per-locale storage `@<locale>:<path>`
+- D-097 · no cross-locale customer fallback
+- D-098 · archetype gate + dedicated lifecycle test per enrollment
+  - Session 75 operational clarification (under D-098 · no new D-number):
+    - Medical-other family CLOSED via A.16c Famiglia closer (5th staged dedicated-schema family closure)
+    - 2-removal-phase sub-recipe variant COMPLETED (first 3-template staged progression closes · 6th precedent guard removal · one-opener-two-closers topology proven)
+    - Deep-path `crescita.topics[].items` uses mechanical reuse of Sapore `menu.sections.{i}.dishes` pattern · f66ac24 render-side fix cross-pattern confirmed on 3rd deep-path archetype (Sapore tuple-in-dict-list + Brace dict-in-dict-list + Famiglia tuple-in-dict-list)
+    - Deep-path cells are plain-key globals per D-098 structured-list policy (non-translatable · uniform across 17 enrolled archetypes)
+    - Deep-path edit surgical isolation verified runtime (target cell only · sibling cells + parent scalars unchanged · both draft and published states)
+    - Stringent IN col-level audit extended to 7 archetypes
+    - Novel col name `src` on home.gallery image-in-dict-row (mechanical reuse via col registration · no new infra)
+    - 6 RTL rules sufficient for `.fm-*` skin base layout (lowest of enrolled archetypes · verified visual coherent on nav/hero/FAQ)
+    - Boundary editor-vs-clinic-admin re-verified on third medical-other archetype
+
+**Nessun nuovo D-number da A.16c.** Operational clarification sotto D-098 solamente.
+
+### Famiglia metrics
+
+- 8 sidebar groups · 102 scalar fields · 16 image surfaces (3 scalar top + 13 image-in-dict-row cells · ALL RENDERED)
+- **20 readonly indexed list entries** (12 parent dict + 4 parent tuple + **4 DEEP-PATH** crescita.topics.{0..3}.items · 32 Q&A cells · Sapore precedent)
+- ~85 translatable · ~290 global
+- 5 locale parity PERFECT (376 keys × 5 · zero gaps)
+- `.fm-*` skin · **6** `html[dir="rtl"]` rules (lowest of enrolled · sufficient for base layout)
+- Zero posts · zero form_fields list-of-dict · zero mutable repeater · zero image per-locale · zero scheduler/booking/patient model paths · zero raw SVG · zero bool flags
+- Schema LOC delta **+600** (right AT soft guardrail · Sapore precedent +663 for similar deep-path)
+
+### Not in scope (confirmed out-of-scope)
+
+- Aura editor enrollment (deferred A.17 candidate)
+- Elevate editor enrollment (deferred)
+- `home.ambients` tuple-with-image widening (deferred novel shape from A.16b · not Famiglia-specific)
+- Bool field type addition (horizontal feature · resisted · no bool flags on Famiglia anyway)
+- Nested list-of-str editor widget (horizontal feature · resisted)
+- Form-structure editor (horizontal feature · resisted)
+- Image per-locale (D-098 invariante)
+- Repeater per-locale (out-of-scope family)
+- Mutable repeater (Famiglia lists tutte readonly)
+- Detail-page editing (horizontal feature cross-archetype · 6-archetype uniform enforcement preserved)
+- Scheduler-state / booking-state / patient-record editing (clinic-admin scope · separate concern)
+- Coverage expansion beyond first wave
+- Refactor trasversali
+- Remote storage
+
+---
+
 ## Session 74 — Phase A.16b · Benessere (wellness · medical-other family · second template · MIDDLE PHASE) Editor + Multi-locale Enrollment (2026-04-19)
 
 **Summary.** Sixteenth archetype enrolled in the editor: `wellness` (Benessere). Single-template phase — Benessere enters as **middle phase** of the medical-other 3-phase staged dedicated-schema progression (A.16 Salute opener · A.16b Benessere middle · A.16c Famiglia closer pending). Removes wellness-out guard half of the DUAL-OUT GUARD planted in A.16 Salute · **family-out guard PRESERVED** for A.16c. **16 archetype slugs enrolled · 16 multi-locale enrolled · 17 templates editable end-to-end.** Catalog 20/20 `published_live` unchanged. Baseline `803f273` → merge `e9cc419` on `phase-integration-baseline-v15` · pushed origin. Medical-other family remains **half-open** (Salute + Benessere IN · Famiglia pending A.16c closer).
