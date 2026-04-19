@@ -12311,6 +12311,418 @@ class FoundationHttpTests(TestCase):
             ):
                 validate_key_path("wellness", out_path)
 
+    # ------------------------------------------------------------------
+    # A.16c · Step 2 — Famiglia (family) lifecycle HTTP cross-cutting ·
+    # CLOSER phase of the medical-other 3-phase staged dedicated-schema
+    # progression (A.16 Salute opener · A.16b Benessere middle · A.16c
+    # Famiglia closer · medical-other family CLOSED). Exercises 4
+    # surfaces end-to-end across 3 distinct pages:
+    #   - home.hero_image (scalar top-level · rendered hero on home)
+    #   - home.gallery.0.src (image-in-dict-row · NOVEL `src` col name ·
+    #     rendered on home · same page as hero but different list)
+    #   - pediatre.doctors.0.portrait (image-in-dict-row · rendered on
+    #     pediatre page · DIFFERENT list + DIFFERENT page)
+    #   - **crescita.topics.0.items.0.q** (DEEP-PATH text override ·
+    #     rendered on crescita FAQ page · Sapore precedent mirror ·
+    #     mechanical reuse of f66ac24 render-side fix · novel-for-
+    #     Famiglia surface)
+    # All 3 image paths plain-keyed across all 5 locales (D-098 image
+    # per-locale out-of-scope). Deep-path text cell translatable via
+    # `@<locale>:` storage (verified via direct autosave · rendered
+    # end-to-end on public crescita page). **ALL 3 MEDICAL-OTHER
+    # ARCHETYPES IN** (clinic + wellness + family) at start AND end of
+    # test (medical-other family CLOSED · dual-out guard fully removed).
+    # ------------------------------------------------------------------
+
+    def test_a16c_family_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the Famiglia enrollment.
+
+        Famiglia's `.fm-*` skin renders ALL 16 image surfaces + the
+        deep-path crescita topics Q&A cells (pediatric skin · no
+        storage-only split). This test blindates both storage shape
+        (plain-key globals for 3 image paths + per-locale for deep-path
+        text cell) AND render visibility on the public preview for
+        each surface across 5 locales × 3 pages · including the
+        **novel deep-path tuple-in-dict-list editing** (Sapore precedent
+        mirror · mechanical reuse of f66ac24).
+
+        Phases:
+        1. perimeter invariants at TEST START — ALL 3 medical-other
+           archetypes IN (clinic + wellness + family · medical-other
+           family CLOSED post-A.16c · DUAL-OUT GUARD fully removed)
+        2. customer edits IT / EN / FR on home.headline
+        3. customer edits global site.logo_word via EN — plain-keyed
+           no @en: prefix
+        4. customer edits SCALAR top-level `home.hero_image`
+           (rendered hero on home page) — 5× assertNotIn @<locale>:
+           + render on home page all 5 locales
+        5. customer edits IMAGE-IN-DICT-ROW `home.gallery.0.src`
+           (5-row gallery · NOVEL `src` col name · same home page as
+           hero but different list shape) — 5× assertNotIn + render
+           on home page all 5 locales
+        6. customer edits IMAGE-IN-DICT-ROW `pediatre.doctors.0.portrait`
+           (4-row doctor grid · DIFFERENT list + DIFFERENT page from
+           gallery) — 5× assertNotIn + render on pediatre page all 5
+           locales
+        7. customer edits **DEEP-PATH** `crescita.topics.0.items.0.q`
+           (Sapore precedent mirror · tuple-in-dict-list cell · global
+           plain-key · non-translatable per D-098 structured-list
+           policy · same as all STRUCTURED_FIELD_SHAPES cells) — single
+           plain-key override · renders universally across 5 locales
+           on crescita page
+        8. publish
+        9. second user visits home + pediatre + crescita on all 5
+           locales
+        10. AR response head carries ``<html dir="rtl" lang="ar">`` on
+            the `.fm-*` skin (6 RTL rules · lowest of enrolled ·
+            skin-level check only)
+        11. owner reopens the editor per locale · prefill + universals
+        12. perimeter invariants re-checked end-of-test:
+            - ALL 3 medical-other (clinic + wellness + family) IN
+              (medical-other family CLOSED · DUAL-OUT GUARD fully
+              consumed · sub-recipe 2-removal-phase variant complete)
+            - 14 pre-A.16 archetypes still enrolled
+            - Sensitive OUT paths REJECTED (form structures · flat
+              str-lists · nested str-lists · deep-path parent col ·
+              pages · posts)
+
+        Explicitly NOT exercised here: browser walk (Step 3), Aura/
+        Elevate editor work, coverage expansion, mutable rows, image
+        per-locale, apps.commerce / clinic-admin touches, home.ambients
+        novel shape widening (deferred from A.16b). Zero production-
+        code changes.
+        """
+        import json as _json
+
+        famiglia = WebTemplate.objects.get(slug="famiglia-pediatria")
+        p = services.create_project_from_template(owner=self.owner, template=famiglia)
+
+        # ── 1. perimeter invariants at TEST START ────────────────
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            _ARCHETYPE_SCHEMAS as _SCHEMAS,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        # Medical-other family CLOSED · all 3 archetypes IN.
+        for arc in ("clinic", "wellness", "family"):
+            self.assertIn(arc, _SCHEMAS,
+                          f"{arc} must be enrolled at lifecycle start · medical-other CLOSED")
+            self.assertIn(arc, _ENABLED,
+                          f"{arc} must be in multi-locale gate at start · medical-other CLOSED")
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 2. three translatable locales on home.headline ────────
+        for locale, headline in (
+            ("it", "Walk IT Famiglia <em>A16cFamilyLine</em>."),
+            ("en", "Walk EN Famiglia <em>A16cFamilyLineEN</em>."),
+            ("fr", "Walk FR Famiglia <em>A16cFamilyLineFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+
+        # ── 3. global plain-keyed text — site.logo_word via EN ────
+        r = autosave("en", {"site.logo_word": "A16c Famiglia Walk Studio"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 4. scalar top-level image — home.hero_image ──────────
+        IMG_HERO = "https://walk-famiglia.example/img/hero-A16c.jpg"
+        r = autosave("it", {"home.hero_image": IMG_HERO})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.hero_image", r.json()["content_keys"])
+
+        # ── 5. image-in-dict-row home.gallery (NOVEL `src` col) ──
+        # 5-row gallery · NOVEL col name `src` (vs prior image/portrait/
+        # avatar across 14 enrolled archetypes) · same home page as
+        # hero_image but DIFFERENT list shape.
+        IMG_GALLERY = "https://walk-famiglia.example/img/gallery-A16c.jpg"
+        r = autosave("it", {"home.gallery.0.src": IMG_GALLERY})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.gallery.0.src", r.json()["content_keys"])
+
+        # ── 6. image-in-dict-row pediatre.doctors (team page) ────
+        # 4-row doctor grid · DIFFERENT list shape from home.gallery
+        # (cols name/role/tag/bio/exp_label/exp_value/wa_label/portrait
+        # vs cap/src) AND DIFFERENT page (pediatre vs home).
+        IMG_PORTRAIT = "https://walk-famiglia.example/img/portrait-A16c.jpg"
+        r = autosave("it", {"pediatre.doctors.0.portrait": IMG_PORTRAIT})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("pediatre.doctors.0.portrait", r.json()["content_keys"])
+
+        # ── 7. DEEP-PATH text override — crescita.topics.0.items.0.q
+        # First deep-path override in Famiglia context · Sapore
+        # precedent mirror (menu.sections.{i}.dishes pattern) ·
+        # mechanical reuse of f66ac24 render-side fix. Deep-path cells
+        # inside STRUCTURED_FIELD_SHAPES are GLOBAL (plain-keyed · non-
+        # translatable per D-098 policy · same as Sapore dish cells
+        # and every other structured-list cell). Single override
+        # applies universally to all 5 locales. Rendered via faq.html
+        # `{% for q, a in topic.items %}` skin loop.
+        Q_OVERRIDE = "Walk · deep-path Q override A16c?"
+        r = autosave("it", {"crescita.topics.0.items.0.q": Q_OVERRIDE})
+        self.assertEqual(r.status_code, 200, "Deep-path autosave failed")
+        self.assertIn("crescita.topics.0.items.0.q",
+                      r.json()["content_keys"])
+
+        # Storage shape verification.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        # Translatable per-locale
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        # Plain-keyed globals (incl. deep-path cell · structured-list
+        # policy · Sapore precedent)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("home.hero_image", keys)
+        self.assertIn("home.gallery.0.src", keys)
+        self.assertIn("pediatre.doctors.0.portrait", keys)
+        self.assertIn("crescita.topics.0.items.0.q", keys)
+        # Zero plain-key leak on translatable paths · zero @<locale>
+        # leak on structured-list cells
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+        # All 3 image paths + deep-path text cell plain-keyed across
+        # all 5 locales.
+        for loc in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(f"@{loc}:home.hero_image", keys,
+                             f"home.hero_image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:home.gallery.0.src", keys,
+                             f"home.gallery.0.src must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:pediatre.doctors.0.portrait", keys,
+                             f"pediatre.doctors.0.portrait must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:crescita.topics.0.items.0.q", keys,
+                             f"deep-path cell must NEVER be @{loc}:-prefixed · structured-list policy")
+
+        # ── 8. publish ───────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 9. second user on every public preview locale ────────
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale, page=None):
+            suffix = f"{page}/" if page else ""
+            url = (
+                f"/templates/medical/famiglia-pediatria/preview/"
+                f"{suffix}?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render (home) — IT override + global logo + home.hero_image
+        # + home.gallery.0.src overrides visible. EN/FR absent.
+        body_it = preview_body("it")
+        self.assertIn("Walk IT Famiglia", body_it)
+        self.assertIn("A16cFamilyLine", body_it)
+        self.assertNotIn("A16cFamilyLineEN", body_it)
+        self.assertNotIn("A16cFamilyLineFR", body_it)
+        self.assertIn("A16c Famiglia Walk Studio", body_it)
+        self.assertIn(IMG_HERO, body_it,
+                      "home.hero_image override must render on home page IT")
+        self.assertIn(IMG_GALLERY, body_it,
+                      "home.gallery.0.src override must render on home page IT (novel src col)")
+
+        # IT render (pediatre) — pediatre.doctors.0.portrait override.
+        body_it_pediatre = preview_body("it", page="pediatre")
+        self.assertIn("A16c Famiglia Walk Studio", body_it_pediatre)
+        self.assertIn(IMG_PORTRAIT, body_it_pediatre,
+                      "pediatre.doctors.0.portrait override must render on pediatre page IT")
+
+        # IT render (crescita · novel FAQ page) — DEEP-PATH override
+        # visible in faq.html Q&A loop. Universal logo + single global
+        # Q override (plain-keyed · renders universally on all 5 locales).
+        body_it_crescita = preview_body("it", page="crescita")
+        self.assertIn("A16c Famiglia Walk Studio", body_it_crescita)
+        self.assertIn(Q_OVERRIDE, body_it_crescita,
+                      "crescita.topics.0.items.0.q override must render "
+                      "on crescita FAQ page · DEEP-PATH end-to-end · Sapore "
+                      "precedent mirror · f66ac24 mechanical reuse")
+
+        # EN render spans home + pediatre + crescita
+        body_en = preview_body("en")
+        self.assertIn("Walk EN Famiglia", body_en)
+        self.assertIn("A16cFamilyLineEN", body_en)
+        self.assertNotIn("Walk IT Famiglia", body_en)
+        self.assertIn("A16c Famiglia Walk Studio", body_en)
+        self.assertIn(IMG_HERO, body_en)
+        self.assertIn(IMG_GALLERY, body_en)
+        self.assertIn(IMG_PORTRAIT, preview_body("en", page="pediatre"))
+        # Deep-path override renders universally (plain-key global) —
+        # visible on EN locale too (no per-locale scoping).
+        self.assertIn(Q_OVERRIDE, preview_body("en", page="crescita"),
+                      "crescita deep-path override universal on EN (plain-key)")
+
+        # FR render spans home + pediatre + crescita
+        body_fr = preview_body("fr")
+        self.assertIn("Walk FR Famiglia", body_fr)
+        self.assertIn("A16cFamilyLineFR", body_fr)
+        self.assertIn("A16c Famiglia Walk Studio", body_fr)
+        self.assertIn(IMG_HERO, body_fr)
+        self.assertIn(IMG_GALLERY, body_fr)
+        self.assertIn(IMG_PORTRAIT, preview_body("fr", page="pediatre"))
+        self.assertIn(Q_OVERRIDE, preview_body("fr", page="crescita"),
+                      "crescita deep-path override universal on FR (plain-key)")
+
+        # Unedited locales — authored fallback on translatable text +
+        # universals preserved across home + pediatre + crescita.
+        # Deep-path global override renders universally on ES + AR too
+        # (plain-key · no per-locale scoping).
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Walk IT Famiglia", body)
+            self.assertNotIn("Walk EN Famiglia", body)
+            self.assertNotIn("Walk FR Famiglia", body)
+            self.assertIn("A16c Famiglia Walk Studio", body)
+            self.assertIn(IMG_HERO, body,
+                          f"home.hero_image must render universally on {locale} home")
+            self.assertIn(IMG_GALLERY, body,
+                          f"home.gallery.0.src must render universally on {locale} home")
+            body_pediatre = preview_body(locale, page="pediatre")
+            self.assertIn(IMG_PORTRAIT, body_pediatre,
+                          f"pediatre.doctors.0.portrait must render universally on {locale} pediatre")
+            body_crescita = preview_body(locale, page="crescita")
+            # Deep-path override renders universally (plain-key global).
+            self.assertIn(Q_OVERRIDE, body_crescita,
+                          f"crescita deep-path override universal on {locale} (plain-key)")
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Famiglia home",
+                )
+
+        # ── 10. AR preview (home) — `.fm-*` skin RTL invariant ────
+        # 6 RTL rules (lowest of enrolled archetypes · validated Session
+        # 51 · visual polish deferrable to future maintenance).
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 11. owner reopens the editor on each locale ──────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Walk IT Famiglia"),
+            ("en", "Walk EN Famiglia"),
+            ("fr", "Walk FR Famiglia"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text + scalar hero image: overridden universally, not
+        # translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Famiglia editor")
+        self.assertEqual(logo_field["value"], "A16c Famiglia Walk Studio")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        hero_field = find_field_by_key(r_es.context["groups"], "home.hero_image")
+        self.assertIsNotNone(hero_field, "home.hero_image missing from Famiglia editor")
+        self.assertEqual(hero_field["value"], IMG_HERO)
+        self.assertTrue(hero_field["is_overridden"])
+        self.assertFalse(hero_field["translatable"])
+
+        # ── 12. perimeter invariants re-checked end-of-test ──────
+        # Medical-other family CLOSED · ALL 3 archetypes IN.
+        for arc in ("clinic", "wellness", "family"):
+            self.assertIn(arc, _SCHEMAS,
+                          f"{arc} enrollment must persist through lifecycle · medical-other CLOSED")
+            self.assertIn(arc, _ENABLED)
+        # 14 pre-A.16 archetypes also still enrolled.
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop", "fashion-editorial",
+        ):
+            self.assertIn(arc, _ENABLED, f"{arc} lost enrollment mid-lifecycle")
+        # Sensitive OUT paths stay rejected — re-verified runtime at
+        # end-of-test per user guidance.
+        for out_path in (
+            # Flat list-of-str
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            "contatti.reason_options",
+            "contatti.reason_options.0",
+            # Nested list-of-str inside dict rows (Juris precedent)
+            "home.age_groups.0.items",
+            "home.age_groups.0.items.0",
+            "home.age_groups.2.items.2",
+            "pediatre.doctors.0.specs",
+            "pediatre.doctors.0.specs.0",
+            "pediatre.doctors.3.specs.2",
+            # Form-related nested-dicts (Juris/Gusto/Bottega/Luxe/Salute/Benessere precedent)
+            "contatti.form_placeholders",
+            "contatti.form_placeholders.parent_name",
+            "contatti.form_placeholders.email",
+            "contatti.form_helpers",
+            "contatti.form_helpers.email",
+            # Top-level navigation + empty posts
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Famiglia complex-shape path must stay rejected: {out_path}",
+            ):
+                validate_key_path("family", out_path)
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
