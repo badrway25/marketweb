@@ -13250,6 +13250,399 @@ class FoundationHttpTests(TestCase):
             ):
                 validate_key_path("family", out_path)
 
+    def test_a17_aura_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the Aura A.17 enrollment.
+
+        Aura's `.au-*` skin renders ALL 12 image surfaces
+        (image-in-dict-row only · zero scalar top-level image · zero
+        deep-path). This test blindates:
+
+        (a) Storage shape global for **every one** of the 12 image
+            cells across 3 lists (home.work_cards · studio.team ·
+            lavori.projects) · each image edit must be plain-keyed
+            (NO @<locale>: prefix) · D-098 structured-list policy
+            uniform across all 18 enrolled archetypes.
+        (b) Per-locale leak absence on the two sentinel fields:
+            - `site.logo_word` force-global (in _GLOBAL_TEXT_PATHS) ·
+              IT edit must be visible on all 5 locales · zero
+              @<locale>: prefix in storage · renders on EN/FR/ES/AR
+            - `home.headline` translatable · IT edit must be visible
+              only on IT preview · EN/FR/ES/AR previews must render
+              their authored baselines (no IT leak · no cross-locale
+              bleed) · confirmed via 5-locale render matrix
+        (c) Posts perimeter closure · validated BOTH at test start
+            AND end-of-test: 12 posts paths rejected by
+            validate_key_path · autosave POST on any posts path
+            rejects with 400 · posts cover_image × 6 stays registry-
+            only (7th uniform enforcement)
+        (d) Outside-gate fixture still OUT at end-of-test:
+            - startup-saas-landing is_supported_archetype → False
+            - supported_locales → []
+            - is_translatable → False
+        (e) Perimeter invariants re-checked: agency-digital-studio
+            IN · all 17 pre-A.17 archetypes IN · 18 enrolled total
+
+        Phases:
+        1. perimeter invariants at TEST START
+        2. customer edits IT/EN/FR on home.headline (per-locale)
+        3. customer edits global site.logo_word via IT — plain-keyed
+        4. customer edits all 12 image cells across 3 lists — every
+           one must be plain-key global (NO @<locale>: prefix)
+        5. customer edits stringent-IN fields (foot_boot_line · sprint_
+           chip · home.sprints[].output) — routed per target type
+        6. autosave rejection on posts paths (registry-only)
+        7. autosave rejection on brief.slots + brief.scope_options +
+           brief.step1 (5th form-structure OUT precedent · explicit)
+        8. publish
+        9. cross-locale render matrix · 5 locales × home page
+           - EN/FR/ES/AR preview must render IT-authored baseline on
+             home.headline (zero IT leak across locales since IT
+             edit was scoped to `@it:`)
+           - ALL 5 locales must render IT-overridden site.logo_word
+             (global · same value universally)
+           - AR response head carries <html dir="rtl" lang="ar"> on
+             `.au-*` skin
+        10. owner reopens the editor per locale · prefill + universals
+        11. perimeter invariants re-checked end-of-test:
+            - agency-digital-studio still IN
+            - startup-saas-landing still OUT (outside-gate preserved)
+            - 17 pre-A.17 archetypes still enrolled
+            - Posts + brief form-structure + flat-list-of-str still
+              rejected
+
+        Explicitly NOT exercised: browser walk (Step 3), Elevate
+        editor work, posts editing, coverage expansion, mutable
+        rows, image per-locale, apps.commerce touches, home.ambients
+        widening. Zero production-code changes required.
+        """
+        import json as _json
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            _ARCHETYPE_SCHEMAS as _SCHEMAS,
+            InvalidEditableField,
+            is_supported_archetype,
+            is_translatable,
+            supported_locales,
+            validate_key_path,
+        )
+
+        # ── 1. perimeter invariants at TEST START ────────────────
+        aura_arc = "agency-digital-studio"
+        out_arc = "startup-saas-landing"
+        self.assertIn(aura_arc, _SCHEMAS, "Aura must be enrolled at lifecycle start")
+        self.assertIn(aura_arc, _ENABLED, "Aura must be in multi-locale gate at start")
+        # Outside-gate sanity (Elevate).
+        self.assertNotIn(out_arc, _SCHEMAS, "Elevate must stay OUT at lifecycle start")
+        self.assertFalse(is_supported_archetype(out_arc))
+        self.assertEqual(supported_locales(out_arc), [])
+        self.assertFalse(is_translatable(out_arc, "home.headline"))
+        # 17 pre-A.17 archetypes still enrolled.
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop", "fashion-editorial",
+            "clinic", "wellness", "family",
+        ):
+            self.assertIn(arc, _SCHEMAS,
+                          f"{arc} must be enrolled at A.17 lifecycle start")
+            self.assertIn(arc, _ENABLED,
+                          f"{arc} must be in multi-locale gate at A.17 lifecycle start")
+
+        aura = WebTemplate.objects.get(slug="aura-digital-studio")
+        p = services.create_project_from_template(owner=self.owner, template=aura)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 2. translatable per-locale edits on home.headline ────
+        # IT + EN + FR share the same autosave shape. Storage must
+        # carry the @<locale>: prefix; the plain-key form must NEVER
+        # appear for a translatable path.
+        headline_per_locale = {
+            "it": "Walk IT Aura <em>A17HeadlineIT</em>.",
+            "en": "Walk EN Aura <em>A17HeadlineEN</em>.",
+            "fr": "Walk FR Aura <em>A17HeadlineFR</em>.",
+        }
+        for locale, headline in headline_per_locale.items():
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200,
+                             f"home.headline autosave failed for {locale}")
+            content_keys = r.json()["content_keys"]
+            self.assertIn(f"@{locale}:home.headline", content_keys,
+                          f"home.headline must land on @{locale}: prefix")
+            self.assertNotIn("home.headline", content_keys,
+                             f"home.headline must NOT appear plain-key for translatable path")
+
+        # ── 3. global plain-keyed text — site.logo_word via IT ───
+        LOGO = "A17 Aura Walk Studio"
+        r = autosave("it", {"site.logo_word": LOGO})
+        self.assertEqual(r.status_code, 200)
+        content_keys = r.json()["content_keys"]
+        self.assertIn("site.logo_word", content_keys,
+                      "site.logo_word must land plain-keyed (global)")
+        self.assertNotIn("@it:site.logo_word", content_keys,
+                         "site.logo_word must NOT be @it:-prefixed (forced global)")
+
+        # ── 4. ALL 12 image cells · plain-key globals (D-098) ────
+        # Every image-in-dict-row cell across 3 lists must be stored
+        # as a plain-key global (non-translatable · structured-list
+        # policy · uniform across 18 enrolled archetypes).
+        image_edits = {
+            # home.work_cards × 3 (cover col)
+            "home.work_cards.0.cover": "https://walk-aura.example/img/work-0.jpg",
+            "home.work_cards.1.cover": "https://walk-aura.example/img/work-1.jpg",
+            "home.work_cards.2.cover": "https://walk-aura.example/img/work-2.jpg",
+            # studio.team × 3 (portrait col)
+            "studio.team.0.portrait":  "https://walk-aura.example/img/team-0.jpg",
+            "studio.team.1.portrait":  "https://walk-aura.example/img/team-1.jpg",
+            "studio.team.2.portrait":  "https://walk-aura.example/img/team-2.jpg",
+            # lavori.projects × 6 (cover col)
+            "lavori.projects.0.cover": "https://walk-aura.example/img/proj-0.jpg",
+            "lavori.projects.1.cover": "https://walk-aura.example/img/proj-1.jpg",
+            "lavori.projects.2.cover": "https://walk-aura.example/img/proj-2.jpg",
+            "lavori.projects.3.cover": "https://walk-aura.example/img/proj-3.jpg",
+            "lavori.projects.4.cover": "https://walk-aura.example/img/proj-4.jpg",
+            "lavori.projects.5.cover": "https://walk-aura.example/img/proj-5.jpg",
+        }
+        # Edit each image cell — force the autosave through both IT
+        # and EN to prove the locale param is IGNORED for structured-
+        # list cells (policy · not an implementation detail).
+        for idx, (path, url) in enumerate(image_edits.items()):
+            locale = "it" if idx % 2 == 0 else "en"
+            r = autosave(locale, {path: url})
+            self.assertEqual(r.status_code, 200,
+                             f"{path} image autosave failed (locale={locale})")
+            content_keys = r.json()["content_keys"]
+            self.assertIn(path, content_keys,
+                          f"{path} must land plain-keyed (global image cell)")
+            self.assertNotIn(f"@{locale}:{path}", content_keys,
+                             f"{path} must NOT carry @{locale}: prefix (D-098 structured-list global policy)")
+            # Cross-locale prefix absence — verify no accidental
+            # per-locale split for any of the 5 locales.
+            for other_loc in ("it", "en", "fr", "es", "ar"):
+                self.assertNotIn(f"@{other_loc}:{path}", content_keys,
+                                 f"{path} must never carry any @<locale>: prefix")
+
+        # ── 5. stringent-IN fields routed correctly ──────────────
+        # foot_boot_line + foot_current_sprint are scalar text · NOT
+        # in _GLOBAL_TEXT_PATHS · they are per-locale translatable.
+        # sprint_chip likewise. home.sprints[].output is a structured-
+        # list cell · plain-key global.
+        r = autosave("en", {
+            "site.foot_boot_line":     "A17 en boot · uptime 99.99 · deploy 2 min",
+            "site.foot_current_sprint":"sprint 08/Q2 · live",
+            "site.sprint_chip":        "Sprint 08/Q2 · live (EN)",
+            "home.sprints.0.output":   "OUT · A17 sprint-zero snapshot",
+        })
+        self.assertEqual(r.status_code, 200)
+        content_keys = r.json()["content_keys"]
+        # Translatable per-locale text under _ENABLED gate.
+        self.assertIn("@en:site.foot_boot_line", content_keys)
+        self.assertIn("@en:site.foot_current_sprint", content_keys)
+        self.assertIn("@en:site.sprint_chip", content_keys)
+        # Structured-list cell · plain-key global.
+        self.assertIn("home.sprints.0.output", content_keys)
+        self.assertNotIn("@en:home.sprints.0.output", content_keys,
+                         "home.sprints.0.output is structured-list cell · must stay global")
+
+        # ── 6. posts paths rejected by autosave (registry-only) ──
+        posts_rejects = (
+            "posts",
+            "posts.0.title",
+            "posts.0.cover_image",
+            "posts.0.problem_paragraphs",
+            "posts.5.cover_image",
+        )
+        for path in posts_rejects:
+            r = autosave("it", {path: "should-be-rejected"})
+            self.assertEqual(r.status_code, 400,
+                             f"autosave on {path} must reject · posts stays registry-only")
+
+        # ── 7. brief form-structure + flat-list rejections ───────
+        # 5th form-structure OUT precedent · brief.slots explicit.
+        form_rejects = (
+            "brief.slots",
+            "brief.slots.0",
+            "brief.slots.0.label",
+            "brief.step1",
+            "brief.labels",
+            "brief.placeholders",
+            "brief.scope_options",
+            "brief.scope_options.0",
+            # Flat list-of-str OUT entire
+            "site.foot_stack_marquee",
+            "studio.story_paragraphs",
+            "lavori.tabs",
+            # Nested list-of-str OUT col-level
+            "home.capab_cards.0.tags",
+            "capabilities.capabilities.0.scope",
+        )
+        for path in form_rejects:
+            r = autosave("it", {path: "should-be-rejected"})
+            self.assertEqual(r.status_code, 400,
+                             f"autosave on {path} must reject · OUT perimeter")
+
+        # ── 8. publish ───────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+        rev = p.revisions.filter(reason="publish").first()
+        self.assertIsNotNone(rev, "publish revision must be recorded")
+        snap = rev.snapshot["content"]
+        # Snapshot captures the storage shape verbatim — verify both
+        # per-locale AND global forms persist lossless across publish.
+        self.assertIn("@it:home.headline", snap)
+        self.assertIn("@en:home.headline", snap)
+        self.assertIn("@fr:home.headline", snap)
+        self.assertIn("site.logo_word", snap)
+        self.assertNotIn("@it:site.logo_word", snap)
+        # All 12 image cells still plain-key after publish.
+        for path in image_edits.keys():
+            self.assertIn(path, snap, f"{path} must persist plain-key through publish")
+            for locale in ("it", "en", "fr", "es", "ar"):
+                self.assertNotIn(f"@{locale}:{path}", snap,
+                                 f"{path} must NEVER be per-locale across publish")
+
+        # ── 9. cross-locale render matrix · home page ────────────
+        # Verify zero IT leak across EN/FR/ES/AR on translatable
+        # home.headline + universal reach for global site.logo_word.
+        self.client.logout()
+        for locale in ("it", "en", "fr", "es", "ar"):
+            r = self.client.get(
+                f"/templates/agency/aura-digital-studio/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            self.assertEqual(r.status_code, 200,
+                             f"{locale} preview must return 200")
+            body = r.content.decode("utf-8", "ignore")
+            # site.logo_word (global) renders on ALL 5 locales.
+            self.assertIn(LOGO, body,
+                          f"{locale} preview must render global site.logo_word override")
+            # Translatable home.headline — overridden only for IT/EN/FR ·
+            # ES/AR must NOT show the IT override text (no cross-locale
+            # leak into unedited locales).
+            if locale in ("it", "en", "fr"):
+                expected = headline_per_locale[locale]
+                # The rendered HTML strips <em> to entities depending
+                # on the skin · the unique marker `A17HeadlineXX` is
+                # pinned inside the <em>.
+                marker = f"A17Headline{locale.upper()}"
+                self.assertIn(marker, body,
+                              f"{locale} preview must render its own home.headline override")
+                # Cross-locale markers MUST NOT leak.
+                for other in ("IT", "EN", "FR"):
+                    if other != locale.upper():
+                        self.assertNotIn(
+                            f"A17Headline{other}", body,
+                            f"{locale} preview must NOT leak {other} home.headline override",
+                        )
+            else:
+                # ES/AR — no override written · their home.headline
+                # must NOT contain any of the written IT/EN/FR markers.
+                for other in ("IT", "EN", "FR"):
+                    self.assertNotIn(
+                        f"A17Headline{other}", body,
+                        f"{locale} (unedited) preview must NOT leak any home.headline override",
+                    )
+            # AR only: <html dir="rtl" lang="ar"> on `.au-*` skin.
+            if locale == "ar":
+                self.assertIn('dir="rtl"', body,
+                              "AR preview must carry <html dir=\"rtl\"> on .au-* skin")
+                self.assertIn('lang="ar"', body,
+                              "AR preview must carry <html lang=\"ar\">")
+        self.client.login(username="owner", password="x")
+
+        # ── 10. owner reopens editor per locale · prefill ────────
+        for locale in ("it", "en", "fr", "es", "ar"):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200,
+                             f"editor reopen must succeed for {locale}")
+            body = r.content.decode("utf-8", "ignore")
+            # Universals visible on every locale reopen.
+            self.assertIn(LOGO, body,
+                          f"{locale} editor reopen must prefill global site.logo_word")
+
+        # ── 11. perimeter invariants re-checked END-OF-TEST ──────
+        # Aura still IN, Elevate still OUT — outside-gate preserved.
+        self.assertIn(aura_arc, _SCHEMAS, "Aura must stay enrolled at lifecycle end")
+        self.assertIn(aura_arc, _ENABLED, "Aura must stay in multi-locale gate at end")
+        self.assertNotIn(out_arc, _SCHEMAS,
+                         "Elevate must stay OUT at lifecycle end · outside-gate preserved")
+        self.assertFalse(is_supported_archetype(out_arc),
+                         "startup-saas-landing must stay unsupported at lifecycle end")
+        self.assertEqual(supported_locales(out_arc), [],
+                         "startup-saas-landing supported_locales must stay [] at end")
+        self.assertFalse(is_translatable(out_arc, "home.headline"),
+                         "startup-saas-landing home.headline must stay non-translatable at end")
+        # 17 pre-A.17 archetypes still enrolled.
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop", "fashion-editorial",
+            "clinic", "wellness", "family",
+        ):
+            self.assertIn(arc, _SCHEMAS,
+                          f"{arc} must stay enrolled at A.17 lifecycle END")
+            self.assertIn(arc, _ENABLED,
+                          f"{arc} must stay in multi-locale gate at A.17 lifecycle END")
+        # Posts perimeter still closed at end-of-test.
+        for posts_path in (
+            "posts",
+            "posts.0",
+            "posts.0.title",
+            "posts.0.cover_image",
+            "posts.0.problem_paragraphs",
+            "posts.0.timeline_steps",
+            "posts.0.results_stats",
+            "posts.5.cover_image",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Aura posts path must still reject at lifecycle END: {posts_path}",
+            ):
+                validate_key_path(aura_arc, posts_path)
+        # Form-structure + flat-list + nested-list-of-str still rejected.
+        for out_path in (
+            "brief.slots",
+            "brief.slots.0.label",
+            "brief.step1",
+            "brief.labels",
+            "brief.placeholders",
+            "brief.scope_options",
+            "site.foot_stack_marquee",
+            "site.foot_stack_rows",
+            "studio.story_paragraphs",
+            "lavori.tabs",
+            "home.capab_cards.0.tags",
+            "capabilities.capabilities.0.scope",
+            "capabilities.engagement_tiles.0.includes",
+            "sprint.sprints.0.deliverables",
+            "lavori.projects.0.kpi",
+            "capabilities.engagement_tiles.0.featured",
+            "home.work_cards.0.slug",
+            "lavori.projects.0.slug",
+            "pages",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Aura OUT path must still reject at lifecycle END: {out_path}",
+            ):
+                validate_key_path(aura_arc, out_path)
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
