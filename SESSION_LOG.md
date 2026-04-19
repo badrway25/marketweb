@@ -1,5 +1,157 @@
 # Session Log
 
+## Session 72 — Phase A.15b · Luxe (fashion-editorial · ecommerce family · second template) Editor + Multi-locale Enrollment · CLOSES ECOMMERCE FAMILY (2026-04-19)
+
+**Summary.** Fourteenth archetype enrolled in the editor: `fashion-editorial` (Luxe). Single-template phase — Luxe **closes** the ecommerce family opened in A.15 Bottega via staged dedicated-schema progression (fourth staged dedicated-schema closure after real-estate A.12+A.12b · portfolio A.13+A.13b · restaurant-continuation A.14+A.14b). **14 archetype slugs enrolled · 14 multi-locale enrolled · 15 templates editable end-to-end.** Catalog 20/20 `published_live` unchanged. Baseline `d8269da` → merge `bd9ffcb` on `phase-integration-baseline-v15` · pushed origin.
+
+Three critical framings for this session:
+
+1. **Luxe enrollment preserves the same boundary as Bottega.** The editor edits the presentational demo content in `template_content_luxe.py` (registry) · `apps/commerce/` (real catalog backend) stays completely out-of-scope. Boundary re-verified Step 0: `apps/catalog/views.py::LiveTemplateView` still does NOT import from `apps.commerce`. Zero cross-contamination by design. Light smoke guardrail test `test_a15b_luxe_commerce_admin_boundary` mirrors the A.15 Bottega contract.
+
+2. **31 image surfaces ALL RENDERED — no storage-only split.** Unlike Bottega's typographic-led `.aw-*` skin (16 rendered + 6 storage-only crest-mark substitution from Session 42 D-073), Luxe's `.fe-*` skin is photographically editorial campaign-driven: every image surface the editor exposes is actually painted by the skin. 1 scalar top-level (`home.cover_image` · full-bleed hero cover) + 2 nested-dict scalar (`product.atelier_portrait` · `maison.direction_portrait`) + 28 image cells across 6 image-in-dict-row lists = 31 total. Lifecycle + browser walk verified render on all of them.
+
+3. **Stringent IN col-level audit on "technical-looking" fields** per user Step 0 guidance: `drop` (editorial drop badge · 'Drop 01 · Spring 26'), `n` (Look numbering · 'Look 03'), `tag` (editorial availability badge · 'Lista d'attesa' · 'Capsula' · 'Archivio') all classified **IN** (customer-facing editorial content). `id` (structural slug · routing to /product/) + `available` (bool flag · commerce-state-like semantic) classified **OUT**. Documented in schema comment block + dedicated `test_a15b_luxe_visible_catalog_fields_kept_in` contract test.
+
+### Context initial post-A.15
+
+Baseline entering Session 72 was `d8269da` (post-A.15 Bottega enrollment consolidated; 13 archetypes enrolled, ecommerce family half-open). Luxe-out dual guard planted in Bottega tests (registration-time + runtime start + runtime end) · outside-gate fixture rotated to `fashion-editorial`/`luxe-fashion-store`.
+
+### Luxe-only scope decision
+
+A.14b (Brace) Step 0 audit had already ruled shared-schema IMPOSSIBILE with Bottega: 50% page-slug overlap (home/product/contatti shared; shop/journal vs collezione/lookbook diverge), `shop.products` 11 cols vs `collezione.products` 9 cols (Bottega has `artisan`/`place`, Luxe has `drop`), different editorial surfaces, image surface ratio 1:1.4 (Bottega 22 vs Luxe 31), journal editorial notes (Bottega) vs lookbook image gallery (Luxe). A.15 established the staged dedicated-schema closure with Bottega opening the family; A.15b mechanical reuse of the established recipe · fourth consecutive staged closure.
+
+### Step 0 · Planning / audit findings chiave
+
+- Archetype slug `fashion-editorial` · skin `ecommerce/fashion-editorial/` · CSS **`.fe-*`** (165 hits) · 21 mature `html[dir="rtl"]` rules · `_base.html` 793 LOC
+- 6 pages: home · **collezione** (novel · `collection` kind) · product · maison (about) · **lookbook** (novel) · contatti — **2 novel page kinds** · plain string identifiers · no view dispatch
+- 5-locale parity PERFETTA (259 keys × 5 locales · zero gaps)
+- `apps/catalog/views.py::LiveTemplateView` still ZERO imports from `apps.commerce` · boundary preserved
+- Image surface runtime-verified: 31 editable surfaces (1 scalar top-level `home.cover_image` · 2 nested-dict scalar · 28 image cells across 6 image-in-dict-row lists) · **ALL RENDERED** (no storage-only split)
+- 11 lists-of-dict (6 with image col · 0 deep-path · pure parent-level registration) + 6 lists-of-tuple = 17 STRUCTURED_FIELD_SHAPES entries
+- 8 flat list-of-str (all OUT per policy) · 1 form structure (`contatti.form_fields` OUT) · 3 flat scalar option lists (`size_options`/`color_options`/`sort_options` all OUT)
+- **Posts list empty** (same structural absence as Bottega · Sapore · Brace · detail-page policy stays at 6-archetype uniform enforcement)
+- **Stringent IN/OUT call on "technical-looking" cols** per user Step 0: `drop`/`n`/`tag` **IN** (customer-facing editorial badges); `id`/`available` **OUT** (structural + commerce-state-like)
+
+### Step 1 · Schema + bridge + gate + contract tests
+
+- `LUXE_FASHION_EDITORIAL_SCHEMA` added in `apps/editor/schema.py` — **8 sidebar groups · 164 scalar fields**.
+- `STRUCTURED_FIELD_SHAPES["fashion-editorial"]` with **17 entries · tutti parent-level · ZERO deep-path** — 3 more than Bottega's 14 (richer editorial surfaces + press + credits + maison cards).
+- Image-in-dict-row lists (6): `home.tiles[].image` × 4 · `home.lookbook_teaser_tiles[].image` × 3 · `collezione.products[].image` × 9 · `product.related_items[].image` × 3 · `maison.ateliers[].image` × 3 · `lookbook.looks[].image` × 6 = 28 image cells.
+- Scalar top-level image: `home.cover_image` (full-bleed editorial cover LEFT on charcoal).
+- Nested-dict scalar images (2): `product.atelier_portrait` · `maison.direction_portrait`.
+- 3 gate registrations simultanee · `_ARCHETYPE_BASELINE_TEMPLATE["fashion-editorial"] = ("luxe-fashion-store", "it")` + `_ARCHETYPE_SCHEMAS["fashion-editorial"] = LUXE_FASHION_EDITORIAL_SCHEMA` + `"fashion-editorial"` in `_MULTILOCALE_ENABLED_ARCHETYPES`.
+- **Col-level exclusions** (structural): `collezione.products[].id` + `.available` · `home.tiles[].id` · `product.related_items[].id`.
+- **Complex-shape exclusion** (flat list-of-str + form + nested): `site.hours_footer_rows` · `site.office_rows` · `home.press_items` · `collezione.filter_groups` + `.0.options` · `collezione.sort_options` · `product.gallery` · `product.size_options` · `product.color_options` · `contatti.form_fields` · `pages` · `posts` (empty).
+- 3 atomic fixes on `templates/live_templates/ecommerce/fashion-editorial/_base.html`: title `site.logo_word|default:brand.brand_name` · body `mw-is-editor-preview` guard · `.fe-*` CSS guard block (`.fe-nav .wm` clamp 32ch) · preview-bridge.js conditional on `preview_project`.
+- **Luxe-out dual guard REMOVED** from A.15 Bottega tests (3 locations: registration-time in `test_a15_bottega_archetype_registered` · runtime start + runtime end of lifecycle test) via symmetric inversion `test_a15b_luxe_out_guard_was_removed_from_bottega_tests` — **4th precedent** of guard removal pattern after Villa-out (A.12b) · Pixel-out (A.13b) · Brace-out (A.14b).
+- **Outside-gate fixture rotation** (6 location): `fashion-editorial`/`luxe-fashion-store` → `clinic`/`salute-studio-medico` (next outside-gate candidate · medical-clinic family still OUT of editor).
+
+### Step 2 · Lifecycle HTTP end-to-end test
+
+- `test_a15b_luxe_full_multilocale_lifecycle_end_to_end` added (pure test-only change · +424 LOC · zero production code).
+- 13 phases blindates: perimeter start · 3 translatable locales on `home.headline` · global plain-key `site.logo_word` · scalar `home.cover_image` · 2 nested-dict scalar (`product.atelier_portrait` + `maison.direction_portrait`) · 2 image-in-dict-row (`collezione.products.0.image` + `lookbook.looks.0.image`) · publish · second-user preview walk 5 locales × 5 pages · AR `<html dir="rtl" lang="ar">` · owner re-opens editor with per-locale prefill · perimeter end + 18 OUT paths rejected.
+- **Dual invariant**: Luxe IN + Bottega still IN verified at start AND end of test.
+- **Image plain-key invariant**: all 5 image paths × 5 locales (25 combinations) assertNotIn `@<locale>:` prefix.
+
+### Step 3 · Playwright browser walk
+
+- Sidebar inventory: **448 total editable fields · 31 image widgets exact · 5 lang pills (IT/EN/FR/ES/AR) · 26 group slots** (8 pages + 17 indexed + 1 design).
+- **8 critical image paths present** in sidebar: `home.cover_image` · `product.atelier_portrait` · `maison.direction_portrait` · `collezione.products.0.image` · `lookbook.looks.0.image` · `home.tiles.0.image` · `lookbook.looks.5.image` · `collezione.products.8.image`.
+- **13 OUT paths correctly absent** from sidebar: filter_groups/options · sort_options · gallery · size_options · color_options · form_fields · pages · posts · col-level `id`/`available` on 3 lists.
+- 5-locale flush walk IT→EN→FR→ES→AR with `home.headline` override in IT/EN/FR; ES/AR stays authored baseline (zero Latin override leak).
+- Per-locale `home.headline` authored baselines verified:
+  - IT: `Il nuovo corpo del vestire.`
+  - EN: `The new body of dress.`
+  - FR: `Le nouveau corps du vêtement.`
+  - ES: `El nuevo cuerpo del vestir.`
+  - AR: `الجسد الجديد للِّباس.`
+- **Storage shape after publish (7 overrides)**: 3 per-locale translatable (`@it/@en/@fr:home.headline`) + 4 plain-key globals (`site.logo_word` · `home.cover_image` · `collezione.products.0.image` · `lookbook.looks.0.image`). Zero `@<locale>:` on any image or logo across 5 locales.
+- **Render matrix 5 locales × 3 pages = 15/15 green**: logo×4 (nav + title + footer word + footer strip) on every page; `home.cover_image` only on home; `collezione.products.0.image` only on collezione; `lookbook.looks.0.image` only on lookbook; zero cross-page bleed; IT/EN/FR override visible only in own locale; ES/AR show authored fallback.
+- **AR RTL invariant verified**: editor iframe `dir="rtl"` · `lang="ar"` · `body.mw-is-editor-preview` · `.fe-nav` present; public preview `<html lang="ar" dir="rtl">` · 5182 Arabic characters.
+
+### Tests + smoke
+
+- `manage.py check` → 0 issues
+- `manage.py test apps` → **295/295 PASS** (280 pre-A.15b + 14 contract + 1 lifecycle)
+- `smoke_full.py` → **834/834 routes HTTP 200**
+- Browser walk 5-locale green (sidebar + flush + storage + render matrix + AR RTL)
+
+### File delta
+
+- `apps/editor/schema.py` +598 LOC (Luxe schema + 17 shapes + 3 gate registrations)
+- `apps/projects/tests.py` +904 (14 contract tests + 1 lifecycle test + Luxe-out dual guard removed + 6 outside-gate fixture rotations) / -55
+- `templates/live_templates/ecommerce/fashion-editorial/_base.html` +10 / -2 (3 atomic fixes on `.fe-*` skin)
+
+**Pure 3-file enrollment surface · zero tocchi a `apps/commerce` · `services.py` · `rendering.py` · editor shell · widgets. Pattern confirmed sub-recipe standard after 4 consecutive applications.**
+
+### Ecommerce family closed
+
+- Staged dedicated-schema closure **4 of N**: real-estate (A.12+A.12b) · portfolio (A.13+A.13b) · restaurant-continuation (A.14+A.14b) · **ecommerce (A.15+A.15b)**.
+- 6 families chiuse (law + medical-specialist + real-estate + portfolio + restaurant-continuation + ecommerce) · 3 aperte residue (medical-other · agency-secondary · startup-saas).
+- 5 templates editor-only-pending residui: Salute (clinic) · Benessere (wellness) · Famiglia (family) · Aura (agency-digital-studio) · Elevate (startup-saas-landing).
+- Staged dedicated-schema è la topologia DOMINANTE: **4 closed**.
+- Catalog 20/20 `published_live` · **15/20 enrolled editor** (was 14/20 post-A.15).
+
+### Guard removal pattern consolidated · 4th precedent
+
+- Villa-out (A.12b via `test_a12b_villa_out_guard_was_removed_from_casa_tests`)
+- Pixel-out (A.13b via `test_a13b_pixel_out_guard_was_removed_from_chiara_tests`)
+- Brace-out (A.14b via `test_a14b_brace_out_guard_was_removed_from_sapore_tests`)
+- **Luxe-out (A.15b via `test_a15b_luxe_out_guard_was_removed_from_bottega_tests`)**
+
+Pattern is now sub-recipe standard for every staged closure: Step 1 of the closing phase MUST remove the dual guard (registration-time + runtime start + runtime end in 3 pre-existing locations on the opening phase's test module) and install a symmetric inversion test.
+
+### Outside-gate fixture rotation history
+
+- A.13 rotated: `cinematic-photographer`/`pixel-portfolio-fotografico` → (next)
+- A.13b rotated: (used Pixel before) → `trattoria-warm`/`sapore-trattoria-pizzeria`
+- A.14 rotated: `trattoria-warm`/`sapore-trattoria-pizzeria` → `street-modern`/`brace-street-food-lab`
+- A.14b rotated: `street-modern`/`brace-street-food-lab` → `artisan-workshop`/`bottega-shop-artigianale`
+- A.15 rotated: `artisan-workshop`/`bottega-shop-artigianale` → `fashion-editorial`/`luxe-fashion-store`
+- **A.15b rotated: `fashion-editorial`/`luxe-fashion-store` → `clinic`/`salute-studio-medico`**
+
+6 fixture rotate · 4 `supported_locales`/`is_translatable` + 1 `is_supported_archetype` + 1 `customize_start` redirect.
+
+### Decisioni binding in vigore post-A.15b
+
+- D-086 → D-095 (A.1 → A.5)
+- D-096 · per-locale storage `@<locale>:<path>`
+- D-097 · no cross-locale customer fallback
+- D-098 · archetype gate + dedicated lifecycle test per enrollment
+  - Session 72 operational clarification (under D-098 · no new D-number):
+    - Ecommerce family closed with Luxe (D-098 recipe fourth staged closure)
+    - Storage-only vs rendered image distinction is PER-SKIN (Bottega has both · Luxe has all-rendered · not a schema concern, a render-skin concern)
+    - Stringent IN/OUT col-level audit extended to drop/n/tag on Luxe (4th archetype to apply this framing after Sapore forno.pizza_signatures.n · Brace ordina routes n · Bottega shop.products n/edition/tag)
+    - Guard removal sub-recipe now at 4 precedents and consolidated
+    - Outside-gate fixture rotation to `clinic`/`salute-studio-medico` (first non-ecommerce/non-restaurant outside-gate reference since A.12+)
+    - Boundary editor-vs-commerce-admin re-verified on second ecommerce archetype
+
+**Nessun nuovo D-number da A.15b.** Operational clarification sotto D-098 solamente.
+
+### Luxe metrics
+
+- 8 sidebar groups · 164 scalar fields · 31 image surfaces (1 scalar top + 2 nested-dict scalar + 28 dict-row cells)
+- 17 readonly indexed list entries · tutti parent-level · ZERO deep-path
+- ~130 translatable · ~450 global (detail tbd by further audit)
+- 5 locale parity PERFECT (259 keys × 5 · zero gaps)
+- `.fe-*` skin · 21 `html[dir="rtl"]` rules
+- Zero posts · zero form structures editing · zero mutable repeater · zero image per-locale · zero apps.commerce
+- Schema LOC delta +598 · SOTTO 600 soft guardrail
+
+### Not in scope (confirmed out-of-scope)
+
+- apps.commerce editing (real catalog backend · seller dashboard scope)
+- Image per-locale (D-098 invariante)
+- Repeater per-locale (out-of-scope family)
+- Mutable repeater (Luxe lists tutte readonly)
+- Detail-page editing (horizontal feature cross-archetype · 6-archetype uniform enforcement preserved)
+- Product-detail per-item editing (demo content · registry-driven · NOT backend catalog)
+- Coverage expansion beyond first wave
+- Refactor trasversali
+- Remote storage
+
+---
+
 ## Session 71 — Phase A.15 · Bottega (artisan-workshop · ecommerce family · first template) Editor + Multi-locale Enrollment · OPENS ECOMMERCE FAMILY (2026-04-19)
 
 **Summary.** Thirteenth archetype enrolled in the editor: `artisan-workshop` (Bottega). Single-template phase — Bottega opens the ecommerce family via staged dedicated-schema progression (fourth staged opening after real-estate A.12 · portfolio A.13 · restaurant-continuation A.14). Luxe (`fashion-editorial`) stays OUT until A.15b. **13 archetype slugs enrolled · 13 multi-locale enrolled · 14 templates editable end-to-end.** Catalog 20/20 `published_live` unchanged.
