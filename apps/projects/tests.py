@@ -9759,6 +9759,430 @@ class FoundationHttpTests(TestCase):
             ):
                 validate_key_path("artisan-workshop", out_path)
 
+    # ------------------------------------------------------------------
+    # A.15b · Step 2 — Luxe (fashion-editorial) lifecycle HTTP cross-
+    # cutting · CLOSES the ecommerce family opened by A.15 Bottega ·
+    # fourth staged dedicated-schema closure (after real-estate +
+    # portfolio + restaurant-continuation + ecommerce). Luxe IN +
+    # Bottega still IN re-verified at start AND end of the test.
+    # Exercises the FULL image surface taxonomy end-to-end:
+    #   - home.cover_image (scalar top-level · rendered on home page)
+    #   - product.atelier_portrait (nested-dict scalar · rendered on
+    #     product page)
+    #   - maison.direction_portrait (nested-dict scalar · rendered on
+    #     maison page)
+    #   - collezione.products.0.image (image-in-dict-row · rendered on
+    #     collezione page)
+    #   - lookbook.looks.0.image (image-in-dict-row · rendered on
+    #     lookbook page · different list shape and page from products)
+    # All 5 image paths plain-keyed across all 5 locales (D-098 image
+    # per-locale out-of-scope · editorial DNA has zero storage-only
+    # split · every image surface renders).
+    # ------------------------------------------------------------------
+
+    def test_a15b_luxe_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the Luxe enrollment.
+
+        Unlike Bottega (typographic skin · rendered/storage-only split),
+        Luxe is photographically editorial DNA — every image surface
+        the editor exposes is actually rendered by the `.fe-*` skin. So
+        this test blindates both storage shape (plain-key globals for
+        all 5 image paths) AND render visibility on the public preview
+        for every image surface it exercises.
+
+        Phases:
+        1. perimeter invariants at TEST START — Luxe IN + Bottega
+           still IN
+        2. customer edits IT / EN / FR on home.headline
+        3. customer edits global site.logo_word via EN — plain-keyed
+           no @en: prefix
+        4. customer edits SCALAR top-level `home.cover_image`
+           (rendered hero on home page) — 5× assertNotIn @<locale>:
+           + render on home page all 5 locales
+        5. customer edits NESTED-DICT scalar `product.atelier_portrait`
+           (rendered portrait on product page) — 5× assertNotIn
+           + render on product page all 5 locales
+        6. customer edits NESTED-DICT scalar `maison.direction_portrait`
+           (rendered portrait on maison page) — 5× assertNotIn
+           + render on maison page all 5 locales
+        7. customer edits IMAGE-IN-DICT-ROW `collezione.products.0.image`
+           (9-item catalog listing · image col) — 5× assertNotIn
+           + render on collezione page all 5 locales
+        8. customer edits IMAGE-IN-DICT-ROW `lookbook.looks.0.image`
+           (6-item editorial grid · DIFFERENT list shape and page from
+           products) — 5× assertNotIn + render on lookbook page all
+           5 locales
+        9. publish
+        10. second user visits home + product + maison + collezione +
+            lookbook on all 5 locales
+        11. AR response head carries ``<html dir="rtl" lang="ar">`` on
+            the `.fe-*` skin
+        12. owner reopens the editor per locale · prefill + universals
+        13. perimeter invariants re-checked end-of-test:
+            - Luxe + Bottega still enrolled (no accidental removal)
+            - 12 pre-A.15 archetypes still enrolled
+            - Sensitive OUT paths REJECTED
+              (collezione.filter_groups.0.options · collezione.sort_options
+              · product.gallery · product.size_options · product.color_options
+              · contatti.form_fields · pages · posts + col-level:
+              collezione.products.0.id · collezione.products.0.available ·
+              home.tiles.0.id)
+
+        Explicitly NOT exercised here: browser walk (Step 3), coverage
+        expansion, mutable rows, image per-locale, apps.commerce
+        touches. Zero production-code changes.
+        """
+        import json as _json
+
+        luxe = WebTemplate.objects.get(slug="luxe-fashion-store")
+        p = services.create_project_from_template(owner=self.owner, template=luxe)
+
+        # ── 1. perimeter invariants at TEST START ────────────────
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            _ARCHETYPE_SCHEMAS as _SCHEMAS,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        self.assertIn("fashion-editorial", _SCHEMAS,
+                      "Luxe must be enrolled at lifecycle start")
+        self.assertIn("fashion-editorial", _ENABLED,
+                      "Luxe must be in multi-locale gate at start")
+        # Bottega still IN at start (no accidental removal).
+        self.assertIn("artisan-workshop", _SCHEMAS,
+                      "Bottega must still be enrolled at Luxe lifecycle start")
+        self.assertIn("artisan-workshop", _ENABLED,
+                      "Bottega must still be in multi-locale gate at start")
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 2. three translatable locales on home.headline ────────
+        for locale, headline in (
+            ("it", "Walk IT Luxe <em>A15bFashionLine</em>."),
+            ("en", "Walk EN Luxe <em>A15bFashionLineEN</em>."),
+            ("fr", "Walk FR Luxe <em>A15bFashionLineFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+
+        # ── 3. global plain-keyed text — site.logo_word via EN ────
+        r = autosave("en", {"site.logo_word": "A15b Luxe Walk Maison"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 4. scalar top-level image — home.cover_image ─────────
+        # Rendered as full-bleed hero cover on home page.
+        IMG_COVER = "https://walk-luxe.example/img/cover-A15b.jpg"
+        r = autosave("it", {"home.cover_image": IMG_COVER})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.cover_image", r.json()["content_keys"])
+
+        # ── 5. nested-dict scalar — product.atelier_portrait ──────
+        IMG_ATELIER = "https://walk-luxe.example/img/atelier-A15b.jpg"
+        r = autosave("it", {"product.atelier_portrait": IMG_ATELIER})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("product.atelier_portrait", r.json()["content_keys"])
+
+        # ── 6. nested-dict scalar — maison.direction_portrait ─────
+        IMG_DIRECTION = "https://walk-luxe.example/img/direction-A15b.jpg"
+        r = autosave("it", {"maison.direction_portrait": IMG_DIRECTION})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("maison.direction_portrait", r.json()["content_keys"])
+
+        # ── 7. image-in-dict-row collezione.products (demo catalog) ─
+        # 9-item dict listing · image col · first row .0.image.
+        IMG_PRODUCT = "https://walk-luxe.example/img/product-A15b.jpg"
+        r = autosave("it", {"collezione.products.0.image": IMG_PRODUCT})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("collezione.products.0.image", r.json()["content_keys"])
+
+        # ── 8. image-in-dict-row lookbook.looks (editorial grid) ───
+        # 6-item dict listing · image col · DIFFERENT list shape from
+        # products (cols n/title/outfit/credit/image vs n/name/meta/
+        # drop/price/tag/image) · DIFFERENT page from collezione.
+        IMG_LOOK = "https://walk-luxe.example/img/look-A15b.jpg"
+        r = autosave("it", {"lookbook.looks.0.image": IMG_LOOK})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("lookbook.looks.0.image", r.json()["content_keys"])
+
+        # Storage shape: 3 @<locale>:home.headline + 6 plain-keyed
+        # globals (logo + 5 image paths). Zero @<locale>: on any image
+        # path across all 5 locales; zero @en: on logo; zero plain-key
+        # leak on home.headline.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("home.cover_image", keys)
+        self.assertIn("product.atelier_portrait", keys)
+        self.assertIn("maison.direction_portrait", keys)
+        self.assertIn("collezione.products.0.image", keys)
+        self.assertIn("lookbook.looks.0.image", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+        # All 5 image paths plain-keyed across all 5 locales.
+        for loc in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(f"@{loc}:home.cover_image", keys,
+                             f"home.cover_image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:product.atelier_portrait", keys,
+                             f"product.atelier_portrait must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:maison.direction_portrait", keys,
+                             f"maison.direction_portrait must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:collezione.products.0.image", keys,
+                             f"collezione.products.0.image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:lookbook.looks.0.image", keys,
+                             f"lookbook.looks.0.image must NEVER be @{loc}:-prefixed")
+
+        # ── 9. publish ───────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 10. second user on every public preview locale ───────
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale, page=None):
+            suffix = f"{page}/" if page else ""
+            url = (
+                f"/templates/ecommerce/luxe-fashion-store/preview/"
+                f"{suffix}?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render (home) — IT override + global logo + home.cover_image
+        # override visible. EN/FR absent.
+        body_it = preview_body("it")
+        self.assertIn("Walk IT Luxe", body_it)
+        self.assertIn("A15bFashionLine", body_it)
+        self.assertNotIn("A15bFashionLineEN", body_it)
+        self.assertNotIn("A15bFashionLineFR", body_it)
+        self.assertIn("A15b Luxe Walk Maison", body_it)
+        self.assertIn(IMG_COVER, body_it,
+                      "home.cover_image override must render on home page IT")
+
+        # IT render (collezione) — collezione.products.0.image override
+        # visible + universal logo.
+        body_it_coll = preview_body("it", page="collezione")
+        self.assertIn("A15b Luxe Walk Maison", body_it_coll)
+        self.assertIn(IMG_PRODUCT, body_it_coll,
+                      "collezione.products.0.image override must render on collezione page IT")
+
+        # IT render (product) — product.atelier_portrait override
+        # visible + universal logo.
+        body_it_product = preview_body("it", page="product")
+        self.assertIn("A15b Luxe Walk Maison", body_it_product)
+        self.assertIn(IMG_ATELIER, body_it_product,
+                      "product.atelier_portrait override must render on product page IT")
+
+        # IT render (maison) — maison.direction_portrait override visible.
+        body_it_maison = preview_body("it", page="maison")
+        self.assertIn("A15b Luxe Walk Maison", body_it_maison)
+        self.assertIn(IMG_DIRECTION, body_it_maison,
+                      "maison.direction_portrait override must render on maison page IT")
+
+        # IT render (lookbook) — lookbook.looks.0.image override visible.
+        body_it_lb = preview_body("it", page="lookbook")
+        self.assertIn("A15b Luxe Walk Maison", body_it_lb)
+        self.assertIn(IMG_LOOK, body_it_lb,
+                      "lookbook.looks.0.image override must render on lookbook page IT")
+
+        # EN render spans home + all 4 image pages
+        body_en = preview_body("en")
+        self.assertIn("Walk EN Luxe", body_en)
+        self.assertIn("A15bFashionLineEN", body_en)
+        self.assertNotIn("Walk IT Luxe", body_en)
+        self.assertIn("A15b Luxe Walk Maison", body_en)
+        self.assertIn(IMG_COVER, body_en)
+        self.assertIn(IMG_PRODUCT, preview_body("en", page="collezione"))
+        self.assertIn(IMG_ATELIER, preview_body("en", page="product"))
+        self.assertIn(IMG_DIRECTION, preview_body("en", page="maison"))
+        self.assertIn(IMG_LOOK, preview_body("en", page="lookbook"))
+
+        # FR render spans home + all 4 image pages
+        body_fr = preview_body("fr")
+        self.assertIn("Walk FR Luxe", body_fr)
+        self.assertIn("A15bFashionLineFR", body_fr)
+        self.assertIn("A15b Luxe Walk Maison", body_fr)
+        self.assertIn(IMG_COVER, body_fr)
+        self.assertIn(IMG_PRODUCT, preview_body("fr", page="collezione"))
+        self.assertIn(IMG_ATELIER, preview_body("fr", page="product"))
+        self.assertIn(IMG_DIRECTION, preview_body("fr", page="maison"))
+        self.assertIn(IMG_LOOK, preview_body("fr", page="lookbook"))
+
+        # Unedited locales — authored fallback on translatable text +
+        # universals preserved across home + all 4 image pages.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Walk IT Luxe", body)
+            self.assertNotIn("Walk EN Luxe", body)
+            self.assertNotIn("Walk FR Luxe", body)
+            self.assertIn("A15b Luxe Walk Maison", body)
+            self.assertIn(IMG_COVER, body,
+                          f"home.cover_image must render universally on {locale} home")
+            body_coll = preview_body(locale, page="collezione")
+            self.assertIn(IMG_PRODUCT, body_coll,
+                          f"collezione.products.0.image must render universally on {locale} collezione")
+            body_product = preview_body(locale, page="product")
+            self.assertIn(IMG_ATELIER, body_product,
+                          f"product.atelier_portrait must render universally on {locale} product")
+            body_maison = preview_body(locale, page="maison")
+            self.assertIn(IMG_DIRECTION, body_maison,
+                          f"maison.direction_portrait must render universally on {locale} maison")
+            body_lb = preview_body(locale, page="lookbook")
+            self.assertIn(IMG_LOOK, body_lb,
+                          f"lookbook.looks.0.image must render universally on {locale} lookbook")
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Luxe home",
+                )
+
+        # ── 11. AR preview (home) — `.fe-*` skin RTL invariant ────
+        # 21 mature RTL rules verified Step 0.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 12. owner reopens the editor on each locale ──────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Walk IT Luxe"),
+            ("en", "Walk EN Luxe"),
+            ("fr", "Walk FR Luxe"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text + all 3 scalar-image surfaces: overridden
+        # universally, not translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Luxe editor")
+        self.assertEqual(logo_field["value"], "A15b Luxe Walk Maison")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        cover_field = find_field_by_key(r_es.context["groups"], "home.cover_image")
+        self.assertIsNotNone(cover_field, "home.cover_image missing from Luxe editor")
+        self.assertEqual(cover_field["value"], IMG_COVER)
+        self.assertTrue(cover_field["is_overridden"])
+        self.assertFalse(cover_field["translatable"])
+
+        atelier_field = find_field_by_key(r_es.context["groups"], "product.atelier_portrait")
+        self.assertIsNotNone(atelier_field, "product.atelier_portrait missing from Luxe editor")
+        self.assertEqual(atelier_field["value"], IMG_ATELIER)
+        self.assertTrue(atelier_field["is_overridden"])
+        self.assertFalse(atelier_field["translatable"])
+
+        direction_field = find_field_by_key(r_es.context["groups"], "maison.direction_portrait")
+        self.assertIsNotNone(direction_field, "maison.direction_portrait missing from Luxe editor")
+        self.assertEqual(direction_field["value"], IMG_DIRECTION)
+        self.assertTrue(direction_field["is_overridden"])
+        self.assertFalse(direction_field["translatable"])
+
+        # ── 13. perimeter invariants re-checked end-of-test ──────
+        # Luxe + Bottega still enrolled.
+        self.assertIn("fashion-editorial", _SCHEMAS,
+                      "Luxe enrollment must persist through lifecycle")
+        self.assertIn("fashion-editorial", _ENABLED)
+        self.assertIn("artisan-workshop", _SCHEMAS,
+                      "Bottega enrollment must persist through Luxe lifecycle")
+        self.assertIn("artisan-workshop", _ENABLED)
+        # 12 pre-A.15 archetypes also still enrolled.
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+        ):
+            self.assertIn(arc, _ENABLED, f"{arc} lost enrollment mid-lifecycle")
+        # Sensitive OUT paths stay rejected — re-verified runtime at
+        # end-of-test per user guidance.
+        for out_path in (
+            # Nested list-of-str inside dict rows
+            "collezione.filter_groups.0.options",
+            "collezione.filter_groups.0.options.0",
+            # Flat list-of-str on collezione / product pages
+            "collezione.sort_options",
+            "collezione.sort_options.0",
+            "product.gallery",
+            "product.gallery.0",
+            "product.size_options",
+            "product.size_options.0",
+            "product.color_options",
+            "product.color_options.0",
+            # Form structure
+            "contatti.form_fields",
+            "contatti.form_fields.0.name",
+            # Top-level navigation + empty posts
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+            # Col-level exclusions (structural identifiers)
+            "collezione.products.0.id",
+            "collezione.products.0.available",
+            "home.tiles.0.id",
+            "product.related_items.0.id",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Luxe complex-shape path must stay rejected: {out_path}",
+            ):
+                validate_key_path("fashion-editorial", out_path)
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
