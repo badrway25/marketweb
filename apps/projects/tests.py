@@ -45,14 +45,16 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.revisions.count(), 1)
 
     def test_unsupported_archetype_raises(self):
-        # `clinic` (Salute) has not been enrolled in _ARCHETYPE_SCHEMAS
-        # yet — Salute still hits the UnsupportedTemplate guard. A.15b
-        # rotated the outside-gate reference from Luxe (fashion-editorial ·
-        # now enrolled) to Salute (clinic · still out). Swap this slug
-        # when `clinic` receives editor support.
-        salute = WebTemplate.objects.get(slug="salute-studio-medico")
+        # `wellness` (Benessere) has not been enrolled in _ARCHETYPE_SCHEMAS
+        # yet — Benessere still hits the UnsupportedTemplate guard. A.16
+        # rotated the outside-gate reference from Salute (clinic · now
+        # enrolled) to Benessere (wellness · still out). Benessere is the
+        # next likely enrollment wave (A.16b · medical-other 3-phase
+        # staged progression). Swap this slug when `wellness` receives
+        # editor support.
+        benessere = WebTemplate.objects.get(slug="benessere-centro-olistico")
         with self.assertRaises(services.UnsupportedTemplate):
-            services.create_project_from_template(owner=self.owner, template=salute)
+            services.create_project_from_template(owner=self.owner, template=benessere)
 
     def test_schema_locks_non_whitelisted_keys(self):
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
@@ -1394,9 +1396,9 @@ class FoundationModelTests(TestCase):
         self.assertTrue(is_supported_archetype("corporate-suite"))
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
         # Sanity — an unsupported archetype still rejects.
-        # `clinic` (Salute) is the current outside-gate reference
-        # (A.15b rotated it from `fashion-editorial`/Luxe which is now enrolled).
-        self.assertFalse(is_supported_archetype("clinic"))
+        # `wellness` (Benessere) is the current outside-gate reference
+        # (A.16 rotated it from `clinic`/Salute which is now enrolled).
+        self.assertFalse(is_supported_archetype("wellness"))
 
     def test_a6_pragma_schema_shape_covers_core_pages(self):
         """The Pragma schema must surface groups for every customer-
@@ -1631,10 +1633,10 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Archetype outside the gate still returns False + empty list.
-        # `clinic` (Salute) is the current outside-gate reference
-        # (A.15b rotated it from `fashion-editorial`/Luxe which is now enrolled).
-        self.assertFalse(is_translatable("clinic", "home.headline"))
-        self.assertEqual(supported_locales("clinic"), [])
+        # `wellness` (Benessere) is the current outside-gate reference
+        # (A.16 rotated it from `clinic`/Salute which is now enrolled).
+        self.assertFalse(is_translatable("wellness", "home.headline"))
+        self.assertEqual(supported_locales("wellness"), [])
 
     # ------------------------------------------------------------------
     # A.8 · Gusto fine-dining enrollment — Step 1 contract
@@ -4238,9 +4240,9 @@ class FoundationModelTests(TestCase):
             supported_locales("trattoria-warm"),
             ["it", "en", "fr", "es", "ar"],
         )
-        # Outside-gate reference: clinic (Salute) after A.15b rotated it
-        # from fashion-editorial/Luxe (now enrolled).
-        self.assertEqual(supported_locales("clinic"), [])
+        # Outside-gate reference: wellness (Benessere) after A.16 rotated
+        # it from clinic/Salute (now enrolled).
+        self.assertEqual(supported_locales("wellness"), [])
 
     def test_a14_tenfold_regression_after_sapore_joins(self):
         """Regression guard: the 10 pre-A.14 archetype classifications
@@ -5550,6 +5552,426 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A15b Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.16 · Salute (clinic · medical-other family · first template)
+    # enrollment — Step 1 contract. OPENS the medical-other family via
+    # staged dedicated-schema progression extended to **3-phase variant**
+    # (A.16 Salute · A.16b Benessere · A.16c Famiglia). First 3-template
+    # staged progression. Dual-out guard planted for BOTH `wellness` +
+    # `family` (removed in A.16b + A.16c respectively). 16 readonly
+    # indexed list entries · tutti parent-level · ZERO deep-path.
+    # ------------------------------------------------------------------
+
+    def test_a16_salute_archetype_registered(self):
+        """`clinic` joins the supported-archetype registry and the
+        multi-locale gate. Benessere (`wellness`) + Famiglia (`family`)
+        stay OUT at BOTH layers (registration-time here · runtime inside
+        the lifecycle test end-of-test guard). All 14 pre-A.16 archetypes
+        must still be enrolled (fourteen-fold regression)."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
+        )
+        self.assertIn("clinic", _ARCHETYPE_SCHEMAS)
+        self.assertIn("clinic", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertIn("clinic", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("clinic"))
+        baseline_slug, baseline_locale = _ARCHETYPE_BASELINE_TEMPLATE["clinic"]
+        self.assertEqual(baseline_slug, "salute-studio-medico")
+        self.assertEqual(baseline_locale, "it")
+
+        # DUAL-OUT GUARD: both `wellness` + `family` stay OUT until A.16b/A.16c.
+        # Runtime re-check lives in
+        # `test_a16_salute_full_multilocale_lifecycle_end_to_end`.
+        # Both guards will be removed in their respective closure phases
+        # via symmetric inversion tests (first 3-template staged
+        # progression · sub-recipe extends to 2 removal phases).
+        self.assertNotIn("wellness", _ARCHETYPE_SCHEMAS,
+                         "Benessere (wellness) must stay OUT until A.16b")
+        self.assertNotIn("wellness", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertNotIn("wellness", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertFalse(is_supported_archetype("wellness"))
+        self.assertNotIn("family", _ARCHETYPE_SCHEMAS,
+                         "Famiglia (family) must stay OUT until A.16c")
+        self.assertNotIn("family", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertNotIn("family", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertFalse(is_supported_archetype("family"))
+
+        # 14 pre-A.16 archetypes still enrolled.
+        for pre_slug in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop", "fashion-editorial",
+        ):
+            self.assertIn(pre_slug, _ARCHETYPE_SCHEMAS, f"{pre_slug} lost enrollment")
+            self.assertIn(pre_slug, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{pre_slug} lost multi-locale")
+
+    def test_a16_salute_schema_shape_covers_all_pages(self):
+        """Salute groups span the 7 page slugs + `*` chrome. Two novel
+        page kinds (`prevention` + `appointment`) · plain string
+        identifiers · no view dispatch."""
+        from apps.editor.schema import iter_groups
+        groups = iter_groups("clinic")
+        pages = {g.get("page") for g in groups}
+        for expected in ("*", "home", "studio", "servizi", "prevenzione", "medici", "contatti", "prenota"):
+            self.assertIn(expected, pages,
+                          f"Salute schema missing page `{expected}` coverage")
+
+    def test_a16_salute_is_translatable_text_fields(self):
+        """Distributed sample of Salute translatable paths — one per
+        page — must classify as translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "clinic"
+        translatable_paths = (
+            # home
+            "home.eyebrow", "home.headline", "home.subhead",
+            "home.specialties_heading", "home.journey_heading",
+            "home.prevenzione_heading", "home.team_heading",
+            "home.partners_heading", "home.trust_note",
+            # studio
+            "studio.eyebrow", "studio.headline", "studio.intro",
+            "studio.values_heading", "studio.photo_heading",
+            "studio.photo_body", "studio.timeline_heading",
+            # servizi
+            "servizi.eyebrow", "servizi.headline", "servizi.intro",
+            "servizi.svc_heading", "servizi.faq_heading",
+            # prevenzione
+            "prevenzione.eyebrow", "prevenzione.headline",
+            "prevenzione.intro", "prevenzione.pack_heading",
+            "prevenzione.how_heading",
+            # medici
+            "medici.eyebrow", "medici.headline", "medici.intro",
+            "medici.footnote_body",
+            # contatti
+            "contatti.headline", "contatti.intro",
+            "contatti.form_title", "contatti.form_intro",
+            # prenota
+            "prenota.eyebrow", "prenota.headline", "prenota.intro",
+            "prenota.help_title", "prenota.alt_body",
+        )
+        for path in translatable_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must classify as translatable on Salute",
+            )
+
+    def test_a16_salute_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Salute — same contract
+        as every previously-enrolled archetype."""
+        from apps.editor.schema import is_translatable
+        arc = "clinic"
+        for path in (
+            "site.logo_word", "site.logo_initial",
+            "site.phone", "site.email",
+            "site.address", "site.license",
+        ):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must stay global on Salute",
+            )
+
+    def test_a16_salute_scalar_and_image_in_dict_rows_exposed(self):
+        """USER-IMPOSED GUARDRAIL: Salute ships 1 scalar top-level image
+        (`studio.photo_src` · about page photo · RENDERED) + 14 image
+        cells across 2 image-in-dict-row lists (`home.team_ribbon_people[].avatar`
+        × 8 + `medici.doctors[].portrait` × 6). All 15 image surfaces
+        rendered (specialist-family precedent)."""
+        from apps.editor.schema import get_field_spec
+        arc = "clinic"
+        scalar_image_paths = ("studio.photo_src",)
+        for path in scalar_image_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Salute schema")
+            self.assertEqual(spec.get("type"), "image",
+                             f"{path} must expose as type=image")
+        image_cell_paths = (
+            # home.team_ribbon_people × 8 (avatar col)
+            "home.team_ribbon_people.0.avatar",
+            "home.team_ribbon_people.7.avatar",     # last of 8
+            # medici.doctors × 6 (portrait col)
+            "medici.doctors.0.portrait",
+            "medici.doctors.5.portrait",            # last of 6
+        )
+        for path in image_cell_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Salute schema")
+            self.assertEqual(spec.get("type"), "image",
+                             f"{path} must expose as type=image")
+
+    def test_a16_salute_visible_catalog_fields_kept_in(self):
+        """Stringent IN call (audit-driven · precedent chain Sapore→
+        Brace→Bottega→Luxe→**Salute**): visible editorial numbering
+        (`num` on journey/how/help steps) + customer-facing badge text
+        (`popular_label`) stay IN. OUT only truly-structural (bool flag
+        `is_popular`) and truly-technical (raw `icon_svg` XML)."""
+        from apps.editor.schema import get_field_spec
+        arc = "clinic"
+        visible_editorial = (
+            ("home.journey_steps.0.num",        "text"),
+            ("home.journey_steps.3.num",        "text"),
+            ("prevenzione.how_steps.0.num",     "text"),
+            ("prevenzione.packages.0.popular_label", "text"),
+            ("prenota.help_steps.0.num",        "text"),
+        )
+        for path, expected_type in visible_editorial:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec,
+                f"{path} missing — editorial-visible cell must be editable",
+            )
+            self.assertEqual(
+                spec.get("type"), expected_type,
+                f"{path} type mismatch (expected {expected_type})",
+            )
+
+    def test_a16_salute_raw_svg_fields_excluded(self):
+        """USER-IMPOSED GUARDRAIL · NOVEL 5th OUT CATEGORY PRECEDENT:
+        Salute ships 18 raw `icon_svg` fields (inline SVG XML markup in
+        `home.specialties[]` × 8 + `servizi.services[]` × 10). These are
+        technical content carrying raw XML — unsafe as plain text input
+        for customers, poor UX, and outside the editor widget contract.
+        **OUT col-level** via STRUCTURED_FIELD_SHAPES col exclusion (not
+        added to the cols list for either shape). Verified by:
+        (a) `get_field_spec` returning None on representative deep paths
+        (b) `validate_key_path` raising for the same paths."""
+        from apps.editor.schema import (
+            get_field_spec, validate_key_path, InvalidEditableField,
+        )
+        arc = "clinic"
+        raw_svg_paths = (
+            "home.specialties.0.icon_svg",
+            "home.specialties.7.icon_svg",          # last of 8
+            "servizi.services.0.icon_svg",
+            "servizi.services.9.icon_svg",          # last of 10
+        )
+        for path in raw_svg_paths:
+            self.assertIsNone(
+                get_field_spec(arc, path),
+                f"{path} must NOT expose as an editable cell (raw SVG OUT)",
+            )
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Salute must reject raw-SVG path via validate_key_path: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a16_salute_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL: complex shapes + structural identifiers
+        + bool flags + nested list-of-str stay outside the perimeter.
+        Salute ships NO posts (empty · same structural absence as Bottega/
+        Luxe/Sapore/Brace · detail-page policy stays at 6-archetype
+        uniform enforcement count)."""
+        from apps.editor.schema import validate_key_path, InvalidEditableField
+        arc = "clinic"
+        rejected_paths = (
+            # Flat list-of-str containers
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            "site.foot_extra_rows",
+            "site.foot_extra_rows.0",
+            "home.partners",
+            "home.partners.0",
+            "prenota.trust",
+            "prenota.trust.0",
+            # Form structures (Juris/Gusto/Bottega/Luxe precedent)
+            "contatti.form_fields",
+            "contatti.form_fields.0.name",
+            "prenota.form_fields",
+            "prenota.form_fields.0.name",
+            "prenota.form_sections",
+            "prenota.form_sections.0.num",
+            # Nested list-of-str inside dict rows (Juris precedent)
+            "servizi.services.0.items",
+            "servizi.services.0.items.0",
+            "prevenzione.packages.0.includes",
+            "prevenzione.packages.0.includes.0",
+            "home.prevenzione_cards.0.includes",
+            "home.prevenzione_cards.0.includes.0",
+            "medici.doctors.0.tags",
+            "medici.doctors.0.tags.0",
+            # Col-level bool flag (Luxe available precedent · preserves
+            # popular_label text editability · no bool field type support)
+            "prevenzione.packages.0.is_popular",
+            # Raw SVG (5th OUT category precedent · separate test covers in depth)
+            "home.specialties.0.icon_svg",
+            "servizi.services.0.icon_svg",
+            # Top-level navigation + empty posts
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+        )
+        for path in rejected_paths:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Salute must reject complex-shape path: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a16_salute_structured_list_cells_are_global(self):
+        """Every STRUCTURED_FIELD_SHAPES text/image cell on Salute stays
+        global (non-translatable · D-098 per-locale image out-of-scope)."""
+        from apps.editor.schema import is_translatable
+        arc = "clinic"
+        cell_paths = (
+            # home.stats (tuple 3 · 2 cols)
+            "home.stats.0.value",
+            "home.stats.2.label",
+            # home.stats_strip (tuple 4 · 2 cols)
+            "home.stats_strip.0.value",
+            "home.stats_strip.3.label",
+            # home.specialties (8 rows · 3 cols IN)
+            "home.specialties.0.title",
+            "home.specialties.7.blurb",
+            # home.journey_steps (4 rows · num IN)
+            "home.journey_steps.0.num",
+            "home.journey_steps.3.body",
+            # home.prevenzione_cards (3 rows · 8 cols IN)
+            "home.prevenzione_cards.0.title",
+            "home.prevenzione_cards.2.price",
+            # home.team_ribbon_people (8 rows · 3 cols · image)
+            "home.team_ribbon_people.0.name",
+            "home.team_ribbon_people.7.avatar",   # image cell
+            # studio.values (4 rows · 2 cols)
+            "studio.values.0.title",
+            "studio.values.3.body",
+            # studio.timeline (4 rows · 3 cols)
+            "studio.timeline.0.year",
+            "studio.timeline.3.body",
+            # servizi.services (10 rows · 4 cols IN)
+            "servizi.services.0.title",
+            "servizi.services.9.price",
+            # servizi.faqs (tuple 3 · 2 cols)
+            "servizi.faqs.0.q",
+            "servizi.faqs.2.a",
+            # prevenzione.packages (3 rows · 9 cols IN · includes popular_label)
+            "prevenzione.packages.0.title",
+            "prevenzione.packages.2.cta",
+            "prevenzione.packages.0.popular_label",
+            # prevenzione.how_steps (4 rows · 3 cols · num IN)
+            "prevenzione.how_steps.0.num",
+            "prevenzione.how_steps.3.body",
+            # medici.doctors (6 rows · 4 cols IN · image)
+            "medici.doctors.0.name",
+            "medici.doctors.5.portrait",            # image cell
+            # contatti.hours_table (tuple 4 · 2 cols)
+            "contatti.hours_table.0.day",
+            "contatti.hours_table.3.value",
+            # contatti.access (4 rows · 3 cols)
+            "contatti.access.0.icon",
+            "contatti.access.3.body",
+            # prenota.help_steps (4 rows · 3 cols · num IN)
+            "prenota.help_steps.0.num",
+            "prenota.help_steps.3.body",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Salute",
+            )
+
+    def test_a16_salute_supported_locales_returns_canonical_five(self):
+        """Salute ships the canonical 5-locale set. Step-0 audit confirmed
+        5-locale parity PERFECT (576 keys × 5 · zero gaps)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("clinic"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a16_fourteenfold_regression_after_salute_joins(self):
+        """Regression guard: the 14 pre-A.16 archetype classifications
+        are unchanged after `clinic` joins the gate."""
+        from apps.editor.schema import (
+            is_translatable, supported_locales, _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        pre_a16 = (
+            "agency-creative-studio",
+            "corporate-suite",
+            "fine-dining",
+            "specialist",
+            "classic-gold",
+            "modern-transparent",
+            "mass-market",
+            "ultra-luxury-cinematic",
+            "editorial-designer-grid",
+            "cinematic-photographer",
+            "trattoria-warm",
+            "street-modern",
+            "artisan-workshop",
+            "fashion-editorial",
+        )
+        for arc in pre_a16:
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} lost multi-locale enrollment")
+            self.assertEqual(
+                supported_locales(arc), ["it", "en", "fr", "es", "ar"],
+                f"{arc} supported_locales regressed",
+            )
+
+    def test_a16_salute_clinic_admin_boundary(self):
+        """USER-IMPOSED LIGHT guardrail (mirrors A.15/A.15b commerce
+        boundary shape): the editor schema for Salute must not leak
+        into pseudo-admin / data-like model paths. Schema stays scoped
+        to the registry content (template_content prefixes:
+        home/studio/servizi/prevenzione/medici/contatti/prenota/site).
+        This is a LIGHT smoke test · blindates that the schema author
+        didn't accidentally add scheduler-state / booking-state / patient-
+        record-like paths."""
+        from apps.editor.schema import iter_editable_fields
+        arc = "clinic"
+        admin_model_prefixes = (
+            "appointment.", "booking.", "patient.", "scheduler.",
+            "calendar_slot.", "medical_record.", "prescription.",
+        )
+        for path, _spec in iter_editable_fields(arc):
+            for prefix in admin_model_prefixes:
+                self.assertFalse(
+                    path.startswith(prefix),
+                    f"Editor schema leaks into pseudo-admin namespace: "
+                    f"field `{path}` starts with `{prefix}` — editor must "
+                    f"stay on template_content registry only"
+                )
+
+    def test_a16_salute_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.15/A.15b bridge-guard — Salute
+        `medical/clinic/_base.html` must integrate the three bridge
+        points together on the `.cl-*` skin: (1) preview-bridge.js
+        conditional on ``preview_project``, (2) ``<title>`` honors
+        ``site.logo_word``, (3) ``<body>`` carries ``mw-is-editor-preview``
+        guard class when inside the editor."""
+        salute = WebTemplate.objects.get(slug="salute-studio-medico")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/medical/salute-studio-medico/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=salute)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A16 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/medical/salute-studio-medico/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A16 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -5612,9 +6034,9 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Unknown archetype returns empty list, never raises.
-        # `clinic` (Salute) is the current outside-gate reference
-        # (A.15b rotated it from `fashion-editorial`/Luxe which is now enrolled).
-        self.assertEqual(supported_locales("clinic"), [])
+        # `wellness` (Benessere) is the current outside-gate reference
+        # (A.16 rotated it from `clinic`/Salute which is now enrolled).
+        self.assertEqual(supported_locales("wellness"), [])
 
     def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
         """Defensive contract: unknown paths and archetypes return False
@@ -5976,13 +6398,13 @@ class FoundationHttpTests(TestCase):
 
     def test_customize_start_unsupported_archetype_redirects_to_detail(self):
         """Templates without editor support bounce to detail with an info message."""
-        # salute-studio-medico (clinic archetype) is not yet enrolled.
-        # A.15b rotated the outside-gate reference from Luxe (fashion-
-        # editorial · now enrolled) to Salute (clinic · still out).
-        # Swap when `clinic` receives editor support.
-        r = self.client.get("/projects/start/?template=salute-studio-medico")
+        # benessere-centro-olistico (wellness archetype) is not yet
+        # enrolled. A.16 rotated the outside-gate reference from Salute
+        # (clinic · now enrolled) to Benessere (wellness · still out).
+        # Swap when `wellness` receives editor support (A.16b).
+        r = self.client.get("/projects/start/?template=benessere-centro-olistico")
         self.assertEqual(r.status_code, 302)
-        # Either /templates/medical/salute-studio-medico/ or template_list — both accept.
+        # Either /templates/medical/benessere-centro-olistico/ or template_list — both accept.
         self.assertIn("/templates/", r["Location"])
 
     def test_autosave_endpoint_rejects_locked_keys(self):
