@@ -45,17 +45,20 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.revisions.count(), 1)
 
     def test_unsupported_archetype_raises(self):
-        # `agency-digital-studio` (Aura) has not been enrolled in
-        # _ARCHETYPE_SCHEMAS yet — Aura still hits the UnsupportedTemplate
-        # guard. A.16c rotated the outside-gate reference from Famiglia
-        # (family · now enrolled · CLOSES medical-other family) to Aura
-        # (agency-digital-studio · still out). Aura closes agency-
-        # secondary category (Vertex already enrolled as agency-creative-
-        # studio). Swap this slug when `agency-digital-studio` receives
-        # editor support.
-        aura = WebTemplate.objects.get(slug="aura-digital-studio")
+        # `startup-saas-landing` (Elevate) has not been enrolled in
+        # _ARCHETYPE_SCHEMAS yet — Elevate still hits the
+        # UnsupportedTemplate guard. A.17 rotated the outside-gate
+        # reference from Aura (agency-digital-studio · now enrolled ·
+        # CLOSES agency-secondary family) to Elevate (startup-saas-
+        # landing · still out). Elevate is the LAST non-enrolled
+        # archetype — A.17b will close startup-saas family with a
+        # single-template phase and retire this gate altogether.
+        # Swap this slug when `startup-saas-landing` receives editor
+        # support (or migrate this test to a null-slug sentinel once
+        # the catalog reaches 20/20 enrolled).
+        elevate = WebTemplate.objects.get(slug="elevate-startup-landing")
         with self.assertRaises(services.UnsupportedTemplate):
-            services.create_project_from_template(owner=self.owner, template=aura)
+            services.create_project_from_template(owner=self.owner, template=elevate)
 
     def test_schema_locks_non_whitelisted_keys(self):
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
@@ -1397,10 +1400,10 @@ class FoundationModelTests(TestCase):
         self.assertTrue(is_supported_archetype("corporate-suite"))
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
         # Sanity — an unsupported archetype still rejects.
-        # `agency-digital-studio` (Aura) is the current outside-gate
-        # reference (A.16c rotated it from `family`/Famiglia which is
-        # now enrolled · CLOSES medical-other family).
-        self.assertFalse(is_supported_archetype("agency-digital-studio"))
+        # `startup-saas-landing` (Elevate) is the current outside-gate
+        # reference (A.17 rotated it from `agency-digital-studio`/Aura
+        # which is now enrolled · CLOSES agency-secondary family).
+        self.assertFalse(is_supported_archetype("startup-saas-landing"))
 
     def test_a6_pragma_schema_shape_covers_core_pages(self):
         """The Pragma schema must surface groups for every customer-
@@ -1635,11 +1638,11 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Archetype outside the gate still returns False + empty list.
-        # `agency-digital-studio` (Aura) is the current outside-gate
-        # reference (A.16c rotated it from `family`/Famiglia which is
-        # now enrolled · CLOSES medical-other family).
-        self.assertFalse(is_translatable("agency-digital-studio", "home.headline"))
-        self.assertEqual(supported_locales("agency-digital-studio"), [])
+        # `startup-saas-landing` (Elevate) is the current outside-gate
+        # reference (A.17 rotated it from `agency-digital-studio`/Aura
+        # which is now enrolled · CLOSES agency-secondary family).
+        self.assertFalse(is_translatable("startup-saas-landing", "home.headline"))
+        self.assertEqual(supported_locales("startup-saas-landing"), [])
 
     # ------------------------------------------------------------------
     # A.8 · Gusto fine-dining enrollment — Step 1 contract
@@ -4243,10 +4246,10 @@ class FoundationModelTests(TestCase):
             supported_locales("trattoria-warm"),
             ["it", "en", "fr", "es", "ar"],
         )
-        # Outside-gate reference: agency-digital-studio (Aura) after
-        # A.16c rotated it from family/Famiglia (now enrolled · CLOSES
-        # medical-other family).
-        self.assertEqual(supported_locales("agency-digital-studio"), [])
+        # Outside-gate reference: startup-saas-landing (Elevate) after
+        # A.17 rotated it from agency-digital-studio/Aura (now enrolled
+        # · CLOSES agency-secondary family).
+        self.assertEqual(supported_locales("startup-saas-landing"), [])
 
     def test_a14_tenfold_regression_after_sapore_joins(self):
         """Regression guard: the 10 pre-A.14 archetype classifications
@@ -6918,6 +6921,529 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A16c Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.17 · Aura (agency-digital-studio · agency-secondary family ·
+    # single-template closure) enrollment — Step 1 contract.
+    # **CLOSES the agency-secondary family** (single-template · first
+    # single-template family closure with a single phase). 6th family
+    # closed (after law · medical-specialist · real-estate · portfolio ·
+    # restaurant-continuation · ecommerce · medical-other — reaching 8
+    # families closed total · only startup-saas remains for A.17b).
+    # 18 readonly indexed list entries · 12 image-in-dict-row cells ·
+    # zero deep-path · zero scalar top-level image · zero novel shape.
+    # Posts list (6 project_detail records) stays registry-only · 7th
+    # uniform enforcement of the per-item content policy. Form-scaffolding
+    # on brief page OUT entire (step1/2/3 · labels · placeholders ·
+    # scope_options · slots) · 5th form-structure OUT precedent.
+    # ------------------------------------------------------------------
+
+    def test_a17_aura_archetype_registered(self):
+        """`agency-digital-studio` joins the supported-archetype registry
+        and the multi-locale gate. All 17 pre-A.17 archetypes must still
+        be enrolled (seventeen-fold regression).
+        """
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS,
+            _MULTILOCALE_ENABLED_ARCHETYPES,
+            is_supported_archetype,
+            supported_locales,
+        )
+        self.assertIn("agency-digital-studio", _ARCHETYPE_SCHEMAS)
+        self.assertIn("agency-digital-studio", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("agency-digital-studio"))
+        self.assertEqual(
+            supported_locales("agency-digital-studio"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # 17 pre-A.17 archetypes still enrolled.
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop", "fashion-editorial",
+            "clinic", "wellness", "family",
+        ):
+            self.assertIn(arc, _ARCHETYPE_SCHEMAS,
+                          f"{arc} must stay enrolled after A.17 Aura joins")
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} must stay in multi-locale gate after A.17")
+
+    def test_a17_aura_out_guard_was_removed_from_prior_tests(self):
+        """A.17 rotates the outside-gate fixture from `agency-digital-
+        studio`/Aura (now enrolled · CLOSES agency-secondary family) to
+        `startup-saas-landing`/Elevate (LAST non-enrolled archetype ·
+        will close with A.17b). Verifies the 7 rotated call-sites no
+        longer name Aura as outside-gate (7th precedent of guard removal
+        pattern · extends 6-precedent chain from A.16c).
+        """
+        from apps.editor.schema import is_supported_archetype, is_translatable, supported_locales
+        # Aura must be IN after A.17.
+        self.assertTrue(is_supported_archetype("agency-digital-studio"),
+                        "Aura must be enrolled after A.17 closer")
+        self.assertTrue(is_translatable("agency-digital-studio", "home.headline"))
+        self.assertEqual(
+            supported_locales("agency-digital-studio"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Elevate is the new outside-gate reference.
+        self.assertFalse(is_supported_archetype("startup-saas-landing"))
+        self.assertFalse(is_translatable("startup-saas-landing", "home.headline"))
+        self.assertEqual(supported_locales("startup-saas-landing"), [])
+
+    def test_a17_agency_secondary_family_closed(self):
+        """A.17 CLOSES agency-secondary family with a single phase ·
+        first single-template family closure precedent. Vertex sits in
+        agency-creative-studio (primary) · Aura in agency-digital-
+        studio (secondary) · both now editable. 8 families closed
+        total after A.17 (law · medical-specialist · real-estate ·
+        portfolio · restaurant-continuation · ecommerce · medical-other
+        · agency-secondary)."""
+        from apps.editor.schema import _ARCHETYPE_SCHEMAS
+        # Both agency archetypes enrolled.
+        self.assertIn("agency-creative-studio", _ARCHETYPE_SCHEMAS,
+                      "Vertex (agency-creative-studio) must stay enrolled")
+        self.assertIn("agency-digital-studio", _ARCHETYPE_SCHEMAS,
+                      "Aura (agency-digital-studio) must be enrolled after A.17")
+
+    def test_a17_aura_schema_shape_covers_all_pages(self):
+        """Aura schema surfaces at least one group for every customer-
+        facing page (9 groups · one per page region + overlapping
+        chrome/console/home_bands trio)."""
+        from apps.editor.schema import _ARCHETYPE_SCHEMAS
+        schema = _ARCHETYPE_SCHEMAS["agency-digital-studio"]
+        group_ids = {g["id"] for g in schema}
+        for expected in (
+            "brand", "hero_home", "console_home", "home_bands",
+            "studio_page", "capabilities_page", "lavori_page",
+            "sprint_page", "brief_page",
+        ):
+            self.assertIn(expected, group_ids,
+                          f"Aura schema missing expected group `{expected}`")
+
+    def test_a17_aura_is_translatable_text_fields(self):
+        """Customer-editable text fields that are NOT under a structured
+        list are per-locale-translatable. Universals (logo · phone ·
+        email · address · license) stay global."""
+        from apps.editor.schema import is_translatable
+        arc = "agency-digital-studio"
+        translatable_samples = (
+            "home.headline",
+            "home.intro",
+            "home.console.primary_label",
+            "studio.standfirst",
+            "capabilities.headline",
+            "lavori.velocity_body",
+            "sprint.standfirst",
+            "brief.async_body",
+        )
+        for path in translatable_samples:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must be per-locale translatable on Aura",
+            )
+
+    def test_a17_aura_branding_and_contact_universals_are_global(self):
+        """site.* universals in _GLOBAL_TEXT_PATHS stay plain-key global
+        (D-098 policy · 18 enrolled archetypes uniform). Select-type
+        routing fields (inquiry_page_slug) also stay global by virtue
+        of their non-translatable field type."""
+        from apps.editor.schema import is_translatable
+        arc = "agency-digital-studio"
+        global_paths = (
+            # _GLOBAL_TEXT_PATHS entries (force plain-key regardless of
+            # text-type classification)
+            "site.logo_word",
+            "site.phone",
+            "site.email",
+            "site.address",
+            "site.license",
+            # Select type · not translatable by field-type rule
+            "site.inquiry_page_slug",
+            "home.primary_href",
+            "home.secondary_href",
+        )
+        for path in global_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must stay global on Aura",
+            )
+
+    def test_a17_aura_image_cells_in_dict_rows_exposed(self):
+        """USER-IMPOSED GUARDRAIL: Aura ships 12 image cells across 3
+        image-in-dict-row lists (no scalar top-level · no deep-path):
+          • home.work_cards[].cover      × 3 rows
+          • studio.team[].portrait       × 3 rows
+          • lavori.projects[].cover      × 6 rows
+        All 12 image cells rendered via `.au-*` skin. Posts cover_image
+        × 6 stays registry-only (7th uniform enforcement of per-item
+        content policy)."""
+        from apps.editor.schema import get_field_spec
+        arc = "agency-digital-studio"
+        image_cell_paths = (
+            # home.work_cards × 3 (cover col)
+            "home.work_cards.0.cover",
+            "home.work_cards.2.cover",
+            # studio.team × 3 (portrait col)
+            "studio.team.0.portrait",
+            "studio.team.2.portrait",
+            # lavori.projects × 6 (cover col)
+            "lavori.projects.0.cover",
+            "lavori.projects.5.cover",
+        )
+        for path in image_cell_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Aura schema")
+            self.assertEqual(spec.get("type"), "image",
+                             f"{path} must expose as type=image")
+
+    def test_a17_aura_visible_catalog_fields_kept_in(self):
+        """Stringent IN call (audit-driven · 8th archetype precedent
+        chain): visible editorial technical-looking labels stay IN.
+        Aura brings `foot_boot_line`, `foot_current_sprint`, `sprint_chip`
+        (navbar chip), `output` tag on home.sprints rows (editorial
+        `OUT · brief + backlog`), `tagline` on sprint.sprints (editorial
+        `// output: ...`), `deliverables_label`, `scope_label`."""
+        from apps.editor.schema import get_field_spec, validate_key_path
+        arc = "agency-digital-studio"
+        visible_editorial = (
+            "site.foot_boot_line",
+            "site.foot_current_sprint",
+            "site.sprint_chip",
+            "site.foot_shiplog_label",
+            "site.foot_studio_label",
+            "site.foot_stack_label",
+            # Structured-list cells (IN col-level)
+            "home.sprints.0.output",
+            "sprint.sprints.0.tagline",
+            "sprint.sprints.0.deliverables_label",
+            "capabilities.capabilities.0.scope_label",
+        )
+        for path in visible_editorial:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Aura schema")
+            # Must also pass validate_key_path (IN perimeter).
+            validate_key_path(arc, path)
+
+    def test_a17_aura_brief_slots_kept_out_explicit(self):
+        """**AUDIT-BINDING · explicit A.17 Step 0 decision**:
+        `brief.slots` is OUT entire · form-structure scaffolding ·
+        5th form-structure OUT precedent after Gusto/Juris/Casa/Villa.
+
+        Rationale: the tuple `(id, label)` holds a form-option-value
+        `id` (structural form-schema · e.g. "mon10") and an editorial
+        label ("Lun · 10:00"). Despite the label being customer-visible,
+        the LIST IDENTITY — which days/hours are offered — is a form-
+        schema concern requiring a calendar integration, not a customer
+        copy edit. Enforced by:
+          (a) `brief.slots` is NOT registered in STRUCTURED_FIELD_SHAPES
+              (list-level OUT · no per-cell editor exposure)
+          (b) `brief.slots` + sub-paths raise InvalidEditableField
+          (c) Sibling form-structure containers (step1/2/3 · labels ·
+              placeholders · scope_options) are similarly OUT entire
+        """
+        from apps.editor.schema import (
+            STRUCTURED_FIELD_SHAPES,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        arc = "agency-digital-studio"
+        # (a) slots NOT registered as structured-list shape
+        shapes = STRUCTURED_FIELD_SHAPES.get(arc, {})
+        self.assertNotIn("brief.slots", shapes,
+                         "brief.slots must stay OUT entire · 5th form-structure precedent")
+        # (b) slots + sub-paths raise InvalidEditableField
+        for out_path in (
+            "brief.slots",
+            "brief.slots.0",
+            "brief.slots.0.0",          # tuple id
+            "brief.slots.0.1",          # tuple label
+            "brief.slots.0.id",         # defensive alias
+            "brief.slots.0.label",      # defensive alias
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"brief.slots path must stay rejected: {out_path}",
+            ):
+                validate_key_path(arc, out_path)
+        # (c) sibling form-structure containers OUT entire
+        for out_path in (
+            "brief.step1",
+            "brief.step1.title",
+            "brief.step2",
+            "brief.step3",
+            "brief.labels",
+            "brief.labels.name",
+            "brief.placeholders",
+            "brief.placeholders.brief",
+            "brief.scope_options",
+            "brief.scope_options.0",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"brief form-structure path must stay rejected: {out_path}",
+            ):
+                validate_key_path(arc, out_path)
+
+    def test_a17_aura_complex_shapes_excluded_from_perimeter(self):
+        """Nested list-of-str inside dict rows, flat list-of-str, and
+        registry-only posts list all rejected by validate_key_path ·
+        6-archetype nested-list-of-str precedent chain + 7th uniform
+        enforcement of per-item content policy (posts)."""
+        from apps.editor.schema import InvalidEditableField, validate_key_path
+        arc = "agency-digital-studio"
+        out_paths = (
+            # Nested list-of-str inside dict rows (Juris precedent · OUT col-level)
+            "home.capab_cards.0.tags",
+            "home.capab_cards.0.tags.0",
+            "home.work_cards.0.stack",
+            "home.work_cards.0.stack.0",
+            "studio.team.0.stack",
+            "capabilities.capabilities.0.scope",
+            "capabilities.capabilities.0.scope.0",
+            "capabilities.capabilities.0.stack",
+            "capabilities.engagement_tiles.0.includes",
+            # Nested list-of-tuple kpi inside lavori.projects (no sub-list kind)
+            "lavori.projects.0.kpi",
+            "lavori.projects.0.kpi.0",
+            # bool flag `featured` on engagement_tiles (OUT-category)
+            "capabilities.engagement_tiles.0.featured",
+            # Flat list-of-str · OUT entire
+            "site.foot_stack_marquee",
+            "site.foot_stack_marquee.0",
+            "site.foot_stack_rows",
+            "site.foot_stack_rows.0",
+            "studio.story_paragraphs",
+            "studio.story_paragraphs.0",
+            "lavori.tabs",
+            "lavori.tabs.0",
+            "brief.scope_options",
+            "brief.scope_options.0",
+            # Structural slug identifiers (router refs) · OUT
+            "home.work_cards.0.slug",
+            "lavori.projects.0.slug",
+            # Deliverables nested list-of-str · OUT col-level
+            "sprint.sprints.0.deliverables",
+            "sprint.sprints.0.deliverables.0",
+            # Posts registry-only · 7th uniform enforcement
+            "posts",
+            "posts.0",
+            "posts.0.title",
+            "posts.0.cover_image",
+            "posts.0.problem_paragraphs",
+            "posts.0.timeline_steps",
+            # Pages list + DNA-locked
+            "pages",
+            "pages.0.slug",
+        )
+        for path in out_paths:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Aura OUT path must stay rejected: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a17_aura_structured_list_cells_are_global(self):
+        """Every STRUCTURED_FIELD_SHAPES text/image cell on Aura stays
+        global (non-translatable · D-098 structured-list policy · 18
+        enrolled archetypes uniform · zero deep-path for Aura)."""
+        from apps.editor.schema import is_translatable
+        arc = "agency-digital-studio"
+        cell_paths = (
+            # site.foot_shiplog_rows (tuple 6 · 3 cols)
+            "site.foot_shiplog_rows.0.date",
+            "site.foot_shiplog_rows.5.desc",
+            # home.hero_metrics (tuple 3 · 2 cols)
+            "home.hero_metrics.0.num",
+            "home.hero_metrics.2.label",
+            # home.console.kpi (tuple 4 · 2 cols · nested under console dict)
+            "home.console.kpi.0.num",
+            "home.console.kpi.3.label",
+            # home.capab_cards (dict 4 · 3 cols IN)
+            "home.capab_cards.0.id",
+            "home.capab_cards.3.body",
+            # home.sprints (dict 4 · 5 cols IN incl output stringent)
+            "home.sprints.0.id",
+            "home.sprints.3.output",
+            # home.work_cards (dict 3 · 5 cols · cover image)
+            "home.work_cards.0.title",
+            "home.work_cards.2.cover",
+            # home.metric_strip (tuple 4 · 3 cols)
+            "home.metric_strip.0.num",
+            "home.metric_strip.3.note",
+            # studio.facts (tuple 4 · 3 cols)
+            "studio.facts.0.num",
+            "studio.facts.3.note",
+            # studio.team (dict 3 · 4 cols · portrait image)
+            "studio.team.0.name",
+            "studio.team.2.portrait",
+            # studio.values (tuple 4 · 3 cols)
+            "studio.values.0.id",
+            "studio.values.3.body",
+            # capabilities.capabilities (dict 4 · 5 cols IN · scope/stack excluded)
+            "capabilities.capabilities.0.id",
+            "capabilities.capabilities.3.scope_label",
+            # capabilities.engagement_tiles (dict 3 · 4 cols IN)
+            "capabilities.engagement_tiles.0.title",
+            "capabilities.engagement_tiles.2.body",
+            # lavori.projects (dict 6 · 7 cols · cover image · slug/kpi excluded)
+            "lavori.projects.0.id",
+            "lavori.projects.5.cover",
+            # lavori.velocity_stats (tuple 4 · 2 cols)
+            "lavori.velocity_stats.0.num",
+            "lavori.velocity_stats.3.label",
+            # sprint.sprints (dict 4 · 6 cols IN · deliverables excluded)
+            "sprint.sprints.0.tagline",
+            "sprint.sprints.3.deliverables_label",
+            # sprint.mindset_cards (dict 3 · 3 cols)
+            "sprint.mindset_cards.0.title",
+            "sprint.mindset_cards.2.body",
+            # sprint.stack_tiles (dict 8 · 2 cols)
+            "sprint.stack_tiles.0.category",
+            "sprint.stack_tiles.7.list",
+            # brief.response_rows (tuple 4 · 2 cols)
+            "brief.response_rows.0.label",
+            "brief.response_rows.3.value",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Aura",
+            )
+
+    def test_a17_aura_supported_locales_returns_canonical_five(self):
+        """Aura ships the canonical 5-locale set. Step-0 audit confirmed
+        5-locale parity PERFECT (544 keys × 5 locales · zero gaps)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("agency-digital-studio"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+        # Outside-gate reference: startup-saas-landing (Elevate)
+        # after A.17 rotated it from agency-digital-studio/Aura
+        # (now enrolled · CLOSES agency-secondary family).
+        self.assertEqual(supported_locales("startup-saas-landing"), [])
+
+    def test_a17_seventeenfold_regression_after_aura_joins(self):
+        """Enrolling Aura must not affect the pre-A.17 17 archetypes.
+        Sample spot-checks across each family:
+        - agency-creative-studio (Vertex · A.6 · agency-primary)
+        - corporate-suite (Pragma · A.7b · business)
+        - fine-dining (Gusto · A.8 · restaurant-primary)
+        - specialist (Cardio+Derm shared · A.9 · medical-specialist CLOSED)
+        - classic-gold + modern-transparent (A.10+A.11 · law CLOSED)
+        - mass-market + ultra-luxury-cinematic (A.12+A.12b · real-estate CLOSED)
+        - editorial-designer-grid + cinematic-photographer (A.13+A.13b · portfolio CLOSED)
+        - trattoria-warm + street-modern (A.14+A.14b · restaurant-continuation CLOSED)
+        - artisan-workshop + fashion-editorial (A.15+A.15b · ecommerce CLOSED)
+        - clinic + wellness + family (A.16+A.16b+A.16c · medical-other CLOSED)
+        """
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS,
+            is_supported_archetype,
+            is_translatable,
+            supported_locales,
+        )
+        samples = (
+            ("agency-creative-studio",   "home.headline",    "vertex-creative-agency"),
+            ("corporate-suite",          "home.headline",    "pragma-corporate-suite"),
+            ("fine-dining",              "home.headline",    "gusto-fine-dining"),
+            ("specialist",               "home.headline",    "cardio-studio-specialistico"),
+            ("classic-gold",             "home.headline",    "lex-studio-legale"),
+            ("modern-transparent",       "home.headline",    "juris-avvocato-moderno"),
+            ("mass-market",              "home.headline",    "casa-agenzia-immobiliare"),
+            ("ultra-luxury-cinematic",   "home.headline",    "villa-immobili-lusso"),
+            ("editorial-designer-grid",  "home.headline",    "chiara-portfolio-creativo"),
+            ("cinematic-photographer",   "home.headline",    "pixel-portfolio-fotografico"),
+            ("trattoria-warm",           "home.headline",    "sapore-trattoria-pizzeria"),
+            ("street-modern",            "home.headline",    "brace-street-food-lab"),
+            ("artisan-workshop",         "home.headline",    "bottega-artisan-workshop"),
+            ("fashion-editorial",        "home.headline",    "luxe-boutique-fashion"),
+            ("clinic",                   "home.headline",    "salute-studio-medico"),
+            ("wellness",                 "home.headline",    "benessere-centro-olistico"),
+            ("family",                   "home.headline",    "famiglia-pediatria"),
+        )
+        for arc, path, slug in samples:
+            self.assertIn(arc, _ARCHETYPE_SCHEMAS,
+                          f"{arc} (slug {slug}) must stay enrolled after A.17")
+            self.assertTrue(is_supported_archetype(arc))
+            self.assertTrue(is_translatable(arc, path),
+                            f"{arc}.{path} must stay translatable after A.17")
+            self.assertEqual(
+                supported_locales(arc),
+                ["it", "en", "fr", "es", "ar"],
+                f"{arc} must stay in 5-locale gate after A.17",
+            )
+
+    def test_a17_aura_posts_stay_registry_only(self):
+        """USER-IMPOSED GUARDRAIL: Aura's posts list (6 project_detail
+        records · cover_image × 6) stays registry-only · 7th uniform
+        enforcement of the per-item content policy (after Chiara +
+        Pixel + Sapore + Brace + Bottega + Luxe). Project_detail kind
+        is served via `lavori/<slug>/` from posts[] but the detail
+        content is NOT exposed in the editor. This keeps detail-page
+        editing deferred until a horizontal feature lifts the policy
+        across the 7-archetype chain in one shot."""
+        from apps.editor.schema import InvalidEditableField, validate_key_path
+        arc = "agency-digital-studio"
+        posts_paths = (
+            "posts",
+            "posts.0",
+            "posts.0.title",
+            "posts.0.client",
+            "posts.0.cover_image",
+            "posts.0.problem_heading",
+            "posts.0.problem_paragraphs",
+            "posts.0.solution_heading",
+            "posts.0.timeline_steps",
+            "posts.0.results_stats",
+            "posts.0.quote",
+            "posts.5.cover_image",      # last of 6 posts
+        )
+        for path in posts_paths:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Aura posts-registry path must stay rejected: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a17_aura_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.16/A.16b/A.16c bridge-guard — Aura
+        `agency/agency-digital-studio/_base.html` must integrate the
+        three bridge points together on the `.au-*` skin:
+        (1) preview-bridge.js conditional on ``preview_project``,
+        (2) ``<title>`` honors ``site.logo_word``,
+        (3) ``<body>`` carries ``mw-is-editor-preview`` guard class
+            when inside the editor iframe."""
+        aura = WebTemplate.objects.get(slug="aura-digital-studio")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/agency/aura-digital-studio/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=aura)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A17 Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/agency/aura-digital-studio/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A17 Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -6980,10 +7506,10 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Unknown archetype returns empty list, never raises.
-        # `agency-digital-studio` (Aura) is the current outside-gate
-        # reference (A.16c rotated it from `family`/Famiglia which is
-        # now enrolled · CLOSES medical-other family).
-        self.assertEqual(supported_locales("agency-digital-studio"), [])
+        # `startup-saas-landing` (Elevate) is the current outside-gate
+        # reference (A.17 rotated it from `agency-digital-studio`/Aura
+        # which is now enrolled · CLOSES agency-secondary family).
+        self.assertEqual(supported_locales("startup-saas-landing"), [])
 
     def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
         """Defensive contract: unknown paths and archetypes return False
@@ -7345,14 +7871,15 @@ class FoundationHttpTests(TestCase):
 
     def test_customize_start_unsupported_archetype_redirects_to_detail(self):
         """Templates without editor support bounce to detail with an info message."""
-        # aura-digital-studio (agency-digital-studio archetype) is not
-        # yet enrolled. A.16c rotated the outside-gate reference from
-        # Famiglia (family · now enrolled · CLOSES medical-other) to
-        # Aura (agency-digital-studio · still out). Swap when
-        # `agency-digital-studio` receives editor support.
-        r = self.client.get("/projects/start/?template=aura-digital-studio")
+        # elevate-startup-landing (startup-saas-landing archetype) is
+        # not yet enrolled. A.17 rotated the outside-gate reference
+        # from Aura (agency-digital-studio · now enrolled · CLOSES
+        # agency-secondary) to Elevate (startup-saas-landing · still
+        # out · LAST non-enrolled archetype). Swap when `startup-saas-
+        # landing` receives editor support (A.17b).
+        r = self.client.get("/projects/start/?template=elevate-startup-landing")
         self.assertEqual(r.status_code, 302)
-        # Either /templates/agency/aura-digital-studio/ or template_list — both accept.
+        # Either /templates/business/elevate-startup-landing/ or template_list — both accept.
         self.assertIn("/templates/", r["Location"])
 
     def test_autosave_endpoint_rejects_locked_keys(self):
