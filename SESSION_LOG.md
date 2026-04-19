@@ -1,5 +1,166 @@
 # Session Log
 
+## Session 74 — Phase A.16b · Benessere (wellness · medical-other family · second template · MIDDLE PHASE) Editor + Multi-locale Enrollment (2026-04-19)
+
+**Summary.** Sixteenth archetype enrolled in the editor: `wellness` (Benessere). Single-template phase — Benessere enters as **middle phase** of the medical-other 3-phase staged dedicated-schema progression (A.16 Salute opener · A.16b Benessere middle · A.16c Famiglia closer pending). Removes wellness-out guard half of the DUAL-OUT GUARD planted in A.16 Salute · **family-out guard PRESERVED** for A.16c. **16 archetype slugs enrolled · 16 multi-locale enrolled · 17 templates editable end-to-end.** Catalog 20/20 `published_live` unchanged. Baseline `803f273` → merge `e9cc419` on `phase-integration-baseline-v15` · pushed origin. Medical-other family remains **half-open** (Salute + Benessere IN · Famiglia pending A.16c closer).
+
+Three critical framings for this session:
+
+1. **First 3-template staged progression enters middle phase · guard-removal sub-recipe in 2-phase variant active**. A.16 Salute planted DUAL-OUT GUARD for BOTH `wellness` + `family` at 3 layers (registration-time + lifecycle start + lifecycle end). A.16b removes wellness-out guard symmetrically via `test_a16b_benessere_out_guard_was_removed_from_salute_tests` (5th precedent after Villa/Pixel/Brace/Luxe) · family-out guard PRESERVED unchanged · A.16c will remove family-out via 6th precedent. **First time 1 opener plants 2 guards and each closure phase removes 1** · sub-recipe generalized from 1-removal to 2-removal phase.
+
+2. **NOVEL SHAPE DEFERRED cleanly (first-ever deferral outcome)**: `home.ambients` tuple-with-image (4 tiles · `(image_url, title, sub)` positional) discovered during Step 0 audit. **ZERO precedent in any existing archetype** — all prior tuple shapes carry text-only cols. Decision: whole list OUT first-wave via schema omission. Rationale: mechanical-reuse principle preserved · no horizontal-feature introduction (would be first-ever image-typed cell inside a tuple) · 4-tile image coverage loss acceptable for middle-phase enrollment · explicit future expansion candidate after dedicated infra verification. **Establishes a 4th deferral category** (novel-shape-deferred) alongside mutable repeater · image per-locale · detail-page editing.
+
+3. **Scheduler-state bool flags + nested list-of-str uniformly OUT across 2 calendar lists**. Benessere ships `home.calendar` + `prenota.calendar` (7 rows × 6 cols each) with `day`/`num`/`month` IN (editorial visible labels) and `has_slots`/`soldout`/`slots` OUT (scheduler-state-like). **4 bool flag cols** (2 lists × 2 cols) are OUT col-level per Luxe `available` + Salute `is_popular` precedent re-application. **2 nested list-of-str cols** (`slots`: concrete time-slots like `['10:00','14:30']`) are OUT col-level per Juris precedent. Uniform enforcement across both calendars confirms scheduler-state is a per-col-type policy category, not a per-archetype special case.
+
+### Context initial post-A.16
+
+Baseline entering Session 74 was `803f273` (post-A.16 Salute enrollment + consolidation; 15 archetypes enrolled, medical-other half-open). Outside-gate fixture already rotated to `wellness`/`benessere-centro-olistico` in A.16 as next-candidate signal.
+
+### Benessere-only scope decision
+
+Step-0 audit (planning session) ran comparative analysis on 3 medical-other templates already completed in A.16. Benessere confirmed as middle phase (simpler than Famiglia's deep-path `crescita.topics[].items` which is deferred to A.16c closer) · mechanical extension of A.16 recipe · no novel topology invention · **5th consecutive staged enrollment after 4 closed + 1 half-open + A.16 Salute opener**.
+
+### Step 0 · Planning / audit findings chiave
+
+- Archetype slug `wellness` · skin `medical/wellness/` · CSS **`.we-*`** (142 hits · highest of medical-other) · 13 mature `html[dir="rtl"]` rules · `_base.html` 645 LOC (highest of medical-other)
+- 7 pages: home · filosofia(about) · rituali(services) · **ambienti** (novel `gallery` kind) · professionisti(team) · contatti(contact) · prenota(appointment · shared with Salute) — **1 novel page kind** (gallery)
+- 5-locale parity PERFETTA (546 keys × 5 locales · zero gaps)
+- `apps/catalog/views.py::LiveTemplateView` ZERO imports da scheduler/booking/patient namespaces · boundary preserved runtime-verified
+- Image surface runtime-verified: 19 editable surfaces (3 scalar top-level + 16 image-in-dict-row cells across 3 lists: `ambienti.rooms[].image` × 8 + `home.therapists_trio[].portrait` × 3 + `professionisti.people[].portrait` × 5) · **ALL RENDERED** (editorial olistico skin)
+- 13 lists-of-dict IN + 4 lists-of-tuple IN = **17 STRUCTURED_FIELD_SHAPES entries** · tutti parent-level · ZERO deep-path
+- 2 lists-of-dict OUT (form structures): `prenota.form_fields` (9 rows · Juris shape) · `prenota.form_sections` (4 rows)
+- 3 nested-dict OUT (form-related): `contatti.form_placeholders` · `contatti.form_helpers` · `contatti.form_fields` (non-standard dict with `interest_label` + `interest_options` list-of-str)
+- 4 flat list-of-str OUT (policy): `site.hours_footer_rows` · `home.hero_meta` · `home.press` · `prenota.why`
+- 5 nested list-of-str inside dict rows OUT (Juris precedent): `home.calendar[].slots` · `prenota.calendar[].slots` · `rituali.packages[].includes` · `professionisti.people[].tags` · `contatti.form_fields.interest_options`
+- **4 bool flag cols OUT** (Luxe/Salute precedent): `home.calendar[].has_slots` · `.soldout` · `prenota.calendar[].has_slots` · `.soldout`
+- **Zero raw SVG fields** (Salute's 5th OUT category precedent does NOT apply to Benessere)
+- **Zero deep-path tuple-in-dict-list or dict-in-dict-list** (no novel contract-alignment fix needed · f66ac24 not invoked)
+- **NOVEL shape discovered · DEFERRED**: `home.ambients` tuple-with-image (4 × `(image_url, title, sub)` · first-ever image-typed cell in a tuple col · whole list OUT first-wave via schema omission · future expansion candidate)
+- **Posts list empty** (same structural absence as Salute/Bottega/Luxe/Sapore/Brace · detail-page policy stays at 6-archetype uniform enforcement)
+
+### Step 1 · Schema + bridge + gate + contract tests
+
+- `BENESSERE_WELLNESS_SCHEMA` added in `apps/editor/schema.py` — **9 sidebar groups · 108 scalar fields**.
+- `STRUCTURED_FIELD_SHAPES["wellness"]` with **17 entries · tutti parent-level · ZERO deep-path** (13 dict + 4 tuple).
+- Image-in-dict-row lists (3): `ambienti.rooms[].image` × 8 · `home.therapists_trio[].portrait` × 3 · `professionisti.people[].portrait` × 5 = 16 image cells.
+- Scalar top-level images (3): `home.hero_image` · `filosofia.photo_image` · `contatti.map_image` (all rendered).
+- 3 gate registrations simultanee · `_ARCHETYPE_BASELINE_TEMPLATE["wellness"] = ("benessere-centro-olistico", "it")` + `_ARCHETYPE_SCHEMAS["wellness"] = BENESSERE_WELLNESS_SCHEMA` + `"wellness"` in `_MULTILOCALE_ENABLED_ARCHETYPES`.
+- **Col-level exclusions**: 4× calendar bool flags (`has_slots`/`soldout` on both calendars · Luxe/Salute precedent) · 2× calendar `slots` (nested list-of-str · Juris precedent) · `rituali.packages[].includes` · `professionisti.people[].tags` (nested list-of-str · Juris precedent).
+- **Complex-shape exclusion** (form + flat + deferred novel): 5× form structures · 4× flat list-of-str · 3× home.ambients tuple-with-image (DEFERRED novel shape · schema omission) · `pages` · `posts` (empty).
+- 3 atomic fixes on `templates/live_templates/medical/wellness/_base.html`: title `site.logo_word|default:brand.brand_name` · body `mw-is-editor-preview` guard · `.we-*` CSS guard block (`.we-nav .wm` clamp 32ch) · preview-bridge.js conditional on `preview_project`.
+- **Wellness-out guard REMOVED** from A.16 Salute tests at 3 locations: registration-time in `test_a16_salute_archetype_registered` + runtime at start AND end of `test_a16_salute_full_multilocale_lifecycle_end_to_end`. **Family-out guard PRESERVED** unchanged in all 3 locations.
+- **NEW test** `test_a16b_benessere_out_guard_was_removed_from_salute_tests` · **5th precedent** of guard removal pattern after Villa/Pixel/Brace/Luxe · **first time 1 opener plants 2 guards and a single closure phase removes 1 of them** (variation vs 2-template staged closures).
+- **Outside-gate fixture rotation** (6 location): `wellness`/`benessere-centro-olistico` → `family`/`famiglia-pediatria` (A.16c closer candidate).
+
+### Step 2 · Lifecycle HTTP end-to-end test
+
+- `test_a16b_benessere_full_multilocale_lifecycle_end_to_end` added (pure test-only change · +388 LOC · zero production code).
+- 11 phases blindates: perimeter start (Benessere IN + Salute IN + Famiglia OUT) · 3 translatable locales on `home.headline` · global plain-key `site.logo_word` · 3 image paths across 3 distinct pages (scalar `home.hero_image` on home + `ambienti.rooms.0.image` on novel gallery page + `professionisti.people.0.portrait` on team page · all DIFFERENT lists + DIFFERENT pages) · publish · second-user preview walk 5 locales × 3 pages · AR `<html dir="rtl" lang="ar">` · owner re-opens editor with per-locale prefill · perimeter end (Benessere + Salute IN · Famiglia STILL OUT) + **24 OUT paths rejected** (calendar bool flags × 4 · nested str-lists × 4 · form structures × 7 · home.ambients tuple × 3 · flat str-list × 4 · pages/posts × 2).
+- **Triple-invariant**: Benessere + Salute IN + Famiglia OUT verified at start AND end of test.
+- **Image plain-key invariant**: 3 image paths × 5 locales (15 combinations) assertNotIn `@<locale>:` prefix.
+
+### Step 3 · Playwright browser walk
+
+- Sidebar inventory: **379 total editable fields · 19 image widgets exact · 5 lang pills (IT/EN/FR/ES/AR) · 27 group slots** (9 sidebar + 17 indexed + 1 design).
+- **14 critical IN paths present** in sidebar: 3 scalar images · 6 image-in-dict-row cell paths · calendar day/month + num/month on prenota calendar · home.journey.0.num · pillars.init · packages.tag.
+- **20 sensitive OUT paths absent**: 4× calendar bool flags · 2× calendar slots · 2× nested str-list · 5× form structures · 3× home.ambients (deferred novel shape) · pages/posts.
+- 5-locale flush walk IT→EN→FR→ES→AR with `home.headline` override in IT/EN/FR; ES/AR stays authored baseline (zero Latin override leak).
+- Per-locale `home.headline` authored baselines verified:
+  - IT: `Un respiro è la misura del nostro tempo`
+  - EN: `A breath is the measure of our time`
+  - FR: `Un souffle est la mesure de notre temps`
+  - ES: `Un respiro es la medida de nuestro tiempo`
+  - AR: `النَّفَسُ هو مقياس وقتنا`
+- **Storage shape after publish (7 overrides)**: 3 per-locale translatable (`@it/@en/@fr:home.headline`) + 4 plain-key globals (`site.logo_word` · `home.hero_image` · `ambienti.rooms.0.image` · `professionisti.people.0.portrait`). Zero `@<locale>:` on any image or logo across 5 locales.
+- **Render matrix 5 locales × 3 pages = 15/15 green**: logo×4 (nav + title + footer + footer strip) on every page; `home.hero_image` only on home; `ambienti.rooms.0.image` only on ambienti (novel `gallery` page · ×2 count due to skin using both `background-image` + `data-li-src` lightbox attribute — documented dual-render behavior); `professionisti.people.0.portrait` only on professionisti; zero cross-page bleed; IT/EN/FR override visible only in own locale; ES/AR show authored fallback.
+- **AR RTL invariant verified**: editor iframe `dir="rtl"` · `lang="ar"` · `body.mw-is-editor-preview` · `.we-nav` + hero rendered; public preview `<html lang="ar" dir="rtl">` · 3033 Arabic characters · authored AR `النَّفَسُ` present.
+
+### Tests + smoke (post-merge)
+
+- `manage.py check` → 0 issues
+- `manage.py test apps` → **325/325 PASS** (309 pre-A.16b + 15 contract + 1 lifecycle)
+- `smoke_full.py` → **834/834 routes HTTP 200**
+- Browser walk 5-locale green (sidebar + flush + storage + render matrix + AR RTL)
+
+### File delta
+
+- `apps/editor/schema.py` +559 LOC (Benessere schema + 17 shapes + 3 gate registrations)
+- `apps/projects/tests.py` +~905 (15 contract tests + 1 lifecycle test + wellness-out dual guard REMOVED from 3 A.16 Salute locations + family-out guard PRESERVED + 6 outside-gate fixture rotations) / -60
+- `templates/live_templates/medical/wellness/_base.html` +10 / -2 (3 atomic fixes on `.we-*` skin)
+
+**Pure 3-file enrollment surface · zero tocchi a `apps/commerce` · `services.py` · `rendering.py` · `views.py` · `models.py` · editor shell · widgets · ProjectAsset · upload endpoint. Pattern confirmed sub-recipe standard after 6 consecutive applications.**
+
+### Medical-other family · half-open status (unchanged)
+
+- Staged dedicated-schema closure will be **5 of N** when family closes in A.16c: real-estate (A.12+A.12b) · portfolio (A.13+A.13b) · restaurant-continuation (A.14+A.14b) · ecommerce (A.15+A.15b) · **medical-other (A.16+A.16b+A.16c · first 3-phase variant)**.
+- 6 families chiuse + 1 half-open (medical-other).
+- 3 templates editor-only-pending residui: Famiglia (`family`) · Aura (`agency-digital-studio`) · Elevate (`startup-saas-landing`).
+- Catalog 20/20 `published_live` · **17/20 enrolled editor** (was 16/20 post-A.16 · +1 Benessere).
+
+### Guard removal pattern · 5 precedents + 1 pending (extended to 3-phase progression)
+
+- Villa-out (A.12b via `test_a12b_villa_out_guard_was_removed_from_casa_tests`)
+- Pixel-out (A.13b via `test_a13b_pixel_out_guard_was_removed_from_chiara_tests`)
+- Brace-out (A.14b via `test_a14b_brace_out_guard_was_removed_from_sapore_tests`)
+- Luxe-out (A.15b via `test_a15b_luxe_out_guard_was_removed_from_bottega_tests`)
+- **Wellness-out (A.16b via `test_a16b_benessere_out_guard_was_removed_from_salute_tests`)** ← 5th precedent · 2-phase-removal variant
+- **Family-out (A.16c via `test_a16c_family_out_guard_was_removed_from_salute_tests` · pending)** ← 6th precedent pending
+
+**First time guard removal pattern applies incrementally to a single opener's dual-out guard** — A.16 Salute planted 2 guards · A.16b removed 1 · A.16c will remove the remaining 1. Sub-recipe extends from "one-opener-one-closer" (A.12→A.12b topology) to "one-opener-two-closers" (A.16→A.16b→A.16c topology).
+
+### Outside-gate fixture rotation history
+
+- A.16: `clinic`/`salute-studio-medico` → `wellness`/`benessere-centro-olistico`
+- **A.16b: `wellness`/`benessere-centro-olistico` → `family`/`famiglia-pediatria`** (A.16c closer candidate)
+
+6 fixture rotate · 4 `supported_locales`/`is_translatable` + 1 `is_supported_archetype` + 1 `customize_start` redirect.
+
+### Decisioni binding in vigore post-A.16b
+
+- D-086 → D-095 (A.1 → A.5)
+- D-096 · per-locale storage `@<locale>:<path>`
+- D-097 · no cross-locale customer fallback
+- D-098 · archetype gate + dedicated lifecycle test per enrollment
+  - Session 74 operational clarification (under D-098 · no new D-number):
+    - Medical-other 3-phase progression enters middle phase with Benessere
+    - Guard removal sub-recipe extended from 1-removal (2-phase) to 2-removal (3-phase) phase
+    - Scheduler-state bool flags + nested list-of-str uniformly OUT across 2 calendar lists (per-col-type policy · Luxe/Salute/Juris precedents re-applied mechanically)
+    - Novel shape deferral outcome formalized: `home.ambients` tuple-with-image OUT first-wave via schema omission (first-ever image-typed cell in a tuple · no horizontal-feature introduction)
+    - Stringent IN col-level audit extended to 6 archetypes (Benessere joins Sapore/Brace/Bottega/Luxe/Salute chain)
+    - Boundary editor-vs-clinic-admin re-verified on second medical-other archetype
+    - Outside-gate fixture rotation to `family`/`famiglia-pediatria` (signals A.16c closer)
+
+**Nessun nuovo D-number da A.16b.** Operational clarification sotto D-098 solamente.
+
+### Benessere metrics
+
+- 9 sidebar groups · 108 scalar fields · 19 image surfaces (3 scalar top + 16 image-in-dict-row cells · ALL RENDERED)
+- 17 readonly indexed list entries · tutti parent-level · ZERO deep-path (13 dict + 4 tuple)
+- ~90 translatable · ~370 global (full audit deferred to maintenance phase)
+- 5 locale parity PERFECT (546 keys × 5 · zero gaps)
+- `.we-*` skin · 13 `html[dir="rtl"]` rules
+- Zero posts · zero form structures editing · zero mutable repeater · zero image per-locale · zero scheduler/booking/patient model paths · zero deep-path
+- Schema LOC delta +559 · SOTTO 600 soft guardrail (consistent with Bottega 585 · Luxe 598 · Salute 512)
+
+### Not in scope (confirmed out-of-scope)
+
+- Famiglia editor enrollment (deferred A.16c closer)
+- `home.ambients` tuple-with-image (deferred · novel shape)
+- Bool field type addition (horizontal feature · resisted)
+- Nested list-of-str editor widget (horizontal feature · resisted)
+- Form-structure editor (horizontal feature · resisted)
+- Tuple-with-image editor widget (horizontal feature · resisted via deferral)
+- Image per-locale (D-098 invariante)
+- Repeater per-locale (out-of-scope family)
+- Mutable repeater (Benessere lists tutte readonly)
+- Detail-page editing (horizontal feature cross-archetype · 6-archetype uniform enforcement preserved)
+- Scheduler-state / booking-state / patient-record editing (clinic-admin scope · separate concern)
+- Coverage expansion beyond first wave
+- Refactor trasversali
+- Remote storage
+
+---
+
 ## Session 73 — Phase A.16 · Salute (clinic · medical-other family · first template) Editor + Multi-locale Enrollment · OPENS MEDICAL-OTHER FAMILY (2026-04-19)
 
 **Summary.** Fifteenth archetype enrolled in the editor: `clinic` (Salute). Single-template phase — Salute **opens** the medical-other family via staged dedicated-schema progression EXTENDED TO **3-PHASE VARIANT** (A.16 Salute opener · A.16b Benessere · A.16c Famiglia closer). **15 archetype slugs enrolled · 15 multi-locale enrolled · 16 templates editable end-to-end.** Catalog 20/20 `published_live` unchanged. Baseline `af0e71a` → merge `e25b622` on `phase-integration-baseline-v15` · pushed origin. Six families closed unchanged · medical-other family half-open (Salute IN · Benessere/Famiglia pending A.16b/A.16c).
