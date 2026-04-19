@@ -4078,6 +4078,260 @@ SALUTE_CLINIC_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# A.16b · wellness (Benessere · benessere-centro-olistico) — middle phase
+# of the medical-other 3-phase staged dedicated-schema progression (A.16
+# Salute opener · A.16b Benessere middle · A.16c Famiglia closer).
+# First 3-template staged progression continues here · removes wellness-
+# out guard half of the dual-out planted in A.16 · family-out guard
+# PRESERVED for A.16c. Distinct skin folder (.we-*) · 7 pages with
+# novel `gallery` page kind + shared `appointment` kind with Salute.
+# 19 image surfaces (3 scalar + 16 image-in-dict-row cells across 3
+# lists) · ALL RENDERED (editorial olistico skin · no storage-only
+# split). Stringent IN col-level extends to 6 archetypes: calendar
+# day/num/month + pillars.init + packages.tag + journey.num IN (editorial
+# visible · 6th archetype precedent). NOVEL Benessere-specific OUT
+# decision: 4 bool flag cols (home.calendar + prenota.calendar ·
+# has_slots + soldout · scheduler-state-like · Luxe/Salute precedent
+# re-application). DEFERRED from first wave: home.ambients tuple-with-
+# image (4 tiles · novel shape · ZERO precedent in existing archetypes ·
+# whole list OUT · future expansion candidate after infra verification).
+# ---------------------------------------------------------------------------
+BENESSERE_WELLNESS_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".we-nav, .we-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "studio", "tagline", "chrome", "olistico"],
+        "help": "Nome centro olistico, iniziale crest, tagline, contatti (telefono · email · indirizzo), orari sintetici, license (operatori certificati FIF/SIAF).",
+        "fields": [
+            ("site.logo_word",    {"label": "Nome centro", "type": "text", "max_length": 60,
+                                     "placeholder": "Studio Armonia"}),
+            ("site.logo_initial", {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",          {"label": "Tagline (nav + strip)", "type": "text", "max_length": 160}),
+            ("site.nav_cta",      {"label": "CTA nav · etichetta", "type": "text", "max_length": 60}),
+            ("site.phone",        {"label": "Telefono", "type": "text", "max_length": 40}),
+            ("site.email",        {"label": "Email", "type": "text", "max_length": 120}),
+            ("site.address",      {"label": "Indirizzo (una riga)", "type": "text", "max_length": 200}),
+            ("site.hours_compact",{"label": "Orari sintetici", "type": "text", "max_length": 160}),
+            ("site.license",      {"label": "Licenza / certificazione", "type": "text", "max_length": 240}),
+            ("site.footer_intro", {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".we-hero",
+        "page": "home",
+        "keywords": ["hero", "cover", "headline", "eyebrow", "subhead", "manifesto", "cta"],
+        "help": "Primo scroll della home · scalar hero_image (rendered cover) · eyebrow + headline + subhead + CTAs + manifesto block.",
+        "subgroups": [
+            {"label": "Cover (rendered scalar image)", "fields": [
+                ("home.hero_image",        {"label": "Hero image · URL (rendered)", "type": "image", "max_length": 400}),
+            ]},
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",           {"label": "Eyebrow", "type": "text", "max_length": 160}),
+                ("home.headline",          {"label": "Headline", "type": "richtext", "max_length": 220,
+                                              "help": "Consentiti i tag <em> per italici."}),
+                ("home.subhead",           {"label": "Subhead", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "CTA hero", "fields": [
+                ("home.primary_cta",       {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.secondary_cta",     {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Manifesto band", "fields": [
+                ("home.manifesto_label",   {"label": "Manifesto · label", "type": "text", "max_length": 80}),
+                ("home.manifesto",         {"label": "Manifesto · testo", "type": "textarea", "max_length": 700}),
+                ("home.manifesto_signature", {"label": "Manifesto · firma", "type": "text", "max_length": 160}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".we-section",
+        "page": "home",
+        "keywords": ["rituali", "benefits", "ambients", "therapists", "journey", "calendar", "press"],
+        "help": "Fasce copy della home: rituali · benefits · ambients · therapists trio · journey · calendar · press. Le liste indexed si modificano dai gruppi indexed corrispondenti.",
+        "subgroups": [
+            {"label": "Rituali intestazione", "fields": [
+                ("home.rituali_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.rituali_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.rituali_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Benefits intestazione", "fields": [
+                ("home.benefits_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.benefits_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.benefits_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Ambients intestazione", "fields": [
+                ("home.ambients_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.ambients_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.ambients_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Therapists trio intestazione", "fields": [
+                ("home.therapists_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.therapists_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.therapists_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Journey intestazione", "fields": [
+                ("home.journey_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.journey_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.journey_intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Calendar intestazione", "fields": [
+                ("home.calendar_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.calendar_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.calendar_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.calendar_cta",     {"label": "CTA · etichetta", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Press intestazione", "fields": [
+                ("home.press_label",      {"label": "Eyebrow", "type": "text", "max_length": 80}),
+            ]},
+        ],
+    },
+    {
+        "id": "filosofia_page",
+        "label": "Pagina Filosofia (about)",
+        "icon": "bi-compass",
+        "region": ".we-filosofia, .we-filosofia-hero, .we-pillars, .we-photo, .we-timeline, .we-cta",
+        "page": "filosofia",
+        "keywords": ["filosofia", "about", "pillars", "photo", "timeline", "cta"],
+        "help": "Pagina about · hero · pillars intestazione · photo block (scalar image rendered · caption · sub) · timeline intestazione · cta finale. Pillars e timeline rows si modificano dai gruppi indexed.",
+        "fields": [
+            ("filosofia.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("filosofia.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("filosofia.intro",            {"label": "Intro", "type": "textarea", "max_length": 800}),
+            ("filosofia.photo_image",      {"label": "Photo · URL (scalar rendered image)", "type": "image", "max_length": 400}),
+            ("filosofia.photo_caption",    {"label": "Photo · didascalia", "type": "text", "max_length": 200}),
+            ("filosofia.photo_sub",        {"label": "Photo · subtitle", "type": "text", "max_length": 200}),
+            ("filosofia.timeline_label",   {"label": "Timeline · label", "type": "text", "max_length": 60}),
+            ("filosofia.timeline_heading", {"label": "Timeline · titolo", "type": "richtext", "max_length": 220}),
+            ("filosofia.cta_label",        {"label": "CTA · label", "type": "text", "max_length": 60}),
+            ("filosofia.cta_heading",      {"label": "CTA · titolo", "type": "richtext", "max_length": 220}),
+            ("filosofia.cta_sub",          {"label": "CTA · subtitle", "type": "textarea", "max_length": 500}),
+            ("filosofia.cta_primary",      {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("filosofia.cta_secondary",    {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "rituali_page",
+        "label": "Pagina Rituali (services)",
+        "icon": "bi-flower1",
+        "region": ".we-rituali, .we-rituali-hero, .we-treatments, .we-advice, .we-packages, .we-cta",
+        "page": "rituali",
+        "keywords": ["rituali", "services", "treatments", "advice", "packages"],
+        "help": "Pagina rituali · hero · reserve label · advice intestazione · packages intestazione (2 pacchetti demo · `includes` nested list-of-str OUT) · cta finale. Treatments, advice, packages si modificano dai gruppi indexed.",
+        "fields": [
+            ("rituali.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("rituali.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("rituali.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("rituali.reserve_label",    {"label": "Reserve · label", "type": "text", "max_length": 60}),
+            ("rituali.advice_label",     {"label": "Advice · label", "type": "text", "max_length": 60}),
+            ("rituali.advice_heading",   {"label": "Advice · titolo", "type": "richtext", "max_length": 220}),
+            ("rituali.packages_label",   {"label": "Packages · label", "type": "text", "max_length": 80}),
+            ("rituali.packages_heading", {"label": "Packages · titolo", "type": "richtext", "max_length": 220}),
+            ("rituali.packages_intro",   {"label": "Packages · intro", "type": "textarea", "max_length": 500}),
+            ("rituali.cta_label",        {"label": "CTA · label", "type": "text", "max_length": 60}),
+            ("rituali.cta_heading",      {"label": "CTA · titolo", "type": "richtext", "max_length": 220}),
+            ("rituali.cta_sub",          {"label": "CTA · subtitle", "type": "textarea", "max_length": 500}),
+            ("rituali.cta_primary",      {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("rituali.cta_secondary",    {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "ambienti_page",
+        "label": "Pagina Ambienti (novel `gallery` kind)",
+        "icon": "bi-images",
+        "region": ".we-ambienti, .we-ambienti-hero, .we-rooms, .we-cta",
+        "page": "ambienti",
+        "keywords": ["ambienti", "gallery", "rooms", "palazzo"],
+        "help": "Pagina gallery (novel kind · plain string identifier · no dispatch) · hero · rooms intestazione implicita · cta finale. Rooms (8 sale) si modificano dal gruppo indexed.",
+        "fields": [
+            ("ambienti.eyebrow",       {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("ambienti.headline",      {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("ambienti.intro",         {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("ambienti.cta_label",     {"label": "CTA · label", "type": "text", "max_length": 60}),
+            ("ambienti.cta_heading",   {"label": "CTA · titolo", "type": "richtext", "max_length": 220}),
+            ("ambienti.cta_sub",       {"label": "CTA · subtitle", "type": "textarea", "max_length": 500}),
+            ("ambienti.cta_primary",   {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+            ("ambienti.cta_secondary", {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "professionisti_page",
+        "label": "Pagina Professionisti (team)",
+        "icon": "bi-people",
+        "region": ".we-professionisti, .we-professionisti-hero, .we-people, .we-philo, .we-cta",
+        "page": "professionisti",
+        "keywords": ["professionisti", "team", "operatori", "philosophy"],
+        "help": "Pagina team · hero · philo quote block (attribution) · cta finale. People (5 operatori · `tags` nested list-of-str OUT) si modificano dal gruppo indexed.",
+        "fields": [
+            ("professionisti.eyebrow",     {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("professionisti.headline",    {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("professionisti.intro",       {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("professionisti.philo_label", {"label": "Philo · label", "type": "text", "max_length": 60}),
+            ("professionisti.philo_quote", {"label": "Philo · quote", "type": "textarea", "max_length": 700}),
+            ("professionisti.philo_attr",  {"label": "Philo · attribution", "type": "text", "max_length": 200}),
+            ("professionisti.cta_label",   {"label": "CTA · label", "type": "text", "max_length": 60}),
+            ("professionisti.cta_heading", {"label": "CTA · titolo", "type": "richtext", "max_length": 220}),
+            ("professionisti.cta_primary", {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-geo-alt",
+        "region": ".we-contact, .we-contact-hero, .we-map, .we-access, .we-hours, .we-form",
+        "page": "contatti",
+        "keywords": ["contatti", "mappa", "orari", "access", "form-labels"],
+        "help": "Pagina contatti · hero · map scalar image · access intestazione · hours intestazione · form scalar labels (struttura form OUT: contatti.form_placeholders + form_helpers + form_fields tutti registry-only).",
+        "fields": [
+            ("contatti.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("contatti.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("contatti.map_image",        {"label": "Map · URL (scalar rendered image)", "type": "image", "max_length": 400}),
+            ("contatti.access_label",     {"label": "Access · label", "type": "text", "max_length": 60}),
+            ("contatti.form_title",       {"label": "Form · titolo", "type": "text", "max_length": 120}),
+            ("contatti.form_intro",       {"label": "Form · intro", "type": "textarea", "max_length": 500}),
+            ("contatti.form_consent",     {"label": "Form · consenso privacy", "type": "textarea", "max_length": 500}),
+            ("contatti.form_submit_note", {"label": "Form · nota post-submit", "type": "textarea", "max_length": 300}),
+            ("contatti.hours_label",      {"label": "Hours · label", "type": "text", "max_length": 60}),
+            ("contatti.hours_heading",    {"label": "Hours · titolo", "type": "richtext", "max_length": 220}),
+            ("contatti.hours_note",       {"label": "Hours · nota", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "prenota_page",
+        "label": "Pagina Prenota (novel `appointment` kind · shared con Salute)",
+        "icon": "bi-calendar-check",
+        "region": ".we-prenota, .we-prenota-hero, .we-calendar, .we-form, .we-why",
+        "page": "prenota",
+        "keywords": ["prenota", "appointment", "calendar", "form", "why"],
+        "help": "Pagina prenotazione · hero · calendar intestazione + hint · form scalar labels (struttura form OUT: prenota.form_fields + form_sections registry-only · bool flags has_slots/soldout + nested list-of-str slots OUT col-level). Calendar e help_steps si modificano dal gruppo indexed.",
+        "fields": [
+            ("prenota.eyebrow",          {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("prenota.headline",         {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("prenota.intro",            {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("prenota.calendar_heading", {"label": "Calendar · titolo", "type": "richtext", "max_length": 220}),
+            ("prenota.calendar_hint",    {"label": "Calendar · hint", "type": "text", "max_length": 200}),
+            ("prenota.form_title",       {"label": "Form · titolo", "type": "richtext", "max_length": 160}),
+            ("prenota.form_side_note",   {"label": "Form side · nota", "type": "textarea", "max_length": 500}),
+            ("prenota.form_side_small",  {"label": "Form side · small", "type": "text", "max_length": 100}),
+            ("prenota.why_label",        {"label": "Why · label", "type": "text", "max_length": 80}),
+            ("prenota.consent",          {"label": "Form · consenso privacy", "type": "textarea", "max_length": 500}),
+            ("prenota.submit_label",     {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("prenota.form_submit_note", {"label": "Form · nota post-submit", "type": "text", "max_length": 200}),
+            ("prenota.footnote",         {"label": "Footnote", "type": "textarea", "max_length": 500}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -7532,6 +7786,261 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # -----------------------------------------------------------------
+    # A.16b · Benessere wellness. Seventeen indexed lists · tutti
+    # parent-level · ZERO deep-path. Image-in-dict-row on 3 lists
+    # (ambienti.rooms × 8 + home.therapists_trio × 3 + professionisti.people
+    # × 5 = 16 image cells) · plus 3 scalar top-level (home.hero_image +
+    # filosofia.photo_image + contatti.map_image) = 19 image surfaces
+    # total. All rendered (editorial olistico skin · no storage-only
+    # split). Stringent IN col-level (editorial visible): day/num/month
+    # (calendar) + num (journey) + init (pillars) + tag (packages).
+    # Stringent OUT col-level: has_slots/soldout bool flags on both
+    # calendar lists (scheduler-state-like · Luxe available + Salute
+    # is_popular precedent) · slots nested list-of-str on both calendar
+    # lists + includes + tags + interest_options (Juris precedent).
+    # DEFERRED from first wave: home.ambients tuple-with-image (4 tiles ·
+    # novel shape · ZERO precedent · whole list OUT via complex-shape
+    # exclusion in perimeter test).
+    # -----------------------------------------------------------------
+    "wellness": {
+        "site.socials": {
+            "kind": "tuple",
+            "page": "*",
+            "label": "Site · Socials (3 celle footer)",
+            "icon": "bi-link-45deg",
+            "region": ".we-foot",
+            "keywords": ["socials", "footer"],
+            "tuple_order": ["label", "url"],
+            "cols": [
+                ("label", {"label": "Etichetta social", "type": "text", "max_length": 40}),
+                ("url",   {"label": "URL", "type": "url", "max_length": 300}),
+            ],
+        },
+        "home.rituali": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Rituali (4 trattamenti in evidenza)",
+            "icon": "bi-flower1",
+            "region": ".we-home-rituali",
+            "keywords": ["rituali", "home", "trattamenti"],
+            "tuple_order": ["name", "desc", "price"],
+            "cols": [
+                ("name",  {"label": "Nome rituale", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione (durata · materiali)", "type": "textarea", "max_length": 400}),
+                ("price", {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+            ],
+        },
+        "home.benefits": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Benefits (3 parole chiave)",
+            "icon": "bi-heart",
+            "region": ".we-benefits",
+            "keywords": ["benefits", "home", "parole"],
+            "tuple_order": ["title", "body"],
+            "cols": [
+                ("title", {"label": "Parola chiave", "type": "text", "max_length": 80}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "home.therapists_trio": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Therapists trio (3 operatori)",
+            "icon": "bi-person-heart",
+            "region": ".we-therapists-trio",
+            "keywords": ["therapists", "trio", "home", "operatori"],
+            "cols": [
+                ("name",     {"label": "Nome operatore", "type": "text", "max_length": 120}),
+                ("role",     {"label": "Ruolo", "type": "text", "max_length": 160}),
+                ("bio",      {"label": "Bio breve", "type": "textarea", "max_length": 500}),
+                ("portrait", {"label": "Portrait · URL (rendered)", "type": "image", "max_length": 400}),
+            ],
+        },
+        "home.journey": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Journey (4 passi del rituale)",
+            "icon": "bi-arrow-right-circle",
+            "region": ".we-journey",
+            "keywords": ["journey", "home", "passi"],
+            "cols": [
+                ("num",   {"label": "Step ('01'/'02'/...)", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo step", "type": "text", "max_length": 160}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "home.calendar": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Calendar (7 giorni disponibilità · demo display)",
+            "icon": "bi-calendar3",
+            "region": ".we-calendar",
+            "keywords": ["calendar", "home", "giorni"],
+            "cols": [
+                ("day",   {"label": "Giorno abbreviato ('Lun'/'Mar'/...)", "type": "text", "max_length": 16}),
+                ("num",   {"label": "Numero giorno ('14'/'15'/...)", "type": "text", "max_length": 8}),
+                ("month", {"label": "Mese abbreviato ('Apr'/...)", "type": "text", "max_length": 16}),
+                # `slots` col excluded (nested list-of-str · time-slots · Juris precedent)
+                # `has_slots` col excluded (bool · scheduler-state-like · Luxe available precedent)
+                # `soldout` col excluded (bool · scheduler-state-like · Luxe available precedent)
+            ],
+        },
+        "filosofia.pillars": {
+            "kind": "dict",
+            "page": "filosofia",
+            "label": "Filosofia · Pillars (3 parole cardine)",
+            "icon": "bi-stars",
+            "region": ".we-pillars",
+            "keywords": ["pillars", "filosofia", "parole"],
+            "cols": [
+                ("init",  {"label": "Iniziale grafica ('A'/'B'/...)", "type": "text", "max_length": 4}),
+                ("title", {"label": "Titolo pillar", "type": "text", "max_length": 120}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "filosofia.timeline": {
+            "kind": "dict",
+            "page": "filosofia",
+            "label": "Filosofia · Timeline (4 tappe storiche)",
+            "icon": "bi-clock-history",
+            "region": ".we-timeline",
+            "keywords": ["timeline", "storia", "tappe"],
+            "cols": [
+                ("year",  {"label": "Anno", "type": "text", "max_length": 40}),
+                ("title", {"label": "Titolo tappa", "type": "text", "max_length": 160}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "rituali.treatments": {
+            "kind": "dict",
+            "page": "rituali",
+            "label": "Rituali · Treatments (10 trattamenti listino)",
+            "icon": "bi-flower2",
+            "region": ".we-treatments",
+            "keywords": ["treatments", "rituali", "listino"],
+            "cols": [
+                ("name",  {"label": "Nome rituale", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+                ("meta",  {"label": "Meta (durata · materia · operatore)", "type": "text", "max_length": 240}),
+                ("price", {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+            ],
+        },
+        "rituali.advice": {
+            "kind": "dict",
+            "page": "rituali",
+            "label": "Rituali · Advice (3 raccomandazioni)",
+            "icon": "bi-info-circle",
+            "region": ".we-advice",
+            "keywords": ["advice", "raccomandazioni"],
+            "cols": [
+                ("title", {"label": "Titolo raccomandazione", "type": "text", "max_length": 160}),
+                ("body",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "rituali.packages": {
+            "kind": "dict",
+            "page": "rituali",
+            "label": "Rituali · Packages (2 soggiorni retreat)",
+            "icon": "bi-bag-heart",
+            "region": ".we-packages",
+            "keywords": ["packages", "retreat", "soggiorni"],
+            "cols": [
+                ("tag",      {"label": "Tag (editorial category · 'Giornata singola')", "type": "text", "max_length": 60}),
+                ("title",    {"label": "Titolo pacchetto", "type": "text", "max_length": 160}),
+                ("duration", {"label": "Durata sintetica", "type": "text", "max_length": 200}),
+                ("desc",     {"label": "Descrizione", "type": "textarea", "max_length": 700}),
+                ("price",    {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                ("cta",      {"label": "CTA etichetta", "type": "text", "max_length": 60}),
+                # `includes` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "ambienti.rooms": {
+            "kind": "dict",
+            "page": "ambienti",
+            "label": "Ambienti · Rooms (8 sale · novel `gallery` kind)",
+            "icon": "bi-door-closed",
+            "region": ".we-rooms",
+            "keywords": ["rooms", "sale", "gallery", "ambienti"],
+            "cols": [
+                ("span",  {"label": "Span grid (a/b/c · controllo layout)", "type": "text", "max_length": 4}),
+                ("tag",   {"label": "Tag (numerazione sala · 'Sala I · Hammam')", "type": "text", "max_length": 80}),
+                ("title", {"label": "Titolo sala", "type": "text", "max_length": 160}),
+                ("sub",   {"label": "Sottotitolo / descrizione", "type": "textarea", "max_length": 500}),
+                ("image", {"label": "Image · URL (rendered)", "type": "image", "max_length": 400}),
+            ],
+        },
+        "professionisti.people": {
+            "kind": "dict",
+            "page": "professionisti",
+            "label": "Professionisti · People (5 operatori)",
+            "icon": "bi-people",
+            "region": ".we-people",
+            "keywords": ["professionisti", "people", "operatori"],
+            "cols": [
+                ("name",     {"label": "Nome operatore", "type": "text", "max_length": 120}),
+                ("role",     {"label": "Ruolo / specializzazione", "type": "text", "max_length": 200}),
+                ("portrait", {"label": "Portrait · URL (rendered)", "type": "image", "max_length": 400}),
+                ("bio",      {"label": "Bio estesa", "type": "textarea", "max_length": 800}),
+                ("quote",    {"label": "Quote breve", "type": "textarea", "max_length": 400}),
+                # `tags` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "contatti.blocks": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Blocks (4 card informative)",
+            "icon": "bi-grid-3x3-gap",
+            "region": ".we-blocks",
+            "keywords": ["contatti", "blocks", "card"],
+            "cols": [
+                ("label", {"label": "Label", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 200}),
+                ("sub",   {"label": "Sub / nota", "type": "textarea", "max_length": 300}),
+            ],
+        },
+        "contatti.access": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Access (3 modalità)",
+            "icon": "bi-signpost",
+            "region": ".we-access",
+            "keywords": ["access", "come-raggiungerci"],
+            "cols": [
+                ("mode", {"label": "Modalità (a piedi/auto/funicolare)", "type": "text", "max_length": 80}),
+                ("text", {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "contatti.hours": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Hours (7 giorni)",
+            "icon": "bi-clock",
+            "region": ".we-hours",
+            "keywords": ["hours", "orari"],
+            "cols": [
+                ("day",   {"label": "Giorno / range", "type": "text", "max_length": 120}),
+                ("value", {"label": "Orario", "type": "text", "max_length": 120}),
+            ],
+        },
+        "prenota.calendar": {
+            "kind": "dict",
+            "page": "prenota",
+            "label": "Prenota · Calendar (7 giorni disponibilità · demo display)",
+            "icon": "bi-calendar3",
+            "region": ".we-prenota-calendar",
+            "keywords": ["calendar", "prenota", "giorni"],
+            "cols": [
+                ("day",   {"label": "Giorno abbreviato ('Lun'/'Mar'/...)", "type": "text", "max_length": 16}),
+                ("num",   {"label": "Numero giorno ('14'/'15'/...)", "type": "text", "max_length": 8}),
+                ("month", {"label": "Mese abbreviato ('Apr'/...)", "type": "text", "max_length": 16}),
+                # `slots` col excluded (nested list-of-str · time-slots · Juris precedent)
+                # `has_slots` col excluded (bool · scheduler-state-like · Luxe available precedent · mirrors home.calendar)
+                # `soldout` col excluded (bool · scheduler-state-like · Luxe available precedent · mirrors home.calendar)
+            ],
+        },
+    },
 }
 
 
@@ -7648,6 +8157,26 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # precedent) · raw icon_svg fields (new 5th OUT category precedent ·
     # safety + poor UX for raw SVG XML editing).
     "clinic":                 ("salute-studio-medico", "it"),
+    # A.16b · Benessere (wellness) joins as 16th enrolled archetype —
+    # second template of the medical-other family · middle phase of
+    # 3-phase staged dedicated-schema progression (Salute A.16 ·
+    # Benessere A.16b · Famiglia A.16c). Removes wellness-out guard half
+    # of the dual-out planted in A.16 · family-out guard PRESERVED for
+    # A.16c closer. Distinct skin folder (.we-*) · 7 pages with novel
+    # `gallery` page kind + shared `appointment` kind with Salute. 19
+    # image surfaces all rendered (3 scalar + 16 image-in-dict-row cells
+    # across 3 lists · editorial olistico skin · no storage-only split).
+    # Stringent IN col-level: calendar day/num/month + pillars.init +
+    # packages.tag + journey.num IN (editorial visible · 6th archetype
+    # precedent). Stringent OUT col-level: has_slots/soldout bool flags
+    # on both calendar lists (scheduler-state-like · Luxe available +
+    # Salute is_popular precedent) · slots nested list-of-str on both
+    # calendars (Juris precedent) · includes/tags/interest_options
+    # nested list-of-str (Juris precedent). DEFERRED from first wave:
+    # home.ambients tuple-with-image (4 tiles · novel shape · ZERO
+    # precedent in existing archetypes · whole list OUT · future
+    # expansion candidate after infra verification).
+    "wellness":               ("benessere-centro-olistico", "it"),
 }
 
 
@@ -7734,6 +8263,21 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # Juris/Gusto/Bottega/Luxe precedent). Zero deep-path · zero tocchi
     # a apps/commerce · services.py · rendering.py · editor shell.
     "clinic":                 SALUTE_CLINIC_SCHEMA,
+    # A.16b · Benessere — middle-phase enrollment of the medical-other
+    # family · removes wellness-out guard half of the dual-out planted
+    # in A.16 · family-out guard preserved for A.16c closer. Distinct
+    # skin folder (.we-*) · 7 pages with novel `gallery` page kind +
+    # shared `appointment` kind with Salute. 19 image surfaces all
+    # rendered (3 scalar + 16 image-in-dict-row cells · editorial
+    # olistico skin). 4 bool flag cols OUT (home.calendar + prenota.
+    # calendar has_slots + soldout · scheduler-state-like · Luxe/Salute
+    # precedent re-application). 5 form-related structures OUT (contatti
+    # form_placeholders/form_helpers/form_fields + prenota form_fields/
+    # form_sections · Juris precedent uniform enforcement). DEFERRED
+    # novel shape: home.ambients tuple-with-image (no precedent · whole
+    # list OUT first-wave). Zero deep-path · zero tocchi a apps/commerce
+    # · services.py · rendering.py · editor shell.
+    "wellness":               BENESSERE_WELLNESS_SCHEMA,
 }
 
 
@@ -8339,6 +8883,21 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # popular_label text editability). Gated by
     # ``test_a16_salute_full_multilocale_lifecycle_end_to_end``.
     "clinic",
+    # A.16b · Benessere (wellness · medical-other family · second
+    # template) joins editor + multi-locale in a single phase · MIDDLE
+    # phase of the 3-phase staged progression. Removes wellness-out
+    # guard half of the dual-out planted in A.16 · family-out guard
+    # PRESERVED for A.16c closer (Famiglia stays OUT). 5th precedent
+    # of guard removal pattern via `test_a16b_benessere_out_guard_was_removed_from_salute_tests`.
+    # Distinct skin (.we-*) · 7 pages with novel `gallery` kind +
+    # shared `appointment` with Salute. 19 image surfaces all rendered
+    # (3 scalar + 16 image-in-dict-row cells · 3 lists · editorial
+    # olistico skin). 17 indexed list entries · zero deep-path. 4 bool
+    # flag cols OUT (calendar has_slots + soldout · scheduler-state ·
+    # Luxe/Salute precedent). 5 form structures OUT. DEFERRED:
+    # home.ambients tuple-with-image novel shape (whole list OUT first-
+    # wave). Gated by ``test_a16b_benessere_full_multilocale_lifecycle_end_to_end``.
+    "wellness",
 })
 
 
