@@ -11476,6 +11476,394 @@ class FoundationHttpTests(TestCase):
             ):
                 validate_key_path("clinic", out_path)
 
+    # ------------------------------------------------------------------
+    # A.16b · Step 2 — Benessere (wellness) lifecycle HTTP cross-
+    # cutting · MIDDLE phase of the medical-other 3-phase staged
+    # dedicated-schema progression (A.16 Salute opener · A.16b Benessere
+    # middle · A.16c Famiglia closer). Exercises 3 image surfaces end-
+    # to-end across 3 distinct pages:
+    #   - home.hero_image (scalar top-level · rendered hero on home)
+    #   - ambienti.rooms.0.image (image-in-dict-row · rendered on
+    #     novel `gallery` page · 8-row largest image list)
+    #   - professionisti.people.0.portrait (image-in-dict-row ·
+    #     rendered on team page · DIFFERENT list + DIFFERENT page
+    #     from ambienti.rooms)
+    # All 3 image paths plain-keyed across all 5 locales (D-098 image
+    # per-locale out-of-scope). **FAMILY-OUT GUARD**: Famiglia stays
+    # OUT at start AND end (wellness-out guard was removed in A.16b ·
+    # family-out will be removed in A.16c closer · first 3-template
+    # staged progression · sub-recipe 2-removal-phase variant).
+    # ------------------------------------------------------------------
+
+    def test_a16b_benessere_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the Benessere enrollment.
+
+        Benessere's `.we-*` skin renders ALL 19 image surfaces (editorial
+        olistico skin · no storage-only split · same profile as Luxe/
+        Salute). This test blindates both storage shape (plain-key
+        globals for 3 image paths) AND render visibility on the public
+        preview for each image surface across 5 locales × 3 pages ·
+        including the **novel `gallery` page kind** (ambienti).
+
+        Phases:
+        1. perimeter invariants at TEST START — Benessere IN +
+           Salute still IN + Famiglia OUT (family-out guard · wellness-
+           out guard was removed in A.16b · first 3-template staged
+           progression · sub-recipe 2-removal-phase variant)
+        2. customer edits IT / EN / FR on home.headline
+        3. customer edits global site.logo_word via EN — plain-keyed
+           no @en: prefix
+        4. customer edits SCALAR top-level `home.hero_image`
+           (rendered hero on home page) — 5× assertNotIn @<locale>:
+           + render on home page all 5 locales
+        5. customer edits IMAGE-IN-DICT-ROW `ambienti.rooms.0.image`
+           (8-row largest image list · novel `gallery` page kind) —
+           5× assertNotIn + render on ambienti page all 5 locales
+        6. customer edits IMAGE-IN-DICT-ROW `professionisti.people.0.portrait`
+           (5-row doctor-like portrait grid · DIFFERENT list + DIFFERENT
+           page from ambienti.rooms) — 5× assertNotIn + render
+           on professionisti page all 5 locales
+        7. publish
+        8. second user visits home + ambienti + professionisti on all
+           5 locales
+        9. AR response head carries ``<html dir="rtl" lang="ar">`` on
+           the `.we-*` skin
+        10. owner reopens the editor per locale · prefill + universals
+        11. perimeter invariants re-checked end-of-test:
+            - Benessere + Salute + 14 pre-A.16 archetypes still enrolled
+            - Famiglia STILL OUT of both gate sets
+              (family-out guard re-enforced · will be removed in A.16c
+              closer via symmetric inversion)
+            - Sensitive OUT paths REJECTED (calendar bool flags × 4 +
+              nested str-lists × 4 + form structures × 5 + home.ambients
+              tuple-with-image × 3 + flat str-lists × 4 + pages/posts × 2)
+
+        Explicitly NOT exercised here: browser walk (Step 3), Famiglia
+        editor work (A.16c), coverage expansion, home.ambients tuple-
+        with-image (deferred), mutable rows, image per-locale,
+        apps.commerce / clinic-admin touches. Zero production-code
+        changes.
+        """
+        import json as _json
+
+        benessere = WebTemplate.objects.get(slug="benessere-centro-olistico")
+        p = services.create_project_from_template(owner=self.owner, template=benessere)
+
+        # ── 1. perimeter invariants at TEST START ────────────────
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            _ARCHETYPE_SCHEMAS as _SCHEMAS,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        self.assertIn("wellness", _SCHEMAS,
+                      "Benessere must be enrolled at lifecycle start")
+        self.assertIn("wellness", _ENABLED,
+                      "Benessere must be in multi-locale gate at start")
+        # Salute still IN at start (no accidental removal).
+        self.assertIn("clinic", _SCHEMAS,
+                      "Salute must still be enrolled at Benessere lifecycle start")
+        self.assertIn("clinic", _ENABLED,
+                      "Salute must still be in multi-locale gate at start")
+        # FAMILY-OUT GUARD at BOTH gates (leak check duro · start).
+        # Wellness-out guard was removed in A.16b · family-out will be
+        # removed in A.16c closer.
+        self.assertNotIn("family", _SCHEMAS,
+                         "Famiglia (family) must be OUT of _ARCHETYPE_SCHEMAS at start")
+        self.assertNotIn("family", _ENABLED,
+                         "Famiglia (family) must be OUT of multi-locale gate at start")
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 2. three translatable locales on home.headline ────────
+        for locale, headline in (
+            ("it", "Walk IT Benessere <em>A16bWellnessLine</em>."),
+            ("en", "Walk EN Benessere <em>A16bWellnessLineEN</em>."),
+            ("fr", "Walk FR Benessere <em>A16bWellnessLineFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+
+        # ── 3. global plain-keyed text — site.logo_word via EN ────
+        r = autosave("en", {"site.logo_word": "A16b Benessere Walk Studio"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 4. scalar top-level image — home.hero_image ──────────
+        # Rendered as hero figure on home page.
+        IMG_HERO = "https://walk-benessere.example/img/hero-A16b.jpg"
+        r = autosave("it", {"home.hero_image": IMG_HERO})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.hero_image", r.json()["content_keys"])
+
+        # ── 5. image-in-dict-row ambienti.rooms (novel gallery page) ─
+        # 8-row largest image list · image col · first row .0.image ·
+        # rendered on novel `gallery` page kind (ambienti page).
+        IMG_ROOM = "https://walk-benessere.example/img/room-A16b.jpg"
+        r = autosave("it", {"ambienti.rooms.0.image": IMG_ROOM})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("ambienti.rooms.0.image", r.json()["content_keys"])
+
+        # ── 6. image-in-dict-row professionisti.people (team page) ─
+        # 5-row portrait grid · DIFFERENT list shape from ambienti.rooms
+        # (cols name/role/portrait/bio/quote vs span/tag/title/sub/image)
+        # AND DIFFERENT page from ambienti (team vs gallery).
+        IMG_PORTRAIT = "https://walk-benessere.example/img/portrait-A16b.jpg"
+        r = autosave("it", {"professionisti.people.0.portrait": IMG_PORTRAIT})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("professionisti.people.0.portrait", r.json()["content_keys"])
+
+        # Storage shape: 3 @<locale>:home.headline + 4 plain-keyed
+        # globals (logo + 3 image paths). Zero @<locale>: on any image
+        # path across all 5 locales; zero @en: on logo; zero plain-key
+        # leak on home.headline.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("home.hero_image", keys)
+        self.assertIn("ambienti.rooms.0.image", keys)
+        self.assertIn("professionisti.people.0.portrait", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+        # All 3 image paths plain-keyed across all 5 locales.
+        for loc in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(f"@{loc}:home.hero_image", keys,
+                             f"home.hero_image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:ambienti.rooms.0.image", keys,
+                             f"ambienti.rooms.0.image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:professionisti.people.0.portrait", keys,
+                             f"professionisti.people.0.portrait must NEVER be @{loc}:-prefixed")
+
+        # ── 7. publish ───────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 8. second user on every public preview locale ────────
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale, page=None):
+            suffix = f"{page}/" if page else ""
+            url = (
+                f"/templates/medical/benessere-centro-olistico/preview/"
+                f"{suffix}?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render (home) — IT override + global logo + home.hero_image
+        # override visible. EN/FR absent.
+        body_it = preview_body("it")
+        self.assertIn("Walk IT Benessere", body_it)
+        self.assertIn("A16bWellnessLine", body_it)
+        self.assertNotIn("A16bWellnessLineEN", body_it)
+        self.assertNotIn("A16bWellnessLineFR", body_it)
+        self.assertIn("A16b Benessere Walk Studio", body_it)
+        self.assertIn(IMG_HERO, body_it,
+                      "home.hero_image override must render on home page IT")
+
+        # IT render (ambienti · novel gallery page) — ambienti.rooms.0.image
+        # override visible + universal logo.
+        body_it_ambienti = preview_body("it", page="ambienti")
+        self.assertIn("A16b Benessere Walk Studio", body_it_ambienti)
+        self.assertIn(IMG_ROOM, body_it_ambienti,
+                      "ambienti.rooms.0.image override must render on ambienti (gallery) page IT")
+
+        # IT render (professionisti · team page) — professionisti.people.0.portrait
+        # override visible.
+        body_it_team = preview_body("it", page="professionisti")
+        self.assertIn("A16b Benessere Walk Studio", body_it_team)
+        self.assertIn(IMG_PORTRAIT, body_it_team,
+                      "professionisti.people.0.portrait override must render on professionisti page IT")
+
+        # EN render spans home + ambienti + professionisti
+        body_en = preview_body("en")
+        self.assertIn("Walk EN Benessere", body_en)
+        self.assertIn("A16bWellnessLineEN", body_en)
+        self.assertNotIn("Walk IT Benessere", body_en)
+        self.assertIn("A16b Benessere Walk Studio", body_en)
+        self.assertIn(IMG_HERO, body_en)
+        self.assertIn(IMG_ROOM, preview_body("en", page="ambienti"))
+        self.assertIn(IMG_PORTRAIT, preview_body("en", page="professionisti"))
+
+        # FR render spans home + ambienti + professionisti
+        body_fr = preview_body("fr")
+        self.assertIn("Walk FR Benessere", body_fr)
+        self.assertIn("A16bWellnessLineFR", body_fr)
+        self.assertIn("A16b Benessere Walk Studio", body_fr)
+        self.assertIn(IMG_HERO, body_fr)
+        self.assertIn(IMG_ROOM, preview_body("fr", page="ambienti"))
+        self.assertIn(IMG_PORTRAIT, preview_body("fr", page="professionisti"))
+
+        # Unedited locales — authored fallback on translatable text +
+        # universals preserved across home + ambienti + professionisti.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Walk IT Benessere", body)
+            self.assertNotIn("Walk EN Benessere", body)
+            self.assertNotIn("Walk FR Benessere", body)
+            self.assertIn("A16b Benessere Walk Studio", body)
+            self.assertIn(IMG_HERO, body,
+                          f"home.hero_image must render universally on {locale} home")
+            body_ambienti = preview_body(locale, page="ambienti")
+            self.assertIn(IMG_ROOM, body_ambienti,
+                          f"ambienti.rooms.0.image must render universally on {locale} ambienti")
+            body_team = preview_body(locale, page="professionisti")
+            self.assertIn(IMG_PORTRAIT, body_team,
+                          f"professionisti.people.0.portrait must render universally on {locale} professionisti")
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Benessere home",
+                )
+
+        # ── 9. AR preview (home) — `.we-*` skin RTL invariant ────
+        # 13 mature RTL rules verified Step 0.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 10. owner reopens the editor on each locale ──────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Walk IT Benessere"),
+            ("en", "Walk EN Benessere"),
+            ("fr", "Walk FR Benessere"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text + scalar hero image: overridden universally, not
+        # translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Benessere editor")
+        self.assertEqual(logo_field["value"], "A16b Benessere Walk Studio")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        hero_field = find_field_by_key(r_es.context["groups"], "home.hero_image")
+        self.assertIsNotNone(hero_field, "home.hero_image missing from Benessere editor")
+        self.assertEqual(hero_field["value"], IMG_HERO)
+        self.assertTrue(hero_field["is_overridden"])
+        self.assertFalse(hero_field["translatable"])
+
+        # ── 11. perimeter invariants re-checked end-of-test ──────
+        # FAMILY-OUT GUARD re-enforced end-of-test (leak check duro):
+        # Famiglia must STILL be OUT at runtime on BOTH gates · removed
+        # in A.16c closer via symmetric inversion test.
+        self.assertNotIn("family", _SCHEMAS,
+                         "Famiglia (family) must stay OUT of _ARCHETYPE_SCHEMAS until A.16c")
+        self.assertNotIn("family", _ENABLED,
+                         "Famiglia (family) must stay OUT of multi-locale gate until A.16c")
+        # Benessere + Salute still enrolled (no accidental removal).
+        self.assertIn("wellness", _SCHEMAS,
+                      "Benessere enrollment must persist through lifecycle")
+        self.assertIn("wellness", _ENABLED)
+        self.assertIn("clinic", _SCHEMAS,
+                      "Salute enrollment must persist through Benessere lifecycle")
+        self.assertIn("clinic", _ENABLED)
+        # 14 pre-A.16 archetypes also still enrolled.
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop", "fashion-editorial",
+        ):
+            self.assertIn(arc, _ENABLED, f"{arc} lost enrollment mid-lifecycle")
+        # Sensitive OUT paths stay rejected — re-verified runtime at
+        # end-of-test per user guidance.
+        for out_path in (
+            # Calendar bool flags OUT (Luxe available + Salute is_popular precedent)
+            "home.calendar.0.has_slots",
+            "home.calendar.0.soldout",
+            "prenota.calendar.0.has_slots",
+            "prenota.calendar.0.soldout",
+            # Nested list-of-str inside dict rows (Juris precedent)
+            "home.calendar.0.slots",
+            "prenota.calendar.0.slots",
+            "rituali.packages.0.includes",
+            "professionisti.people.0.tags",
+            # Form structures (Juris/Gusto/Bottega/Luxe/Salute precedent)
+            "contatti.form_placeholders",
+            "contatti.form_helpers",
+            "contatti.form_fields",
+            "contatti.form_fields.interest_options",
+            "prenota.form_fields",
+            "prenota.form_fields.0.name",
+            "prenota.form_sections",
+            # DEFERRED novel shape (home.ambients tuple-with-image)
+            "home.ambients",
+            "home.ambients.0",
+            "home.ambients.0.0",
+            # Flat list-of-str
+            "site.hours_footer_rows",
+            "home.hero_meta",
+            "home.press",
+            "prenota.why",
+            # Top-level navigation + empty posts
+            "pages",
+            "posts",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Benessere complex-shape path must stay rejected: {out_path}",
+            ):
+                validate_key_path("wellness", out_path)
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
