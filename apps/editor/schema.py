@@ -3547,6 +3547,308 @@ BOTTEGA_ARTISAN_WORKSHOP_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# A.15b · fashion-editorial (Luxe · luxe-fashion-store) — closes the
+# ecommerce family opened by A.15 Bottega (artisan-workshop). Dedicated
+# schema · staged dedicated-schema closure pattern (4th precedent after
+# real-estate + portfolio + restaurant-continuation). Distinct skin
+# folder (.fe-*) · photographically editorial campaign-driven · ALL 31
+# image surfaces rendered (NO storage-only, unlike Bottega's typographic
+# DNA) · novel page kinds `collection` + `lookbook` · zero touches to
+# apps/commerce (boundary editor-vs-commerce-admin preserved · editor
+# edits template_content registry showcase only). Six pages: home,
+# collezione (collection), product, maison (about), lookbook, contatti.
+# Stringent IN col-level audit (audit-driven · non-inertial): drop/n/tag
+# IN (editorial badges · customer-facing) · id/available OUT (structural
+# routing + commerce-state-like boolean).
+# ---------------------------------------------------------------------------
+LUXE_FASHION_EDITORIAL_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".fe-nav, .fe-foot",
+        "page": "*",
+        "keywords": ["logo", "maison", "luxe", "tagline", "chrome", "private"],
+        "help": "Nome maison, iniziale crest, subline (Milano · Parigi · Tokyo), tagline, contatti (direzione clienti + concierge), chrome footer, label meta strip (drop/season/shipping/viewing/waitlist/rsvp).",
+        "fields": [
+            ("site.logo_word",            {"label": "Nome maison", "type": "text", "max_length": 60,
+                                             "placeholder": "Maison Luxe"}),
+            ("site.logo_initial",         {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.logo_subline",         {"label": "Subline (città maison)", "type": "text", "max_length": 80}),
+            ("site.tag",                  {"label": "Tagline (nav · strip · atelier collezione)", "type": "text", "max_length": 160}),
+            ("site.phone",                {"label": "Telefono", "type": "text", "max_length": 40}),
+            ("site.private_phone_label",  {"label": "Label · direzione clienti", "type": "text", "max_length": 60}),
+            ("site.email",                {"label": "Email", "type": "text", "max_length": 120}),
+            ("site.private_email_label",  {"label": "Label · concierge clienti", "type": "text", "max_length": 60}),
+            ("site.address",              {"label": "Indirizzo (una riga)", "type": "text", "max_length": 200}),
+            ("site.showroom_paris",       {"label": "Showroom Parigi (una riga)", "type": "text", "max_length": 200}),
+            ("site.showroom_tokyo",       {"label": "Showroom Tokyo (una riga)", "type": "text", "max_length": 200}),
+            ("site.hours_compact",        {"label": "Orari sintetici", "type": "text", "max_length": 160}),
+            ("site.license",              {"label": "Licenza / P.IVA / CCIAA", "type": "text", "max_length": 240}),
+            ("site.footer_intro",         {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.nav_cta",              {"label": "CTA nav · etichetta", "type": "text", "max_length": 60}),
+            ("site.currency_symbol",      {"label": "Simbolo valuta (€/£/$)", "type": "text", "max_length": 4}),
+            ("site.collection_label",     {"label": "Label · Collezione", "type": "text", "max_length": 40}),
+            ("site.drop_label",           {"label": "Label · Drop", "type": "text", "max_length": 40}),
+            ("site.season_label",         {"label": "Label · Stagione", "type": "text", "max_length": 40}),
+            ("site.shipping_label",       {"label": "Label · Consegna riservata", "type": "text", "max_length": 60}),
+            ("site.shipping_value",       {"label": "Valore · Consegna riservata", "type": "text", "max_length": 200}),
+            ("site.viewing_label",        {"label": "Label · Private viewing", "type": "text", "max_length": 40}),
+            ("site.viewing_value",        {"label": "Valore · Private viewing", "type": "text", "max_length": 200}),
+            ("site.waitlist_label",       {"label": "Label · Lista d'attesa", "type": "text", "max_length": 40}),
+            ("site.rsvp_label",           {"label": "Label · RSVP", "type": "text", "max_length": 40}),
+            ("site.foot_studio",          {"label": "Footer · titolo La maison", "type": "text", "max_length": 40}),
+            ("site.foot_pages",           {"label": "Footer · titolo Mappa", "type": "text", "max_length": 40}),
+            ("site.foot_contact",         {"label": "Footer · titolo Direzione clienti", "type": "text", "max_length": 40}),
+            ("site.foot_offices",         {"label": "Footer · titolo Atelier & showroom", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".fe-hero",
+        "page": "home",
+        "keywords": ["hero", "cover", "headline", "eyebrow", "intro", "cta", "styling"],
+        "help": "Primo scroll della home · cover scalar image (rendered · editorial cover LEFT) · issue + styling + cover labels · hero copy + CTAs.",
+        "subgroups": [
+            {"label": "Cover (rendered scalar image)", "fields": [
+                ("home.cover_image",          {"label": "Cover image · URL (rendered)", "type": "image", "max_length": 400}),
+                ("home.issue",                {"label": "Issue (es. 'Issue 12 · Primavera 26')", "type": "text", "max_length": 160}),
+                ("home.issue_label",          {"label": "Issue · label", "type": "text", "max_length": 40}),
+                ("home.cover_styling_label",  {"label": "Styling · label", "type": "text", "max_length": 40}),
+                ("home.cover_styling_name",   {"label": "Styling · nome (es. 'Carla Sozzani')", "type": "text", "max_length": 120}),
+                ("home.cover_label",          {"label": "Cover · label", "type": "text", "max_length": 40}),
+                ("home.cover_subject",        {"label": "Cover · soggetto (es. 'La Muse en Velours')", "type": "text", "max_length": 160}),
+            ]},
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",              {"label": "Eyebrow", "type": "text", "max_length": 160}),
+                ("home.headline",             {"label": "Headline", "type": "richtext", "max_length": 220,
+                                                 "help": "Consentiti i tag <em> per italici editoriali."}),
+                ("home.headline_credit_line", {"label": "Headline credit line", "type": "text", "max_length": 200}),
+                ("home.intro",                {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ]},
+            {"label": "CTA hero", "fields": [
+                ("home.primary_cta",          {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.primary_href",         {"label": "CTA primaria · destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "product", "maison", "lookbook", "contatti"]}),
+                ("home.secondary_label",      {"label": "CTA secondaria · label (es. 'Direzione creativa')", "type": "text", "max_length": 60}),
+                ("home.secondary_name",       {"label": "CTA secondaria · nome", "type": "text", "max_length": 120}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".fe-section",
+        "page": "home",
+        "keywords": ["edition", "tiles", "manifesto", "atelier-numbers", "lookbook-teaser", "press", "drop", "private"],
+        "help": "Fasce copy della home: edition tiles intestazione · manifesto · atelier numbers intestazione · lookbook teaser · press · drop band · private viewing band.",
+        "subgroups": [
+            {"label": "Edition tiles intestazione", "fields": [
+                ("home.edition_label",        {"label": "Edition · label", "type": "text", "max_length": 80}),
+                ("home.edition_subline",      {"label": "Edition · subline", "type": "text", "max_length": 160}),
+            ]},
+            {"label": "Manifesto", "fields": [
+                ("home.manifesto_label",      {"label": "Manifesto · label", "type": "text", "max_length": 80}),
+                ("home.manifesto_heading",    {"label": "Manifesto · titolo", "type": "richtext", "max_length": 220}),
+                ("home.manifesto_text",       {"label": "Manifesto · paragrafo", "type": "textarea", "max_length": 700}),
+            ]},
+            {"label": "Atelier numbers intestazione", "fields": [
+                ("home.atelier_numbers_label",{"label": "Atelier numbers · label", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Lookbook teaser", "fields": [
+                ("home.lookbook_teaser_label",   {"label": "Lookbook teaser · label", "type": "text", "max_length": 80}),
+                ("home.lookbook_teaser_heading", {"label": "Lookbook teaser · titolo", "type": "richtext", "max_length": 220}),
+                ("home.lookbook_teaser_intro",   {"label": "Lookbook teaser · intro", "type": "textarea", "max_length": 600}),
+                ("home.lookbook_teaser_link",    {"label": "Lookbook teaser · link label", "type": "text", "max_length": 60}),
+                ("home.lookbook_teaser_href",    {"label": "Lookbook teaser · link destinazione", "type": "select",
+                                                    "choices": ["home", "collezione", "product", "maison", "lookbook", "contatti"]}),
+            ]},
+            {"label": "Press intestazione", "fields": [
+                ("home.press_label",          {"label": "Press · label", "type": "text", "max_length": 80}),
+                ("home.press_intro",          {"label": "Press · intro (es. 'Recensita su')", "type": "text", "max_length": 120}),
+            ]},
+            {"label": "Drop band", "fields": [
+                ("home.drop_label",           {"label": "Drop · label (es. 'Prossimo drop')", "type": "text", "max_length": 80}),
+                ("home.drop_heading",         {"label": "Drop · titolo", "type": "richtext", "max_length": 220}),
+                ("home.drop_subhead",         {"label": "Drop · subhead", "type": "textarea", "max_length": 300}),
+                ("home.drop_cta",             {"label": "Drop · CTA etichetta", "type": "text", "max_length": 60}),
+                ("home.drop_cta_href",        {"label": "Drop · CTA destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "product", "maison", "lookbook", "contatti"]}),
+            ]},
+            {"label": "Private viewing band", "fields": [
+                ("home.private_label",        {"label": "Private · label", "type": "text", "max_length": 80}),
+                ("home.private_heading",      {"label": "Private · titolo", "type": "richtext", "max_length": 220}),
+                ("home.private_intro",        {"label": "Private · intro", "type": "textarea", "max_length": 600}),
+                ("home.private_primary",      {"label": "Private · CTA primaria", "type": "text", "max_length": 60}),
+                ("home.private_primary_href", {"label": "Private · CTA primaria destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "product", "maison", "lookbook", "contatti"]}),
+                ("home.private_secondary",    {"label": "Private · CTA secondaria", "type": "text", "max_length": 60}),
+                ("home.private_secondary_href",{"label":"Private · CTA secondaria destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "product", "maison", "lookbook", "contatti"]}),
+            ]},
+        ],
+    },
+    {
+        "id": "collezione_page",
+        "label": "Pagina Collezione (catalog listing demo · novel `collection` kind)",
+        "icon": "bi-grid",
+        "region": ".fe-collection, .fe-products",
+        "page": "collezione",
+        "keywords": ["collezione", "collection", "catalogo", "listing", "drop"],
+        "help": "Pagina catalogo demo: season chip + hero + filter/sort label + result_count + footer_note. La griglia dei capi demo si modifica dal gruppo indexed `Collezione · Products (9 demo)`.",
+        "fields": [
+            ("collezione.season_chip",       {"label": "Season chip", "type": "text", "max_length": 80}),
+            ("collezione.eyebrow",           {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("collezione.headline",          {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("collezione.intro",             {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ("collezione.filter_label",      {"label": "Filter · label", "type": "text", "max_length": 80}),
+            ("collezione.sort_label",        {"label": "Sort · label", "type": "text", "max_length": 80}),
+            ("collezione.result_count",      {"label": "Result · count text", "type": "text", "max_length": 120}),
+            ("collezione.result_subtitle",   {"label": "Result · subtitle", "type": "textarea", "max_length": 300}),
+            ("collezione.footer_note_label", {"label": "Footer note · label", "type": "text", "max_length": 80}),
+            ("collezione.footer_note",       {"label": "Footer note · text", "type": "textarea", "max_length": 600}),
+        ],
+    },
+    {
+        "id": "product_page",
+        "label": "Pagina Product (single demo record · `product` kind)",
+        "icon": "bi-box",
+        "region": ".fe-product, .fe-product-hero, .fe-atelier, .fe-care, .fe-provenance",
+        "page": "product",
+        "keywords": ["product", "prodotto", "look", "atelier", "care", "provenance"],
+        "help": "Pagina demo singolo prodotto (NON commerce state · DEMO presentational). Customer edita il record showcase. Related items si modificano dal gruppo indexed `Product · Related items (3)`.",
+        "fields": [
+            ("product.n",                   {"label": "Numero look (visible · es. 'Look 11 · Drop 02')", "type": "text", "max_length": 40}),
+            ("product.name",                {"label": "Nome capo", "type": "text", "max_length": 120}),
+            ("product.subtitle",            {"label": "Subtitle (materia · tecnica)", "type": "textarea", "max_length": 300}),
+            ("product.price",               {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+            ("product.vat_note",            {"label": "Nota IVA / consegna", "type": "textarea", "max_length": 300}),
+            ("product.tag",                 {"label": "Tag (editorial badge · es. 'Lista d'attesa · Drop 02')", "type": "text", "max_length": 120}),
+            ("product.intro",               {"label": "Intro lunga", "type": "textarea", "max_length": 800}),
+            ("product.gallery_caption_styling",  {"label": "Gallery caption · styling", "type": "text", "max_length": 160}),
+            ("product.gallery_caption_photo",    {"label": "Gallery caption · foto", "type": "text", "max_length": 160}),
+            ("product.gallery_caption_location", {"label": "Gallery caption · location", "type": "text", "max_length": 200}),
+            ("product.info_label",          {"label": "Info rows · label", "type": "text", "max_length": 60}),
+            ("product.size_label",          {"label": "Size · label", "type": "text", "max_length": 60}),
+            ("product.color_label",         {"label": "Color · label", "type": "text", "max_length": 60}),
+            ("product.edition_label",       {"label": "Edition · label", "type": "text", "max_length": 60}),
+            ("product.edition_value",       {"label": "Edition · valore", "type": "text", "max_length": 160}),
+            ("product.edition_note",        {"label": "Edition · nota estesa", "type": "textarea", "max_length": 400}),
+            ("product.atelier_label",       {"label": "Atelier · label", "type": "text", "max_length": 60}),
+            ("product.atelier_name",        {"label": "Atelier · nome", "type": "text", "max_length": 120}),
+            ("product.atelier_founded",     {"label": "Atelier · data apertura", "type": "text", "max_length": 60}),
+            ("product.atelier_text",        {"label": "Atelier · paragrafo", "type": "textarea", "max_length": 800}),
+            ("product.atelier_portrait",    {"label": "Atelier · portrait URL (nested-dict scalar · RENDERED)", "type": "image", "max_length": 400}),
+            ("product.buy_primary",         {"label": "Buy · CTA primaria (demo · no commerce state)", "type": "text", "max_length": 60}),
+            ("product.buy_primary_href",    {"label": "Buy · CTA primaria destinazione", "type": "select",
+                                                "choices": ["home", "collezione", "product", "maison", "lookbook", "contatti"]}),
+            ("product.buy_secondary",       {"label": "Buy · CTA secondaria", "type": "text", "max_length": 60}),
+            ("product.buy_note",            {"label": "Buy · nota", "type": "textarea", "max_length": 400}),
+            ("product.care_label",          {"label": "Care · label", "type": "text", "max_length": 60}),
+            ("product.care_intro",          {"label": "Care · intro", "type": "textarea", "max_length": 500}),
+            ("product.provenance_label",    {"label": "Provenance · label", "type": "text", "max_length": 60}),
+            ("product.provenance_heading",  {"label": "Provenance · titolo", "type": "richtext", "max_length": 220}),
+            ("product.related_label",       {"label": "Related · label", "type": "text", "max_length": 60}),
+            ("product.related_intro",       {"label": "Related · intro", "type": "textarea", "max_length": 400}),
+        ],
+    },
+    {
+        "id": "maison_page",
+        "label": "Pagina Maison (about)",
+        "icon": "bi-building",
+        "region": ".fe-maison, .fe-maison-hero, .fe-statement, .fe-ateliers, .fe-direction, .fe-numbers, .fe-visit",
+        "page": "maison",
+        "keywords": ["maison", "about", "statement", "ateliers", "direction", "numbers", "visit"],
+        "help": "Pagina about · hero · statement · ateliers intestazione · direction block (portrait nested-dict scalar · rendered) · numbers · visit block. Press items si modificano dal gruppo indexed `Maison · Press (5)`.",
+        "fields": [
+            ("maison.eyebrow",               {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("maison.headline",              {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("maison.intro",                 {"label": "Intro", "type": "textarea", "max_length": 800}),
+            ("maison.statement_label",       {"label": "Statement · label", "type": "text", "max_length": 60}),
+            ("maison.statement_heading",     {"label": "Statement · titolo", "type": "richtext", "max_length": 220}),
+            ("maison.statement_text",        {"label": "Statement · paragrafo", "type": "textarea", "max_length": 700}),
+            ("maison.ateliers_label",        {"label": "Ateliers · label", "type": "text", "max_length": 60}),
+            ("maison.ateliers_heading",      {"label": "Ateliers · titolo", "type": "richtext", "max_length": 220}),
+            ("maison.ateliers_intro",        {"label": "Ateliers · intro", "type": "textarea", "max_length": 500}),
+            ("maison.direction_label",       {"label": "Direction · label", "type": "text", "max_length": 60}),
+            ("maison.direction_name",        {"label": "Direction · nome", "type": "text", "max_length": 120}),
+            ("maison.direction_role",        {"label": "Direction · ruolo", "type": "text", "max_length": 160}),
+            ("maison.direction_text",        {"label": "Direction · paragrafo", "type": "textarea", "max_length": 700}),
+            ("maison.direction_portrait",    {"label": "Direction · portrait URL (nested-dict scalar · RENDERED)", "type": "image", "max_length": 400}),
+            ("maison.direction_quote",       {"label": "Direction · quote", "type": "textarea", "max_length": 500}),
+            ("maison.direction_quote_attribution", {"label": "Direction · quote attribution", "type": "text", "max_length": 200}),
+            ("maison.press_label",           {"label": "Press · label", "type": "text", "max_length": 60}),
+            ("maison.press_heading",         {"label": "Press · titolo", "type": "richtext", "max_length": 220}),
+            ("maison.numbers_label",         {"label": "Numbers · label", "type": "text", "max_length": 60}),
+            ("maison.visit_label",           {"label": "Visit · label", "type": "text", "max_length": 60}),
+            ("maison.visit_heading",         {"label": "Visit · titolo", "type": "richtext", "max_length": 220}),
+            ("maison.visit_text",            {"label": "Visit · paragrafo", "type": "textarea", "max_length": 500}),
+            ("maison.visit_primary",         {"label": "Visit · CTA primaria", "type": "text", "max_length": 60}),
+            ("maison.visit_primary_href",    {"label": "Visit · CTA primaria destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "product", "maison", "lookbook", "contatti"]}),
+        ],
+    },
+    {
+        "id": "lookbook_page",
+        "label": "Pagina Lookbook (novel `lookbook` kind)",
+        "icon": "bi-camera",
+        "region": ".fe-lookbook, .fe-lookbook-hero, .fe-credits, .fe-looks, .fe-pullquote, .fe-notes, .fe-shop",
+        "page": "lookbook",
+        "keywords": ["lookbook", "issue", "credits", "looks", "pullquote", "notes", "shop"],
+        "help": "Pagina lookbook editoriale · hero + issue number · pullquote + attribution · notes intro · shop CTA band. Credits rows, looks, notes_items si modificano dai gruppi indexed corrispondenti.",
+        "fields": [
+            ("lookbook.issue",               {"label": "Issue (es. 'Spring-Summer 2026')", "type": "text", "max_length": 120}),
+            ("lookbook.issue_label",         {"label": "Issue · label", "type": "text", "max_length": 40}),
+            ("lookbook.issue_n",             {"label": "Issue · numero (es. 'Issue 12')", "type": "text", "max_length": 40}),
+            ("lookbook.eyebrow",             {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("lookbook.headline",            {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("lookbook.intro",               {"label": "Intro", "type": "textarea", "max_length": 800}),
+            ("lookbook.credits_label",       {"label": "Credits · label", "type": "text", "max_length": 60}),
+            ("lookbook.looks_label",         {"label": "Looks · label", "type": "text", "max_length": 60}),
+            ("lookbook.looks_intro",         {"label": "Looks · intro", "type": "textarea", "max_length": 400}),
+            ("lookbook.pullquote",           {"label": "Pullquote", "type": "textarea", "max_length": 500}),
+            ("lookbook.pullquote_attribution", {"label": "Pullquote · attribution", "type": "text", "max_length": 200}),
+            ("lookbook.notes_label",         {"label": "Notes · label", "type": "text", "max_length": 60}),
+            ("lookbook.notes_intro",         {"label": "Notes · intro", "type": "textarea", "max_length": 500}),
+            ("lookbook.shop_label",          {"label": "Shop · label", "type": "text", "max_length": 60}),
+            ("lookbook.shop_heading",        {"label": "Shop · titolo", "type": "richtext", "max_length": 220}),
+            ("lookbook.shop_intro",          {"label": "Shop · intro", "type": "textarea", "max_length": 500}),
+            ("lookbook.shop_primary",        {"label": "Shop · CTA primaria", "type": "text", "max_length": 60}),
+            ("lookbook.shop_primary_href",   {"label": "Shop · CTA primaria destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "product", "maison", "lookbook", "contatti"]}),
+            ("lookbook.shop_secondary",      {"label": "Shop · CTA secondaria", "type": "text", "max_length": 60}),
+            ("lookbook.shop_secondary_href", {"label": "Shop · CTA secondaria destinazione", "type": "select",
+                                                 "choices": ["home", "collezione", "product", "maison", "lookbook", "contatti"]}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti (private appointment · `contact` kind)",
+        "icon": "bi-geo-alt",
+        "region": ".fe-contact, .fe-contact-hero, .fe-maison-cards, .fe-faq",
+        "page": "contatti",
+        "keywords": ["contatti", "private", "maison-cards", "faq", "form-labels"],
+        "help": "Pagina contatti · hero · form scalar labels (struttura form OUT · form_fields resta registry-only) · FAQ intestazione · card label. Le 3 maison cards e le 4 FAQ si modificano dai gruppi indexed corrispondenti.",
+        "fields": [
+            ("contatti.eyebrow",                 {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("contatti.headline",                {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",                   {"label": "Intro", "type": "textarea", "max_length": 800}),
+            ("contatti.form_section_label",      {"label": "Form section · label", "type": "text", "max_length": 60}),
+            ("contatti.form_section_intro",      {"label": "Form section · intro", "type": "textarea", "max_length": 500}),
+            ("contatti.form_helper_required",    {"label": "Form · helper required", "type": "text", "max_length": 120}),
+            ("contatti.form_submit_button",      {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("contatti.form_submit_note",        {"label": "Form · nota post-submit", "type": "textarea", "max_length": 400}),
+            ("contatti.card_label",              {"label": "Card · label (es. 'Le tre maison')", "type": "text", "max_length": 60}),
+            ("contatti.faq_label",               {"label": "FAQ · label", "type": "text", "max_length": 60}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -6505,6 +6807,260 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+    # -----------------------------------------------------------------
+    # A.15b · Luxe fashion-editorial. Seventeen indexed lists, all
+    # parent-level (zero deep-path). Image-in-dict-row on 6 lists
+    # (home.tiles + home.lookbook_teaser_tiles + collezione.products +
+    # product.related_items + maison.ateliers + lookbook.looks) = 30
+    # image cells · plus home.cover_image scalar + product.atelier_portrait
+    # + maison.direction_portrait = 3 nested-dict scalar images = 31
+    # image surfaces total. All rendered (photographically editorial DNA ·
+    # zero storage-only, unlike Bottega typographic DNA). Stringent IN
+    # col-level: drop/n/tag IN (editorial badges) · id/available OUT
+    # (structural routing + commerce-state-like boolean).
+    # -----------------------------------------------------------------
+    "fashion-editorial": {
+        "home.tiles": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Edition tiles (4 silhouettes)",
+            "icon": "bi-grid",
+            "region": ".fe-tiles",
+            "keywords": ["edition", "tiles", "silhouettes", "home"],
+            "cols": [
+                ("tag",   {"label": "Tag (editorial badge)", "type": "text", "max_length": 40}),
+                ("name",  {"label": "Nome capo", "type": "text", "max_length": 120}),
+                ("price", {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                ("image", {"label": "Image · URL (rendered)", "type": "image", "max_length": 400}),
+                # `id` col excluded (structural slug · routing to /product/)
+            ],
+        },
+        "home.atelier_numbers": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Atelier numbers (4 celle)",
+            "icon": "bi-123",
+            "region": ".fe-atelier-numbers",
+            "keywords": ["atelier", "numbers", "cifre"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 80}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "home.lookbook_teaser_tiles": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Lookbook teaser tiles (3 immagini)",
+            "icon": "bi-images",
+            "region": ".fe-lookbook-teaser",
+            "keywords": ["lookbook", "teaser", "tiles"],
+            "cols": [
+                ("title",  {"label": "Titolo look", "type": "text", "max_length": 160}),
+                ("credit", {"label": "Credit (stilismo · foto · atelier)", "type": "text", "max_length": 160}),
+                ("image",  {"label": "Image · URL (rendered)", "type": "image", "max_length": 400}),
+            ],
+        },
+        "home.drop_metadata": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Drop metadata (4 celle)",
+            "icon": "bi-calendar-event",
+            "region": ".fe-drop",
+            "keywords": ["drop", "metadata", "capsule"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 200}),
+            ],
+        },
+        "collezione.products": {
+            "kind": "dict",
+            "page": "collezione",
+            "label": "Collezione · Products (9 look demo · NON commerce state)",
+            "icon": "bi-bag",
+            "region": ".fe-products",
+            "keywords": ["products", "collezione", "catalogo", "demo"],
+            "cols": [
+                ("n",     {"label": "Numero look (visible)", "type": "text", "max_length": 16}),
+                ("name",  {"label": "Nome capo", "type": "text", "max_length": 120}),
+                ("meta",  {"label": "Meta (materia · tessitoria)", "type": "text", "max_length": 200}),
+                ("drop",  {"label": "Drop (visible · 'Drop 01 · Spring 26')", "type": "text", "max_length": 80}),
+                ("price", {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                ("tag",   {"label": "Tag (editorial badge · 'Lista d'attesa' · 'Sold-out')", "type": "text", "max_length": 60}),
+                ("image", {"label": "Image · URL (rendered)", "type": "image", "max_length": 400}),
+                # `id` excluded (structural slug) · `available` excluded
+                # (bool flag · commerce-state-like · OUT stringent audit)
+            ],
+        },
+        "product.info_rows": {
+            "kind": "tuple",
+            "page": "product",
+            "label": "Product · Info rows (8 specs atelier)",
+            "icon": "bi-list-ul",
+            "region": ".fe-info",
+            "keywords": ["info", "specs", "specifiche", "atelier"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta spec", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore spec", "type": "text", "max_length": 300}),
+            ],
+        },
+        "product.care_items": {
+            "kind": "tuple",
+            "page": "product",
+            "label": "Product · Care items (4 celle)",
+            "icon": "bi-shield-check",
+            "region": ".fe-product-care",
+            "keywords": ["care", "manutenzione"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore", "type": "textarea", "max_length": 300}),
+            ],
+        },
+        "product.provenance_steps": {
+            "kind": "tuple",
+            "page": "product",
+            "label": "Product · Provenance steps (4 tappe)",
+            "icon": "bi-geo",
+            "region": ".fe-product-provenance",
+            "keywords": ["provenance", "tappe", "atelier"],
+            "tuple_order": ["n", "title", "desc"],
+            "cols": [
+                ("n",     {"label": "Step ('01'/'02'/...)", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo tappa", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 400}),
+            ],
+        },
+        "product.related_items": {
+            "kind": "dict",
+            "page": "product",
+            "label": "Product · Related items (3 capi correlati)",
+            "icon": "bi-link",
+            "region": ".fe-related",
+            "keywords": ["related", "correlati"],
+            "cols": [
+                ("n",     {"label": "Numero look (visible)", "type": "text", "max_length": 16}),
+                ("name",  {"label": "Nome capo", "type": "text", "max_length": 120}),
+                ("meta",  {"label": "Meta (materia · atelier)", "type": "text", "max_length": 200}),
+                ("price", {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                ("image", {"label": "Image · URL (rendered)", "type": "image", "max_length": 400}),
+                # `id` excluded (structural slug)
+            ],
+        },
+        "maison.ateliers": {
+            "kind": "dict",
+            "page": "maison",
+            "label": "Maison · Ateliers (3 città)",
+            "icon": "bi-building",
+            "region": ".fe-ateliers",
+            "keywords": ["ateliers", "città", "maison"],
+            "cols": [
+                ("city",  {"label": "Città", "type": "text", "max_length": 80}),
+                ("place", {"label": "Indirizzo (via · quartiere)", "type": "text", "max_length": 160}),
+                ("role",  {"label": "Ruolo atelier", "type": "text", "max_length": 200}),
+                ("since", {"label": "Apertura (es. 'Aperta nel 2014')", "type": "text", "max_length": 80}),
+                ("head",  {"label": "Capo atelier · nome e ruolo", "type": "text", "max_length": 200}),
+                ("team",  {"label": "Team (una riga)", "type": "text", "max_length": 240}),
+                ("image", {"label": "Image · URL (rendered)", "type": "image", "max_length": 400}),
+            ],
+        },
+        "maison.press_items": {
+            "kind": "dict",
+            "page": "maison",
+            "label": "Maison · Press (5 apparizioni)",
+            "icon": "bi-newspaper",
+            "region": ".fe-press",
+            "keywords": ["press", "editoriale", "magazine"],
+            "cols": [
+                ("magazine", {"label": "Magazine", "type": "text", "max_length": 120}),
+                ("issue",    {"label": "Issue (data)", "type": "text", "max_length": 80}),
+                ("title",    {"label": "Titolo pezzo", "type": "text", "max_length": 200}),
+                ("byline",   {"label": "Byline (firma)", "type": "text", "max_length": 200}),
+            ],
+        },
+        "maison.numbers_items": {
+            "kind": "tuple",
+            "page": "maison",
+            "label": "Maison · Numbers (4 celle)",
+            "icon": "bi-123",
+            "region": ".fe-numbers",
+            "keywords": ["numbers", "cifre"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 80}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "lookbook.credits_rows": {
+            "kind": "tuple",
+            "page": "lookbook",
+            "label": "Lookbook · Credits (8 righe)",
+            "icon": "bi-people",
+            "region": ".fe-credits",
+            "keywords": ["credits", "crediti", "stylist", "foto"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Ruolo", "type": "text", "max_length": 80}),
+                ("value", {"label": "Nome", "type": "text", "max_length": 240}),
+            ],
+        },
+        "lookbook.looks": {
+            "kind": "dict",
+            "page": "lookbook",
+            "label": "Lookbook · Looks (6 look editoriali)",
+            "icon": "bi-camera",
+            "region": ".fe-looks",
+            "keywords": ["looks", "editoriali", "lookbook"],
+            "cols": [
+                ("n",      {"label": "Numero look (visible · 'Look 03')", "type": "text", "max_length": 16}),
+                ("title",  {"label": "Titolo look", "type": "text", "max_length": 160}),
+                ("outfit", {"label": "Outfit (descrizione completa)", "type": "textarea", "max_length": 400}),
+                ("credit", {"label": "Credit (atelier · stylist · set)", "type": "text", "max_length": 200}),
+                ("image",  {"label": "Image · URL (rendered)", "type": "image", "max_length": 400}),
+            ],
+        },
+        "lookbook.notes_items": {
+            "kind": "dict",
+            "page": "lookbook",
+            "label": "Lookbook · Notes dal set (3 voci)",
+            "icon": "bi-journal",
+            "region": ".fe-notes",
+            "keywords": ["notes", "set", "giornate"],
+            "cols": [
+                ("label", {"label": "Label (es. 'Giorno 01 · Salone')", "type": "text", "max_length": 160}),
+                ("text",  {"label": "Testo", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "contatti.maison_cards": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · Maison cards (3 città)",
+            "icon": "bi-geo-alt",
+            "region": ".fe-maison-cards",
+            "keywords": ["maison", "cards", "città"],
+            "cols": [
+                ("city",    {"label": "Città", "type": "text", "max_length": 80}),
+                ("address", {"label": "Indirizzo completo", "type": "text", "max_length": 200}),
+                ("phone",   {"label": "Telefono", "type": "text", "max_length": 40}),
+                ("email",   {"label": "Email", "type": "text", "max_length": 120}),
+                ("hours",   {"label": "Orari", "type": "text", "max_length": 160}),
+            ],
+        },
+        "contatti.faq_items": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · FAQ (4 domande)",
+            "icon": "bi-question-circle",
+            "region": ".fe-faq",
+            "keywords": ["faq", "domande"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 200}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 500}),
+            ],
+        },
+    },
 }
 
 
@@ -6591,6 +7147,20 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # and managed via seller dashboard Phase 3a/3b. Zero touches to
     # apps.commerce required.
     "artisan-workshop":       ("bottega-shop-artigianale", "it"),
+    # A.15b · Luxe (fashion-editorial) joins as 14th enrolled archetype —
+    # second template of the ecommerce family. **Closes the family**
+    # opened in A.15 with Bottega · fourth staged dedicated-schema
+    # closure (after real-estate + portfolio + restaurant-continuation).
+    # Distinct archetype from Bottega: editorial campaign-driven DNA
+    # (fashion press · runway) · .fe-* skin · six pages with two novel
+    # kinds (collection + lookbook) · 31 image surfaces ALL RENDERED
+    # (zero storage-only · unlike Bottega typographic DNA). Boundary
+    # preserved: editor edits template_content registry showcase only ·
+    # zero tocchi a apps/commerce · commerce state managed via seller
+    # dashboard. Stringent IN col-level: drop/n/tag IN (editorial
+    # badges) · id/available OUT (structural routing + commerce-state-
+    # like boolean).
+    "fashion-editorial":      ("luxe-fashion-store", "it"),
 }
 
 
@@ -6657,6 +7227,15 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # out-of-scope · managed via seller dashboard. Zero tocchi a
     # apps/commerce required · pure 3-file enrollment surface.
     "artisan-workshop":       BOTTEGA_ARTISAN_WORKSHOP_SCHEMA,
+    # A.15b · Luxe — closes the ecommerce family opened in A.15 with
+    # Bottega. Fourth staged dedicated-schema closure (real-estate +
+    # portfolio + restaurant-continuation + ecommerce). Distinct skin
+    # folder (.fe-*) · editorial campaign-driven DNA · 31 image surfaces
+    # ALL RENDERED (no storage-only distinction like Bottega's
+    # typographic skin). Two novel page kinds (collection + lookbook).
+    # Zero tocchi a apps/commerce · services.py · rendering.py · editor
+    # shell — pure 3-file enrollment on the established surface.
+    "fashion-editorial":      LUXE_FASHION_EDITORIAL_SCHEMA,
 }
 
 
@@ -7229,6 +7808,25 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # repeater · zero image per-locale · pure 3-file enrollment. Gated
     # by ``test_a15_bottega_full_multilocale_lifecycle_end_to_end``.
     "artisan-workshop",
+    # A.15b · Luxe (fashion-editorial · ecommerce family · second
+    # template) joins editor + multi-locale in a single phase, CLOSING
+    # the ecommerce family opened by A.15 Bottega. Fourth staged
+    # dedicated-schema closure (real-estate + portfolio + restaurant-
+    # continuation + ecommerce). Distinct skin folder (.fe-*) from
+    # Bottega (.aw-*) · 50% page-slug overlap (home + contatti) · other
+    # four pages distinct (collezione/product/maison/lookbook vs
+    # shop/product/atelier/journal) with two novel kinds (collection +
+    # lookbook). 31 image surfaces ALL RENDERED (photographically
+    # editorial DNA · zero storage-only distinction like Bottega's
+    # typographic skin). Stringent IN col-level audit: drop/n/tag IN
+    # (editorial badges customer-facing) · id/available OUT (structural
+    # routing + commerce-state-like boolean). Posts list empty · no
+    # form structures (contatti.form_fields registry-only). Boundary
+    # editor-vs-commerce-admin preserved (LiveTemplateView does NOT
+    # import apps.commerce). Zero tocchi a apps/commerce · services.py ·
+    # rendering.py · editor shell. Gated by
+    # ``test_a15b_luxe_full_multilocale_lifecycle_end_to_end``.
+    "fashion-editorial",
 })
 
 
