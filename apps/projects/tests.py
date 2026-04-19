@@ -8909,6 +8909,427 @@ class FoundationHttpTests(TestCase):
             ):
                 validate_key_path("street-modern", out_path)
 
+    # ------------------------------------------------------------------
+    # A.15 · Step 2 — Bottega (artisan-workshop) lifecycle HTTP
+    # cross-cutting · OPENS the ecommerce family via staged dedicated-
+    # schema progression · fourth staged opening (after real-estate /
+    # portfolio / restaurant-continuation). Luxe (fashion-editorial)
+    # stays OUT until A.15b — runtime Luxe-out guard re-checked at
+    # start AND end of the test. Exercises THREE image-in-dict-row
+    # shapes end-to-end with explicit neighbor preservation:
+    #   - home.makers[].portrait (4 artisan portraits · home page)
+    #   - shop.products[].image (9 demo product cards · shop page)
+    #   - product.artisan_portrait (nested-dict scalar · product page)
+    # Boundary editor-vs-commerce-admin re-verified end-of-test by
+    # rejecting sensitive OUT paths including flat list-of-str + form
+    # structures + empty posts.
+    # ------------------------------------------------------------------
+
+    def test_a15_bottega_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the Bottega enrollment.
+
+        IMPORTANT skin note (documented · NOT a bug): Bottega's
+        artisan-workshop skin treats most portrait-like surfaces as
+        **typographic stamps** (Session 42 D-073 DNA-honest conversion:
+        artisan-workshop was always meant to be typographic-led, not
+        portrait-led). Fields `home.makers[].portrait`,
+        `product.artisan_portrait`, `atelier.founder_portrait` are
+        exposed in the editor sidebar (future skin variants / customer
+        swap · data preserved in registry) but are NOT rendered by the
+        current `.aw-*` skin. The ACTUALLY-RENDERED image surfaces are
+        the PRODUCT thumbnails in dict-rows:
+          - `home.latest_items[].image` (home page)
+          - `shop.products[].image` (shop page)
+          - `product.related_items[].image` (product page)
+        So the lifecycle test blindates:
+          - STORAGE plain-key for ALL 3 user-asked paths
+            (product.artisan_portrait · shop.products.0.image ·
+            home.makers.0.portrait) · 5× assertNotIn each · covers the
+            full per-locale contract regardless of skin rendering
+          - RENDER visibility on public preview ONLY on paths that the
+            current skin actually renders
+            (shop.products.0.image + home.latest_items.0.image +
+            product.related_items.0.image · 3 distinct image-in-dict-row
+            list shapes including home.latest_items with a col set
+            different from shop.products so the "second list shape"
+            ask is covered)
+
+        Phases:
+        1. perimeter invariants at TEST START — Bottega in gate · Luxe
+           out of gate
+        2. customer edits IT / EN / FR on home.headline
+        3. customer edits global site.logo_word via EN — plain-keyed
+           no @en: prefix
+        4. customer edits NESTED-DICT scalar `product.artisan_portrait`
+           (storage blindatura only · not rendered in typographic skin)
+           — 5× assertNotIn @<locale>:
+        5. customer edits IMAGE-IN-DICT-ROW `shop.products.0.image`
+           — 5× assertNotIn + render on public shop page all 5 locales
+        6. customer edits IMAGE-IN-DICT-ROW `home.makers.0.portrait`
+           (storage blindatura only · not rendered · typographic stamp)
+           — 5× assertNotIn
+        6b. customer edits IMAGE-IN-DICT-ROW `home.latest_items.0.image`
+           (SECOND list shape distinct from shop.products · different
+           col set) — 5× assertNotIn + render on public home page all
+           5 locales
+        6c. customer edits IMAGE-IN-DICT-ROW `product.related_items.0.image`
+           (THIRD list shape · product-page scoped) — 5× assertNotIn
+           + render on public product page all 5 locales
+        7. publish
+        8. second user visits home + shop + product on all 5 locales
+        9. AR response head carries ``<html dir="rtl" lang="ar">`` on
+           the `.aw-*` skin
+        10. owner reopens the editor per locale · prefill + universals
+        11. perimeter invariants re-checked end-of-test:
+            - Luxe (fashion-editorial) STILL OUT of both gate sets
+              (leak check duro per user guidance)
+            - Bottega + 12 pre-A.15 archetypes still enrolled
+            - Sensitive OUT paths REJECTED (shop.filter_groups.0.options
+              · product.gallery · product.size_options · contatti.form_fields
+              · pages · posts + col-level: shop.products.0.id ·
+              shop.products.0.available)
+
+        Explicitly NOT exercised here: browser walk (Step 3), Luxe
+        editor work, coverage expansion, mutable rows, image per-
+        locale, apps.commerce touches. Zero production-code changes.
+        """
+        import json as _json
+
+        bottega = WebTemplate.objects.get(slug="bottega-shop-artigianale")
+        p = services.create_project_from_template(owner=self.owner, template=bottega)
+
+        # ── 1. perimeter invariants at TEST START ────────────────
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            _ARCHETYPE_SCHEMAS as _SCHEMAS,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        self.assertIn("artisan-workshop", _SCHEMAS,
+                      "Bottega must be enrolled at lifecycle start")
+        self.assertIn("artisan-workshop", _ENABLED,
+                      "Bottega must be in multi-locale gate at start")
+        # Luxe out at BOTH gates (leak check duro · start).
+        self.assertNotIn("fashion-editorial", _SCHEMAS,
+                         "Luxe (fashion-editorial) must be OUT of _ARCHETYPE_SCHEMAS at start")
+        self.assertNotIn("fashion-editorial", _ENABLED,
+                         "Luxe (fashion-editorial) must be OUT of multi-locale gate at start")
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 2. three translatable locales on home.headline ────────
+        for locale, headline in (
+            ("it", "Walk IT Bottega <em>A15ArtisanLine</em>."),
+            ("en", "Walk EN Bottega <em>A15ArtisanLineEN</em>."),
+            ("fr", "Walk FR Bottega <em>A15ArtisanLineFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+
+        # ── 3. global plain-keyed text — site.logo_word via EN ────
+        r = autosave("en", {"site.logo_word": "A15 Bottega Walk Brand"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 4. nested-dict scalar image — product.artisan_portrait ─
+        # Chiara `studio.founder.image` precedent shape. Image fields
+        # NEVER per-locale.
+        IMG_ARTISAN = "https://walk-bottega.example/img/artisan-A15.jpg"
+        r = autosave("it", {"product.artisan_portrait": IMG_ARTISAN})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("product.artisan_portrait", r.json()["content_keys"])
+
+        # ── 5. image-in-dict-row on shop.products (demo catalog) ──
+        # 9-item dict listing · image col · first row .0.image
+        IMG_PRODUCT = "https://walk-bottega.example/img/product-A15.jpg"
+        r = autosave("it", {"shop.products.0.image": IMG_PRODUCT})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("shop.products.0.image", r.json()["content_keys"])
+
+        # ── 6. image-in-dict-row on home.makers (STORAGE blindatura) ─
+        # 4 artisan portraits · dict with portrait col · NOT rendered
+        # by the typographic-first artisan-workshop skin (Session 42
+        # DNA-honest crest-mark treatment) but still exposed in the
+        # editor sidebar · storage contract must still be clean.
+        IMG_MAKER = "https://walk-bottega.example/img/maker-A15.jpg"
+        r = autosave("it", {"home.makers.0.portrait": IMG_MAKER})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.makers.0.portrait", r.json()["content_keys"])
+
+        # ── 6b. image-in-dict-row on home.latest_items (rendered) ─
+        # 4 product cards · dict with image col · DIFFERENT col set
+        # from shop.products (n/name/meta/place/price/edition/tag/image
+        # vs n/name/artisan/place/meta/price/edition/tag/image). Second
+        # image-in-dict-row list shape to blindate end-to-end on home
+        # page render (covers user's "second list shape" ask via a
+        # path the typographic skin actually renders).
+        IMG_LATEST = "https://walk-bottega.example/img/latest-A15.jpg"
+        r = autosave("it", {"home.latest_items.0.image": IMG_LATEST})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.latest_items.0.image", r.json()["content_keys"])
+
+        # ── 6c. image-in-dict-row on product.related_items (rendered) ─
+        # Third distinct list shape (cols n/name/meta/price/image) ·
+        # product-page-scoped · fourth image surface in this lifecycle.
+        IMG_RELATED = "https://walk-bottega.example/img/related-A15.jpg"
+        r = autosave("it", {"product.related_items.0.image": IMG_RELATED})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("product.related_items.0.image", r.json()["content_keys"])
+
+        # Storage shape: 3 @<locale>:home.headline + 6 plain-keyed
+        # globals (logo + 5 image paths: product.artisan_portrait +
+        # shop.products.0.image + home.makers.0.portrait +
+        # home.latest_items.0.image + product.related_items.0.image).
+        # Zero @<locale>: on any image path across all 5 locales;
+        # zero @en: on logo; zero plain-key leak on home.headline.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("product.artisan_portrait", keys)
+        self.assertIn("shop.products.0.image", keys)
+        self.assertIn("home.makers.0.portrait", keys)
+        self.assertIn("home.latest_items.0.image", keys)
+        self.assertIn("product.related_items.0.image", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+        # All 5 image paths plain-keyed across all 5 locales.
+        for loc in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(f"@{loc}:product.artisan_portrait", keys,
+                             f"product.artisan_portrait must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:shop.products.0.image", keys,
+                             f"shop.products.0.image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:home.makers.0.portrait", keys,
+                             f"home.makers.0.portrait must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:home.latest_items.0.image", keys,
+                             f"home.latest_items.0.image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:product.related_items.0.image", keys,
+                             f"product.related_items.0.image must NEVER be @{loc}:-prefixed")
+
+        # ── 7. publish ───────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 8. second user on every public preview locale ────────
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale, page=None):
+            suffix = f"{page}/" if page else ""
+            url = (
+                f"/templates/ecommerce/bottega-shop-artigianale/preview/"
+                f"{suffix}?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render (home) — IT override + global logo +
+        # home.latest_items.0.image override visible (product thumb
+        # on home page · ACTUALLY rendered by the typographic skin).
+        # EN/FR absent.
+        body_it = preview_body("it")
+        self.assertIn("Walk IT Bottega", body_it)
+        self.assertIn("A15ArtisanLine", body_it)
+        self.assertNotIn("A15ArtisanLineEN", body_it)
+        self.assertNotIn("A15ArtisanLineFR", body_it)
+        self.assertIn("A15 Bottega Walk Brand", body_it)
+        self.assertIn(IMG_LATEST, body_it,
+                      "home.latest_items.0.image override must render on home page IT")
+
+        # IT render (shop page) — shop.products.0.image override visible
+        # + universal logo.
+        body_it_shop = preview_body("it", page="shop")
+        self.assertIn("A15 Bottega Walk Brand", body_it_shop)
+        self.assertIn(IMG_PRODUCT, body_it_shop,
+                      "shop.products.0.image override must render on shop page IT")
+
+        # IT render (product page) — product.related_items.0.image
+        # override visible + universal logo. Note: product.artisan_portrait
+        # override is STORED correctly but NOT rendered by the typographic
+        # skin (documented in test docstring).
+        body_it_product = preview_body("it", page="product")
+        self.assertIn("A15 Bottega Walk Brand", body_it_product)
+        self.assertIn(IMG_RELATED, body_it_product,
+                      "product.related_items.0.image override must render on product page IT")
+
+        # EN render spans home + shop + product
+        body_en = preview_body("en")
+        self.assertIn("Walk EN Bottega", body_en)
+        self.assertIn("A15ArtisanLineEN", body_en)
+        self.assertNotIn("Walk IT Bottega", body_en)
+        self.assertIn("A15 Bottega Walk Brand", body_en)
+        self.assertIn(IMG_LATEST, body_en)
+        body_en_shop = preview_body("en", page="shop")
+        self.assertIn(IMG_PRODUCT, body_en_shop)
+        body_en_product = preview_body("en", page="product")
+        self.assertIn(IMG_RELATED, body_en_product)
+
+        # FR render spans home + shop + product
+        body_fr = preview_body("fr")
+        self.assertIn("Walk FR Bottega", body_fr)
+        self.assertIn("A15ArtisanLineFR", body_fr)
+        self.assertIn("A15 Bottega Walk Brand", body_fr)
+        self.assertIn(IMG_LATEST, body_fr)
+        body_fr_shop = preview_body("fr", page="shop")
+        self.assertIn(IMG_PRODUCT, body_fr_shop)
+        body_fr_product = preview_body("fr", page="product")
+        self.assertIn(IMG_RELATED, body_fr_product)
+
+        # Unedited locales — authored fallback on translatable text +
+        # universals preserved across home + shop + product.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Walk IT Bottega", body)
+            self.assertNotIn("Walk EN Bottega", body)
+            self.assertNotIn("Walk FR Bottega", body)
+            self.assertIn("A15 Bottega Walk Brand", body)
+            self.assertIn(IMG_LATEST, body,
+                          f"home.latest_items.0.image must render universally on {locale} home")
+            body_shop = preview_body(locale, page="shop")
+            self.assertIn(IMG_PRODUCT, body_shop,
+                          f"shop.products.0.image must render universally on {locale} shop")
+            body_product = preview_body(locale, page="product")
+            self.assertIn(IMG_RELATED, body_product,
+                          f"product.related_items.0.image must render universally on {locale} product")
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Bottega home",
+                )
+
+        # AR preview (home) — `.aw-*` skin must emit
+        # ``<html dir="rtl" lang="ar">`` (31 mature RTL rules verified
+        # Step 0).
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 9. owner reopens the editor on each locale ───────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Walk IT Bottega"),
+            ("en", "Walk EN Bottega"),
+            ("fr", "Walk FR Bottega"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text + nested-dict scalar image: overridden universally,
+        # not translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Bottega editor")
+        self.assertEqual(logo_field["value"], "A15 Bottega Walk Brand")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        artisan_field = find_field_by_key(r_es.context["groups"], "product.artisan_portrait")
+        self.assertIsNotNone(artisan_field, "product.artisan_portrait missing from Bottega editor")
+        self.assertEqual(artisan_field["value"], IMG_ARTISAN)
+        self.assertTrue(artisan_field["is_overridden"])
+        self.assertFalse(artisan_field["translatable"])
+
+        # ── 10. perimeter invariants re-checked end-of-test ──────
+        # Luxe (fashion-editorial) MUST stay OUT at runtime on BOTH
+        # gates — dual leak check re-enforced end-of-test per user
+        # guidance. Will be removed in A.15b with symmetric inversion.
+        self.assertNotIn("fashion-editorial", _SCHEMAS,
+                         "Luxe (fashion-editorial) must stay OUT of _ARCHETYPE_SCHEMAS until A.15b")
+        self.assertNotIn("fashion-editorial", _ENABLED,
+                         "Luxe (fashion-editorial) must stay OUT of multi-locale gate until A.15b")
+        # Bottega still enrolled (no accidental removal).
+        self.assertIn("artisan-workshop", _SCHEMAS,
+                      "Bottega enrollment must persist through lifecycle")
+        self.assertIn("artisan-workshop", _ENABLED)
+        # 12 pre-A.15 archetypes also still enrolled.
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+        ):
+            self.assertIn(arc, _ENABLED, f"{arc} lost enrollment mid-lifecycle")
+        # Sensitive OUT paths stay rejected — re-verified runtime at
+        # end-of-test per user guidance.
+        for out_path in (
+            # Nested list-of-str inside dict rows
+            "shop.filter_groups.0.options",
+            "shop.filter_groups.0.options.0",
+            # Flat list-of-str on product page (gallery + size_options)
+            "product.gallery",
+            "product.gallery.0",
+            "product.size_options",
+            "product.size_options.0",
+            # Form structure
+            "contatti.form_fields",
+            "contatti.form_fields.0.name",
+            # Top-level navigation + empty posts
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+            # Col-level exclusions (structural identifiers)
+            "shop.products.0.id",
+            "shop.products.0.available",
+            "home.latest_items.0.id",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Bottega complex-shape path must stay rejected: {out_path}",
+            ):
+                validate_key_path("artisan-workshop", out_path)
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
