@@ -3217,6 +3217,336 @@ BRACE_STREET_MODERN_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# A.15 · Bottega artisan-workshop — 13th enrolled editor archetype,
+# first template of the ecommerce family. OPENS the family via staged
+# dedicated-schema progression (fourth staged opening after real-estate,
+# portfolio, restaurant-continuation). Luxe (`fashion-editorial`) stays
+# OUT until A.15b.
+#
+# BOUNDARY EDITOR VS COMMERCE-ADMIN (verified Step-0 runtime):
+#   • Editor scope = template_content_bottega.py REGISTRY = presentational
+#     demo showcase (product card listing demo · single-product demo
+#     record · hero · copy bands · journal entries).
+#   • Commerce-admin scope = apps.commerce.Storefront/Product/Variant/
+#     Cart/Order/PaymentIntent = REAL catalog backend · managed via
+#     seller dashboard (Phase 3a/3b).
+#   • LiveTemplateView (apps/catalog/views.py) does NOT import from
+#     apps.commerce · the two surfaces are ORTHOGONAL.
+#   • Editor enrollment touches ONLY template_content presentational
+#     demo content. Zero touches to apps.commerce models/services/URLs.
+#
+# Skin uses `.aw-*` selectors (chrome `.aw-nav`/`.aw-foot`, sections
+# `.aw-section`/`.aw-card`/`.aw-stamp`/`.aw-wrap` etc.) · 31 mature
+# `html[dir="rtl"]` rules in `_base.html`.
+#
+# Shape contract notes (Step-0 audit verified):
+#   • 6 pages: home · shop (NOVEL) · product (NOVEL) · atelier (about)
+#     · journal (NOVEL) · contatti. 5-locale parity PERFECT (236 keys
+#     × 5 locales, zero gaps). Three novel page kinds (`shop`/`product`/
+#     `journal`) — plain string identifiers, no view dispatch.
+#   • 0 scalar image at top-level (artisan-workshop is typographic-led
+#     DNA per Session 42 observations · no hero photo).
+#   • 2 nested-dict scalar images (`product.artisan_portrait` ·
+#     `atelier.founder_portrait`) · Chiara `studio.founder.image`
+#     precedent shape.
+#   • 4 image-in-dict-row lists (home.latest_items × 4, home.makers ×
+#     4, shop.products × 9, product.related_items × 3) · 20 image
+#     cells · shallow shape (Vertex/Villa/Chiara/Sapore/Brace precedents).
+#   • Total editable image surface: 22 (0 scalar top + 2 nested-dict
+#     scalar + 20 dict-row cells).
+#   • Menu-like shape: `shop.products` is a 9-item demo product listing
+#     (dict 11 cols). Col-level exclusions: `id` (slug for routing) +
+#     `available` (bool flag). Cols IN: name/artisan/place/meta/price/
+#     tag/image/n/edition. **`n`/`edition` kept IN despite looking
+#     "technical" — audit confirms they are editorial visible content:
+#     'N° 042' / '3 / 8' / 'Esaurito' are customer-facing badges, same
+#     category as Sapore forno.pizza_signatures.n (roman numeral visible
+#     counter · kept IN) and Chiara ledger_rows num. Stringent IN call
+#     per user Step 1 guidance.**
+#   • `posts` list EMPTY (same as Sapore · Brace · structural absence ·
+#     detail-page policy stays at 6-archetype uniform enforcement).
+#   • Complex shapes explicitly KEPT OUT of the perimeter:
+#       - site.hours_footer_rows · site.stockists_rows (flat list-of-str)
+#       - home.press_items (5 · flat list-of-str)
+#       - shop.filter_groups · shop.sort_options (form-like structural)
+#       - product.gallery (4 image URLs · flat list-of-str · same
+#         category as Sapore storia.story flat list-of-str policy)
+#       - product.size_options (flat list-of-str)
+#       - contatti.card_hours_rows (flat list-of-str)
+#       - contatti.form_fields (form structure)
+#       - pages (navigation index)
+#       - posts (empty)
+#   • Col-level exclusions (structural identifiers):
+#       - shop.products[].id + .available
+#       - home.latest_items[].id
+#       - product.related_items[].id
+#   • Zero mutable repeater · zero image per-locale · pure enrollment.
+#   • 14 readonly indexed list entries in STRUCTURED_FIELD_SHAPES ·
+#     tutti parent · ZERO deep-path (Bottega has no list-nested-in-list
+#     parent · simpler than Sapore/Brace).
+
+BOTTEGA_ARTISAN_WORKSHOP_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".aw-nav, .aw-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "bottega", "tagline", "chrome"],
+        "help": "Nome bottega, iniziale crest, tagline, contatti sintetici, chrome footer, labels generici (material/made_in/edition/artisan/shipping/guarantee).",
+        "fields": [
+            ("site.logo_word",        {"label": "Nome bottega", "type": "text", "max_length": 60,
+                                         "placeholder": "La Bottega di Martino"}),
+            ("site.logo_initial",     {"label": "Iniziale / crest", "type": "text", "max_length": 4}),
+            ("site.tag",              {"label": "Tagline (nav + strip)", "type": "text", "max_length": 160}),
+            ("site.phone",            {"label": "Telefono", "type": "text", "max_length": 40}),
+            ("site.whatsapp",         {"label": "WhatsApp (display)", "type": "text", "max_length": 40}),
+            ("site.whatsapp_link",    {"label": "WhatsApp · URL completo", "type": "url", "max_length": 300}),
+            ("site.email",            {"label": "Email", "type": "text", "max_length": 120}),
+            ("site.address",          {"label": "Indirizzo (una riga)", "type": "text", "max_length": 200}),
+            ("site.hours_compact",    {"label": "Orari sintetici (nav/footer)", "type": "text", "max_length": 160}),
+            ("site.license",          {"label": "Licenza / P.IVA", "type": "text", "max_length": 200}),
+            ("site.footer_intro",     {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.nav_cta",          {"label": "CTA nav · etichetta", "type": "text", "max_length": 60}),
+            ("site.currency_symbol",  {"label": "Simbolo valuta (€/£/$)", "type": "text", "max_length": 4}),
+            ("site.material_label",   {"label": "Label · Materiale", "type": "text", "max_length": 40}),
+            ("site.made_in_label",    {"label": "Label · Fatto a", "type": "text", "max_length": 40}),
+            ("site.edition_label",    {"label": "Label · Edizione", "type": "text", "max_length": 40}),
+            ("site.artisan_label",    {"label": "Label · Firmato da", "type": "text", "max_length": 40}),
+            ("site.shipping_label",   {"label": "Label · Spedizione", "type": "text", "max_length": 40}),
+            ("site.shipping_value",   {"label": "Valore · Spedizione", "type": "text", "max_length": 160}),
+            ("site.guarantee_label",  {"label": "Label · Garanzia", "type": "text", "max_length": 40}),
+            ("site.guarantee_value",  {"label": "Valore · Garanzia", "type": "text", "max_length": 160}),
+            ("site.shop_count_unit",  {"label": "Unità catalogo (es. 'pezzi')", "type": "text", "max_length": 40}),
+            ("site.shop_filter_label",{"label": "Label · Filtri catalogo", "type": "text", "max_length": 40}),
+            ("site.foot_studio",      {"label": "Footer · titolo bottega", "type": "text", "max_length": 40}),
+            ("site.foot_pages",       {"label": "Footer · titolo Mappa", "type": "text", "max_length": 40}),
+            ("site.foot_contact",     {"label": "Footer · titolo Contatti", "type": "text", "max_length": 40}),
+            ("site.foot_stockists",   {"label": "Footer · titolo Stockists", "type": "text", "max_length": 40}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-easel",
+        "region": ".aw-hero, .aw-stamp",
+        "page": "home",
+        "keywords": ["hero", "headline", "eyebrow", "intro", "cta", "stamp"],
+        "help": "Primo scroll della home (artisan-workshop · typographic-led · no hero image scalar) · eyebrow/headline/intro + CTAs + stamp decorative block.",
+        "subgroups": [
+            {"label": "Hero copy", "fields": [
+                ("home.eyebrow",        {"label": "Eyebrow", "type": "text", "max_length": 120}),
+                ("home.headline",       {"label": "Headline", "type": "richtext", "max_length": 220,
+                                           "help": "Consentiti i tag <em> per italici."}),
+                ("home.intro",          {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "CTA hero", "fields": [
+                ("home.primary_cta",    {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.primary_href",   {"label": "CTA primaria · destinazione", "type": "select",
+                                           "choices": ["home", "shop", "product", "atelier", "journal", "contatti"]}),
+                ("home.secondary_cta",  {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.secondary_href", {"label": "CTA secondaria · destinazione", "type": "select",
+                                           "choices": ["home", "shop", "product", "atelier", "journal", "contatti"]}),
+            ]},
+            {"label": "Stamp decorative block", "fields": [
+                ("home.stamp_label",        {"label": "Stamp · eyebrow", "type": "text", "max_length": 80}),
+                ("home.stamp_heading",      {"label": "Stamp · titolo", "type": "richtext", "max_length": 220}),
+                ("home.stamp_footer",       {"label": "Stamp · footer caption", "type": "text", "max_length": 200}),
+                ("home.stamp_corner_index", {"label": "Stamp · indice angolo", "type": "text", "max_length": 8}),
+                ("home.stamp_corner_word",  {"label": "Stamp · parola angolo", "type": "text", "max_length": 40}),
+            ]},
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".aw-section",
+        "page": "home",
+        "keywords": ["latest", "makers", "provenance", "care", "press", "journal", "cta"],
+        "help": "Fasce copy della home: latest items · makers · provenance · care · press label · journal teaser · CTA finale.",
+        "subgroups": [
+            {"label": "Latest items intestazione", "fields": [
+                ("home.latest_label",      {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.latest_heading",    {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.latest_link_label", {"label": "Link · etichetta", "type": "text", "max_length": 60}),
+                ("home.latest_link_href",  {"label": "Link · destinazione", "type": "select",
+                                              "choices": ["home", "shop", "product", "atelier", "journal", "contatti"]}),
+            ]},
+            {"label": "Makers intestazione", "fields": [
+                ("home.makers_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.makers_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.makers_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Provenance intestazione", "fields": [
+                ("home.provenance_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.provenance_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.provenance_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Care intestazione", "fields": [
+                ("home.care_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.care_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Press intestazione", "fields": [
+                ("home.press_label", {"label": "Eyebrow", "type": "text", "max_length": 80}),
+            ]},
+            {"label": "Journal teaser", "fields": [
+                ("home.journal_teaser_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.journal_teaser_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.journal_teaser_link",    {"label": "Link · etichetta", "type": "text", "max_length": 60}),
+                ("home.journal_teaser_href",    {"label": "Link · destinazione", "type": "select",
+                                                   "choices": ["home", "shop", "product", "atelier", "journal", "contatti"]}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("home.cta_label",         {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.cta_heading",       {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.cta_intro",         {"label": "Intro", "type": "textarea", "max_length": 500}),
+                ("home.cta_primary",       {"label": "CTA primaria · etichetta", "type": "text", "max_length": 60}),
+                ("home.cta_primary_href",  {"label": "CTA primaria · destinazione", "type": "select",
+                                              "choices": ["home", "shop", "product", "atelier", "journal", "contatti"]}),
+                ("home.cta_secondary",     {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 60}),
+            ]},
+        ],
+    },
+    {
+        "id": "shop_page",
+        "label": "Pagina Shop (catalog listing demo · novel `shop` kind)",
+        "icon": "bi-grid",
+        "region": ".aw-shop, .aw-shop-hero, .aw-products",
+        "page": "shop",
+        "keywords": ["shop", "catalogo", "listing", "products"],
+        "help": "Pagina catalogo demo: hero + filter/sort label + result_count + footer_note. La griglia dei prodotti demo si modifica dal gruppo indexed `Shop · Products (9 demo)`.",
+        "fields": [
+            ("shop.eyebrow",              {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("shop.headline",             {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("shop.intro",                {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("shop.filter_section_label", {"label": "Filter section · label", "type": "text", "max_length": 80}),
+            ("shop.sort_label",           {"label": "Sort · label", "type": "text", "max_length": 80}),
+            ("shop.result_count",         {"label": "Result · count text", "type": "text", "max_length": 80}),
+            ("shop.result_subtitle",      {"label": "Result · subtitle", "type": "textarea", "max_length": 300}),
+            ("shop.footer_note_label",    {"label": "Footer note · label", "type": "text", "max_length": 60}),
+            ("shop.footer_note",          {"label": "Footer note · text", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "product_page",
+        "label": "Pagina Product (single demo record · novel `product` kind)",
+        "icon": "bi-box",
+        "region": ".aw-product, .aw-product-hero, .aw-artisan, .aw-care, .aw-provenance",
+        "page": "product",
+        "keywords": ["product", "prodotto", "item", "artisan", "care", "provenance"],
+        "help": "Pagina demo singolo prodotto (NON commerce state · DEMO presentational). Customer edita il record showcase. Related items si modificano dal gruppo indexed `Product · Related items (3)`.",
+        "fields": [
+            ("product.n",                 {"label": "Numero pezzo (visible)", "type": "text", "max_length": 16}),
+            ("product.edition",           {"label": "Edizione (visible · '3/8' · 'Esaurito')", "type": "text", "max_length": 40}),
+            ("product.edition_note",      {"label": "Edizione · nota estesa", "type": "textarea", "max_length": 300}),
+            ("product.name",              {"label": "Nome prodotto", "type": "text", "max_length": 120}),
+            ("product.subtitle",          {"label": "Subtitle (materiale · tecnica)", "type": "textarea", "max_length": 300}),
+            ("product.price",             {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+            ("product.vat_note",          {"label": "Nota IVA / spedizione", "type": "textarea", "max_length": 300}),
+            ("product.intro",             {"label": "Intro lunga", "type": "textarea", "max_length": 800}),
+            ("product.info_label",        {"label": "Info rows · label", "type": "text", "max_length": 60}),
+            ("product.size_label",        {"label": "Size · label", "type": "text", "max_length": 60}),
+            ("product.size_intro",        {"label": "Size · intro", "type": "textarea", "max_length": 300}),
+            ("product.size_chart_link",   {"label": "Size · chart link label", "type": "text", "max_length": 80}),
+            ("product.size_chart_href",   {"label": "Size · chart link destinazione", "type": "select",
+                                              "choices": ["home", "shop", "product", "atelier", "journal", "contatti"]}),
+            ("product.artisan_label",     {"label": "Artisan · label", "type": "text", "max_length": 60}),
+            ("product.artisan_name",      {"label": "Artisan · nome", "type": "text", "max_length": 120}),
+            ("product.artisan_role",      {"label": "Artisan · ruolo", "type": "text", "max_length": 160}),
+            ("product.artisan_bio",       {"label": "Artisan · bio", "type": "textarea", "max_length": 800}),
+            ("product.artisan_portrait",  {"label": "Artisan · portrait URL (nested-dict scalar image)", "type": "image", "max_length": 400}),
+            ("product.buy_primary",       {"label": "Buy · CTA primaria (demo · no commerce state)", "type": "text", "max_length": 60}),
+            ("product.buy_secondary",     {"label": "Buy · CTA secondaria", "type": "text", "max_length": 60}),
+            ("product.buy_note",          {"label": "Buy · nota", "type": "textarea", "max_length": 400}),
+            ("product.care_label",        {"label": "Care · label", "type": "text", "max_length": 60}),
+            ("product.care_intro",        {"label": "Care · intro", "type": "textarea", "max_length": 500}),
+            ("product.provenance_label",  {"label": "Provenance · label", "type": "text", "max_length": 60}),
+            ("product.provenance_heading",{"label": "Provenance · titolo", "type": "richtext", "max_length": 220}),
+            ("product.related_label",     {"label": "Related · label", "type": "text", "max_length": 60}),
+            ("product.related_intro",     {"label": "Related · intro", "type": "textarea", "max_length": 400}),
+        ],
+    },
+    {
+        "id": "atelier_page",
+        "label": "Pagina Atelier (about)",
+        "icon": "bi-building",
+        "region": ".aw-atelier, .aw-atelier-hero, .aw-mission, .aw-numbers, .aw-process, .aw-visit",
+        "page": "atelier",
+        "keywords": ["atelier", "about", "mission", "numbers", "process", "visit", "founder"],
+        "help": "Pagina about: hero · founder block (portrait nested-dict) · mission · numbers · process intestazione · visit block.",
+        "fields": [
+            ("atelier.eyebrow",            {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("atelier.headline",           {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("atelier.intro",              {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("atelier.founder_label",      {"label": "Founder · label", "type": "text", "max_length": 60}),
+            ("atelier.founder_heading",    {"label": "Founder · titolo", "type": "richtext", "max_length": 220}),
+            ("atelier.founder_text",       {"label": "Founder · paragrafo", "type": "textarea", "max_length": 800}),
+            ("atelier.founder_portrait",   {"label": "Founder · portrait URL (nested-dict scalar image)", "type": "image", "max_length": 400}),
+            ("atelier.founder_caption",    {"label": "Founder · didascalia", "type": "text", "max_length": 200}),
+            ("atelier.mission_label",      {"label": "Mission · label", "type": "text", "max_length": 60}),
+            ("atelier.mission_heading",    {"label": "Mission · titolo", "type": "richtext", "max_length": 220}),
+            ("atelier.mission_text",       {"label": "Mission · paragrafo", "type": "textarea", "max_length": 600}),
+            ("atelier.numbers_label",      {"label": "Numbers · label", "type": "text", "max_length": 60}),
+            ("atelier.process_label",      {"label": "Process · label", "type": "text", "max_length": 60}),
+            ("atelier.process_heading",    {"label": "Process · titolo", "type": "richtext", "max_length": 220}),
+            ("atelier.visit_label",        {"label": "Visit · label", "type": "text", "max_length": 60}),
+            ("atelier.visit_heading",      {"label": "Visit · titolo", "type": "richtext", "max_length": 220}),
+            ("atelier.visit_text",         {"label": "Visit · paragrafo", "type": "textarea", "max_length": 500}),
+            ("atelier.visit_primary",      {"label": "Visit · CTA primaria", "type": "text", "max_length": 60}),
+            ("atelier.visit_primary_href", {"label": "Visit · CTA primaria destinazione", "type": "select",
+                                              "choices": ["home", "shop", "product", "atelier", "journal", "contatti"]}),
+            ("atelier.visit_secondary",    {"label": "Visit · CTA secondaria", "type": "text", "max_length": 60}),
+        ],
+    },
+    {
+        "id": "journal_page",
+        "label": "Pagina Journal (novel `journal` kind)",
+        "icon": "bi-journal",
+        "region": ".aw-journal, .aw-journal-hero, .aw-entries",
+        "page": "journal",
+        "keywords": ["journal", "quaderno", "note", "entries"],
+        "help": "Pagina diario/journal: hero + entries intestazione. Le entries si modificano dal gruppo indexed `Journal · Entries (6)`.",
+        "fields": [
+            ("journal.eyebrow",  {"label": "Eyebrow", "type": "text", "max_length": 120}),
+            ("journal.headline", {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("journal.intro",    {"label": "Intro", "type": "textarea", "max_length": 500}),
+        ],
+    },
+    {
+        "id": "contatti_page",
+        "label": "Pagina Contatti",
+        "icon": "bi-geo-alt",
+        "region": ".aw-contact, .aw-contact-hero, .aw-contact-card, .aw-faq",
+        "page": "contatti",
+        "keywords": ["contatti", "bottega", "card", "faq", "form-labels"],
+        "help": "Pagina contatti: hero · card (address/hours/phone/whatsapp/email labels+values) · FAQ intestazione · form scalar labels (struttura form OUT).",
+        "fields": [
+            ("contatti.eyebrow",                 {"label": "Eyebrow", "type": "text", "max_length": 160}),
+            ("contatti.headline",                {"label": "Headline", "type": "richtext", "max_length": 220}),
+            ("contatti.intro",                   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ("contatti.card_label",              {"label": "Card · label", "type": "text", "max_length": 60}),
+            ("contatti.card_address_value",      {"label": "Card · indirizzo valore", "type": "text", "max_length": 200}),
+            ("contatti.card_directions_label",   {"label": "Card · directions label", "type": "text", "max_length": 60}),
+            ("contatti.card_directions_text",    {"label": "Card · directions text", "type": "textarea", "max_length": 400}),
+            ("contatti.card_hours_label",        {"label": "Card · hours label", "type": "text", "max_length": 60}),
+            ("contatti.card_phone_label",        {"label": "Card · phone label", "type": "text", "max_length": 60}),
+            ("contatti.card_phone_value",        {"label": "Card · phone value", "type": "text", "max_length": 40}),
+            ("contatti.card_whatsapp_label",     {"label": "Card · whatsapp label", "type": "text", "max_length": 60}),
+            ("contatti.card_whatsapp_value",     {"label": "Card · whatsapp value", "type": "text", "max_length": 40}),
+            ("contatti.card_email_label",        {"label": "Card · email label", "type": "text", "max_length": 60}),
+            ("contatti.card_email_value",        {"label": "Card · email value", "type": "text", "max_length": 120}),
+            ("contatti.faq_label",               {"label": "FAQ · label", "type": "text", "max_length": 60}),
+            ("contatti.form_section_label",      {"label": "Form section · label", "type": "text", "max_length": 60}),
+            ("contatti.form_section_intro",      {"label": "Form section · intro", "type": "textarea", "max_length": 400}),
+            ("contatti.form_helper_required",    {"label": "Form · helper required", "type": "text", "max_length": 120}),
+            ("contatti.form_submit_button",      {"label": "Form · CTA submit", "type": "text", "max_length": 60}),
+            ("contatti.form_submit_note",        {"label": "Form · nota post-submit", "type": "textarea", "max_length": 400}),
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -5952,6 +6282,229 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+
+    # A.15 · Bottega artisan-workshop — 14 readonly indexed lists, tutti
+    # parent-level (zero deep-path · Bottega has no list-nested-in-list-
+    # parent). 4 image-in-dict-row lists (home.latest_items, home.makers,
+    # shop.products, product.related_items · 20 image cells). Col-level
+    # exclusions per structural identifiers:
+    #   - shop.products[].id + .available (slug + bool flag)
+    #   - home.latest_items[].id
+    #   - product.related_items[].id
+    # Stringent IN call per Step-0 audit on `n`/`edition`/`icon`: values
+    # are editorial visible content ('N° 042' / '3/8' / 'Esaurito' /
+    # '01'/'02'/'03') in the same category as Sapore forno.pizza_signatures.n
+    # and Chiara ledger_rows.num — customer-facing catalog numbering,
+    # kept IN.
+    "artisan-workshop": {
+        "home.latest_items": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Latest items (4 pezzi demo)",
+            "icon": "bi-grid",
+            "region": ".aw-latest",
+            "keywords": ["latest", "items", "products", "demo"],
+            "cols": [
+                ("n",       {"label": "Numero pezzo (visible)", "type": "text", "max_length": 16}),
+                ("name",    {"label": "Nome pezzo", "type": "text", "max_length": 120}),
+                ("meta",    {"label": "Meta (materiale · luogo)", "type": "text", "max_length": 200}),
+                ("place",   {"label": "Luogo produzione", "type": "text", "max_length": 120}),
+                ("price",   {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                ("edition", {"label": "Edizione (visible)", "type": "text", "max_length": 40}),
+                ("tag",     {"label": "Tag (editorial badge)", "type": "text", "max_length": 40}),
+                ("image",   {"label": "Image · URL", "type": "image", "max_length": 400}),
+                # `id` col excluded (structural slug · routing to /product/)
+            ],
+        },
+        "home.makers": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Makers (4 artigiani)",
+            "icon": "bi-people",
+            "region": ".aw-makers",
+            "keywords": ["makers", "artisans", "portraits"],
+            "cols": [
+                ("name",     {"label": "Nome artigiano", "type": "text", "max_length": 120}),
+                ("craft",    {"label": "Mestiere", "type": "text", "max_length": 120}),
+                ("place",    {"label": "Luogo", "type": "text", "max_length": 120}),
+                ("since",    {"label": "Since (anno)", "type": "text", "max_length": 80}),
+                ("quote",    {"label": "Quote", "type": "textarea", "max_length": 500}),
+                ("portrait", {"label": "Portrait · URL", "type": "image", "max_length": 400}),
+            ],
+        },
+        "home.provenance_items": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Provenance (3 territori)",
+            "icon": "bi-geo-alt",
+            "region": ".aw-provenance",
+            "keywords": ["provenance", "territori", "origine"],
+            "cols": [
+                ("icon",  {"label": "Indice ('01'/'02'/'03')", "type": "text", "max_length": 8}),
+                ("title", {"label": "Titolo territorio", "type": "text", "max_length": 120}),
+                ("place", {"label": "Luogo (km da città)", "type": "text", "max_length": 160}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "home.stamp_rows": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Stamp rows (4 celle)",
+            "icon": "bi-stamp",
+            "region": ".aw-stamp",
+            "keywords": ["stamp", "regole", "bottega"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 200}),
+            ],
+        },
+        "home.care_items": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Care items (4 celle)",
+            "icon": "bi-shield-check",
+            "region": ".aw-care",
+            "keywords": ["care", "garanzie"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore", "type": "text", "max_length": 200}),
+            ],
+        },
+        "shop.products": {
+            "kind": "dict",
+            "page": "shop",
+            "label": "Shop · Products (9 pezzi demo · NON commerce state)",
+            "icon": "bi-bag",
+            "region": ".aw-products",
+            "keywords": ["products", "catalogo", "demo"],
+            "cols": [
+                ("n",       {"label": "Numero pezzo (visible)", "type": "text", "max_length": 16}),
+                ("name",    {"label": "Nome pezzo", "type": "text", "max_length": 120}),
+                ("artisan", {"label": "Artigiano", "type": "text", "max_length": 120}),
+                ("place",   {"label": "Luogo", "type": "text", "max_length": 120}),
+                ("meta",    {"label": "Meta (materiale)", "type": "text", "max_length": 200}),
+                ("price",   {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                ("edition", {"label": "Edizione (visible · '3/8' · 'Esaurito')", "type": "text", "max_length": 40}),
+                ("tag",     {"label": "Tag (editorial badge)", "type": "text", "max_length": 40}),
+                ("image",   {"label": "Image · URL", "type": "image", "max_length": 400}),
+                # `id` excluded (structural slug) · `available` excluded
+                # (bool flag · commerce-state-like semantic · OUT stringent)
+            ],
+        },
+        "product.info_rows": {
+            "kind": "tuple",
+            "page": "product",
+            "label": "Product · Info rows (8 specs)",
+            "icon": "bi-list-ul",
+            "region": ".aw-info",
+            "keywords": ["info", "specs", "specifiche"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta spec", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore spec", "type": "text", "max_length": 300}),
+            ],
+        },
+        "product.care_items": {
+            "kind": "tuple",
+            "page": "product",
+            "label": "Product · Care items (4 celle)",
+            "icon": "bi-shield-check",
+            "region": ".aw-product-care",
+            "keywords": ["care", "manutenzione"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 80}),
+                ("value", {"label": "Valore", "type": "textarea", "max_length": 300}),
+            ],
+        },
+        "product.provenance_steps": {
+            "kind": "tuple",
+            "page": "product",
+            "label": "Product · Provenance steps (4 tappe)",
+            "icon": "bi-geo",
+            "region": ".aw-product-provenance",
+            "keywords": ["provenance", "tappe"],
+            "tuple_order": ["step", "place", "desc"],
+            "cols": [
+                ("step",  {"label": "Step (label)", "type": "text", "max_length": 80}),
+                ("place", {"label": "Luogo", "type": "text", "max_length": 120}),
+                ("desc",  {"label": "Descrizione", "type": "textarea", "max_length": 300}),
+            ],
+        },
+        "product.related_items": {
+            "kind": "dict",
+            "page": "product",
+            "label": "Product · Related items (3 pezzi correlati)",
+            "icon": "bi-link",
+            "region": ".aw-related",
+            "keywords": ["related", "correlati"],
+            "cols": [
+                ("n",     {"label": "Numero pezzo (visible)", "type": "text", "max_length": 16}),
+                ("name",  {"label": "Nome pezzo", "type": "text", "max_length": 120}),
+                ("meta",  {"label": "Meta (materiale · artigiano)", "type": "text", "max_length": 200}),
+                ("price", {"label": "Prezzo (display)", "type": "text", "max_length": 40}),
+                ("image", {"label": "Image · URL", "type": "image", "max_length": 400}),
+                # `id` excluded (structural slug)
+            ],
+        },
+        "atelier.process_steps": {
+            "kind": "dict",
+            "page": "atelier",
+            "label": "Atelier · Process steps (5 tappe)",
+            "icon": "bi-arrow-right-circle",
+            "region": ".aw-process",
+            "keywords": ["process", "atelier", "tappe"],
+            "cols": [
+                ("n",        {"label": "Step ('01'/'02'/...)", "type": "text", "max_length": 8}),
+                ("title",    {"label": "Titolo step", "type": "text", "max_length": 120}),
+                ("place",    {"label": "Luogo", "type": "text", "max_length": 160}),
+                ("duration", {"label": "Durata", "type": "text", "max_length": 120}),
+                ("desc",     {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "atelier.numbers_items": {
+            "kind": "tuple",
+            "page": "atelier",
+            "label": "Atelier · Numbers (4 celle)",
+            "icon": "bi-123",
+            "region": ".aw-numbers",
+            "keywords": ["numbers", "cifre"],
+            "tuple_order": ["value", "label"],
+            "cols": [
+                ("value", {"label": "Valore", "type": "text", "max_length": 80}),
+                ("label", {"label": "Etichetta", "type": "text", "max_length": 120}),
+            ],
+        },
+        "journal.entries": {
+            "kind": "dict",
+            "page": "journal",
+            "label": "Journal · Entries (6 voci)",
+            "icon": "bi-journal",
+            "region": ".aw-entries",
+            "keywords": ["journal", "entries", "diario"],
+            "cols": [
+                ("n",       {"label": "Numero entry (visible)", "type": "text", "max_length": 8}),
+                ("title",   {"label": "Titolo entry", "type": "text", "max_length": 160}),
+                ("place",   {"label": "Luogo · data", "type": "text", "max_length": 160}),
+                ("excerpt", {"label": "Excerpt", "type": "textarea", "max_length": 500}),
+                ("minutes", {"label": "Tempo di lettura", "type": "text", "max_length": 80}),
+            ],
+        },
+        "contatti.faq_items": {
+            "kind": "dict",
+            "page": "contatti",
+            "label": "Contatti · FAQ (4 domande)",
+            "icon": "bi-question-circle",
+            "region": ".aw-faq",
+            "keywords": ["faq", "domande"],
+            "cols": [
+                ("q", {"label": "Domanda", "type": "text", "max_length": 200}),
+                ("a", {"label": "Risposta", "type": "textarea", "max_length": 500}),
+            ],
+        },
+    },
 }
 
 
@@ -6028,6 +6581,16 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # f66ac24 A.14 Step 2 render-side contract-alignment fix). Zero
     # new infrastructure required.
     "street-modern":          ("brace-street-food-lab", "it"),
+    # A.15 · Bottega (artisan-workshop) joins as 13th enrolled archetype —
+    # first template of the ecommerce family. **Opens the family** via
+    # staged dedicated-schema progression · fourth staged opening after
+    # real-estate / portfolio / restaurant-continuation. Luxe (fashion-
+    # editorial) stays OUT until A.15b. Boundary verified Step-0:
+    # editor edits ONLY template_content registry (presentational demo
+    # showcase) · apps.commerce (real catalog backend) is ORTHOGONAL
+    # and managed via seller dashboard Phase 3a/3b. Zero touches to
+    # apps.commerce required.
+    "artisan-workshop":       ("bottega-shop-artigianale", "it"),
 }
 
 
@@ -6085,6 +6648,15 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # image-in-dict-row (Vertex/Villa). Zero service-layer / rendering /
     # editor-widget changes required — pure enrollment on 3-file surface.
     "street-modern":          BRACE_STREET_MODERN_SCHEMA,
+    # A.15 · Bottega — first-template enrollment of the ecommerce family.
+    # Luxe (fashion-editorial) stays OUT until A.15b. Editor edits
+    # template_content registry (presentational demo showcase): product
+    # card listings demo + single-product demo record + copy bands +
+    # journal entries + atelier about. Real catalog state in
+    # apps.commerce (Storefront/Product/Variant/Cart/Order) is
+    # out-of-scope · managed via seller dashboard. Zero tocchi a
+    # apps/commerce required · pure 3-file enrollment surface.
+    "artisan-workshop":       BOTTEGA_ARTISAN_WORKSHOP_SCHEMA,
 }
 
 
@@ -6644,6 +7216,19 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # zero). Gated by
     # ``test_a14b_brace_full_multilocale_lifecycle_end_to_end``.
     "street-modern",
+    # A.15 · Bottega (artisan-workshop · ecommerce family · first
+    # template) joins editor + multi-locale in a single phase, OPENING
+    # the ecommerce family. Luxe (fashion-editorial) stays OUT of the
+    # gate until A.15b. Fourth staged opening after real-estate /
+    # portfolio / restaurant-continuation. Boundary editor-vs-commerce-
+    # admin verified Step-0: LiveTemplateView does NOT import from
+    # apps.commerce · editor edits registry presentational demo only ·
+    # commerce state managed via seller dashboard Phase 3a/3b. Posts
+    # list empty (same as Sapore/Brace · structural absence). No form
+    # structures OUT (contatti.form_fields excluded). Zero mutable
+    # repeater · zero image per-locale · pure 3-file enrollment. Gated
+    # by ``test_a15_bottega_full_multilocale_lifecycle_end_to_end``.
+    "artisan-workshop",
 })
 
 
