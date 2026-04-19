@@ -4570,6 +4570,310 @@ FAMIGLIA_FAMILY_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# A.17 · Aura (agency-digital-studio) — single-template closer of the
+# agency-secondary family. Pure 3-file enrollment surface (schema +
+# _base.html atomic fixes + tests). 6 pages (home · studio · capabilities
+# · lavori · sprint · brief) + 1 derived kind (project_detail via
+# posts[]). Posts stay registry-only per the 7th uniform enforcement of
+# the per-item content policy (after Chiara + Pixel + Sapore + Brace +
+# Bottega + Luxe · detail-page editing is OUT of scope).
+#
+# **Form-structure scaffolding on the `brief` page stays OUT entire** ·
+# 5th precedent after Gusto/Juris/Casa/Villa:
+#   • brief.step1 / step2 / step3  (nested-dict form step metadata)
+#   • brief.labels / placeholders  (nested-dict form field labels)
+#   • brief.scope_options           (flat list-of-str · select options)
+#   • brief.slots                   (tuple list · id=form-option-value
+#                                    is structural · despite the label
+#                                    being editorially visible, the list
+#                                    identity — which days/hours are
+#                                    offered — is a form-schema concern
+#                                    requiring a calendar integration,
+#                                    not a customer copy edit)
+# brief.form_submit_label / submit_note / response_rows remain IN as
+# editorial button copy + SLA response table.
+#
+# Flat list-of-str stay OUT entire (established policy):
+#   • site.foot_stack_marquee / foot_stack_rows
+#   • studio.story_paragraphs
+#   • lavori.tabs
+#   • brief.scope_options
+#
+# Nested list-of-str inside dict rows stay OUT col-level (Juris
+# precedent + 6-archetype chain):
+#   • home.capab_cards.{i}.tags
+#   • home.work_cards.{i}.stack
+#   • studio.team.{i}.stack
+#   • capabilities.capabilities.{i}.scope + .stack
+#   • capabilities.engagement_tiles.{i}.includes
+#   • posts.{i}.problem_paragraphs / solution_paragraphs (posts registry-only)
+#
+# Stringent IN (technical-looking but customer-facing · 8th precedent):
+#   • site.foot_boot_line     ("aura.studio · uptime 99.98 · ...")
+#   • site.foot_current_sprint ("sprint 07/Q2 · live")
+#   • site.sprint_chip         navbar chip
+#   • home.sprints.{i}.output  ("OUT · brief + backlog")
+#
+# 12 image surfaces all image-in-dict-row (no scalar top-level · no
+# nested-dict scalar · no deep-path):
+#   • home.work_cards.{i}.cover        × 3
+#   • studio.team.{i}.portrait         × 3
+#   • lavori.projects.{i}.cover        × 6
+# Posts `cover_image` × 6 stays registry-only (not exposed).
+#
+# Zero raw SVG · zero bool flags · zero scheduler-state · zero novel
+# page kinds · zero novel shapes · zero mutable repeater · zero image
+# per-locale · zero commerce/clinic boundary.
+# ---------------------------------------------------------------------------
+
+AURA_AGENCY_DIGITAL_STUDIO_SCHEMA: list[dict[str, Any]] = [
+    {
+        "id": "brand",
+        "label": "Brand",
+        "icon": "bi-bookmark-star",
+        "region": ".au-nav, .au-foot",
+        "page": "*",
+        "keywords": ["logo", "marchio", "studio", "tagline", "chrome", "nav cta", "footer"],
+        "help": "Nome studio, tagline, navbar chip (sprint live), CTA header, dati di contatto, voce footer e micro-copy tecnico del footer (shiplog · current sprint · stack labels · boot line).",
+        "fields": [
+            ("site.logo_word",          {"label": "Nome studio (logo word)", "type": "text", "max_length": 60,
+                                           "placeholder": "Aura"}),
+            ("site.tag",                {"label": "Tagline (sotto nav · footer)", "type": "text", "max_length": 120}),
+            ("site.sprint_chip",        {"label": "Navbar chip (sprint live · stringent IN)", "type": "text", "max_length": 60,
+                                           "help": "Chip editoriale vicino al logo (es. 'Sprint 07/Q2 · live')."}),
+            ("site.nav_cta",            {"label": "CTA header · etichetta", "type": "text", "max_length": 40}),
+            ("site.inquiry_page_slug",  {"label": "CTA header · pagina di destinazione", "type": "select",
+                                           "choices": ["home", "studio", "capabilities", "lavori", "sprint", "brief"]}),
+            ("site.phone",              {"label": "Telefono", "type": "text", "max_length": 40}),
+            ("site.email",              {"label": "Email", "type": "text", "max_length": 120}),
+            ("site.address",            {"label": "Indirizzo", "type": "text", "max_length": 200}),
+            ("site.hours_compact",      {"label": "Orari sintetici", "type": "text", "max_length": 120}),
+            ("site.license",            {"label": "Licenza / P.IVA", "type": "text", "max_length": 200}),
+            ("site.footer_intro",       {"label": "Intro footer", "type": "textarea", "max_length": 500}),
+            ("site.foot_shiplog_label", {"label": "Footer · label shiplog", "type": "text", "max_length": 60}),
+            ("site.foot_current_sprint",{"label": "Footer · current sprint (stringent IN)", "type": "text", "max_length": 60}),
+            ("site.foot_studio_label",  {"label": "Footer · label studio", "type": "text", "max_length": 40}),
+            ("site.foot_stack_label",   {"label": "Footer · label stack", "type": "text", "max_length": 40}),
+            ("site.foot_boot_line",     {"label": "Footer · boot line (stringent IN · uptime + last deploy)",
+                                           "type": "textarea", "max_length": 300}),
+        ],
+    },
+    {
+        "id": "hero_home",
+        "label": "Hero home",
+        "icon": "bi-stars",
+        "region": ".au-hero",
+        "page": "home",
+        "keywords": ["hero", "headline", "chip", "intro", "cta home", "primo scroll"],
+        "help": "Primo scroll della home: chip disponibilità · headline · intro · CTA primaria (prenota call) · CTA secondaria (lavori).",
+        "fields": [
+            ("home.chip",            {"label": "Chip (es. '3 slot disponibili · Q3 2026')", "type": "text", "max_length": 100}),
+            ("home.headline",        {"label": "Headline", "type": "richtext", "max_length": 220,
+                                       "help": "Consentiti i tag <em> per italici."}),
+            ("home.intro",           {"label": "Intro", "type": "textarea", "max_length": 700}),
+            ("home.primary_cta",     {"label": "CTA primaria · etichetta", "type": "text", "max_length": 40}),
+            ("home.primary_href",    {"label": "CTA primaria · pagina destinazione", "type": "select",
+                                       "choices": ["home", "studio", "capabilities", "lavori", "sprint", "brief"]}),
+            ("home.secondary_cta",   {"label": "CTA secondaria · etichetta", "type": "text", "max_length": 40}),
+            ("home.secondary_href",  {"label": "CTA secondaria · pagina destinazione", "type": "select",
+                                       "choices": ["home", "studio", "capabilities", "lavori", "sprint", "brief"]}),
+        ],
+    },
+    {
+        "id": "console_home",
+        "label": "Console dashboard · home",
+        "icon": "bi-speedometer2",
+        "region": ".au-console",
+        "page": "home",
+        "keywords": ["console", "dashboard", "metric", "kpi", "home"],
+        "help": "Il tile dashboard sotto l'hero della home · path · status chip · metrica principale · meta sprint corrente. Le 4 righe KPI si modificano dal gruppo indexed `home.console.kpi`.",
+        "fields": [
+            ("home.console.path",           {"label": "Path dashboard (es. 'aura.studio/clients/...')", "type": "text", "max_length": 160}),
+            ("home.console.status_chip",    {"label": "Status chip (es. 'LIVE · sprint 07/Q2')", "type": "text", "max_length": 80}),
+            ("home.console.primary_metric", {"label": "Metrica primaria (es. '+34%')", "type": "text", "max_length": 40}),
+            ("home.console.primary_label",  {"label": "Metrica primaria · label", "type": "text", "max_length": 200}),
+            ("home.console.meta_label",     {"label": "Meta · label (es. 'Sprint corrente')", "type": "text", "max_length": 60}),
+            ("home.console.meta_value",     {"label": "Meta · value (es. '07/Q2 · week 2 of 2')", "type": "text", "max_length": 80}),
+        ],
+    },
+    {
+        "id": "home_bands",
+        "label": "Home · fasce copy",
+        "icon": "bi-layout-three-columns",
+        "region": ".au-section",
+        "page": "home",
+        "keywords": ["capab", "sprint", "work", "metric strip", "cta home", "bands"],
+        "help": "Intestazioni delle fasce copy della home · capabilities mini · sprint strip · lavori cards · CTA finale. Le liste (capab_cards · sprints · work_cards · metric_strip) si modificano dai gruppi indexed.",
+        "subgroups": [
+            {"label": "Capabilities · intestazione", "fields": [
+                ("home.capab_label",    {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.capab_heading",  {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.capab_intro",    {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ]},
+            {"label": "Sprint strip · intestazione", "fields": [
+                ("home.sprint_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.sprint_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.sprint_intro",   {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ]},
+            {"label": "Lavori cards · intestazione", "fields": [
+                ("home.work_label",     {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("home.work_heading",   {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.work_intro",     {"label": "Intro", "type": "textarea", "max_length": 600}),
+                ("home.work_page_slug", {"label": "Link al listing lavori · pagina", "type": "select",
+                                           "choices": ["home", "studio", "capabilities", "lavori", "sprint", "brief"]}),
+            ]},
+            {"label": "CTA finale home", "fields": [
+                ("home.cta_label",      {"label": "Eyebrow", "type": "text", "max_length": 60}),
+                ("home.cta_heading",    {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("home.cta_sub",        {"label": "Descrizione", "type": "textarea", "max_length": 500}),
+                ("home.cta_chip",       {"label": "Chip (es. '30 min · zero committment')", "type": "text", "max_length": 80}),
+                ("home.cta_primary",    {"label": "CTA · etichetta", "type": "text", "max_length": 40}),
+            ]},
+        ],
+    },
+    {
+        "id": "studio_page",
+        "label": "Pagina Studio (about)",
+        "icon": "bi-building",
+        "region": ".au-section",
+        "page": "studio",
+        "keywords": ["chi siamo", "about", "team", "storia", "valori", "bio"],
+        "help": "About dello studio · chip · headline · standfirst · intestazioni di saggio storia · team · valori. Le liste (facts · team · values) si modificano dai gruppi indexed. story_paragraphs (flat list-of-str · saggio) stays OUT entire.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("studio.chip",       {"label": "Chip", "type": "text", "max_length": 120}),
+                ("studio.headline",   {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("studio.standfirst", {"label": "Standfirst", "type": "textarea", "max_length": 800}),
+            ]},
+            {"label": "Story · saggio intestazione", "fields": [
+                ("studio.story_label",   {"label": "Eyebrow saggio", "type": "text", "max_length": 80}),
+                ("studio.story_heading", {"label": "Titolo saggio", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Team · intestazione", "fields": [
+                ("studio.team_label",   {"label": "Eyebrow team", "type": "text", "max_length": 80}),
+                ("studio.team_heading", {"label": "Titolo team", "type": "richtext", "max_length": 220}),
+                ("studio.team_intro",   {"label": "Intro team", "type": "textarea", "max_length": 500}),
+            ]},
+            {"label": "Valori · intestazione", "fields": [
+                ("studio.values_label",   {"label": "Eyebrow valori", "type": "text", "max_length": 80}),
+                ("studio.values_heading", {"label": "Titolo valori", "type": "richtext", "max_length": 220}),
+            ]},
+        ],
+    },
+    {
+        "id": "capabilities_page",
+        "label": "Pagina Capabilities (services)",
+        "icon": "bi-gem",
+        "region": ".au-section",
+        "page": "capabilities",
+        "keywords": ["capabilities", "services", "discipline", "engagement", "ingaggio"],
+        "help": "Pagina servizi · chip · headline · standfirst · intestazione tile di ingaggio · CTA finale. Le liste (capabilities · engagement_tiles) si modificano dai gruppi indexed. Nested list-of-str (scope · stack · includes) stay OUT col-level.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("capabilities.chip",       {"label": "Chip", "type": "text", "max_length": 120}),
+                ("capabilities.headline",   {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("capabilities.standfirst", {"label": "Standfirst", "type": "textarea", "max_length": 800}),
+            ]},
+            {"label": "Engagement tiles · intestazione", "fields": [
+                ("capabilities.engagement_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("capabilities.engagement_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("capabilities.engagement_intro",   {"label": "Intro", "type": "textarea", "max_length": 600}),
+            ]},
+            {"label": "CTA finale", "fields": [
+                ("capabilities.cta_label",   {"label": "Eyebrow", "type": "text", "max_length": 60}),
+                ("capabilities.cta_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("capabilities.cta_primary", {"label": "CTA · etichetta", "type": "text", "max_length": 40}),
+            ]},
+        ],
+    },
+    {
+        "id": "lavori_page",
+        "label": "Pagina Lavori (project_list)",
+        "icon": "bi-images",
+        "region": ".au-section",
+        "page": "lavori",
+        "keywords": ["lavori", "progetti", "archivio", "portfolio", "velocity"],
+        "help": "Pagina progetti · chip · headline · standfirst · counter archivio · intestazione velocity. La lista projects si modifica dal gruppo indexed · velocity_stats anche. Tabs (flat list-of-str · filtri) stays OUT entire. Per-project detail (posts[]) stays registry-only (7th uniform enforcement).",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("lavori.chip",       {"label": "Chip", "type": "text", "max_length": 120}),
+                ("lavori.headline",   {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("lavori.standfirst", {"label": "Standfirst", "type": "textarea", "max_length": 800}),
+            ]},
+            {"label": "Tabs · counter archivio", "fields": [
+                ("lavori.tabs_count_label", {"label": "Label counter (es. '// totali archivio')", "type": "text", "max_length": 60}),
+                ("lavori.tabs_count_value", {"label": "Value counter (es. '047')", "type": "text", "max_length": 20}),
+            ]},
+            {"label": "Velocity · intestazione", "fields": [
+                ("lavori.velocity_label",   {"label": "Eyebrow", "type": "text", "max_length": 60}),
+                ("lavori.velocity_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("lavori.velocity_body",    {"label": "Body", "type": "textarea", "max_length": 700}),
+            ]},
+        ],
+    },
+    {
+        "id": "sprint_page",
+        "label": "Pagina Sprint (process)",
+        "icon": "bi-diagram-3",
+        "region": ".au-section",
+        "page": "sprint",
+        "keywords": ["sprint", "process", "fasi", "mindset", "stack", "delivery"],
+        "help": "Pagina metodologia · chip · headline · standfirst · intestazione mindset + stack. Le liste (sprints · mindset_cards · stack_tiles) si modificano dai gruppi indexed. deliverables nested list-of-str stays OUT col-level.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("sprint.chip",       {"label": "Chip", "type": "text", "max_length": 120}),
+                ("sprint.headline",   {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("sprint.standfirst", {"label": "Standfirst", "type": "textarea", "max_length": 800}),
+            ]},
+            {"label": "Mindset · intestazione", "fields": [
+                ("sprint.mindset_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("sprint.mindset_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+            ]},
+            {"label": "Stack · intestazione", "fields": [
+                ("sprint.stack_label",   {"label": "Eyebrow", "type": "text", "max_length": 80}),
+                ("sprint.stack_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("sprint.stack_intro",   {"label": "Intro", "type": "textarea", "max_length": 500}),
+            ]},
+        ],
+    },
+    {
+        "id": "brief_page",
+        "label": "Pagina Brief (contact)",
+        "icon": "bi-envelope",
+        "region": ".au-section",
+        "page": "brief",
+        "keywords": ["brief", "contatti", "form", "call", "async", "response"],
+        "help": "Pagina contatti · chip · headline · standfirst · form intestazioni (submit · note) · async block · response SLA intestazione · footer boot. Form scaffolding (step1/2/3 · labels · placeholders · scope_options · slots) stays OUT entire — form structure · 5th precedent dopo Gusto/Juris/Casa/Villa. response_rows si modifica dal gruppo indexed.",
+        "subgroups": [
+            {"label": "Intestazione", "fields": [
+                ("brief.chip",       {"label": "Chip (es. '3 slot aperti · Q3 2026')", "type": "text", "max_length": 120}),
+                ("brief.headline",   {"label": "Headline", "type": "richtext", "max_length": 220}),
+                ("brief.standfirst", {"label": "Standfirst", "type": "textarea", "max_length": 800}),
+            ]},
+            {"label": "Form · intestazione + submit", "fields": [
+                ("brief.form_heading",      {"label": "Titolo form (es. '// brief intake · 3 step')", "type": "text", "max_length": 120}),
+                ("brief.form_submit_label", {"label": "Submit · etichetta pulsante", "type": "text", "max_length": 40}),
+                ("brief.form_submit_note",  {"label": "Submit · nota sotto il pulsante", "type": "textarea", "max_length": 300}),
+            ]},
+            {"label": "Async block", "fields": [
+                ("brief.async_label",   {"label": "Eyebrow", "type": "text", "max_length": 60}),
+                ("brief.async_heading", {"label": "Titolo", "type": "richtext", "max_length": 220}),
+                ("brief.async_body",    {"label": "Body", "type": "textarea", "max_length": 500}),
+                ("brief.studio_label",  {"label": "Label 'Lo studio'", "type": "text", "max_length": 40}),
+            ]},
+            {"label": "Response SLA · intestazione", "fields": [
+                ("brief.response_label", {"label": "Eyebrow (es. '// SLA di risposta')", "type": "text", "max_length": 60}),
+            ]},
+            {"label": "Footer boot", "fields": [
+                ("brief.boot_left",  {"label": "Boot · sinistra", "type": "text", "max_length": 200}),
+                ("brief.boot_right", {"label": "Boot · destra",   "type": "text", "max_length": 200}),
+            ]},
+        ],
+    },
+]
+
+
 LEX_CLASSIC_GOLD_SCHEMA: list[dict[str, Any]] = [
     {
         "id": "brand",
@@ -8581,6 +8885,301 @@ STRUCTURED_FIELD_SHAPES: dict[str, dict[str, dict[str, Any]]] = {
             ],
         },
     },
+
+    # A.17 · Aura (agency-digital-studio) — 18 indexed lists · zero
+    # deep-path · all 12 image cells are image-in-dict-row at
+    # `<list>.{i}.<col>`. Nested list-of-str cols (tags · stack · scope ·
+    # includes) excluded (Juris precedent · 6-archetype chain). Nested
+    # list-of-tuple `kpi` inside lavori.projects excluded col-level
+    # (no sub-tuple-list kind). bool `featured` on engagement_tiles
+    # excluded col-level (bool stays OUT · 4 OUT-category precedent).
+    # `slug` cols excluded (structural identifier). `output` on
+    # home.sprints IN as stringent editorial tag.
+    "agency-digital-studio": {
+
+        # ── BRAND ───────────────────────────────────────────────────────
+        "site.foot_shiplog_rows": {
+            "kind": "tuple",
+            "page": "*",
+            "label": "Footer · Ship log (6 righe · stringent IN)",
+            "icon": "bi-terminal",
+            "region": ".au-foot .shiplog",
+            "keywords": ["shiplog", "footer", "versioni", "deploy"],
+            "tuple_order": ["date", "ver", "desc"],
+            "cols": [
+                ("date", {"label": "Data (es. 'ieri · 18:04')", "type": "text", "max_length": 40}),
+                ("ver",  {"label": "Versione (es. 'v2.14')",   "type": "text", "max_length": 20}),
+                ("desc", {"label": "Descrizione deploy",        "type": "textarea", "max_length": 300}),
+            ],
+        },
+
+        # ── HOME ────────────────────────────────────────────────────────
+        "home.hero_metrics": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Hero home · Metriche (3 tuple)",
+            "icon": "bi-bar-chart",
+            "region": ".au-hero .metric",
+            "keywords": ["hero", "metrics", "kpi", "numeri"],
+            "tuple_order": ["num", "label"],
+            "cols": [
+                ("num",   {"label": "Numero (richtext · <em>)", "type": "richtext", "max_length": 80}),
+                ("label", {"label": "Label",                     "type": "text", "max_length": 160}),
+            ],
+        },
+        "home.console.kpi": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Console home · KPI (4 tuple)",
+            "icon": "bi-speedometer2",
+            "region": ".au-console .kpi",
+            "keywords": ["console", "kpi", "dashboard"],
+            "tuple_order": ["num", "label"],
+            "cols": [
+                ("num",   {"label": "Numero (richtext · <em>)", "type": "richtext", "max_length": 80}),
+                ("label", {"label": "Label",                     "type": "text", "max_length": 200}),
+            ],
+        },
+        "home.capab_cards": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Capab cards (4 card)",
+            "icon": "bi-gem",
+            "region": ".au-capab .card",
+            "keywords": ["capab", "cards", "home", "aree"],
+            "cols": [
+                ("id",    {"label": "ID card (es. 'C.01')", "type": "text", "max_length": 20}),
+                ("title", {"label": "Titolo (richtext · <em>)", "type": "richtext", "max_length": 160}),
+                ("body",  {"label": "Body", "type": "textarea", "max_length": 500}),
+                # `tags` col excluded (nested list-of-str · 4 per row · Juris precedent)
+            ],
+        },
+        "home.sprints": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Sprint strip (4 sprint)",
+            "icon": "bi-arrow-right-circle",
+            "region": ".au-sprints .sprint-card",
+            "keywords": ["sprint", "strip", "home", "fasi"],
+            "cols": [
+                ("id",       {"label": "ID sprint (es. 'S.00')", "type": "text", "max_length": 20}),
+                ("duration", {"label": "Durata (es. 'Sprint 0 · 1 settimana')", "type": "text", "max_length": 120}),
+                ("title",    {"label": "Titolo (richtext · <em>)", "type": "richtext", "max_length": 80}),
+                ("body",     {"label": "Body", "type": "textarea", "max_length": 500}),
+                ("output",   {"label": "Output tag (stringent IN · es. 'OUT · brief + backlog')", "type": "text", "max_length": 120}),
+            ],
+        },
+        "home.work_cards": {
+            "kind": "dict",
+            "page": "home",
+            "label": "Home · Work cards (3 progetti featured)",
+            "icon": "bi-images",
+            "region": ".au-work .card",
+            "keywords": ["work", "cards", "home", "lavori", "image"],
+            "cols": [
+                ("id",          {"label": "ID card (es. 'W.01')", "type": "text", "max_length": 20}),
+                ("title",       {"label": "Titolo progetto", "type": "text", "max_length": 160}),
+                ("client",      {"label": "Cliente", "type": "text", "max_length": 120}),
+                ("metric_chip", {"label": "Metric chip (es. '+18% retention · D30')", "type": "text", "max_length": 120}),
+                ("cover",       {"label": "Cover · URL (rendered)", "type": "image", "max_length": 400}),
+                # `slug` col excluded (structural identifier for detail page routing)
+                # `stack` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "home.metric_strip": {
+            "kind": "tuple",
+            "page": "home",
+            "label": "Home · Metric strip (4 tuple)",
+            "icon": "bi-graph-up",
+            "region": ".au-metric-band .stat",
+            "keywords": ["metric", "strip", "home", "band"],
+            "tuple_order": ["num", "label", "note"],
+            "cols": [
+                ("num",   {"label": "Numero (richtext · <em>)", "type": "richtext", "max_length": 80}),
+                ("label", {"label": "Label",                     "type": "text", "max_length": 120}),
+                ("note",  {"label": "Nota",                      "type": "text", "max_length": 200}),
+            ],
+        },
+
+        # ── STUDIO (about) ──────────────────────────────────────────────
+        "studio.facts": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Facts (4 tuple)",
+            "icon": "bi-123",
+            "region": ".au-studio-facts",
+            "keywords": ["facts", "studio", "numeri"],
+            "tuple_order": ["num", "label", "note"],
+            "cols": [
+                ("num",   {"label": "Numero (richtext · <em>)", "type": "richtext", "max_length": 80}),
+                ("label", {"label": "Label",                     "type": "text", "max_length": 80}),
+                ("note",  {"label": "Nota",                      "type": "text", "max_length": 200}),
+            ],
+        },
+        "studio.team": {
+            "kind": "dict",
+            "page": "studio",
+            "label": "Studio · Team (3 persone)",
+            "icon": "bi-people",
+            "region": ".au-team .member",
+            "keywords": ["team", "persone", "bio", "portrait"],
+            "cols": [
+                ("name",     {"label": "Nome", "type": "text", "max_length": 120}),
+                ("role",     {"label": "Ruolo", "type": "text", "max_length": 200}),
+                ("bio",      {"label": "Bio",   "type": "textarea", "max_length": 800}),
+                ("portrait", {"label": "Portrait · URL (rendered)", "type": "image", "max_length": 400}),
+                # `stack` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "studio.values": {
+            "kind": "tuple",
+            "page": "studio",
+            "label": "Studio · Values (4 tuple)",
+            "icon": "bi-compass",
+            "region": ".au-values",
+            "keywords": ["values", "valori", "principi"],
+            "tuple_order": ["id", "title", "body"],
+            "cols": [
+                ("id",    {"label": "ID (es. 'V.01')",            "type": "text", "max_length": 20}),
+                ("title", {"label": "Titolo (richtext · <em>)", "type": "richtext", "max_length": 200}),
+                ("body",  {"label": "Body",                       "type": "textarea", "max_length": 500}),
+            ],
+        },
+
+        # ── CAPABILITIES (services) ─────────────────────────────────────
+        "capabilities.capabilities": {
+            "kind": "dict",
+            "page": "capabilities",
+            "label": "Capabilities · Capabilities (4 card)",
+            "icon": "bi-gem",
+            "region": ".au-capab .card",
+            "keywords": ["capabilities", "services", "card"],
+            "cols": [
+                ("id",          {"label": "ID (es. 'CAP.01 · Product launch')", "type": "text", "max_length": 80}),
+                ("title",       {"label": "Titolo (richtext · <em>)", "type": "richtext", "max_length": 200}),
+                ("tagline",     {"label": "Tagline (durata + KPI)", "type": "text", "max_length": 200}),
+                ("body",        {"label": "Body", "type": "textarea", "max_length": 800}),
+                ("scope_label", {"label": "Scope · label (stringent IN)", "type": "text", "max_length": 40}),
+                # `scope` col excluded (nested list-of-str · 8 per row · Juris precedent)
+                # `stack` col excluded (nested list-of-str · Juris precedent)
+            ],
+        },
+        "capabilities.engagement_tiles": {
+            "kind": "dict",
+            "page": "capabilities",
+            "label": "Capabilities · Engagement tiles (3 modelli)",
+            "icon": "bi-diagram-3",
+            "region": ".au-engagement .tile",
+            "keywords": ["engagement", "ingaggio", "tile"],
+            "cols": [
+                ("id",    {"label": "ID (es. 'E.01 · Discovery')", "type": "text", "max_length": 80}),
+                ("title", {"label": "Titolo (richtext · <em>)", "type": "richtext", "max_length": 160}),
+                ("range", {"label": "Range / durata", "type": "text", "max_length": 120}),
+                ("body",  {"label": "Body", "type": "textarea", "max_length": 500}),
+                # `includes` col excluded (nested list-of-str · Juris precedent)
+                # `featured` col excluded (bool · OUT-category precedent)
+            ],
+        },
+
+        # ── LAVORI (project_list) ───────────────────────────────────────
+        "lavori.projects": {
+            "kind": "dict",
+            "page": "lavori",
+            "label": "Lavori · Projects (6 progetti)",
+            "icon": "bi-images",
+            "region": ".au-projects .project-card",
+            "keywords": ["lavori", "projects", "portfolio", "image"],
+            "cols": [
+                ("id",         {"label": "ID (es. 'P.01')", "type": "text", "max_length": 20}),
+                ("title",      {"label": "Titolo", "type": "text", "max_length": 200}),
+                ("client",     {"label": "Cliente", "type": "text", "max_length": 120}),
+                ("discipline", {"label": "Disciplina", "type": "text", "max_length": 120}),
+                ("year",       {"label": "Anno", "type": "text", "max_length": 20}),
+                ("blurb",      {"label": "Blurb", "type": "textarea", "max_length": 500}),
+                ("cover",      {"label": "Cover · URL (rendered)", "type": "image", "max_length": 400}),
+                # `slug` col excluded (structural identifier for detail page routing)
+                # `kpi` col excluded (nested list-of-tuple · no sub-list kind)
+            ],
+        },
+        "lavori.velocity_stats": {
+            "kind": "tuple",
+            "page": "lavori",
+            "label": "Lavori · Velocity stats (4 tuple)",
+            "icon": "bi-speedometer",
+            "region": ".au-velocity .stat",
+            "keywords": ["velocity", "stats", "lavori"],
+            "tuple_order": ["num", "label"],
+            "cols": [
+                ("num",   {"label": "Numero (richtext · <em>)", "type": "richtext", "max_length": 80}),
+                ("label", {"label": "Label",                     "type": "text", "max_length": 160}),
+            ],
+        },
+
+        # ── SPRINT (process) ────────────────────────────────────────────
+        "sprint.sprints": {
+            "kind": "dict",
+            "page": "sprint",
+            "label": "Sprint · Sprints (4 fasi)",
+            "icon": "bi-diagram-3",
+            "region": ".au-sprint-phase",
+            "keywords": ["sprint", "fasi", "process"],
+            "cols": [
+                ("id",                 {"label": "ID sprint (es. 'Sprint 0 · Signal')", "type": "text", "max_length": 80}),
+                ("duration",           {"label": "Durata", "type": "text", "max_length": 80}),
+                ("title",              {"label": "Titolo (richtext · <em>)", "type": "richtext", "max_length": 200}),
+                ("tagline",            {"label": "Tagline (stringent IN · '// output: ...')", "type": "text", "max_length": 200}),
+                ("body",               {"label": "Body", "type": "textarea", "max_length": 800}),
+                ("deliverables_label", {"label": "Deliverables · label (stringent IN)", "type": "text", "max_length": 40}),
+                # `deliverables` col excluded (nested list-of-str · 6 per row · Juris precedent)
+            ],
+        },
+        "sprint.mindset_cards": {
+            "kind": "dict",
+            "page": "sprint",
+            "label": "Sprint · Mindset cards (3 principi)",
+            "icon": "bi-compass",
+            "region": ".au-mindset .card",
+            "keywords": ["mindset", "principi", "process"],
+            "cols": [
+                ("id",    {"label": "ID (es. 'P.01')", "type": "text", "max_length": 20}),
+                ("title", {"label": "Titolo (richtext · <em>)", "type": "richtext", "max_length": 160}),
+                ("body",  {"label": "Body", "type": "textarea", "max_length": 500}),
+            ],
+        },
+        "sprint.stack_tiles": {
+            "kind": "dict",
+            "page": "sprint",
+            "label": "Sprint · Stack tiles (8 categorie delivery)",
+            "icon": "bi-stack",
+            "region": ".au-stack .tile",
+            "keywords": ["stack", "delivery", "tecnologie"],
+            "cols": [
+                ("category", {"label": "Category (es. '// frontend')", "type": "text", "max_length": 60}),
+                ("list",     {"label": "List (HTML richtext · <strong>/<span>)", "type": "richtext", "max_length": 400}),
+            ],
+        },
+
+        # ── BRIEF (contact) ─────────────────────────────────────────────
+        # brief.slots (tuple list `(id, label)` · 9 rows) stays OUT entire.
+        # The id is a form-option-value (structural form-schema concern
+        # requiring calendar integration, not a customer copy edit) ·
+        # 5th precedent of form-structure OUT after Gusto/Juris/Casa/
+        # Villa. brief.labels + placeholders + step1/2/3 + scope_options
+        # likewise OUT entire. Only response_rows (SLA table) is exposed.
+        "brief.response_rows": {
+            "kind": "tuple",
+            "page": "brief",
+            "label": "Brief · Response SLA (4 tuple)",
+            "icon": "bi-clock-history",
+            "region": ".au-response",
+            "keywords": ["response", "sla", "tempi"],
+            "tuple_order": ["label", "value"],
+            "cols": [
+                ("label", {"label": "Fase (es. 'Brief')",      "type": "text", "max_length": 80}),
+                ("value", {"label": "Tempi (es. '< 48h')",     "type": "text", "max_length": 80}),
+            ],
+        },
+    },
 }
 
 
@@ -8740,6 +9339,17 @@ _ARCHETYPE_BASELINE_TEMPLATE: dict[str, tuple[str, str]] = {
     # real-estate + portfolio + restaurant-continuation + ecommerce +
     # medical-other).
     "family":                 ("famiglia-pediatria", "it"),
+    # A.17 · Aura (agency-digital-studio) — CLOSER of the agency-secondary
+    # family (single-template · first single-template closure with one
+    # phase · mirror of A.17b Elevate upcoming for startup-saas-landing).
+    # 18 indexed lists · 12 image-in-dict-row cells (home.work_cards.cover
+    # × 3 · studio.team.portrait × 3 · lavori.projects.cover × 6) · zero
+    # scalar top-level image · zero deep-path · zero novel shape. Posts
+    # list (6 project_detail records) stays registry-only · 7th uniform
+    # enforcement of the per-item content policy. Form-scaffolding on
+    # brief page OUT entire (step1/2/3 · labels · placeholders ·
+    # scope_options · slots) · 5th form-structure OUT precedent.
+    "agency-digital-studio":  ("aura-digital-studio", "it"),
 }
 
 
@@ -8858,6 +9468,14 @@ _ARCHETYPE_SCHEMAS: dict[str, list[dict[str, Any]]] = {
     # (form as flat scalars · simpler OUT policy). Zero tocchi a
     # apps/commerce · services.py · rendering.py · editor shell.
     "family":                 FAMIGLIA_FAMILY_SCHEMA,
+    # A.17 · Aura single-template closure of agency-secondary family.
+    # Pure 3-file enrollment surface · 9 sidebar groups · ~95 scalar +
+    # 18 indexed lists (6 tuple + 12 dict · including home.console.kpi
+    # nested inside home.console parent dict) · 12 image-in-dict-row
+    # cells all rendered · zero deep-path. brief.slots OUT entire
+    # (form-structure · 5th precedent). Zero tocchi a services.py ·
+    # rendering.py · editor shell.
+    "agency-digital-studio":  AURA_AGENCY_DIGITAL_STUDIO_SCHEMA,
 }
 
 
@@ -9498,6 +10116,12 @@ _MULTILOCALE_ENABLED_ARCHETYPES: frozenset[str] = frozenset({
     # Novel col name `src` on home.gallery (mechanical reuse). Gated by
     # ``test_a16c_family_full_multilocale_lifecycle_end_to_end``.
     "family",
+    # A.17 · Aura (agency-digital-studio) — single-template closer of
+    # the agency-secondary family. 5-locale content already authored
+    # with perfect 544-key parity pre-enrollment. Gated by
+    # ``test_a17_aura_full_multilocale_lifecycle_end_to_end``. Pure
+    # 3-file surface · zero horizontal touches.
+    "agency-digital-studio",
 })
 
 
