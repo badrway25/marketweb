@@ -45,14 +45,14 @@ class FoundationModelTests(TestCase):
         self.assertEqual(p.revisions.count(), 1)
 
     def test_unsupported_archetype_raises(self):
-        # fashion-editorial (Luxe) has not been enrolled in
-        # _ARCHETYPE_SCHEMAS yet — Luxe still hits the UnsupportedTemplate
-        # guard. A.15 rotated the outside-gate reference from Bottega
-        # (now enrolled) to Luxe. Swap this slug if/when
-        # fashion-editorial gets an editor schema of its own (A.15b).
-        luxe = WebTemplate.objects.get(slug="luxe-fashion-store")
+        # `clinic` (Salute) has not been enrolled in _ARCHETYPE_SCHEMAS
+        # yet — Salute still hits the UnsupportedTemplate guard. A.15b
+        # rotated the outside-gate reference from Luxe (fashion-editorial ·
+        # now enrolled) to Salute (clinic · still out). Swap this slug
+        # when `clinic` receives editor support.
+        salute = WebTemplate.objects.get(slug="salute-studio-medico")
         with self.assertRaises(services.UnsupportedTemplate):
-            services.create_project_from_template(owner=self.owner, template=luxe)
+            services.create_project_from_template(owner=self.owner, template=salute)
 
     def test_schema_locks_non_whitelisted_keys(self):
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
@@ -1394,9 +1394,9 @@ class FoundationModelTests(TestCase):
         self.assertTrue(is_supported_archetype("corporate-suite"))
         self.assertTrue(is_supported_archetype("agency-creative-studio"))
         # Sanity — an unsupported archetype still rejects.
-        # `fashion-editorial` (Luxe) is the current outside-gate reference
-        # (A.15 rotated it from `artisan-workshop`/Bottega which is now enrolled).
-        self.assertFalse(is_supported_archetype("fashion-editorial"))
+        # `clinic` (Salute) is the current outside-gate reference
+        # (A.15b rotated it from `fashion-editorial`/Luxe which is now enrolled).
+        self.assertFalse(is_supported_archetype("clinic"))
 
     def test_a6_pragma_schema_shape_covers_core_pages(self):
         """The Pragma schema must surface groups for every customer-
@@ -1631,10 +1631,10 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Archetype outside the gate still returns False + empty list.
-        # `fashion-editorial` (Luxe) is the current outside-gate reference
-        # (A.15 rotated it from `artisan-workshop`/Bottega which is now enrolled).
-        self.assertFalse(is_translatable("fashion-editorial", "home.headline"))
-        self.assertEqual(supported_locales("fashion-editorial"), [])
+        # `clinic` (Salute) is the current outside-gate reference
+        # (A.15b rotated it from `fashion-editorial`/Luxe which is now enrolled).
+        self.assertFalse(is_translatable("clinic", "home.headline"))
+        self.assertEqual(supported_locales("clinic"), [])
 
     # ------------------------------------------------------------------
     # A.8 · Gusto fine-dining enrollment — Step 1 contract
@@ -4238,9 +4238,9 @@ class FoundationModelTests(TestCase):
             supported_locales("trattoria-warm"),
             ["it", "en", "fr", "es", "ar"],
         )
-        # Outside-gate reference: fashion-editorial (Luxe) after A.15
-        # rotated it from artisan-workshop/Bottega (now enrolled).
-        self.assertEqual(supported_locales("fashion-editorial"), [])
+        # Outside-gate reference: clinic (Salute) after A.15b rotated it
+        # from fashion-editorial/Luxe (now enrolled).
+        self.assertEqual(supported_locales("clinic"), [])
 
     def test_a14_tenfold_regression_after_sapore_joins(self):
         """Regression guard: the 10 pre-A.14 archetype classifications
@@ -4729,11 +4729,10 @@ class FoundationModelTests(TestCase):
 
     def test_a15_bottega_archetype_registered(self):
         """`artisan-workshop` joins the supported-archetype registry and
-        the multi-locale gate. Luxe (`fashion-editorial`) stays OUT at
-        BOTH layers: registration-time (absence from three registries) ·
-        runtime (see the lifecycle test end-of-test guard). All 12
-        pre-A.15 archetypes must still be enrolled (twelve-fold
-        regression)."""
+        the multi-locale gate. All 12 pre-A.15 archetypes must still be
+        enrolled (twelve-fold regression). Luxe-out guard removed in
+        A.15b via symmetric inversion — see
+        `test_a15b_luxe_out_guard_was_removed_from_bottega_tests`."""
         from apps.editor.schema import (
             _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
             _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
@@ -4745,14 +4744,6 @@ class FoundationModelTests(TestCase):
         baseline_slug, baseline_locale = _ARCHETYPE_BASELINE_TEMPLATE["artisan-workshop"]
         self.assertEqual(baseline_slug, "bottega-shop-artigianale")
         self.assertEqual(baseline_locale, "it")
-
-        # Luxe OUT at 2 layers (registration + runtime). Runtime re-check
-        # lives in `test_a15_bottega_full_multilocale_lifecycle_end_to_end`.
-        self.assertNotIn("fashion-editorial", _ARCHETYPE_SCHEMAS,
-                         "Luxe (fashion-editorial) must stay OUT until A.15b")
-        self.assertNotIn("fashion-editorial", _ARCHETYPE_BASELINE_TEMPLATE)
-        self.assertNotIn("fashion-editorial", _MULTILOCALE_ENABLED_ARCHETYPES)
-        self.assertFalse(is_supported_archetype("fashion-editorial"))
 
         # 12 pre-A.15 archetypes still enrolled.
         for pre_slug in (
@@ -5113,6 +5104,452 @@ class FoundationModelTests(TestCase):
         self.assertIn("<title>A15 Bridge Check", body_proj)
         self.assertIn('<body class="mw-is-editor-preview"', body_proj)
 
+    # ------------------------------------------------------------------
+    # A.15b · Luxe (fashion-editorial · ecommerce family · second
+    # template) enrollment — Step 1 contract. CLOSES the ecommerce
+    # family opened by A.15 Bottega · fourth staged dedicated-schema
+    # closure (after real-estate + portfolio + restaurant-continuation).
+    # Boundary editor-vs-commerce-admin preserved. 17 readonly indexed
+    # list entries · tutti parent-level. 31 image surfaces ALL RENDERED
+    # (photographically editorial DNA · no storage-only split).
+    # ------------------------------------------------------------------
+
+    def test_a15b_luxe_archetype_registered(self):
+        """`fashion-editorial` joins the supported-archetype registry and
+        the multi-locale gate. All 13 pre-A.15b archetypes (including
+        Bottega) must still be enrolled (thirteen-fold regression)."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
+        )
+        self.assertIn("fashion-editorial", _ARCHETYPE_SCHEMAS)
+        self.assertIn("fashion-editorial", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertIn("fashion-editorial", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("fashion-editorial"))
+        baseline_slug, baseline_locale = _ARCHETYPE_BASELINE_TEMPLATE["fashion-editorial"]
+        self.assertEqual(baseline_slug, "luxe-fashion-store")
+        self.assertEqual(baseline_locale, "it")
+
+        # 13 pre-A.15b archetypes (12 pre-A.15 + Bottega) still enrolled.
+        for pre_slug in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop",
+        ):
+            self.assertIn(pre_slug, _ARCHETYPE_SCHEMAS, f"{pre_slug} lost enrollment")
+            self.assertIn(pre_slug, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{pre_slug} lost multi-locale")
+
+    def test_a15b_luxe_out_guard_was_removed_from_bottega_tests(self):
+        """USER-IMPOSED SYMMETRIC GUARDRAIL · 4th precedent after
+        Villa-out (A.12b) · Pixel-out (A.13b) · Brace-out (A.14b).
+        Verifies that the Luxe-out guards that lived in the A.15 Bottega
+        tests (both registration-time inside
+        `test_a15_bottega_archetype_registered` AND runtime start AND
+        runtime end-of-lifecycle) were correctly inverted when Luxe
+        joined, rather than forgotten. Silent regression on the
+        inversion cannot happen."""
+        from apps.editor.schema import (
+            _ARCHETYPE_SCHEMAS, _ARCHETYPE_BASELINE_TEMPLATE,
+            _MULTILOCALE_ENABLED_ARCHETYPES, is_supported_archetype,
+        )
+        # Luxe IS now in all three registries.
+        self.assertIn("fashion-editorial", _ARCHETYPE_SCHEMAS,
+                      "Luxe (fashion-editorial) must be IN after A.15b")
+        self.assertIn("fashion-editorial", _ARCHETYPE_BASELINE_TEMPLATE)
+        self.assertIn("fashion-editorial", _MULTILOCALE_ENABLED_ARCHETYPES)
+        self.assertTrue(is_supported_archetype("fashion-editorial"))
+
+        # Bottega still enrolled (the archetype whose tests used to host
+        # the Luxe-out dual guard).
+        self.assertIn("artisan-workshop", _ARCHETYPE_SCHEMAS,
+                      "Bottega must stay enrolled after Luxe joins")
+        self.assertIn("artisan-workshop", _MULTILOCALE_ENABLED_ARCHETYPES)
+
+    def test_a15b_luxe_schema_shape_covers_all_pages(self):
+        """Luxe groups span the 6 page slugs + `*` chrome. Two novel
+        page kinds (`collection`, `lookbook`) · plain string identifiers ·
+        no view dispatch."""
+        from apps.editor.schema import iter_groups
+        groups = iter_groups("fashion-editorial")
+        pages = {g.get("page") for g in groups}
+        for expected in ("*", "home", "collezione", "product", "maison", "lookbook", "contatti"):
+            self.assertIn(expected, pages,
+                          f"Luxe schema missing page `{expected}` coverage")
+
+    def test_a15b_luxe_is_translatable_text_fields(self):
+        """Distributed sample of Luxe translatable paths — one per
+        page — must classify as translatable."""
+        from apps.editor.schema import is_translatable
+        arc = "fashion-editorial"
+        translatable_paths = (
+            # home
+            "home.eyebrow", "home.headline", "home.intro",
+            "home.manifesto_heading", "home.manifesto_text",
+            "home.lookbook_teaser_heading", "home.drop_heading",
+            "home.private_heading",
+            # collezione
+            "collezione.eyebrow", "collezione.headline", "collezione.intro",
+            "collezione.footer_note",
+            # product
+            "product.name", "product.subtitle", "product.intro",
+            "product.atelier_text", "product.care_intro",
+            "product.provenance_heading",
+            # maison
+            "maison.eyebrow", "maison.headline", "maison.intro",
+            "maison.statement_heading", "maison.direction_text",
+            "maison.press_heading", "maison.visit_heading",
+            # lookbook
+            "lookbook.eyebrow", "lookbook.headline", "lookbook.intro",
+            "lookbook.pullquote", "lookbook.notes_intro",
+            "lookbook.shop_heading",
+            # contatti
+            "contatti.headline", "contatti.intro",
+        )
+        for path in translatable_paths:
+            self.assertTrue(
+                is_translatable(arc, path),
+                f"{path} must classify as translatable on Luxe",
+            )
+
+    def test_a15b_luxe_branding_and_contact_universals_are_global(self):
+        """Shared global-text paths stay global on Luxe — same contract
+        as every previously-enrolled archetype."""
+        from apps.editor.schema import is_translatable
+        arc = "fashion-editorial"
+        for path in (
+            "site.logo_word", "site.logo_initial",
+            "site.phone", "site.email",
+            "site.address", "site.license",
+        ):
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} must stay global on Luxe",
+            )
+
+    def test_a15b_luxe_scalar_and_nested_dict_images_exposed(self):
+        """USER-IMPOSED GUARDRAIL: Luxe ships 1 scalar top-level image
+        (`home.cover_image` · rendered full-bleed cover) + 2 nested-dict
+        scalar images (`product.atelier_portrait` · `maison.direction_portrait`).
+        All three expose as type=image. Luxe has NO storage-only image
+        distinction (unlike Bottega · editorial DNA renders every
+        surface)."""
+        from apps.editor.schema import get_field_spec
+        arc = "fashion-editorial"
+        scalar_image_paths = (
+            "home.cover_image",
+            "product.atelier_portrait",
+            "maison.direction_portrait",
+        )
+        for path in scalar_image_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(spec, f"{path} missing from Luxe schema")
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} must expose as type=image",
+            )
+
+    def test_a15b_luxe_image_cols_in_dict_rows_shallow_exposed(self):
+        """USER-IMPOSED GUARDRAIL: 6 shallow image-in-dict-row lists
+        (home.tiles · home.lookbook_teaser_tiles · collezione.products ·
+        product.related_items · maison.ateliers · lookbook.looks) expose
+        their image cells with `type=image`. 30 image cells total ·
+        first+middle+last sampled per list."""
+        from apps.editor.schema import get_field_spec
+        arc = "fashion-editorial"
+        image_cell_paths = (
+            # home.tiles · 4 items
+            "home.tiles.0.image",
+            "home.tiles.3.image",                      # last of 4
+            # home.lookbook_teaser_tiles · 3 items
+            "home.lookbook_teaser_tiles.0.image",
+            "home.lookbook_teaser_tiles.2.image",      # last of 3
+            # collezione.products · 9 items
+            "collezione.products.0.image",
+            "collezione.products.4.image",             # middle of 9
+            "collezione.products.8.image",             # last of 9
+            # product.related_items · 3 items
+            "product.related_items.0.image",
+            "product.related_items.2.image",           # last of 3
+            # maison.ateliers · 3 items
+            "maison.ateliers.0.image",
+            "maison.ateliers.2.image",                 # last of 3
+            # lookbook.looks · 6 items
+            "lookbook.looks.0.image",
+            "lookbook.looks.2.image",                  # middle
+            "lookbook.looks.5.image",                  # last of 6
+        )
+        for path in image_cell_paths:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec, f"{path} missing from Luxe schema",
+            )
+            self.assertEqual(
+                spec.get("type"), "image",
+                f"{path} must expose as type=image",
+            )
+
+    def test_a15b_luxe_visible_catalog_fields_kept_in(self):
+        """Stringent IN call per user Step 1 guidance: values like
+        `drop`/`n`/`tag` that LOOK technical but are editorial visible
+        content (customer-facing catalog numbering + editorial badges)
+        must stay IN. 'Drop 01 · Spring 26' / 'Look 03' / 'Lista
+        d'attesa' are visible badges a customer would typically edit —
+        same category as Bottega shop.products.edition. OUT only truly-
+        structural cols (id slugs · available bool flag)."""
+        from apps.editor.schema import get_field_spec
+        arc = "fashion-editorial"
+        # These are editorial visible — IN.
+        visible_editorial = (
+            # drop_label on cards (editorial drop badge)
+            ("collezione.products.0.drop", "text"),
+            ("collezione.products.4.drop", "text"),
+            # n (Look number display badge)
+            ("collezione.products.0.n",    "text"),
+            ("product.related_items.0.n",  "text"),
+            ("lookbook.looks.0.n",         "text"),
+            # tag (editorial badge)
+            ("collezione.products.0.tag",  "text"),
+            ("collezione.products.6.tag",  "text"),
+            ("home.tiles.0.tag",           "text"),
+        )
+        for path, expected_type in visible_editorial:
+            spec = get_field_spec(arc, path)
+            self.assertIsNotNone(
+                spec,
+                f"{path} missing — editorial-visible cell must be editable",
+            )
+            self.assertEqual(
+                spec.get("type"), expected_type,
+                f"{path} type mismatch (expected {expected_type})",
+            )
+
+    def test_a15b_luxe_complex_shapes_excluded_from_perimeter(self):
+        """USER-IMPOSED GUARDRAIL: complex shapes + structural identifiers
+        stay outside the perimeter. Luxe ships NO posts (empty · same
+        structural absence as Bottega/Sapore/Brace · detail-page policy
+        stays at 6-archetype uniform enforcement)."""
+        from apps.editor.schema import validate_key_path, InvalidEditableField
+        arc = "fashion-editorial"
+        rejected_paths = (
+            # Flat list-of-str containers
+            "site.hours_footer_rows",
+            "site.hours_footer_rows.0",
+            "site.office_rows",
+            "site.office_rows.0",
+            "home.press_items",
+            "home.press_items.0",
+            "collezione.filter_groups",
+            "collezione.filter_groups.0.options",
+            "collezione.filter_groups.0.options.0",
+            "collezione.sort_options",
+            "collezione.sort_options.0",
+            "product.gallery",
+            "product.gallery.0",
+            "product.size_options",
+            "product.size_options.0",
+            "product.color_options",
+            "product.color_options.0",
+            # Form structure
+            "contatti.form_fields",
+            "contatti.form_fields.0.name",
+            # Navigation + posts (empty)
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+            # Col-level exclusions (structural identifiers · slug + flag)
+            "collezione.products.0.id",
+            "collezione.products.8.id",
+            "collezione.products.0.available",
+            "collezione.products.7.available",
+            "home.tiles.0.id",
+            "home.tiles.3.id",
+            "product.related_items.0.id",
+            "product.related_items.2.id",
+        )
+        for path in rejected_paths:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Luxe must reject complex-shape path: {path}",
+            ):
+                validate_key_path(arc, path)
+
+    def test_a15b_luxe_structured_list_cells_are_global(self):
+        """Every STRUCTURED_FIELD_SHAPES text/image cell on Luxe stays
+        global (non-translatable), including visible catalog numbering
+        (`drop`/`n`/`tag`) and image cells (6 image-in-dict-row lists ·
+        D-098 per-locale image out-of-scope)."""
+        from apps.editor.schema import is_translatable
+        arc = "fashion-editorial"
+        cell_paths = (
+            # home.tiles (4 rows · 4 cols · image col)
+            "home.tiles.0.name",
+            "home.tiles.3.price",
+            "home.tiles.0.image",          # image cell
+            # home.atelier_numbers (tuple 4 · 2 cols)
+            "home.atelier_numbers.0.value",
+            "home.atelier_numbers.3.label",
+            # home.lookbook_teaser_tiles (dict 3 · 3 cols · image col)
+            "home.lookbook_teaser_tiles.0.title",
+            "home.lookbook_teaser_tiles.2.credit",
+            "home.lookbook_teaser_tiles.1.image",   # image cell
+            # home.drop_metadata (tuple 4 · 2 cols)
+            "home.drop_metadata.0.label",
+            "home.drop_metadata.3.value",
+            # collezione.products (9 rows · 7 cols IN · image col)
+            "collezione.products.0.name",
+            "collezione.products.8.price",
+            "collezione.products.0.n",
+            "collezione.products.4.drop",
+            "collezione.products.7.tag",
+            "collezione.products.5.image",  # image cell
+            # product.info_rows (tuple 8 · 2 cols)
+            "product.info_rows.0.label",
+            "product.info_rows.7.value",
+            # product.care_items (tuple 4 · 2 cols)
+            "product.care_items.0.label",
+            # product.provenance_steps (tuple 4 · 3 cols)
+            "product.provenance_steps.0.n",
+            "product.provenance_steps.3.desc",
+            # product.related_items (3 rows · 5 cols · image col)
+            "product.related_items.0.name",
+            "product.related_items.2.image",   # image cell
+            # maison.ateliers (3 rows · 7 cols · image col)
+            "maison.ateliers.0.city",
+            "maison.ateliers.2.team",
+            "maison.ateliers.1.image",         # image cell
+            # maison.press_items (5 rows · 4 cols · text only)
+            "maison.press_items.0.magazine",
+            "maison.press_items.4.byline",
+            # maison.numbers_items (tuple 4 · 2 cols)
+            "maison.numbers_items.0.value",
+            "maison.numbers_items.3.label",
+            # lookbook.credits_rows (tuple 8 · 2 cols)
+            "lookbook.credits_rows.0.label",
+            "lookbook.credits_rows.7.value",
+            # lookbook.looks (6 rows · 5 cols · image col)
+            "lookbook.looks.0.title",
+            "lookbook.looks.5.outfit",
+            "lookbook.looks.3.image",          # image cell
+            # lookbook.notes_items (dict 3 · 2 cols)
+            "lookbook.notes_items.0.label",
+            "lookbook.notes_items.2.text",
+            # contatti.maison_cards (3 rows · 5 cols)
+            "contatti.maison_cards.0.city",
+            "contatti.maison_cards.2.hours",
+            # contatti.faq_items (4 rows · 2 cols)
+            "contatti.faq_items.0.q",
+            "contatti.faq_items.3.a",
+        )
+        for path in cell_paths:
+            self.assertFalse(
+                is_translatable(arc, path),
+                f"{path} structured-list cell must stay global on Luxe",
+            )
+
+    def test_a15b_luxe_supported_locales_returns_canonical_five(self):
+        """Luxe ships the canonical 5-locale set. Step-0 audit confirmed
+        5-locale parity PERFECT (259 keys × 5 · zero gaps)."""
+        from apps.editor.schema import supported_locales
+        self.assertEqual(
+            supported_locales("fashion-editorial"),
+            ["it", "en", "fr", "es", "ar"],
+        )
+
+    def test_a15b_thirteenfold_regression_after_luxe_joins(self):
+        """Regression guard: the 13 pre-A.15b archetype classifications
+        (12 pre-A.15 + Bottega) are unchanged after `fashion-editorial`
+        joins the gate."""
+        from apps.editor.schema import (
+            is_translatable, supported_locales, _MULTILOCALE_ENABLED_ARCHETYPES,
+        )
+        pre_a15b = (
+            "agency-creative-studio",
+            "corporate-suite",
+            "fine-dining",
+            "specialist",
+            "classic-gold",
+            "modern-transparent",
+            "mass-market",
+            "ultra-luxury-cinematic",
+            "editorial-designer-grid",
+            "cinematic-photographer",
+            "trattoria-warm",
+            "street-modern",
+            "artisan-workshop",
+        )
+        for arc in pre_a15b:
+            self.assertIn(arc, _MULTILOCALE_ENABLED_ARCHETYPES,
+                          f"{arc} lost multi-locale enrollment")
+            self.assertEqual(
+                supported_locales(arc), ["it", "en", "fr", "es", "ar"],
+                f"{arc} supported_locales regressed",
+            )
+
+    def test_a15b_luxe_commerce_admin_boundary(self):
+        """USER-IMPOSED LIGHT guardrail (same shape as Bottega A.15):
+        the editor schema for Luxe must not leak into `apps.commerce`
+        model paths. Schema stays scoped to the registry content
+        (template_content prefixes: home/collezione/product/maison/
+        lookbook/contatti/site) and no field references apps.commerce
+        model namespaces. Real boundary is architectural
+        (LiveTemplateView does not import apps.commerce) — this test
+        just blindates that the schema author didn't mistakenly add
+        commerce-state paths."""
+        from apps.editor.schema import iter_editable_fields
+        arc = "fashion-editorial"
+        commerce_model_prefixes = (
+            "storefront.", "cart.", "variant.", "order.",
+            "payment_intent.", "checkout.", "storefront_member.",
+        )
+        for path, _spec in iter_editable_fields(arc):
+            for prefix in commerce_model_prefixes:
+                self.assertFalse(
+                    path.startswith(prefix),
+                    f"Editor schema leaks into apps.commerce namespace: "
+                    f"field `{path}` starts with `{prefix}` — editor must "
+                    f"stay on template_content registry only"
+                )
+
+    def test_a15b_luxe_preview_bridge_injected_only_with_preview_project(self):
+        """Mirror of the A.15 Bottega bridge-guard — Luxe
+        `ecommerce/fashion-editorial/_base.html` must integrate the three
+        bridge points together on the `.fe-*` skin: (1) preview-bridge.js
+        conditional on ``preview_project``, (2) ``<title>`` honors
+        ``site.logo_word``, (3) ``<body>`` carries ``mw-is-editor-preview``
+        guard class when inside the editor."""
+        luxe = WebTemplate.objects.get(slug="luxe-fashion-store")
+        # ── 1. Bare public preview (no project) ───────────────────
+        self.client.logout()
+        r_bare = self.client.get("/templates/ecommerce/luxe-fashion-store/preview/")
+        self.assertEqual(r_bare.status_code, 200)
+        body_bare = r_bare.content.decode("utf-8", "ignore")
+        self.assertNotIn("editor/preview-bridge.js", body_bare)
+        import re as _re
+        body_tag = _re.search(r"<body[^>]*>", body_bare)
+        self.assertIsNotNone(body_tag)
+        self.assertNotIn("mw-is-editor-preview", body_tag.group(0))
+
+        # ── 2. Editor-embedded preview (with project) ─────────────
+        self.client.login(username="owner", password="x")
+        p = services.create_project_from_template(owner=self.owner, template=luxe)
+        services.save_content_edits(
+            project=p, editor=self.owner,
+            edits={"site.logo_word": "A15b Bridge Check"},
+        )
+        r_proj = self.client.get(
+            f"/templates/ecommerce/luxe-fashion-store/preview/?project={p.uuid}"
+        )
+        self.assertEqual(r_proj.status_code, 200)
+        body_proj = r_proj.content.decode("utf-8", "ignore")
+        self.assertIn("editor/preview-bridge.js", body_proj)
+        self.assertIn("<title>A15b Bridge Check", body_proj)
+        self.assertIn('<body class="mw-is-editor-preview"', body_proj)
+
     def test_a8_gusto_preview_bridge_injected_only_with_preview_project(self):
         """Guardrail user-imposed (A.8 Step 1 rifinitura): the Gusto
         `_base.html` must integrate three bridge points together:
@@ -5175,9 +5612,9 @@ class FoundationModelTests(TestCase):
             ["it", "en", "fr", "es", "ar"],
         )
         # Unknown archetype returns empty list, never raises.
-        # `fashion-editorial` (Luxe) is the current outside-gate reference
-        # (A.15 rotated it from `artisan-workshop`/Bottega which is now enrolled).
-        self.assertEqual(supported_locales("fashion-editorial"), [])
+        # `clinic` (Salute) is the current outside-gate reference
+        # (A.15b rotated it from `fashion-editorial`/Luxe which is now enrolled).
+        self.assertEqual(supported_locales("clinic"), [])
 
     def test_a7_is_translatable_unknown_path_and_archetype_return_false(self):
         """Defensive contract: unknown paths and archetypes return False
@@ -5539,13 +5976,13 @@ class FoundationHttpTests(TestCase):
 
     def test_customize_start_unsupported_archetype_redirects_to_detail(self):
         """Templates without editor support bounce to detail with an info message."""
-        # luxe-fashion-store (fashion-editorial archetype) is not yet
-        # enrolled. A.15 rotated the outside-gate reference from Bottega
-        # (now enrolled) to Luxe. Swap when fashion-editorial receives
-        # editor support (A.15b).
-        r = self.client.get("/projects/start/?template=luxe-fashion-store")
+        # salute-studio-medico (clinic archetype) is not yet enrolled.
+        # A.15b rotated the outside-gate reference from Luxe (fashion-
+        # editorial · now enrolled) to Salute (clinic · still out).
+        # Swap when `clinic` receives editor support.
+        r = self.client.get("/projects/start/?template=salute-studio-medico")
         self.assertEqual(r.status_code, 302)
-        # Either /templates/ecommerce/luxe-fashion-store/ or template_list — both accept.
+        # Either /templates/medical/salute-studio-medico/ or template_list — both accept.
         self.assertIn("/templates/", r["Location"])
 
     def test_autosave_endpoint_rejects_locked_keys(self):
@@ -8981,13 +9418,13 @@ class FoundationHttpTests(TestCase):
            the `.aw-*` skin
         10. owner reopens the editor per locale · prefill + universals
         11. perimeter invariants re-checked end-of-test:
-            - Luxe (fashion-editorial) STILL OUT of both gate sets
-              (leak check duro per user guidance)
             - Bottega + 12 pre-A.15 archetypes still enrolled
             - Sensitive OUT paths REJECTED (shop.filter_groups.0.options
               · product.gallery · product.size_options · contatti.form_fields
               · pages · posts + col-level: shop.products.0.id ·
               shop.products.0.available)
+            (Luxe-out dual guard removed in A.15b via symmetric inversion;
+             see `test_a15b_luxe_out_guard_was_removed_from_bottega_tests`.)
 
         Explicitly NOT exercised here: browser walk (Step 3), Luxe
         editor work, coverage expansion, mutable rows, image per-
@@ -9009,11 +9446,8 @@ class FoundationHttpTests(TestCase):
                       "Bottega must be enrolled at lifecycle start")
         self.assertIn("artisan-workshop", _ENABLED,
                       "Bottega must be in multi-locale gate at start")
-        # Luxe out at BOTH gates (leak check duro · start).
-        self.assertNotIn("fashion-editorial", _SCHEMAS,
-                         "Luxe (fashion-editorial) must be OUT of _ARCHETYPE_SCHEMAS at start")
-        self.assertNotIn("fashion-editorial", _ENABLED,
-                         "Luxe (fashion-editorial) must be OUT of multi-locale gate at start")
+        # Luxe-out start/end guards removed in A.15b · see
+        # `test_a15b_luxe_out_guard_was_removed_from_bottega_tests`.
 
         def autosave(locale, content, tokens=None):
             return self.client.post(
@@ -9280,13 +9714,8 @@ class FoundationHttpTests(TestCase):
         self.assertFalse(artisan_field["translatable"])
 
         # ── 10. perimeter invariants re-checked end-of-test ──────
-        # Luxe (fashion-editorial) MUST stay OUT at runtime on BOTH
-        # gates — dual leak check re-enforced end-of-test per user
-        # guidance. Will be removed in A.15b with symmetric inversion.
-        self.assertNotIn("fashion-editorial", _SCHEMAS,
-                         "Luxe (fashion-editorial) must stay OUT of _ARCHETYPE_SCHEMAS until A.15b")
-        self.assertNotIn("fashion-editorial", _ENABLED,
-                         "Luxe (fashion-editorial) must stay OUT of multi-locale gate until A.15b")
+        # Luxe-out end-of-test guard removed in A.15b via symmetric
+        # inversion — see `test_a15b_luxe_out_guard_was_removed_from_bottega_tests`.
         # Bottega still enrolled (no accidental removal).
         self.assertIn("artisan-workshop", _SCHEMAS,
                       "Bottega enrollment must persist through lifecycle")
@@ -9329,6 +9758,430 @@ class FoundationHttpTests(TestCase):
                 msg=f"Bottega complex-shape path must stay rejected: {out_path}",
             ):
                 validate_key_path("artisan-workshop", out_path)
+
+    # ------------------------------------------------------------------
+    # A.15b · Step 2 — Luxe (fashion-editorial) lifecycle HTTP cross-
+    # cutting · CLOSES the ecommerce family opened by A.15 Bottega ·
+    # fourth staged dedicated-schema closure (after real-estate +
+    # portfolio + restaurant-continuation + ecommerce). Luxe IN +
+    # Bottega still IN re-verified at start AND end of the test.
+    # Exercises the FULL image surface taxonomy end-to-end:
+    #   - home.cover_image (scalar top-level · rendered on home page)
+    #   - product.atelier_portrait (nested-dict scalar · rendered on
+    #     product page)
+    #   - maison.direction_portrait (nested-dict scalar · rendered on
+    #     maison page)
+    #   - collezione.products.0.image (image-in-dict-row · rendered on
+    #     collezione page)
+    #   - lookbook.looks.0.image (image-in-dict-row · rendered on
+    #     lookbook page · different list shape and page from products)
+    # All 5 image paths plain-keyed across all 5 locales (D-098 image
+    # per-locale out-of-scope · editorial DNA has zero storage-only
+    # split · every image surface renders).
+    # ------------------------------------------------------------------
+
+    def test_a15b_luxe_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the Luxe enrollment.
+
+        Unlike Bottega (typographic skin · rendered/storage-only split),
+        Luxe is photographically editorial DNA — every image surface
+        the editor exposes is actually rendered by the `.fe-*` skin. So
+        this test blindates both storage shape (plain-key globals for
+        all 5 image paths) AND render visibility on the public preview
+        for every image surface it exercises.
+
+        Phases:
+        1. perimeter invariants at TEST START — Luxe IN + Bottega
+           still IN
+        2. customer edits IT / EN / FR on home.headline
+        3. customer edits global site.logo_word via EN — plain-keyed
+           no @en: prefix
+        4. customer edits SCALAR top-level `home.cover_image`
+           (rendered hero on home page) — 5× assertNotIn @<locale>:
+           + render on home page all 5 locales
+        5. customer edits NESTED-DICT scalar `product.atelier_portrait`
+           (rendered portrait on product page) — 5× assertNotIn
+           + render on product page all 5 locales
+        6. customer edits NESTED-DICT scalar `maison.direction_portrait`
+           (rendered portrait on maison page) — 5× assertNotIn
+           + render on maison page all 5 locales
+        7. customer edits IMAGE-IN-DICT-ROW `collezione.products.0.image`
+           (9-item catalog listing · image col) — 5× assertNotIn
+           + render on collezione page all 5 locales
+        8. customer edits IMAGE-IN-DICT-ROW `lookbook.looks.0.image`
+           (6-item editorial grid · DIFFERENT list shape and page from
+           products) — 5× assertNotIn + render on lookbook page all
+           5 locales
+        9. publish
+        10. second user visits home + product + maison + collezione +
+            lookbook on all 5 locales
+        11. AR response head carries ``<html dir="rtl" lang="ar">`` on
+            the `.fe-*` skin
+        12. owner reopens the editor per locale · prefill + universals
+        13. perimeter invariants re-checked end-of-test:
+            - Luxe + Bottega still enrolled (no accidental removal)
+            - 12 pre-A.15 archetypes still enrolled
+            - Sensitive OUT paths REJECTED
+              (collezione.filter_groups.0.options · collezione.sort_options
+              · product.gallery · product.size_options · product.color_options
+              · contatti.form_fields · pages · posts + col-level:
+              collezione.products.0.id · collezione.products.0.available ·
+              home.tiles.0.id)
+
+        Explicitly NOT exercised here: browser walk (Step 3), coverage
+        expansion, mutable rows, image per-locale, apps.commerce
+        touches. Zero production-code changes.
+        """
+        import json as _json
+
+        luxe = WebTemplate.objects.get(slug="luxe-fashion-store")
+        p = services.create_project_from_template(owner=self.owner, template=luxe)
+
+        # ── 1. perimeter invariants at TEST START ────────────────
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            _ARCHETYPE_SCHEMAS as _SCHEMAS,
+            InvalidEditableField,
+            validate_key_path,
+        )
+        self.assertIn("fashion-editorial", _SCHEMAS,
+                      "Luxe must be enrolled at lifecycle start")
+        self.assertIn("fashion-editorial", _ENABLED,
+                      "Luxe must be in multi-locale gate at start")
+        # Bottega still IN at start (no accidental removal).
+        self.assertIn("artisan-workshop", _SCHEMAS,
+                      "Bottega must still be enrolled at Luxe lifecycle start")
+        self.assertIn("artisan-workshop", _ENABLED,
+                      "Bottega must still be in multi-locale gate at start")
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # ── 2. three translatable locales on home.headline ────────
+        for locale, headline in (
+            ("it", "Walk IT Luxe <em>A15bFashionLine</em>."),
+            ("en", "Walk EN Luxe <em>A15bFashionLineEN</em>."),
+            ("fr", "Walk FR Luxe <em>A15bFashionLineFR</em>."),
+        ):
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200)
+            self.assertIn(f"@{locale}:home.headline", r.json()["content_keys"])
+
+        # ── 3. global plain-keyed text — site.logo_word via EN ────
+        r = autosave("en", {"site.logo_word": "A15b Luxe Walk Maison"})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("site.logo_word", r.json()["content_keys"])
+
+        # ── 4. scalar top-level image — home.cover_image ─────────
+        # Rendered as full-bleed hero cover on home page.
+        IMG_COVER = "https://walk-luxe.example/img/cover-A15b.jpg"
+        r = autosave("it", {"home.cover_image": IMG_COVER})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home.cover_image", r.json()["content_keys"])
+
+        # ── 5. nested-dict scalar — product.atelier_portrait ──────
+        IMG_ATELIER = "https://walk-luxe.example/img/atelier-A15b.jpg"
+        r = autosave("it", {"product.atelier_portrait": IMG_ATELIER})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("product.atelier_portrait", r.json()["content_keys"])
+
+        # ── 6. nested-dict scalar — maison.direction_portrait ─────
+        IMG_DIRECTION = "https://walk-luxe.example/img/direction-A15b.jpg"
+        r = autosave("it", {"maison.direction_portrait": IMG_DIRECTION})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("maison.direction_portrait", r.json()["content_keys"])
+
+        # ── 7. image-in-dict-row collezione.products (demo catalog) ─
+        # 9-item dict listing · image col · first row .0.image.
+        IMG_PRODUCT = "https://walk-luxe.example/img/product-A15b.jpg"
+        r = autosave("it", {"collezione.products.0.image": IMG_PRODUCT})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("collezione.products.0.image", r.json()["content_keys"])
+
+        # ── 8. image-in-dict-row lookbook.looks (editorial grid) ───
+        # 6-item dict listing · image col · DIFFERENT list shape from
+        # products (cols n/title/outfit/credit/image vs n/name/meta/
+        # drop/price/tag/image) · DIFFERENT page from collezione.
+        IMG_LOOK = "https://walk-luxe.example/img/look-A15b.jpg"
+        r = autosave("it", {"lookbook.looks.0.image": IMG_LOOK})
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("lookbook.looks.0.image", r.json()["content_keys"])
+
+        # Storage shape: 3 @<locale>:home.headline + 6 plain-keyed
+        # globals (logo + 5 image paths). Zero @<locale>: on any image
+        # path across all 5 locales; zero @en: on logo; zero plain-key
+        # leak on home.headline.
+        keys = set(p.content_overrides.values_list("key_path", flat=True))
+        self.assertIn("@it:home.headline", keys)
+        self.assertIn("@en:home.headline", keys)
+        self.assertIn("@fr:home.headline", keys)
+        self.assertIn("site.logo_word", keys)
+        self.assertIn("home.cover_image", keys)
+        self.assertIn("product.atelier_portrait", keys)
+        self.assertIn("maison.direction_portrait", keys)
+        self.assertIn("collezione.products.0.image", keys)
+        self.assertIn("lookbook.looks.0.image", keys)
+        self.assertNotIn("home.headline", keys)
+        self.assertNotIn("@en:site.logo_word", keys)
+        # All 5 image paths plain-keyed across all 5 locales.
+        for loc in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(f"@{loc}:home.cover_image", keys,
+                             f"home.cover_image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:product.atelier_portrait", keys,
+                             f"product.atelier_portrait must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:maison.direction_portrait", keys,
+                             f"maison.direction_portrait must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:collezione.products.0.image", keys,
+                             f"collezione.products.0.image must NEVER be @{loc}:-prefixed")
+            self.assertNotIn(f"@{loc}:lookbook.looks.0.image", keys,
+                             f"lookbook.looks.0.image must NEVER be @{loc}:-prefixed")
+
+        # ── 9. publish ───────────────────────────────────────────
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+
+        # ── 10. second user on every public preview locale ───────
+        self.client.logout()
+        self.client.login(username="other", password="x")
+
+        def preview_body(locale, page=None):
+            suffix = f"{page}/" if page else ""
+            url = (
+                f"/templates/ecommerce/luxe-fashion-store/preview/"
+                f"{suffix}?project={p.uuid}&lang={locale}"
+            )
+            r = self.client.get(url)
+            self.assertEqual(r.status_code, 200)
+            return r.content.decode("utf-8", "ignore")
+
+        # IT render (home) — IT override + global logo + home.cover_image
+        # override visible. EN/FR absent.
+        body_it = preview_body("it")
+        self.assertIn("Walk IT Luxe", body_it)
+        self.assertIn("A15bFashionLine", body_it)
+        self.assertNotIn("A15bFashionLineEN", body_it)
+        self.assertNotIn("A15bFashionLineFR", body_it)
+        self.assertIn("A15b Luxe Walk Maison", body_it)
+        self.assertIn(IMG_COVER, body_it,
+                      "home.cover_image override must render on home page IT")
+
+        # IT render (collezione) — collezione.products.0.image override
+        # visible + universal logo.
+        body_it_coll = preview_body("it", page="collezione")
+        self.assertIn("A15b Luxe Walk Maison", body_it_coll)
+        self.assertIn(IMG_PRODUCT, body_it_coll,
+                      "collezione.products.0.image override must render on collezione page IT")
+
+        # IT render (product) — product.atelier_portrait override
+        # visible + universal logo.
+        body_it_product = preview_body("it", page="product")
+        self.assertIn("A15b Luxe Walk Maison", body_it_product)
+        self.assertIn(IMG_ATELIER, body_it_product,
+                      "product.atelier_portrait override must render on product page IT")
+
+        # IT render (maison) — maison.direction_portrait override visible.
+        body_it_maison = preview_body("it", page="maison")
+        self.assertIn("A15b Luxe Walk Maison", body_it_maison)
+        self.assertIn(IMG_DIRECTION, body_it_maison,
+                      "maison.direction_portrait override must render on maison page IT")
+
+        # IT render (lookbook) — lookbook.looks.0.image override visible.
+        body_it_lb = preview_body("it", page="lookbook")
+        self.assertIn("A15b Luxe Walk Maison", body_it_lb)
+        self.assertIn(IMG_LOOK, body_it_lb,
+                      "lookbook.looks.0.image override must render on lookbook page IT")
+
+        # EN render spans home + all 4 image pages
+        body_en = preview_body("en")
+        self.assertIn("Walk EN Luxe", body_en)
+        self.assertIn("A15bFashionLineEN", body_en)
+        self.assertNotIn("Walk IT Luxe", body_en)
+        self.assertIn("A15b Luxe Walk Maison", body_en)
+        self.assertIn(IMG_COVER, body_en)
+        self.assertIn(IMG_PRODUCT, preview_body("en", page="collezione"))
+        self.assertIn(IMG_ATELIER, preview_body("en", page="product"))
+        self.assertIn(IMG_DIRECTION, preview_body("en", page="maison"))
+        self.assertIn(IMG_LOOK, preview_body("en", page="lookbook"))
+
+        # FR render spans home + all 4 image pages
+        body_fr = preview_body("fr")
+        self.assertIn("Walk FR Luxe", body_fr)
+        self.assertIn("A15bFashionLineFR", body_fr)
+        self.assertIn("A15b Luxe Walk Maison", body_fr)
+        self.assertIn(IMG_COVER, body_fr)
+        self.assertIn(IMG_PRODUCT, preview_body("fr", page="collezione"))
+        self.assertIn(IMG_ATELIER, preview_body("fr", page="product"))
+        self.assertIn(IMG_DIRECTION, preview_body("fr", page="maison"))
+        self.assertIn(IMG_LOOK, preview_body("fr", page="lookbook"))
+
+        # Unedited locales — authored fallback on translatable text +
+        # universals preserved across home + all 4 image pages.
+        from apps.catalog import template_content as _tc
+        for locale in ("es", "ar"):
+            body = preview_body(locale)
+            self.assertNotIn("Walk IT Luxe", body)
+            self.assertNotIn("Walk EN Luxe", body)
+            self.assertNotIn("Walk FR Luxe", body)
+            self.assertIn("A15b Luxe Walk Maison", body)
+            self.assertIn(IMG_COVER, body,
+                          f"home.cover_image must render universally on {locale} home")
+            body_coll = preview_body(locale, page="collezione")
+            self.assertIn(IMG_PRODUCT, body_coll,
+                          f"collezione.products.0.image must render universally on {locale} collezione")
+            body_product = preview_body(locale, page="product")
+            self.assertIn(IMG_ATELIER, body_product,
+                          f"product.atelier_portrait must render universally on {locale} product")
+            body_maison = preview_body(locale, page="maison")
+            self.assertIn(IMG_DIRECTION, body_maison,
+                          f"maison.direction_portrait must render universally on {locale} maison")
+            body_lb = preview_body(locale, page="lookbook")
+            self.assertIn(IMG_LOOK, body_lb,
+                          f"lookbook.looks.0.image must render universally on {locale} lookbook")
+            authored = _tc.get_content(p.source_template.slug, locale) or {}
+            stable = (authored.get("home", {}).get("headline") or "")
+            stable = stable.replace("<em>", "").replace("</em>", "")
+            first_word = stable.split()[0] if stable else ""
+            if first_word:
+                self.assertIn(
+                    first_word, body,
+                    f"{locale} authored fallback not visible on Luxe home",
+                )
+
+        # ── 11. AR preview (home) — `.fe-*` skin RTL invariant ────
+        # 21 mature RTL rules verified Step 0.
+        import re as _re
+        body_ar = preview_body("ar")
+        html_tag_ar = _re.search(r"<html[^>]*>", body_ar)
+        self.assertIsNotNone(html_tag_ar)
+        self.assertIn('dir="rtl"', html_tag_ar.group(0))
+        self.assertIn('lang="ar"', html_tag_ar.group(0))
+
+        # ── 12. owner reopens the editor on each locale ──────────
+        self.client.logout()
+        self.client.login(username="owner", password="x")
+
+        def find_field_by_key(groups, key):
+            for g in groups:
+                for f in g["fields"]:
+                    if f["key"] == key:
+                        return f
+            return None
+
+        for locale, expected_substring in (
+            ("it", "Walk IT Luxe"),
+            ("en", "Walk EN Luxe"),
+            ("fr", "Walk FR Luxe"),
+        ):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200)
+            self.assertEqual(r.context["active_locale"], locale)
+            self.assertEqual(
+                r.context["supported_locales"],
+                ["it", "en", "fr", "es", "ar"],
+            )
+            headline_field = find_field_by_key(r.context["groups"], "home.headline")
+            self.assertIsNotNone(headline_field)
+            self.assertIn(
+                expected_substring, headline_field["value"],
+                f"editor prefill for locale={locale} missed expected text",
+            )
+            self.assertTrue(headline_field["is_overridden"])
+            self.assertTrue(headline_field["translatable"])
+
+        # Unedited locale (ES): no override → authored baseline prefill.
+        r_es = self.client.get(f"/projects/{p.uuid}/editor/?lang=es")
+        self.assertEqual(r_es.context["active_locale"], "es")
+        headline_es = find_field_by_key(r_es.context["groups"], "home.headline")
+        self.assertIsNotNone(headline_es)
+        self.assertFalse(headline_es["is_overridden"])
+        self.assertTrue(headline_es["translatable"])
+
+        # Global text + all 3 scalar-image surfaces: overridden
+        # universally, not translatable.
+        logo_field = find_field_by_key(r_es.context["groups"], "site.logo_word")
+        self.assertIsNotNone(logo_field, "site.logo_word missing from Luxe editor")
+        self.assertEqual(logo_field["value"], "A15b Luxe Walk Maison")
+        self.assertTrue(logo_field["is_overridden"])
+        self.assertFalse(logo_field["translatable"])
+
+        cover_field = find_field_by_key(r_es.context["groups"], "home.cover_image")
+        self.assertIsNotNone(cover_field, "home.cover_image missing from Luxe editor")
+        self.assertEqual(cover_field["value"], IMG_COVER)
+        self.assertTrue(cover_field["is_overridden"])
+        self.assertFalse(cover_field["translatable"])
+
+        atelier_field = find_field_by_key(r_es.context["groups"], "product.atelier_portrait")
+        self.assertIsNotNone(atelier_field, "product.atelier_portrait missing from Luxe editor")
+        self.assertEqual(atelier_field["value"], IMG_ATELIER)
+        self.assertTrue(atelier_field["is_overridden"])
+        self.assertFalse(atelier_field["translatable"])
+
+        direction_field = find_field_by_key(r_es.context["groups"], "maison.direction_portrait")
+        self.assertIsNotNone(direction_field, "maison.direction_portrait missing from Luxe editor")
+        self.assertEqual(direction_field["value"], IMG_DIRECTION)
+        self.assertTrue(direction_field["is_overridden"])
+        self.assertFalse(direction_field["translatable"])
+
+        # ── 13. perimeter invariants re-checked end-of-test ──────
+        # Luxe + Bottega still enrolled.
+        self.assertIn("fashion-editorial", _SCHEMAS,
+                      "Luxe enrollment must persist through lifecycle")
+        self.assertIn("fashion-editorial", _ENABLED)
+        self.assertIn("artisan-workshop", _SCHEMAS,
+                      "Bottega enrollment must persist through Luxe lifecycle")
+        self.assertIn("artisan-workshop", _ENABLED)
+        # 12 pre-A.15 archetypes also still enrolled.
+        for arc in (
+            "agency-creative-studio", "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+        ):
+            self.assertIn(arc, _ENABLED, f"{arc} lost enrollment mid-lifecycle")
+        # Sensitive OUT paths stay rejected — re-verified runtime at
+        # end-of-test per user guidance.
+        for out_path in (
+            # Nested list-of-str inside dict rows
+            "collezione.filter_groups.0.options",
+            "collezione.filter_groups.0.options.0",
+            # Flat list-of-str on collezione / product pages
+            "collezione.sort_options",
+            "collezione.sort_options.0",
+            "product.gallery",
+            "product.gallery.0",
+            "product.size_options",
+            "product.size_options.0",
+            "product.color_options",
+            "product.color_options.0",
+            # Form structure
+            "contatti.form_fields",
+            "contatti.form_fields.0.name",
+            # Top-level navigation + empty posts
+            "pages",
+            "pages.0.slug",
+            "posts",
+            "posts.0.title",
+            # Col-level exclusions (structural identifiers)
+            "collezione.products.0.id",
+            "collezione.products.0.available",
+            "home.tiles.0.id",
+            "product.related_items.0.id",
+        ):
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Luxe complex-shape path must stay rejected: {out_path}",
+            ):
+                validate_key_path("fashion-editorial", out_path)
 
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
