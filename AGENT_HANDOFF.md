@@ -1,6 +1,66 @@
 # Agent Handoff
 
-Last updated: 2026-04-20 — after **Session 77 A.17b Elevate (startup-saas-landing · startup-saas family · SINGLE-TEMPLATE CLOSER) Editor + Multi-locale Enrollment merge · CLOSES THE STARTUP-SAAS FAMILY · CLOSES THE EDITOR ENROLLMENT PROGRAM A.6 → A.17b** (baseline tip `3074b00`, pushed to origin)
+Last updated: 2026-04-20 — after **Session 78 Phase X.2 + X.2b Catalog IA Redesign + Taxonomy Migration + Visual Polish · PUSHED** (tip includes docs commit · 6 feat/fix commits + 1 docs commit ahead of pre-X.2 baseline `57266ce`)
+
+## ⚑ X.2 + X.2b CLOSED · pushed to origin (2026-04-20)
+
+**Read before opening any new workstream.** X.2 + X.2b are complete and pushed to `origin/phase-integration-baseline-v15`. 6 feature/fix commits (`6407833` → `971da41`) land taxonomy v2 + catalog discovery + homepage redesign + visual polish pass. Docs consolidation committed on top.
+
+- **Remote tip:** includes docs commit + full X.2 + X.2b chain · 480/480 apps tests · 854/854 smoke · Playwright MCP browser walk green on 6 surfaces.
+- **Program state:** editor enrollment program CLOSED (D-099). X.2 + X.2b are catalog-only — zero touches to editor / projects / commerce / live_templates / static/editor.
+
+### X.2 scope delivered (5 feat commits · 24 files · +5583 / −249 LOC)
+
+| Commit | Hash | Surface |
+|---|---|---|
+| 1 | `6407833` | Models `ProfessionCluster` + `VisualStyle` + 11 nullable WebTemplate fields · schema migration 0003 · admin wiring |
+| 2 | `81951ab` | Seed commands · 12 styles + 52 clusters (+7 inline extra categories) |
+| 3 | `1571964` | Backfill data migration 0004 · `seed_templates` extended with taxonomy metadata · 20/20 MVP templates backfilled |
+| 4 | `e6e4e53` | Discovery UI · facets sidebar · typeahead JSON endpoint · cluster/role/use-case pages · card partial with pills · catalog-facets.css · typeahead.js |
+| 5 | `acfa27c` | Homepage redesign · 8 sections search-first · live trust counters · home-discovery.css |
+
+### X.2b scope delivered (1 fix commit · 5 files · +838 / −189 LOC)
+
+| Commit | Hash | Surface |
+|---|---|---|
+| X.2b | `971da41` | Homepage hero contrast · navbar/footer premium overrides · facet sidebar refinement · card/sidebar/pill polish · fix facet-sidebar Python-dict leak · fix card-badge overlap against legacy components.css rule |
+
+### What works on the local build
+
+- `/` — homepage with hero search typeahead + 15 category chips + 8 role cards + 6 featured + 6 use-case cards + 4 LIVE trust counters + 3-step explainer + final CTA
+- `/templates/` — facet sidebar (52 clusters + 12 styles + 3 prices + 7 features) + paginated grid with new card anatomy (cluster pill + style pill + tier badge + feature icons)
+- `/templates/<cat>/` — legacy per-category listing preserved
+- `/templates/<cat>/<slug>/` — detail with 3 pills + use-case list + feature list + legacy Personalizza CTA
+- `/templates/search/typeahead/?q=...` — JSON endpoint (3 pools · AbortController + debounce)
+- `/templates/clusters/<slug>/` — cluster detail
+- `/templates/for-role/<slug>/` — role discovery (10 roles in `ROLE_DISCOVERY`)
+- `/templates/for-use-case/<slug>/` — use-case discovery (10 cases in `USE_CASE_DISCOVERY`)
+- Legacy `/templates/<cat>/<slug>/preview/...` unchanged · 854/854 smoke routes green
+
+### What is deferred (not in X.2)
+
+- **X.2 Commit 6 NOT NULL flip** on `profession_cluster` + `visual_style` — wait until backfill validates across environments.
+- **Related templates M2M + intelligent ordering** (same-cluster → same-style → same-category) — lifted into Phase X.3.
+- **Wave 2 new templates** — X.2 is infrastructure-only · no new templates added · no new archetypes.
+- **Minor visual polish** — homepage hero first-line ("Il sito web della tua professione.") has low contrast on the blue-tinted gradient. Non-blocker.
+
+### Recommended next workstream
+
+**Phase X.3 · Content Factory Pipeline.** Before any new template lands in the catalog, formalize the authoring runbook:
+1. Cluster content templates (per-profession copy skeletons + terminology dictionary + curated imagery pool)
+2. Sub-agent parallel authoring recipe (proven in Sessions 23–52 but unwritten)
+3. Imagery curator step BEFORE the template author (the Session 31 "PlayStation-as-Roma-map" lesson)
+4. Per-cluster `search_keywords` authoring conventions
+5. `related_templates` logic as explicit M2M or queryset helper
+
+Scope: 4–6 commits · 3–5 days · gates Wave 2 template authoring. X.2 Commit 6 can land in the same window as a trivial schema flip.
+
+### Follow-up work that is NOT on the table
+
+- No `A.18` template enrollment (program closed · D-099 binding)
+- No fake WebTemplate or real slug re-introduction as test fixture (D-099 binding)
+- No editor / product-admin / subscription surface touches (D-099 + X.2 scope binding)
+- No trigram / full-text search at the catalog layer (X.2 kept filters deterministic · JSON contains handled portably)
 
 ## ⚑ EDITOR ENROLLMENT PROGRAM · OFFICIALLY CLOSED (2026-04-20)
 

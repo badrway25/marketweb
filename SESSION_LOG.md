@@ -1,5 +1,136 @@
 # Session Log
 
+## Session 78 — Phase X.2 · Catalog IA Redesign + Taxonomy Migration + X.2b Visual Polish (2026-04-20)
+
+**Summary.** Public catalog rebuilt for 200+ template discovery: 2-level taxonomy (`Category` + `ProfessionCluster`), `VisualStyle` model, additive `WebTemplate` metadata (use_cases, audience, price_tier, search_keywords, 7 feature flag BooleanFields), facet sidebar + typeahead + cluster/role/use-case discovery pages, homepage redesigned around search-first discovery. Closed with **X.2b visual polish pass** that elevated hero contrast + navbar/footer premium overrides + card/sidebar refinement and fixed 2 display bugs caught in pre-merge browser verification (facet-sidebar Python-dict leak · card-badge overlap against legacy `.mw-template-card-img .mw-badge` absolute-positioning rule). **6 commits locally on `phase-integration-baseline-v15`** (`6407833` → `971da41`) · baseline after A.17b (`57266ce`) → tip `971da41` pushed to origin in this session. Zero touches to `apps/editor`, `apps/projects`, `apps/commerce`, `templates/live_templates`, `static/editor` · editor enrollment program closed in A.17b remains intact.
+
+**Five critical framings for X.2:**
+
+1. **2-level taxonomy · additive, nullable-first · zero migration to existing routes.** `ProfessionCluster` sits under `Category` as a child FK · `WebTemplate` gains `profession_cluster FK null=True`, `visual_style FK null=True`, `use_cases JSONField=list`, `audience JSONField=list`, `search_keywords TextField`, `price_tier CharField choices`. Feature facets as explicit `BooleanField(db_index=True)` columns (`has_shop`/`has_booking`/`has_portfolio`/`has_blog`/`has_video`/`has_rtl`/`is_multi_page`) — closed set, indexable, no JSONField-operator dependency. `WebTemplate.category` FK preserved verbatim — legacy catalog routes and selectors still resolve without touches. **Commit 6 NOT NULL hardening deferred** until backfill validates across environments.
+
+2. **Seed chain · 4 idempotent commands in order.** `seed_categories` (pre-existing) → `seed_visual_styles` (NEW · 12 styles: editorial-warm/cool/noir · dashboard-dark/light · minimal-light/mono · bold-display · cinematic-fullbleed · typographic-first · magazine-hybrid · classic-serif) → `seed_profession_clusters` (NEW · 52 clusters across 15 macro-categories · 7 extras auto-created inline since `seed_categories` stays frozen as 8-MVP: education · events · travel · fitness · construction · beauty · nonprofit) → `seed_templates` (EXTENDED · applies taxonomy metadata on creation via `_apply_taxonomy_metadata` helper · 20 MVP templates get cluster/style/use_cases/audience/price_tier/feature-flags/search_keywords). Every command re-runnable · `get_or_create(slug=...)` gates prevent duplicates. Test `test_cluster_counts_per_category_match_taxonomy_contract` locks the 52-cluster distribution.
+
+3. **Data migration backfill for existing 20 rows · fail-loud on missing seed.** `0004_taxonomy_v2_backfill.py` (RunPython forward + reverse) iterates the 20 MVP slugs in `TEMPLATE_METADATA` (inlined + frozen in the migration · mirrored in `seed_templates` for fresh DBs · consistency locked by `test_backfill_dict_and_seed_templates_dict_match`). No-op on empty databases (test DBs · CI); full write on the production-like baseline where the 20 rows pre-exist with NULL taxonomy columns. Missing cluster/style slug raises `RuntimeError` pointing at the offending template — never silently lands NULL FKs. Reverse migration restores pre-backfill defaults on the 20 slugs keeping schema migration 0003 standalone-rollbackable.
+
+4. **Discovery IA live · facets + typeahead + 3 new page kinds + 4 new URLs.** Catalog gallery `/templates/` rebuilt with sticky facet sidebar (cluster · style · price · feature flags) + 52/12/3/7 facet option counts · card partial `catalog/_includes/template_card.html` with cluster pill + visual-style pill + price-tier badge + feature-flag icon strip. New endpoints + views: `/templates/search/typeahead/` (JSON · 3 pools: templates/clusters/roles · `AbortController` + 180ms debounce in `typeahead.js`) · `/templates/clusters/<slug>/` (ClusterDetailView) · `/templates/for-role/<slug>/` (RoleDiscoveryView · 10 hardcoded roles in `ROLE_DISCOVERY`) · `/templates/for-use-case/<slug>/` (UseCaseDiscoveryView · 10 use cases in `USE_CASE_DISCOVERY`). URL ordering invariant: fixed-prefix paths sit BEFORE `<slug:category_slug>/` catch-all so `clusters/`, `search/`, `for-role/`, `for-use-case/` resolve to their dedicated views — locked by `test_fixed_prefix_paths_resolve_before_category_catchall`. Template detail extended with 3 pills (cluster/style/price_tier) + use-case list + feature list · related_templates still pointer-based.
+
+5. **Homepage redesigned search-first · 8 sections · live counters + curated subset · IT-first · no Lovable clone.** `/` rebuilt: (a) Hero with `mw-home-hero-title` "Il sito web della tua professione. Pronto." + lead "{templates}+ premium · {clusters} professioni · 5 lingue con RTL" + search form (`data-typeahead-root`) hooked to `/templates/search/typeahead/` via `typeahead.js` + 2 CTAs (Sfoglia catalogo · Come funziona); (b) 15 macro-category chips with counts; (c) 8 role discovery cards (avvocati · medici · ristoratori · startup · fotografi · artigiani · agenzie · immobiliari); (d) 6 featured templates reusing `get_featured_templates(limit=6)` with new pill-aware card; (e) 6 use-case discovery cards (sell-online · reservations · appointment-booking · show-portfolio · generate-leads · brand-storytelling); (f) Trust strip with 4 LIVE counters from DB (`templates_live`/`categories_active`/`clusters_active`/`locales_supported=5`); (g) 3-step explainer Scegli/Personalizza/Pubblica; (h) Final CTA "Il tuo progetto è a un click." Zero glassmorphism · zero purple mesh · zero community/forks UI · zero pricing matrix · zero testimonials carousel · zero docs section · Italian-first editorial tone.
+
+### Step-by-step commit sequence
+
+**Commit 1 · `6407833` — schema + admin + nullable metadata.** Models `ProfessionCluster` + `VisualStyle` + 11 new `WebTemplate` fields + migration `0003_taxonomy_v2_schema.py`. Admin registered. 4 files (~682 LOC). 398/398 tests.
+
+**Commit 2 · `81951ab` — seed commands.** `seed_visual_styles.py` (154 LOC · 12 styles) + `seed_profession_clusters.py` (664 LOC · 52 clusters + 7 inline extra categories). 3 files (~994 LOC). 409/409 tests.
+
+**Commit 3 · `1571964` — backfill migration + `seed_templates` extension.** `0004_taxonomy_v2_backfill.py` (543 LOC data migration · forward + reverse + fail-loud) + `seed_templates.py` extended (+437 LOC) + tests (+261 LOC). 3 files (~1241 LOC). 428/428 tests. 20/20 templates backfilled runtime-verified.
+
+**Commit 4 · `e6e4e53` — discovery UI (facets + typeahead + cluster/role/use-case pages).** `selectors.py` (+409 LOC · 6 new filter kwargs + `get_facet_counts` + `search_templates_typeahead` + resolver helpers + `ROLE_DISCOVERY` + `USE_CASE_DISCOVERY` + `_filter_json_list_and` portable helper for SQLite) + `views.py` (+161 LOC · 4 new views) + `urls.py` (+29 LOC) + card/sidebar partials + 3 discovery pages + typeahead.js (207 LOC) + catalog-facets.css (253 LOC) + tests (+302 LOC) + smoke_full.py (+33 LOC · 20 new discovery routes). 14 files (~1906 LOC). 466/466 tests. 854/854 smoke (up from 834).
+
+**Commit 5 · `acfa27c` — homepage redesign.** `apps/pages/views.py` (+91 LOC · 4 new context fields) + `templates/pages/home.html` rewritten (8 sections) + `home-discovery.css` (354 LOC) + tests (+150 LOC · HomepageDiscoveryTests/HomepageEmptyDbSafetyTests/HomepageScopeInvariantTests). 4 files (~760 LOC). 480/480 tests. 854/854 smoke (unchanged · `/` already in smoke).
+
+### Step · final validation
+
+- `manage.py check` → 0 issues.
+- `manage.py test apps.catalog` → **105/105 PASS** (+82 since pre-X.2 baseline 23).
+- `manage.py test apps` → **480/480 PASS** (+105 since pre-X.2 baseline 375).
+- `smoke_full.py` → **854/854 HTTP 200** (+20 discovery routes since pre-X.2 baseline 834).
+- Git diff scope vs `57266ce`: 24 files touched · +5583 / −249 LOC · **zero** touches to `apps/editor`, `apps/projects`, `apps/commerce`, `static/editor`, `templates/live_templates`.
+
+### Step · Playwright browser verification on `127.0.0.1:8019`
+
+Stale zombie servers on 8017 killed; fresh server on 8019 served the X.2 build correctly.
+
+**Homepage (`/`)** — 8 sections confirmed:
+1. Hero renders H1 "Il sito web della tua professione. Pronto in pochi minuti." + search form `action="/templates/"` `data-typeahead-root` + 2 CTAs.
+2. 15 category chips with counts (Agency 2 · Business 2 · Ristorante 3 · Medico 5 · Avvocato 2 · Immobiliare 2 · Portfolio 2 · eCommerce 2 · + 7 chip per le nuove macro-categorie inline-seeded).
+3. 8 role cards with working deep-links to `/templates/for-role/<slug>/`.
+4. 6 featured templates rendered with new pill-aware card (Chiara · Lex · Salute · Gusto · Pragma · Vertex).
+5. 6 use-case cards with deep-links to `/templates/for-use-case/<slug>/`.
+6. Trust strip counters LIVE from DB: `20+` templates, `15` macro-categorie, `52` professioni, `5` lingue · RTL incluso.
+7. 3-step explainer with mono accent top-border.
+8. Final CTA "Il tuo progetto è a un click." + 2 CTAs.
+
+**Catalog gallery (`/templates/`)** — facet sidebar + 12-card paginated grid:
+- `.mw-facet-sidebar` sticky con 6 facet groups (search · sort · cluster · style · price · feature).
+- 52 cluster options + 12 style options + 3 price options + 7 feature options tutti renderizzati.
+- 12 cards (page 1 di 2) with cluster pill + style pill + price-tier badge + feature-flag icon strip.
+- Facet total counter `20` coerente con lo state del DB.
+- Sort dropdown + Apply/Reset CTAs operativi.
+
+**Discovery pages:**
+- `/templates/clusters/specialist/` → 200 · breadcrumb + "Specialista medico" hero + 2 cards (Cardio + Derm) con pills/badges corretti.
+- `/templates/for-role/medici/` → 200 · "Per medici" header.
+- `/templates/for-use-case/appointment-booking/` → 200 · "Gestire appuntamenti medici" label.
+- `/templates/clusters/does-not-exist/` → 404.
+
+**Typeahead endpoint:** `GET /templates/search/typeahead/?q=avvocat` returned `{templates: 2, clusters: 2, roles: 1}` · template slugs `lex-studio-legale` + `juris-avvocato-moderno` · cluster names `Avvocato classico` + `Avvocato moderno & tech` · role slug `avvocati`.
+
+**Template detail (`/templates/ecommerce/luxe-fashion-store/`):**
+- 3 pills in `.mw-detail-pills`: `Fashion editorial` (cluster) · `Magazine hybrid` (style) · `Premium` (tier badge).
+- Use-case list includes "Vendere online" linking to `/templates/for-use-case/sell-online/`.
+- Feature list: 5 features (has_shop · has_blog · has_video · has_rtl · is_multi_page).
+- Legacy `/projects/start/?template=luxe-fashion-store` CTA preserved.
+
+**Legacy catalog routes preserved:** `/templates/agency/vertex-creative-agency/` · `/templates/medical/cardio-studio-specialistico/` · `/templates/agency/vertex-creative-agency/preview/` · `/templates/lawyer/` · `/templates/ecommerce/` all 200.
+
+**Console errors:** 0 errors · 0 warnings across all navigated pages.
+
+**Minor visual polish note (non-blocking at X.2 finalization):** homepage hero first-line "Il sito web della tua professione." had low contrast on the blue-tinted gradient hero. **This was addressed in X.2b** (below) before merge/push.
+
+### Step · X.2b · Visual Polish + Display-Bug Fixes (commit `971da41`)
+
+Single-commit polish pass that elevated the public catalog + homepage to "modern premium product-page" quality, fixed 2 display bugs caught in browser verification, and preserved all X.2 functional gates.
+
+**Scope (5 files, +838/−189 LOC · strictly homepage/catalog surfaces):**
+- `templates/pages/home.html` — removed legacy `mw-hero` class from the home hero (was forcing `color: white` via `components.css .mw-hero h1`)
+- `templates/catalog/template_detail.html` — fix dict-leak on feature-flag list rendering
+- `templates/catalog/_includes/facet_sidebar.html` — fix dict-leak on cluster facet counts
+- `static/css/home-discovery.css` — hero contrast + section rhythm + role/use-case cards + trust strip + 3-step + final CTA polish
+- `static/css/catalog-facets.css` — navbar premium sticky + frosted-glass overrides · footer premium dark treatment · facet sidebar refinement · card-badge-overlap fix (reset legacy `.mw-template-card-img .mw-badge` absolute-positioning via 3-class-chain specificity)
+
+**Display bugs caught + fixed in flight:**
+1. **Facet sidebar dict leak** — `{{ facet_counts.clusters|default_if_none:""|default:"" }}` was rendering the entire Python dict `{'artisan-workshop': 1, 'classic-law': 1, ...}` in the UI because `|default` only kicks in on falsy values (a dict with data is truthy). Removed the fallback prefix; the `for`-loop alone produces the correct count.
+2. **Template detail feature-flag dict leak** — same pattern on `feature_flag_labels` · same fix.
+3. **Card badge overlap** — the legacy `.mw-template-card-img .mw-badge { position: absolute; top; left }` rule (components.css) applied to EACH badge individually, ignoring the flex layout of `.mw-card-badges`, stacking category + tier badges at the same top-left corner. Fixed with a 3-class-chain override `.mw-template-card-img .mw-card-badges .mw-badge { position: static }`. `components.css` itself NOT touched — X.2b scope disallowed it.
+4. **Hero title invisible** — root cause: `.mw-hero h1 { color: var(--mw-neutral-0) }` in components.css was forcing white on the homepage's dark-theme legacy hero class. Fix: removed the `mw-hero` class from the `section` element · the new `mw-home-hero-v2` is now a self-contained editorial light hero. Specificity on `.mw-home-hero-title` raised via `.mw-home-hero-v2 .mw-home-hero-title` + `h1.mw-home-hero-title` selector chain.
+
+**Polish landed (target: "modern, premium, editorial, not Bootstrap generic"):**
+- **Hero**: crisp white canvas with subtle warm radial bloom + product-grade dot-grid texture · explicit `color: --mw-neutral-900` title · accent-gradient `<em>` tagline with background-clip · 680px pill-shaped search form with premium shadow + focus ring · balanced Plus Jakarta Sans 700 + Inter secondary.
+- **Navbar**: `position: sticky` + `backdrop-filter: saturate(180%) blur(12px)` (frosted glass) · gradient brand-mark with box-shadow · nav-link hover background · rounded-pill primary CTA.
+- **Footer**: `--mw-neutral-900` dark · top accent hairline `linear-gradient` · gradient brand-mark · social icons as 2.2rem pill cards with accent hover · link hover → accent-light · bottom-bar divider.
+- **Homepage sections**: 5rem vertical rhythm · 700px balanced section headers with overline + accent · role/use-case cards with top-accent-line on hover + translateY lift + premium shadow + arrow `translateX` animation · 3-step cards with gradient-numbered badges.
+- **Trust strip**: radial bloom accent on dark · tabular-nums counters in accent-light · vertical dividers between cells on desktop.
+- **Final CTA**: dark-gradient `linear-gradient(135deg, primary, primary-dark)` + radial bloom + dot-grid · ghost CTA with premium outlined-on-dark treatment.
+- **Catalog**: sticky facet sidebar at `top: 5.5rem` past navbar · premium shadow · hairline group dividers · checkbox `accent-color: --mw-accent` · count pills with border · template card border-radius 14px + hover lift · badges: dark-glass category + gradient-gold premium tier with shadow · pills: cluster-pill with accent bg + feature icons hover orange · detail pills larger (0.8rem) + bottom divider · use-case items with accent hover + translateY · feature list as pill chips.
+
+**Playwright MCP browser walk (127.0.0.1:8023 · fresh server) green across:**
+- Homepage hero title rendering with correct contrast + accent tagline gradient
+- Navbar sticky + backdrop-filter present + brand gradient rendering
+- Footer dark + 4 columns + social pill hover
+- Catalog listing facet sidebar clean (no dict leak) · 12 cards with badges correctly spaced (space-between)
+- Cluster detail / role discovery / use-case discovery pages 200
+- Template detail with 3 pills + use-case list + feature chips
+- AR/RTL live preview on `/templates/agency/vertex-creative-agency/preview/?lang=ar` → `<html dir="rtl">` preserved · editor live-preview architecture UNTOUCHED
+- 0 console errors · 0 blocking warnings
+
+**Final validation at X.2b close:**
+- `manage.py check` → 0 issues
+- `manage.py test apps` → 480/480 PASS
+- `python smoke_full.py` → 854/854 routes HTTP 200
+
+### Step · Docs Consolidation + Merge/Push (this entry)
+
+4 docs committed as `docs: consolidate X.2 catalog IA redesign and X.2b visual polish` · 6-commit X.2+X.2b chain pushed to `origin/phase-integration-baseline-v15`. No squash · no rebase · history preserved.
+
+### Step · NOT executed (deferred)
+
+- **X.2 Commit 6 NOT NULL flip** on `profession_cluster` + `visual_style` — to be opened when backfill validates across environments.
+- **Wave 2+ template authoring** — X.2+X.2b are infrastructure+polish only · no new templates added.
+- **Archetype enrollment** — program closed in A.17b (D-099) · unchanged.
+- **X.3 Content Factory Pipeline** — the next recommended workstream; gates Wave 2 authoring.
+
+---
+
 ## Session 77 — Phase A.17b · Elevate (startup-saas-landing · startup-saas family · SINGLE-TEMPLATE CLOSER) Editor + Multi-locale Enrollment · CLOSES STARTUP-SAAS FAMILY · CLOSES THE EDITOR ENROLLMENT PROGRAM A.6 → A.17b (2026-04-20)
 
 **Summary.** Nineteenth and final archetype enrolled in the editor: `startup-saas-landing` (Elevate). Single-template phase — 2nd single-template dedicated-schema closure precedent after A.17 Aura. **CLOSES the startup-saas family · CLOSES the editor enrollment program A.6 → A.17b.** **19 archetype slugs enrolled · 19 multi-locale enrolled · 20 templates editable end-to-end · 20/20 catalog editable · 9/9 families closed · zero half-open · zero non-enrolled real archetypes.** Catalog 20/20 `published_live` unchanged. Baseline `e67741c` → merge `3074b00` on `phase-integration-baseline-v15` · pushed origin. **Editor enrollment program officially CLOSED** · no further enrollment phase remains on the roadmap.

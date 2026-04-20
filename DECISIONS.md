@@ -1,5 +1,75 @@
 # Decisions Log
 
+## D-100 · Catalog IA Redesign v2 · 2-Level Taxonomy + Visual Style + Additive Template Metadata (2026-04-20, Session 78)
+
+### Decision
+
+Public catalog discovery scales from 20 templates to 200+ via a nullable-first 2-level taxonomy layered on the existing `WebTemplate` without reshaping the editor enrollment architecture (D-099 program closure stays intact).
+
+**Model additions:**
+
+- `ProfessionCluster(name, slug [unique], category FK, description, icon, order, is_active, search_aliases)` — profession-level taxonomy under `Category`. 52 seeded clusters across 15 macro-categories.
+- `VisualStyle(slug [unique], label, palette_family, typography_stack, density_profile, badge, order, is_active)` — shared token-bundle descriptor. 12 seeded styles.
+- `WebTemplate` gains (all `null=True, blank=True` during the backfill window):
+  - `profession_cluster FK → ProfessionCluster` (PROTECT)
+  - `visual_style FK → VisualStyle` (PROTECT)
+  - `use_cases JSONField(default=list)` — open-ended list of use-case slugs
+  - `audience JSONField(default=list)` — open-ended list of audience slugs
+  - `price_tier CharField choices(free/standard/premium)` — coarse filter bucket, distinct from numeric `price`
+  - `search_keywords TextField` — typeahead prefix-match surface
+  - **7 explicit BooleanField feature facets** (NOT JSONField): `has_shop · has_booking · has_portfolio · has_blog · has_video · has_rtl · is_multi_page` — each `db_index=True` so facet count aggregation stays O(1) per flag.
+
+**Binding invariants:**
+
+1. **`WebTemplate.category` FK is preserved verbatim.** The taxonomy is additive, not replacing; every cluster carries its own category FK so the two fields stay consistent at seed + backfill time. Legacy catalog routes and selectors resolve without any change.
+2. **Feature facets are columns, not JSON.** Closed set · indexable · single-pass `Count(filter=Q(flag=True))` aggregation. Adding an 8th feature is a schema migration, not a JSON key convention — the friction is deliberate.
+3. **Visual style is a token bundle, not an archetype.** A `VisualStyle` lands on many templates. It does NOT carry editor schema · it does NOT influence D-098 archetype enrollment. "New visual style" is a CSS/imagery delta; "new archetype" stays a 3-file enrollment phase per the post-A.17b pattern.
+4. **Nullable-first → NOT NULL later.** Commit 6 (explicit NOT NULL flip on `profession_cluster` + `visual_style`) is deferred until backfill validates across environments.
+
+### Why
+
+1. **Scale unlocks without model proliferation.** 52 clusters × 12 styles × metadata = 200+ discoverable templates without a new archetype per niche. Content + visual variation rides the existing 19 editor-enrolled archetypes; only novel *structural* variation demands a new archetype (D-099 still binding).
+2. **Single source of truth for discovery.** `FEATURE_FLAG_LABELS`, `ROLE_DISCOVERY`, `USE_CASE_DISCOVERY` live in `selectors.py` and are consumed by the sidebar, detail pills, discovery pages, and the homepage. No duplicate maps in templates.
+3. **Separation of concerns respected.** Admin boundary (editor-vs-commerce-admin · editor-vs-clinic-admin · editor-vs-product-admin) stays at the archetype/enrollment layer (D-099) · catalog discovery is a presentation layer that reads metadata and never writes to editor state.
+
+### How to apply
+
+- Seed chain order on a fresh DB: `seed_categories` → `seed_visual_styles` → `seed_profession_clusters` → `seed_templates`. All four commands are idempotent; re-running produces zero duplicates and leaves admin-edited rows untouched.
+- Data migration `0004_taxonomy_v2_backfill.py` runs on existing DBs (20 MVP slugs · fail-loud on missing seed rows); it is a no-op on empty DBs (test / CI), where `seed_templates` carries the same metadata inline and produces the same end-state.
+- New templates added after X.2 MUST populate `profession_cluster`, `visual_style`, `price_tier`, and the 7 feature flags at seed time. `search_keywords` + `use_cases` + `audience` are open-ended but should be populated for discoverability.
+- Any new feature flag requires a schema migration + addition to `FEATURE_FLAG_LABELS` + the card icon strip. Do not bypass by overloading `use_cases`.
+- The feature facet column names are the single source of truth consumed by URL-driven filters — `/templates/?feature=has_shop` resolves because `has_shop` is a real column. Adding a flag to FEATURE_FLAG_LABELS without the underlying column would silently drop on the filter gate (`if flag in FEATURE_FLAG_LABELS`), which is the intended safety behavior.
+
+### Consequences
+
+- Catalog gallery gains a facet sidebar (cluster × style × price × feature) with live counts.
+- Typeahead JSON endpoint `/templates/search/typeahead/` serves the homepage hero search.
+- Three new public page kinds landed: cluster detail (`/templates/clusters/<slug>/`), role discovery (`/templates/for-role/<slug>/`), use-case discovery (`/templates/for-use-case/<slug>/`). URL ordering invariant: these fixed-prefix routes MUST sit before the `<slug:category_slug>/` catch-all or the category lookup 404s the request.
+- Homepage (`/`) redesigned search-first with hero typeahead + role/use-case discovery grids + live trust counters + 3-step explainer. 8 sections total.
+- Zero touches to `apps/editor`, `apps/projects`, `apps/commerce`, `templates/live_templates`, `static/editor`. D-099 program closure stays intact.
+
+### Deferred (not in X.2)
+
+- **Commit 6 NOT NULL flip** on `profession_cluster` + `visual_style` — after backfill validates in staging/prod.
+- **Related templates M2M** — current related-pointer logic unchanged; explicit M2M is a future phase.
+- **`related_templates` intelligence** (same-cluster > same-style > same-category) — deferred to Content Factory Pipeline (X.3).
+- **JSON-field native DB lookup** — current implementation uses a portable Python-side filter (`_filter_json_list_and`) for SQLite compatibility; at 200+ templates and after the PostgreSQL-only environment lands, swap to `__contains=[...]` behind the same helper.
+- **New templates** — X.2 is infrastructure-only. Wave 2 content + visual variation lands in a later phase.
+
+### Alternatives rejected
+
+- **Replace `Category` with `ProfessionCluster` (flatten).** Rejected: breaks existing legacy URLs + selectors; forces a migration on every consumer. 2-level keeps legacy surface + adds precision.
+- **Use JSONField for feature facets.** Rejected: cross-DB portability (SQLite JSONB limits) + indexability + aggregation cost all favor explicit BooleanFields. 7 flags is a closed set — a new one is a schema migration by design.
+- **Auto-derive visual style from brand palette.** Rejected: too implicit · hard to curate or filter · breaks the "visual style is a shared facet" mental model. Explicit FK with curated labels wins.
+- **Model-based role / use-case tables.** Rejected for MVP: hardcoded `ROLE_DISCOVERY` / `USE_CASE_DISCOVERY` dicts in selectors are editable without a migration and land zero risk on the DB layer. Can graduate to a table when operators need self-serve editing.
+
+### Operationalisation history
+
+- **2026-04-20 · Session 78 · X.2 Commits 1–5** — scaffolding + seed + backfill + discovery UI + homepage redesign. 5 commits locally on `phase-integration-baseline-v15` (`6407833` → `acfa27c`). 480/480 apps tests · 854/854 smoke. Playwright walk on `127.0.0.1:8019` verified hero + facets + typeahead + cluster/role/use-case pages + detail pills + legacy route preservation.
+- **2026-04-20 · Session 78 · X.2b Visual Polish** — single-commit (`971da41`) closing pass on homepage + catalog surfaces: hero contrast + navbar/footer premium overrides + card/sidebar refinement + fixed two display bugs (facet-sidebar Python-dict leak rendering `{'artisan-workshop': 1, ...}` in the UI · card-badge overlap against legacy `.mw-template-card-img .mw-badge` absolute-positioning rule). Root cause of hero contrast issue: the `.mw-hero h1 { color: var(--mw-neutral-0) }` dark-theme rule in `components.css` was applying to the homepage hero via the legacy `mw-hero` class · fix = remove `mw-hero` from the home `<section>` and let `mw-home-hero-v2` be self-contained with explicit dark-on-light color. Root cause of card-badge overlap: the legacy `.mw-template-card-img .mw-badge { position: absolute; top; left }` rule applied to EACH badge individually · fix = 3-class-chain override `.mw-template-card-img .mw-card-badges .mw-badge { position: static }` in `catalog-facets.css` so the flex layout of the badge container is respected. `components.css` NOT touched — X.2b scope disallowed it. **6 commits total on phase-integration-baseline-v15** (`6407833` → `971da41`) pushed in the same session. X.2 + X.2b closed officially as the catalog-IA-v2 baseline with polish-ready public surface. Next phase: X.3 Content Factory Pipeline. Commit 6 NOT NULL flip deferred until backfill validates across environments.
+
+---
+
 ## D-088: Editor UX v2 — Debounced Autosave + Baseline Compare + Highlight Mapping + Standalone Shell (2026-04-16, Session 57)
 
 **Decision.** Phase A.2 transforms the A.1b editor from a form-POST surface into a premium app shell governed by six interlocking contract clauses:

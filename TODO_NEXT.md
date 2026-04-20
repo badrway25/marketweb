@@ -1,6 +1,20 @@
 # TODO Next
 
-## 🟢 Current State (2026-04-20 · after Session 77 A.17b Elevate (startup-saas-landing · startup-saas family · SINGLE-TEMPLATE CLOSER) Editor + Multi-locale Enrollment merge · CLOSES THE STARTUP-SAAS FAMILY · **CLOSES THE EDITOR ENROLLMENT PROGRAM A.6 → A.17b**)
+## 🟢 Current State (2026-04-20 · after Session 78 Phase X.2 + X.2b · MERGED + PUSHED)
+
+Baseline `phase-integration-baseline-v15` tip is **`<DOCS_COMMIT>`** · **PUSHED** to origin. 6 X.2/X.2b commits (`6407833` → `971da41`) plus docs consolidation. Validation gates all green: **480/480 apps tests · 854/854 smoke · `manage.py check` 0 issues · Playwright MCP browser walk verde on 6 surfaces**.
+
+**Phase X.2 + X.2b delivered and pushed:**
+- **Taxonomy v2 live**: 15 macro-categories (8 MVP + 7 inline-seeded) · **52 profession clusters** · **12 visual styles** · **20/20 MVP templates backfilled** with `profession_cluster` + `visual_style` + `use_cases` + `audience` + `price_tier` + `search_keywords` + 7 feature flags.
+- **Catalog discovery live**: facet sidebar (cluster × style × price × feature) · typeahead JSON endpoint · cluster/role/use-case discovery pages · card partial with pills/badges/feature icons.
+- **Homepage redesigned search-first**: 8 sections (hero + chips + role grid + featured + use-case grid + trust strip + 3-step explainer + final CTA) · LIVE DB counters.
+- **X.2b visual polish pass**: premium hero contrast + sticky frosted-glass navbar + dark premium footer + editorial card/sidebar treatment · 2 display bugs fixed in flight (facet-sidebar Python-dict leak + card-badge overlap against legacy components.css rule).
+- Zero touches to `apps/editor`, `apps/projects`, `apps/commerce`, `templates/live_templates`, `static/editor`. **D-099 program closure intact.**
+- **Commit 6 NOT NULL flip deferred** until backfill validates across environments.
+
+## 🟢 Previous checkpoint (pre-X.2)
+
+Baseline `phase-integration-baseline-v15` tip `57266ce` (pushed 2026-04-20 Session 77 A.17b). **19 archetype slugs enrolled / 20 templates editabili end-to-end · 20/20 catalog editable · 9/9 families closed · editor enrollment program officially CLOSED**. Nineteenth and final enrollment CLOSES the startup-saas family (2nd single-template dedicated-schema closure precedent after Aura). D-098 topology distribution FINAL · D-099 outside-gate retirement binding · zero non-enrolled real archetypes.
 
 Baseline `phase-integration-baseline-v15` tip is **`3074b00`** (A.17b merge), pushed to origin. **19 archetype slugs enrolled / 20 templates editabili end-to-end · 20/20 catalog editable · 9/9 families closed · zero half-open · zero non-enrolled real archetypes · editor enrollment program officially CLOSED**. Nineteenth and final enrollment CLOSES the startup-saas family: Vertex + Pragma + Gusto + specialist + classic-gold + modern-transparent + mass-market + ultra-luxury-cinematic + editorial-designer-grid + cinematic-photographer + trattoria-warm + street-modern + artisan-workshop + fashion-editorial + clinic + wellness + family + agency-digital-studio + **startup-saas-landing** are all multi-locale enrolled. **NINE families editor-complete** (law · medical-specialist · real-estate · portfolio · restaurant-continuation · ecommerce · medical-other · agency-secondary · **startup-saas** ← new + last · 2nd single-template dedicated-schema closure precedent after Aura). **Zero half-open families remain · zero non-enrolled real archetypes remain · outside-gate pattern RETIRED via synthetic sentinel (D-099)**.
 
@@ -47,11 +61,19 @@ No explicitly-deferred debt is pending. **19 commit-clean phases** delivered bac
 
 A.17b closes the startup-saas family · closes the editor enrollment program A.6 → A.17b. **Zero further `A.18` template-enrollment phase planned.** The D-098 topology distribution is final. The DNA registry has 19 archetype slugs · all enrolled. The next workstream sits in one of two buckets:
 
-**Bucket 1 · Maintenance (low-value low-risk)**
-- [ ] **MEMORY.md maintenance mini-phase** — auto-memory index ~35-36KB sopra warning-soglia 24.4KB (grew across enrollment phases). Index entries can be shortened without losing content. Separate housekeeping task · clean consolidation point now that enrollment is done.
-- [ ] **Docs archive pass (optional)** — consolidate SESSION_LOG earlier sessions into a compact history appendix · DECISIONS.md is stable (D-099 is the last D-number expected for a long while).
+**Bucket 0 · X.2 closeout (CLOSED)**
+- [x] **Merge + push X.2+X.2b** — 6 commits (`6407833` → `971da41`) + docs consolidation pushed to `origin/phase-integration-baseline-v15`.
+- [x] **Homepage hero polish** — fixed in X.2b (removed legacy `mw-hero` class · explicit dark-on-light color · editorial hero background).
+- [ ] **X.2 Commit 6 (NOT NULL flip)** — flip `WebTemplate.profession_cluster` + `visual_style` to `null=False` once the backfill validates across environments. Pure schema migration. Can land any time after pushed X.2 is confirmed stable.
 
-**Bucket 2 · Polish / optional widening (signal-gated)**
+**Bucket 1 · Maintenance (low-value low-risk)**
+- [x] **MEMORY.md maintenance mini-phase** — closed in M.1 (pre-X.2).
+- [ ] **Docs archive pass (optional)** — consolidate SESSION_LOG earlier sessions into a compact history appendix · DECISIONS.md is stable.
+
+**Bucket 2 · Wave 2 prep — Phase X.3 Content Factory Pipeline (RECOMMENDED NEXT)**
+- [ ] **Phase X.3 · Content Factory Pipeline** — the scaffolding Wave 2 needs BEFORE any new template lands: (a) cluster content templates (profession-indexed copy skeletons + per-cluster terminology dictionary + per-cluster imagery pool curation); (b) sub-agent parallel authoring recipe formalized as a runbook (proven in Sessions 23–52 but unwritten); (c) imagery curator step BEFORE the template author (the Session 31 "PlayStation-as-Roma-map" disaster must not recur); (d) per-cluster `search_keywords` authoring conventions; (e) `related_templates` logic moved to an explicit M2M or queryset helper (same-cluster → same-style → same-category priority order). Est: 4-6 commits over 3-5 days. **Gates Wave 2 template authoring.**
+
+**Bucket 3 · Polish / optional widening (signal-gated)**
 - [ ] **`home.ambients` tuple-with-image widening mini-phase** — deferred novel shape from A.16b Benessere. Would require: runtime verification of tuple-cell-with-image-type handling (`services._resolve_path` + `schema._iter_indexed_groups` + `rendering._apply_indexed`) + widget-level render test. Low value (4 tiles only) · customer-signal-gated · still deferred.
 - [ ] **Detail-page editing horizontal feature** — 7 archetypes have per-item content locked registry-only (posts.*). Lifting this would be a cross-archetype horizontal feature · NOT a single-archetype enrollment · requires its own design phase.
 - [ ] **Selective editor UX polish** — defer unless customer signal surfaces.
