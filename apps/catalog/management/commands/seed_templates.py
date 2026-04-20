@@ -3,7 +3,388 @@ from decimal import Decimal
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from apps.catalog.models import Category, TemplateBrand, WebTemplate
+from apps.catalog.models import (
+    Category,
+    ProfessionCluster,
+    TemplateBrand,
+    VisualStyle,
+    WebTemplate,
+)
+
+
+# ── X.2 Commit 3 · taxonomy v2 metadata for fresh seeds ────────────
+#
+# Mirrors ``TEMPLATE_METADATA`` in ``migrations/0004_taxonomy_v2_backfill``
+# so that: (a) a freshly-seeded database lands in the same end-state as
+# a production DB that had backfill applied, and (b) future template
+# additions carry metadata at seed time without a separate migration.
+# Consistency between the two definitions is locked by
+# ``test_backfill_dict_and_seed_templates_dict_match`` in the catalog
+# test suite.
+TEMPLATE_METADATA = {
+    "vertex-creative-agency": {
+        "cluster": "creative",
+        "style": "editorial-warm",
+        "price_tier": "premium",
+        "use_cases": ["show-portfolio", "generate-leads", "brand-identity"],
+        "audience": ["agency", "studio"],
+        "search_keywords": (
+            "agenzia creativa brand design portfolio case-study studio creative"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": True,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "aura-digital-studio": {
+        "cluster": "digital-growth",
+        "style": "dashboard-dark",
+        "price_tier": "premium",
+        "use_cases": ["show-portfolio", "generate-leads", "growth-tech"],
+        "audience": ["agency", "studio"],
+        "search_keywords": (
+            "agenzia digital growth performance sprint studio tech midnight"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": True,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "pragma-corporate-suite": {
+        "cluster": "corporate",
+        "style": "classic-serif",
+        "price_tier": "standard",
+        "use_cases": ["corporate-presence", "generate-leads", "b2b-credibility"],
+        "audience": ["enterprise", "smb"],
+        "search_keywords": (
+            "corporate azienda istituzionale b2b enterprise consulenza business"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "elevate-startup-landing": {
+        "cluster": "saas-landing",
+        "style": "dashboard-dark",
+        "price_tier": "premium",
+        "use_cases": ["product-launch", "generate-leads", "demo-bookings"],
+        "audience": ["smb", "enterprise"],
+        "search_keywords": (
+            "saas startup prodotto landing pricing demo b2b tech"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "gusto-fine-dining": {
+        "cluster": "fine-dining",
+        "style": "editorial-warm",
+        "price_tier": "premium",
+        "use_cases": ["reservations", "menu-online", "brand-storytelling"],
+        "audience": ["smb"],
+        "search_keywords": (
+            "ristorante stellato chef fine-dining gourmet haute-cuisine prenotazione"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "sapore-trattoria-pizzeria": {
+        "cluster": "trattoria",
+        "style": "editorial-warm",
+        "price_tier": "standard",
+        "use_cases": ["reservations", "menu-online", "local-presence"],
+        "audience": ["smb", "freelance"],
+        "search_keywords": (
+            "trattoria pizzeria osteria menu tradizionale regionale prenotazione"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "brace-street-food-lab": {
+        "cluster": "street-casual",
+        "style": "bold-display",
+        "price_tier": "standard",
+        "use_cases": ["online-ordering", "menu-online", "brand-youth"],
+        "audience": ["smb"],
+        "search_keywords": (
+            "street-food burger casual cloud-kitchen ordering pickup lab"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "salute-studio-medico": {
+        "cluster": "multi-clinic",
+        "style": "minimal-light",
+        "price_tier": "standard",
+        "use_cases": [
+            "appointment-booking",
+            "patient-info",
+            "professional-credibility",
+        ],
+        "audience": ["smb", "studio"],
+        "search_keywords": (
+            "clinica poliambulatorio medicina-generale visita prenotazione ambulatorio"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "benessere-centro-olistico": {
+        "cluster": "wellness-holistic",
+        "style": "minimal-light",
+        "price_tier": "standard",
+        "use_cases": ["appointment-booking", "wellness-brand", "retreats-booking"],
+        "audience": ["smb", "studio"],
+        "search_keywords": (
+            "olistico wellness benessere nutrizione naturopatia retreat trattamenti"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "famiglia-pediatria": {
+        "cluster": "family-pediatric",
+        "style": "minimal-light",
+        "price_tier": "standard",
+        "use_cases": ["appointment-booking", "family-trust", "pediatric-brand"],
+        "audience": ["studio", "smb"],
+        "search_keywords": (
+            "pediatria famiglia bambini pediatra visita ginecologia"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "cardio-studio-specialistico": {
+        "cluster": "specialist",
+        "style": "minimal-light",
+        "price_tier": "premium",
+        "use_cases": [
+            "appointment-booking",
+            "specialist-credibility",
+            "medical-authority",
+        ],
+        "audience": ["freelance", "studio"],
+        "search_keywords": (
+            "cardiologo cuore specialista studio-medico visita-specialistica"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "dermatologia-elite-roma": {
+        "cluster": "specialist",
+        "style": "minimal-light",
+        "price_tier": "premium",
+        "use_cases": [
+            "appointment-booking",
+            "specialist-credibility",
+            "aesthetic-services",
+        ],
+        "audience": ["freelance", "studio"],
+        "search_keywords": (
+            "dermatologo pelle estetica specialista roma visita-dermatologica"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "lex-studio-legale": {
+        "cluster": "classic-law",
+        "style": "classic-serif",
+        "price_tier": "premium",
+        "use_cases": ["consultation-booking", "case-studies", "legal-authority"],
+        "audience": ["studio", "smb"],
+        "search_keywords": (
+            "avvocato studio-legale civile penale commerciale consulenza-legale"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "juris-avvocato-moderno": {
+        "cluster": "modern-law-tech",
+        "style": "minimal-mono",
+        "price_tier": "premium",
+        "use_cases": ["consultation-booking", "legal-tech-brand", "modern-law"],
+        "audience": ["freelance", "studio"],
+        "search_keywords": (
+            "avvocato moderno ip startup diritto-tech privacy gdpr consulenza"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "casa-agenzia-immobiliare": {
+        "cluster": "real-estate-mass-market",
+        "style": "minimal-light",
+        "price_tier": "standard",
+        "use_cases": ["property-listings", "lead-capture", "local-real-estate"],
+        "audience": ["smb"],
+        "search_keywords": (
+            "immobiliare agenzia casa appartamento affitto vendita ricerca-casa"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "villa-immobili-lusso": {
+        "cluster": "real-estate-luxury",
+        "style": "cinematic-fullbleed",
+        "price_tier": "premium",
+        "use_cases": ["luxury-listings", "premium-brand", "lead-capture"],
+        "audience": ["smb", "agency"],
+        "search_keywords": (
+            "villa lusso immobili-lusso prestigio proprietà-esclusive luxury-estate"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "chiara-portfolio-creativo": {
+        "cluster": "designer-editorial",
+        "style": "editorial-warm",
+        "price_tier": "premium",
+        "use_cases": ["show-portfolio", "attract-clients", "editorial-brand"],
+        "audience": ["freelance", "studio"],
+        "search_keywords": (
+            "designer portfolio editoriale graphic-designer art-direction brand-identity"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": True,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "pixel-portfolio-fotografico": {
+        "cluster": "photographer",
+        "style": "cinematic-fullbleed",
+        "price_tier": "premium",
+        "use_cases": ["show-portfolio", "attract-clients", "cinematic-brand"],
+        "audience": ["freelance", "studio"],
+        "search_keywords": (
+            "fotografo portfolio cinematic fine-art ritratto architettura serie"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": True,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "bottega-shop-artigianale": {
+        "cluster": "artisan-workshop",
+        "style": "typographic-first",
+        "price_tier": "premium",
+        "use_cases": ["sell-online", "brand-storytelling", "artisan-identity"],
+        "audience": ["smb", "freelance"],
+        "search_keywords": (
+            "artigiano bottega atelier maker tipografico editoriale vendita-online journal"
+        ),
+        "has_shop": True,
+        "has_booking": False,
+        "has_portfolio": False,
+        "has_blog": True,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "luxe-fashion-store": {
+        "cluster": "fashion-editorial",
+        "style": "magazine-hybrid",
+        "price_tier": "premium",
+        "use_cases": ["sell-online", "luxury-brand", "lookbook-campaigns"],
+        "audience": ["smb", "enterprise"],
+        "search_keywords": (
+            "fashion moda maison luxury lookbook editoriale concept-store vendita-online"
+        ),
+        "has_shop": True,
+        "has_booking": False,
+        "has_portfolio": False,
+        "has_blog": True,
+        "has_video": True,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+}
+
+_FEATURE_FLAG_FIELDS = (
+    "has_shop",
+    "has_booking",
+    "has_portfolio",
+    "has_blog",
+    "has_video",
+    "has_rtl",
+    "is_multi_page",
+)
 
 
 SEED_TEMPLATES = [
@@ -537,6 +918,54 @@ SEED_TEMPLATES = [
 class Command(BaseCommand):
     help = "Seed the database with realistic WebTemplate and TemplateBrand data for all MVP categories"
 
+    def _apply_taxonomy_metadata(self, template):
+        """Apply taxonomy v2 metadata to a freshly-created ``WebTemplate``.
+
+        Looks up the per-template entry in ``TEMPLATE_METADATA`` and
+        writes profession_cluster + visual_style + use_cases + audience
+        + price_tier + search_keywords + 7 feature flags. Skips silently
+        if the template slug is not in the metadata dict or if the
+        required seed rows (clusters, styles) have not been loaded —
+        a later ``manage.py seed_profession_clusters`` +
+        ``seed_visual_styles`` + backfill migration can always catch up.
+        """
+        md = TEMPLATE_METADATA.get(template.slug)
+        if not md:
+            return
+
+        try:
+            cluster = ProfessionCluster.objects.get(slug=md["cluster"])
+            style = VisualStyle.objects.get(slug=md["style"])
+        except (ProfessionCluster.DoesNotExist, VisualStyle.DoesNotExist):
+            self.stderr.write(
+                self.style.WARNING(
+                    f"  taxonomy skipped for {template.slug}: run "
+                    f"seed_visual_styles + seed_profession_clusters first."
+                )
+            )
+            return
+
+        template.profession_cluster = cluster
+        template.visual_style = style
+        template.use_cases = list(md["use_cases"])
+        template.audience = list(md["audience"])
+        template.price_tier = md["price_tier"]
+        template.search_keywords = md["search_keywords"]
+        for flag in _FEATURE_FLAG_FIELDS:
+            setattr(template, flag, md[flag])
+        template.save(
+            update_fields=[
+                "profession_cluster",
+                "visual_style",
+                "use_cases",
+                "audience",
+                "price_tier",
+                "search_keywords",
+                *_FEATURE_FLAG_FIELDS,
+                "updated_at",
+            ]
+        )
+
     def handle(self, *args, **options):
         categories = {c.slug: c for c in Category.objects.all()}
         if not categories:
@@ -572,6 +1001,13 @@ class Command(BaseCommand):
                     template=template,
                     defaults=brand_data,
                 )
+                # X.2 Commit 3 · apply taxonomy v2 metadata on fresh
+                # seed so a brand-new database lands in the same end-
+                # state as an existing DB after the 0004 backfill
+                # migration ran. Only applied on creation to preserve
+                # idempotency: existing rows keep any admin-authored
+                # metadata tweaks.
+                self._apply_taxonomy_metadata(template)
                 self.stdout.write(f"  Created: {t_data['name']} ({brand_data['brand_name']})")
             else:
                 self.stdout.write(f"  Exists:  {t_data['name']}")

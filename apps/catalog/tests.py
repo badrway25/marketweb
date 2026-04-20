@@ -441,3 +441,264 @@ class SeedProfessionClustersCommandTests(TestCase):
                 f"Expected {count} clusters in '{slug}', got {actual}.",
             )
         self.assertEqual(sum(expected.values()), 52)
+
+
+# ── X.2 Commit 3 · backfill + seed_templates metadata integration ──
+
+import importlib  # noqa: E402
+
+from apps.catalog.management.commands.seed_templates import (  # noqa: E402
+    TEMPLATE_METADATA as SEED_TEMPLATE_METADATA,
+)
+
+# The migration file name starts with a digit ("0004_..."), so a plain
+# ``from apps.catalog.migrations.0004_... import ...`` is a syntax
+# error. ``importlib.import_module`` accepts arbitrary dotted paths and
+# is the canonical way to reach migration-level constants from a test.
+_backfill_module = importlib.import_module(
+    "apps.catalog.migrations.0004_taxonomy_v2_backfill"
+)
+BACKFILL_TEMPLATE_METADATA = _backfill_module.TEMPLATE_METADATA
+BACKFILL_FEATURE_FLAG_FIELDS = _backfill_module._FEATURE_FLAG_FIELDS
+
+
+class BackfillContractTests(TestCase):
+    """Locks the dict-level contract between the migration and the seed.
+
+    The data migration inlines ``TEMPLATE_METADATA`` (frozen at migration
+    authoring time) while ``seed_templates.TEMPLATE_METADATA`` remains
+    the live source of truth for fresh seeds. These tests assert they
+    stay in sync — a drift would produce different end-states for a
+    production DB (migration path) vs a CI / fresh DB (seed path).
+    """
+
+    def test_backfill_dict_and_seed_templates_dict_match(self):
+        self.assertEqual(
+            set(BACKFILL_TEMPLATE_METADATA.keys()),
+            set(SEED_TEMPLATE_METADATA.keys()),
+            "Migration and seed must cover the same 20 template slugs.",
+        )
+        for slug, seed_md in SEED_TEMPLATE_METADATA.items():
+            migration_md = BACKFILL_TEMPLATE_METADATA[slug]
+            self.assertEqual(
+                seed_md,
+                migration_md,
+                f"Metadata drift on '{slug}' between migration 0004 and "
+                f"seed_templates — both must declare identical fields.",
+            )
+
+    def test_backfill_covers_exactly_twenty_templates(self):
+        self.assertEqual(len(BACKFILL_TEMPLATE_METADATA), 20)
+        self.assertEqual(len(SEED_TEMPLATE_METADATA), 20)
+
+    def test_feature_flag_field_list_is_consistent(self):
+        # Both definitions expose the same tuple order so iteration
+        # stays deterministic across forward + reverse paths.
+        self.assertEqual(
+            BACKFILL_FEATURE_FLAG_FIELDS,
+            (
+                "has_shop",
+                "has_booking",
+                "has_portfolio",
+                "has_blog",
+                "has_video",
+                "has_rtl",
+                "is_multi_page",
+            ),
+        )
+
+
+class FreshSeedChainBackfillTests(TestCase):
+    """End-to-end seed chain → backfill via seed_templates metadata.
+
+    Mirrors the path a CI / fresh-env run takes: migrations apply
+    (including the 0004 data migration, which is a no-op on an empty
+    DB), then the four seed commands run in order. Locks the 20-MVP
+    invariant + category preservation + sample slug→cluster/style
+    mapping + sample feature-flag and price-tier wiring.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        call_command("seed_categories", stdout=StringIO())
+        call_command("seed_visual_styles", stdout=StringIO())
+        call_command("seed_profession_clusters", stdout=StringIO())
+        call_command("seed_templates", stdout=StringIO())
+
+    def test_twenty_mvp_templates_seeded(self):
+        self.assertEqual(WebTemplate.objects.count(), 20)
+
+    def test_every_mvp_template_has_profession_cluster(self):
+        missing = list(
+            WebTemplate.objects.filter(profession_cluster__isnull=True).values_list(
+                "slug", flat=True
+            )
+        )
+        self.assertEqual(
+            missing,
+            [],
+            f"Every MVP template must carry a profession_cluster; missing on: {missing}.",
+        )
+
+    def test_every_mvp_template_has_visual_style(self):
+        missing = list(
+            WebTemplate.objects.filter(visual_style__isnull=True).values_list(
+                "slug", flat=True
+            )
+        )
+        self.assertEqual(
+            missing,
+            [],
+            f"Every MVP template must carry a visual_style; missing on: {missing}.",
+        )
+
+    def test_template_category_preserved_across_backfill(self):
+        # The seed_templates entries hardcode the legacy category FK;
+        # taxonomy v2 is additive so each ``category_slug`` in the
+        # seed list must match the persisted FK (no silent rewrite).
+        from apps.catalog.management.commands.seed_templates import SEED_TEMPLATES
+
+        for entry in SEED_TEMPLATES:
+            tpl = WebTemplate.objects.get(slug=entry["slug"])
+            self.assertEqual(
+                tpl.category.slug,
+                entry["category_slug"],
+                f"Category drift on {entry['slug']}: expected "
+                f"{entry['category_slug']!r}, got {tpl.category.slug!r}.",
+            )
+
+    def test_cluster_category_matches_template_category(self):
+        # Invariant: the ProfessionCluster a template points to must
+        # live under the same macro-category as the template itself.
+        for tpl in WebTemplate.objects.all():
+            self.assertEqual(
+                tpl.profession_cluster.category_id,
+                tpl.category_id,
+                f"Cluster/category mismatch on '{tpl.slug}': cluster "
+                f"is in {tpl.profession_cluster.category.slug!r}, "
+                f"template is in {tpl.category.slug!r}.",
+            )
+
+    def test_representative_mapping_vertex_creative_editorial_warm(self):
+        vertex = WebTemplate.objects.get(slug="vertex-creative-agency")
+        self.assertEqual(vertex.profession_cluster.slug, "creative")
+        self.assertEqual(vertex.visual_style.slug, "editorial-warm")
+        self.assertEqual(vertex.price_tier, WebTemplate.PriceTier.PREMIUM)
+        self.assertTrue(vertex.has_portfolio)
+        self.assertFalse(vertex.has_shop)
+
+    def test_representative_mapping_bottega_artisan_typographic_first(self):
+        bottega = WebTemplate.objects.get(slug="bottega-shop-artigianale")
+        self.assertEqual(bottega.profession_cluster.slug, "artisan-workshop")
+        self.assertEqual(bottega.visual_style.slug, "typographic-first")
+        self.assertEqual(bottega.price_tier, WebTemplate.PriceTier.PREMIUM)
+        self.assertTrue(bottega.has_shop)
+        self.assertTrue(bottega.has_blog)
+        self.assertFalse(bottega.has_video)
+
+    def test_representative_mapping_luxe_fashion_magazine_hybrid(self):
+        luxe = WebTemplate.objects.get(slug="luxe-fashion-store")
+        self.assertEqual(luxe.profession_cluster.slug, "fashion-editorial")
+        self.assertEqual(luxe.visual_style.slug, "magazine-hybrid")
+        self.assertTrue(luxe.has_shop)
+        self.assertTrue(luxe.has_blog)
+        self.assertTrue(luxe.has_video)
+        self.assertTrue(luxe.has_rtl)
+        self.assertIn("luxury-brand", luxe.use_cases)
+
+    def test_specialist_cluster_is_shared_by_cardio_and_derm(self):
+        # A.9 invariant preserved through taxonomy v2: a single cluster
+        # slug can carry two templates (shared-schema archetype).
+        cardio = WebTemplate.objects.get(slug="cardio-studio-specialistico")
+        derm = WebTemplate.objects.get(slug="dermatologia-elite-roma")
+        self.assertEqual(cardio.profession_cluster.slug, "specialist")
+        self.assertEqual(derm.profession_cluster.slug, "specialist")
+        self.assertEqual(
+            cardio.profession_cluster_id, derm.profession_cluster_id
+        )
+
+    def test_medical_and_restaurant_templates_have_booking_flag(self):
+        # Feature-flag sanity on the five medical + three restaurant
+        # templates — booking is the discovery-relevant feature for
+        # both category groups.
+        booking_slugs = {
+            "salute-studio-medico",
+            "benessere-centro-olistico",
+            "famiglia-pediatria",
+            "cardio-studio-specialistico",
+            "dermatologia-elite-roma",
+            "gusto-fine-dining",
+            "sapore-trattoria-pizzeria",
+            "brace-street-food-lab",
+            "lex-studio-legale",
+            "juris-avvocato-moderno",
+        }
+        actual = set(
+            WebTemplate.objects.filter(has_booking=True).values_list(
+                "slug", flat=True
+            )
+        )
+        self.assertEqual(
+            actual,
+            booking_slugs,
+            "has_booking=True expected on medical + restaurant + lawyer "
+            "templates only at the X.2 baseline.",
+        )
+
+    def test_ecommerce_templates_have_shop_flag(self):
+        shop_slugs = {"bottega-shop-artigianale", "luxe-fashion-store"}
+        actual = set(
+            WebTemplate.objects.filter(has_shop=True).values_list(
+                "slug", flat=True
+            )
+        )
+        self.assertEqual(actual, shop_slugs)
+
+    def test_all_mvp_templates_are_rtl_enabled(self):
+        # D-098 / program-closure invariant: 19/19 enrolled archetypes
+        # ship real RTL → all 20 templates land with has_rtl=True.
+        self.assertEqual(
+            WebTemplate.objects.filter(has_rtl=True).count(),
+            20,
+        )
+
+    def test_all_mvp_templates_are_multi_page(self):
+        self.assertEqual(
+            WebTemplate.objects.filter(is_multi_page=True).count(),
+            20,
+        )
+
+    def test_search_keywords_populated_for_every_template(self):
+        empty = list(
+            WebTemplate.objects.filter(search_keywords="").values_list(
+                "slug", flat=True
+            )
+        )
+        self.assertEqual(
+            empty,
+            [],
+            f"Every MVP template must carry non-empty search_keywords; "
+            f"missing on: {empty}.",
+        )
+
+    def test_price_tier_populated_for_every_template(self):
+        null_rows = list(
+            WebTemplate.objects.filter(price_tier__isnull=True).values_list(
+                "slug", flat=True
+            )
+        )
+        self.assertEqual(
+            null_rows,
+            [],
+            f"Every MVP template must carry a price_tier; missing on: "
+            f"{null_rows}.",
+        )
+
+    def test_second_seed_run_is_idempotent(self):
+        # Re-seeding must not duplicate templates + must not overwrite
+        # metadata (we only apply metadata on create).
+        call_command("seed_templates", stdout=StringIO())
+        self.assertEqual(WebTemplate.objects.count(), 20)
+        # Sanity: metadata still intact after the repeat run.
+        vertex = WebTemplate.objects.get(slug="vertex-creative-agency")
+        self.assertEqual(vertex.visual_style.slug, "editorial-warm")
