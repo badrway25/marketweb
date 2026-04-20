@@ -139,13 +139,13 @@
       "imagery_key": "business-fiscal",
       "font_pairing": "IBM Plex Serif + IBM Plex Sans",
       "dna_phase": "x4.1",
-      "session_closed": null,
-      "live_preview": false,
+      "session_closed": 80,
+      "live_preview": true,
       "live_pages": ["home", "lo-studio", "competenze", "casi-seguiti", "casi-seguiti/<post>", "contatti"],
-      "locales": ["it"],
-      "rtl": false,
-      "tier": "draft",
-      "tier_reason": "Phase X.4 Wave 2 Pilot #1 opened 2026-04-20. Fiscus is the first pilot template produced by the Content Factory pipeline. Reuses corporate-suite archetype (Pragma's shell) but with commercialista-specific voice, dashboard-light visual style, warm-neutral palette + blu-notte accent, and financial-services cluster. Ships with IT content tree only at this stage — EN/FR/ES/AR locales pending parallel sub-agent authoring (blueprint: docs/content-factory/cluster_blueprints/financial-services.md · imagery pack: docs/content-factory/imagery/packs/financial-services.md). Flip to published_live requires: (a) 4 locale trees authored + tagged RTL for AR, (b) 8-point Playwright walk (IT home + IT detail + IT studio + IT scadenze-section + EN home + AR home RTL + cluster-detail lists Fiscus + typeahead returns Fiscus on 'commercialista'), (c) D-054 differentiation from Pragma verified. Stays `draft` until those three gates are green."
+      "locales": ["it", "en", "fr", "es", "ar"],
+      "rtl": true,
+      "tier": "published_live",
+      "tier_reason": "Phase X.4 Wave 2 Pilot #1 closed in Session 80 (2026-04-20). Fiscus is the first pilot template produced by the Content Factory pipeline (X.3). Reuses corporate-suite archetype (Pragma's shell) but with commercialista-specific voice, dashboard-light visual style, warm-neutral palette + blu-notte accent, and financial-services cluster. 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic. Locale registers: IT commercialista Milan ODCEC, EN FT/HBR institutional tax-advisor, FR Les Echos/Agefi vouvoiement with espaces insecables, ES Cinco Días/Expansión peninsular usted, AR MSA Asharq al-Awsat boardroom with Latin digits + Latin proper names + Italian normative refs preserved with parenthetical Arabic clarification on first mention. D-053 gate green (131/131 catalog · 506/506 apps · 892/892 smoke with Fiscus included). D-054 10/10 vs Pragma: warm-neutral cream + blu-notte + gold filigrana palette (vs Pragma navy slate + emerald) + fiscal-desk imagery (vs Pragma boardroom) + IBM Plex Serif+Sans typographic pair (vs Pragma Merriweather+Inter) + voice anchor 'adempimento corretto, non la trovata' (vs Pragma 'decisioni che contano') + appointment-request CTA with P.IVA+CF+fascia oraria form (vs Pragma private-call NDA-ready form) + casi-seguiti routing nomenclature (vs Pragma case-studies) + ODCEC-iscritti commercialista-specific leadership + 6 fiscal practice areas + deadline-presidio narrative. Playwright MCP 8/8 checkpoints green. Voice stays sharply distinct from Pragma's institutional advisory register."
     },
     {
       "slug": "gusto-fine-dining",

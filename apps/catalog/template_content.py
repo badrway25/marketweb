@@ -2428,9 +2428,16 @@ from apps.catalog.template_content_elevate_ar import ELEVATE_CONTENT_AR  # noqa:
 # Wave 2 Pilot #1 — Fiscus (Phase X.4, Session 80, 2026-04-20).
 # Reuses corporate-suite archetype (Pragma's skin) with commercialista
 # voice + dashboard-light visual style + warm-neutral palette. Ships
-# IT-only at `tier=draft`; EN/FR/ES/AR locales authored in a follow-up
-# turn before the tier flip to `published_live`.
+# in 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic. Locale
+# registers are institutional-fiscal throughout: IT commercialista ·
+# EN FT/HBR · FR Les Echos/Agefi vouvoiement · ES Cinco Días/Expansión
+# peninsular usted · AR MSA boardroom (Asharq al-Awsat) with Latin
+# digits + Latin proper names + Italian normative refs preserved.
 from apps.catalog.template_content_fiscus import FISCUS_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_fiscus_en import FISCUS_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_fiscus_fr import FISCUS_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_fiscus_es import FISCUS_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_fiscus_ar import FISCUS_CONTENT_AR  # noqa: E402
 
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
@@ -2603,9 +2610,14 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "ar": ELEVATE_CONTENT_AR,
     },
     # Wave 2 Pilot #1 — Fiscus (Phase X.4, Session 80, 2026-04-20)
-    # IT-only at tier=draft · 4 locales pending parallel sub-agents.
+    # 5 locales · IT commercialista + EN FT/HBR + FR Les Echos +
+    # ES Cinco Días + AR MSA Asharq al-Awsat · tier flip pending.
     "fiscus-commercialista": {
         "it": FISCUS_CONTENT_IT,
+        "en": FISCUS_CONTENT_EN,
+        "fr": FISCUS_CONTENT_FR,
+        "es": FISCUS_CONTENT_ES,
+        "ar": FISCUS_CONTENT_AR,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,

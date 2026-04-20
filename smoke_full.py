@@ -37,6 +37,8 @@ LOCALES = {
     "juris-avvocato-moderno":      ["it", "en", "fr", "es", "ar"],
     "casa-agenzia-immobiliare":    ["it", "en", "fr", "es", "ar"],
     "villa-immobili-lusso":        ["it", "en", "fr", "es", "ar"],
+    # Phase X.4 — Wave 2 Pilot #1 (Fiscus commercialista · Session 80)
+    "fiscus-commercialista":       ["it", "en", "fr", "es", "ar"],
 }
 
 CATEGORY = {
@@ -62,6 +64,8 @@ CATEGORY = {
     "juris-avvocato-moderno":      "lawyer",
     "casa-agenzia-immobiliare":    "real-estate",
     "villa-immobili-lusso":        "real-estate",
+    # Phase X.4 — Wave 2 Pilot #1
+    "fiscus-commercialista":       "business",
 }
 
 @override_settings(ALLOWED_HOSTS=["*"])
@@ -162,6 +166,9 @@ def run():
          ["attico-brera-duomo", "villa-cernobbio-lago", "loft-tortona-navigli"]),
         ("/templates/real-estate/villa-immobili-lusso/preview/collezione/",
          ["villa-aurelia-portofino", "castello-di-montero-chianti", "penthouse-quadronno-milano"]),
+        # Phase X.4 — Fiscus case studies (casi-seguiti detail route)
+        ("/templates/business/fiscus-commercialista/preview/casi-seguiti/",
+         ["pmi-manifattura-bilancio-revisione", "contenzioso-tributario-accertamento-iva", "wealth-passaggio-generazionale-holding"]),
     ]
     for parent, slugs in POST_ROUTES:
         for s in slugs:
