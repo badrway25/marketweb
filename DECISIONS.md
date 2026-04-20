@@ -1,5 +1,52 @@
 # Decisions Log
 
+## D-101 · Content Factory Pipeline · Runbook + Taxonomy-Aware Related + NOT-NULL Tightening (2026-04-20, Session 79)
+
+### Decision
+
+X.3 establishes the Content Factory Pipeline as the binding authoring contract for Wave 2+ template production, and closes the taxonomy v2 contract with 3 interlocking pieces:
+
+1. **Factory runbook + blueprints + imagery packs + validator** (Commits 1–3). `docs/content-factory/` is the authoritative source for how a new template moves from zero to published_live: runbook (5-day cadence · curator → IT author → 4 parallel locale authors → reviewer → Phase Lead) + 10 pilot cluster blueprints (profession-specific terminology · anti-patterns · D-054 matrix) + 10 imagery packs (232 Pexels URLs · role-grouped · cross-pack deduped) + standalone validator `scripts/check_imagery_pack.py` (334 LOC · zero Django dep · 22 unit tests · hermetic · CI-safe offline-by-default).
+
+2. **Related-templates selector becomes taxonomy-aware and deterministic** (Commit 4). `get_related_templates(template, limit=3, include_drafts=False)` refactored from naive `filter(category=...).exclude(pk=...)` to priority-layered fill: same `profession_cluster` → same `visual_style` → same `category`. Exclude self · distinct across layers · deterministic ordering (featured DESC + Meta ordering). Returns `list[WebTemplate]` (layered union cannot be a QuerySet without raw SQL while preserving the priority contract; iteration in templates is unchanged). Runtime behavior verified end-to-end via Playwright MCP on Cardio (→ Derm first) · Luxe (→ Bottega) · Pragma (→ Lex + Elevate).
+
+3. **Taxonomy FKs flipped to NOT NULL** (Commit 5). `WebTemplate.profession_cluster` and `WebTemplate.visual_style` no longer `null=True, blank=True`. Schema-only migration 0005 (2 `AlterField` ops · zero data migration) because X.2 Commit 3 had already backfilled all 20 MVP rows. `seed_templates.py` updated to resolve cluster + style upfront into the `get_or_create` defaults and to auto-run `seed_profession_clusters` / `seed_visual_styles` if the taxonomy tables are empty — preserves legacy fixture paths without touching `apps/projects/*`.
+
+### Why
+
+1. **Factory discipline > ad-hoc authoring.** Wave 2 scales to 80+ templates. Without a binding pipeline, imagery mismatches (Session 31), D-047 chrome-leak incidents, and D-054 differentiation drift recur. The runbook + blueprints + validator + mandatory Playwright MCP walk at merge-time encode the lessons of Sessions 23–52 as enforceable contract rather than institutional memory.
+
+2. **Option B (selector helper) beats Option A (M2M).** M2M requires seed/maintenance per-template and drifts when cluster FK changes. Selector helper is deterministic, auto-correct, zero-schema, and cacheable. At 20→200 templates the query cost stays sub-100ms. If manual override emerges as a need, a one-field `related_override M2M` can layer on top of the default without breaking the contract.
+
+3. **NOT NULL closes the nullable-first transition contract.** X.2 Commit 1 intentionally shipped the FKs nullable to avoid a data-migration risk on an already-populated DB. Commit 3 backfilled. After two operational cycles (Playwright walks · smoke · test suites) the NOT NULL flip is safe. Leaving FKs nullable indefinitely would let a future template slip through without taxonomy wiring and silently break discovery surfaces (facets · typeahead · cluster pages · related-templates priority).
+
+### How to apply
+
+- **Wave 2 author**: read `docs/content-factory/runbook.md`, then the relevant `cluster_blueprints/<slug>.md`, then the imagery pack. Do NOT start copy before the imagery pack is reviewer-approved.
+- **New template INSERT**: `profession_cluster` and `visual_style` MUST be provided — the DB enforces it now.
+- **Seed command authors**: pre-resolve cluster + style upfront (model pattern already in `seed_templates.py` as of Commit 5). If seeding new clusters/styles, also update the relevant blueprint + imagery pack or the template is non-authorable.
+- **Related templates extension (future)**: do NOT add a first M2M override without documenting a specific customer signal. The selector-helper default is the correct baseline.
+- **Imagery curation**: Pexels primary (API key via `PEXELS_API_KEY` env var · never committed) · Unsplash secondary · paywalled stock banned per `imagery/sources.md`. Validator `scripts/check_imagery_pack.py` runs offline in CI; `--network` for operator-time live checks.
+
+### Binding
+
+- **Playwright MCP browser verification is mandatory** for every Wave 2 template merge and for every public-surface commit in X.3+ (exceptions: docs-only commits, Python-tests-only commits).
+- **Imagery curation step is blocking**: no copy authoring starts before the imagery pack is approved. Skipping this reopens Session 31.
+- **No new archetypes in Wave 2**: D-099 program closure stays binding. A cluster that demands novel structural surface is NOT a Wave 2 candidate.
+
+### Alternatives rejected
+
+- **M2M related_templates**: rejected in favor of selector helper (see Why §2).
+- **Pexels vendoring (download + re-host)**: rejected in MVP · direct CDN linking is operationally cheaper · validator can re-probe via `--network`.
+- **Schema-less imagery packs (just a folder of images)**: rejected · structured MD files with per-URL semantic caption + coherence statement is the only way to enforce reviewer accountability.
+- **Keep FKs nullable indefinitely**: rejected · implicit contract drift risk on Wave 2 template creation.
+
+### Operationalisation history
+
+- **2026-04-20 · Session 79 · X.3 Commits 1–5** — factory scaffolding · 10 pilot blueprints · 10 imagery packs + validator · taxonomy-aware related · NOT-NULL flip. 5 commits locally on `phase-integration-baseline-v15` (`c0f4e65` → `f26689f`). 506/506 apps tests · 131/131 catalog tests · 854/854 smoke. Playwright walk on homepage / catalog / Cardio detail / AR preview all green. Pushed to origin at session close.
+
+---
+
 ## D-100 · Catalog IA Redesign v2 · 2-Level Taxonomy + Visual Style + Additive Template Metadata (2026-04-20, Session 78)
 
 ### Decision

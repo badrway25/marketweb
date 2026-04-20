@@ -1,10 +1,63 @@
 # Agent Handoff
 
-Last updated: 2026-04-20 — after **Session 78 Phase X.2 + X.2b Catalog IA Redesign + Taxonomy Migration + Visual Polish · PUSHED** (tip includes docs commit · 6 feat/fix commits + 1 docs commit ahead of pre-X.2 baseline `57266ce`)
+Last updated: 2026-04-20 — after **Session 79 Phase X.3 Content Factory Pipeline · PUSHED** (5 feat/fix/docs commits `c0f4e65` → `f26689f` + docs consolidation · ahead of pre-X.3 baseline `d1762f7`)
 
-## ⚑ X.2 + X.2b CLOSED · pushed to origin (2026-04-20)
+## ⚑ X.3 CLOSED · pushed to origin (2026-04-20)
 
-**Read before opening any new workstream.** X.2 + X.2b are complete and pushed to `origin/phase-integration-baseline-v15`. 6 feature/fix commits (`6407833` → `971da41`) land taxonomy v2 + catalog discovery + homepage redesign + visual polish pass. Docs consolidation committed on top.
+**Read before opening any new workstream.** X.3 is complete and pushed to `origin/phase-integration-baseline-v15`. 5 feature/fix/docs commits land the Content Factory Pipeline + taxonomy-aware related templates + NOT-NULL taxonomy contract. Docs consolidation committed on top.
+
+- **Remote tip**: includes docs commit + full X.3 chain · 506/506 apps tests · 131/131 catalog tests · 854/854 smoke · Playwright MCP walk green.
+- **Program state**: editor enrollment program CLOSED (D-099 since A.17b) · catalog IA v2 live · taxonomy contract tightened to NOT NULL.
+
+### X.3 scope delivered (5 commits · 36 files · +7041 LOC)
+
+| Commit | Hash | Surface |
+|---|---|---|
+| 1 | `c0f4e65` | Docs scaffolding · runbook + cluster_blueprints/_TEMPLATE + glossaries/_TEMPLATE + imagery docs (CURATION_PROTOCOL + blacklist + sources) + search_keywords docs (AUTHORING_CONTRACT + reviewer_checklist) + pilot_batch spec · 9 files |
+| 2 | `a385110` | 10 pilot cluster blueprints (profession-specific · terminology · anti-patterns · D-054 matrix) · 10 files |
+| 3 | `2e37439` | 10 imagery packs (232 Pexels URLs · role-grouped · deduped) + standalone validator `scripts/check_imagery_pack.py` + 22 hermetic tests · 12 files |
+| 4 | `252f9f9` | Taxonomy-aware related-templates selector (same-cluster → same-style → same-category · deterministic · 15 tests) · 2 files |
+| 5 | `f26689f` | NOT-NULL flip (schema migration 0005 · `seed_templates.py` migration-required runtime update · 11 contract tests) · 4 files |
+
+### What works on the live build
+
+- Factory pipeline binding: `docs/content-factory/runbook.md` is the authoritative contract for Wave 2 template authoring.
+- `/templates/<cat>/<slug>/` related block now reads same-cluster siblings first, then same-style, then same-category. Deterministic · no randomness.
+- `scripts/check_imagery_pack.py` validates imagery packs offline (CI-safe) or with `--network` (operator-time HTTP HEAD probe).
+- Taxonomy FKs (`profession_cluster`, `visual_style`) are required at INSERT. Creating a WebTemplate without either raises `IntegrityError`.
+- `seed_templates.py` auto-runs `seed_profession_clusters` and `seed_visual_styles` when the taxonomy tables are empty (preserves legacy fixture paths in `apps.projects` tests without touching that app).
+
+### What is deferred (not in X.3)
+
+- **Wave 2 template authoring** (the 10 pilot templates in `pilot_batch/x4_wave2_first_10.md`) · this is X.4 Step 0 onwards.
+- **Related-templates manual override M2M** · stays deferred until a specific manual-curation signal emerges. Selector-helper default (Option B) is correct baseline.
+- **AI-generated imagery** · forbidden in MVP per `imagery/sources.md` · revisit post-Wave 2.
+- **New archetype enrollment** · program closed (D-099) · no Wave 2 cluster justifies re-opening.
+
+### Recommended next workstream
+
+**Phase X.4 · Wave 2 Pilot Authoring · Step 0 planning audit.** Before authoring kicks off:
+1. Re-read `docs/content-factory/pilot_batch/x4_wave2_first_10.md`.
+2. Assign curator / IT copy author / locale authors (×4) / reviewer per cluster · at most 3 clusters in parallel.
+3. Confirm `PEXELS_API_KEY` availability for any imagery re-curation.
+4. Pick starting cluster from the 10 (recommend `financial-services` or `dental` as both have tight blueprint discipline + low structural novelty).
+5. First pilot template cadence: imagery pack LGTM (pack already exists in X.3 C3) → IT copy author → 4 parallel locale authors → reviewer checklist → Phase Lead merge → mandatory Playwright MCP walk.
+
+Expected post-pilot catalog: **30 templates** (20 existing + 10 pilot). 10 new clusters activated (30/52 populated). Est: 15-20 calendar days with 2-3 parallel streams.
+
+### Follow-up work that is NOT on the table
+
+- No `A.18` template enrollment (D-099 binding · editor enrollment program CLOSED).
+- No related-templates M2M without explicit signal (Option B selector-helper wins).
+- No paywalled stock imagery (Pexels + Unsplash only per `imagery/sources.md`).
+- No AI-gen imagery in MVP.
+- No copy authoring without imagery pack LGTM first (runbook §2 blocking step).
+
+---
+
+## Historical context · X.2 + X.2b (superseded by X.3 above · retained for reference)
+
+X.2 + X.2b are complete and pushed to `origin/phase-integration-baseline-v15`. 6 feature/fix commits (`6407833` → `971da41`) land taxonomy v2 + catalog discovery + homepage redesign + visual polish pass. Docs consolidation committed on top.
 
 - **Remote tip:** includes docs commit + full X.2 + X.2b chain · 480/480 apps tests · 854/854 smoke · Playwright MCP browser walk green on 6 surfaces.
 - **Program state:** editor enrollment program CLOSED (D-099). X.2 + X.2b are catalog-only — zero touches to editor / projects / commerce / live_templates / static/editor.

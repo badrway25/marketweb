@@ -1,6 +1,19 @@
 # TODO Next
 
-## 🟢 Current State (2026-04-20 · after Session 78 Phase X.2 + X.2b · MERGED + PUSHED)
+## 🟢 Current State (2026-04-20 · after Session 79 Phase X.3 Content Factory Pipeline · PUSHED)
+
+Baseline `phase-integration-baseline-v15` tip is **`<DOCS_COMMIT>`** · **PUSHED** to origin. X.3 closed with 5 feature/fix/docs commits (`c0f4e65` → `f26689f`) plus docs consolidation. Validation gates all green: **506/506 apps tests · 131/131 catalog tests · 854/854 smoke · `manage.py check` 0 issues · Playwright MCP browser walk green on 4 public surfaces + editor-invariant**.
+
+**Phase X.3 delivered and pushed:**
+- **Content Factory Pipeline established** · `docs/content-factory/` carries runbook + 10 pilot cluster blueprints (profession-specific terminology + anti-patterns + D-054 matrix) + 10 imagery packs (232 Pexels URLs, role-grouped, cross-pack deduped) + 3 imagery docs (CURATION_PROTOCOL · blacklist · sources) + 2 search-keywords docs + pilot_batch spec.
+- **Imagery validator live** · `scripts/check_imagery_pack.py` (334 LOC · zero Django dep · 22 unit tests · hermetic · offline-by-default CI-safe). Enforces 20-40 URLs, within-pack dedup, allowed-domain whitelist, optional cross-pack, optional HTTP HEAD probe.
+- **Related-templates selector taxonomy-aware** · priority-layered same-cluster → same-style → same-category · deterministic · exclude-self · distinct · limit-respected. 15 new tests. Cardio → Derm first. Luxe → Bottega. Pragma → Lex + Elevate.
+- **NOT-NULL flip closed** · migration 0005 (schema-only, 2 AlterField · zero data migration) · `WebTemplate.profession_cluster` + `visual_style` now required. 11 contract tests. `seed_templates.py` auto-runs taxonomy seed preconditions.
+- Zero touches to `apps/editor`, `apps/projects`, `apps/commerce`, `templates/live_templates`, `static/editor`. **D-099 program closure intact.**
+
+## 🟢 Previous checkpoint (pre-X.3)
+
+Baseline post-X.2+X.2b (tip `d1762f7` after docs consolidation). Editor enrollment program closed (A.17b · D-099). Catalog IA v2 live: 15 macro-categories · 52 profession clusters · 12 visual styles · 20/20 templates backfilled · homepage redesigned search-first · discovery facets + typeahead + cluster/role/use-case pages.
 
 Baseline `phase-integration-baseline-v15` tip is **`<DOCS_COMMIT>`** · **PUSHED** to origin. 6 X.2/X.2b commits (`6407833` → `971da41`) plus docs consolidation. Validation gates all green: **480/480 apps tests · 854/854 smoke · `manage.py check` 0 issues · Playwright MCP browser walk verde on 6 surfaces**.
 
@@ -61,17 +74,19 @@ No explicitly-deferred debt is pending. **19 commit-clean phases** delivered bac
 
 A.17b closes the startup-saas family · closes the editor enrollment program A.6 → A.17b. **Zero further `A.18` template-enrollment phase planned.** The D-098 topology distribution is final. The DNA registry has 19 archetype slugs · all enrolled. The next workstream sits in one of two buckets:
 
-**Bucket 0 · X.2 closeout (CLOSED)**
-- [x] **Merge + push X.2+X.2b** — 6 commits (`6407833` → `971da41`) + docs consolidation pushed to `origin/phase-integration-baseline-v15`.
-- [x] **Homepage hero polish** — fixed in X.2b (removed legacy `mw-hero` class · explicit dark-on-light color · editorial hero background).
-- [ ] **X.2 Commit 6 (NOT NULL flip)** — flip `WebTemplate.profession_cluster` + `visual_style` to `null=False` once the backfill validates across environments. Pure schema migration. Can land any time after pushed X.2 is confirmed stable.
+**Bucket 0 · X.3 closeout (CLOSED)**
+- [x] **X.3 Commits 1-5 + docs consolidation pushed** to `origin/phase-integration-baseline-v15`.
+- [x] **NOT NULL flip landed** (X.3 Commit 5 · migration 0005 · was pending from X.2 Commit 6 slot).
+- [x] **Content Factory Pipeline docs scaffolding** · runbook + blueprints + imagery packs + validator · all binding for Wave 2.
+- [x] **Related templates selector** · taxonomy-aware + deterministic (Option B · no M2M).
 
 **Bucket 1 · Maintenance (low-value low-risk)**
 - [x] **MEMORY.md maintenance mini-phase** — closed in M.1 (pre-X.2).
 - [ ] **Docs archive pass (optional)** — consolidate SESSION_LOG earlier sessions into a compact history appendix · DECISIONS.md is stable.
 
-**Bucket 2 · Wave 2 prep — Phase X.3 Content Factory Pipeline (RECOMMENDED NEXT)**
-- [ ] **Phase X.3 · Content Factory Pipeline** — the scaffolding Wave 2 needs BEFORE any new template lands: (a) cluster content templates (profession-indexed copy skeletons + per-cluster terminology dictionary + per-cluster imagery pool curation); (b) sub-agent parallel authoring recipe formalized as a runbook (proven in Sessions 23–52 but unwritten); (c) imagery curator step BEFORE the template author (the Session 31 "PlayStation-as-Roma-map" disaster must not recur); (d) per-cluster `search_keywords` authoring conventions; (e) `related_templates` logic moved to an explicit M2M or queryset helper (same-cluster → same-style → same-category priority order). Est: 4-6 commits over 3-5 days. **Gates Wave 2 template authoring.**
+**Bucket 2 · Wave 2 authoring kickoff — Phase X.4 (RECOMMENDED NEXT)**
+- [ ] **Phase X.4 · Wave 2 Pilot Authoring** — author the 10 pilot templates defined in `docs/content-factory/pilot_batch/x4_wave2_first_10.md` using the Content Factory pipeline landed in X.3 (runbook + blueprints + imagery packs + validator + taxonomy-aware related + NOT-NULL contract). All 10 reuse existing enrolled archetypes (zero new archetypes · D-099 binding intact). Per-template cadence: curator LGTM on imagery pack (already produced in X.3 Commit 3) → IT copy author → 4 parallel locale authors (EN/FR/ES/AR) → reviewer checklist → Phase Lead merge. **Mandatory Playwright MCP walk at every template merge.** Expected post-pilot catalog: **30 templates** (20 existing + 10 pilot). 10 new clusters activated (52 → populated 30). Est: ~5 calendar days per cluster with 2-3 parallel streams · ~15-20 days for the batch.
+- [ ] **Phase X.4 Step 0 planning audit** recommended before authoring kicks off: re-read pilot batch spec · confirm curator/author/reviewer sub-agent assignments · verify Pexels API key availability for any imagery re-curation · pick starting cluster from the 10.
 
 **Bucket 3 · Polish / optional widening (signal-gated)**
 - [ ] **`home.ambients` tuple-with-image widening mini-phase** — deferred novel shape from A.16b Benessere. Would require: runtime verification of tuple-cell-with-image-type handling (`services._resolve_path` + `schema._iter_indexed_groups` + `rendering._apply_indexed`) + widget-level render test. Low value (4 tiles only) · customer-signal-gated · still deferred.

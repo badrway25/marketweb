@@ -1,5 +1,60 @@
 # Session Log
 
+## Session 79 — Phase X.3 · Content Factory Pipeline (2026-04-20)
+
+**Summary.** Content Factory scaffolding for Wave 2 template authoring landed as 5 local commits on `phase-integration-baseline-v15` (`c0f4e65` → `f26689f`). X.3 closes the taxonomy v2 contract introduced in X.2 by: (i) formalizing the authoring pipeline via `docs/content-factory/` runbook + 10 pilot cluster blueprints + 10 pilot imagery packs + validator script + tests; (ii) making the related-templates selector taxonomy-aware (same-cluster → same-style → same-category priority · deterministic · exclude-self · distinct); (iii) flipping `WebTemplate.profession_cluster` and `WebTemplate.visual_style` from nullable to NOT NULL now that all 20 MVP rows carry populated FKs. **Zero touches to `apps/editor`, `apps/projects`, `apps/commerce`, `templates/live_templates`, `static/editor`.** D-099 program closure remains intact.
+
+**Five critical framings for X.3:**
+
+1. **Content Factory as a binding pipeline, not a wiki.** `docs/content-factory/runbook.md` formalizes the 5-day cadence per cluster (curator → IT author → parallel locale authors → reviewer → Phase Lead). Imagery curation is a **blocking step** that must precede copy authoring. Playwright MCP browser verification is mandatory for every Wave 2 template merge. 9 docs files scaffold the machinery: runbook · 2 boilerplate templates · 3 imagery docs (CURATION_PROTOCOL · blacklist · sources) · 2 search-keywords docs (AUTHORING_CONTRACT · reviewer_checklist) · 1 pilot batch spec.
+
+2. **10 pilot cluster blueprints filled profession-specifically.** Each blueprint spans 240-270 LOC covering identity · audience · positioning · terminology (22-30 terms) · voice anchor · per-page copy skeleton · search-keywords pack · imagery pointer · feature flag expectations · 3 example brand names · 7-10 anti-patterns · 10-gate D-054 differentiation matrix. The 10 clusters match `pilot_batch/x4_wave2_first_10.md`: `financial-services` · `coaching` · `professional-services` · `bakery-pasticceria` · `bar-bistrot` · `dental` · `veterinary` · `notary-commercialista` · `videomaker` · `wine-food-boutique`. Each clearly differentiates from its siblings (dental ≠ specialist medical · veterinary ≠ family-pediatric · bakery-pasticceria ≠ fine-dining/trattoria · bar-bistrot ≠ street-casual/trattoria · notary-commercialista ≠ classic-law/modern-law-tech · wine-food-boutique ≠ artisan-workshop/fashion-editorial · videomaker ≠ photographer · financial/professional/coaching each distinct in tone/promise/terminology).
+
+3. **Imagery factory live with 232 curated Pexels URLs + standalone validator.** 10 imagery packs authored via Pexels API (`PEXELS_API_KEY` env var · never committed). Each pack 23-24 URLs, grouped by semantic role (hero · portrait · detail · ambient · gallery where relevant), with caption + coherence statement + photographer attribution + dimensions. Global dedup on Pexels photo-id enforced at generation time (cross-pack unique · 232/232 unique IDs). Validator `scripts/check_imagery_pack.py` (standalone · zero Django dep · 334 LOC) enforces count (20-40), within-pack dedup, allowed-domain whitelist (Pexels + Unsplash), optional cross-pack check, optional HTTP HEAD probe (default offline · CI-safe). 22 unit tests in `tests/test_check_imagery_pack.py` (stdlib unittest · hermetic · mocked HTTP).
+
+4. **Related templates become taxonomy-aware · Option B selector-helper wins.** `get_related_templates(template, limit=3, include_drafts=False)` refactored from naive same-category-only to deterministic priority-layered fill: same `profession_cluster` → same `visual_style` → same `category`. Exclude self · distinct across layers · deterministic ordering (featured DESC + Meta ordering · no randomness). Runtime behavior verified end-to-end via Playwright MCP: Cardio → Derm first (same cluster `specialist`) · Luxe → Bottega (category fallback, singleton cluster+style) · Pragma → Lex + Elevate (style + category layers fire). 15 dedicated tests blindatures all invariants. No schema change · no M2M · no manual override surface — pure selector logic. When future signal demands manual curation, a single M2M field can layer on top without breaking the deterministic default.
+
+5. **NOT NULL flip closes taxonomy v2.** Migration `0005_taxonomy_v2_not_null.py` flips `WebTemplate.profession_cluster` and `WebTemplate.visual_style` from `null=True, blank=True` to required. Schema-only (2 `AlterField` ops · zero data migration) because X.2 Commit 3 already backfilled all 20 MVP rows. 11 contract tests blindatures the new invariant: creating a template without either FK raises `IntegrityError` · existing rows query OK · migration itself is AlterField-only (guardrail test). `seed_templates.py` was updated (required by migration runtime) to resolve cluster + style upfront into the `get_or_create` defaults and to auto-run `seed_profession_clusters` / `seed_visual_styles` if the taxonomy tables are empty — this preserves legacy fixture paths (e.g. `apps.projects` `_seed_catalog()`) without touching `apps/projects/*`.
+
+### Step-by-step commit sequence
+
+**Commit 1 · `c0f4e65` — docs scaffolding + runbook + pilot_batch.** 9 files · ~1630 LOC MD · zero code. Establishes the factory contract. 398/398 tests unchanged.
+
+**Commit 2 · `a385110` — 10 pilot cluster blueprints.** 10 files · ~2560 LOC MD. Each blueprint profession-specific with real terminology + anti-patterns + D-054 matrix. Zero code.
+
+**Commit 3 · `2e37439` — 10 imagery packs + validator + tests.** 12 files · ~2517 LOC (packs 10 × ~187 LOC + validator 334 LOC + tests 299 LOC). 232 Pexels URLs validated · zero cross-pack dup. 22/22 validator tests PASS.
+
+**Commit 4 · `252f9f9` — taxonomy-aware related-templates selector.** 2 files · +290 LOC. 15 new tests. Playwright MCP walk verified Cardio → Derm first · Luxe → Bottega · Pragma → Lex+Elevate. 495/495 apps tests PASS (+15 from 480 baseline).
+
+**Commit 5 · `f26689f` — NOT NULL flip (X.2 Commit 6 piggyback).** 4 files · +244 LOC. Schema migration 0005 (2 AlterField · no data migration) · 11 new tests · `seed_templates.py` updated for migration-required runtime. 506/506 apps tests PASS (+11 from Commit 4). Playwright MCP walk on homepage / catalog list / Cardio detail / AR live preview all green.
+
+### Final validation at X.3 close
+
+- `manage.py check` → 0 issues.
+- `manage.py test apps.catalog` → **131/131 PASS** (+111 since pre-X.3 baseline 105).
+- `manage.py test apps` → **506/506 PASS** (+26 since pre-X.3 baseline 480).
+- `smoke_full.py` → **854/854 HTTP 200** (unchanged · no new public routes).
+- Git diff vs `d1762f7`: 36 files touched · +7041 LOC · **zero** touches to editor/projects/commerce/live_templates/static-editor.
+
+### Step · Playwright MCP browser sanity at X.3 close
+
+Fresh server on `127.0.0.1:8025` · 4 surfaces + 1 editor-invariant + console check.
+
+- **Homepage `/`** — H1 "Il sito web della tua professione. Pronto in pochi minuti." readable · trust counters LIVE (20+/15/52/5) · 15 category chips · 8 role cards · 6 use-case cards · 6 featured templates.
+- **Catalog `/templates/`** — HTTP 200 · facet sidebar present · 12 cards rendered with cluster + style + tier pills.
+- **Cardio detail** `/templates/medical/cardio-studio-specialistico/` — related section present · **Dermatologia first** (same-cluster priority from Commit 4 preserved post-flip).
+- **AR live preview** `/templates/agency/vertex-creative-agency/preview/?lang=ar` — `<html dir="rtl" lang="ar">` preserved · editor live-preview architecture UNTOUCHED by X.3.
+- **Console errors**: 1 (favicon.ico 404 · pre-existing) · **zero new**.
+
+### Step · NOT executed (deferred)
+
+- **Wave 2 template authoring** — X.3 is infrastructure-only · no new templates added · gated on pilot batch execution in X.4.
+- **New archetype enrollment** — program closed A.17b (D-099) · unchanged.
+- **Related templates M2M override** — selector-helper wins (Option B) · M2M layer can land later when manual-curation signal emerges.
+- **Pexels live HTTP HEAD probe in CI** — validator ships offline-by-default · `--network` flag available for operator-time checks.
+
+---
+
 ## Session 78 — Phase X.2 · Catalog IA Redesign + Taxonomy Migration + X.2b Visual Polish (2026-04-20)
 
 **Summary.** Public catalog rebuilt for 200+ template discovery: 2-level taxonomy (`Category` + `ProfessionCluster`), `VisualStyle` model, additive `WebTemplate` metadata (use_cases, audience, price_tier, search_keywords, 7 feature flag BooleanFields), facet sidebar + typeahead + cluster/role/use-case discovery pages, homepage redesigned around search-first discovery. Closed with **X.2b visual polish pass** that elevated hero contrast + navbar/footer premium overrides + card/sidebar refinement and fixed 2 display bugs caught in pre-merge browser verification (facet-sidebar Python-dict leak · card-badge overlap against legacy `.mw-template-card-img .mw-badge` absolute-positioning rule). **6 commits locally on `phase-integration-baseline-v15`** (`6407833` → `971da41`) · baseline after A.17b (`57266ce`) → tip `971da41` pushed to origin in this session. Zero touches to `apps/editor`, `apps/projects`, `apps/commerce`, `templates/live_templates`, `static/editor` · editor enrollment program closed in A.17b remains intact.
