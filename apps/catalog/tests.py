@@ -480,12 +480,27 @@ class BackfillContractTests(TestCase):
     """
 
     def test_backfill_dict_and_seed_templates_dict_match(self):
+        # Wave 2 contract (Phase X.4): the backfill migration
+        # (``0004_taxonomy_v2_backfill``) is FROZEN at the 20 MVP
+        # slugs it shipped with. The seed dict grows each wave as
+        # new templates land. The invariant therefore shifts from
+        # "exact set equality" to "backfill keys ⊆ seed keys and
+        # metadata matches on the common slugs". This keeps fresh
+        # DB seed runs identical to migrated DB end-state for every
+        # MVP slug, while letting Wave-2+ pilots extend the seed
+        # without rewriting history.
+        backfill_slugs = set(BACKFILL_TEMPLATE_METADATA.keys())
+        seed_slugs = set(SEED_TEMPLATE_METADATA.keys())
+        missing_from_seed = backfill_slugs - seed_slugs
         self.assertEqual(
-            set(BACKFILL_TEMPLATE_METADATA.keys()),
-            set(SEED_TEMPLATE_METADATA.keys()),
-            "Migration and seed must cover the same 20 template slugs.",
+            missing_from_seed,
+            set(),
+            f"Backfill-only slugs not present in seed: {missing_from_seed}. "
+            f"Every migration slug must remain seedable so fresh DBs "
+            f"converge to the same end-state as migrated ones.",
         )
-        for slug, seed_md in SEED_TEMPLATE_METADATA.items():
+        for slug in backfill_slugs:
+            seed_md = SEED_TEMPLATE_METADATA[slug]
             migration_md = BACKFILL_TEMPLATE_METADATA[slug]
             self.assertEqual(
                 seed_md,
@@ -495,8 +510,12 @@ class BackfillContractTests(TestCase):
             )
 
     def test_backfill_covers_exactly_twenty_templates(self):
+        # Backfill dict stays frozen at 20 (the MVP slugs from X.2).
+        # Seed dict grows with each Wave — at least 20 + however
+        # many Wave 2 pilots have merged. No upper bound asserted
+        # here; Wave cadence tests enforce their own counts.
         self.assertEqual(len(BACKFILL_TEMPLATE_METADATA), 20)
-        self.assertEqual(len(SEED_TEMPLATE_METADATA), 20)
+        self.assertGreaterEqual(len(SEED_TEMPLATE_METADATA), 20)
 
     def test_feature_flag_field_list_is_consistent(self):
         # Both definitions expose the same tuple order so iteration
@@ -532,8 +551,18 @@ class FreshSeedChainBackfillTests(TestCase):
         call_command("seed_profession_clusters", stdout=StringIO())
         call_command("seed_templates", stdout=StringIO())
 
-    def test_twenty_mvp_templates_seeded(self):
-        self.assertEqual(WebTemplate.objects.count(), 20)
+    def test_seeded_template_count_matches_seed_metadata(self):
+        # 20 MVP templates + Wave 2 pilots merged to date. The exact
+        # count is derived from SEED_TEMPLATE_METADATA so Wave 2
+        # additions bump the expected count automatically, while
+        # still guarding against silent catalog drift (each seed
+        # entry must correspond to exactly one DB row).
+        self.assertEqual(
+            WebTemplate.objects.count(),
+            len(SEED_TEMPLATE_METADATA),
+            "Seeded DB row count must match seed metadata length — "
+            "one metadata entry per template, no duplicates, no gaps.",
+        )
 
     def test_every_mvp_template_has_profession_cluster(self):
         missing = list(
@@ -625,9 +654,10 @@ class FreshSeedChainBackfillTests(TestCase):
         )
 
     def test_medical_and_restaurant_templates_have_booking_flag(self):
-        # Feature-flag sanity on the five medical + three restaurant
-        # templates — booking is the discovery-relevant feature for
-        # both category groups.
+        # Feature-flag sanity on medical + restaurant + lawyer + Wave 2
+        # `consultation-booking` templates. Booking is the discovery-
+        # relevant feature for all four groups. New Wave 2 booking
+        # templates register here as they land.
         booking_slugs = {
             "salute-studio-medico",
             "benessere-centro-olistico",
@@ -639,6 +669,8 @@ class FreshSeedChainBackfillTests(TestCase):
             "brace-street-food-lab",
             "lex-studio-legale",
             "juris-avvocato-moderno",
+            # Wave 2 Pilot #1 — Fiscus (appointment-request CTA)
+            "fiscus-commercialista",
         }
         actual = set(
             WebTemplate.objects.filter(has_booking=True).values_list(
@@ -649,7 +681,7 @@ class FreshSeedChainBackfillTests(TestCase):
             actual,
             booking_slugs,
             "has_booking=True expected on medical + restaurant + lawyer "
-            "templates only at the X.2 baseline.",
+            "+ Wave 2 booking-enabled templates.",
         )
 
     def test_ecommerce_templates_have_shop_flag(self):
@@ -662,17 +694,20 @@ class FreshSeedChainBackfillTests(TestCase):
         self.assertEqual(actual, shop_slugs)
 
     def test_all_mvp_templates_are_rtl_enabled(self):
-        # D-098 / program-closure invariant: 19/19 enrolled archetypes
-        # ship real RTL → all 20 templates land with has_rtl=True.
+        # D-098 / program-closure invariant: every enrolled archetype
+        # (MVP + Wave 2) ships real RTL. The expected count tracks the
+        # seed metadata length so Wave 2 additions don't drift the
+        # assertion each merge — the invariant is "has_rtl is the
+        # catalog-wide default", not "has_rtl is a magic 20".
         self.assertEqual(
             WebTemplate.objects.filter(has_rtl=True).count(),
-            20,
+            len(SEED_TEMPLATE_METADATA),
         )
 
     def test_all_mvp_templates_are_multi_page(self):
         self.assertEqual(
             WebTemplate.objects.filter(is_multi_page=True).count(),
-            20,
+            len(SEED_TEMPLATE_METADATA),
         )
 
     def test_search_keywords_populated_for_every_template(self):
@@ -705,7 +740,10 @@ class FreshSeedChainBackfillTests(TestCase):
         # Re-seeding must not duplicate templates + must not overwrite
         # metadata (we only apply metadata on create).
         call_command("seed_templates", stdout=StringIO())
-        self.assertEqual(WebTemplate.objects.count(), 20)
+        self.assertEqual(
+            WebTemplate.objects.count(),
+            len(SEED_TEMPLATE_METADATA),
+        )
         # Sanity: metadata still intact after the repeat run.
         vertex = WebTemplate.objects.get(slug="vertex-creative-agency")
         self.assertEqual(vertex.visual_style.slug, "editorial-warm")
@@ -1413,8 +1451,14 @@ class TaxonomyNotNullContractTests(_SeededCatalogMixin, TestCase):
         )
 
     def test_seeded_count_unchanged_by_migration(self):
-        """20/20 MVP templates must still be queryable · no row lost."""
-        self.assertEqual(WebTemplate.objects.count(), 20)
+        """No seeded row may be lost by migration 0005's NOT NULL
+        flip. Count is derived from seed metadata so Wave 2 additions
+        (which extend the seed but not the historical migration)
+        don't require manual test updates."""
+        self.assertEqual(
+            WebTemplate.objects.count(),
+            len(SEED_TEMPLATE_METADATA),
+        )
 
     def test_cluster_category_invariant_preserved(self):
         """cluster.category == template.category · holds post-flip."""

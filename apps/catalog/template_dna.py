@@ -1305,6 +1305,66 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
             "nav_links": ["Studio", "Visite", "Pubblicazioni", "Contatti"],
         },
     },
+
+    # ─────────────────────────────────────────────────────────────
+    # Wave 2 Pilot #1 — Fiscus (Phase X.4, 2026-04-20)
+    # Reuses corporate-suite archetype (Pragma's skin) but with
+    # dashboard-light visual style + warm-neutral palette + fiscal
+    # voice. D-054 differentiation from Pragma is content + palette
+    # + imagery driven (same chrome, different identity).
+    # ─────────────────────────────────────────────────────────────
+
+    # ── W2-1) CORPORATE-SUITE — Fiscus, studio tributario ────────
+    "fiscus-commercialista": {
+        "archetype":          "corporate-suite",
+        "hero_style":         "split-advisory",
+        "navbar_style":       "solid-institutional",
+        "footer_style":       "sectors-ribbon",
+        "section_order":      ["nav", "editorial-hero", "advisory-pillars", "kpi-strip", "sectors-ribbon"],
+        "card_style":         "pillar-advisory",
+        "button_style":       "ghost-institutional",
+        "density":            "airy",
+        "tone":               "institutional-fiscal",
+        "imagery_direction":  "fiscal-desk-documents",
+        "imagery_key":        "business-fiscal",
+        "conversion_pattern": "appointment-request",
+        "font_pairing":       ("IBM Plex Serif", "IBM Plex Sans"),
+        "content": {
+            "eyebrow":       "Studio tributario · Milano · iscritto ODCEC dal 2003",
+            "headline":      'L\'adempimento <em>corretto</em>, non la trovata.',
+            "subhead":       "Studio tributario per partite IVA, PMI e famiglie imprenditoriali. Dichiarazione dei redditi, bilancio, contenzioso tributario e pianificazione fiscale pluriennale — senza promesse di risparmio, con il calendario delle scadenze alla mano.",
+            "primary_cta":   "Primo appuntamento",
+            "secondary_cta": "Scarica la guida scadenze",
+            "phone":         "+39 02 4951 3388",
+            "nav_links":     ["Lo studio", "Competenze", "Scadenze", "Casi seguiti", "Contatti"],
+            "meta_strip": [
+                ("Sede",           "Milano · Porta Venezia"),
+                ("Albo ODCEC",     "dal 2003 · 4 iscritti"),
+                ("Clienti attivi", "260 partite IVA"),
+            ],
+            "hero_credit_left":  ("Direzione",       "Dott. A. Ruffini"),
+            "hero_credit_right": ("Anno fondazione", "2003"),
+            "pillars_heading": "Tre pratiche, una sola firma",
+            "pillars_label":   "Aree di competenza",
+            "pillars": [
+                ("01", "Dichiarazione & bilancio",
+                 "Dichiarazione dei redditi, quadro RW, certificazione unica e bilancio d'esercizio — audit-ready, con calendario delle revisioni concordato a gennaio."),
+                ("02", "Contenzioso tributario",
+                 "Assistenza in accertamento, ravvedimento operoso, ricorso in Commissione Tributaria. Mai promesse di esito, sempre una stima preliminare delle probabilità."),
+                ("03", "Wealth & passaggio generazionale",
+                 "Pianificazione fiscale pluriennale, holding di famiglia, successione e donazione — per patrimoni privati medio-alti e famiglie imprenditoriali."),
+            ],
+            "kpi_heading": "Ventidue anni di pratica continuativa",
+            "kpi_strip": [
+                ("22",       "anni dalla fondazione"),
+                ("260",      "partite IVA in portafoglio"),
+                ("€ 180 M",  "fatturato clienti aggregato"),
+                ("0",        "sanzioni non previste nel 2025"),
+            ],
+            "sectors_label": "Settori dei clienti",
+            "sectors": ["Partite IVA & freelance", "PMI manifattura", "Studi professionali", "Wealth privato", "Immobiliare"],
+        },
+    },
 }
 
 

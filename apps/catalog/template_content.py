@@ -2425,6 +2425,13 @@ from apps.catalog.template_content_elevate_fr import ELEVATE_CONTENT_FR  # noqa:
 from apps.catalog.template_content_elevate_es import ELEVATE_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_elevate_ar import ELEVATE_CONTENT_AR  # noqa: E402
 
+# Wave 2 Pilot #1 — Fiscus (Phase X.4, Session 80, 2026-04-20).
+# Reuses corporate-suite archetype (Pragma's skin) with commercialista
+# voice + dashboard-light visual style + warm-neutral palette. Ships
+# IT-only at `tier=draft`; EN/FR/ES/AR locales authored in a follow-up
+# turn before the tier flip to `published_live`.
+from apps.catalog.template_content_fiscus import FISCUS_CONTENT_IT  # noqa: E402
+
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
 # Phase 2g3.4b — Chiara perfection pass (Session 37). Chiara now ships in 5
@@ -2594,6 +2601,11 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": ELEVATE_CONTENT_FR,
         "es": ELEVATE_CONTENT_ES,
         "ar": ELEVATE_CONTENT_AR,
+    },
+    # Wave 2 Pilot #1 — Fiscus (Phase X.4, Session 80, 2026-04-20)
+    # IT-only at tier=draft · 4 locales pending parallel sub-agents.
+    "fiscus-commercialista": {
+        "it": FISCUS_CONTENT_IT,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,
