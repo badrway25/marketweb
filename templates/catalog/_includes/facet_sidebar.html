@@ -43,7 +43,7 @@ Context variables:
                    data-facet="cluster" data-value="{{ cluster.slug }}"
                    {% if cluster.slug in selected_clusters %}checked{% endif %}>
             <span class="mw-facet-label">{{ cluster.name }}</span>
-            <span class="mw-facet-count">{{ facet_counts.clusters|default_if_none:""|default:"" }}{% for k, n in facet_counts.clusters.items %}{% if k == cluster.slug %}{{ n }}{% endif %}{% endfor %}</span>
+            <span class="mw-facet-count">{% for k, n in facet_counts.clusters.items %}{% if k == cluster.slug %}{{ n }}{% endif %}{% endfor %}</span>
           </label>
         </li>
         {% endwith %}
