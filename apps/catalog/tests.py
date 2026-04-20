@@ -4,20 +4,33 @@ X.2 Commit 1 · initial coverage for ``ProfessionCluster``, ``VisualStyle``,
 and the additive metadata layer on ``WebTemplate``. No selectors, views,
 or templates are exercised here — those land in later X.2 commits.
 
+X.2 Commit 2 · focused coverage for the two seed management commands
+(``seed_visual_styles`` + ``seed_profession_clusters``). Exercises the
+idempotency contract + representative-sample slug/category mapping.
+
 Scope per commit binding:
 - Every new model has __str__, ordering, uniqueness, default-value tests.
 - Every new WebTemplate field has a default-value test so the nullable-
   then-NOT-NULL migration path stays safe.
 - Admin registration is asserted at import-time so a regression on the
   admin.py wiring surfaces before the public catalog UX is built.
+- Every seed command is tested for: fresh-run count, second-run
+  idempotency, representative sample mapping.
 """
 
 from decimal import Decimal
+from io import StringIO
 
 from django.contrib import admin as djadmin
+from django.core.management import call_command
 from django.db import IntegrityError, transaction
 from django.test import TestCase
 
+from apps.catalog.management.commands.seed_profession_clusters import (
+    EXTRA_CATEGORIES,
+    PROFESSION_CLUSTERS,
+)
+from apps.catalog.management.commands.seed_visual_styles import VISUAL_STYLES
 from apps.catalog.models import (
     Category,
     ProfessionCluster,
@@ -265,3 +278,166 @@ class AdminRegistrationTests(TestCase):
         self.assertIn("has_shop", list_filter)
         self.assertIn("has_booking", list_filter)
         self.assertIn("has_rtl", list_filter)
+
+
+# ── X.2 Commit 2 · seed management command coverage ──────────────
+
+
+class SeedVisualStylesCommandTests(TestCase):
+    """``seed_visual_styles`` creates 12 rows and is idempotent."""
+
+    def _run(self):
+        out = StringIO()
+        call_command("seed_visual_styles", stdout=out)
+        return out.getvalue()
+
+    def test_first_run_creates_twelve_styles(self):
+        self.assertEqual(VisualStyle.objects.count(), 0)
+        output = self._run()
+        self.assertEqual(VisualStyle.objects.count(), 12)
+        self.assertIn("12 visual styles created", output)
+
+    def test_second_run_is_idempotent(self):
+        self._run()
+        self.assertEqual(VisualStyle.objects.count(), 12)
+        output = self._run()
+        self.assertEqual(VisualStyle.objects.count(), 12)
+        self.assertIn("0 visual styles created", output)
+        self.assertIn("12 already existed", output)
+
+    def test_seed_constant_declares_exactly_twelve_styles(self):
+        # Guardrail against accidental drift between the seed constant
+        # and the Commit 2 contract (12 base styles).
+        self.assertEqual(len(VISUAL_STYLES), 12)
+        slugs = [s["slug"] for s in VISUAL_STYLES]
+        self.assertEqual(len(slugs), len(set(slugs)), "slugs must be unique")
+
+    def test_representative_sample_mapping(self):
+        self._run()
+        editorial_warm = VisualStyle.objects.get(slug="editorial-warm")
+        self.assertEqual(editorial_warm.label, "Editorial warm")
+        self.assertEqual(editorial_warm.palette_family, "warm")
+        self.assertEqual(editorial_warm.typography_stack, "serif-editorial")
+        self.assertEqual(editorial_warm.density_profile, "editorial-sparse")
+
+        dashboard_dark = VisualStyle.objects.get(slug="dashboard-dark")
+        self.assertEqual(dashboard_dark.palette_family, "dark")
+        self.assertEqual(dashboard_dark.density_profile, "dashboard-dense")
+
+        cinematic = VisualStyle.objects.get(slug="cinematic-fullbleed")
+        self.assertEqual(cinematic.density_profile, "fullbleed-cinematic")
+
+
+class SeedProfessionClustersCommandTests(TestCase):
+    """``seed_profession_clusters`` creates 52 rows + ensures 7 extra macro-
+    categories, and is idempotent across re-runs.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        # Seed the 8 MVP macro-categories via the canonical command so
+        # the cluster-seed resolves their FK targets. The 7 extra ones
+        # are ensured inline by the cluster-seed command itself.
+        call_command("seed_categories", stdout=StringIO())
+
+    def _run(self):
+        out = StringIO()
+        call_command("seed_profession_clusters", stdout=out)
+        return out.getvalue()
+
+    def test_first_run_creates_fifty_two_clusters(self):
+        # Pre-seed: 8 MVP categories exist, 0 clusters.
+        self.assertEqual(Category.objects.count(), 8)
+        self.assertEqual(ProfessionCluster.objects.count(), 0)
+        output = self._run()
+        self.assertEqual(ProfessionCluster.objects.count(), 52)
+        self.assertIn("52 profession clusters created", output)
+
+    def test_first_run_creates_seven_extra_macro_categories(self):
+        # 8 MVP + 7 extra = 15 total macro-categories post-run.
+        self._run()
+        self.assertEqual(Category.objects.count(), 15)
+        for extra in EXTRA_CATEGORIES:
+            self.assertTrue(
+                Category.objects.filter(slug=extra["slug"]).exists(),
+                f"Expected extra macro-category {extra['slug']} to be seeded.",
+            )
+
+    def test_second_run_is_idempotent(self):
+        self._run()
+        self.assertEqual(ProfessionCluster.objects.count(), 52)
+        self.assertEqual(Category.objects.count(), 15)
+        output = self._run()
+        self.assertEqual(ProfessionCluster.objects.count(), 52)
+        self.assertEqual(Category.objects.count(), 15)
+        self.assertIn("0 profession clusters created", output)
+        self.assertIn("52 already existed", output)
+
+    def test_seed_constant_declares_exactly_fifty_two_clusters(self):
+        # Guardrail against accidental drift between the seed constant
+        # and the X.1/X.2 52-cluster taxonomy contract.
+        self.assertEqual(len(PROFESSION_CLUSTERS), 52)
+        slugs = [c["slug"] for c in PROFESSION_CLUSTERS]
+        self.assertEqual(len(slugs), len(set(slugs)), "cluster slugs must be unique")
+
+    def test_extra_categories_constant_declares_exactly_seven(self):
+        self.assertEqual(len(EXTRA_CATEGORIES), 7)
+
+    def test_representative_sample_cluster_to_category_mapping(self):
+        self._run()
+        # Restaurant → fine-dining (existing MVP category)
+        fine_dining = ProfessionCluster.objects.get(slug="fine-dining")
+        self.assertEqual(fine_dining.category.slug, "restaurant")
+        self.assertEqual(fine_dining.name, "Fine dining")
+        self.assertIn("stellato", fine_dining.search_aliases)
+
+        # Medical → specialist
+        specialist = ProfessionCluster.objects.get(slug="specialist")
+        self.assertEqual(specialist.category.slug, "medical")
+
+        # Legacy category slug is 'lawyer' (not 'law') — the cluster
+        # seed must honor it, otherwise the FK resolves to None and
+        # the cluster is skipped.
+        classic_law = ProfessionCluster.objects.get(slug="classic-law")
+        self.assertEqual(classic_law.category.slug, "lawyer")
+
+        # Inline-created extra category → fitness cluster
+        gym = ProfessionCluster.objects.get(slug="gym-functional")
+        self.assertEqual(gym.category.slug, "fitness")
+
+        # Nonprofit (another inline extra category)
+        charity = ProfessionCluster.objects.get(slug="charity-foundation")
+        self.assertEqual(charity.category.slug, "nonprofit")
+
+    def test_cluster_counts_per_category_match_taxonomy_contract(self):
+        # Locks the X.1 taxonomy distribution so a future edit to the
+        # PROFESSION_CLUSTERS constant cannot silently drift the per-
+        # category split.
+        self._run()
+        expected = {
+            "agency": 4,
+            "business": 5,
+            "restaurant": 5,
+            "medical": 6,
+            "lawyer": 3,
+            "real-estate": 3,
+            "portfolio": 4,
+            "ecommerce": 4,
+            "education": 3,
+            "events": 2,
+            "travel": 3,
+            "fitness": 3,
+            "construction": 3,
+            "beauty": 2,
+            "nonprofit": 2,
+        }
+        for slug, count in expected.items():
+            actual = ProfessionCluster.objects.filter(
+                category__slug=slug
+            ).count()
+            self.assertEqual(
+                actual,
+                count,
+                f"Expected {count} clusters in '{slug}', got {actual}.",
+            )
+        self.assertEqual(sum(expected.values()), 52)
