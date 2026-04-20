@@ -4,6 +4,10 @@
 {% block title %}{{ template.name|default:"Template Detail" }}{% endblock %}
 {% block meta_description %}{{ template.short_description|default:"Scopri questo template web premium su MarketWeb. Personalizzabile, moderno e pronto all'uso." }}{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/catalog-facets.css' %}">
+{% endblock %}
+
 {% block content %}
 
 <!-- Detail Section -->
@@ -40,6 +44,49 @@
             {% endif %}
           {% endwith %}
         </div>
+
+        {# ── X.2 Commit 4 · taxonomy pills + use cases ─────────── #}
+        <div class="mw-detail-pills">
+          {% if template.profession_cluster %}
+            <a class="mw-pill mw-pill--cluster" href="{% url 'catalog:cluster_detail' template.profession_cluster.slug %}">
+              <i class="bi bi-tag"></i> {{ template.profession_cluster.name }}
+            </a>
+          {% endif %}
+          {% if template.visual_style %}
+            <span class="mw-pill mw-pill--style">
+              <i class="bi bi-palette"></i> {{ template.visual_style.label }}
+            </span>
+          {% endif %}
+          {% if template.price_tier %}
+            <span class="mw-pill mw-pill--tier mw-pill--tier-{{ template.price_tier }}">
+              {{ template.get_price_tier_display }}
+            </span>
+          {% endif %}
+        </div>
+
+        {% if use_case_entries %}
+        <div class="mw-detail-use-cases mb-4">
+          <h4 class="mw-detail-subheading">Casi d'uso ideali</h4>
+          <ul class="mw-use-case-list" role="list">
+            {% for uc in use_case_entries %}
+              <li class="mw-use-case-item">
+                <a href="{{ uc.detail_url }}">{{ uc.label }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        {% if active_feature_flags %}
+        <div class="mw-detail-features mb-4">
+          <h4 class="mw-detail-subheading">Funzionalità incluse</h4>
+          <ul class="mw-detail-feature-list" role="list">
+            {% for flag in active_feature_flags %}
+              <li><i class="bi bi-check2-circle text-success"></i> {{ feature_flag_labels|default_if_none:""|default:"" }}{% for k, label in feature_flag_labels.items %}{% if k == flag %}{{ label }}{% endif %}{% endfor %}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
 
         <!-- Tabs -->
         <ul class="nav mw-detail-tabs" role="tablist">
@@ -194,7 +241,7 @@
     </div>
     <div class="mw-featured-grid">
       {% for tmpl in related_templates %}
-        {% include "includes/_template_card.html" with template=tmpl %}
+        {% include "catalog/_includes/template_card.html" with template=tmpl %}
       {% endfor %}
     </div>
   </div>

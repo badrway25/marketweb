@@ -4,6 +4,10 @@
 {% block title %}{% if category %}{{ category.name }} — {% endif %}Template{% endblock %}
 {% block meta_description %}{% if category %}Template web professionali per {{ category.name }}{% else %}Esplora tutti i template web premium su MarketWeb{% endif %}. Personalizzabili, moderni e pronti all'uso.{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/catalog-facets.css' %}">
+{% endblock %}
+
 {% block content %}
 
 <!-- Page Hero -->
@@ -25,91 +29,79 @@
   </div>
 </section>
 
-<!-- Filter Bar + Grid -->
-<section class="mw-section">
+<!-- Facet sidebar + Grid -->
+<section class="mw-section mw-section--catalog">
   <div class="container">
 
-    <!-- Filter Bar -->
-    <form method="get" class="mw-filter-bar">
-      <div class="flex-grow-1">
-        <input type="text" name="q" class="form-control" placeholder="Cerca template..." aria-label="Cerca template" value="{{ search_query }}">
-      </div>
-      <select class="form-select" style="max-width: 180px;" aria-label="Categoria" onchange="if(this.value){var u=this.value,s=new URLSearchParams(window.location.search);s.delete('page');var p=s.toString();if(p)u+='?'+p;window.location=u;}">
-        <option value="{% url 'catalog:template_list' %}" {% if not category %}selected{% endif %}>Tutte le Categorie</option>
-        {% for cat in categories %}
-          <option value="{% url 'catalog:template_list_by_category' cat.slug %}" {% if category and category.slug == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
-        {% endfor %}
-      </select>
-      <select name="sort" class="form-select" style="max-width: 160px;" aria-label="Ordina per" onchange="this.form.submit()">
-        {% for value, label in sort_options.items %}
-          <option value="{{ value }}" {% if current_sort == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </select>
-    </form>
+    <form method="get" class="mw-catalog-layout">
 
-    {# D-055 (Session 20): visible catalog is gated by tier=published_live. #}
-    {# Category pages whose sibling is `draft` land in the "category_soon"  #}
-    {# empty state; a failed search lands in "search_no_match"; an empty    #}
-    {# global listing lands in the curatorial catch-all. All three are     #}
-    {# authored in templates/catalog/_empty_catalog.html.                   #}
-    {% if templates %}
-      <!-- Listing Header -->
-      <div class="mw-listing-header">
-        <div class="mw-listing-count">
-          {{ paginator.count }} template {% if paginator.count == 1 %}disponibile{% else %}disponibili{% endif %}
-        </div>
-      </div>
+      {% include "catalog/_includes/facet_sidebar.html" %}
 
-      <!-- Template Grid -->
-      <div class="mw-listing-grid">
-        {% for tmpl in templates %}
-          {% include "includes/_template_card.html" with template=tmpl %}
-        {% endfor %}
-      </div>
-    {% else %}
-      {% if search_query %}
-        {% include "catalog/_empty_catalog.html" with mode="search_no_match" category=category search_query=search_query %}
-      {% elif category %}
-        {% include "catalog/_empty_catalog.html" with mode="category_soon" category=category %}
-      {% else %}
-        {% include "catalog/_empty_catalog.html" with mode="catalog_empty" %}
-      {% endif %}
-    {% endif %}
+      <div class="mw-catalog-main">
 
-    <!-- Pagination -->
-    {% if page_obj.has_other_pages %}
-    <nav class="mt-5" aria-label="Navigazione pagine">
-      <ul class="pagination justify-content-center">
-        {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?{% if filter_query_string %}{{ filter_query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">
-              <i class="bi bi-chevron-left"></i> Precedente
-            </a>
-          </li>
-        {% endif %}
+        {% if templates %}
+          <!-- Listing Header -->
+          <div class="mw-listing-header">
+            <div class="mw-listing-count">
+              {{ paginator.count }} template {% if paginator.count == 1 %}disponibile{% else %}disponibili{% endif %}
+            </div>
+          </div>
 
-        {% for num in page_obj.paginator.page_range %}
-          {% if page_obj.number == num %}
-            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-          {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-            <li class="page-item">
-              <a class="page-link" href="?{% if filter_query_string %}{{ filter_query_string }}&{% endif %}page={{ num }}">{{ num }}</a>
-            </li>
+          <!-- Template Grid (X.2 card with pills) -->
+          <div class="mw-listing-grid">
+            {% for tmpl in templates %}
+              {% include "catalog/_includes/template_card.html" with template=tmpl %}
+            {% endfor %}
+          </div>
+        {% else %}
+          {% if search_query %}
+            {% include "catalog/_empty_catalog.html" with mode="search_no_match" category=category search_query=search_query %}
+          {% elif category %}
+            {% include "catalog/_empty_catalog.html" with mode="category_soon" category=category %}
+          {% else %}
+            {% include "catalog/_empty_catalog.html" with mode="catalog_empty" %}
           {% endif %}
-        {% endfor %}
-
-        {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?{% if filter_query_string %}{{ filter_query_string }}&{% endif %}page={{ page_obj.next_page_number }}">
-              Successiva <i class="bi bi-chevron-right"></i>
-            </a>
-          </li>
         {% endif %}
-      </ul>
-    </nav>
-    {% endif %}
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav class="mt-5" aria-label="Navigazione pagine">
+          <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?{% if filter_query_string %}{{ filter_query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                  <i class="bi bi-chevron-left"></i> Precedente
+                </a>
+              </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+              {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                <li class="page-item">
+                  <a class="page-link" href="?{% if filter_query_string %}{{ filter_query_string }}&{% endif %}page={{ num }}">{{ num }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?{% if filter_query_string %}{{ filter_query_string }}&{% endif %}page={{ page_obj.next_page_number }}">
+                  Successiva <i class="bi bi-chevron-right"></i>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+        {% endif %}
+
+      </div>
+    </form>
 
   </div>
 </section>
+
+<script src="{% static 'js/typeahead.js' %}" defer></script>
 
 {% endblock %}

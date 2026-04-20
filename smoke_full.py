@@ -95,7 +95,49 @@ def run():
                 if r.status_code == 200: ok += 1
                 else: failed.append((url+q, r.status_code))
     # Catalog surfaces
-    for path in ["/", "/templates/", "/templates/medical/", "/templates/restaurant/", "/templates/business/", "/templates/portfolio/", "/templates/ecommerce/", "/templates/agency/", "/templates/lawyer/", "/templates/real-estate/"]:
+    # X.2 Commit 4 · discovery surfaces added:
+    #  - taxonomy-filtered listing (cluster / style / feature)
+    #  - cluster detail pages
+    #  - role discovery pages
+    #  - use-case discovery pages
+    #  - typeahead JSON endpoint
+    for path in [
+        "/",
+        "/templates/",
+        "/templates/medical/",
+        "/templates/restaurant/",
+        "/templates/business/",
+        "/templates/portfolio/",
+        "/templates/ecommerce/",
+        "/templates/agency/",
+        "/templates/lawyer/",
+        "/templates/real-estate/",
+        # Taxonomy-filtered listings
+        "/templates/?cluster=fine-dining",
+        "/templates/?style=editorial-warm",
+        "/templates/?feature=has_shop",
+        "/templates/?price=premium",
+        # Cluster detail pages (representative sample across macros)
+        "/templates/clusters/fine-dining/",
+        "/templates/clusters/specialist/",
+        "/templates/clusters/artisan-workshop/",
+        "/templates/clusters/classic-law/",
+        "/templates/clusters/real-estate-luxury/",
+        # Role discovery pages
+        "/templates/for-role/avvocati/",
+        "/templates/for-role/medici/",
+        "/templates/for-role/ristoratori/",
+        "/templates/for-role/startup/",
+        "/templates/for-role/ecommerce/",
+        # Use-case discovery pages
+        "/templates/for-use-case/sell-online/",
+        "/templates/for-use-case/appointment-booking/",
+        "/templates/for-use-case/show-portfolio/",
+        "/templates/for-use-case/reservations/",
+        # Typeahead JSON endpoint
+        "/templates/search/typeahead/?q=agenzia",
+        "/templates/search/typeahead/?q=",
+    ]:
         total += 1
         r = client.get(path)
         if r.status_code == 200: ok += 1

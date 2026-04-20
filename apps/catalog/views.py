@@ -1,5 +1,6 @@
-from django.http import Http404, HttpRequest
+from django.http import Http404, HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.views.generic import DetailView, ListView, TemplateView
 
@@ -36,6 +37,19 @@ class CategoryListView(ListView):
         )
 
 
+def _split_csv(value: str | None) -> list[str]:
+    """Split a comma-separated query-string param into a cleaned list.
+
+    The catalog filters (``cluster``, ``style``, ``price``, ``feature``,
+    ``use_case``, ``audience``) accept multi-value URL shape
+    ``?cluster=fine-dining,trattoria``. Values are stripped and empty
+    entries are dropped so ``?cluster=`` (empty) resolves to ``None``.
+    """
+    if not value:
+        return []
+    return [v.strip() for v in value.split(",") if v.strip()]
+
+
 class TemplateListView(ListView):
     template_name = "catalog/template_list.html"
     context_object_name = "templates"
@@ -46,12 +60,31 @@ class TemplateListView(ListView):
         self.sort_by = self.request.GET.get("sort", "recent")
         self.staff_preview = _staff_preview_mode(self.request)
 
+        # X.2 Commit 4 · taxonomy v2 facet filters read from the query
+        # string. Multi-value params use comma-separated lists.
+        self.selected_clusters = _split_csv(self.request.GET.get("cluster"))
+        self.selected_styles = _split_csv(self.request.GET.get("style"))
+        self.selected_prices = _split_csv(self.request.GET.get("price"))
+        self.selected_features = _split_csv(self.request.GET.get("feature"))
+        self.selected_use_cases = _split_csv(self.request.GET.get("use_case"))
+        self.selected_audiences = _split_csv(self.request.GET.get("audience"))
+
         self.category, qs = selectors.get_listing_templates(
             category_slug=self.kwargs.get("category_slug"),
             search_query=self.search_query or None,
             sort_by=self.sort_by,
             include_drafts=self.staff_preview,
+            cluster_slugs=self.selected_clusters or None,
+            style_slugs=self.selected_styles or None,
+            price_tiers=self.selected_prices or None,
+            feature_flags=self.selected_features or None,
+            use_case_slugs=self.selected_use_cases or None,
+            audience_slugs=self.selected_audiences or None,
         )
+        # Stash the pre-pagination queryset so get_context_data can
+        # compute facet counts across the full match set (not just
+        # the current page).
+        self._base_qs = qs
         return qs
 
     def get_context_data(self, **kwargs):
@@ -62,6 +95,18 @@ class TemplateListView(ListView):
         ctx["current_sort"] = self.sort_by
         ctx["sort_options"] = selectors.SORT_LABELS
         ctx["staff_preview"] = self.staff_preview
+
+        # X.2 Commit 4 · facet sidebar context
+        ctx["clusters"] = selectors.get_active_profession_clusters()
+        ctx["visual_styles"] = selectors.get_all_visual_styles()
+        ctx["feature_flag_labels"] = selectors.FEATURE_FLAG_LABELS
+        ctx["facet_counts"] = selectors.get_facet_counts(self._base_qs)
+        ctx["selected_clusters"] = self.selected_clusters
+        ctx["selected_styles"] = self.selected_styles
+        ctx["selected_prices"] = self.selected_prices
+        ctx["selected_features"] = self.selected_features
+        ctx["selected_use_cases"] = self.selected_use_cases
+        ctx["selected_audiences"] = self.selected_audiences
 
         # Query string without 'page' — used for pagination links
         params = self.request.GET.copy()
@@ -93,6 +138,121 @@ class TemplateDetailView(DetailView):
         # construction (see tier gate in selectors.get_template_detail),
         # so the detail page shows the real "Apri anteprima completa" CTA
         # unconditionally. No ghost `href="#"` fallback.
+
+        # X.2 Commit 4 · taxonomy v2 context for pills/badges on the
+        # detail page. Resolved use-case entries let the template show
+        # human labels instead of raw slugs in the use-case block.
+        tpl = self.object
+        ctx["use_case_entries"] = [
+            {
+                "slug": uc,
+                "label": selectors.USE_CASE_DISCOVERY.get(uc, {}).get("label", uc),
+                "detail_url": f"/templates/for-use-case/{uc}/",
+            }
+            for uc in (tpl.use_cases or [])
+            if uc in selectors.USE_CASE_DISCOVERY
+        ]
+        ctx["feature_flag_labels"] = selectors.FEATURE_FLAG_LABELS
+        ctx["active_feature_flags"] = [
+            flag
+            for flag in selectors.FEATURE_FLAG_LABELS
+            if getattr(tpl, flag, False)
+        ]
+        return ctx
+
+
+# ── X.2 Commit 4 · taxonomy-driven discovery views ─────────────
+
+
+class TemplateTypeaheadJSON(View):
+    """Lightweight JSON typeahead endpoint for the hero search bar.
+
+    GET ``/templates/search/typeahead/?q=<query>&limit=<n>``
+    → JSON dict with three pools: ``templates``, ``clusters``, ``roles``.
+    Always returns 200 — empty query yields empty pools.
+    """
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        q = request.GET.get("q", "")
+        try:
+            limit = int(request.GET.get("limit", 8))
+        except ValueError:
+            limit = 8
+        limit = max(1, min(limit, 20))
+        payload = selectors.search_templates_typeahead(
+            q,
+            limit=limit,
+            include_drafts=_staff_preview_mode(request),
+        )
+        return JsonResponse(payload)
+
+
+class ClusterDetailView(TemplateView):
+    """Landing page for a single profession cluster.
+
+    Reuses the same card rendering as the listing page; the cluster
+    name + description form the hero. 404s on unknown or inactive
+    cluster slugs.
+    """
+
+    template_name = "catalog/cluster_detail.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        cluster_slug = kwargs["cluster_slug"]
+        include_drafts = _staff_preview_mode(self.request)
+        cluster, templates = selectors.get_templates_by_cluster(
+            cluster_slug, include_drafts=include_drafts
+        )
+        ctx["cluster"] = cluster
+        ctx["templates"] = templates
+        ctx["total"] = templates.count()
+        return ctx
+
+
+class RoleDiscoveryView(TemplateView):
+    """Role-driven discovery page (``/templates/for-role/<slug>/``).
+
+    Resolves the role slug against the hardcoded ``ROLE_DISCOVERY``
+    map in selectors and renders all published templates that sit in
+    the role's cluster set. 404s on unknown role slugs.
+    """
+
+    template_name = "catalog/role_discovery.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        role_slug = kwargs["role_slug"]
+        include_drafts = _staff_preview_mode(self.request)
+        role, templates = selectors.get_templates_by_role(
+            role_slug, include_drafts=include_drafts
+        )
+        ctx["role"] = role
+        ctx["templates"] = templates
+        ctx["total"] = templates.count()
+        return ctx
+
+
+class UseCaseDiscoveryView(TemplateView):
+    """Use-case-driven discovery page.
+
+    ``/templates/for-use-case/<slug>/`` · Resolves the use-case slug
+    against ``USE_CASE_DISCOVERY`` and renders templates whose
+    ``use_cases`` JSONField contains the slug. 404s on unknown slugs.
+    """
+
+    template_name = "catalog/use_case_discovery.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        use_case_slug = kwargs["use_case_slug"]
+        include_drafts = _staff_preview_mode(self.request)
+        use_case, templates = selectors.get_templates_by_use_case(
+            use_case_slug, include_drafts=include_drafts
+        )
+        ctx["use_case"] = use_case
+        ctx["templates"] = templates
+        ctx["total"] = templates.count()
         return ctx
 
 

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ cluster.name }} — Template{% endblock %}
+{% block meta_description %}Esplora {{ total }} template per {{ cluster.name|lower }}. {{ cluster.description }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/catalog-facets.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="mw-page-hero">
+  <div class="container">
+    <nav class="mw-breadcrumb" aria-label="Breadcrumb">
+      <a href="{% url 'pages:home' %}">Home</a>
+      <span class="separator">/</span>
+      <a href="{% url 'catalog:template_list' %}">Template</a>
+      <span class="separator">/</span>
+      <a href="{% url 'catalog:template_list_by_category' cluster.category.slug %}">{{ cluster.category.name }}</a>
+      <span class="separator">/</span>
+      <span class="current">{{ cluster.name }}</span>
+    </nav>
+    <h1>{{ cluster.name }}</h1>
+    {% if cluster.description %}<p>{{ cluster.description }}</p>{% endif %}
+  </div>
+</section>
+
+<section class="mw-section">
+  <div class="container">
+    <div class="mw-listing-header">
+      <div class="mw-listing-count">
+        {{ total }} template {% if total == 1 %}disponibile{% else %}disponibili{% endif %}
+      </div>
+    </div>
+
+    {% if templates %}
+      <div class="mw-listing-grid">
+        {% for tmpl in templates %}
+          {% include "catalog/_includes/template_card.html" with template=tmpl %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="mw-cluster-empty">
+        <p>Nessun template pubblicato in questo cluster al momento.</p>
+        <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-primary">Torna al catalogo</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

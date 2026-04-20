@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ role.label }} — Template{% endblock %}
+{% block meta_description %}{{ role.description }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/catalog-facets.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="mw-page-hero">
+  <div class="container">
+    <nav class="mw-breadcrumb" aria-label="Breadcrumb">
+      <a href="{% url 'pages:home' %}">Home</a>
+      <span class="separator">/</span>
+      <a href="{% url 'catalog:template_list' %}">Template</a>
+      <span class="separator">/</span>
+      <span class="current">{{ role.label }}</span>
+    </nav>
+    <h1>{{ role.label }}</h1>
+    {% if role.description %}<p>{{ role.description }}</p>{% endif %}
+  </div>
+</section>
+
+<section class="mw-section">
+  <div class="container">
+    <div class="mw-listing-header">
+      <div class="mw-listing-count">
+        {{ total }} template {% if total == 1 %}disponibile{% else %}disponibili{% endif %}
+      </div>
+    </div>
+
+    {% if templates %}
+      <div class="mw-listing-grid">
+        {% for tmpl in templates %}
+          {% include "catalog/_includes/template_card.html" with template=tmpl %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="mw-cluster-empty">
+        <p>Nessun template pubblicato per questo ruolo al momento.</p>
+        <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-primary">Torna al catalogo</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,134 @@
+{% comment %}
+Facet sidebar (X.2 Commit 4)
+----------------------------
+Drives the gallery-page filter UI. All filters submit via the
+enclosing ``<form method="get">`` on ``template_list.html``; multi-
+value facets (cluster, style, price, feature) use comma-separated
+query params handled by the view's ``_split_csv`` helper.
+
+Context variables:
+  - clusters:           QuerySet of active ProfessionCluster
+  - visual_styles:      QuerySet of active VisualStyle
+  - feature_flag_labels: dict (slug → label)
+  - facet_counts:       dict from selectors.get_facet_counts
+  - selected_clusters / selected_styles / selected_prices / selected_features: list[str]
+  - search_query:       string
+  - current_sort:       string
+{% endcomment %}
+
+<aside class="mw-facet-sidebar" aria-label="Filtri del catalogo">
+
+  <div class="mw-facet-group">
+    <h4 class="mw-facet-heading">Ricerca</h4>
+    <input type="text" name="q" class="form-control" placeholder="Cerca per professione, stile..." value="{{ search_query }}">
+  </div>
+
+  <div class="mw-facet-group">
+    <h4 class="mw-facet-heading">Ordina</h4>
+    <select name="sort" class="form-select" aria-label="Ordina per">
+      {% for value, label in sort_options.items %}
+        <option value="{{ value }}" {% if current_sort == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="mw-facet-group">
+    <h4 class="mw-facet-heading">Professione</h4>
+    <ul class="mw-facet-list" role="list">
+      {% for cluster in clusters %}
+        {% with count=facet_counts.clusters|default_if_none:"" %}
+        <li class="mw-facet-item">
+          <label class="mw-facet-row">
+            <input type="checkbox" name="cluster_{{ cluster.slug }}" value="1"
+                   data-facet="cluster" data-value="{{ cluster.slug }}"
+                   {% if cluster.slug in selected_clusters %}checked{% endif %}>
+            <span class="mw-facet-label">{{ cluster.name }}</span>
+            <span class="mw-facet-count">{{ facet_counts.clusters|default_if_none:""|default:"" }}{% for k, n in facet_counts.clusters.items %}{% if k == cluster.slug %}{{ n }}{% endif %}{% endfor %}</span>
+          </label>
+        </li>
+        {% endwith %}
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="mw-facet-group">
+    <h4 class="mw-facet-heading">Stile visivo</h4>
+    <ul class="mw-facet-list" role="list">
+      {% for style in visual_styles %}
+        <li class="mw-facet-item">
+          <label class="mw-facet-row">
+            <input type="checkbox" name="style_{{ style.slug }}" value="1"
+                   data-facet="style" data-value="{{ style.slug }}"
+                   {% if style.slug in selected_styles %}checked{% endif %}>
+            <span class="mw-facet-label">{{ style.label }}</span>
+            <span class="mw-facet-count">{% for k, n in facet_counts.styles.items %}{% if k == style.slug %}{{ n }}{% endif %}{% endfor %}</span>
+          </label>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="mw-facet-group">
+    <h4 class="mw-facet-heading">Fascia prezzo</h4>
+    <ul class="mw-facet-list" role="list">
+      <li class="mw-facet-item">
+        <label class="mw-facet-row">
+          <input type="checkbox" name="price_free" value="1" data-facet="price" data-value="free"
+                 {% if "free" in selected_prices %}checked{% endif %}>
+          <span class="mw-facet-label">Free</span>
+          <span class="mw-facet-count">{% for k, n in facet_counts.price_tiers.items %}{% if k == "free" %}{{ n }}{% endif %}{% endfor %}</span>
+        </label>
+      </li>
+      <li class="mw-facet-item">
+        <label class="mw-facet-row">
+          <input type="checkbox" name="price_standard" value="1" data-facet="price" data-value="standard"
+                 {% if "standard" in selected_prices %}checked{% endif %}>
+          <span class="mw-facet-label">Standard</span>
+          <span class="mw-facet-count">{% for k, n in facet_counts.price_tiers.items %}{% if k == "standard" %}{{ n }}{% endif %}{% endfor %}</span>
+        </label>
+      </li>
+      <li class="mw-facet-item">
+        <label class="mw-facet-row">
+          <input type="checkbox" name="price_premium" value="1" data-facet="price" data-value="premium"
+                 {% if "premium" in selected_prices %}checked{% endif %}>
+          <span class="mw-facet-label">Premium</span>
+          <span class="mw-facet-count">{% for k, n in facet_counts.price_tiers.items %}{% if k == "premium" %}{{ n }}{% endif %}{% endfor %}</span>
+        </label>
+      </li>
+    </ul>
+  </div>
+
+  <div class="mw-facet-group">
+    <h4 class="mw-facet-heading">Funzionalità</h4>
+    <ul class="mw-facet-list" role="list">
+      {% for flag, label in feature_flag_labels.items %}
+        <li class="mw-facet-item">
+          <label class="mw-facet-row">
+            <input type="checkbox" name="feature_{{ flag }}" value="1"
+                   data-facet="feature" data-value="{{ flag }}"
+                   {% if flag in selected_features %}checked{% endif %}>
+            <span class="mw-facet-label">{{ label }}</span>
+            <span class="mw-facet-count">{% for k, n in facet_counts.features.items %}{% if k == flag %}{{ n }}{% endif %}{% endfor %}</span>
+          </label>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {# Aggregator hidden fields — typeahead.js' facet sync writes into     #}
+  {# these so the standard form submit carries the multi-value params.  #}
+  <input type="hidden" name="cluster" value="{{ selected_clusters|join:',' }}">
+  <input type="hidden" name="style" value="{{ selected_styles|join:',' }}">
+  <input type="hidden" name="price" value="{{ selected_prices|join:',' }}">
+  <input type="hidden" name="feature" value="{{ selected_features|join:',' }}">
+  <input type="hidden" name="use_case" value="{{ selected_use_cases|join:',' }}">
+  <input type="hidden" name="audience" value="{{ selected_audiences|join:',' }}">
+
+  <div class="mw-facet-actions">
+    <button type="submit" class="mw-btn mw-btn-primary mw-btn-sm">Applica filtri</button>
+    <a href="{% if category %}{% url 'catalog:template_list_by_category' category.slug %}{% else %}{% url 'catalog:template_list' %}{% endif %}" class="mw-btn mw-btn-ghost mw-btn-sm">Reset</a>
+  </div>
+
+  <p class="mw-facet-total">Risultati: <strong>{{ facet_counts.total|default:0 }}</strong></p>
+
+</aside>

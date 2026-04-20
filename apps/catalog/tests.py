@@ -702,3 +702,305 @@ class FreshSeedChainBackfillTests(TestCase):
         # Sanity: metadata still intact after the repeat run.
         vertex = WebTemplate.objects.get(slug="vertex-creative-agency")
         self.assertEqual(vertex.visual_style.slug, "editorial-warm")
+
+
+# ── X.2 Commit 4 · discovery selectors + views ────────────────────
+
+import json  # noqa: E402
+
+from apps.catalog import selectors  # noqa: E402
+
+
+class _SeededCatalogMixin:
+    """Runs the full seed chain so discovery tests have a populated DB."""
+
+    @classmethod
+    def setUpTestData(cls):
+        call_command("seed_categories", stdout=StringIO())
+        call_command("seed_visual_styles", stdout=StringIO())
+        call_command("seed_profession_clusters", stdout=StringIO())
+        call_command("seed_templates", stdout=StringIO())
+
+
+class DiscoverySelectorTests(_SeededCatalogMixin, TestCase):
+    """Coverage for selectors extended in X.2 Commit 4."""
+
+    def test_listing_filter_by_cluster(self):
+        _, qs = selectors.get_listing_templates(cluster_slugs=["fine-dining"])
+        slugs = list(qs.values_list("slug", flat=True))
+        self.assertEqual(slugs, ["gusto-fine-dining"])
+
+    def test_listing_filter_by_multiple_clusters(self):
+        _, qs = selectors.get_listing_templates(
+            cluster_slugs=["fine-dining", "trattoria"]
+        )
+        self.assertEqual(
+            set(qs.values_list("slug", flat=True)),
+            {"gusto-fine-dining", "sapore-trattoria-pizzeria"},
+        )
+
+    def test_listing_filter_by_style(self):
+        _, qs = selectors.get_listing_templates(
+            style_slugs=["cinematic-fullbleed"]
+        )
+        self.assertEqual(
+            set(qs.values_list("slug", flat=True)),
+            {"villa-immobili-lusso", "pixel-portfolio-fotografico"},
+        )
+
+    def test_listing_filter_by_price_tier(self):
+        _, qs = selectors.get_listing_templates(price_tiers=["standard"])
+        # Standard tier templates (per X.2 mapping): Pragma + Sapore +
+        # Brace + Salute + Benessere + Famiglia + Casa.
+        self.assertEqual(qs.count(), 7)
+        self.assertIn("pragma-corporate-suite", qs.values_list("slug", flat=True))
+
+    def test_listing_filter_by_feature_flag_has_shop(self):
+        _, qs = selectors.get_listing_templates(feature_flags=["has_shop"])
+        self.assertEqual(
+            set(qs.values_list("slug", flat=True)),
+            {"bottega-shop-artigianale", "luxe-fashion-store"},
+        )
+
+    def test_listing_filter_by_unknown_feature_flag_is_ignored(self):
+        # Unknown flag names are silently dropped — URL-driven filters
+        # should stay resilient to typos without 500-ing.
+        _, qs = selectors.get_listing_templates(
+            feature_flags=["has_does_not_exist"]
+        )
+        self.assertEqual(qs.count(), 20)
+
+    def test_listing_filter_by_use_case(self):
+        _, qs = selectors.get_listing_templates(
+            use_case_slugs=["appointment-booking"]
+        )
+        # Medical + specialist templates carry appointment-booking.
+        slugs = set(qs.values_list("slug", flat=True))
+        self.assertIn("salute-studio-medico", slugs)
+        self.assertIn("cardio-studio-specialistico", slugs)
+        self.assertNotIn("bottega-shop-artigianale", slugs)
+
+    def test_listing_filter_by_audience(self):
+        _, qs = selectors.get_listing_templates(audience_slugs=["enterprise"])
+        slugs = set(qs.values_list("slug", flat=True))
+        self.assertIn("pragma-corporate-suite", slugs)
+        self.assertIn("elevate-startup-landing", slugs)
+
+    def test_listing_feature_flags_are_and_joined(self):
+        # Bottega carries has_shop=True + has_blog=True; Luxe too.
+        # Cardio has has_booking=True but has_shop=False so it drops.
+        _, qs = selectors.get_listing_templates(
+            feature_flags=["has_shop", "has_blog"]
+        )
+        self.assertEqual(
+            set(qs.values_list("slug", flat=True)),
+            {"bottega-shop-artigianale", "luxe-fashion-store"},
+        )
+
+    def test_facet_counts_shape(self):
+        _, qs = selectors.get_listing_templates()
+        counts = selectors.get_facet_counts(qs)
+        self.assertIn("clusters", counts)
+        self.assertIn("styles", counts)
+        self.assertIn("price_tiers", counts)
+        self.assertIn("features", counts)
+        self.assertIn("total", counts)
+        self.assertEqual(counts["total"], 20)
+        # Sanity spot-checks on a few counts.
+        self.assertEqual(counts["clusters"].get("specialist"), 2)
+        self.assertEqual(counts["price_tiers"].get("standard"), 7)
+        self.assertEqual(counts["features"].get("has_rtl"), 20)
+        self.assertEqual(counts["features"].get("has_shop"), 2)
+
+    def test_typeahead_empty_query_returns_empty_pools(self):
+        payload = selectors.search_templates_typeahead("")
+        self.assertEqual(payload["templates"], [])
+        self.assertEqual(payload["clusters"], [])
+        self.assertEqual(payload["roles"], [])
+
+    def test_typeahead_single_char_returns_empty_pools(self):
+        payload = selectors.search_templates_typeahead("a")
+        self.assertEqual(payload["templates"], [])
+
+    def test_typeahead_matches_cluster_alias(self):
+        payload = selectors.search_templates_typeahead("stellato")
+        cluster_slugs = [c["slug"] for c in payload["clusters"]]
+        self.assertIn("fine-dining", cluster_slugs)
+
+    def test_typeahead_matches_template_name(self):
+        payload = selectors.search_templates_typeahead("vertex")
+        template_slugs = [t["slug"] for t in payload["templates"]]
+        self.assertIn("vertex-creative-agency", template_slugs)
+
+    def test_typeahead_matches_role_label(self):
+        payload = selectors.search_templates_typeahead("avvocat")
+        role_slugs = [r["slug"] for r in payload["roles"]]
+        self.assertIn("avvocati", role_slugs)
+
+    def test_get_templates_by_cluster(self):
+        cluster, qs = selectors.get_templates_by_cluster("specialist")
+        self.assertEqual(cluster.slug, "specialist")
+        self.assertEqual(
+            set(qs.values_list("slug", flat=True)),
+            {"cardio-studio-specialistico", "dermatologia-elite-roma"},
+        )
+
+    def test_get_templates_by_cluster_404_on_unknown(self):
+        with self.assertRaises(Http404):
+            selectors.get_templates_by_cluster("does-not-exist-cluster")
+
+    def test_get_templates_by_role(self):
+        role, qs = selectors.get_templates_by_role("avvocati")
+        self.assertEqual(role["slug"], "avvocati")
+        self.assertEqual(
+            set(qs.values_list("slug", flat=True)),
+            {"lex-studio-legale", "juris-avvocato-moderno"},
+        )
+
+    def test_get_templates_by_role_404_on_unknown(self):
+        with self.assertRaises(Http404):
+            selectors.get_templates_by_role("unknown-role")
+
+    def test_get_templates_by_use_case(self):
+        use_case, qs = selectors.get_templates_by_use_case("sell-online")
+        self.assertEqual(use_case["slug"], "sell-online")
+        self.assertEqual(
+            set(qs.values_list("slug", flat=True)),
+            {"bottega-shop-artigianale", "luxe-fashion-store"},
+        )
+
+    def test_get_templates_by_use_case_404_on_unknown(self):
+        with self.assertRaises(Http404):
+            selectors.get_templates_by_use_case("unknown-use-case")
+
+
+class DiscoveryViewTests(_SeededCatalogMixin, TestCase):
+    """HTTP coverage for X.2 Commit 4 views + legacy routes."""
+
+    def test_legacy_template_list_200(self):
+        r = self.client.get("/templates/")
+        self.assertEqual(r.status_code, 200)
+
+    def test_legacy_category_listing_200(self):
+        r = self.client.get("/templates/restaurant/")
+        self.assertEqual(r.status_code, 200)
+
+    def test_legacy_template_detail_200(self):
+        r = self.client.get("/templates/restaurant/gusto-fine-dining/")
+        self.assertEqual(r.status_code, 200)
+
+    def test_legacy_template_detail_exposes_pills(self):
+        r = self.client.get("/templates/restaurant/gusto-fine-dining/")
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("Fine dining", body)          # cluster pill
+        self.assertIn("Editorial warm", body)       # visual style pill
+        self.assertIn("Premium", body)              # price tier pill label
+
+    def test_listing_filter_by_cluster_query_string(self):
+        r = self.client.get("/templates/?cluster=fine-dining")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("Gusto", body)
+        self.assertNotIn("Bottega", body)
+
+    def test_listing_filter_by_feature_query_string(self):
+        r = self.client.get("/templates/?feature=has_shop")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("Bottega", body)
+        self.assertIn("Luxe", body)
+        self.assertNotIn("Vertex Studio", body)
+
+    def test_typeahead_endpoint_returns_json(self):
+        r = self.client.get("/templates/search/typeahead/?q=fine")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r["Content-Type"], "application/json")
+        payload = json.loads(r.content)
+        self.assertIn("templates", payload)
+        self.assertIn("clusters", payload)
+        self.assertIn("roles", payload)
+
+    def test_typeahead_endpoint_empty_query_200(self):
+        r = self.client.get("/templates/search/typeahead/?q=")
+        self.assertEqual(r.status_code, 200)
+        payload = json.loads(r.content)
+        self.assertEqual(payload["templates"], [])
+
+    def test_typeahead_endpoint_clamps_limit(self):
+        r = self.client.get("/templates/search/typeahead/?q=agenzia&limit=200")
+        self.assertEqual(r.status_code, 200)
+
+    def test_cluster_detail_200(self):
+        r = self.client.get("/templates/clusters/fine-dining/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("Fine dining", body)
+        self.assertIn("Gusto", body)
+
+    def test_cluster_detail_404_on_unknown(self):
+        r = self.client.get("/templates/clusters/does-not-exist/")
+        self.assertEqual(r.status_code, 404)
+
+    def test_role_discovery_200(self):
+        r = self.client.get("/templates/for-role/avvocati/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("Per avvocati", body)
+        self.assertIn("Lex", body)
+
+    def test_role_discovery_404_on_unknown(self):
+        r = self.client.get("/templates/for-role/nonexistent-role/")
+        self.assertEqual(r.status_code, 404)
+
+    def test_use_case_discovery_200(self):
+        r = self.client.get("/templates/for-use-case/sell-online/")
+        self.assertEqual(r.status_code, 200)
+        body = r.content.decode("utf-8", "ignore")
+        self.assertIn("Vendere online", body)
+        self.assertIn("Bottega", body)
+        self.assertIn("Luxe", body)
+
+    def test_use_case_discovery_404_on_unknown(self):
+        r = self.client.get("/templates/for-use-case/unknown/")
+        self.assertEqual(r.status_code, 404)
+
+    def test_fixed_prefix_paths_resolve_before_category_catchall(self):
+        # The URL routing invariant: `clusters/`, `search/`, `for-role/`
+        # and `for-use-case/` MUST resolve to their dedicated views,
+        # not to the category-listing catch-all.
+        # If resolution drifted, the assert below would return 404
+        # from the category lookup inside the listing view.
+        urls = [
+            "/templates/clusters/fine-dining/",
+            "/templates/search/typeahead/?q=fine",
+            "/templates/for-role/avvocati/",
+            "/templates/for-use-case/sell-online/",
+        ]
+        for url in urls:
+            r = self.client.get(url)
+            self.assertEqual(
+                r.status_code,
+                200,
+                f"Fixed prefix path {url} must resolve to its dedicated "
+                f"view — URL ordering drift detected.",
+            )
+
+    def test_editor_untouched_invariant(self):
+        # X.2 Commit 4 scope guard: catalog discovery must not have
+        # imported anything from apps.editor (the enrollment program
+        # is closed — D-099 binding). A breakage here means a view
+        # reached outside its approved scope.
+        import apps.catalog.views as cat_views
+        import apps.catalog.selectors as cat_selectors
+        self.assertFalse(
+            hasattr(cat_views, "apply_project_overrides")
+            and cat_views.apply_project_overrides.__module__ != "apps.editor.rendering",
+            "Catalog views must import apply_project_overrides from "
+            "apps.editor.rendering verbatim — not reimplement it.",
+        )
+        # The selectors layer must not have grown an editor dependency.
+        self.assertNotIn("editor", cat_selectors.__file__)
+
+
+# Ensure Http404 is imported for the test suite (used by selector 404 tests).
+from django.http import Http404  # noqa: E402
