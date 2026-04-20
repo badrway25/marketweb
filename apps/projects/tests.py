@@ -14317,6 +14317,358 @@ class FoundationHttpTests(TestCase):
             ):
                 validate_key_path(aura_arc, out_path)
 
+    def test_a17b_elevate_full_multilocale_lifecycle_end_to_end(self):
+        """End-to-end HTTP lifecycle for the A.17b Elevate enrollment.
+
+        Elevate's `.sl-*` (startup-saas-landing) skin is the SIMPLEST
+        image profile of any enrolled archetype · 1 single image
+        surface (``home.product_demo_card.poster`` · nested-dict
+        scalar) vs Aura 12 · Famiglia 16 · Luxe 31. Second single-
+        template dedicated-schema precedent after A.17 Aura. This
+        test blindates — as the **closer of the editor enrollment
+        program A.6 → A.17b** — every invariant asked by the Step 2
+        brief:
+
+        (a) Perimeter at TEST START · 19 enrolled archetypes · sentinel
+            OUT (Strategy A retirement from A.17b Step 1).
+        (b) Translatable storage shape: IT/EN/FR edits on
+            ``home.headline`` land on ``@<locale>:`` · zero plain-key
+            leak for a translatable path.
+        (c) Global plain-key: ``site.logo_word`` edited via EN lands
+            plain-keyed · zero ``@<locale>:`` prefix on any of the 5
+            canonical locales.
+        (d) Single image surface: ``home.product_demo_card.poster``
+            override lands plain-key · 5× cross-locale prefix absence
+            · renders on every one of the 5 locales (universal reach).
+        (e) Publish preserves the storage shape lossless.
+        (f) Cross-locale render matrix · 5 locales × home page:
+            - IT/EN/FR previews show ONLY their own headline override
+              marker (zero IT->EN · EN->FR · etc. bleed)
+            - ES/AR previews (unedited) show NONE of the IT/EN/FR
+              markers (authored baseline fallback)
+            - `site.logo_word` override universal on all 5 locales
+            - `home.product_demo_card.poster` override universal on
+              all 5 locales
+            - AR carries ``<html lang="ar" dir="rtl">``
+        (g) Owner reopen per locale: per-locale headlines come back
+            for IT/EN/FR · global universals come back on every
+            locale.
+        (h) OUT-path rejection at test end (explicit list includes the
+            6th + 7th form-structure OUT precedents · flat list-of-str
+            · nested list-of-str cols · bool cols · structural href
+            cols · registry-only posts/pages).
+        (i) Perimeter at TEST END · 19 enrolled archetypes still IN ·
+            sentinel still OUT · no real outside-gate archetype
+            remains (program-closure coherence).
+
+        Phases mirror the Aura Step 2 topology (A.17). Explicitly NOT
+        exercised: browser walk (Step 3), Elevate-specific coverage
+        expansion, posts editing (absent by design), mutable rows,
+        image per-locale, apps.commerce touches. Zero production-code
+        changes required — this test only touches
+        ``apps/projects/tests.py``.
+        """
+        import json as _json
+        from apps.editor.schema import (
+            _MULTILOCALE_ENABLED_ARCHETYPES as _ENABLED,
+            _ARCHETYPE_SCHEMAS as _SCHEMAS,
+            InvalidEditableField,
+            is_supported_archetype,
+            is_translatable,
+            supported_locales,
+            validate_key_path,
+        )
+
+        # Archetype + template identifiers (closer of the program).
+        elev_arc = "startup-saas-landing"
+        elev_slug = "elevate-startup-landing"
+        # 18 pre-A.17b archetypes — Elevate's peers at program closure.
+        # Listed explicitly so a drift in any of them fails this test
+        # (program-closure guardrail · 19/19 catalog complete).
+        PEER_ARCS = (
+            "agency-creative-studio", "agency-digital-studio",
+            "corporate-suite", "fine-dining",
+            "specialist", "classic-gold", "modern-transparent",
+            "mass-market", "ultra-luxury-cinematic",
+            "editorial-designer-grid", "cinematic-photographer",
+            "trattoria-warm", "street-modern",
+            "artisan-workshop", "fashion-editorial",
+            "clinic", "wellness", "family",
+        )
+
+        # -- 1. perimeter invariants at TEST START --------------------
+        self.assertIn(elev_arc, _SCHEMAS,
+                      "Elevate must be enrolled at lifecycle start")
+        self.assertIn(elev_arc, _ENABLED,
+                      "Elevate must be in multi-locale gate at start")
+        # All 18 peer archetypes still IN (closer precedent).
+        for arc in PEER_ARCS:
+            self.assertIn(arc, _SCHEMAS,
+                          f"{arc} must be enrolled at A.17b lifecycle start")
+            self.assertIn(arc, _ENABLED,
+                          f"{arc} must be in multi-locale gate at A.17b lifecycle start")
+        # 19 enrolled archetypes total at lifecycle start (Elevate +
+        # 18 peers · no duplicate · no leak).
+        self.assertEqual(
+            len({elev_arc, *PEER_ARCS}), 19,
+            "19 distinct archetypes must be enrolled at A.17b lifecycle start",
+        )
+        # Sentinel OUT · no real outside-gate archetype remains — the
+        # retirement introduced in A.17b Step 1 stays honored.
+        self.assertNotIn(_OUTSIDE_GATE_SENTINEL, _SCHEMAS,
+                         "sentinel must stay OUT of _ARCHETYPE_SCHEMAS at start")
+        self.assertNotIn(_OUTSIDE_GATE_SENTINEL, _ENABLED,
+                         "sentinel must stay OUT of multi-locale gate at start")
+        self.assertFalse(is_supported_archetype(_OUTSIDE_GATE_SENTINEL))
+        self.assertEqual(supported_locales(_OUTSIDE_GATE_SENTINEL), [])
+        self.assertFalse(is_translatable(_OUTSIDE_GATE_SENTINEL, "home.headline"))
+
+        elev = WebTemplate.objects.get(slug=elev_slug)
+        p = services.create_project_from_template(owner=self.owner, template=elev)
+
+        def autosave(locale, content, tokens=None):
+            return self.client.post(
+                f"/projects/{p.uuid}/autosave/",
+                data=_json.dumps({
+                    "locale": locale,
+                    "content": content,
+                    "tokens": tokens or {},
+                }),
+                content_type="application/json",
+            )
+
+        # -- 2. translatable per-locale edits on home.headline --------
+        # IT + EN + FR land on `@<locale>:`. Plain-key MUST never
+        # appear for a translatable path.
+        headline_per_locale = {
+            "it": "Walk IT Elevate <em>A17bHeadlineIT</em>.",
+            "en": "Walk EN Elevate <em>A17bHeadlineEN</em>.",
+            "fr": "Walk FR Elevate <em>A17bHeadlineFR</em>.",
+        }
+        for locale, headline in headline_per_locale.items():
+            r = autosave(locale, {"home.headline": headline})
+            self.assertEqual(r.status_code, 200,
+                             f"home.headline autosave failed for {locale}")
+            content_keys = r.json()["content_keys"]
+            self.assertIn(f"@{locale}:home.headline", content_keys,
+                          f"home.headline must land on @{locale}: prefix")
+            self.assertNotIn("home.headline", content_keys,
+                             "home.headline must NOT appear plain-key for translatable path")
+
+        # -- 3. global plain-keyed text -- site.logo_word via EN ------
+        # Forced global · _GLOBAL_TEXT_PATHS routing. Even edited via
+        # EN, storage must carry the plain key (no @en: prefix).
+        LOGO = "A17b Elevate Walk Product"
+        r = autosave("en", {"site.logo_word": LOGO})
+        self.assertEqual(r.status_code, 200)
+        content_keys = r.json()["content_keys"]
+        self.assertIn("site.logo_word", content_keys,
+                      "site.logo_word must land plain-keyed (global)")
+        for locale in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(
+                f"@{locale}:site.logo_word", content_keys,
+                f"site.logo_word must NOT carry @{locale}: prefix (forced global)",
+            )
+
+        # -- 4. single image surface · home.product_demo_card.poster --
+        # Simplest image profile of any enrolled archetype · 1 nested-
+        # dict scalar cell. Must land plain-key global · zero @<locale>:
+        # prefix on any of the 5 canonical locales.
+        POSTER = "https://walk-elevate.example/img/product-demo.jpg"
+        # Route the edit via a non-IT locale to prove the locale param
+        # is IGNORED for the image surface (policy · not an impl detail).
+        r = autosave("fr", {"home.product_demo_card.poster": POSTER})
+        self.assertEqual(r.status_code, 200,
+                         "home.product_demo_card.poster autosave must succeed")
+        content_keys = r.json()["content_keys"]
+        self.assertIn("home.product_demo_card.poster", content_keys,
+                      "home.product_demo_card.poster must land plain-keyed (global image)")
+        # Cross-locale prefix absence -- verify no accidental per-locale
+        # split for any of the 5 canonical locales (5x assertNotIn).
+        for locale in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(
+                f"@{locale}:home.product_demo_card.poster", content_keys,
+                f"home.product_demo_card.poster must NEVER carry @{locale}: prefix",
+            )
+
+        # -- 5. publish -----------------------------------------------
+        services.publish_project(project=p, editor=self.owner)
+        p.refresh_from_db()
+        self.assertEqual(p.status, CustomerProject.Status.PUBLISHED)
+        rev = p.revisions.filter(reason="publish").first()
+        self.assertIsNotNone(rev, "publish revision must be recorded")
+        snap = rev.snapshot["content"]
+        # Storage shape lossless across publish -- per-locale headlines
+        # and plain-key globals both persist verbatim.
+        self.assertIn("@it:home.headline", snap)
+        self.assertIn("@en:home.headline", snap)
+        self.assertIn("@fr:home.headline", snap)
+        self.assertIn("site.logo_word", snap)
+        self.assertNotIn("@it:site.logo_word", snap)
+        self.assertNotIn("@en:site.logo_word", snap)
+        # Poster: plain-key after publish · never per-locale.
+        self.assertIn("home.product_demo_card.poster", snap,
+                      "poster must persist plain-key through publish")
+        for locale in ("it", "en", "fr", "es", "ar"):
+            self.assertNotIn(
+                f"@{locale}:home.product_demo_card.poster", snap,
+                f"poster must NEVER be per-locale across publish ({locale})",
+            )
+
+        # -- 6. second-user preview matrix · 5 locales x home page ----
+        # Logged-out second user. Verifies preview reach for published
+        # project without editor context.
+        self.client.logout()
+        for locale in ("it", "en", "fr", "es", "ar"):
+            r = self.client.get(
+                f"/templates/business/{elev_slug}/preview/"
+                f"?project={p.uuid}&lang={locale}"
+            )
+            self.assertEqual(r.status_code, 200,
+                             f"{locale} preview must return 200")
+            body = r.content.decode("utf-8", "ignore")
+            # site.logo_word (global) renders on ALL 5 locales.
+            self.assertIn(LOGO, body,
+                          f"{locale} preview must render global site.logo_word override")
+            # Poster image (global) visible in rendered HTML on every
+            # locale -- skin lifts the poster URL into the mockup card.
+            self.assertIn(POSTER, body,
+                          f"{locale} preview must render global poster override")
+            # Translatable home.headline -- overridden only for IT/EN/FR ·
+            # ES/AR must NOT show any IT/EN/FR override markers.
+            if locale in ("it", "en", "fr"):
+                marker = f"A17bHeadline{locale.upper()}"
+                self.assertIn(marker, body,
+                              f"{locale} preview must render its own home.headline override")
+                for other in ("IT", "EN", "FR"):
+                    if other != locale.upper():
+                        self.assertNotIn(
+                            f"A17bHeadline{other}", body,
+                            f"{locale} preview must NOT leak {other} home.headline override",
+                        )
+            else:
+                # ES/AR -- unedited · must NOT contain ANY of the
+                # IT/EN/FR markers (zero bleed into unedited locales).
+                for other in ("IT", "EN", "FR"):
+                    self.assertNotIn(
+                        f"A17bHeadline{other}", body,
+                        f"{locale} (unedited) preview must NOT leak any home.headline override",
+                    )
+            # AR only: <html dir="rtl" lang="ar"> on `.sl-*` skin.
+            if locale == "ar":
+                self.assertIn('dir="rtl"', body,
+                              "AR preview must carry <html dir=\"rtl\"> on .sl-* skin")
+                self.assertIn('lang="ar"', body,
+                              "AR preview must carry <html lang=\"ar\">")
+        self.client.login(username="owner", password="x")
+
+        # -- 7. owner reopens editor per locale · prefill -------------
+        for locale in ("it", "en", "fr", "es", "ar"):
+            r = self.client.get(f"/projects/{p.uuid}/editor/?lang={locale}")
+            self.assertEqual(r.status_code, 200,
+                             f"editor reopen must succeed for {locale}")
+            body = r.content.decode("utf-8", "ignore")
+            # Global universals visible on every locale reopen.
+            self.assertIn(LOGO, body,
+                          f"{locale} editor reopen must prefill global site.logo_word")
+            self.assertIn(POSTER, body,
+                          f"{locale} editor reopen must prefill global poster")
+            # Per-locale headlines come back on their own locale reopen.
+            if locale in ("it", "en", "fr"):
+                marker = f"A17bHeadline{locale.upper()}"
+                self.assertIn(
+                    marker, body,
+                    f"{locale} editor reopen must prefill its own home.headline override",
+                )
+
+        # -- 8. OUT-path rejection (end-of-test · HTTP autosave) ------
+        # Explicit list -- 6th + 7th form-structure precedents ·
+        # flat list-of-str (A.17b OUT entire) · nested list-of-str
+        # cols (Juris precedent chain) · bool cols (5th precedent) ·
+        # structural href cols (Aura slug precedent) · registry-only
+        # posts/pages (uniform across 19 archetypes).
+        OUT_AUTOSAVE_PATHS = (
+            # 7th form-structure OUT precedent (demo page)
+            "demo.form_fields",
+            "demo.form_fields.0.name",
+            "demo.form_sections",
+            "demo.form_sections.0.title",
+            "demo.upload_field",
+            # 6th form-structure OUT precedent (prezzi billing toggle)
+            "prezzi.billing_toggle_options",
+            "prezzi.billing_toggle_options.0.id",
+            # Flat list-of-str OUT entire
+            "site.hours_footer_rows",
+            "site.shiplog_footer_rows",
+            "home.trust_logos",
+            "home.feature_pills",
+            "home.mockup.chrome_dots",
+            "home.mockup.perks",
+            # Nested list-of-str cols OUT (Juris precedent chain)
+            "home.pricing_teaser.0.perks",
+            "prodotto.modules.0.highlights",
+            "prezzi.tiers.0.perks",
+            # Bool + structural OUT cols
+            "home.pricing_teaser.0.highlight",
+            "prezzi.tiers.0.highlight",
+            "prezzi.tiers.0.cta_href",
+            # Registry-only top-level lists
+            "posts",
+            "pages",
+        )
+        for path in OUT_AUTOSAVE_PATHS:
+            r = autosave("it", {path: "should-be-rejected"})
+            self.assertEqual(
+                r.status_code, 400,
+                f"autosave on {path} must reject · OUT perimeter (A.17b)",
+            )
+        # Double enforcement -- validate_key_path rejects the same
+        # list at the contract layer (not just HTTP).
+        for path in OUT_AUTOSAVE_PATHS:
+            with self.assertRaises(
+                InvalidEditableField,
+                msg=f"Elevate OUT path must reject at contract layer: {path}",
+            ):
+                validate_key_path(elev_arc, path)
+
+        # -- 9. perimeter invariants re-checked END-OF-TEST -----------
+        # Elevate still IN + sentinel still OUT · 19 enrolled intact ·
+        # program-closure coherence (no real outside-gate remains).
+        self.assertIn(elev_arc, _SCHEMAS,
+                      "Elevate must stay enrolled at lifecycle end")
+        self.assertIn(elev_arc, _ENABLED,
+                      "Elevate must stay in multi-locale gate at end")
+        for arc in PEER_ARCS:
+            self.assertIn(arc, _SCHEMAS,
+                          f"{arc} must stay enrolled at A.17b lifecycle END")
+            self.assertIn(arc, _ENABLED,
+                          f"{arc} must stay in multi-locale gate at A.17b lifecycle END")
+        self.assertEqual(
+            len({elev_arc, *PEER_ARCS}), 19,
+            "19 distinct archetypes must remain enrolled at lifecycle END",
+        )
+        # Sentinel OUT · contract helpers still return the negative
+        # answers · program closure stays coherent.
+        self.assertNotIn(_OUTSIDE_GATE_SENTINEL, _SCHEMAS,
+                         "sentinel must stay OUT of _ARCHETYPE_SCHEMAS at end")
+        self.assertNotIn(_OUTSIDE_GATE_SENTINEL, _ENABLED,
+                         "sentinel must stay OUT of multi-locale gate at end")
+        self.assertFalse(is_supported_archetype(_OUTSIDE_GATE_SENTINEL),
+                         "sentinel is_supported_archetype must stay False at end")
+        self.assertEqual(supported_locales(_OUTSIDE_GATE_SENTINEL), [],
+                         "sentinel supported_locales must stay [] at end")
+        self.assertFalse(
+            is_translatable(_OUTSIDE_GATE_SENTINEL, "home.headline"),
+            "sentinel is_translatable must stay False at end",
+        )
+        # And validate_key_path on the sentinel still raises -- the
+        # retirement stays watertight across the full lifecycle.
+        with self.assertRaises(
+            InvalidEditableField,
+            msg="sentinel validate_key_path must raise at lifecycle END",
+        ):
+            validate_key_path(_OUTSIDE_GATE_SENTINEL, "home.headline")
+
     def test_a7_step2_preview_follows_active_locale_end_to_end(self):
         """Saving EN via autosave + fetching the preview with ``?lang=en``
         returns the EN override on HTML; fetching ``?lang=it`` returns
