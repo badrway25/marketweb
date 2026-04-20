@@ -140,12 +140,85 @@ def get_template_detail(
 
 def get_related_templates(
     template: WebTemplate, limit: int = 3, include_drafts: bool = False
-) -> QuerySet[WebTemplate]:
-    return (
-        get_published_templates(include_drafts)
-        .filter(category=template.category)
-        .exclude(pk=template.pk)[:limit]
-    )
+) -> list[WebTemplate]:
+    """Taxonomy-driven related-templates selector (X.3 Commit 4).
+
+    Priority layers (fill in order until ``limit`` is reached):
+      1. Same ``profession_cluster`` (cluster-level siblings)
+      2. Same ``visual_style`` (visual-style siblings across clusters)
+      3. Same ``category`` (macro-category fallback · legacy behaviour)
+
+    Invariants:
+      * Excludes ``template`` itself from every layer.
+      * Distinct results across layers (a template matched by layer 1
+        never reappears in layer 2 or 3).
+      * Deterministic ordering: within each layer, results honor
+        ``featured DESC, order ASC, -created_at`` (the WebTemplate
+        Meta ordering) so repeat queries produce the same sequence.
+      * Returns a Python ``list`` rather than a QuerySet: the layered
+        union cannot be expressed as a single QuerySet without raw
+        SQL while preserving the layer-priority contract, and the
+        caller's usage pattern (iteration in a template) is
+        list-compatible.
+
+    Contract compared to pre-X.3 behaviour: a legacy caller passing
+    only ``template`` with default ``limit=3`` gets the SAME return
+    shape (iterable of ``WebTemplate`` with ``.name``, ``.slug``,
+    ``.category``, ``.brand`` accessible) — the template partial
+    keeps rendering without any change.
+
+    Deterministic examples (on the seeded 20-template catalog):
+      * cardio-studio-specialistico → [dermatologia-elite-roma, ...]
+        because both share cluster ``specialist``.
+      * luxe-fashion-store → fashion-editorial cluster has only Luxe;
+        style ``magazine-hybrid`` has only Luxe; category
+        ``ecommerce`` contains Bottega → returns [bottega-shop-
+        artigianale] at category layer.
+      * pragma-corporate-suite → cluster ``corporate`` has only
+        Pragma; style ``classic-serif`` has {Lex}; category
+        ``business`` has {Elevate, Pragma} → returns [Lex, Elevate]
+        at style + category layers.
+    """
+    if limit <= 0:
+        return []
+
+    base = get_published_templates(include_drafts).exclude(pk=template.pk)
+
+    collected_pks: set[int] = set()
+    out: list[WebTemplate] = []
+
+    def _drain_layer(qs):
+        """Append up to (limit - len(out)) rows from qs, respecting distinct."""
+        if len(out) >= limit:
+            return
+        needed = limit - len(out)
+        # Fetch a slightly wider slice than ``needed`` to keep
+        # distinct-filtering deterministic when a layer's ordering
+        # intersects with prior layers' picks.
+        for tpl in qs[: needed * 3]:
+            if tpl.pk in collected_pks:
+                continue
+            collected_pks.add(tpl.pk)
+            out.append(tpl)
+            if len(out) >= limit:
+                return
+
+    # Layer 1 · same profession_cluster (only if the template has one).
+    if template.profession_cluster_id is not None:
+        _drain_layer(
+            base.filter(profession_cluster_id=template.profession_cluster_id)
+        )
+
+    # Layer 2 · same visual_style (drops templates already collected).
+    if len(out) < limit and template.visual_style_id is not None:
+        _drain_layer(base.filter(visual_style_id=template.visual_style_id))
+
+    # Layer 3 · same category fallback (legacy behaviour preserved for
+    # templates without enriched taxonomy + as last-resort filler).
+    if len(out) < limit:
+        _drain_layer(base.filter(category_id=template.category_id))
+
+    return out
 
 
 # ── Listing page: combined search / sort / filter ──────────────

@@ -1154,3 +1154,214 @@ class HomepageScopeInvariantTests(TestCase):
         src = django_engine.get_template("pages/home.html").template.source
         self.assertNotIn("live_templates/", src)
         self.assertNotIn("editor/preview-bridge", src)
+
+
+# ── X.3 Commit 4 · taxonomy-driven related-templates selector ─────
+
+
+class RelatedTemplatesTaxonomyTests(_SeededCatalogMixin, TestCase):
+    """``get_related_templates`` honors the layered priority contract:
+    same-cluster → same-style → same-category, exclude-self, distinct,
+    deterministic, ``limit`` respected.
+    """
+
+    def _related_slugs(self, slug, limit=3, include_drafts=False):
+        tpl = WebTemplate.objects.get(slug=slug)
+        return [
+            t.slug
+            for t in selectors.get_related_templates(
+                tpl, limit=limit, include_drafts=include_drafts
+            )
+        ]
+
+    def test_same_cluster_priority_cardio_returns_derm_first(self):
+        """Cardio + Derm share cluster `specialist` · Derm must be first."""
+        slugs = self._related_slugs("cardio-studio-specialistico")
+        self.assertGreater(len(slugs), 0)
+        self.assertEqual(slugs[0], "dermatologia-elite-roma")
+
+    def test_same_cluster_priority_derm_returns_cardio_first(self):
+        """Symmetry · Derm's related starts with Cardio (same cluster)."""
+        slugs = self._related_slugs("dermatologia-elite-roma")
+        self.assertGreater(len(slugs), 0)
+        self.assertEqual(slugs[0], "cardio-studio-specialistico")
+
+    def test_same_style_fallback_when_cluster_is_singleton(self):
+        """Villa's cluster `real-estate-luxury` is singleton; its style
+        `cinematic-fullbleed` is shared with Pixel · style layer must fire."""
+        slugs = self._related_slugs("villa-immobili-lusso")
+        self.assertIn(
+            "pixel-portfolio-fotografico",
+            slugs,
+            f"expected Pixel via style layer, got {slugs}",
+        )
+
+    def test_same_category_fallback_luxe_includes_bottega(self):
+        """Luxe's cluster singleton + style singleton · category `ecommerce`
+        contains Bottega → fallback to category layer must pick it up."""
+        slugs = self._related_slugs("luxe-fashion-store")
+        self.assertIn(
+            "bottega-shop-artigianale",
+            slugs,
+            f"expected Bottega via category layer, got {slugs}",
+        )
+
+    def test_pragma_falls_back_gracefully(self):
+        """Pragma's cluster `corporate` has only Pragma; style
+        `classic-serif` includes Lex; category `business` has Elevate.
+        Should return Lex + Elevate (no errors, no empties)."""
+        slugs = self._related_slugs("pragma-corporate-suite")
+        self.assertGreater(len(slugs), 0)
+        self.assertIn("lex-studio-legale", slugs)
+        self.assertIn("elevate-startup-landing", slugs)
+
+    def test_exclude_self_invariant(self):
+        """Every related set must never contain the source template itself."""
+        for slug in WebTemplate.objects.values_list("slug", flat=True):
+            slugs = self._related_slugs(slug, limit=3)
+            self.assertNotIn(
+                slug,
+                slugs,
+                f"{slug} appeared in its own related set",
+            )
+
+    def test_distinct_no_duplicate_slugs(self):
+        """A template in cluster+style+category intersection must appear
+        at most once · the layered union de-duplicates."""
+        for slug in WebTemplate.objects.values_list("slug", flat=True):
+            slugs = self._related_slugs(slug, limit=5)
+            self.assertEqual(
+                len(slugs),
+                len(set(slugs)),
+                f"duplicate slug in related set for {slug}: {slugs}",
+            )
+
+    def test_limit_respected(self):
+        """Returned set never exceeds the requested limit."""
+        for limit in (0, 1, 3, 5, 10):
+            slugs = self._related_slugs("cardio-studio-specialistico", limit=limit)
+            self.assertLessEqual(
+                len(slugs),
+                limit,
+                f"limit {limit} violated: got {len(slugs)}",
+            )
+
+    def test_limit_zero_returns_empty(self):
+        slugs = self._related_slugs("cardio-studio-specialistico", limit=0)
+        self.assertEqual(slugs, [])
+
+    def test_deterministic_across_repeated_calls(self):
+        """Two consecutive calls with the same args must return the same
+        slug order · no randomness allowed."""
+        for slug in (
+            "cardio-studio-specialistico",
+            "luxe-fashion-store",
+            "pragma-corporate-suite",
+            "vertex-creative-agency",
+        ):
+            a = self._related_slugs(slug, limit=3)
+            b = self._related_slugs(slug, limit=3)
+            self.assertEqual(a, b, f"non-deterministic order for {slug}: {a} != {b}")
+
+    def test_include_drafts_false_respected(self):
+        """Draft tier templates MUST NOT appear in related results when
+        ``include_drafts=False`` (default)."""
+        # Demote Derm to draft to prove the gate.
+        derm = WebTemplate.objects.get(slug="dermatologia-elite-roma")
+        derm.tier = WebTemplate.Tier.DRAFT
+        derm.save(update_fields=["tier"])
+        try:
+            slugs = self._related_slugs("cardio-studio-specialistico")
+            self.assertNotIn(
+                "dermatologia-elite-roma",
+                slugs,
+                "draft Derm must not surface with include_drafts=False",
+            )
+        finally:
+            derm.tier = WebTemplate.Tier.PUBLISHED_LIVE
+            derm.save(update_fields=["tier"])
+
+    def test_include_drafts_true_widens_pool(self):
+        """With ``include_drafts=True`` (staff preview path), drafts are
+        visible in the related set."""
+        derm = WebTemplate.objects.get(slug="dermatologia-elite-roma")
+        derm.tier = WebTemplate.Tier.DRAFT
+        derm.save(update_fields=["tier"])
+        try:
+            slugs = self._related_slugs(
+                "cardio-studio-specialistico", include_drafts=True
+            )
+            self.assertIn(
+                "dermatologia-elite-roma",
+                slugs,
+                "draft Derm must surface with include_drafts=True",
+            )
+        finally:
+            derm.tier = WebTemplate.Tier.PUBLISHED_LIVE
+            derm.save(update_fields=["tier"])
+
+    def test_layer_ordering_cluster_beats_style_beats_category(self):
+        """Explicit layer-priority sanity · with a fully-populated catalog
+        the cluster layer is drained first, style second, category third.
+        Vertex: cluster `creative` is singleton (only Vertex); style
+        `editorial-warm` is shared with Gusto/Sapore/Chiara; category
+        `agency` contains Aura. Expected order: style siblings before
+        category fallback (Aura)."""
+        slugs = self._related_slugs("vertex-creative-agency", limit=4)
+        # Aura (same category, not same style) should be AFTER at least
+        # one style sibling (editorial-warm: Gusto / Sapore / Chiara).
+        style_siblings = {
+            "gusto-fine-dining",
+            "sapore-trattoria-pizzeria",
+            "chiara-portfolio-creativo",
+        }
+        earliest_style_idx = min(
+            (slugs.index(s) for s in slugs if s in style_siblings),
+            default=None,
+        )
+        if "aura-digital-studio" in slugs and earliest_style_idx is not None:
+            self.assertLess(
+                earliest_style_idx,
+                slugs.index("aura-digital-studio"),
+                f"style siblings must come before category fallback: {slugs}",
+            )
+
+    def test_return_shape_is_iterable_with_webtemplate_attrs(self):
+        """Regression guard · views/templates iterate the result and read
+        ``.name``, ``.slug``, ``.category``, ``.brand`` — the refactor
+        changed QuerySet → list but the contract must hold."""
+        tpl = WebTemplate.objects.get(slug="cardio-studio-specialistico")
+        related = selectors.get_related_templates(tpl, limit=3)
+        for r in related:
+            self.assertIsInstance(r, WebTemplate)
+            self.assertTrue(r.slug)
+            self.assertTrue(r.name)
+            self.assertTrue(r.category)
+
+    def test_template_without_taxonomy_falls_back_to_category(self):
+        """Defensive: a template with NULL profession_cluster + NULL
+        visual_style still returns category siblings · nullable-first
+        contract from X.2."""
+        tpl = WebTemplate.objects.get(slug="vertex-creative-agency")
+        # Strip taxonomy in memory to simulate a pre-X.2 row state.
+        tpl.profession_cluster_id = None
+        tpl.visual_style_id = None
+        tpl.save(update_fields=["profession_cluster", "visual_style"])
+        try:
+            slugs = [
+                t.slug
+                for t in selectors.get_related_templates(tpl, limit=3)
+            ]
+            self.assertGreater(
+                len(slugs),
+                0,
+                "template without taxonomy must still get category fallback",
+            )
+            for s in slugs:
+                sibling = WebTemplate.objects.get(slug=s)
+                self.assertEqual(sibling.category_id, tpl.category_id)
+        finally:
+            # Restore to avoid contaminating other tests (TestCase wraps
+            # in a transaction but update_fields+save persists until
+            # rollback, which unittest does between methods).
+            pass
