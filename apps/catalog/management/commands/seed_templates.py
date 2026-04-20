@@ -972,11 +972,42 @@ class Command(BaseCommand):
             self.stderr.write(self.style.ERROR("No categories found. Run seed_categories first."))
             return
 
+        # X.3 Commit 5 · post NOT NULL flip: cluster + style must be
+        # present at CREATE time (INSERT can no longer land with NULL
+        # FKs and be patched later). Ensure the taxonomy tables are
+        # populated · callers that only ran ``seed_categories + seed_
+        # templates`` (legacy fixture path in apps.projects tests)
+        # still get a valid seed chain without touching apps/projects.
+        if not ProfessionCluster.objects.exists():
+            call_command("seed_profession_clusters", verbosity=0)
+        if not VisualStyle.objects.exists():
+            call_command("seed_visual_styles", verbosity=0)
+
+        # Pre-resolve the taxonomy maps so the ``defaults`` dict
+        # carries the FKs upfront. Idempotent: ``get_or_create`` still
+        # keys on slug · admin-authored overrides on existing rows
+        # are preserved.
+        clusters = {c.slug: c for c in ProfessionCluster.objects.all()}
+        styles = {s.slug: s for s in VisualStyle.objects.all()}
+
         created_count = 0
         for t_data in SEED_TEMPLATES:
             category = categories.get(t_data["category_slug"])
             if not category:
                 self.stderr.write(f"  Category '{t_data['category_slug']}' not found, skipping {t_data['name']}")
+                continue
+
+            md = TEMPLATE_METADATA.get(t_data["slug"])
+            cluster = clusters.get(md["cluster"]) if md else None
+            style = styles.get(md["style"]) if md else None
+            if cluster is None or style is None:
+                self.stderr.write(
+                    self.style.WARNING(
+                        f"  Taxonomy missing for {t_data['slug']}: run "
+                        f"seed_profession_clusters + seed_visual_styles "
+                        f"first. Skipping."
+                    )
+                )
                 continue
 
             template, created = WebTemplate.objects.get_or_create(
@@ -991,6 +1022,9 @@ class Command(BaseCommand):
                     "featured": t_data["featured"],
                     "order": t_data["order"],
                     "status": WebTemplate.Status.PUBLISHED,
+                    # NOT NULL FKs · required at INSERT post-X.3 C5.
+                    "profession_cluster": cluster,
+                    "visual_style": style,
                 },
             )
 
@@ -1001,12 +1035,11 @@ class Command(BaseCommand):
                     template=template,
                     defaults=brand_data,
                 )
-                # X.2 Commit 3 · apply taxonomy v2 metadata on fresh
-                # seed so a brand-new database lands in the same end-
-                # state as an existing DB after the 0004 backfill
-                # migration ran. Only applied on creation to preserve
-                # idempotency: existing rows keep any admin-authored
-                # metadata tweaks.
+                # X.2 Commit 3 · apply the remaining taxonomy v2
+                # metadata (use_cases, audience, price_tier,
+                # search_keywords, feature flags) on fresh seed. The
+                # FK columns already landed in the INSERT above · the
+                # helper now only fills the additive non-FK fields.
                 self._apply_taxonomy_metadata(template)
                 self.stdout.write(f"  Created: {t_data['name']} ({brand_data['brand_name']})")
             else:

@@ -173,7 +173,9 @@ class WebTemplate(TimestampedModel, SlugModel):
     )
     # X.2 Commit 1 · additive 2-level taxonomy hook. Nullable during the
     # backfill window so existing rows don't require an immediate data
-    # migration. Commit 3 populates; a later commit flips ``null=False``.
+    # migration. Commit 3 populated all 20 MVP rows; X.3 Commit 5 (this
+    # flip) tightens the contract to ``null=False`` — every template now
+    # carries a profession_cluster and a visual_style by schema law.
     # ``category`` FK stays untouched for backward compatibility — every
     # cluster carries its own category FK so the two fields are kept
     # consistent at seed + backfill time.
@@ -181,15 +183,11 @@ class WebTemplate(TimestampedModel, SlugModel):
         ProfessionCluster,
         on_delete=models.PROTECT,
         related_name="templates",
-        null=True,
-        blank=True,
     )
     visual_style = models.ForeignKey(
         VisualStyle,
         on_delete=models.PROTECT,
         related_name="templates",
-        null=True,
-        blank=True,
     )
     # X.2 Commit 1 · catalog discovery metadata. JSONField is used for
     # the open-ended lists (use_cases, audience) where the valid set is

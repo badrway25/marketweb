@@ -164,21 +164,28 @@ class WebTemplateMetadataTests(TestCase):
         )
 
     def _make_template(self, **overrides) -> WebTemplate:
+        # X.3 Commit 5 · post NOT NULL flip: profession_cluster + visual_style
+        # are required at INSERT. The helper wires the class-level fixture
+        # cluster + style by default so existing tests keep testing metadata
+        # defaults on a VALID row shape. Override via kwargs when a test
+        # needs a specific cluster/style.
         defaults = {
             "name": "Test Template",
             "slug": "test-template",
             "category": self.category,
             "description": "Test description.",
             "price": Decimal("0.00"),
+            "profession_cluster": self.cluster,
+            "visual_style": self.style,
         }
         defaults.update(overrides)
         return WebTemplate.objects.create(**defaults)
 
     def test_new_fields_default_values_match_migration_contract(self):
         tpl = self._make_template()
-        # Nullable FKs default to None during the backfill window.
-        self.assertIsNone(tpl.profession_cluster)
-        self.assertIsNone(tpl.visual_style)
+        # X.3 Commit 5: FKs are now required · helper wires them.
+        self.assertIsNotNone(tpl.profession_cluster)
+        self.assertIsNotNone(tpl.visual_style)
         # Open-ended list metadata defaults to empty list.
         self.assertEqual(tpl.use_cases, [])
         self.assertEqual(tpl.audience, [])
@@ -1339,29 +1346,172 @@ class RelatedTemplatesTaxonomyTests(_SeededCatalogMixin, TestCase):
             self.assertTrue(r.category)
 
     def test_template_without_taxonomy_falls_back_to_category(self):
-        """Defensive: a template with NULL profession_cluster + NULL
-        visual_style still returns category siblings · nullable-first
-        contract from X.2."""
-        tpl = WebTemplate.objects.get(slug="vertex-creative-agency")
-        # Strip taxonomy in memory to simulate a pre-X.2 row state.
-        tpl.profession_cluster_id = None
-        tpl.visual_style_id = None
-        tpl.save(update_fields=["profession_cluster", "visual_style"])
-        try:
-            slugs = [
-                t.slug
-                for t in selectors.get_related_templates(tpl, limit=3)
-            ]
-            self.assertGreater(
-                len(slugs),
-                0,
-                "template without taxonomy must still get category fallback",
+        """Defensive: the selector still walks the category fallback
+        path when ``profession_cluster`` / ``visual_style`` are absent
+        on the query source. Simulated via an in-memory WebTemplate
+        that is NOT persisted — persisting a FK-less row would fail
+        post-X.3 Commit 5 (NOT NULL flip)."""
+        source = WebTemplate.objects.get(slug="vertex-creative-agency")
+        # In-memory copy with stripped taxonomy · NEVER .save()ed.
+        ghost = WebTemplate(
+            pk=source.pk,
+            name=source.name,
+            slug=source.slug,
+            category=source.category,
+            description=source.description,
+            profession_cluster_id=None,
+            visual_style_id=None,
+        )
+        slugs = [
+            t.slug
+            for t in selectors.get_related_templates(ghost, limit=3)
+        ]
+        self.assertGreater(
+            len(slugs),
+            0,
+            "template without taxonomy must still get category fallback",
+        )
+        for s in slugs:
+            sibling = WebTemplate.objects.get(slug=s)
+            self.assertEqual(sibling.category_id, ghost.category_id)
+
+
+# ── X.3 Commit 5 · NOT NULL flip on profession_cluster + visual_style
+
+
+class TaxonomyNotNullContractTests(_SeededCatalogMixin, TestCase):
+    """After X.3 Commit 5, every WebTemplate row carries a
+    ``profession_cluster`` and a ``visual_style`` FK by schema law.
+    The NOT NULL flip is a trivial schema migration (0005) safe on
+    the MVP 20-row catalog because X.2 Commit 3 backfilled all rows.
+    """
+
+    def test_all_seeded_templates_have_profession_cluster(self):
+        missing = list(
+            WebTemplate.objects.filter(profession_cluster__isnull=True).values_list(
+                "slug", flat=True
             )
-            for s in slugs:
-                sibling = WebTemplate.objects.get(slug=s)
-                self.assertEqual(sibling.category_id, tpl.category_id)
-        finally:
-            # Restore to avoid contaminating other tests (TestCase wraps
-            # in a transaction but update_fields+save persists until
-            # rollback, which unittest does between methods).
-            pass
+        )
+        self.assertEqual(
+            missing,
+            [],
+            f"post-flip invariant: no template may have NULL "
+            f"profession_cluster · missing on {missing}",
+        )
+
+    def test_all_seeded_templates_have_visual_style(self):
+        missing = list(
+            WebTemplate.objects.filter(visual_style__isnull=True).values_list(
+                "slug", flat=True
+            )
+        )
+        self.assertEqual(
+            missing,
+            [],
+            f"post-flip invariant: no template may have NULL "
+            f"visual_style · missing on {missing}",
+        )
+
+    def test_seeded_count_unchanged_by_migration(self):
+        """20/20 MVP templates must still be queryable · no row lost."""
+        self.assertEqual(WebTemplate.objects.count(), 20)
+
+    def test_cluster_category_invariant_preserved(self):
+        """cluster.category == template.category · holds post-flip."""
+        for tpl in WebTemplate.objects.all():
+            self.assertEqual(
+                tpl.profession_cluster.category_id,
+                tpl.category_id,
+                f"cluster/category mismatch on {tpl.slug}",
+            )
+
+    def test_create_without_profession_cluster_raises(self):
+        """Creating a WebTemplate without profession_cluster must fail
+        at the DB layer (IntegrityError) now that the column is NOT
+        NULL. Use ``.objects.create`` which performs the INSERT."""
+        category = Category.objects.get(slug="business")
+        style = VisualStyle.objects.get(slug="dashboard-dark")
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            WebTemplate.objects.create(
+                name="Ghost No Cluster",
+                slug="ghost-no-cluster",
+                category=category,
+                description="ghost",
+                visual_style=style,
+                # profession_cluster intentionally omitted
+            )
+
+    def test_create_without_visual_style_raises(self):
+        category = Category.objects.get(slug="business")
+        cluster = ProfessionCluster.objects.get(slug="corporate")
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            WebTemplate.objects.create(
+                name="Ghost No Style",
+                slug="ghost-no-style",
+                category=category,
+                description="ghost",
+                profession_cluster=cluster,
+                # visual_style intentionally omitted
+            )
+
+    def test_create_with_both_fks_succeeds(self):
+        """Positive control · ensures the flip didn't over-tighten."""
+        category = Category.objects.get(slug="business")
+        cluster = ProfessionCluster.objects.get(slug="corporate")
+        style = VisualStyle.objects.get(slug="dashboard-dark")
+        tpl = WebTemplate.objects.create(
+            name="Ghost Complete",
+            slug="ghost-complete",
+            category=category,
+            description="ghost",
+            profession_cluster=cluster,
+            visual_style=style,
+        )
+        self.assertEqual(tpl.profession_cluster, cluster)
+        self.assertEqual(tpl.visual_style, style)
+
+    def test_category_fk_still_required_unchanged(self):
+        """X.3 Commit 5 does NOT touch ``category`` · legacy FK still
+        required, behaviour identical to pre-flip."""
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            WebTemplate.objects.create(
+                name="Ghost No Category",
+                slug="ghost-no-category",
+                description="ghost",
+                # category intentionally omitted
+            )
+
+    def test_model_field_declarations_reflect_not_null(self):
+        """The model definition itself must carry null=False on both
+        FKs · guards against a future revert that silently re-loosens
+        the contract without a corresponding migration."""
+        pc_field = WebTemplate._meta.get_field("profession_cluster")
+        vs_field = WebTemplate._meta.get_field("visual_style")
+        self.assertFalse(pc_field.null, "profession_cluster must be null=False")
+        self.assertFalse(vs_field.null, "visual_style must be null=False")
+
+    def test_discovery_surfaces_no_regression(self):
+        """End-to-end smoke at the selector level: the 3 X.2 Commit 4
+        discovery helpers still work post-flip (no code path regressed
+        against the NULL-is-possible assumption that was removed)."""
+        _, qs = selectors.get_listing_templates()
+        self.assertEqual(qs.count(), 20)
+        counts = selectors.get_facet_counts(qs)
+        self.assertEqual(counts["total"], 20)
+        self.assertGreater(len(counts["clusters"]), 0)
+        self.assertGreater(len(counts["styles"]), 0)
+
+    def test_migration_0005_is_schema_only(self):
+        """Guardrail · migration 0005 must contain only AlterField
+        operations · no data migration / RunPython / RunSQL crept in."""
+        import importlib
+
+        mig = importlib.import_module(
+            "apps.catalog.migrations.0005_taxonomy_v2_not_null"
+        )
+        for op in mig.Migration.operations:
+            self.assertEqual(
+                type(op).__name__,
+                "AlterField",
+                f"migration 0005 op {op} must be AlterField (schema-only)",
+            )
