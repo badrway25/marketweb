@@ -1004,3 +1004,153 @@ class DiscoveryViewTests(_SeededCatalogMixin, TestCase):
 
 # Ensure Http404 is imported for the test suite (used by selector 404 tests).
 from django.http import Http404  # noqa: E402
+
+
+# ── X.2 Commit 5 · homepage discovery context + render ────────────
+
+
+class HomepageDiscoveryTests(_SeededCatalogMixin, TestCase):
+    """Homepage (``/``) must render the X.2 discovery surface end-to-end.
+
+    Locks the context wiring (search-typeahead URL, role cards,
+    use-case cards, trust counters) and the rendered-HTML shape so a
+    future template edit that drops a block fails loudly instead of
+    silently shrinking the hero.
+    """
+
+    def setUp(self):
+        self.response = self.client.get("/")
+
+    def test_home_200(self):
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_home_exposes_typeahead_endpoint_hook(self):
+        # The hero search form must wire the typeahead root + point at
+        # the taxonomy-typeahead URL introduced in Commit 4. typeahead.js
+        # is loaded via a <script src="..."> tag at the bottom of the
+        # page and binds to any input inside a ``data-typeahead-root``
+        # node — assert both signals are in the rendered HTML.
+        body = self.response.content.decode("utf-8", "ignore")
+        self.assertIn("data-typeahead-root", body)
+        self.assertIn("/static/js/typeahead.js", body)
+
+    def test_home_search_form_submits_to_catalog_listing(self):
+        body = self.response.content.decode("utf-8", "ignore")
+        self.assertIn('action="/templates/"', body)
+        self.assertIn('name="q"', body)
+
+    def test_home_includes_role_discovery_entries(self):
+        # At least the 6 canonical roles (avvocati · medici · ristoratori
+        # · startup · fotografi · artigiani) must appear in the rendered
+        # HTML as linked role-discovery cards.
+        ctx = self.response.context
+        role_slugs = {role["slug"] for role in ctx["home_roles"]}
+        for slug in ("avvocati", "medici", "ristoratori", "startup",
+                     "fotografi", "artigiani"):
+            self.assertIn(
+                slug,
+                role_slugs,
+                f"Homepage role grid must expose '{slug}' role card.",
+            )
+        body = self.response.content.decode("utf-8", "ignore")
+        self.assertIn("/templates/for-role/avvocati/", body)
+        self.assertIn("/templates/for-role/medici/", body)
+
+    def test_home_includes_use_case_entries(self):
+        ctx = self.response.context
+        uc_slugs = {uc["slug"] for uc in ctx["home_use_cases"]}
+        for slug in ("sell-online", "reservations", "appointment-booking",
+                     "show-portfolio", "generate-leads"):
+            self.assertIn(
+                slug,
+                uc_slugs,
+                f"Homepage use-case grid must expose '{slug}' card.",
+            )
+        body = self.response.content.decode("utf-8", "ignore")
+        self.assertIn("/templates/for-use-case/sell-online/", body)
+        self.assertIn("/templates/for-use-case/show-portfolio/", body)
+
+    def test_home_trust_counters_are_live_from_db(self):
+        counters = self.response.context["trust_counters"]
+        # Seeded DB: 20 MVP templates all published_live, 15 macro-
+        # categories (8 MVP + 7 extras from seed_profession_clusters),
+        # 52 profession clusters, 5 canonical locales.
+        self.assertEqual(counters["templates_live"], 20)
+        self.assertEqual(counters["categories_active"], 15)
+        self.assertEqual(counters["clusters_active"], 52)
+        self.assertEqual(counters["locales_supported"], 5)
+
+    def test_home_trust_counters_render_in_html(self):
+        body = self.response.content.decode("utf-8", "ignore")
+        self.assertIn("20+", body)   # templates_live
+        self.assertIn("52", body)    # clusters_active
+        self.assertIn("professioni", body)
+        self.assertIn("RTL", body)
+
+    def test_home_features_featured_templates(self):
+        ctx = self.response.context
+        featured = list(ctx["featured_templates"])
+        self.assertGreater(len(featured), 0, "Featured pool must be non-empty on seeded DB.")
+        body = self.response.content.decode("utf-8", "ignore")
+        # At least one featured template name should surface in the
+        # rendered card grid.
+        self.assertTrue(
+            any(tpl.name in body for tpl in featured),
+            "At least one featured template name must appear on the rendered homepage.",
+        )
+
+    def test_home_exposes_how_it_works_anchor(self):
+        body = self.response.content.decode("utf-8", "ignore")
+        self.assertIn('id="come-funziona"', body)
+        self.assertIn("Scegli", body)
+        self.assertIn("Personalizza", body)
+        self.assertIn("Pubblica", body)
+
+    def test_home_category_chips_point_to_catalog_routes(self):
+        body = self.response.content.decode("utf-8", "ignore")
+        # Each category link must point to the catalog per-category
+        # listing URL — spot-check 2 MVP slugs.
+        self.assertIn("/templates/agency/", body)
+        self.assertIn("/templates/restaurant/", body)
+
+
+class HomepageEmptyDbSafetyTests(TestCase):
+    """Homepage must not 500 when the DB is empty (fresh dev env · pre-seed).
+
+    Locks the ``or []`` / counter fallback contract in the view: trust
+    counters render 0, discovery grids render empty, and the legacy
+    featured pool returns an empty list. No seed chain runs in
+    ``setUpTestData`` — this is the empty-DB invariant.
+    """
+
+    def test_home_200_on_empty_db(self):
+        r = self.client.get("/")
+        self.assertEqual(r.status_code, 200)
+
+    def test_home_trust_counters_zero_on_empty_db(self):
+        r = self.client.get("/")
+        c = r.context["trust_counters"]
+        self.assertEqual(c["templates_live"], 0)
+        self.assertEqual(c["categories_active"], 0)
+        self.assertEqual(c["clusters_active"], 0)
+        self.assertEqual(c["locales_supported"], 5)
+
+
+class HomepageScopeInvariantTests(TestCase):
+    """X.2 Commit 5 scope guard: editor + catalog internals untouched."""
+
+    def test_pages_views_does_not_import_editor(self):
+        import apps.pages.views as pv
+        src = open(pv.__file__, "r", encoding="utf-8").read()
+        self.assertNotIn("apps.editor", src)
+        self.assertNotIn("apps.projects", src)
+        self.assertNotIn("apps.commerce", src)
+
+    def test_home_template_does_not_reach_into_live_templates(self):
+        # The homepage must not render archetype live_templates paths —
+        # those belong to /templates/<cat>/<slug>/preview/.
+        from django.template import engines
+        django_engine = engines["django"]
+        src = django_engine.get_template("pages/home.html").template.source
+        self.assertNotIn("live_templates/", src)
+        self.assertNotIn("editor/preview-bridge", src)

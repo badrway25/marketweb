@@ -2,111 +2,122 @@
 {% load static %}
 
 {% block title %}Home{% endblock %}
-{% block meta_description %}MarketWeb — Il marketplace italiano di template web premium. Scegli, personalizza e lancia il tuo sito professionale in pochi minuti.{% endblock %}
+{% block meta_description %}MarketWeb — Il marketplace italiano di template web premium. 200+ template professionali con editor visuale incluso, 5 lingue e supporto RTL nativo.{% endblock %}
 
 {% block body_class %}mw-page-home{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/catalog-facets.css' %}">
+<link rel="stylesheet" href="{% static 'css/home-discovery.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<!-- ========== HERO ========== -->
-<section class="mw-hero mw-home-hero">
-  <div class="container">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-6 mw-hero-content">
-        <span class="mw-overline">Marketplace Template Web</span>
-        <h1>Il tuo sito web professionale, pronto in pochi minuti.</h1>
-        <p class="mw-lead">
-          Scegli tra template premium progettati per ogni settore, personalizzali con il nostro editor visuale e lancia la tua presenza online senza scrivere codice.
-        </p>
-        <div class="mw-hero-actions">
-          <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-primary mw-btn-lg">
-            Esplora i Template <i class="bi bi-arrow-right"></i>
-          </a>
-          <a href="#" class="mw-btn mw-btn-white mw-btn-lg">
-            <i class="bi bi-play-circle"></i> Come Funziona
-          </a>
-        </div>
-      </div>
-      <div class="col-lg-6 mw-hero-visual d-none d-lg-block">
-        <div class="mw-hero-mockup">
-          {# Session 47: Pexels 4884116 — minimalist laptop on white desk. #}
-          {# Photographer: Artem Podrez. Replaces wireframe bi-icon placeholder. #}
-          <div class="mw-hero-image" style="
-            aspect-ratio: 4/3;
-            border-radius: var(--mw-radius-lg);
-            background-image: url('https://images.pexels.com/photos/4884116/pexels-photo-4884116.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1200');
-            background-size: cover;
-            background-position: center 45%;
-            box-shadow: 0 30px 60px -20px rgba(15,16,32,0.35);
-            overflow: hidden;
-          "></div>
-        </div>
-        <div class="mw-hero-float" style="width: 100px; height: 100px; top: -20px; inset-inline-end: -30px; animation-delay: 0.5s;"></div>
-        <div class="mw-hero-float" style="width: 60px; height: 60px; bottom: 30px; inset-inline-start: -20px; animation-delay: 1.5s;"></div>
-      </div>
+{# ════════════════════════════════════════════════════════════════ #}
+{# X.2 Commit 5 · Homepage redesigned for taxonomy-driven discovery #}
+{# ════════════════════════════════════════════════════════════════ #}
+
+<!-- ========== 1 · HERO · search-first discovery ========== -->
+<section class="mw-hero mw-home-hero-v2">
+  <div class="container mw-home-hero-inner">
+    <span class="mw-overline">Template web premium · editor visuale incluso</span>
+    <h1 class="mw-home-hero-title">
+      Il sito web della tua professione.<br>
+      <em>Pronto in pochi minuti.</em>
+    </h1>
+    <p class="mw-home-hero-lead">
+      {{ trust_counters.templates_live }}+ template premium · {{ trust_counters.clusters_active }} professioni · 5 lingue con RTL autentico.
+      Scegli, personalizza, pubblica.
+    </p>
+
+    {# Search form — submits to the catalog listing. The typeahead #}
+    {# panel hooks to /templates/search/typeahead/ via typeahead.js. #}
+    <form action="{{ catalog_list_url }}" method="get" class="mw-home-search" data-typeahead-root>
+      <label for="mw-home-search-input" class="sr-only">Cerca template</label>
+      <i class="bi bi-search mw-home-search-icon" aria-hidden="true"></i>
+      <input
+        id="mw-home-search-input"
+        type="text"
+        name="q"
+        class="mw-home-search-input"
+        placeholder="Cerca per professione, stile o funzione..."
+        autocomplete="off"
+        aria-label="Cerca template per professione, stile o funzione">
+      <button type="submit" class="mw-btn mw-btn-primary mw-home-search-submit">
+        <i class="bi bi-arrow-right"></i>
+        <span>Cerca</span>
+      </button>
+    </form>
+
+    <div class="mw-home-hero-ctas">
+      <a href="{{ catalog_list_url }}" class="mw-btn mw-btn-primary mw-btn-lg">
+        Sfoglia il catalogo <i class="bi bi-arrow-right"></i>
+      </a>
+      <a href="#come-funziona" class="mw-btn mw-btn-ghost mw-btn-lg">
+        <i class="bi bi-play-circle"></i> Come funziona
+      </a>
     </div>
   </div>
 </section>
 
 
-<!-- ========== TRUST BAR ========== -->
-<section class="mw-section-sm mw-surface-sunken">
+<!-- ========== 2 · CATEGORY CHIPS · compact macro filters ========== -->
+<section class="mw-home-chips-section" aria-label="Categorie del catalogo">
   <div class="container">
-    <div class="mw-stats">
-      <div class="mw-stat">
-        <div class="mw-stat-value">150+</div>
-        <div class="mw-stat-label">Template Premium</div>
-      </div>
-      <div class="mw-stat">
-        <div class="mw-stat-value">8</div>
-        <div class="mw-stat-label">Categorie Professionali</div>
-      </div>
-      <div class="mw-stat">
-        <div class="mw-stat-value">2.500+</div>
-        <div class="mw-stat-label">Clienti Soddisfatti</div>
-      </div>
-      <div class="mw-stat">
-        <div class="mw-stat-value">99%</div>
-        <div class="mw-stat-label">Valutazione Positiva</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ========== CATEGORIES ========== -->
-<section class="mw-section" id="categorie">
-  <div class="container">
-    <div class="mw-section-header">
-      <span class="mw-overline">Categorie</span>
-      <h2>Un template per ogni settore</h2>
-      <p>Dai professionisti alle attivit&agrave; commerciali, ogni categoria offre design curati nei minimi dettagli.</p>
-    </div>
-
-    <div class="mw-category-grid">
+    <ul class="mw-home-chips" role="list">
       {% for category in categories %}
-        {% include "includes/_category_card.html" with category=category %}
+        <li>
+          <a href="{% url 'catalog:template_list_by_category' category.slug %}" class="mw-home-chip">
+            {% if category.icon %}<i class="bi bi-{{ category.icon }}"></i>{% endif %}
+            <span>{{ category.name }}</span>
+            {% if category.template_count %}<em class="mw-home-chip-count">{{ category.template_count }}</em>{% endif %}
+          </a>
+        </li>
       {% endfor %}
-    </div>
+    </ul>
   </div>
 </section>
 
 
-<!-- ========== FEATURED TEMPLATES ========== -->
+<!-- ========== 3 · ROLE DISCOVERY · "Per ruolo" cards ========== -->
+<section class="mw-section mw-home-section" id="per-ruolo">
+  <div class="container">
+    <div class="mw-section-header mw-home-section-header">
+      <span class="mw-overline">Per ruolo</span>
+      <h2>Trova il template giusto per la tua professione</h2>
+      <p>Dal primo template allo scale-up: ogni ruolo ha un catalogo curato con design, tono e funzionalità adatte.</p>
+    </div>
+
+    <ul class="mw-home-role-grid" role="list">
+      {% for role in home_roles %}
+        <li class="mw-home-role-card">
+          <a href="{{ role.url }}" class="mw-home-role-link">
+            <h3 class="mw-home-role-label">{{ role.label }}</h3>
+            <p class="mw-home-role-desc">{{ role.description }}</p>
+            <span class="mw-home-role-cta">
+              Esplora <i class="bi bi-arrow-right"></i>
+            </span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+
+<!-- ========== 4 · FEATURED TEMPLATES · curated collection ========== -->
 <section class="mw-section mw-surface-sunken" id="template-in-evidenza">
   <div class="container">
-    <div class="mw-section-header">
-      <span class="mw-overline">In Evidenza</span>
+    <div class="mw-section-header mw-home-section-header">
+      <span class="mw-overline">In evidenza</span>
       <h2>Collezione curata</h2>
-      <p>Ogni template pubblicato &egrave; un sito completo e navigabile. Rilasciamo solo ci&ograve; che supera il nostro standard.</p>
+      <p>Ogni template pubblicato è un sito completo e navigabile. Rilasciamo solo ciò che supera il nostro standard.</p>
     </div>
 
-    {# D-055: featured pool filters tier=published_live — when empty, #}
-    {# show the curatorial empty state rather than a dead grid.       #}
     {% if featured_templates %}
       <div class="mw-featured-grid">
         {% for tmpl in featured_templates %}
-          {% include "includes/_template_card.html" with template=tmpl %}
+          {% include "catalog/_includes/template_card.html" with template=tmpl %}
         {% endfor %}
       </div>
     {% else %}
@@ -114,119 +125,111 @@
     {% endif %}
 
     <div class="text-center mt-5">
-      <a href="{% url 'catalog:template_list' %}" class="mw-btn mw-btn-secondary mw-btn-lg">
-        Vedi Tutti i Template <i class="bi bi-arrow-right"></i>
+      <a href="{{ catalog_list_url }}" class="mw-btn mw-btn-secondary mw-btn-lg">
+        Vedi tutti i template <i class="bi bi-arrow-right"></i>
       </a>
     </div>
   </div>
 </section>
 
 
-<!-- ========== HOW IT WORKS ========== -->
-<section class="mw-section" id="come-funziona">
+<!-- ========== 5 · USE-CASE DISCOVERY · "Per obiettivo" cards ========== -->
+<section class="mw-section mw-home-section" id="per-obiettivo">
   <div class="container">
-    <div class="mw-section-header">
-      <span class="mw-overline">Come Funziona</span>
-      <h2>Da zero al tuo sito in 3 passi</h2>
-      <p>Nessuna competenza tecnica richiesta. Il nostro editor visuale rende tutto semplice e veloce.</p>
+    <div class="mw-section-header mw-home-section-header">
+      <span class="mw-overline">Per obiettivo</span>
+      <h2>Cosa vuoi che il tuo sito faccia?</h2>
+      <p>Scegli il risultato concreto: il catalogo filtra solo i template costruiti per quello.</p>
     </div>
 
-    <div class="mw-steps">
-      <div class="mw-step">
-        <div class="mw-step-number">1</div>
-        <h4>Scegli il Template</h4>
-        <p>Naviga tra centinaia di design professionali organizzati per settore. Ogni template &egrave; stato progettato da designer esperti.</p>
-      </div>
-      <div class="mw-step">
-        <div class="mw-step-number">2</div>
-        <h4>Personalizza i Contenuti</h4>
-        <p>Usa il nostro editor visuale per modificare testi, immagini, colori e layout. Vedi le modifiche in tempo reale, senza codice.</p>
-      </div>
-      <div class="mw-step">
-        <div class="mw-step-number">3</div>
-        <h4>Pubblica e Cresci</h4>
-        <p>Scarica il tuo sito oppure attiva l'hosting integrato. Aggiorna i contenuti quando vuoi, il tuo sito &egrave; sempre sotto il tuo controllo.</p>
-      </div>
-    </div>
+    <ul class="mw-home-usecase-grid" role="list">
+      {% for uc in home_use_cases %}
+        <li class="mw-home-usecase-card">
+          <a href="{{ uc.url }}" class="mw-home-usecase-link">
+            <h3 class="mw-home-usecase-label">{{ uc.label }}</h3>
+            <p class="mw-home-usecase-desc">{{ uc.description }}</p>
+            <span class="mw-home-usecase-cta">
+              Vedi template <i class="bi bi-arrow-right"></i>
+            </span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
   </div>
 </section>
 
 
-<!-- ========== TESTIMONIALS ========== -->
-<section class="mw-section mw-surface-sunken">
+<!-- ========== 6 · TRUST STRIP · live counters ========== -->
+<section class="mw-home-trust" aria-label="Numeri del catalogo">
   <div class="container">
-    <div class="mw-section-header">
-      <span class="mw-overline">Testimonianze</span>
-      <h2>Cosa dicono i nostri clienti</h2>
-    </div>
-
-    <div class="row g-4">
-      <div class="col-lg-4 col-md-6">
-        <div class="mw-testimonial">
-          <p class="mw-testimonial-quote">
-            Ho lanciato il sito del mio ristorante in un pomeriggio. I clienti pensano che l'abbia fatto un'agenzia da migliaia di euro.
-          </p>
-          <div class="mw-testimonial-author">
-            <div class="mw-testimonial-avatar">MR</div>
-            <div>
-              <div class="mw-testimonial-name">Marco Rossi</div>
-              <div class="mw-testimonial-role">Ristorante La Pergola, Roma</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-4 col-md-6">
-        <div class="mw-testimonial">
-          <p class="mw-testimonial-quote">
-            Come avvocato avevo bisogno di un sito autorevole ma non avevo budget per un'agenzia. MarketWeb ha risolto il problema perfettamente.
-          </p>
-          <div class="mw-testimonial-author">
-            <div class="mw-testimonial-avatar">GB</div>
-            <div>
-              <div class="mw-testimonial-name">Giulia Bianchi</div>
-              <div class="mw-testimonial-role">Avv. Bianchi &amp; Associati, Milano</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-4 col-md-6">
-        <div class="mw-testimonial">
-          <p class="mw-testimonial-quote">
-            L'editor visuale &egrave; incredibilmente intuitivo. Ho personalizzato il mio portfolio in meno di un'ora e ora ricevo richieste ogni settimana.
-          </p>
-          <div class="mw-testimonial-author">
-            <div class="mw-testimonial-avatar">LV</div>
-            <div>
-              <div class="mw-testimonial-name">Luca Verdi</div>
-              <div class="mw-testimonial-role">Fotografo freelance, Firenze</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ul class="mw-home-trust-row" role="list">
+      <li class="mw-home-trust-cell">
+        <span class="mw-home-trust-n">{{ trust_counters.templates_live }}+</span>
+        <span class="mw-home-trust-lbl">template premium</span>
+      </li>
+      <li class="mw-home-trust-cell">
+        <span class="mw-home-trust-n">{{ trust_counters.categories_active }}</span>
+        <span class="mw-home-trust-lbl">macro-categorie</span>
+      </li>
+      <li class="mw-home-trust-cell">
+        <span class="mw-home-trust-n">{{ trust_counters.clusters_active }}</span>
+        <span class="mw-home-trust-lbl">professioni</span>
+      </li>
+      <li class="mw-home-trust-cell">
+        <span class="mw-home-trust-n">{{ trust_counters.locales_supported }}</span>
+        <span class="mw-home-trust-lbl">lingue · RTL incluso</span>
+      </li>
+    </ul>
   </div>
 </section>
 
 
-<!-- ========== FINAL CTA ========== -->
-<section class="mw-cta-section mw-surface-gradient">
+<!-- ========== 7 · HOW IT WORKS · Scegli · Personalizza · Pubblica ========== -->
+<section class="mw-section mw-home-section" id="come-funziona">
   <div class="container">
-    <span class="mw-overline" style="color: var(--mw-accent-light);">Pronto a Iniziare?</span>
-    <h2 style="color: var(--mw-neutral-0);">Crea il tuo sito professionale oggi</h2>
-    <p style="color: var(--mw-neutral-300);">
-      Unisciti a migliaia di professionisti che hanno scelto MarketWeb per lanciare la propria presenza online.
-    </p>
-    <div class="d-flex flex-wrap justify-content-center gap-3">
-      <a href="#" class="mw-btn mw-btn-primary mw-btn-lg" style="background: var(--mw-neutral-0); color: var(--mw-primary); border-color: var(--mw-neutral-0);">
-        Inizia Gratis <i class="bi bi-arrow-right"></i>
+    <div class="mw-section-header mw-home-section-header">
+      <span class="mw-overline">Come funziona</span>
+      <h2>Dal template al tuo sito in tre passi</h2>
+      <p>Nessuna competenza tecnica. L'editor visuale ti guida fino alla pubblicazione.</p>
+    </div>
+
+    <ol class="mw-home-steps" role="list">
+      <li class="mw-home-step">
+        <span class="mw-home-step-num">01</span>
+        <h3 class="mw-home-step-title">Scegli</h3>
+        <p class="mw-home-step-desc">Parti da una professione o da un obiettivo. Filtra per stile, funzione o caso d'uso fino al template che fa al caso tuo.</p>
+      </li>
+      <li class="mw-home-step">
+        <span class="mw-home-step-num">02</span>
+        <h3 class="mw-home-step-title">Personalizza</h3>
+        <p class="mw-home-step-desc">Testi, immagini, palette, pagine: modifica tutto dall'editor visuale. Ogni modifica è live e salva in automatico.</p>
+      </li>
+      <li class="mw-home-step">
+        <span class="mw-home-step-num">03</span>
+        <h3 class="mw-home-step-title">Pubblica</h3>
+        <p class="mw-home-step-desc">Quando sei pronto, il tuo sito è online. Aggiornalo quando vuoi — il controllo è sempre tuo.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+
+<!-- ========== 8 · FINAL CTA ========== -->
+<section class="mw-home-final-cta" aria-label="Chiama all'azione finale">
+  <div class="container">
+    <h2 class="mw-home-final-title">Il tuo progetto è a un click.</h2>
+    <p class="mw-home-final-sub">Scegli un template, personalizzalo oggi. Nessuna carta richiesta.</p>
+    <div class="mw-home-final-ctas">
+      <a href="{{ catalog_list_url }}" class="mw-btn mw-btn-primary mw-btn-lg">
+        Sfoglia il catalogo <i class="bi bi-arrow-right"></i>
       </a>
-      <a href="#" class="mw-btn mw-btn-lg" style="color: var(--mw-neutral-0); border-color: rgba(255,255,255,0.3);">
-        Vedi i Prezzi
+      <a href="#come-funziona" class="mw-btn mw-btn-ghost mw-btn-lg">
+        Come funziona
       </a>
     </div>
   </div>
 </section>
+
+<script src="{% static 'js/typeahead.js' %}" defer></script>
 
 {% endblock %}
