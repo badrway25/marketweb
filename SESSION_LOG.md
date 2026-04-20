@@ -1,5 +1,64 @@
 # Session Log
 
+## Session 80 — Phase X.4 · Wave 2 Pilot #1 · Fiscus Commercialista LIVE (2026-04-20)
+
+**Summary.** First Wave 2 pilot template produced by the Content Factory pipeline (X.3) lands end-to-end. Fiscus — Studio Tributario enrolls on the existing `corporate-suite` archetype with commercialista-specific voice, `dashboard-light` visual style, `financial-services` cluster, and ships in all 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic. Two local commits on `phase-x4-wave2-fiscus-commercialista-v1` off `52a04c1`: `f8cf575` (infrastructure + IT tree at `tier=draft`) → `65c6dd6` (4 locale trees + tier flip + test cascade fixes). **Catalog: 21/21 published_live (MVP 20 + Wave 2 #1).** Zero touches to `apps/editor`, `apps/projects`, `apps/commerce`, `apps/catalog/models.py`, `apps/catalog/migrations`, `apps/catalog/selectors.py`, `apps/catalog/views.py`, `apps/catalog/urls.py`, `docs/content-factory`, `live_templates` structural. D-099 program closure intact.
+
+**Six critical framings for X.4 Wave 2 Pilot #1:**
+
+1. **Content Factory Pipeline validated end-to-end.** The X.3 runbook + blueprint + imagery pack ran through production for the first time. Fiscus consumed: `cluster_blueprints/financial-services.md` (terminology · voice anchor "L'adempimento corretto, non la trovata" · 6 practice areas · anti-patterns incl. "risparmio fiscale garantito" · D-054 matrix) + `imagery/packs/financial-services.md` (Pexels URLs for fiscal-desk/portrait/detail/ambient — no calculator-cliché). Blueprint voice, terminology rules, and feature flag expectations survived the full round-trip from doc to live catalog.
+
+2. **Archetype reuse at its cleanest — shared skin, distinct identity.** Fiscus shares the `corporate-suite` skin folder with Pragma (same page-kind map: home/about/services/case_study_list/case_study_detail/contact). Differentiation happens via content tree + brand palette + imagery pool + DNA tone metadata — zero live_templates/ structural changes. D-054 10-gate recorded in module docstring: warm-neutral cream + blu-notte + gold filigrana (vs Pragma navy slate + emerald) · IBM Plex Serif/Sans (vs Merriweather+Inter) · fiscal-desk imagery (vs boardroom) · appointment-request with P.IVA+CF form (vs private-call NDA-ready) · 22-year commercialista ODCEC narrative (vs 22-year board advisory). No new archetype · no new page kinds · no new visual styles.
+
+3. **5-locale register diversity on one skin.** IT commercialista Milan ODCEC institutional-fiscal · EN FT/HBR tax-advisor with parenthetical Italian normative clarifications · FR Les Echos/Agefi vouvoiement with espaces insecables and expert-comptable terminology · ES Cinco Días/Expansión peninsular usted with inverted punctuation and asesor-fiscal · AR MSA Asharq al-Awsat boardroom with Latin digits + Latin proper names + Italian normative refs preserved (Pragma AR convention). All 4 locale trees authored in parallel by sub-agents with shape-parity enforcement; zero key drift, zero list-length drift.
+
+4. **Tier flip discipline respected — draft → published_live only after 8-point Playwright walk.** Infrastructure landed first at `tier=draft` (invisible in public catalog, hidden from homepage featured, hidden from facet listings). After 4 locale trees added, Playwright MCP walk ran all 8 checkpoints: detail page (cluster "Servizi finanziari" + style "Dashboard light" + tier "Standard" pills · use-case + feature chips · Personalizza CTA) · IT preview (hero voice anchor · no Pragma leak · no overflow) · AR preview (dir="rtl" · lang="ar" · Latin digits/proper names preserved · no overflow) · homepage featured rule (featured=False respected · Fiscus NOT on homepage) · cluster filter (financial-services returns Fiscus card) · typeahead (q=commercialista returns Fiscus template + financial-services + notary-commercialista clusters) · related templates (14 items populated on detail) · zero new console errors (favicon 404 pre-existing). All 8 green → registry flipped to `published_live` → sync_template_tiers applied → post-flip tests + smoke re-verified.
+
+5. **Test-suite cascade absorbed in one pass.** 6 tests broke post-flip because they hardcoded counts assuming 20 live templates: `test_facet_counts_shape` (total 20→21 · has_rtl 20→21 · standard 7→8 · new financial-services cluster spot-check) · `test_listing_filter_by_price_tier` (7→8 · Fiscus-in-slugs assertion added) · `test_listing_filter_by_unknown_feature_flag_is_ignored` (20→21) · `test_home_trust_counters_are_live_from_db` (20→21) · `test_home_trust_counters_render_in_html` ("20+"→"21+") · `test_discovery_surfaces_no_regression` (20→21 dual). All updated to explicit literal counts + comment "MVP 20 + Wave 2 pilots merged to date" so future pilot merges see the intent clearly. 506/506 apps tests PASS. Raw-DB count tests (previously updated in `f8cf575` to use `len(SEED_TEMPLATE_METADATA)`) remained stable through the flip.
+
+6. **Smoke coverage expanded 854 → 892 routes.** `smoke_full.py` extended with Fiscus entry in `LOCALES` + `CATEGORY` + `POST_ROUTES` (3 casi-seguiti post detail slugs). Added routes = 5 locales × (1 detail + 1 home + 5 inner pages) + 3 posts = 38 new HTTP 200 targets. 892/892 green at post-flip state.
+
+### Step-by-step commit sequence
+
+**Commit 1 · `f8cf575` — infrastructure + IT tree at tier=draft.** 7 files · +1178 LOC. `seed_templates.py` (TEMPLATE_METADATA + SEED_TEMPLATES entry) · `template_dna.py` (Fiscus on corporate-suite) · `preview_imagery.py` (business-fiscal pool) · `TEMPLATE_REGISTRY.json` (draft entry with tier_reason documenting flip gates) · `template_content_fiscus.py` (~930 LOC IT tree: 5 pages · 3 partners with ODCEC albo numbers · 6 practice areas · 3 anonymized case studies with real normative refs art. 2477 c.c./art. 3 c.4-ter D.Lgs. 346/1990/TUIR 177/D.Lgs. 39/2010 · form with P.IVA+CF+fascia oraria) · `template_content.py` (IT registration) · `tests.py` (backfill parity relaxed to subset + 3 raw-count tests shifted to `len(SEED_TEMPLATE_METADATA)` + Fiscus added to expected booking set). 506/506 tests green.
+
+**Commit 2 · `65c6dd6` — 4 locale trees + tier flip LIVE.** 8 files · +3849 LOC. `template_content_fiscus_en.py` (938 LOC) · `template_content_fiscus_fr.py` (996 LOC) · `template_content_fiscus_es.py` (955 LOC) · `template_content_fiscus_ar.py` (909 LOC) — all at shape-parity with IT · all authored by parallel sub-agents. `template_content.py` (4 locale imports + dict entries). `TEMPLATE_REGISTRY.json` (tier draft→published_live · live_preview=true · locales=5 · rtl=true · tier_reason documents D-053 gate + D-054 10/10 vs Pragma + Playwright 8/8 green). `tests.py` (6 public-count assertions shifted from 20 to 21 with explicit MVP+Wave 2 comment). `smoke_full.py` (+7 LOC · Fiscus LOCALES + CATEGORY + POST_ROUTES). Preview PNG regenerated (2.2 MB). **506/506 apps tests · 892/892 smoke · Playwright MCP 8/8 walk green · short post-flip sanity green.**
+
+### Validation gates (post-flip end-state)
+
+- `python manage.py check` → 0 issues
+- `python manage.py test apps.catalog` → 131/131 PASS
+- `python manage.py test apps` → 506/506 PASS
+- `python smoke_full.py` → 892/892 HTTP 200
+- Playwright MCP 8-point walk → all green (see framing #4)
+- Preview PNG regenerated → `media/template_assets/2026/04/fiscus-commercialista-preview.png` (2.2 MB)
+- `sync_template_tiers` → 21/21 published_live / 0 draft
+
+### Catalog state (post-Session 80)
+
+- 21 templates published_live · 6 macro-categories covered (business +1 via Fiscus entering the already-populated business category, not a new category)
+- 52/52 clusters available · 20→21 populated (financial-services goes from 0 templates to 1)
+- 12/12 visual styles available · dashboard-light moves from 0 templates to 1
+- 7 templates at `price_tier=standard` → 8 (Fiscus added)
+- 10 templates with `has_booking=True` → 11 (Fiscus added)
+- Zero templates at `tier=draft`
+
+### Branch state
+
+`phase-x4-wave2-fiscus-commercialista-v1` tip `65c6dd6`:
+- `52a04c1` (baseline — X.3 consolidation)
+- `f8cf575` (X.4 pilot #1 draft IT-only)
+- `65c6dd6` (X.4 pilot #1 LIVE 5 locales)
+
+Merge to `phase-integration-baseline-v15` pending explicit operator approval.
+
+### Remaining Wave 2 pilots (9 of 10)
+
+Fiscus is the **pattern-setter**. The remaining 9 pilots per `docs/content-factory/pilot_batch/x4_wave2_first_10.md` will follow the same recipe (archetype reuse + 5 locales + tier discipline + Playwright walk + smoke extension + test cascade absorption):
+`solaria-coaching` · `zenith-consulting` · `madou-pasticceria` · `cucina-di-rione` · `denti-co-studio` · `petro-veterinario` · `atto-notai-associati` · `fotogramma-films` · `sapori-di-langa`.
+
+---
+
 ## Session 79 — Phase X.3 · Content Factory Pipeline (2026-04-20)
 
 **Summary.** Content Factory scaffolding for Wave 2 template authoring landed as 5 local commits on `phase-integration-baseline-v15` (`c0f4e65` → `f26689f`). X.3 closes the taxonomy v2 contract introduced in X.2 by: (i) formalizing the authoring pipeline via `docs/content-factory/` runbook + 10 pilot cluster blueprints + 10 pilot imagery packs + validator script + tests; (ii) making the related-templates selector taxonomy-aware (same-cluster → same-style → same-category priority · deterministic · exclude-self · distinct); (iii) flipping `WebTemplate.profession_cluster` and `WebTemplate.visual_style` from nullable to NOT NULL now that all 20 MVP rows carry populated FKs. **Zero touches to `apps/editor`, `apps/projects`, `apps/commerce`, `templates/live_templates`, `static/editor`.** D-099 program closure remains intact.
