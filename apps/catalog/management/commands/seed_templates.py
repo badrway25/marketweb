@@ -374,6 +374,36 @@ TEMPLATE_METADATA = {
         "has_rtl": True,
         "is_multi_page": True,
     },
+    # ── Wave 2 Pilot #1 · Phase X.4 (2026-04-20) ────────────────
+    # First pilot template produced by the Content Factory pipeline
+    # (X.3). Reuses the corporate-suite archetype (Pragma's shell)
+    # with commercialista-specific voice, dashboard-light visual
+    # style, and the financial-services cluster. Seeds at `tier:
+    # draft` (set in TEMPLATE_REGISTRY.json) — flipped to
+    # published_live only after the 8-point Playwright walk.
+    "fiscus-commercialista": {
+        "cluster": "financial-services",
+        "style": "dashboard-light",
+        "price_tier": "standard",
+        "use_cases": [
+            "consultation-booking",
+            "generate-leads",
+            "b2b-credibility",
+        ],
+        "audience": ["smb", "freelance", "studio"],
+        "search_keywords": (
+            "commercialista fiscale finanza tasse contabilità "
+            "dichiarazione-redditi wealth-management revisore "
+            "studio-tributario partita-iva"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
 }
 
 _FEATURE_FLAG_FIELDS = (
@@ -489,6 +519,41 @@ SEED_TEMPLATES = [
             "typography": "Satoshi + Inter",
             "personality": "moderno, energico, tech-forward",
             "logo_concept": "Freccia ascendente stilizzata in gradiente viola-ciano, forme geometriche dinamiche",
+        },
+    },
+    # ── Wave 2 Pilot #1 · Fiscus — Studio Tributario ───────────
+    # Phase X.4 first pilot template. Reuses corporate-suite
+    # archetype (shared shell with Pragma) but with
+    # commercialista-specific voice, dashboard-light visual style,
+    # warm-neutral palette (differs from Pragma's navy slate).
+    # Seeds at tier=draft via TEMPLATE_REGISTRY.json; flipped to
+    # published_live only after the Wave 2 reviewer acceptance walk.
+    {
+        "name": "Fiscus — Studio Tributario",
+        "slug": "fiscus-commercialista",
+        "category_slug": "business",
+        "short_description": "Istituzionale e preciso per studi tributari e commercialisti. Calendario scadenze, iscrizioni albo, form appuntamento con P.IVA e CF.",
+        "description": (
+            "Fiscus è il template per studi tributari e commercialisti che vogliono comunicare "
+            "competenza tecnica verificabile senza trovate grafiche. Voce formale-precisa, "
+            "ritmo editoriale, palette warm-neutral con accento blu-notte — una presenza online "
+            "che rassicura il decision-maker SMB che sta cercando un presidio, non un fornitore.\n\n"
+            "Include: homepage con calendario scadenze del trimestre, pagina studio con bio "
+            "albo-iscrizione dei partner, sei aree di competenza (dichiarazione, bilancio, "
+            "contenzioso, wealth, lavoro, revisione), casistiche anonimizzate, form "
+            "appuntamento con P.IVA/CF e fascia oraria, lead-magnet guida scadenze PDF."
+        ),
+        "price": Decimal("79.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 3,
+        "brand": {
+            "brand_name": "Fiscus — Studio Tributario",
+            "tagline": "L'adempimento corretto, non la trovata",
+            "palette": {"primary": "#1F2937", "secondary": "#B58F4A", "accent": "#1C3D5A"},
+            "typography": "IBM Plex Serif + IBM Plex Sans",
+            "personality": "preciso, istituzionale, continuativo",
+            "logo_concept": "Monogramma F geometrico in serif transitional su fondo avorio, filetto oro sottile che richiama la filigrana dei documenti fiscali",
         },
     },
     # ── Ristorante (2) ─────────────────────────────────────────

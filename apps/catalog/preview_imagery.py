@@ -333,6 +333,30 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1517292987719-0369a794ec0f?w=800&q=80&auto=format&fit=crop",
     ],
+    # ─────────────────────────────────────────────────────────────
+    # business-fiscal — Wave 2 Pilot #1 (Phase X.4 · Fiscus).
+    # Sourced from `docs/content-factory/imagery/packs/financial-
+    # services.md` (Pexels · CC0-compatible · curator-verified). Pool
+    # shape matches Pragma's: [hero, feature, portrait, portrait,
+    # detail, ambient]. Direction per the financial-services blueprint:
+    # desks with paperwork, professionals in focus, warm-neutral
+    # corporate palette — no clichéd calculator close-ups or
+    # handshake-over-monitor stock.
+    # ─────────────────────────────────────────────────────────────
+    "business-fiscal": [
+        # 0: hero — tidy workspace with laptop, documents, eyeglasses
+        "https://images.pexels.com/photos/8927688/pexels-photo-8927688.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        # 1: feature — contemporary office interior, sleek desk
+        "https://images.pexels.com/photos/36175676/pexels-photo-36175676.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        # 2: portrait — professional man, eyeglasses, office
+        "https://images.pexels.com/photos/7845284/pexels-photo-7845284.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 3: portrait — professional woman, modern office setting
+        "https://images.pexels.com/photos/30614308/pexels-photo-30614308.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 4: detail — tax documents with calculator on wooden table
+        "https://images.pexels.com/photos/7821914/pexels-photo-7821914.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 5: ambient — law/regulation bookshelf (institutional reassurance)
+        "https://images.pexels.com/photos/159832/justice-law-case-hearing-159832.jpeg?auto=compress&cs=tinysrgb&w=800",
+    ],
     "real-estate": [
         # 0: hero - luxury modern home exterior
         "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80&auto=format&fit=crop",

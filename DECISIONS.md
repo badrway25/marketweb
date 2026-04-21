@@ -1,5 +1,37 @@
 # Decisions Log
 
+## D-102 · Wave 2 Pilot Cadence · Fiscus as Pattern-Setter · Flip-before-Walk Interpretation (2026-04-20, Session 80)
+
+### Decision
+
+Wave 2 pilot authoring follows the cadence proven on Fiscus Commercialista (X.4 Pilot #1):
+
+1. **Commit 1 · infrastructure + IT tree at `tier=draft`.** Add the template's seed entry (TEMPLATE_METADATA + SEED_TEMPLATES), DNA, imagery pool (if the blueprint demands a new one), TEMPLATE_REGISTRY.json entry at `tier=draft`, full IT content tree, and IT-only registration in `template_content.py`. Relax test parity where the backfill migration diverges from the growing seed (subset semantics) and shift raw-DB counts to `len(SEED_TEMPLATE_METADATA)` so they auto-track.
+2. **Commit 2 · 4 locale trees via parallel sub-agents.** Each locale sub-agent receives: the IT tree as semantic source, the relevant archetype sibling's same-locale tree as structural/chrome reference (e.g. Pragma EN for Fiscus EN on corporate-suite), the blueprint for cross-locale terminology. Enforce shape-parity via a deep-diff helper at author-time. Register the 4 locales in `template_content.py`.
+3. **8-point Playwright MCP walk, then tier flip.** Fiscus's walk gates stand as the canonical list: detail-page pills (cluster + style + tier) + feature/use-case chips + Personalizza CTA · IT preview (hero voice · no sibling-template leak · no overflow) · AR preview (dir=rtl + lang=ar + Latin digits/proper names preserved + no overflow) · homepage featured rule (featured flag respected) · cluster filter shows the template · typeahead returns the template on the core keyword · related templates block populated · zero new console errors. The walk is mandatory; if any gate fails, revert the flip and investigate before committing.
+4. **Test cascade absorption in the flip commit.** When a draft template goes live, public-facing counts shift (facet totals · price-tier counts · feature flag counts · homepage trust counters · discovery selector regression smoke). Update those assertions to explicit new literals (e.g. `20 → 21`) with a comment documenting "MVP 20 + Wave 2 pilots merged to date" — do NOT dynamize via `len(...)` for public-count tests, because the explicit literal is what makes a Wave 2 merge visible in PR review and catches silent drift.
+5. **Smoke coverage extension.** Extend `smoke_full.py` with the new template's entry in `LOCALES` + `CATEGORY` + `POST_ROUTES` (if the template ships post/detail routes). Expected route delta: 5 locales × (1 detail + 1 home + N inner pages) + M post detail slugs.
+6. **Flip-before-walk interpretation** (clarifying the "keep draft until Playwright passes" rule). The walk needs the template publicly reachable (all 8 checkpoints expect HTTP 200 publicly). Strict draft means 404 on public routes + staff-preview-only, which can't exercise the featured/typeahead/cluster-filter checks cleanly. The pragmatic protocol: tier-flip **immediately before** the walk, walk, and if any gate fails **revert**. The gate semantic is preserved (no Wave 2 template lands as `published_live` with a failed walk) while the walk gets real public routing to verify.
+
+### Why
+
+- **Fiscus validated the runbook end-to-end in one session.** Infrastructure + IT tree + 4 locale trees + Playwright walk + tier flip + tests + smoke + preview regen + commit all landed clean. 506/506 tests · 892/892 smoke · 8/8 walk · 2 commits on the feature branch. The cadence is reproducible.
+- **Parallel sub-agent locale authoring beats sequential.** EN/FR/ES/AR authored in parallel totaled ~3800 LOC in ~7-8 minutes of wall-clock time. Sequential would have been ~25 minutes, and would serialize the context-heavy step unnecessarily. Shape-parity enforcement in each sub-agent's brief + author-time deep-diff verification eliminates the drift that historically dogged parallel translations.
+- **Explicit literal counts in public-count tests beat dynamic `len(...)`.** The raw-DB count (`WebTemplate.objects.count() == len(SEED_TEMPLATE_METADATA)`) SHOULD be dynamic — it's an infrastructure invariant. But public counts (`counts["total"]`, `counters["templates_live"]`, `counts["features"]["has_rtl"]`) should be explicit literals that force a Wave 2 merge to bump them — that's how a reviewer notices the cascade and validates it was intentional.
+- **Flip-before-walk is pragmatic honesty.** The alternative (staff-auth + `?preview=1` for the walk) requires ad-hoc superuser + login session + conditional URL mutation and still can't exercise the featured/typeahead checks. The flip-then-walk-then-revert-if-red protocol achieves the same gate semantics with simpler tooling.
+
+### How to apply
+
+- **Wave 2 pilots #2–#10**: clone this cadence. Start on a dedicated branch `phase-x4-wave2-<slug>-v1` off the current `phase-integration-baseline-v15` tip. Commit 1 infrastructure+IT+draft · Commit 2 locales+flip+cascade+smoke.
+- **Sub-agent briefs**: include the 3 references (IT tree · archetype-sibling locale tree · blueprint) + locale-specific voice register + explicit typography rules (spaces insécables for FR · inverted punctuation for ES · Latin digits/proper names for AR) + shape-parity validator snippet.
+- **Playwright walk**: if a gate fails, **revert the tier flip immediately** (edit `TEMPLATE_REGISTRY.json` back to draft + re-run `sync_template_tiers`). Do not commit the flip until all 8 are green.
+- **Related-templates** behavior: verify on the detail page. With `get_related_templates` priority `cluster → style → category`, a pilot in a singleton cluster (only 1 template) falls through to style fallback, then category. Document the fallback chain if it surprises a reviewer.
+- **D-054 differentiation**: record the 10 gates in the IT content file's module docstring (hero imagery · silhouette · section order · primary CTA · block rhythm · macro tone · imagery direction · typography · voice anchor · first-2 stock) when the template shares an archetype with an existing sibling.
+
+### Binding
+
+This cadence binds all remaining Wave 2 pilots (#2–#10) and any future single-template enrollment on an existing archetype. If a future template requires a new archetype, that's D-099 reopening territory and requires a separate decision.
+
 ## D-101 · Content Factory Pipeline · Runbook + Taxonomy-Aware Related + NOT-NULL Tightening (2026-04-20, Session 79)
 
 ### Decision
