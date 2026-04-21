@@ -45,12 +45,14 @@
 
 ### Branch state
 
-`phase-x4-wave2-fiscus-commercialista-v1` tip `65c6dd6`:
-- `52a04c1` (baseline — X.3 consolidation)
-- `f8cf575` (X.4 pilot #1 draft IT-only)
-- `65c6dd6` (X.4 pilot #1 LIVE 5 locales)
+**Merged + pushed 2026-04-21.** Baseline `phase-integration-baseline-v15` tip now `2860081` (merge commit via `--no-ff` from `phase-x4-wave2-fiscus-commercialista-v1`), pushed to origin. Full chain on baseline:
+- `52a04c1` (X.3 consolidation)
+- `f8cf575` (X.4 pilot #1 draft IT-only · via merge)
+- `65c6dd6` (X.4 pilot #1 LIVE 5 locales · via merge)
+- `06aaf12` (X.4 pilot #1 docs consolidation · via merge)
+- `2860081` (merge commit · baseline tip)
 
-Merge to `phase-integration-baseline-v15` pending explicit operator approval.
+Post-merge re-validation: `manage.py check` 0 issues · 506/506 apps tests · 892/892 smoke · 21/21 published_live · 20/52 clusters populated · 10/12 visual styles populated. Feature branch preserved locally for audit.
 
 ### Remaining Wave 2 pilots (9 of 10)
 

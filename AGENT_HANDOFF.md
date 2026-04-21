@@ -1,20 +1,22 @@
 # Agent Handoff
 
-Last updated: 2026-04-20 — after **Session 80 Phase X.4 Wave 2 Pilot #1 · Fiscus Commercialista LIVE** (2 local commits `f8cf575` → `65c6dd6` on branch `phase-x4-wave2-fiscus-commercialista-v1` off X.3 baseline `52a04c1` · NOT yet merged to `phase-integration-baseline-v15` · NOT yet pushed)
+Last updated: 2026-04-21 — after **Session 80 Phase X.4 Wave 2 Pilot #1 · Fiscus Commercialista · CLOSED · pushed to origin** (merge commit `2860081` on `phase-integration-baseline-v15` bringing 3 feature/docs commits `f8cf575` → `65c6dd6` → `06aaf12` · remote up to date).
 
-## ⚑ X.4 Pilot #1 LOCAL · merge/push pending (2026-04-20)
+## ⚑ X.4 Pilot #1 CLOSED · pushed to origin (2026-04-21)
 
-**Read before opening any new workstream.** Fiscus Commercialista is the first Wave 2 pilot produced by the Content Factory pipeline. The template is fully live on the feature branch but has not yet been merged to the integration baseline nor pushed to origin. Do not open Wave 2 Pilot #2 before (a) the Fiscus branch merges, (b) the merged tip passes a re-run of Playwright MCP sanity, and (c) the merge lands on origin.
+**Read before opening any new workstream.** Fiscus Commercialista is the first Wave 2 pilot produced by the Content Factory pipeline. The template is live on `phase-integration-baseline-v15`, validated end-to-end and pushed to origin. Wave 2 Pilot #2 (`solaria-coaching`) can now open against the new baseline tip.
 
-- **Branch tip**: `65c6dd6` on `phase-x4-wave2-fiscus-commercialista-v1`. Baseline was `52a04c1` (X.3 docs consolidation).
-- **Program state**: editor enrollment program CLOSED (D-099 since A.17b) · catalog IA v2 live (D-100) · Content Factory Pipeline live (D-101) · **Wave 2 authoring cadence binding (D-102)**. 21/21 published_live · 30 clusters populated out of 52 (wait — still 21/52 populated; Fiscus added `financial-services`).
+- **Remote tip**: `2860081` on `phase-integration-baseline-v15`. Pre-merge tip was `52a04c1` (X.3 docs consolidation). Feature branch `phase-x4-wave2-fiscus-commercialista-v1` merged via `--no-ff` and preserved in history for audit; branch can be deleted at operator discretion.
+- **Program state**: editor enrollment program CLOSED (D-099 since A.17b) · catalog IA v2 live (D-100) · Content Factory Pipeline live (D-101) · **Wave 2 authoring cadence binding (D-102)** · **Wave 2 Pilot #1 CLOSED**. Catalog: 21/21 published_live · 0 draft · 20/52 clusters populated (`financial-services` newly activated by Fiscus) · 10/12 visual styles populated (`dashboard-light` newly activated).
 
-### X.4 Pilot #1 scope delivered (2 local commits · 15 files · +5027 LOC)
+### X.4 Pilot #1 scope delivered (3 feature/docs commits + merge · 16 files · +5180 LOC)
 
 | Commit | Hash | Surface |
 |---|---|---|
 | 1 | `f8cf575` | Infrastructure + IT tree at `tier=draft`. `seed_templates.py` (TEMPLATE_METADATA + SEED_TEMPLATES entry) · `template_dna.py` (Fiscus on corporate-suite archetype with `business-fiscal` imagery_key) · `preview_imagery.py` (business-fiscal 6-URL Pexels pool from X.3 C3 imagery pack) · `TEMPLATE_REGISTRY.json` (draft entry with tier_reason documenting the flip gates) · `template_content_fiscus.py` (~930 LOC IT tree: 5 pages · 3 ODCEC-iscritti partners with real albo numbers · 6 practice areas · 3 anonymized case studies with real normative refs) · `template_content.py` (IT registration) · `tests.py` (backfill parity relaxed to subset semantics + 3 raw-count tests shifted to `len(SEED_TEMPLATE_METADATA)` + Fiscus added to expected booking set). 506/506 tests green at IT-only state. |
 | 2 | `65c6dd6` | 4 locale trees + tier flip to `published_live`. `template_content_fiscus_en.py` (938 LOC · FT/HBR) · `template_content_fiscus_fr.py` (996 LOC · Les Echos/Agefi vouvoiement) · `template_content_fiscus_es.py` (955 LOC · Cinco Días peninsular usted) · `template_content_fiscus_ar.py` (909 LOC · MSA Asharq al-Awsat) — all authored in parallel by sub-agents, all at exact shape-parity with IT. `template_content.py` (4 locale imports + dict entries). `TEMPLATE_REGISTRY.json` (tier draft→published_live · live_preview=true · locales=5 · rtl=true · session_closed=80 · tier_reason documents D-053 gate + D-054 10/10 vs Pragma + Playwright 8/8 green). `tests.py` (6 public-count assertions shifted 20→21 with explicit MVP+Wave 2 comment). `smoke_full.py` (Fiscus added to LOCALES + CATEGORY + POST_ROUTES). Preview PNG regenerated (2.2 MB). 506/506 apps tests · 131/131 catalog tests · 892/892 smoke · Playwright MCP 8/8 walk · short post-flip sanity all green. |
+| 3 | `06aaf12` | Docs consolidation for Pilot #1: SESSION_LOG.md (Session 80 entry · 6 framings · commit table · validation gates · catalog state) · DECISIONS.md (D-102 Wave 2 Pilot Cadence · Fiscus as Pattern-Setter · Flip-before-Walk Interpretation) · TODO_NEXT.md (Current State X.4 · next workstream Pilot #2 solaria-coaching) · AGENT_HANDOFF.md (X.4 Pilot #1 LOCAL section). |
+| merge | `2860081` | Merge `--no-ff phase-x4-wave2-fiscus-commercialista-v1 → phase-integration-baseline-v15`. Post-merge re-validation: `manage.py check` 0 issues · 506/506 apps tests · 892/892 smoke · 21/21 published_live · 20/52 clusters populated · 10/12 visual styles populated. Pushed to origin. |
 
 ### What works on the local branch
 
@@ -28,10 +30,10 @@ Last updated: 2026-04-20 — after **Session 80 Phase X.4 Wave 2 Pilot #1 · Fis
 
 ### What is deferred (not in X.4 Pilot #1)
 
-- **Merge to integration baseline + push to origin** — the operator's call. PR title suggestion: `feat(catalog): X.4 wave 2 pilot #1 · fiscus-commercialista LIVE · 5 locales`.
 - **Wave 2 Pilots #2–#10** (solaria · zenith · madou · cucina · denti · petro · atto · fotogramma · sapori) — each follows D-102 cadence. No new archetype enrollments planned (D-099 intact).
 - **Related-templates manual override M2M** — still deferred (Option B selector-helper wins per X.3 Commit 4).
 - **Further blueprint revisions / new imagery packs** — only if Wave 2 authoring reveals a concrete need.
+- **Feature-branch deletion** — `phase-x4-wave2-fiscus-commercialista-v1` is preserved locally for audit; operator can prune at will.
 
 ### Recommended next workstream
 

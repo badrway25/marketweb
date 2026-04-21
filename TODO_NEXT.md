@@ -1,10 +1,10 @@
 # TODO Next
 
-## 🟢 Current State (2026-04-20 · after Session 80 Phase X.4 Wave 2 Pilot #1 Fiscus LIVE · local commits on feature branch)
+## 🟢 Current State (2026-04-21 · after Session 80 Phase X.4 Wave 2 Pilot #1 Fiscus CLOSED · pushed to origin)
 
-Branch `phase-x4-wave2-fiscus-commercialista-v1` tip is **`65c6dd6`**. Two local commits off the X.3 baseline `52a04c1`: `f8cf575` (infrastructure + IT tree · tier=draft) → `65c6dd6` (4 locale trees · tier=published_live · cascade absorbed). **Not yet merged to `phase-integration-baseline-v15`.** Validation gates all green: **506/506 apps tests · 131/131 catalog tests · 892/892 smoke · `manage.py check` 0 issues · Playwright MCP 8-point walk green · post-flip short sanity green**.
+Baseline `phase-integration-baseline-v15` tip is **`2860081`** · **PUSHED** to origin. X.4 Pilot #1 closed with 3 feature/docs commits (`f8cf575` → `65c6dd6` → `06aaf12`) merged via `--no-ff` as `2860081`. Post-merge validation gates all green: **506/506 apps tests · 131/131 catalog tests · 892/892 smoke · `manage.py check` 0 issues**.
 
-**Phase X.4 Wave 2 Pilot #1 delivered (pending merge/push):**
+**Phase X.4 Wave 2 Pilot #1 delivered and pushed:**
 - **Fiscus — Studio Tributario live end-to-end.** Reuses `corporate-suite` archetype with commercialista voice · `dashboard-light` visual style · `financial-services` cluster. 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic. Institutional registers per locale (IT Milan ODCEC · EN FT/HBR · FR Les Echos · ES Cinco Días · AR MSA Asharq al-Awsat).
 - **Catalog state post-Fiscus**: 21/21 published_live (MVP 20 + Wave 2 #1). `financial-services` cluster goes from 0 to 1 template. `dashboard-light` visual style goes from 0 to 1. `has_booking=True` count 10→11. Standard price tier count 7→8. Homepage `templates_live` counter 20→21.
 - **Content Factory Pipeline validated in production.** Blueprint + imagery pack consumed end-to-end. Parallel sub-agent locale authoring (EN/FR/ES/AR ~3800 LOC in ~8 min wall-clock) with author-time shape-parity enforcement landed zero key drift.
@@ -13,9 +13,8 @@ Branch `phase-x4-wave2-fiscus-commercialista-v1` tip is **`65c6dd6`**. Two local
 
 ### Immediate next workstream
 
-1. **Merge + push Wave 2 Pilot #1.** Open PR `phase-x4-wave2-fiscus-commercialista-v1` → `phase-integration-baseline-v15`. Rerun Playwright MCP sanity on merged tip before push.
-2. **Wave 2 Pilot #2 · `solaria-coaching`** per `docs/content-factory/pilot_batch/x4_wave2_first_10.md`. Blueprint `coaching.md` already drafted in X.3. Follows D-102 cadence.
-3. **Wave 2 Pilots #3–#10** (order per pilot_batch spec): `zenith-consulting` · `madou-pasticceria` · `cucina-di-rione` · `denti-co-studio` · `petro-veterinario` · `atto-notai-associati` · `fotogramma-films` · `sapori-di-langa`.
+1. **Wave 2 Pilot #2 · `solaria-coaching`** per `docs/content-factory/pilot_batch/x4_wave2_first_10.md`. Blueprint `coaching.md` already drafted in X.3. Follows D-102 cadence. Open branch `phase-x4-wave2-solaria-coaching-v1` from current tip `2860081`.
+2. **Wave 2 Pilots #3–#10** (order per pilot_batch spec): `zenith-consulting` · `madou-pasticceria` · `cucina-di-rione` · `denti-co-studio` · `petro-veterinario` · `atto-notai-associati` · `fotogramma-films` · `sapori-di-langa`.
 
 ## 🟢 Previous checkpoint (2026-04-20 · after Session 79 Phase X.3 Content Factory Pipeline · PUSHED)
 
