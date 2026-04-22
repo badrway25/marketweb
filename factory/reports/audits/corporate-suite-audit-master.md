@@ -175,7 +175,9 @@ Each item below is **systemic** — fixing it fixes Pragma, Fiscus, and Solaria 
    - **Fix direction**: new pilots author against ALL three siblings via `template-planner`'s `d-054-triangulation.md`. Pragma + Fiscus docstrings refresh on next touch. The sibling-refresh is small (~10 lines per docstring) and can run as a `template-editor-fixer` follow-up.
 
 6. **AP7 `--primary-2: #2c3e6b` hardcode + AP12 reduced-motion JS**
-   - Both LATENT-ARCHETYPE-WIDE; both fix in the shared skin / global JS, outside per-pilot SOP scope (§7.6). Bundled with the AP2 hardening pass.
+   - AP7 (refined 2026-04-22): grep audit confirms **0 consumers** of `var(--primary-2)` archetype-wide — dead-code declaration at `_base.html:20`. The 1-line deletion has zero rendered impact; rolled into the AP2 diff at zero marginal cost.
+   - AP12 (refined 2026-04-22): `[data-lm]` appears **45 times across 6 files** (every page except `contact.html`) — a real 5-page JS-side exposure; fix is in `static/js/live-motion.js`, outside per-pilot SOP scope (§7.6).
+   - Both bundled with the AP2 hardening pass.
 
 7. **Documentation drift in `factory/agents/release-gatekeeper.md` §1**
    - The gatekeeper prompt lists CRITICAL dimensions as `(D1, D2, D4, D9, D10, D11, D12, D13, D14)` whereas the authoritative scorecard (`corporate-suite-quality-scorecard.md` §3 + §5) lists `(D1, D2, D3, D4, D10, D11, D12, D13, D14)`. The gatekeeper prompt has D9 (Imagery quality, NON-CRITICAL) swapped for D3 (Modern professionalism, CRITICAL).
@@ -200,7 +202,8 @@ Each item below is **systemic** — fixing it fixes Pragma, Fiscus, and Solaria 
 | All 10 agent prompts populated 2026-04-22 | ✅ (file mtimes + content) | |
 | Release-gatekeeper D3 ↔ D9 inconsistency | ✅ (text comparison · gatekeeper §1 vs scorecard §3 + §5) | |
 | JS reduced-motion coverage for `[data-lm]` | | Inferred (not opened `live-motion.js`) |
-| `--primary-2: #2c3e6b` footprint impact | Partial (value confirmed at line 20, usages not enumerated) | Inferred scope |
+| `--primary-2: #2c3e6b` footprint impact | ✅ (2026-04-22 grep: declaration at `_base.html:20`; **0 `var(--primary-2)` consumers** across `templates/`, `static/`, `apps/` — dead code) | |
+| `[data-lm]` coverage footprint | ✅ (2026-04-22 grep: 45 occurrences across 6 files — every page except `contact.html`) | |
 | Specific viewport widths where skin breaks | | Inferred from fixed 72px padding + 1400 max-width (not browser-verified yet) |
 
 ---
@@ -230,7 +233,7 @@ The X.4a hardening pass MUST close (at minimum) the systemic items below BEFORE 
 | AP1 enforcement layered (Builder L\* self-check binding ✓ + Contrast Auditor hard-veto agent ✓) plus pre-commit palette validator (PENDING) | `corporate-suite-design-standard.md` §19.7-19.8 · `corporate-suite-blocking-rules.md` §21.4 | Solaria's `e8f38b5` proves this is the dominant failure shape. Re-introducing it on the EN/FR/ES/AR locales is structurally impossible only if the validator + walk are both in place. |
 | AP2 responsive coverage (1100 + 720 px breakpoints + per-page collapse rules) (PENDING) | `corporate-suite-design-standard.md` §19.7-19.8 · `corporate-suite-blocking-rules.md` §3 (CS-BLOCK-02/03 — the ✱ merge-block items) | Without breakpoints, EN/FR/ES/AR × 6 pages × 8 viewports = 240 walk cells per locale all expected to FAIL O2. The walk would FAIL Solaria not for content reasons but for inherited-skin reasons. |
 | AP3 `business-corporate` Pexels retro-pack (PENDING · soft precondition) | `corporate-suite-design-standard.md` §19.8 · `corporate-suite-blocking-rules.md` §21.4 | Not strictly a Solaria precondition (Solaria uses `business-coaching` Pexels). Listed because the SOP §10.3 framing — "every pilot lands on rails that already caught a Solaria-class defect" — depends on Pragma not being a perpetual exception. |
-| AP7 `--primary-2` decoupling (PENDING · soft) | `corporate-suite-design-standard.md` §19.7 · AP7 entry | Solaria warm-earth identity inherits a navy bias on every page edge until decoupled. Fix lands once. |
+| AP7 `--primary-2` dead-code deletion (PENDING · trivial) | `corporate-suite-design-standard.md` §19.7 · AP7 entry | Grep-confirmed dead code (0 consumers archetype-wide). The original "navy bias on every page edge" framing is invalidated by the 0-usage enumeration; the cleanup is now a 1-line deletion bundled with AP2 at zero marginal cost. |
 | AP12 reduced-motion JS audit (PENDING · soft) | `corporate-suite-design-standard.md` §19.7 · AP12 entry | Solaria's coaching audience includes motion-sensitive visitors; WCAG 2.3.3 claim must hold. |
 | Multi-agent pipeline first end-to-end run (RECOMMENDED) | `template-inventory.md` §7 issue #7 | Solaria un-pause should not be the pipeline's first exercise. Re-walk Fiscus first to surface coordination defects without 4× surface-area. |
 | `release-gatekeeper.md` D3 ↔ D9 fix (PENDING · trivial) | §4 issue #7 above | One-line documentation fix. Bundle with the pipeline first run. |
@@ -267,7 +270,7 @@ These are recommendations, not commitments. The user drives the order.
 1. **Fix the `release-gatekeeper.md` D3 ↔ D9 inconsistency** — one-line documentation edit. Bundle with #2.
 2. **Re-walk Fiscus through the 10-agent pipeline end-to-end** — surfaces gate-signal coordination defects at low surface-area cost. Produces the first concrete evidence directory under `factory/reports/browser-verification/fiscus-commercialista/<run-timestamp>/` and the first scorecard under `factory/reports/quality-scorecards/fiscus-commercialista/<run-timestamp>-scorecard.md`. Confirms `corporate-suite-multi-agent-sop.md` §4 handoffs work as written.
 3. **Land the AP2 hardening patch on `_base.html` + 6 page files** — one diff modeled on `agency-creative-studio/_base.html:349,359`. Adds `@media (max-width: 1100px)` and `@media (max-width: 720px)` plus per-page collapse rules. Re-walk Pragma + Fiscus to confirm both tighten cleanly at the new breakpoints.
-4. **Land the AP7 + AP12 cleanups** — derive or drop `--primary-2`; verify `[data-lm]` reduced-motion JS path. Re-walk Pragma + Fiscus once more.
+4. **Land the AP7 + AP12 cleanups** — AP7: delete the dead `--primary-2` declaration (`_base.html:20` · grep-confirmed 0 consumers); AP12: extend `static/js/live-motion.js` to honor `prefers-reduced-motion: reduce` across the 45 `[data-lm]` hooks on 5 of 6 pages. Re-walk Pragma + Fiscus once more.
 5. **Retro-curate `business-corporate` Pexels pack** — `imagery-curator` (primary + reviewer pass) produces the pack; `template-editor-fixer` swaps the 6 URLs in `preview_imagery.py:312-322`. Re-walk Pragma. AP3 closes; the single grandfathered exception ends.
 6. **Optional · pre-commit palette validator** — codifies CS-PAL-01 as a CI gate. Builder self-check is the per-pilot enforcement; the validator is the pre-commit complement.
 7. **Refresh Pragma + Fiscus D-054 docstrings** — small `template-editor-fixer` follow-up to triangulate against ALL three siblings. `template-inventory.md` §7 issue #6.

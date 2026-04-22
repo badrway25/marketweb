@@ -204,22 +204,22 @@ All shipped to production before Session 31. Each survived the author's own revi
 
 ---
 
-## AP7 [S2 → STRONG · ANTI-PATTERN · LATENT-ARCHETYPE-WIDE] · Hardcoded `--primary-2: #2c3e6b;` not derived from brand
-**File**: `_base.html:20`.
+## AP7 [S2 → STRONG · ANTI-PATTERN · LATENT-ARCHETYPE-WIDE · footprint enumerated 2026-04-22 = DEAD-CODE in this archetype] · Hardcoded `--primary-2: #2c3e6b;` not derived from brand
+**File**: `_base.html:20` (declaration site, single archetype-wide).
 
-**Why it's a problem**: every other token derives from `{{ theme.primary }} / .secondary / .accent`, but `--primary-2` is a hex literal that makes the skin "less navy" at the edges when a non-Pragma template loads. Solaria (warm carbon) and Fiscus (charcoal) inherit a navy shade that doesn't match their brand.
+**Why it's a problem (revised after grep audit 2026-04-22)**: every other token derives from `{{ theme.primary }} / .secondary / .accent`, but `--primary-2` is a hex literal. The original concern was that the navy hex would bleed onto non-Pragma palettes (Solaria warm-carbon, Fiscus charcoal). **Grep audit on 2026-04-22 (`var(--primary-2)` across `templates/`, `static/`, `apps/` = 0 hits)** revises the finding: the token is **declared but never consumed** in this archetype — dead code, not a bias-injecting token. The defect is "fourth-token convention violation present even when unused" (CS-PAL-03 in spirit), not "navy bias rendered on every page edge".
 
-**Evidence**: the value `#2c3e6b` is navy-biased — doesn't belong in Solaria's warm-earth identity.
+**Evidence (refined 2026-04-22)**: the same dead-code pattern is repeated in 3 other archetype `_base.html` files (`startup-saas-landing` `#1a1f3a`, `lawyer/modern-transparent` `#1A202C`, `lawyer/classic-gold` `#232340`) — all 4 declarations, 0 references. Cross-archetype dead-code; not a corporate-suite-only finding.
 
-**Status as of 2026-04-22**: LATENT-ARCHETYPE-WIDE. Affects Solaria warm-earth + Fiscus charcoal palettes.
+**Status as of 2026-04-22**: LATENT-ARCHETYPE-WIDE (cleanup-style, not contrast-style). The original "Solaria warm-earth inherits navy edge bias" claim is INCORRECT given 0 usages — recorded for historical traceability.
 
-**Standards anchor**: `CS-PAL-03` (three tokens only — no hardcoded fourth color · `[REQUIRED]`). Listed as a known `[STRONG]` archetype-debt drift in design-standard §17 non-blocking examples and §19.7.
+**Standards anchor**: `CS-PAL-03` (three tokens only — no hardcoded fourth color · `[REQUIRED]`). Listed as a known `[STRONG]` archetype-debt drift in design-standard §17 non-blocking examples and §19.7. The hardening fix is now **trivially "delete the declaration line"** rather than "derive server-side OR drop".
 
 **Detected by**:
 - `style-critic` (cross-cuts D3 modern professionalism) — flags as `[STRONG]` drift in the sub-scorecard with a `§ deviation` note.
-- A grep audit of `--primary-2` usages enumerates the footprint before refactoring.
+- A grep audit of `var(--primary-2)` consumers — already executed 2026-04-22, footprint = 0 lines. No additional grep needed before remediation.
 
-**Fixed by**: NOT `template-editor-fixer` — this is shared-skin (out of SOP §7.6 scope). The fix is a separate hardening step: either compute `--primary-2` from `theme.primary` (server-side darken/lighten) or drop it entirely if unused.
+**Fixed by**: NOT `template-editor-fixer` per SOP §7.6 (shared-skin). The fix is a 1-line deletion in `_base.html:20`. Rolled into the AP2 hardening diff at zero marginal cost.
 
 ---
 
@@ -325,12 +325,14 @@ All shipped to production before Session 31. Each survived the author's own revi
 
 ---
 
-## AP12 [S2 → STRONG · ANTI-PATTERN · LATENT-ARCHETYPE-WIDE] · Reduced-motion coverage is partial
-**Evidence**: `_base.html:299-301` disables transitions on buttons and button arrows. But `data-lm="reveal"` reveal animations in home.html/about.html use the global `live-motion.js` — unclear from this skin's CSS whether those also respect `prefers-reduced-motion`.
+## AP12 [S2 → STRONG · ANTI-PATTERN · LATENT-ARCHETYPE-WIDE · footprint enumerated 2026-04-22] · Reduced-motion coverage is partial
+**Evidence**: `_base.html:299-301` disables transitions on buttons and button arrows. `data-lm="reveal"` reveal animations use the global `static/js/live-motion.js` — unclear from this skin's CSS whether those also respect `prefers-reduced-motion`.
 
-**Detection**: load the live page with OS-level reduced-motion enabled and verify no entrance animation fires.
+**Footprint (grep audit 2026-04-22)**: `data-lm` appears **45 times across 6 files** in the corporate-suite skin — `_base.html:1`, `home.html:19`, `about.html:11`, `services.html:7`, `case_study_list.html:4`, `case_study_detail.html:3`. Every page in the archetype is affected. `contact.html` is the only page with zero `[data-lm]` hooks.
 
-**Status as of 2026-04-22**: LATENT-ARCHETYPE-WIDE. Affects every page that uses `[data-lm]` reveal triggers. Not yet measured on a live walk.
+**Detection**: load the live page with OS-level reduced-motion enabled (or `matchMedia('(prefers-reduced-motion: reduce)')` emulation in Playwright MCP) and verify no entrance animation fires on any of the 5 affected pages × 5 locales.
+
+**Status as of 2026-04-22**: LATENT-ARCHETYPE-WIDE. 5 of 6 pages affected (contact.html is the only exception — 0 `[data-lm]` hooks). Not yet measured on a live walk.
 
 **Standards anchor**: `CS-RESPONSIVE-07` (`:focus-visible` and reduced-motion survive all viewports · `[REQUIRED]`) · `BRWS-FEEL-08` (reduced-motion respected · `[STRONG]`) · `CS-REQ-06` (reduced-motion JS path unverified · `[REQUIRED]`).
 

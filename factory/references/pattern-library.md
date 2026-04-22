@@ -71,7 +71,7 @@ The legacy `[G] / [A] / [I]` letter tags are kept for back-reference but the uni
 - **Why it works**: every template swaps identity via 3 hex values. Rest of the skin derives fills, rules, and text color from these.
 - **Reuse**: every new template on this skin must provide exactly these 3 tokens in `SEED_TEMPLATES[...]["brand"]["palette"]`.
 - **Standards anchor**: `CS-PAL-03` (three tokens only — no hardcoded fourth color · `[REQUIRED]`).
-- **Caveat**: AP7 — `_base.html:20` hardcodes `--primary-2: #2c3e6b` violating CS-PAL-03 in spirit. Tracked as `[STRONG]` archetype debt.
+- **Caveat**: AP7 — `_base.html:20` hardcodes `--primary-2: #2c3e6b` violating CS-PAL-03 in spirit. Grep audit 2026-04-22: `var(--primary-2)` = 0 consumers in the archetype — dead-code declaration, not a rendered bias. `[STRONG]` archetype debt resolved by a 1-line deletion (bundled with AP2 hardening).
 - **Used by**: `template-planner` (palette spec in `brief.md` · SOP §3.1) · `template-builder` (writes the seed row · SOP §3.4).
 
 ### B2 [G · REUSABLE-NOW · LOAD-BEARING] **Dark foreground convention** — `--primary` IS the text color
