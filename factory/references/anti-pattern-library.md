@@ -1,6 +1,6 @@
 # Anti-pattern Library · `corporate-suite` archetype
 
-**Audit baseline**: 2026-04-21 · **Refined**: 2026-04-22
+**Audit baseline**: 2026-04-21 · **Refined**: 2026-04-22 (2nd pass · post-standards-drafting reconciliation)
 **Source**: repo evidence — commits, file state, bug diffs, documented incidents.
 
 Each entry: **evidence** (file:line or commit), **how it failed**, **how to detect**, **how to prevent**, the **standards anchor** (the `CS-BLOCK-*` / `O<n>` / `D<n>` rules in `factory/standards/*.md` that codify the failure as ship-gate enforcement), the **detector / fixer agent(s)** from the multi-agent SOP, and a **reusability tag** under the four-bucket model.
@@ -326,7 +326,7 @@ All shipped to production before Session 31. Each survived the author's own revi
 ---
 
 ## AP12 [S2 → STRONG · ANTI-PATTERN · LATENT-ARCHETYPE-WIDE · footprint enumerated 2026-04-22] · Reduced-motion coverage is partial
-**Evidence**: `_base.html:299-301` disables transitions on buttons and button arrows. `data-lm="reveal"` reveal animations use the global `static/js/live-motion.js` — unclear from this skin's CSS whether those also respect `prefers-reduced-motion`.
+**Evidence**: `_base.html:299-301` disables transitions on buttons and button arrows. `data-lm="reveal"` reveal animations use the global `static/js/live-motion.js` — the skin's CSS does not gate those transitions itself, so the coverage claim depends on the JS honoring `prefers-reduced-motion`. That JS gating has not been opened or live-walked from this archetype's vantage.
 
 **Footprint (grep audit 2026-04-22)**: `data-lm` appears **45 times across 6 files** in the corporate-suite skin — `_base.html:1`, `home.html:19`, `about.html:11`, `services.html:7`, `case_study_list.html:4`, `case_study_detail.html:3`. Every page in the archetype is affected. `contact.html` is the only page with zero `[data-lm]` hooks.
 
@@ -346,20 +346,24 @@ All shipped to production before Session 31. Each survived the author's own revi
 
 ## Systemic issues surfaced (Pragma · Fiscus · Solaria in aggregate)
 
-Cross-reference `factory/reports/audits/corporate-suite-audit-master.md` §4 (refined) and `factory/references/template-inventory.md` §7 for the dependency graph. The systemic issues that close at the archetype level (and therefore must close before Solaria Commit B) are:
+Canonical numbering (shared across `factory/reports/audits/corporate-suite-audit-master.md` §4, `factory/references/template-inventory.md` §7, and this section). Each row is cross-keyed by AP id, so an agent can follow the trail in either direction.
 
-1. ⚠ **Skin convention invariants are not encoded** — the "primary is dark foreground" rule (B2 / CS-PAL-01) is now defended by the Builder L\* self-check (SOP §3.4) + the Contrast Auditor's hard veto (SOP §3.6) + the Browser Verifier walk. A pre-commit palette validator is the still-pending automated complement (template-inventory §7 issue #1). **Status: enforcement layered, validator pending.**
+1. ⚠ **AP1 · Skin convention invariants are not encoded** — the "primary is dark foreground" rule (B2 / CS-PAL-01) is now defended by the Builder L\* self-check (SOP §3.4) + the Contrast Auditor's hard veto (SOP §3.6) + the Browser Verifier walk. A pre-commit palette validator is the still-pending automated complement. **Status: enforcement layered, validator pending.** → audit-master §4 #1 · template-inventory §7 #1.
 
-2. ⚠ **Browser verification is central, not optional** — encoded as `CS-BROWSER-01..03` / `CS-BLOCK-18` / `O18`, plus the 10-agent SOP makes browser-verifier the single source of truth for downstream scoring. **Status: encoded; first end-to-end run still pending** (Solaria un-pause should NOT be the first run — re-walk Fiscus first per template-inventory §7 issue #7).
+2. ⚠ **AP8 · Browser verification is central, not optional** — encoded as `CS-BROWSER-01..03` / `CS-BLOCK-18` / `O18`, plus the 10-agent SOP makes browser-verifier the single source of truth for downstream scoring. **Status: encoded; first end-to-end run still pending** (Solaria un-pause should NOT be the first run — re-walk Fiscus first). → audit-master §4 #2 · template-inventory §7 #2.
 
-3. ⚠ **Responsive coverage is an archetype-level gap** — AP2. Fix lands once on `_base.html` + 6 page files modeled on `agency-creative-studio/_base.html:349,359`. **Status: LATENT; hardening fix pending.**
+3. ⚠ **AP2 · Responsive coverage is an archetype-level gap** — fix lands once on `_base.html` + 6 page files modeled on `agency-creative-studio/_base.html:349,359`. **Status: LATENT; hardening fix pending.** → audit-master §4 #3 · template-inventory §7 #3.
 
-4. **Legacy imagery (Pragma Unsplash) is an invisible liability** — AP3. Closes when the `business-corporate` Pexels retro-pack lands (template-inventory §7 issue #3). **Status: GRANDFATHERED with retro-pack pending.**
+4. **AP3 · Legacy imagery (Pragma Unsplash) is an invisible liability** — closes when the `business-corporate` Pexels retro-pack lands. **Status: GRANDFATHERED with retro-pack pending.** Soft precondition for Solaria (Solaria uses `business-coaching` Pexels) but hard precondition for the archetype to shed its single tolerated non-Pexels exception. → audit-master §4 #4 · template-inventory §7 #4.
 
-5. ⚠ **D-054 is a content+palette+imagery contract** — and now a 3-way triangle. New pilots author against ALL three siblings via planner; Pragma + Fiscus docstrings should refresh on next touch. **Status: encoded for new pilots; sibling refresh pending.**
+5. ⚠ **AP10 · D-054 is a content+palette+imagery contract** — and now a 3-way triangle. New pilots author against ALL three siblings via planner; Pragma + Fiscus docstrings should refresh on next touch. **Status: encoded for new pilots; sibling refresh pending.** → audit-master §4 #5 · template-inventory §7 #5.
 
-6. **No CI gate for palette L\* / contrast ratio / viewport responsive** — all three failure modes are human-walk-only today. The Builder L\* self-check is the closest thing to a CI gate; the rest depend on the browser walk. **Status: walk-side enforcement complete; CI-side enforcement pending (palette validator only).**
+6. **AP7 + AP12 cleanups · bundled** — AP7: `_base.html:20` `--primary-2: #2c3e6b` declaration with **0 consumers archetype-wide** (grep-confirmed 2026-04-22) = dead-code 1-line deletion. AP12: `data-lm` reveal animations appear **45 times across 6 files** (every page except `contact.html`, grep-confirmed 2026-04-22) and depend on `static/js/live-motion.js` honoring `prefers-reduced-motion`. **Status: AP7 bundled into the AP2 hardening diff at zero marginal cost; AP12 is a separate `static/js/live-motion.js` edit.** Neither affects Solaria copy authoring directly; AP12 must close before Solaria Commit B because the coaching audience includes motion-sensitive visitors and the WCAG 2.3.3 claim must hold. → audit-master §4 #6 · template-inventory §7 #6.
 
-7. **Release-gatekeeper agent prompt CRITICAL-dimension list inconsistency** — `factory/agents/release-gatekeeper.md` §1 lists CRITICAL dimensions as `(D1, D2, D4, D9, D10, D11, D12, D13, D14)` whereas the authoritative scorecard (`corporate-suite-quality-scorecard.md` §3 + §5) lists `(D1, D2, D3, D4, D10, D11, D12, D13, D14)`. The gatekeeper prompt has D9 swapped for D3. **Status: documentation drift; flag for one-line fix during pipeline first end-to-end run.** (D9 Imagery quality is non-critical; D3 Modern professionalism is critical. The scorecard is authoritative.)
+7. **Release-gatekeeper agent prompt CRITICAL-dimension list inconsistency** — `factory/agents/release-gatekeeper.md` §1 lists CRITICAL dimensions as `(D1, D2, D4, D9, D10, D11, D12, D13, D14)` whereas the authoritative scorecard (`corporate-suite-quality-scorecard.md` §3 + §5 + §6) lists `(D1, D2, D3, D4, D10, D11, D12, D13, D14)`. The gatekeeper prompt has D9 swapped for D3. (D9 Imagery quality is non-critical; D3 Modern professionalism is critical. The scorecard is authoritative.) **Status: documentation drift; flag for one-line fix during pipeline first end-to-end run.** → audit-master §4 #7 · template-inventory §7 #7.
 
-The first six are addressed by the X.4a hardening pass; the seventh is a small documentation fix that should land alongside.
+### Sequencing verdict (binding)
+
+**X.4a hardening MUST precede Solaria Commit B.** Items #1-#6 above close at the archetype level by the X.4a hardening pass; item #7 is a trivial documentation fix that should land alongside item #2 so the Gatekeeper operates on the correct CRITICAL floor set on its first end-to-end run. The full verdict statement — with verbatim quotes from `corporate-suite-design-standard.md` §19.8, `corporate-suite-blocking-rules.md` §21.4, `corporate-suite-imagery-standard.md` §1+§19, `corporate-suite-browser-rubric.md` §12, `corporate-suite-multi-agent-sop.md` §7.6+§9, and `corporate-suite-quality-scorecard.md` §9 — lives in `corporate-suite-audit-master.md` §7.
+
+No agent (planner, curator, copy-translation, builder, browser-verifier, gatekeeper) has authority to un-pause Solaria Commit B. Only the user does, and only after the above close.

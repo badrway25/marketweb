@@ -1,6 +1,6 @@
 # Corporate-suite Factory Hardening · Step 0 · Master Audit
 
-**Phase**: X.4a · **Audit baseline**: 2026-04-21 · **Refined**: 2026-04-22 · **Branch**: `phase-x4a-corporate-factory-hardening-step0`
+**Phase**: X.4a · **Audit baseline**: 2026-04-21 · **Refined**: 2026-04-22 (2nd pass · post-standards-drafting reconciliation) · **Branch**: `phase-x4a-corporate-factory-hardening-step0`
 **Baseline tip**: `1e82294` (`docs: consolidate X.4 Wave 2 Pilot #1 post-merge state`)
 **Scope constraint**: zero `apps/editor`, `apps/projects`, `apps/commerce` changes · zero new archetypes · factory files only.
 
@@ -25,10 +25,10 @@ Both gaps slipped past `506/506` test suite runs. CLI green is a lower bound, no
 
 | Path | Purpose | Status as of 2026-04-22 |
 |---|---|---|
-| `factory/references/template-inventory.md` | Skin layout + 3 enrolled templates + what's reusable + agent-mapping + systemic-issues | **REFINED 2026-04-22** · adds reusability-bucket tags, agent-mapping §6, systemic-issues §7 |
-| `factory/references/pattern-library.md` | 8 pattern groups (A-H) · golden/acceptable patterns with evidence | **REFINED 2026-04-22** · adds standards-anchor + agent mapping per pattern, reusability tags, appendix cross-reference |
-| `factory/references/anti-pattern-library.md` | 12 anti-patterns (AP1-AP12) with severity, detection, prevention | **REFINED 2026-04-22** · maps each AP to the standards rule (`CS-BLOCK-*` / `O<n>` / `D<n>`) and to the SOP detector/fixer agent; adds Status-as-of field + escalates AP11 to BLOCKING |
-| `factory/reports/audits/corporate-suite-audit-master.md` | This file · master report | **REFINED 2026-04-22** · adds explicit X.4a-precedes-Solaria verdict + systemic-vs-per-pilot split + flag for the agent-prompt inconsistency |
+| `factory/references/template-inventory.md` | Skin layout + 3 enrolled templates + what's reusable + agent-mapping + systemic-issues | **REFINED 2026-04-22 (2nd pass)** · adds reusability-bucket tags, agent-mapping §6, systemic-issues §7; 2nd pass re-sequenced §7 to the canonical ordering shared with this file's §4 and added the gatekeeper D3↔D9 drift as systemic item #7 |
+| `factory/references/pattern-library.md` | 8 pattern groups (A-H) · golden/acceptable patterns with evidence | **REFINED 2026-04-22 (2nd pass)** · adds standards-anchor + agent mapping per pattern, reusability tags, appendix cross-reference; 2nd pass tightened E2 AP12 caveat with grep-confirmed footprint (45 `[data-lm]` hooks across 6 files) and added §0 cross-ref to the canonical 7-item systemic-issue numbering |
+| `factory/references/anti-pattern-library.md` | 12 anti-patterns (AP1-AP12) with severity, detection, prevention | **REFINED 2026-04-22 (2nd pass)** · maps each AP to the standards rule (`CS-BLOCK-*` / `O<n>` / `D<n>`) and to the SOP detector/fixer agent; adds Status-as-of field + escalates AP11 to BLOCKING; 2nd pass tightened AP12 evidence wording, replaced the duplicative "No CI gate" systemic item with the AP7+AP12 bundled item (matching this file's §4 #6), and added the explicit sequencing verdict |
+| `factory/reports/audits/corporate-suite-audit-master.md` | This file · master report | **REFINED 2026-04-22 (2nd pass)** · adds explicit X.4a-precedes-Solaria verdict + systemic-vs-per-pilot split + flag for the agent-prompt inconsistency; 2nd pass marks §4 as the canonical systemic-issue numbering shared across the three refined reference files |
 | `factory/standards/corporate-suite-design-standard.md` | 19 sections · 80+ tagged rules (CS-TONE/PAL/HERO/NAV/FOOT/RHYTHM/DENSITY/CTA/COMP/EXEC/MARKET/RESPONSIVE/BROWSER) | **POPULATED** since 2026-04-21 |
 | `factory/standards/corporate-suite-imagery-standard.md` | 19 sections · CS-IMG-* taxonomy | **POPULATED** since 2026-04-21 |
 | `factory/standards/corporate-suite-browser-rubric.md` | §5 8-viewport matrix · §6 BRWS-* check roster · §7 evidence dir format · §11 verdict template | **POPULATED** since 2026-04-21 |
@@ -152,7 +152,7 @@ Solaria palette fix is the only one landed. The Builder L\* self-check (SOP §3.
 
 ## 4 · Systemic issues surfaced (must be fixed at archetype level before Solaria Commit B)
 
-Each item below is **systemic** — fixing it fixes Pragma, Fiscus, and Solaria simultaneously. Numbered to align with `template-inventory.md` §7.
+Each item below is **systemic** — fixing it fixes Pragma, Fiscus, and Solaria simultaneously. **This numbering is canonical** — `factory/references/template-inventory.md` §7 and the `Systemic issues surfaced` section of `factory/references/anti-pattern-library.md` share the same item numbers (e.g., audit-master §4 #3 = template-inventory §7 #3 = anti-pattern-library systemic #3 = AP2 responsive coverage). Cross-referencing is by item number **and** AP id.
 
 1. ⚠ **Unenforced skin invariant — palette polarity (AP1 / CS-PAL-01)**
    - The "primary is dark" rule lives at `seed_templates.py:623-633` and in the standards. Today's enforcement = Builder L\* self-check + Contrast Auditor hard veto + browser walk. Pre-commit palette validator is the still-pending complement.

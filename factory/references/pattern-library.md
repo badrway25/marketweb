@@ -1,6 +1,6 @@
 # Pattern Library · `corporate-suite` archetype
 
-**Audit baseline**: 2026-04-21 · **Refined**: 2026-04-22
+**Audit baseline**: 2026-04-21 · **Refined**: 2026-04-22 (2nd pass · post-standards-drafting reconciliation)
 **Source**: repo evidence from Pragma (LIVE), Fiscus (LIVE post-merge), Solaria (local draft).
 
 Each pattern lists: **evidence** (file:line), **why it works**, **how to reuse**, the **standards anchor** (the `CS-*` / `BRWS-*` rule it codifies in `factory/standards/*.md`), the **agent(s)** that consume it, and a **reusability tag** (REUSABLE-NOW · REUSABLE-AFTER-HARDENING · LOCAL-ONLY · ANTI-PATTERN).
@@ -15,6 +15,7 @@ The legacy `[G] / [A] / [I]` letter tags are kept for back-reference but the uni
 2. **REUSABLE-NOW** = a downstream agent may consume the pattern as-is. **REUSABLE-AFTER-HARDENING** = the pattern is sound but the supporting code/skin still has a known gap (AP1 enforceability, AP2 breakpoints, AP3 retro-pack, AP7 token decoupling, AP12 motion JS) that must close before the pattern is fully realized.
 3. The **Used by** column names the agents from `corporate-suite-multi-agent-sop.md` §2 that consume each pattern. When a pattern shows up as a `[BLOCKING]` standard rule, the cited agent enforces it; when it's a positive example, the cited agent uses it as a reference.
 4. Pair with `factory/references/anti-pattern-library.md` (failure modes), `factory/references/template-inventory.md` (what exists today), and the standards it codifies.
+5. Every pattern tagged REUSABLE-AFTER-HARDENING cross-references an AP id; the AP id then resolves to one of the 7 canonical systemic-issue items (shared numbering across `corporate-suite-audit-master.md` §4, `template-inventory.md` §7, and the `Systemic issues surfaced` section of `anti-pattern-library.md`). The sequencing verdict — X.4a hardening precedes Solaria Commit B — is anchored in `corporate-suite-audit-master.md` §7.
 
 ---
 
@@ -191,7 +192,7 @@ The legacy `[G] / [A] / [I]` letter tags are kept for back-reference but the uni
 - **Why it works**: WCAG 2.3.3 compliance. Motion-sensitive visitors aren't punished.
 - **Reuse**: any new motion on this skin must be disabled under the same media query.
 - **Standards anchor**: `CS-RESPONSIVE-07` · `BRWS-FEEL-08` (`[STRONG]`).
-- **Caveat**: AP12 — `[data-lm]` reveal animations driven by `static/js/live-motion.js` are unverified. Pattern is **REUSABLE-AFTER-HARDENING** until the JS path is confirmed to honor the same media query.
+- **Caveat**: AP12 — `[data-lm]` reveal animations driven by `static/js/live-motion.js` are unverified. Grep audit 2026-04-22: `data-lm` appears **45 times across 6 files** in the corporate-suite skin (every page except `contact.html`). Pattern is **REUSABLE-AFTER-HARDENING** until the JS path is confirmed to honor the same media query on those 45 hooks.
 - **Used by**: `browser-verifier` (BRWS-FEEL-08 emulates reduced-motion + reloads home + confirms no entrance animations fire).
 
 ### E3 [A · REUSABLE-NOW] Logo marquee with sober institutional drift (110s duration)
