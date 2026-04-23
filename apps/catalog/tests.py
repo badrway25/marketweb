@@ -1567,3 +1567,131 @@ class TaxonomyNotNullContractTests(_SeededCatalogMixin, TestCase):
                 "AlterField",
                 f"migration 0005 op {op} must be AlterField (schema-only)",
             )
+
+
+# ── Phase X.4a Step 1A · corporate-suite palette safety ──────────────
+
+
+class CorporateSuiteThemeSafetyTests(TestCase):
+    """`apps.catalog.theme_safety` guards CS-PAL-01 on the server side.
+
+    These tests are archetype-level: they never touch DB state. They lock
+    the WCAG math and the enrichment contract that `views.py` threads
+    into every corporate-suite render so a regression (e.g. someone
+    relaxes the luminance ceiling) surfaces immediately.
+    """
+
+    def test_relative_luminance_monotonic(self):
+        from apps.catalog.theme_safety import relative_luminance
+
+        self.assertLess(
+            relative_luminance("#000000"), relative_luminance("#1E293B")
+        )
+        self.assertLess(
+            relative_luminance("#1E293B"), relative_luminance("#F7F4EC")
+        )
+        self.assertAlmostEqual(relative_luminance("#FFFFFF"), 1.0, places=2)
+
+    def test_contrast_ratio_symmetric_and_bounded(self):
+        from apps.catalog.theme_safety import contrast_ratio
+
+        # Symmetric
+        self.assertAlmostEqual(
+            contrast_ratio("#000000", "#FFFFFF"),
+            contrast_ratio("#FFFFFF", "#000000"),
+            places=4,
+        )
+        # Black-on-white is the 21:1 WCAG ceiling
+        self.assertAlmostEqual(
+            contrast_ratio("#000000", "#FFFFFF"), 21.0, places=1
+        )
+
+    def test_primary_safety_pass_on_pragma_and_fiscus(self):
+        from apps.catalog.theme_safety import is_primary_safe_on_cream
+
+        # Pragma
+        ok, lum, ratio = is_primary_safe_on_cream("#1E293B")
+        self.assertTrue(ok, f"Pragma primary should pass: L={lum} ratio={ratio}")
+        self.assertGreaterEqual(ratio, 7.0)
+
+        # Fiscus
+        ok, lum, ratio = is_primary_safe_on_cream("#1F2937")
+        self.assertTrue(ok, f"Fiscus primary should pass: L={lum} ratio={ratio}")
+
+    def test_primary_safety_fails_on_solaria_bug_palette(self):
+        from apps.catalog.theme_safety import is_primary_safe_on_cream
+
+        # The `#F7F3EC` cream that Solaria's Commit A shipped with — the
+        # incident palette that motivated this entire hardening pass.
+        ok, lum, ratio = is_primary_safe_on_cream("#F7F3EC")
+        self.assertFalse(
+            ok, f"Solaria bug primary must fail: L={lum} ratio={ratio}"
+        )
+        self.assertLess(ratio, 2.0)
+
+    def test_enrich_is_noop_on_fields_outside_its_scope(self):
+        from apps.catalog.theme_safety import enrich_corporate_suite_theme
+
+        out = enrich_corporate_suite_theme(
+            {
+                "primary": "#1E293B",
+                "secondary": "#3B82F6",
+                "accent": "#10B981",
+                "heading_font": "Merriweather",
+                "body_font": "Inter",
+            },
+            template_slug="pragma-corporate-suite",
+        )
+        self.assertEqual(out["primary"], "#1E293B")
+        self.assertEqual(out["heading_font"], "Merriweather")
+        self.assertEqual(out["body_font"], "Inter")
+        self.assertEqual(out["on_primary"], "#F7F4EC")
+        self.assertTrue(out["primary_is_safe"])
+
+    def test_enrich_warns_for_light_primary(self):
+        import warnings
+
+        from apps.catalog.theme_safety import enrich_corporate_suite_theme
+
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            out = enrich_corporate_suite_theme(
+                {
+                    "primary": "#F7F3EC",
+                    "secondary": "#D4AF37",
+                    "accent": "#B85450",
+                },
+                template_slug="solaria-coaching",
+            )
+
+        self.assertFalse(out["primary_is_safe"])
+        self.assertEqual(out["on_primary"], "#F7F4EC")
+        warnings_emitted = [w for w in caught if issubclass(w.category, UserWarning)]
+        self.assertEqual(len(warnings_emitted), 1)
+        msg = str(warnings_emitted[0].message)
+        self.assertIn("CS-PAL-01", msg)
+        self.assertIn("solaria-coaching", msg)
+
+    def test_should_enrich_only_on_corporate_suite(self):
+        from apps.catalog.theme_safety import should_enrich
+
+        self.assertTrue(should_enrich("corporate-suite"))
+        self.assertFalse(should_enrich("startup-saas-landing"))
+        self.assertFalse(should_enrich("editorial-designer-grid"))
+        self.assertFalse(should_enrich(None))
+
+    def test_enrich_never_raises_on_invalid_hex(self):
+        import warnings as _warnings
+
+        from apps.catalog.theme_safety import enrich_corporate_suite_theme
+
+        # Invalid hex should fall through without blowing up the live
+        # render — the helper is a warning layer, not a hard block.
+        with _warnings.catch_warnings():
+            _warnings.simplefilter("ignore")
+            out = enrich_corporate_suite_theme(
+                {"primary": "not-a-hex", "secondary": "", "accent": ""},
+                template_slug="broken",
+            )
+        self.assertFalse(out["primary_is_safe"])
+        self.assertEqual(out["on_primary"], "#F7F4EC")

@@ -16,8 +16,12 @@
 <link rel="stylesheet" href="{% static 'css/live-forms.css' %}">
 <style>
   :root {
+    /* CS-PAL-01/03/06 · primary/secondary/accent are the ONLY brand tokens.
+       No fourth brand color (AP7 cleanup): `--primary-2` has been retired
+       because it was a dead-code `#2c3e6b` navy that biased every non-Pragma
+       skin away from its own palette. Any derivative dark surface must
+       compose from `--primary`, not a second hardcoded hue. */
     --primary:    {{ theme.primary }};
-    --primary-2:  #2c3e6b;
     --secondary:  {{ theme.secondary }};
     --accent:     {{ theme.accent }};
     --paper:      #eef0f3;
@@ -28,9 +32,25 @@
     --ink-mute:   #64748b;
     --rule:       rgba(15,23,42,0.10);
     --rule-soft:  rgba(15,23,42,0.05);
+    /* CS-PAL-04 · on-dark family is the canonical foreground set for any
+       surface painted with `--primary`. `--on-dark` = AA+ body text;
+       `--on-dark-2` = muted body / meta labels (still AA); `--on-dark-3`
+       is reserved for NON-textual decoration (rules, dividers, legend
+       dots). Never use `--on-dark-3` for body copy — it composites below
+       AA on most dark primaries. */
     --on-dark:    #eef0f3;
     --on-dark-2:  rgba(238,240,243,0.72);
     --on-dark-3:  rgba(238,240,243,0.45);
+    /* CS-PAL-01 safety rail · `--on-primary` is the guaranteed-legible
+       foreground to use whenever an element paints `background: var(--primary)`.
+       The server-side palette validator (`apps/catalog/theme_safety.py`)
+       sets this to the cream variant when the supplied `primary` passes
+       the L* ≤ 40 gate, and degrades gracefully to the same cream on
+       legacy palettes. Reach for `--on-primary` instead of a hardcoded
+       `#fff`/`#eef0f3` whenever a new child element lands on the dark
+       band. */
+    --on-primary:      {{ theme.on_primary|default:"#eef0f3" }};
+    --on-primary-soft: var(--on-dark-2);
     --heading: '{{ theme.heading_font }}', Georgia, 'Times New Roman', serif;
     --body:    '{{ theme.body_font }}', system-ui, sans-serif;
 
@@ -148,9 +168,20 @@
     letter-spacing: 0.16em; text-transform: uppercase;
     color: var(--on-dark-2);
   }
-  .cs-nav .links a { transition: color .15s ease; }
+  .cs-nav .links a { transition: color .15s ease; position: relative; }
   .cs-nav .links a:hover { color: var(--on-dark); }
-  .cs-nav .links a.is-current { color: var(--accent); }
+  /* CS-NAV-02 · active-route state is indicated by an accent underline
+     dot, NOT by swapping the link text to the accent hue. Accent-on-dark
+     text is borderline AA on lighter accents (warm gold / caramel) and
+     collapses the 4-states cascade (default / hover / focus / active).
+     The pseudo-element keeps the text at `--on-dark` for reliable
+     contrast while still signalling currentness. */
+  .cs-nav .links a.is-current { color: var(--on-dark); }
+  .cs-nav .links a.is-current:after {
+    content: ''; position: absolute;
+    left: 0; right: 0; bottom: -10px; height: 2px;
+    background: var(--accent);
+  }
   .cs-nav .phone {
     margin-left: auto; display: flex; align-items: center; gap: 18px;
     font-family: var(--heading); font-size: 15px; font-weight: 600;
@@ -231,6 +262,30 @@
   .cs-section.dark h3,
   .cs-section.dark h4 { color: var(--on-dark); }
   .cs-section.dark em { color: var(--accent); }
+  /* CS-PAL-04 safety net · any descendant of a dark corporate-suite
+     surface (`.cs-section.dark`, `.cs-kpi-band`, `.cs-cta`, `.cs-foot`,
+     `.cs-nav`) must resolve text color against `--on-dark`, never against
+     `--ink`. Without this, a new <p>, <li>, <dt>, <dd>, <span>, <small>,
+     or <time> element inherits the body `color: var(--ink)` and paints
+     dark-on-dark (AP11). Existing explicit rules in `home.html` and
+     sibling page files keep priority — this is only a fallback for
+     descendants that have not declared their own color. */
+  .cs-section.dark p, .cs-section.dark li, .cs-section.dark dt,
+  .cs-section.dark dd, .cs-section.dark small, .cs-section.dark time,
+  .cs-kpi-band  p, .cs-kpi-band  li, .cs-kpi-band  dt,
+  .cs-kpi-band  dd, .cs-kpi-band  small, .cs-kpi-band  time,
+  .cs-cta       p, .cs-cta       li, .cs-cta       dt,
+  .cs-cta       dd, .cs-cta       small, .cs-cta       time,
+  .cs-foot      p, .cs-foot      li, .cs-foot      dt,
+  .cs-foot      dd, .cs-foot      small, .cs-foot      time {
+    color: var(--on-primary-soft);
+  }
+  .cs-section.dark strong, .cs-kpi-band strong,
+  .cs-cta strong, .cs-foot strong { color: var(--on-primary); }
+  /* Generic accent-on-dark emphasis stays as punctuation, never body text.
+     Scoping to the inline `em` keeps pull-quotes legal without letting a
+     future <span class="accent"> paragraph escape the legibility rule. */
+  .cs-kpi-band em, .cs-cta em, .cs-foot em { color: var(--accent); }
   .cs-section .sec-label {
     font-family: var(--body); font-size: 10px; font-weight: 700;
     letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
@@ -276,9 +331,16 @@
   .cs-foot .bot {
     padding-top: 28px;
     display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
-    font-size: 11px; color: var(--on-dark-3);
+    /* CS-FOOT-02 · legal row must stay legible (copyright / P.IVA /
+       privacy / cookie / whistleblowing). Was `var(--on-dark-3)` at alpha
+       0.45 — composited ratio against a dark primary hovers at ~2.8:1,
+       which fails AA even for the tracked-uppercase 11px target. Uses
+       `--on-dark-2` (alpha 0.72) to restore AA, while keeping the
+       editorial quietness vs. the rest of the footer copy. */
+    font-size: 11px; color: var(--on-dark-2);
     letter-spacing: 0.10em; text-transform: uppercase;
   }
+  .cs-foot .bot a { color: var(--on-dark-2); }
   .cs-foot .bot a:hover { color: var(--accent); }
 
   /* ============================================================

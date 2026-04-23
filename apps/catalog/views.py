@@ -6,6 +6,7 @@ from django.views.generic import DetailView, ListView, TemplateView
 
 from apps.catalog import selectors, template_content, template_i18n
 from apps.catalog.template_dna import get_dna
+from apps.catalog.theme_safety import enrich_corporate_suite_theme, should_enrich
 from apps.editor.rendering import apply_project_overrides
 from apps.projects.selectors import get_project_for_preview
 
@@ -397,6 +398,18 @@ class LiveTemplateView(TemplateView):
             content, theme = apply_project_overrides(
                 self.preview_project, self.content, theme,
                 locale=self.locale,
+            )
+
+        # Phase X.4a Step 1A · corporate-suite palette safety.
+        # For archetypes that invert the paper convention (cream paper +
+        # dark `--primary` reused as foreground text on paper and as the
+        # filled background of navbar/KPI/footer), derive an on-primary
+        # safety token and emit a UserWarning when the primary is too
+        # light to be legible (CS-PAL-01). The enrichment is a no-op for
+        # every other archetype.
+        if should_enrich(self.dna.get("archetype")):
+            theme = enrich_corporate_suite_theme(
+                theme, template_slug=self.template_obj.slug
             )
 
         ctx["template"]  = self.template_obj
