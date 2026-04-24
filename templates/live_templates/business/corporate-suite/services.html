@@ -80,6 +80,23 @@
   .cs-cta-svc em { color: var(--accent); }
   .cs-cta-svc .intro { margin: 22px auto 0; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; }
   .cs-cta-svc .actions { margin-top: 36px; display: flex; justify-content: center; gap: 24px; }
+
+  /* Step 1D responsive hardening for services page */
+  @media (max-width: 1100px) {
+    .cs-services .grid { gap: 32px; }
+    .cs-process .grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+  }
+  @media (max-width: 880px) {
+    .cs-services .grid { grid-template-columns: 1fr; gap: 28px; }
+    .cs-services .card { padding: 28px 24px 24px; }
+    .cs-services .card .meta { grid-template-columns: 1fr; gap: 12px; }
+  }
+  @media (max-width: 720px) {
+    .cs-process .grid { grid-template-columns: 1fr; gap: 24px; }
+    .cs-process .step .num { font-size: 38px; }
+    .cs-cta-svc .actions { flex-direction: column; align-items: stretch; }
+    .cs-cta-svc .actions .cs-btn-primary { min-height: 44px; padding: 14px 22px; justify-content: center; }
+  }
 {% endblock %}
 
 {% block content %}

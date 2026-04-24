@@ -120,6 +120,35 @@
   .cs-cta-band h2 { font-size: var(--fs-h2); line-height: 1.08; max-width: 20ch; }
   .cs-cta-band em { color: var(--accent); }
   .cs-cta-band .intro { margin-top: 18px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; }
+
+  /* Step 1D responsive hardening for the about page */
+  @media (max-width: 1100px) {
+    .cs-history .head { grid-template-columns: 1fr; gap: 24px; }
+    .cs-history .timeline { grid-template-columns: 120px 1fr; gap: 0 28px; }
+    .cs-values .grid { gap: 36px; }
+    .cs-team .grid { grid-template-columns: repeat(2, 1fr); gap: 36px; }
+    .cs-coords .grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+    .cs-cta-band { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 880px) {
+    .cs-history .timeline { grid-template-columns: 1fr; gap: 0; }
+    .cs-history .timeline .year-cell {
+      padding: 24px 0 8px; border-top: 1px solid var(--rule);
+      font-size: 22px;
+    }
+    .cs-history .timeline .body-cell {
+      padding: 0 0 28px 20px; border-top: 0; border-left: 1px solid var(--rule);
+    }
+    .cs-history .timeline .body-cell:before { left: -7px; top: 4px; }
+    .cs-values .grid { grid-template-columns: 1fr; gap: 28px; }
+  }
+  @media (max-width: 720px) {
+    .cs-team .grid { grid-template-columns: 1fr; gap: 28px; }
+    .cs-coords { padding: 64px var(--space-section-x); }
+    .cs-coords .grid { grid-template-columns: 1fr; gap: 24px; }
+    .cs-coords .item .city { font-size: 24px; }
+    .cs-cta-band .cs-btn-primary { min-height: 44px; padding: 14px 22px; }
+  }
 {% endblock %}
 
 {% block content %}

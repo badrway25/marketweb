@@ -886,3 +886,294 @@ the same editorial floor problems" to "every pilot inherits an
 editorial floor that is already a contract". The browser walk
 stays the ship veto per CS-BROWSER-01 — the contracts above only
 reduce how many ways that walk can surface surprises.
+
+---
+
+## Step 1D — Responsive Hardening + Live Browser Verification
+
+Goal: close AP2 (zero real `@media` breakpoints in 6/7 skin files —
+the single remaining systemic risk after Steps 1A/1B/1C) and earn
+the first end-to-end live browser walk for the archetype under the
+Step 0 rubric. Every edit stays inside the corporate-suite archetype
+surface; zero changes to `apps/editor`, `apps/projects`, `apps/commerce`,
+no new archetypes, no Solaria Commit B un-pause.
+
+### Files changed
+
+| File | Change |
+|---|---|
+| `templates/live_templates/business/corporate-suite/_base.html` | (1) **Root-level horizontal overflow guard** — added `overflow-x: clip` to both `html` and `body` so the logo marquee's off-canvas track never surfaces as a scrollbar on mobile. `clip` (not `hidden`) preserves `position: sticky` on the nav. (2) **CSS-only hamburger drawer primitive** — `.cs-nav-toggle` (visually-hidden checkbox) + `.cs-nav-burger` (label with 3 spans) inserted into the nav markup; engages at ≤ 880 (not ≤ 720 as the rubric baseline suggests) because Italian labels overflow a horizontal nav at 768. Hamburger → X glyph transform via `span:nth-child()` rotates. `:focus-visible` on the hidden input surfaces a gold outline on the visible label (E1 focus-ring contract preserved at mobile). (3) **Responsive token stack** — 5 new `@media` blocks (1280, 1100, 880, 720, 480) that redefine `--fs-hero`, `--fs-lead`, `--fs-h2`, `--fs-h3`, `--fs-body-lg`, `--space-section-y`, `--space-section-x`, `--space-band-y`, `--space-footer-y`, `--space-lead-bot`. Every Step 1C rule that consumes a token auto-scales. Hero h1 walks 64 → 56 → 48 → 42 → 36 → 32 px across the matrix; section padding walks 100×72 → 84×48 → 72×40 → 64×28 → 52×22. (4) **Language-pill touch target** — `.mp-lang a.mp-lang-pill` bumped to `min-width/min-height: 44px`, `padding: 12px 10px`, `justify-content: center` inside the 720 breakpoint; `.mp-lang-label` ("LINGUA") hidden on mobile to claim the horizontal room. (5) **Footer reflow cascade** — `.cs-foot .top` `grid-template-columns` walks `1.4fr 1fr 1fr 1fr → 1.4fr 1fr 1fr → 1fr 1fr → 1fr` across 1100/880/720. The 4th column (Sedi) reflows to a full-row with a hairline separator at the intermediate tiers, so every step reads as a premium footer instead of a collapsed grid. (6) **Ancillary mobile polish** — `.mp-bar` tightens padding + hides `.mp-name` at ≤ 720 so the cross-marketplace strip stays single-line; hamburger drawer picks up the phone line (visible only when the drawer opens) so the CTA number stays one tap away. |
+| `templates/live_templates/business/corporate-suite/home.html` | 4 new `@media` blocks (1100 / 880 / 720 / 480). (1) **Hero stacking at ≤ 720 (CS-HERO-07)** — `.cs-hero { grid-template-columns: 1fr; min-height: 0 }`, left column `order: 1`, right column `order: 2 + aspect-ratio: 16/10`, h1 `max-width: none + line-height: 1.1`. (2) **Pillars / Leadership / Cases grid reflow** — 3-col → 2-col at 1100 → 1-col at 880/720. (3) **KPI band re-layout** — 4-col desktop → 1+2 grid at 1100 (heading row-spans full width above stats) → 2×2 at 720 (alternating borders) → 1-col at 480 with bottom hairlines. Stat number size walks 44 → 36 → 28 px. (4) **CTA wrap** — the `.wrap` grid collapses to 1-col at 1100, CTAs `.actions` go column-stretch at 720 with `min-height: 44px`. (5) **Case-preview row** — 5-col at desktop → 4-col at 1100 (hiding the secondary meta) → 3-col at 720 with a re-positioned meta on row 2. |
+| `templates/live_templates/business/corporate-suite/about.html` | `@media` blocks at 1100 / 880 / 720. History timeline collapses from 160+1fr grid → 120+1fr → 1-col (with vertical accent dot repositioning on the hairline). Values 2-col → 1-col at 880. Team 3-col → 2-col → 1-col. Coords 3-col → 2-col → 1-col. CTA band 1fr+0.6fr → 1fr at 1100. |
+| `templates/live_templates/business/corporate-suite/services.html` | 1100 / 880 / 720 breakpoints. Services cards 2-col → 1-col at 880 with tighter padding. Process steps 4-col → 2-col at 1100 → 1-col at 720 with stepper number scale 48 → 38 px. CTA `.actions` column-stretch at 720 with `min-height: 44px`. |
+| `templates/live_templates/business/corporate-suite/case_study_list.html` | 1100 + 720 breakpoints. Case row grid eases from 64+1.6fr+0.8fr+0.6fr+80 → 48+1.4fr+0.8fr+60 (hiding secondary meta) → 36+1fr+40 at mobile (title + arrow only, category/year collapse to the title stack). CTA list `.wrap` 1fr+0.5fr → 1fr at 1100. |
+| `templates/live_templates/business/corporate-suite/case_study_detail.html` | 1100 / 720 / 480 breakpoints. `.cs-post` padding eases 72 → 64 → 44 → 44 px horizontal. h1 walks 56 → 44 → 32 px. Meta-strip 4-col → 2-col → 2-col → 1-col. KPI band 4-col → 2-col → 2-col → 1-col (stat number scale 36 → 28 px). Team-strip 2-col → 1-col. Next-case CTA wraps at 720 with `.arrow` staying aligned. |
+| `templates/live_templates/business/corporate-suite/contact.html` | Pre-existing 880 breakpoint preserved + new 1100 (gap easing) + 720 (form padding trim + side-channel column collapse + `min-height: 44px` on the submit button). |
+
+### What improved
+
+1. **Every viewport in the §5 matrix now renders without a
+   horizontal scrollbar.** The `overflow-x: clip` root guard is
+   the only way to close the marquee-phantom-scroll class at the
+   root without disabling sticky positioning; `clip` (not `hidden`)
+   preserves the `.cs-nav { position: sticky; top: 0 }` contract.
+   Verified on both Pragma and Fiscus across 1920/1440/1280/1024/
+   768/640/414/390 (see `factory/reports/browser-verification/x4a-hardening-round1.md`
+   § "Viewport matrix results" table for the cell-by-cell
+   scrollWidth/clientWidth measurements).
+
+2. **The hamburger drawer engages at ≤ 880, not ≤ 720.** This is
+   a deliberate deviation from the baseline rubric (CS-NAV-05 says
+   720) and it is load-bearing: the Italian nav labels ("COMPETENZE"
+   10 chars + "CASE STUDIES" 11 chars × 5 links + wordmark + phone)
+   exceed the horizontal budget at 768 even after the 1100-tier
+   compaction. Dropping to a drawer at 880 means every tablet-class
+   portrait is a drawer walk — no 2-line nav-label wrap. The
+   promotion also future-proofs the archetype for EN/FR/ES
+   translations (which typically run 10-20% longer than IT); when
+   those locales land, no further nav work will be required.
+
+3. **Hero h1 respects the CS-RESPONSIVE-03 floor at the smallest
+   supported viewport.** At 390×844 the computed `font-size` is
+   exactly 32 px (via the 480-breakpoint `--fs-hero: 32px`
+   override). The `<em>` italic emphasis is preserved at every
+   size — a regression where the italic fall-back shipped at
+   "too-small-to-italic" would be caught by the type-scale
+   contract tests from Step 1C.
+
+4. **Touch targets meet WCAG 2.1 SC 2.5.5 at every tap surface on
+   mobile.** Measured at 390×844: hamburger 44×44, each of 5 nav
+   links when drawer is open 303×47, primary CTA 277×56, locale
+   switcher pills 44×44. The hero ghost CTA is 177×24 and stays
+   typographic-link (CS-CTA-03 ghost primitive contract — the
+   rubric's touch-target floor applies to "button-role" elements;
+   the ghost is a text-link by design, documented under the
+   verification's § deviation).
+
+5. **Focus-visible gold outline survives the drawer-open state
+   on mobile.** The `.cs-nav-toggle:focus-visible ~ .cs-nav-burger`
+   selector pipes the accent outline onto the label when the
+   hidden checkbox has focus — so keyboard-only users see the
+   ring on the hamburger icon itself (E1 focus-ring contract
+   satisfied at the drawer entry point). Inside the drawer, each
+   nav link retains the `.cs-nav .links a:focus-visible` rule
+   from Step 1B (outline 2px accent, offset 6px).
+
+6. **The KPI band re-layout preserves editorial rhythm at every
+   step.** The 4-col desktop grid eases to 1+2 at 1100 (heading
+   row-spans the full width above the 2-col stats — reads as
+   "framed by a statement"), then to 2×2 at 720 (alternating
+   internal borders keep the tabular-nums column-align intact),
+   then to 1-col at 480 with bottom hairlines. At no step does
+   the band collapse to a "dense list of numbers" — the editorial
+   character Pragma and Fiscus both depend on survives every
+   tier.
+
+7. **The case-preview row gracefully drops less-load-bearing
+   metadata at smaller widths.** At desktop: 5 columns
+   (num + title + practice + year+duration + arrow). At 1100:
+   4 columns — the secondary `.meta:nth-of-type(2)` is hidden
+   (year+duration is the less-critical of the two — practice
+   signals domain at a glance, year+duration is click-to-open
+   detail). At 720: 3 columns (num + title + arrow), with the
+   remaining meta stacked below the title in row 2. No row ever
+   becomes unreadable; the navigation affordance (arrow) always
+   stays visible on the rightmost edge.
+
+8. **Every page file responds to the same five breakpoints with
+   the same logic.** A reviewer reading the responsive stack can
+   predict every page's behavior from the `_base.html` token
+   stack plus the page file's two-to-four page-specific `@media`
+   blocks. No magic numbers repeated across files — everything
+   that represents archetype-level cadence (section padding, type
+   scale, chrome chrome-width) resolves through the tokens.
+
+### Live browser verification summary (X.4a Round 1)
+
+**Verdict**: **PASS** · 0 `[BLOCKING]` failures · 0 `[REQUIRED]`
+failures across the full §6 roster (32 distinct checks).
+
+The full rubric walk + evidence + parallel-verification handshake
+live in the sibling report
+`factory/reports/browser-verification/x4a-hardening-round1.md`.
+
+Headline measurements from the walk:
+
+| Viewport | scrollW = clientW | hero h1 | hero grid | nav mode | footer grid |
+|---|---|---|---|---|---|
+| 1920×1080 | **yes** (no overflow) | 64 px | 55/45 | horizontal (5 links) | 4 col |
+| 1440×900  | **yes** | 64 px | 55/45 | horizontal | 4 col |
+| 1280×800  | **yes** | 56 px | 55/45 | horizontal (eased) | 4 col |
+| 1024×768  | **yes** | 48 px | 1fr/1fr | horizontal (compact) | 3 col |
+|  768×1024 | **yes** | 42 px | 1fr/1fr | **drawer** | 2 col |
+|  640×360  | **yes** (after fix) | 36 px | stacked | drawer | 2 col |
+|  414×896  | **yes** | 32 px | stacked | drawer | 1 col |
+|  390×844  | **yes** | 32 px | stacked | drawer | 1 col |
+
+Contrast (1440): Pragma h1 12.81:1, Fiscus h1 12.86:1, footer
+legal row 12.86:1 — all AAA on body paper, AA+ on dark bands.
+
+Nav accent count (Pragma 1440): crest + `.is-current:after` = 2
+hits. Matches CS-BLOCK-N-02 target exactly.
+
+Console: 0 errors / 0 warnings (apart from the harmless
+`/favicon.ico` 404).
+
+Issues surfaced + fixed during the walk:
+1. Horizontal scroll at ≤ 640 — closed via `html/body
+   { overflow-x: clip }` root guard.
+2. Language pill touch target below 44×44 at mobile — closed by
+   a `min-width/min-height: 44px` rule inside the 720 breakpoint.
+3. Navbar 2-line wrap at 768 portrait tablet — closed by raising
+   the hamburger drawer breakpoint from 720 to 880 (load-bearing
+   deviation from the rubric baseline, documented in the walk
+   report's § "Issues found").
+
+### Remaining weak points
+
+- **RTL live walk deferred.** The responsive token stack is
+  direction-invariant (tokens under `:root` inherit to
+  `html[dir="rtl"]` automatically; the Step 1A/1B `{% if is_rtl %}`
+  flip block is unchanged). A dedicated Playwright walk at
+  `?lang=ar` across the full matrix remains scheduled for the
+  X.4b RTL factory step — not a Step 1D defect, a distinct
+  deliverable.
+
+- **Multi-locale rendered walk (EN/FR/ES) deferred.** Same
+  rationale — token-driven responsive CSS is locale-invariant.
+  The concrete risk (longer translations overflowing the nav at
+  768) is closed in advance by the 880 drawer breakpoint.
+
+- **Pragma legacy imagery retro-curation still pending.** AP3
+  backlog tracked in Step 1C. The imagery-policy gate reports
+  `is_legacy_exempt = True` and stays silent on Pragma renders.
+  Step 1D did not touch imagery.
+
+- **The hero ghost CTA is 177×24 at 390.** Ghost primitives are
+  typographic-link style (CS-CTA-03), not button-role elements;
+  the rubric's 44×44 floor applies to `button`-role elements.
+  Documented under the walk's § deviation. If a future review
+  decides the ghost must meet button-role touch floors, a per-
+  viewport override in `home.html` would close it in one diff
+  (estimated 6 lines).
+
+- **`overflow-x: clip` on `body` means any future skin element
+  that *intentionally* pans off-canvas (e.g., a future
+  horizontal scroll-snap gallery) would be clipped.** No such
+  element exists today; if one lands it would need a scoped
+  escape hatch (either `position: absolute` in a dedicated
+  scrollable wrapper, or a per-section `overflow-x: visible`
+  rule at a narrower scope). Not a current gap.
+
+### What still requires browser verification
+
+Step 1D's walk covers every cell of the §5 viewport matrix on IT
+Pragma (all 5 pages) + IT Fiscus (home). The remaining
+authoritative gates inside the rubric that a future walk on this
+archetype will re-run:
+
+1. **AR / FR / EN / ES live locale walk** on the full matrix.
+   Invariants expected to hold (token-driven), but the actual
+   rendered glyph widths (especially AR Noto Kufi + Amiri) must
+   be confirmed at 390 × 844 to protect against an RTL-only
+   overflow regression that the LTR walk could not surface.
+
+2. **Portrait primitive injection walk.** When the first
+   corporate-suite pilot declares `partner.portrait` URLs in its
+   content registry, a Playwright walk with the primitive active
+   at 1440 / 1024 / 390 will confirm the 4:3 figure + card-top
+   reset from Step 1C composes cleanly with the Step 1D
+   1-col-at-mobile card grid. Today the primitive is inert (no
+   enrolled template declares portraits), so the walk confirms
+   degradation-to-typographic only.
+
+3. **Solaria Commit B un-pause walk.** When the Commit B branch
+   un-pauses, a fresh walk on that branch applying this rubric
+   end-to-end will be the ship gate. Today Commit B remains
+   paused per the binding user instruction.
+
+### Cumulative effect — Steps 1A + 1B + 1C + 1D
+
+| Failure class (from the Solaria incident) | Closure step | Enforcement layer |
+|---|---|---|
+| Palette polarity (AP1) | 1A | Server-side WCAG gate (`theme_safety.py`) + `--on-primary` safety token + dark-section descendant cascade + static test |
+| Chrome premium contracts (CS-NAV-04, CS-FOOT-02, CS-HERO-01 overlay safety) | 1B | Static-file assertion tests (`CorporateSuiteChromeContractTests`) + archetype-level chrome refactor in `_base.html` + `home.html` |
+| Editorial floor (CS-TYPE-04 ceiling, CS-RHYTHM-01 cadence, CS-IMG-SRC-01 Pexels-only, CS-IMG-SEC-01 rhythm) | 1C | Token-driven type scale + rhythm + image-rhythm guardrails + `imagery_policy.py` server-side gate + static test |
+| Responsive breakpoints (AP2) + mobile UX | 1D | `_base.html` + 6 page files now carry a full `@media` stack calibrated on the §5 viewport matrix + `overflow-x: clip` root guard + pure-CSS hamburger drawer + touch-target floor + **live browser walk evidence** in `factory/reports/browser-verification/x4a-hardening-round1.md` |
+
+Net: the archetype has moved from "one-palette-away from a
+Solaria-class regression + zero responsive + no imagery gate" to
+"four archetype-level contracts closing the four risk classes
+that surfaced in Commit A, with a live browser walk proving it".
+The **archetype is ready to accept a controlled Solaria Commit B
+continuation** once the following preconditions are met:
+
+1. The user un-pauses the Solaria work explicitly.
+2. A retro-curation pass on the `business-corporate` pool brings
+   Pragma to Pexels-only (closing AP3). This makes the imagery
+   policy gate's `LEGACY_EXEMPT_KEYS` shrink to empty — Solaria
+   un-pausing under `business-coaching` would then be the only
+   non-exempt-non-compliant edge case, which the gate already
+   warns on.
+3. A fresh Playwright walk on the Solaria branch applying the
+   full rubric. Step 1D's walk is a proof of methodology; the
+   Commit B walk is the ship gate.
+
+---
+
+## Changed-files summary (Step 1A + 1B + 1C + 1D cumulative)
+
+```
+M templates/live_templates/business/corporate-suite/_base.html
+M templates/live_templates/business/corporate-suite/home.html
+M templates/live_templates/business/corporate-suite/about.html              (1C + 1D)
+M templates/live_templates/business/corporate-suite/services.html           (1C + 1D)
+M templates/live_templates/business/corporate-suite/case_study_list.html    (1C + 1D)
+M templates/live_templates/business/corporate-suite/case_study_detail.html  (1D)
+M templates/live_templates/business/corporate-suite/contact.html            (1D)
+A apps/catalog/theme_safety.py                    (1A)
+A apps/catalog/imagery_policy.py                  (1C)
+M apps/catalog/views.py                           (1A + 1C)
+M apps/catalog/tests.py                           (1A + 1B + 1C)
+M factory/reports/hardening/step1-core-hardening.md                         (1A + 1B + 1C + 1D)
+A factory/reports/browser-verification/x4a-hardening-round1.md              (1D live walk)
+A factory/reports/browser-verification/x4a-step1d/20260424T2300Z/screenshots/*.png  (1D evidence)
+```
+
+Step 1D delta only:
+- `_base.html`: ~230 lines net added — the 5 `@media` breakpoint
+  blocks + hamburger drawer primitive + root overflow guard.
+  Nav markup gained 4 lines (the `<input>` + `<label>` with 3
+  spans). No rule outside the archetype scope touched.
+- `home.html`: ~100 lines net added — 4 `@media` blocks.
+- `about.html` / `services.html` / `case_study_list.html` /
+  `case_study_detail.html` / `contact.html`: 15-30 lines each,
+  page-specific `@media` blocks.
+- No changes to `apps/*` code.
+- No changes to tests (the contract tests from Steps 1A/1B/1C
+  continue to pass unmodified — 32/32 green).
+
+### Final verdict for Step 1 hardening round
+
+**Step 1 (A + B + C + D) · PASS.** The archetype absorbs every
+Solaria-incident failure class at the archetype layer.
+
+- Step 1A hardens palette + dark-surface safety at the server-
+  render level, caught by static tests.
+- Step 1B hardens nav + hero + footer premium contracts, caught
+  by static tests.
+- Step 1C hardens type scale + rhythm + imagery policy, caught
+  by static tests.
+- Step 1D hardens responsive breakpoints + mobile UX + touch
+  targets, caught by a live Playwright walk that left zero
+  blocking / zero required failures.
+
+**The archetype is stronger enough to begin a controlled Solaria
+continuation later.** The binding "Solaria paused" instruction
+stays in effect; the continuation decision remains the user's.
+What Step 1 delivers is a floor — any future pilot (Solaria's
+Commit B un-pause OR a fresh corporate-suite template) inherits
+every contract closed here without per-template work, and the
+browser-verification rubric from `factory/standards/corporate-
+suite-browser-rubric.md` is now proven runnable end-to-end on
+this archetype with auditable evidence.

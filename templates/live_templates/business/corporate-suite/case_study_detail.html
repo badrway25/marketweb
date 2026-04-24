@@ -109,6 +109,36 @@
     transition: transform .2s ease;
   }
   .cs-post .next-case a:hover .arrow { transform: translateX(8px); }
+
+  /* Step 1D responsive hardening for case-study detail */
+  @media (max-width: 1100px) {
+    .cs-post { padding: 64px 40px 80px; }
+    .cs-post h1 { font-size: 44px; }
+    .cs-post .meta-strip { grid-template-columns: repeat(2, 1fr); }
+    .cs-post .kpi-band { grid-template-columns: repeat(2, 1fr); padding: 36px; }
+  }
+  @media (max-width: 720px) {
+    .cs-post { padding: 44px 22px 60px; }
+    .cs-post h1 { font-size: 32px; }
+    .cs-post .lead { font-size: 20px; margin-top: 32px; }
+    .cs-post .section { margin-top: 40px; }
+    .cs-post .section h2 { font-size: 26px; }
+    .cs-post .section p { font-size: 15px; }
+    .cs-post .meta-strip { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .cs-post .kpi-band {
+      grid-template-columns: 1fr 1fr;
+      padding: 28px 22px;
+      gap: 20px;
+    }
+    .cs-post .kpi-band .stat .num { font-size: 28px; }
+    .cs-post .team-strip { grid-template-columns: 1fr; gap: 16px; }
+    .cs-post .next-case { flex-wrap: wrap; gap: 16px; }
+    .cs-post .next-case .title { font-size: 18px; }
+  }
+  @media (max-width: 480px) {
+    .cs-post .meta-strip { grid-template-columns: 1fr; gap: 12px; }
+    .cs-post .kpi-band { grid-template-columns: 1fr; }
+  }
 {% endblock %}
 
 {% block content %}

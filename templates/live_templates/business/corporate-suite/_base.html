@@ -147,8 +147,17 @@
     --lm-marquee-pad-y:    20px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: var(--fs-body); line-height: 1.62; }
+  html {
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    /* CS-RESPONSIVE-02 · Step 1D · clip horizontal overflow at the root
+       so decorative off-canvas primitives (the logo marquee's duplicated
+       track, any RTL flip, future parallax frames) never surface a
+       horizontal scrollbar at mobile viewports. `clip` is preferred
+       over `hidden` because it does not establish a new scroll container,
+       keeping `position: sticky` on the nav functional. */
+    overflow-x: clip;
+  }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: var(--fs-body); line-height: 1.62; overflow-x: clip; }
   img { max-width: 100%; display: block; }
   a { color: inherit; text-decoration: none; }
   h1, h2, h3, h4, h5 {
@@ -697,6 +706,249 @@
 
   {% block extra_css %}{% endblock %}
 
+  /* ============================================================
+     RESPONSIVE HARDENING — Step 1D · AP2 closure.
+     Desktop-first skin layered with four breakpoints that redefine
+     the rhythm + type-scale tokens from the :root block above, so
+     every selector that consumes `var(--fs-hero)` / `var(--fs-h2)` /
+     `var(--space-section-y)` auto-adapts without per-rule churn.
+
+       ≤ 1280 · narrow desktop — section padding eases
+       ≤ 1100 · small desktop / large tablet (CS-NAV-05) — nav condenses
+       ≤  880 · portrait tablet (CS-RESPONSIVE-01) — card grids restack
+       ≤  720 · mobile (CS-HERO-07, CS-NAV-05, CS-FOOT-05) — nav becomes
+                a pure-CSS drawer via the `.cs-nav-toggle` checkbox, the
+                hero / footer / grids collapse to 1 column
+       ≤  480 · small phone floor — minimum spacing, hero h1 ≥ 32 px
+
+     Nav drawer primitive · `.cs-nav-toggle` is a visually-hidden
+     checkbox paired with the `.cs-nav-burger` label (both inserted
+     in the nav markup below). At ≤ 720 px the `:checked` state
+     opens `.links` into a stacked drawer with ≥ 44 px touch rows.
+     No JavaScript; no focus-trap needed (the drawer closes when the
+     burger is re-clicked or when any link inside is activated).
+  ============================================================ */
+  .cs-nav-toggle {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
+  }
+  .cs-nav-burger { display: none; }
+
+  @media (max-width: 1280px) {
+    :root {
+      --space-section-y: 84px;
+      --space-section-x: 48px;
+      --space-band-y:    60px;
+      --space-footer-y:  80px;
+      --fs-hero: 56px;
+      --fs-lead: 48px;
+      --fs-h2:   42px;
+    }
+    .cs-nav { padding: 0 40px; }
+    .cs-nav .links { gap: 24px; margin-left: 36px; }
+    .mp-bar { padding: 10px 24px; }
+  }
+
+  @media (max-width: 1100px) {
+    :root {
+      --space-section-y: 72px;
+      --space-section-x: 40px;
+      --space-band-y:    56px;
+      --space-footer-y:  72px;
+      --fs-hero: 48px;
+      --fs-lead: 42px;
+      --fs-h2:   36px;
+      --fs-h3:   24px;
+    }
+    .cs-nav {
+      padding: 0 28px;
+    }
+    .cs-nav .links {
+      gap: 18px; margin-left: 28px;
+      font-size: 11px; letter-spacing: 0.12em;
+    }
+    .cs-nav .phone .tag { display: none; }
+    .cs-foot .top {
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 40px;
+    }
+    .cs-foot .top .col:nth-child(4) {
+      grid-column: 1 / -1;
+      padding-top: 28px;
+      border-top: 1px solid rgba(238,240,243,0.14);
+    }
+  }
+
+  @media (max-width: 880px) {
+    :root {
+      --space-section-y: 64px;
+      --space-section-x: 28px;
+      --space-band-y:    48px;
+      --space-footer-y:  64px;
+      --fs-hero: 42px;
+      --fs-lead: 36px;
+      --fs-h2:   30px;
+      --fs-body-lg: 16px;
+    }
+    /* The nav collapses into the hamburger drawer at 880 rather than
+       720 because the Italian nav labels (CHI SIAMO · COMPETENZE · CASE
+       STUDIES · CONTATTI) together with the wordmark and the trailing
+       phone block exceed the horizontal budget at portrait-tablet widths
+       even after the 1100-tier compaction. Dropping to a drawer here
+       keeps the 4-state cascade and touch-target floor on tablets and
+       avoids the 2-line nav-label wrap the rubric treats as a premium-
+       feel regression. */
+    .cs-nav {
+      flex-wrap: wrap; height: auto; min-height: 64px;
+      padding: 12px 28px; column-gap: 16px;
+    }
+    .cs-nav .wm {
+      font-size: 19px; gap: 10px;
+    }
+    .cs-nav .wm .crest {
+      width: 34px; height: 34px; font-size: 12px;
+    }
+    .cs-nav-burger {
+      display: inline-flex; flex-direction: column;
+      justify-content: center; align-items: center; gap: 5px;
+      width: 44px; height: 44px;
+      margin-left: auto;
+      cursor: pointer;
+    }
+    .cs-nav-burger span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--on-dark);
+      transition: transform .18s ease, opacity .18s ease;
+    }
+    .cs-nav-toggle:focus-visible ~ .cs-nav-burger {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+    .cs-nav-toggle:checked ~ .cs-nav-burger span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .cs-nav-toggle:checked ~ .cs-nav-burger span:nth-child(2) {
+      opacity: 0;
+    }
+    .cs-nav-toggle:checked ~ .cs-nav-burger span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+    .cs-nav .links {
+      order: 99; width: 100%;
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      margin: 14px -28px 0;
+      padding: 8px 28px 6px;
+      border-top: 1px solid rgba(238,240,243,0.12);
+      font-size: 12px; letter-spacing: 0.14em;
+    }
+    .cs-nav-toggle:checked ~ .links { display: flex; }
+    .cs-nav .links a {
+      padding: 14px 0;
+      min-height: 44px;
+      display: flex; align-items: center;
+    }
+    .cs-nav .links a.is-current:after {
+      left: 0;
+      transform: none;
+      bottom: 6px;
+    }
+    .cs-nav .phone {
+      order: 100; width: 100%;
+      margin-left: 0;
+      padding: 10px 0 4px;
+      font-size: 14px; gap: 12px;
+      display: none;
+    }
+    .cs-nav-toggle:checked ~ .phone { display: flex; }
+    .cs-foot {
+      padding: var(--space-footer-y) var(--space-section-x) 36px;
+    }
+    .cs-foot .top {
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      padding-bottom: 40px;
+    }
+    .cs-foot .top .col:nth-child(4) {
+      grid-column: 1 / -1;
+      padding-top: 28px;
+      border-top: 1px solid rgba(238,240,243,0.14);
+    }
+  }
+
+  @media (max-width: 720px) {
+    :root {
+      --space-section-y: 52px;
+      --space-section-x: 22px;
+      --space-band-y:    40px;
+      --space-footer-y:  56px;
+      --space-lead-bot:  40px;
+      --fs-hero: 36px;
+      --fs-lead: 32px;
+      --fs-h2:   26px;
+      --fs-h3:   20px;
+      --fs-body-lg: 16px;
+    }
+    .mp-bar {
+      padding: 8px 16px; font-size: 10px; gap: 10px;
+      letter-spacing: 0.12em;
+    }
+    .mp-bar .mp-name { display: none; }
+    /* CS-RESPONSIVE-06 touch-target floor — language pills bump to
+       ≥ 44×44 on mobile (at desktop they sit at 22 px tall, which
+       reads editorial; at touch widths they need the Apple HIG /
+       WCAG 2.1 Success Criterion 2.5.5 minimum). */
+    .mp-lang { gap: 6px; flex-wrap: wrap; }
+    .mp-lang .mp-lang-label { display: none; }
+    .mp-lang .mp-lang-list { gap: 2px; }
+    .mp-lang a.mp-lang-pill {
+      min-width: 44px; min-height: 44px;
+      padding: 12px 10px;
+      justify-content: center;
+    }
+    /* Nav chrome is already in drawer mode from the 880 breakpoint
+       above; this tier only tightens the wordmark scale + drawer
+       padding for the narrowest devices. */
+    .cs-nav { padding: 12px 20px; }
+    .cs-nav .wm { font-size: 18px; }
+    .cs-nav .links { margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; }
+    .cs-foot {
+      padding: var(--space-footer-y) var(--space-section-x) 32px;
+    }
+    .cs-foot .top {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding-bottom: 32px;
+    }
+    .cs-foot .top .col:nth-child(4) {
+      grid-column: auto;
+      padding-top: 0;
+      border-top: 0;
+    }
+    .cs-foot .brand .word { font-size: 28px; }
+    .cs-foot .bot {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      text-align: left;
+    }
+    .cs-foot .bot .legal { justify-content: flex-start; }
+  }
+
+  @media (max-width: 480px) {
+    :root {
+      --space-section-x: 18px;
+      --fs-hero: 32px;
+      --fs-lead: 28px;
+      --fs-h2:   24px;
+    }
+    .cs-nav { padding: 10px 16px; }
+    .cs-nav .wm { font-size: 17px; }
+    .mp-bar { padding: 6px 12px; gap: 8px; }
+  }
+
   /* A.6 — Editor-embedded preview parity with Vertex: when the live
      route is loaded inside the customer editor iframe (identified by
      `preview_project` being non-null), suppress the marketplace top
@@ -751,6 +1003,10 @@
     <span class="crest">{{ site.logo_initial }}</span>
     <span>{{ site.logo_word }}</span>
   </div>
+  <input type="checkbox" id="cs-nav-toggle" class="cs-nav-toggle" aria-label="{{ chrome.nav_menu|default:'Menu' }}">
+  <label for="cs-nav-toggle" class="cs-nav-burger" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </label>
   <div class="links">
     {% for p in pages %}
       {% if p.slug == "home" %}

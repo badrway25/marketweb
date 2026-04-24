@@ -61,6 +61,29 @@
   .cs-cta-list h2 { font-size: var(--fs-h2); max-width: 22ch; line-height: 1.1; }
   .cs-cta-list em { color: var(--accent); }
   .cs-cta-list .intro { margin-top: 16px; font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; max-width: var(--copy-max); }
+
+  /* Step 1D responsive hardening for case-study list */
+  @media (max-width: 1100px) {
+    .cs-cases-list .row {
+      grid-template-columns: 48px 1.4fr 0.8fr 60px;
+      gap: 20px;
+    }
+    .cs-cases-list .row .meta:nth-of-type(2) { display: none; }
+    .cs-cta-list .wrap { grid-template-columns: 1fr; gap: 28px; }
+  }
+  @media (max-width: 720px) {
+    .cs-cases-list .row {
+      grid-template-columns: 36px 1fr 40px;
+      gap: 14px;
+      padding: 20px 0;
+      align-items: start;
+    }
+    .cs-cases-list .row .meta:first-of-type { display: none; }
+    .cs-cases-list .row .title h3 { font-size: 18px; }
+    .cs-cases-list .row .title .lead { font-size: 13px; margin-top: 6px; }
+    .cs-cases-list .row .arrow { align-self: center; font-size: 18px; }
+    .cs-cta-list .cs-btn-primary { min-height: 44px; padding: 14px 22px; }
+  }
 {% endblock %}
 
 {% block content %}

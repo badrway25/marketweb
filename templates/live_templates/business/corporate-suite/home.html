@@ -308,6 +308,148 @@
   .cs-cta .actions .cs-btn-primary:hover:after { color: var(--primary); }
   .cs-cta .actions .cs-btn-ghost { color: var(--on-dark-2); border-color: var(--on-dark-3); }
   .cs-cta .actions .cs-btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ============================================================
+     Home responsive hardening — Step 1D.
+       ≤ 1100 · pillars/leadership/cases restack to 2-col, hero
+                split eases to 1fr 1fr, KPI band condenses
+       ≤  880 · pillars/leadership 1-col, sectors ribbon wraps
+       ≤  720 · CS-HERO-07 hero stacks (text above photo), KPI
+                band 2x2, CTA wraps, case rows re-flow
+  ============================================================ */
+  @media (max-width: 1100px) {
+    .cs-hero { grid-template-columns: 1fr 1fr; min-height: 520px; }
+    .cs-hero .left { padding: 72px 32px 56px 40px; }
+    .cs-hero .left .meta-strip { gap: 28px; flex-wrap: wrap; }
+    .cs-hero .right .credit { left: 24px; right: 24px; bottom: 24px; gap: 20px; }
+    .cs-pillars .head { grid-template-columns: 1fr; gap: 24px; }
+    .cs-pillars .grid { grid-template-columns: repeat(2, 1fr); gap: 36px; }
+    .cs-kpi-band .row { grid-template-columns: 1fr repeat(2, 1fr); row-gap: 32px; }
+    .cs-kpi-band .heading {
+      grid-column: 1 / -1; padding-right: 0; border-right: 0;
+      padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.18);
+    }
+    .cs-kpi-band .stat { padding: 0 24px; }
+    .cs-leadership .grid { grid-template-columns: repeat(2, 1fr); gap: 36px; }
+    .cs-cases-preview .head { grid-template-columns: 1fr; gap: 24px; }
+    .cs-cases-preview .row { grid-template-columns: 48px 1.6fr 1fr 60px; }
+    .cs-cases-preview .row .meta:nth-of-type(2) { display: none; }
+    .cs-cta .wrap { grid-template-columns: 1fr; gap: 40px; }
+    .cs-cta .actions { flex-direction: row; flex-wrap: wrap; }
+  }
+
+  @media (max-width: 880px) {
+    .cs-hero { min-height: 480px; }
+    .cs-hero .left { padding: 56px 24px 48px 32px; }
+    .cs-hero .left h1 { max-width: 20ch; }
+    .cs-hero .left .sub { max-width: none; }
+    .cs-hero .right .credit { gap: 16px; }
+    .cs-hero .right .credit .item { font-size: 9px; }
+    .cs-hero .right .credit .item strong { font-size: 14px; }
+    .cs-pillars .grid { grid-template-columns: 1fr; gap: 28px; }
+    .cs-leadership .grid { grid-template-columns: 1fr; gap: 32px; }
+    .cs-leadership .card { padding: 28px 24px; }
+  }
+
+  @media (max-width: 720px) {
+    /* CS-HERO-07 · hero stacks text-above-photo at mobile. */
+    .cs-hero {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .cs-hero .left {
+      padding: 36px 20px 40px;
+      order: 1;
+    }
+    .cs-hero .left h1 {
+      margin-top: 24px;
+      /* CS-RESPONSIVE-03 · hero h1 ≥ 32 px floor · --fs-hero = 36 at ≤ 720. */
+      line-height: 1.1;
+      max-width: none;
+    }
+    .cs-hero .left .sub { margin-top: 20px; }
+    .cs-hero .left .actions {
+      margin-top: 28px; gap: 20px;
+      flex-wrap: wrap;
+    }
+    .cs-hero .left .meta-strip {
+      margin-top: 32px;
+      padding-top: 20px;
+      gap: 20px;
+    }
+    .cs-hero .right {
+      order: 2;
+      min-height: 280px;
+      aspect-ratio: 16 / 10;
+    }
+    .cs-hero .right .credit {
+      left: 18px; right: 18px; bottom: 18px;
+      padding-top: 16px;
+    }
+    .cs-pillars .head h2 { max-width: none; }
+    .cs-pillars .pillar { padding-top: 20px; }
+    /* CS-RESPONSIVE-04 · KPI band becomes a 2×N grid with 2 columns
+       so numerics keep their tabular rhythm without going single-file. */
+    .cs-kpi-band .row {
+      grid-template-columns: 1fr 1fr;
+      row-gap: 28px;
+    }
+    .cs-kpi-band .heading {
+      padding-bottom: 16px;
+      font-size: 22px;
+    }
+    .cs-kpi-band .stat {
+      padding: 0 16px;
+      border-right: 1px solid rgba(255,255,255,0.18);
+    }
+    .cs-kpi-band .stat:nth-child(2n+1) { border-right: 1px solid rgba(255,255,255,0.18); }
+    .cs-kpi-band .stat:nth-child(even) { border-right: 0; }
+    .cs-kpi-band .stat .num { font-size: 36px; }
+    .cs-sectors {
+      padding: 24px var(--space-section-x);
+    }
+    .cs-sectors .row { gap: 14px; font-size: 10px; letter-spacing: 0.14em; }
+    .cs-trust .logos { gap: 24px; font-size: 14px; }
+    .cs-leadership .head h2 { max-width: none; }
+    .cs-cases-preview .head h2 { max-width: none; }
+    .cs-cases-preview .row {
+      grid-template-columns: 36px 1fr 40px;
+      gap: 16px;
+      padding: 20px 0;
+      align-items: start;
+    }
+    .cs-cases-preview .row .title {
+      font-size: 17px; gap: 12px;
+    }
+    .cs-cases-preview .row .meta:first-of-type { display: none; }
+    .cs-cases-preview .row .meta:nth-of-type(2) {
+      display: block;
+      grid-column: 2 / 3;
+      font-size: 10px;
+    }
+    .cs-cases-preview .row .arrow {
+      align-self: center; font-size: 18px;
+    }
+    .cs-cta .wrap { gap: 28px; }
+    .cs-cta .actions { flex-direction: column; align-items: stretch; }
+    .cs-cta h2 { max-width: none; }
+    /* CS-CTA-01 touch targets ≥ 44 px at the hero/CTA button cluster. */
+    .cs-hero .left .cs-btn-primary,
+    .cs-cta .actions .cs-btn-primary {
+      padding: 14px 22px; min-height: 44px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .cs-hero .left { padding: 28px 16px 32px; }
+    .cs-hero .left .meta-strip { gap: 16px; }
+    .cs-hero .right { min-height: 220px; }
+    .cs-kpi-band .row { grid-template-columns: 1fr; }
+    .cs-kpi-band .stat,
+    .cs-kpi-band .stat:nth-child(2n+1),
+    .cs-kpi-band .stat:nth-child(even) { border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.14); padding: 16px 0; }
+    .cs-kpi-band .stat:last-child { border-bottom: 0; }
+  }
 {% endblock %}
 
 {% block content %}
