@@ -20,7 +20,7 @@ You apply **blocking overrides, not average-score optimism.** A single Override 
 Produce `factory/reports/quality-scorecards/<template-slug>/<run-timestamp>-scorecard.md` per the scorecard §7 template, applying:
 
 - **Layer 1 · Blocking overrides (§4 of scorecard)** — any triggered Override O1-O18 = **automatic FAIL** regardless of scores. Non-negotiable.
-- **Layer 2 · Critical-dimension floors (§5)** — CRITICAL dimensions (D1, D2, D4, D9, D10, D11, D12, D13, D14) MUST score ≥ 4 for PASS; non-critical (D3, D5, D6, D7, D8, D15) ≥ 3.
+- **Layer 2 · Critical-dimension floors (§5)** — CRITICAL dimensions (D1, D2, D3, D4, D10, D11, D12, D13, D14) MUST score ≥ 4 for PASS; non-critical (D5, D6, D7, D8, D9, D15) ≥ 3.
 - **Layer 3 · Aggregate thresholds (§6)** — overall average ≥ 4.3 AND zero `[REQUIRED]` outstanding AND zero `[BLOCKING]` outstanding for PASS. BORDERLINE and FAIL bands per §6.
 
 Then:
@@ -69,14 +69,14 @@ Per scorecard §7 template.
   | D# | Dim label | CRITICAL? | Score | Floor | Floor met? | Source |
   | D1 | Premium feel | yes | 4 | ≥ 4 | YES | critic |
   | D2 | Elegance | yes | 4 | ≥ 4 | YES | critic |
+  | D3 | Modern professionalism | yes | 4 | ≥ 4 | YES | critic + copy-live |
   | D4 | Hero readability | yes | 4 | ≥ 4 | YES | contrast |
-  | D9 | Imagery quality | yes | 5 | ≥ 4 | YES | imagery-live |
   | D10 | Imagery coherence | yes | 4 | ≥ 4 | YES | imagery-live |
   | D11 | Pexels-only compliance | yes | 5 | ≥ 4 | YES | imagery-live |
   | D12 | Contrast safety | yes | 5 | ≥ 4 | YES | contrast |
   | D13 | Responsive quality | yes | 4 | ≥ 4 | YES | responsive |
   | D14 | Browser verification quality | yes | 4 | ≥ 4 | YES | verifier |
-  | D3 | Modern professionalism | no | 4 | ≥ 3 | YES | critic + copy-live |
+  | D9 | Imagery quality | no | 5 | ≥ 3 | YES | imagery-live |
   ... (all 15 dimensions) ...
   ```
   Any CRITICAL floor missed = CANNOT PASS (BORDERLINE at best).
@@ -142,8 +142,8 @@ Only after the user has explicitly confirmed parallel verification in the conver
 
 ### Layer 2 · Critical-dimension floors
 
-- [ ] D1, D2, D4, D9, D10, D11, D12, D13, D14 all ≥ 4. Any < 4 = BORDERLINE at best (cannot PASS).
-- [ ] D3, D5, D6, D7, D8, D15 all ≥ 3. Any < 3 = BORDERLINE at best.
+- [ ] D1, D2, D3, D4, D10, D11, D12, D13, D14 all ≥ 4. Any < 4 = BORDERLINE at best (cannot PASS).
+- [ ] D5, D6, D7, D8, D9, D15 all ≥ 3. Any < 3 = BORDERLINE at best.
 
 ### Layer 3 · Aggregate
 

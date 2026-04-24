@@ -1,0 +1,3 @@
+[corporate_suite.E001] corporate-suite template '__solaria-prefix-bug__' ships an unsafe primary '#F7F3EC' (luminance=0.8993, contrast-vs-cream=1.01). CS-PAL-01 requires luminance ≤ 0.12 and contrast ≥ 7.0:1 against the cream body paper. The dark skin surfaces (navbar, KPI band, footer) paint cream on primary — a light primary makes every h1/h2/h3 on the body paper unreadable (Solaria Commit A incident).
+---
+exit_nonzero_simulated

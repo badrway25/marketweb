@@ -1,0 +1,4 @@
+ERROR [corporate_suite.E002] corporate-suite imagery pool 'business-coaching' ships 1 non-Pexels url(s). CS-IMG-SRC-01 requires every new corporate-suite url to come from images.pexels.com. Offending: https://images.unsplash.com/photo-1?w=1600
+WARNING [corporate_suite.W001] corporate-suite imagery pool 'business-corporate' is grandfathered under LEGACY_EXEMPT_KEYS and ships 6 non-Pexels url(s) pending AP3 retro-curation. The archetype accepts this; the gatekeeper must cite it explicitly (O7 precondition).
+---
+exit_nonzero_simulated

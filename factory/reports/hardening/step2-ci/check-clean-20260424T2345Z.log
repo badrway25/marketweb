@@ -1,0 +1,6 @@
+System check identified some issues:
+
+WARNINGS:
+business-corporate: (corporate_suite.W001) corporate-suite imagery pool 'business-corporate' is grandfathered under LEGACY_EXEMPT_KEYS and ships 6 non-Pexels url(s) pending AP3 retro-curation. The archetype accepts this; the gatekeeper must cite it explicitly (O7 precondition).
+
+System check identified 1 issue (0 silenced).

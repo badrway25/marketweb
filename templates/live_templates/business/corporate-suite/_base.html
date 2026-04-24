@@ -1057,10 +1057,14 @@
   </div>
   <div class="bot">
     <span class="copy">© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    {# CS-CTA-04 · legal row hrefs resolve to real routes. The default #}
+    {# target is the `contatti` page (which carries the license + P.IVA); #}
+    {# individual templates can override via `site.privacy_href` /       #}
+    {# `site.cookie_href` / `site.legal_href` (page slug string).         #}
     <span class="legal">
-      <a href="#">{{ chrome.foot_privacy }}</a>
-      <a href="#">{{ chrome.foot_cookie }}</a>
-      <a href="#">{{ chrome.foot_legal }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.privacy_href|default:'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.foot_privacy }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.cookie_href|default:'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.foot_cookie }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.legal_href|default:'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.foot_legal }}</a>
     </span>
   </div>
 </footer>

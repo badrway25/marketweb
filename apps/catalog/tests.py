@@ -1820,6 +1820,42 @@ class CorporateSuiteChromeContractTests(TestCase):
         self.assertIn("<span class=\"legal\">", self.base_html)
         self.assertIn(".cs-foot .bot .legal", self.base_html)
 
+    def test_footer_legal_hrefs_are_not_placeholder_hashes(self):
+        # Phase X.4a Step 2 · P0-5 / CS-CTA-04 · the legal row must
+        # resolve to real routes. `href="#"` on a CTA primitive is a
+        # placeholder-class defect; the archetype-level fix wires the
+        # three legal links through `{% url 'catalog:live_template_page' %}`
+        # with a `contatti` default (overrideable per-template via
+        # `site.privacy_href` / `site.cookie_href` / `site.legal_href`).
+        import re
+
+        legal_section = re.search(
+            r"<span class=\"legal\">(.*?)</span>",
+            self.base_html,
+            flags=re.DOTALL,
+        )
+        self.assertIsNotNone(
+            legal_section, "legal span in _base.html footer missing"
+        )
+        body = legal_section.group(1)
+        self.assertNotIn(
+            'href="#"',
+            body,
+            "CS-CTA-04 regression: footer legal row reintroduced href='#' placeholder",
+        )
+        # Every anchor inside .legal must use the live_template_page URL
+        # resolver — the real-route guarantee.
+        anchors = re.findall(r"<a\s+href=\"([^\"]+)\"", body)
+        self.assertEqual(
+            len(anchors), 3, "expected 3 legal-row anchors (privacy/cookie/legal)"
+        )
+        for href in anchors:
+            self.assertIn(
+                "live_template_page",
+                href,
+                f"legal anchor {href!r} must route through catalog:live_template_page",
+            )
+
     def test_footer_wordmark_uses_heading_font_and_premium_size(self):
         # CS-FOOT-01 + CS-TYPE-01 · the brand lockup is the footer's
         # gravity well. Size floor (≥ 28 px) keeps it editorial vs the
@@ -2151,3 +2187,170 @@ class CorporateSuiteRhythmContractTests(TestCase):
                 rf"font-size:\s*{bad_px}px",
                 f"home.html regresses to hardcoded {bad_px}px heading",
             )
+
+
+# ── Phase X.4a Step 2 · P0-1 / P0-2 build-time check gates ──────────
+
+
+class CorporateSuiteBuildTimeCheckTests(TestCase):
+    """Contracts for the Step 2 P0-1 / P0-2 gates that promote
+    ``theme_safety`` + ``imagery_policy`` from ``UserWarning`` (runtime)
+    to ``django.core.checks.Error`` (build-time).
+
+    These tests lock three things:
+
+    1. Registration — the two checks are wired into Django's check
+       registry via the ``CatalogConfig.ready`` hook, so every
+       ``manage.py check`` + ``manage.py test`` invocation runs them.
+    2. Green on current enrolled state — Pragma + Fiscus palettes pass;
+       Fiscus imagery pool is Pexels-only; Pragma is legacy-exempt and
+       surfaces as a Warning (not an Error).
+    3. Red on injected regression — reintroducing the Solaria pre-fix
+       ``#F7F3EC`` palette on a corporate-suite slug fails the palette
+       gate; injecting a non-Pexels URL on ``business-coaching`` fails
+       the imagery gate.
+    """
+
+    def test_palette_check_is_registered(self):
+        from django.core.checks import registry
+
+        registered = [
+            c for c in registry.registry.get_checks()
+            if getattr(c, "__name__", "") == "check_corporate_suite_palettes"
+        ]
+        self.assertEqual(
+            len(registered),
+            1,
+            "check_corporate_suite_palettes not registered via CatalogConfig.ready",
+        )
+
+    def test_imagery_check_is_registered(self):
+        from django.core.checks import registry
+
+        registered = [
+            c for c in registry.registry.get_checks()
+            if getattr(c, "__name__", "") == "check_corporate_suite_imagery"
+        ]
+        self.assertEqual(
+            len(registered),
+            1,
+            "check_corporate_suite_imagery not registered via CatalogConfig.ready",
+        )
+
+    def test_palette_check_green_on_enrolled_state(self):
+        from apps.catalog.checks import check_corporate_suite_palettes
+
+        findings = check_corporate_suite_palettes(app_configs=None)
+        self.assertEqual(
+            findings,
+            [],
+            f"Enrolled corporate-suite palettes must pass the gate, got: {findings}",
+        )
+
+    def test_imagery_check_green_on_enrolled_state(self):
+        # Fiscus must be Error-free. Pragma is legacy-exempt and
+        # surfaces as a Warning (non-blocking), not an Error.
+        from django.core.checks import Error
+
+        from apps.catalog.checks import check_corporate_suite_imagery
+
+        findings = check_corporate_suite_imagery(app_configs=None)
+        errors = [f for f in findings if isinstance(f, Error)]
+        self.assertEqual(
+            errors,
+            [],
+            f"Non-legacy corporate-suite pools must pass imagery gate, got: {errors}",
+        )
+
+    def test_palette_check_red_on_injected_solaria_bug(self):
+        from apps.catalog.management.commands import seed_templates
+
+        original = seed_templates.SEED_TEMPLATES
+        injected = list(original) + [
+            {
+                "name": "__test-injected-solaria__",
+                "slug": "__test-injected-solaria__",
+                "category_slug": "business",
+                "short_description": "test-only",
+                "description": "test-only",
+                "brand": {
+                    "brand_name": "Test",
+                    "tagline": "",
+                    "palette": {
+                        "primary":   "#F7F3EC",  # Solaria pre-fix bug
+                        "secondary": "#D4AF37",
+                        "accent":    "#B85450",
+                    },
+                    "typography": "Inter + Inter",
+                    "personality": "test",
+                    "logo_concept": "",
+                },
+            }
+        ]
+        from apps.catalog import template_dna
+
+        template_dna.TEMPLATE_DNA["__test-injected-solaria__"] = {
+            "archetype":    "corporate-suite",
+            "font_pairing": ("Merriweather", "Inter"),
+            "content":      {},
+        }
+        seed_templates.SEED_TEMPLATES = injected
+
+        try:
+            from apps.catalog.checks import check_corporate_suite_palettes
+
+            findings = check_corporate_suite_palettes(app_configs=None)
+            self.assertTrue(
+                any(getattr(e, "id", "") == "corporate_suite.E001" for e in findings),
+                f"Expected corporate_suite.E001 on injected Solaria bug, got: {findings}",
+            )
+            msgs = " ".join(getattr(e, "msg", "") for e in findings)
+            self.assertIn("__test-injected-solaria__", msgs)
+            self.assertIn("#F7F3EC", msgs)
+        finally:
+            seed_templates.SEED_TEMPLATES = original
+            del template_dna.TEMPLATE_DNA["__test-injected-solaria__"]
+
+    def test_imagery_check_red_on_injected_non_pexels_url(self):
+        # Inject a non-Pexels URL into the non-exempt business-coaching
+        # pool (Solaria's) and confirm the gate raises an Error.
+        from django.core.checks import Error
+
+        from apps.catalog import preview_imagery
+
+        preview_imagery.IMAGERY_CONFIG["business-coaching"] = [
+            "https://images.unsplash.com/photo-1?w=1600",
+            "https://images.pexels.com/photos/2/b.jpeg?w=1200",
+            "https://images.pexels.com/photos/3/c.jpeg?w=800",
+            "https://images.pexels.com/photos/4/d.jpeg?w=800",
+            "https://images.pexels.com/photos/5/e.jpeg?w=800",
+            "https://images.pexels.com/photos/6/f.jpeg?w=800",
+        ]
+        try:
+            from apps.catalog.checks import check_corporate_suite_imagery
+
+            findings = check_corporate_suite_imagery(app_configs=None)
+            errors = [f for f in findings if isinstance(f, Error)]
+            self.assertTrue(
+                any(getattr(e, "id", "") == "corporate_suite.E002" for e in errors),
+                f"Expected corporate_suite.E002 on injected unsplash url, got: {errors}",
+            )
+        finally:
+            del preview_imagery.IMAGERY_CONFIG["business-coaching"]
+
+    def test_imagery_check_legacy_exempt_surfaces_as_warning_not_error(self):
+        from django.core.checks import Error, Warning as ChecksWarning
+
+        from apps.catalog.checks import check_corporate_suite_imagery
+
+        findings = check_corporate_suite_imagery(app_configs=None)
+        errors = [f for f in findings if isinstance(f, Error)]
+        warnings_ = [f for f in findings if isinstance(f, ChecksWarning)]
+        self.assertEqual(errors, [])
+        # Pragma's business-corporate pool is legacy-exempt and ships
+        # non-Pexels URLs — we want a visible W001, not silence.
+        self.assertTrue(
+            any(getattr(w, "id", "") == "corporate_suite.W001" for w in warnings_),
+            f"Expected corporate_suite.W001 for business-corporate legacy pool, got: {warnings_}",
+        )
+
