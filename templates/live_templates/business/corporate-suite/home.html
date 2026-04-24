@@ -1,13 +1,19 @@
 {% extends "live_templates/business/corporate-suite/_base.html" %}
 
 {% block extra_css %}
-  /* Hero — 55/45 split: serif drama LEFT + boardroom photo RIGHT */
+  /* Hero — 55/45 split: serif drama LEFT + boardroom photo RIGHT.
+     CS-HERO-01/03/04/05/06 anchors · restraint-over-density + AAA h1
+     contrast on cream + one primary + one ghost CTA + meta-strip
+     credential anchors. Overlay gradient earns its keep only by
+     guaranteeing the credit line remains legible on any Pexels
+     frame slot 0 may supply (AP5 prevention · safety, not taste). */
   .cs-hero {
-    display: grid; grid-template-columns: 1.3fr 1fr; min-height: 580px;
+    display: grid; grid-template-columns: 1.3fr 1fr; min-height: 620px;
     background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+    border-bottom: 1px solid var(--rule);
   }
   .cs-hero .left {
-    padding: 100px 56px 64px 72px; position: relative;
+    padding: 104px 56px 72px 72px; position: relative;
     display: flex; flex-direction: column; justify-content: flex-start;
   }
   .cs-hero .left .eyebrow {
@@ -16,35 +22,45 @@
     letter-spacing: 0.22em; text-transform: uppercase; color: var(--primary);
   }
   .cs-hero .left .eyebrow:before {
-    content: ''; width: 40px; height: 1.5px; background: var(--accent);
+    content: ''; width: 44px; height: 1.5px; background: var(--accent);
   }
   .cs-hero .left h1 {
-    margin-top: 36px; font-size: 76px; line-height: 1.0;
+    margin-top: 36px; font-size: 76px; line-height: 1.02;
     letter-spacing: -0.025em; max-width: 14ch;
   }
   .cs-hero .left .sub {
-    margin-top: 28px; max-width: 52ch;
-    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    margin-top: 32px; max-width: 52ch;
+    font-family: var(--body); font-size: 18px; line-height: 1.62;
     color: var(--ink-soft);
   }
-  .cs-hero .left .actions { margin-top: 40px; display: flex; gap: 22px; align-items: center; }
+  .cs-hero .left .actions { margin-top: 44px; display: flex; gap: 28px; align-items: center; }
   .cs-hero .left .meta-strip {
-    margin-top: 56px; display: flex; gap: 42px; padding-top: 22px;
+    margin-top: auto; padding-top: 28px;
+    display: flex; gap: 48px;
     border-top: 1px solid var(--rule);
   }
   .cs-hero .left .meta-strip .item {
     font-family: var(--body); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute);
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--ink-mute);
   }
   .cs-hero .left .meta-strip .item strong {
-    display: block; margin-top: 8px;
+    display: block; margin-top: 10px;
     font-family: var(--heading); font-size: 17px; color: var(--primary);
     text-transform: none; letter-spacing: 0; font-weight: 700;
   }
   .cs-hero .right {
     background-color: var(--paper-2);
+    /* Two-stop linear gradient (top slight dim · bottom deeper) earns
+       ~AA legibility for the credit overlay across any Pexels slot-0
+       frame the curator may land (bright board rooms, backlit desks,
+       neutral studio). Top stop at rgba(15,23,42,0.10) prevents a
+       raw crop from overpowering the paper-side transition; bottom
+       stop at rgba(15,23,42,0.74) guarantees the credit hairline +
+       tracked label + serif figure stay above AA on the busiest
+       photograph. `filter` keeps the editorial tone (Pragma warmth,
+       Fiscus restraint) without shifting hue. */
     background-image:
-      linear-gradient(180deg, rgba(15,23,42,0) 52%, rgba(15,23,42,0.66) 100%),
+      linear-gradient(180deg, rgba(15,23,42,0.10) 0%, rgba(15,23,42,0) 34%, rgba(15,23,42,0.74) 100%),
       url('{{ page_data.hero_image }}');
     background-size: cover; background-position: center;
     filter: grayscale(15%) contrast(1.04) brightness(0.97);
@@ -52,16 +68,16 @@
   }
   .cs-hero .right .credit {
     position: absolute; left: 36px; right: 36px; bottom: 36px;
-    display: flex; justify-content: space-between;
+    display: flex; justify-content: space-between; gap: 32px;
     color: var(--on-dark); padding-top: 22px;
-    border-top: 1px solid rgba(238,240,243,0.32);
+    border-top: 1px solid rgba(238,240,243,0.42);
   }
   .cs-hero .right .credit .item {
     font-family: var(--body); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase; color: var(--on-dark-2);
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--on-dark-2);
   }
   .cs-hero .right .credit .item strong {
-    display: block; margin-top: 6px;
+    display: block; margin-top: 8px;
     font-family: var(--heading); font-size: 17px; color: var(--on-dark);
     text-transform: none; letter-spacing: 0; font-weight: 700;
   }

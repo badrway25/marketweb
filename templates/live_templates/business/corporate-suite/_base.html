@@ -140,8 +140,17 @@
   .mp-lang a.mp-lang-pill.is-current { color: var(--accent); border-color: var(--accent); }
 
   /* ============================================================
-     CORPORATE-SUITE NAV — full-bleed solid navy, logo crest L,
+     CORPORATE-SUITE NAV — full-bleed solid primary, logo crest L,
      links inline, phone CTA right (matches preview composition).
+     Four-state cascade per CS-NAV-02:
+       (1) default  → --on-dark-2 text, quiet
+       (2) hover    → --on-dark text, fully lit
+       (3) focus    → gold accent outline (E1, :focus-visible)
+       (4) active   → compact accent underline dot (NOT accent text)
+     The underline dot is the ONE state indicator; the trailing CTA
+     pill is the ONE accent element (CS-NAV-04 / CS-PAL-05). Crest
+     stroke is part of the wordmark brand mark and is counted once
+     as brand chrome, not as a per-viewport accent hit.
   ============================================================ */
   .cs-nav {
     position: sticky; top: 0; z-index: 50;
@@ -149,12 +158,18 @@
     display: flex; align-items: center; padding: 0 56px;
     background: var(--primary);
     color: var(--on-dark);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 6px 30px -18px rgba(0,0,0,0.4);
+    /* Inset hairline opens the nav from the marketplace strip above;
+       the drop-shadow reads as editorial elevation over cream paper
+       without tipping into SaaS "card" territory. */
+    box-shadow:
+      0 1px 0 rgba(238,240,243,0.08) inset,
+      0 10px 34px -22px rgba(0,0,0,0.45);
   }
   .cs-nav .wm {
     display: flex; align-items: center; gap: 14px;
     font-family: var(--heading); font-weight: 700;
     font-size: 22px; letter-spacing: 0.005em;
+    color: var(--on-dark);
   }
   .cs-nav .wm .crest {
     width: 38px; height: 38px;
@@ -168,30 +183,50 @@
     letter-spacing: 0.16em; text-transform: uppercase;
     color: var(--on-dark-2);
   }
-  .cs-nav .links a { transition: color .15s ease; position: relative; }
+  .cs-nav .links a {
+    transition: color .18s ease;
+    position: relative; padding: 4px 0;
+  }
   .cs-nav .links a:hover { color: var(--on-dark); }
-  /* CS-NAV-02 · active-route state is indicated by an accent underline
-     dot, NOT by swapping the link text to the accent hue. Accent-on-dark
-     text is borderline AA on lighter accents (warm gold / caramel) and
-     collapses the 4-states cascade (default / hover / focus / active).
-     The pseudo-element keeps the text at `--on-dark` for reliable
-     contrast while still signalling currentness. */
+  /* CS-NAV-02 active-route state · compact 20px accent rule centered
+     under the link text, 10px below the baseline. The previous
+     `left:0;right:0` full-width rule could visually drift into the
+     32px gap between links at narrower widths; a fixed-width centered
+     mark reads more editorial and keeps the 4-state cascade tidy. */
   .cs-nav .links a.is-current { color: var(--on-dark); }
   .cs-nav .links a.is-current:after {
     content: ''; position: absolute;
-    left: 0; right: 0; bottom: -10px; height: 2px;
+    left: 50%; bottom: -10px;
+    width: 20px; height: 2px;
+    transform: translateX(-50%);
     background: var(--accent);
+  }
+  /* Dedicated focus-visible mask for nav links · inherits the archetype
+     gold outline but adds a tighter offset so the ring sits inside the
+     nav chrome (the shared 4px offset lands outside the sticky band).
+     Covered by CS-NAV-02 state (3) + E1. */
+  .cs-nav .links a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 6px;
   }
   .cs-nav .phone {
     margin-left: auto; display: flex; align-items: center; gap: 18px;
     font-family: var(--heading); font-size: 15px; font-weight: 600;
     color: var(--on-dark);
   }
+  /* `.phone .tag` is a tracked-uppercase label next to the phone number.
+     Prior iteration painted it with `var(--accent)` + `rgba(255,255,255,.18)`
+     border, which pushed the nav to ≥ 2 accent hits per viewport (crest
+     stroke + tag text + current-page underline), tripping CS-BLOCK-N-02 /
+     CS-PAL-05 "accent as punctuation". Restored to a sober `--on-dark-2`
+     label on an `--on-dark-3`-alpha border so the nav now reads ONE
+     accent element (the active-underline dot) on any given page load,
+     while the contact cluster keeps its editorial hairline boundary. */
   .cs-nav .phone .tag {
     font-family: var(--body); font-size: 9px; font-weight: 700;
     letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--accent);
-    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--on-dark-2);
+    border: 1px solid rgba(238,240,243,0.20);
     padding: 6px 12px;
   }
 
@@ -221,28 +256,36 @@
   .cs-lead .actions {
     margin-top: 44px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center;
   }
+  /* CTA primitives · CS-CTA-01/03 · primary reads as outline-boxed
+     boardroom button on cream paper (light-tier dominance via shape,
+     not fill — keeps the accent budget for state and punctuation);
+     ghost is a typographic-underline. The dark-section override in
+     `.cs-cta .actions .cs-btn-primary` inverts the polarity so the
+     same primitive reads correctly on either surface. */
   .cs-btn-primary {
     font-family: var(--body); font-size: 13px; font-weight: 700;
-    letter-spacing: 0.10em; text-transform: uppercase;
+    letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--primary);
-    border: 1.5px solid var(--primary); padding: 14px 28px;
+    border: 1.5px solid var(--primary); padding: 16px 30px;
     display: inline-flex; align-items: center; gap: 14px;
-    transition: background .2s ease, color .2s ease;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
   }
   .cs-btn-primary:after { content: '→'; font-family: var(--heading); font-size: 16px; color: var(--accent); }
-  .cs-btn-primary:hover { background: var(--primary); color: var(--on-dark); }
+  .cs-btn-primary:hover { background: var(--primary); color: var(--on-primary); }
   .cs-btn-primary:hover:after { color: var(--accent); }
   .cs-btn-ghost {
     font-family: var(--body); font-size: 12px; font-weight: 600;
-    letter-spacing: 0.10em; color: var(--ink-mute);
+    letter-spacing: 0.12em; color: var(--ink-soft);
     border-bottom: 1px solid var(--ink-mute); padding-bottom: 4px;
     transition: color .2s ease, border-color .2s ease;
   }
   .cs-btn-ghost:hover { color: var(--primary); border-color: var(--primary); }
-  /* Accessible focus rings — institutional gold accent, not browser-blue */
+  /* Accessible focus rings — institutional gold accent, not browser-blue.
+     `.cs-nav .links a:focus-visible` is owned by the nav block above
+     (tighter 6 px offset so the outline lands inside the sticky chrome);
+     intentionally excluded here to avoid re-setting the offset to 4 px. */
   .cs-btn-primary:focus-visible,
   .cs-btn-ghost:focus-visible,
-  .cs-nav .links a:focus-visible,
   .mp-lang a.mp-lang-pill:focus-visible,
   .cs-cases-preview .row:focus-visible,
   .cs-cases-list .row:focus-visible {
@@ -305,43 +348,67 @@
   .cs-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
 
   /* ============================================================
-     FOOTER — 4-col on dark navy
+     FOOTER — 4-col on primary · CS-FOOT-01/02/03 · premium pass.
+     Vertical rhythm bumped toward the archetype's 100x72 section
+     contract without quite matching it (footer is the cadence
+     closer, not a section peer), column gap widened, brand lockup
+     upgraded, and the legal row split into a three-zone grid so
+     copyright / legal / imprint read as separated editorial groups
+     instead of a squished flex line. Accent usage is held at the
+     existing h5 tracked labels (one accent family per footer) —
+     no additional accent borders or dividers are introduced, in
+     line with CS-PAL-05 (accent as punctuation, not decoration).
   ============================================================ */
   .cs-foot {
     margin-top: 24px;
     background: var(--primary); color: var(--on-dark);
-    padding: 72px 72px 36px; font-family: var(--body); font-size: 13px;
+    padding: 96px 72px 40px; font-family: var(--body); font-size: 13px;
   }
   .cs-foot .top {
-    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px;
-    padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.18);
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 56px;
+    padding-bottom: 56px;
+    border-bottom: 1px solid rgba(238,240,243,0.18);
   }
   .cs-foot .top h5 {
     color: var(--accent); font-family: var(--body);
     font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
-    font-weight: 700; margin-bottom: 18px;
+    font-weight: 700; margin-bottom: 20px;
   }
   .cs-foot .brand .word {
-    font-family: var(--heading); font-size: 24px; color: var(--on-dark);
-    margin-bottom: 10px;
+    font-family: var(--heading); font-size: 28px; color: var(--on-dark);
+    letter-spacing: -0.01em; line-height: 1.1;
+    margin-bottom: 16px;
   }
-  .cs-foot .brand p { color: var(--on-dark-2); max-width: 36ch; line-height: 1.55; }
-  .cs-foot .col p, .cs-foot .col a { color: var(--on-dark-2); display: block; padding: 4px 0; }
-  .cs-foot .col a:hover { color: var(--accent); }
+  .cs-foot .brand p {
+    color: var(--on-primary-soft); max-width: 38ch; line-height: 1.62;
+    padding-top: 16px; border-top: 1px solid rgba(238,240,243,0.14);
+  }
+  .cs-foot .col p, .cs-foot .col a {
+    color: var(--on-primary-soft); display: block; padding: 5px 0;
+    transition: color .18s ease;
+  }
+  .cs-foot .col a:hover { color: var(--on-dark); }
   .cs-foot .bot {
-    padding-top: 28px;
-    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    padding-top: 32px;
+    display: grid; grid-template-columns: 1fr auto; gap: 24px 40px;
+    align-items: center;
     /* CS-FOOT-02 · legal row must stay legible (copyright / P.IVA /
-       privacy / cookie / whistleblowing). Was `var(--on-dark-3)` at alpha
-       0.45 — composited ratio against a dark primary hovers at ~2.8:1,
-       which fails AA even for the tracked-uppercase 11px target. Uses
-       `--on-dark-2` (alpha 0.72) to restore AA, while keeping the
-       editorial quietness vs. the rest of the footer copy. */
+       privacy / cookie / whistleblowing). `--on-dark-3` (alpha 0.45)
+       composited ~2.8:1 against a dark primary — fails AA even for the
+       tracked-uppercase 11px target. Uses `--on-dark-2` (alpha 0.72)
+       for AA + restraint against the rest of the footer copy. */
     font-size: 11px; color: var(--on-dark-2);
-    letter-spacing: 0.10em; text-transform: uppercase;
+    letter-spacing: 0.14em; text-transform: uppercase;
   }
-  .cs-foot .bot a { color: var(--on-dark-2); }
-  .cs-foot .bot a:hover { color: var(--accent); }
+  .cs-foot .bot .legal {
+    display: flex; flex-wrap: wrap; gap: 12px 20px;
+    justify-content: flex-end;
+  }
+  .cs-foot .bot a {
+    color: var(--on-dark-2);
+    transition: color .18s ease;
+  }
+  .cs-foot .bot a:hover { color: var(--on-dark); }
 
   /* ============================================================
      CORPORATE MOTION PROFILE — sober, restrained
@@ -598,8 +665,12 @@
     </div>
   </div>
   <div class="bot">
-    <span>© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
-    <span><a href="#">{{ chrome.foot_privacy }}</a> &middot; <a href="#">{{ chrome.foot_cookie }}</a> &middot; <a href="#">{{ chrome.foot_legal }}</a></span>
+    <span class="copy">© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>
+    <span class="legal">
+      <a href="#">{{ chrome.foot_privacy }}</a>
+      <a href="#">{{ chrome.foot_cookie }}</a>
+      <a href="#">{{ chrome.foot_legal }}</a>
+    </span>
   </div>
 </footer>
 

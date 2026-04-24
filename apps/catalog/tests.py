@@ -1695,3 +1695,144 @@ class CorporateSuiteThemeSafetyTests(TestCase):
             )
         self.assertFalse(out["primary_is_safe"])
         self.assertEqual(out["on_primary"], "#F7F4EC")
+
+
+# ── Phase X.4a Step 1B · nav / hero / footer premium pass ────────────
+
+
+class CorporateSuiteChromeContractTests(TestCase):
+    """Structural contracts for the corporate-suite nav, hero, and
+    footer introduced in X.4a Step 1B.
+
+    The archetype's chrome primitives live entirely in
+    ``_base.html`` and ``home.html``. The hardening pass makes three
+    contracts load-bearing (CS-NAV-02 four-state cascade, CS-FOOT-02
+    AA floor on the legal row, CS-HERO-01 overlay-safety on the
+    right column). A regression in any of them — e.g. someone
+    restores the full-width active-state underline, or drops the
+    ``.legal`` grouping from the legal row — would re-open the exact
+    risks Step 1B was written to close.
+
+    These tests are static-file asserts (no DB, no client), mirroring
+    the ``CorporateSuiteThemeSafetyTests`` pattern above.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from pathlib import Path
+
+        from django.conf import settings
+
+        base = Path(settings.BASE_DIR) / "templates" / "live_templates" / "business" / "corporate-suite"
+        cls.base_html = (base / "_base.html").read_text(encoding="utf-8")
+        cls.home_html = (base / "home.html").read_text(encoding="utf-8")
+
+    # ── Nav contracts ────────────────────────────────────────────
+
+    def test_nav_active_underline_is_compact_centered_accent(self):
+        # CS-NAV-02 active-state · the 20px centered accent rule
+        # replaces the previous full-width `left:0;right:0` line.
+        self.assertIn(".cs-nav .links a.is-current:after", self.base_html)
+        self.assertIn("width: 20px", self.base_html)
+        self.assertIn("transform: translateX(-50%)", self.base_html)
+        self.assertNotRegex(
+            self.base_html,
+            r"\.cs-nav\s+\.links\s+a\.is-current:after\s*\{[^}]*left:\s*0;\s*right:\s*0",
+        )
+
+    def test_nav_phone_tag_is_not_accent_colored(self):
+        # CS-BLOCK-N-02 / CS-PAL-05 · nav accent budget is exactly one
+        # hit (the active-route underline). The `.phone .tag` label
+        # must NOT use `var(--accent)` as its text color — only
+        # `--on-dark-2` on an `--on-dark`-family alpha border.
+        import re
+
+        match = re.search(
+            r"\.cs-nav\s+\.phone\s+\.tag\s*\{([^}]+)\}",
+            self.base_html,
+        )
+        self.assertIsNotNone(match, "phone tag rule missing")
+        body = match.group(1)
+        self.assertNotIn("color: var(--accent)", body)
+        self.assertIn("color: var(--on-dark-2)", body)
+
+    def test_nav_links_have_dedicated_focus_visible(self):
+        # CS-NAV-02 state (3) + E1 · the 6px-offset outline is the
+        # navchrome-aware variant of the archetype focus ring.
+        self.assertIn(".cs-nav .links a:focus-visible", self.base_html)
+        self.assertIn("outline-offset: 6px", self.base_html)
+
+    # ── Hero contracts ───────────────────────────────────────────
+
+    def test_hero_right_overlay_has_bottom_stop_at_or_above_072(self):
+        # CS-HERO-01 + CS-PAL-04 · the bottom gradient stop must stay
+        # dark enough to protect the credit line on any Pexels slot-0
+        # frame. Floor is 0.72 alpha; higher is fine, lower fails the
+        # safety rationale from the Step 1B report.
+        import re
+
+        match = re.search(
+            r"rgba\(15,23,42,([0-9.]+)\)\s*100%",
+            self.home_html,
+        )
+        self.assertIsNotNone(match, "hero bottom gradient stop not found")
+        alpha = float(match.group(1))
+        self.assertGreaterEqual(
+            alpha,
+            0.72,
+            f"hero bottom overlay alpha {alpha} < 0.72 · regression on credit legibility",
+        )
+
+    def test_hero_has_single_primary_and_single_ghost_cta(self):
+        # CS-HERO-04 / CS-CTA-01 / CS-CTA-03 · exactly one
+        # `.cs-btn-primary` + one `.cs-btn-ghost` inside the hero
+        # markup block, and no third button sibling.
+        self.assertEqual(self.home_html.count("<section class=\"cs-hero\">"), 1)
+        hero_open = self.home_html.index("<section class=\"cs-hero\">")
+        hero_close = self.home_html.index("</section>", hero_open)
+        hero_block = self.home_html[hero_open:hero_close]
+        self.assertEqual(hero_block.count("cs-btn-primary"), 1)
+        self.assertEqual(hero_block.count("cs-btn-ghost"), 1)
+
+    # ── Footer contracts ─────────────────────────────────────────
+
+    def test_footer_legal_row_uses_on_dark_2_not_on_dark_3(self):
+        # CS-FOOT-02 · AA floor for the tracked-uppercase legal row.
+        # `--on-dark-3` (alpha 0.45) composites below AA on a dark
+        # primary. Keep `--on-dark-2`.
+        import re
+
+        match = re.search(
+            r"\.cs-foot\s+\.bot\s*\{([^}]+)\}",
+            self.base_html,
+        )
+        self.assertIsNotNone(match, "footer legal row rule missing")
+        body = match.group(1)
+        self.assertIn("color: var(--on-dark-2)", body)
+        self.assertNotIn("color: var(--on-dark-3)", body)
+
+    def test_footer_legal_row_wraps_links_in_legal_group(self):
+        # CS-FOOT-02 · the `.legal` grouping is what lets the legal
+        # links render as a single editorial zone on the right, set
+        # apart from the copyright clause on the left. The grid
+        # selector in `.cs-foot .bot` expects this DOM shape.
+        self.assertIn("<span class=\"legal\">", self.base_html)
+        self.assertIn(".cs-foot .bot .legal", self.base_html)
+
+    def test_footer_wordmark_uses_heading_font_and_premium_size(self):
+        # CS-FOOT-01 + CS-TYPE-01 · the brand lockup is the footer's
+        # gravity well. Size floor (≥ 28 px) keeps it editorial vs the
+        # prior 24px treatment that read like a utility link.
+        import re
+
+        match = re.search(
+            r"\.cs-foot\s+\.brand\s+\.word\s*\{([^}]+)\}",
+            self.base_html,
+        )
+        self.assertIsNotNone(match, "footer wordmark rule missing")
+        body = match.group(1)
+        self.assertIn("font-family: var(--heading)", body)
+        size_match = re.search(r"font-size:\s*(\d+)px", body)
+        self.assertIsNotNone(size_match)
+        self.assertGreaterEqual(int(size_match.group(1)), 28)
