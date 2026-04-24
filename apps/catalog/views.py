@@ -5,6 +5,10 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.views.generic import DetailView, ListView, TemplateView
 
 from apps.catalog import selectors, template_content, template_i18n
+from apps.catalog.imagery_policy import (
+    enforce_corporate_suite_imagery_policy,
+    should_enforce as should_enforce_imagery,
+)
 from apps.catalog.template_dna import get_dna
 from apps.catalog.theme_safety import enrich_corporate_suite_theme, should_enrich
 from apps.editor.rendering import apply_project_overrides
@@ -407,9 +411,22 @@ class LiveTemplateView(TemplateView):
         # safety token and emit a UserWarning when the primary is too
         # light to be legible (CS-PAL-01). The enrichment is a no-op for
         # every other archetype.
-        if should_enrich(self.dna.get("archetype")):
+        archetype = self.dna.get("archetype")
+        if should_enrich(archetype):
             theme = enrich_corporate_suite_theme(
                 theme, template_slug=self.template_obj.slug
+            )
+
+        # Phase X.4a Step 1C · corporate-suite imagery-sourcing policy.
+        # Pexels-only (CS-IMG-SRC-01) is a blocking rule for every *new*
+        # template on this archetype, with a documented legacy exemption
+        # for the ``business-corporate`` pool (Pragma) pending retro-
+        # curation. Archetype-gated so non-corporate-suite renders are
+        # untouched. Emits a ``UserWarning`` on failure; never raises.
+        if should_enforce_imagery(archetype):
+            enforce_corporate_suite_imagery_policy(
+                self.dna.get("imagery_key"),
+                template_slug=self.template_obj.slug,
             )
 
         ctx["template"]  = self.template_obj

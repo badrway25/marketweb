@@ -1,10 +1,13 @@
 {% extends "live_templates/business/corporate-suite/_base.html" %}
 
 {% block extra_css %}
-  /* Studio history — vertical timeline */
-  .cs-history { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  /* Studio history — vertical timeline (CS-COMP-06) */
+  .cs-history {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
   .cs-history .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
-  .cs-history .head h2 { font-size: 48px; max-width: 14ch; }
+  .cs-history .head h2 { font-size: var(--fs-h2); max-width: 16ch; }
   .cs-history .timeline { margin-top: 56px; display: grid; grid-template-columns: 160px 1fr; gap: 0 48px; }
   .cs-history .timeline .step {
     display: contents;
@@ -33,12 +36,16 @@
   }
 
   /* Values — 4 numbered principles */
-  .cs-values { background: var(--paper-2); padding: 100px 72px; max-width: none; }
+  .cs-values {
+    background: var(--paper-2);
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: none;
+  }
   .cs-values .wrap { max-width: 1400px; margin: 0 auto; }
   .cs-values .head { padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
-  .cs-values .head h2 { font-size: 52px; max-width: 18ch; }
+  .cs-values .head h2 { font-size: var(--fs-h2); max-width: 20ch; }
   .cs-values .head em { color: var(--accent); }
-  .cs-values .head .intro { margin-top: 24px; max-width: 64ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; }
+  .cs-values .head .intro { margin-top: 24px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; }
   .cs-values .grid { margin-top: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
   .cs-values .item { padding-top: 28px; border-top: 2px solid var(--primary); }
   .cs-values .item .num {
@@ -48,11 +55,14 @@
   .cs-values .item h3 { margin-top: 14px; font-size: 24px; line-height: 1.2; }
   .cs-values .item p { margin-top: 18px; font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
 
-  /* Team — full grid 6 portraits + meta */
-  .cs-team { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  /* Team — full grid 6 portraits + meta (CS-DENSITY-05) */
+  .cs-team {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
   .cs-team .head { padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
-  .cs-team .head h2 { font-size: 48px; max-width: 22ch; }
-  .cs-team .head .intro { margin-top: 22px; max-width: 64ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; }
+  .cs-team .head h2 { font-size: var(--fs-h2); max-width: 22ch; }
+  .cs-team .head .intro { margin-top: 22px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; }
   .cs-team .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
   .cs-team .card {
     border-top: 1px solid var(--primary);
@@ -100,15 +110,16 @@
     color: var(--on-dark-2); line-height: 1.6;
   }
 
-  /* Page-level CTA */
+  /* Page-level CTA — cadence closer (CS-CTA-05) */
   .cs-cta-band {
-    padding: 100px 72px; max-width: 1400px; margin: 0 auto;
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
     border-top: 1px solid var(--rule);
     display: grid; grid-template-columns: 1fr 0.6fr; gap: 80px; align-items: end;
   }
-  .cs-cta-band h2 { font-size: 44px; line-height: 1.06; max-width: 18ch; }
+  .cs-cta-band h2 { font-size: var(--fs-h2); line-height: 1.08; max-width: 20ch; }
   .cs-cta-band em { color: var(--accent); }
-  .cs-cta-band .intro { margin-top: 18px; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; }
+  .cs-cta-band .intro { margin-top: 18px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; }
 {% endblock %}
 
 {% block content %}

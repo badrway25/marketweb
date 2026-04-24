@@ -1836,3 +1836,318 @@ class CorporateSuiteChromeContractTests(TestCase):
         size_match = re.search(r"font-size:\s*(\d+)px", body)
         self.assertIsNotNone(size_match)
         self.assertGreaterEqual(int(size_match.group(1)), 28)
+
+
+# ── Phase X.4a Step 1C · typography, rhythm, imagery hardening ────────
+
+
+class CorporateSuiteImageryPolicyTests(TestCase):
+    """Pexels-only imagery sourcing contract for the corporate-suite
+    archetype (CS-IMG-SRC-01).
+
+    The policy is archetype-gated and exempts the legacy
+    ``business-corporate`` pool (Pragma) from warnings while the
+    retro-curation is pending. Every other corporate-suite pool must
+    ship Pexels-only URLs, and the canonical 6-slot shape must hold.
+    """
+
+    def test_legacy_business_corporate_is_exempt_and_silent(self):
+        import warnings as _warnings
+
+        from apps.catalog.imagery_policy import (
+            enforce_corporate_suite_imagery_policy,
+        )
+
+        with _warnings.catch_warnings(record=True) as caught:
+            _warnings.simplefilter("always")
+            report = enforce_corporate_suite_imagery_policy(
+                "business-corporate", template_slug="pragma-corporate-suite"
+            )
+        self.assertTrue(report.is_legacy_exempt)
+        self.assertTrue(report.is_compliant)
+        # The pool ships non-Pexels URLs — we WANT the report to record
+        # that fact (the retro-curation backlog is visible) but the
+        # helper MUST stay silent on legacy, never warn on every render.
+        self.assertFalse(report.pexels_only)
+        self.assertEqual([w for w in caught if issubclass(w.category, UserWarning)], [])
+
+    def test_business_fiscal_is_pexels_only_and_compliant(self):
+        from apps.catalog.imagery_policy import validate_corporate_suite_imagery_key
+
+        report = validate_corporate_suite_imagery_key("business-fiscal")
+        self.assertTrue(report.is_known)
+        self.assertTrue(report.pexels_only)
+        self.assertTrue(report.shape_is_canonical)
+        self.assertTrue(report.is_compliant)
+        self.assertEqual(report.non_pexels_urls, [])
+
+    def test_pexels_hostname_enforcement_uses_canonical_cdn(self):
+        # CS-IMG-SRC-01 · the gate is the CDN hostname, not just the
+        # "contains pexels" substring. A URL on a lookalike domain
+        # (e.g. ``pexels.example.com``) must be rejected.
+        from apps.catalog.imagery_policy import _is_pexels
+
+        self.assertTrue(_is_pexels(
+            "https://images.pexels.com/photos/1/foo.jpeg?auto=compress"
+        ))
+        self.assertFalse(_is_pexels(
+            "https://www.pexels.com/photos/1/foo.jpeg"  # not the CDN
+        ))
+        self.assertFalse(_is_pexels(
+            "https://images.unsplash.com/photo-1234?w=1600"
+        ))
+
+    def test_non_canonical_pool_shape_is_flagged(self):
+        from apps.catalog.imagery_policy import PolicyReport, validate_corporate_suite_imagery_key
+
+        # Monkey-patch a fake pool via IMAGERY_CONFIG; restore after.
+        from apps.catalog import preview_imagery
+
+        key = "business-__test_shape__"
+        preview_imagery.IMAGERY_CONFIG[key] = [
+            "https://images.pexels.com/photos/1/a.jpeg?w=1600",
+            "https://images.pexels.com/photos/2/b.jpeg?w=1200",
+            # only 2 URLs — canonical shape is 6
+        ]
+        try:
+            report = validate_corporate_suite_imagery_key(key)
+            self.assertIsInstance(report, PolicyReport)
+            self.assertTrue(report.is_known)
+            self.assertFalse(report.shape_is_canonical)
+            self.assertTrue(report.pexels_only)
+        finally:
+            del preview_imagery.IMAGERY_CONFIG[key]
+
+    def test_should_enforce_archetype_gate(self):
+        from apps.catalog.imagery_policy import should_enforce
+
+        self.assertTrue(should_enforce("corporate-suite"))
+        self.assertFalse(should_enforce("agency-creative-studio"))
+        self.assertFalse(should_enforce(None))
+
+    def test_warn_on_non_pexels_non_legacy_pool(self):
+        import warnings as _warnings
+
+        from apps.catalog import preview_imagery
+        from apps.catalog.imagery_policy import (
+            CORPORATE_SUITE_POOL_KEYS,
+            enforce_corporate_suite_imagery_policy,
+        )
+
+        # business-coaching is a declared corporate-suite pool key
+        # (Solaria) but is NOT legacy-exempt, so an Unsplash URL in
+        # its slot 0 must emit a UserWarning. Stub a temporary
+        # registration that matches that shape.
+        self.assertIn("business-coaching", CORPORATE_SUITE_POOL_KEYS)
+        preview_imagery.IMAGERY_CONFIG["business-coaching"] = [
+            "https://images.unsplash.com/photo-1?w=1600",
+            "https://images.pexels.com/photos/2/b.jpeg?w=1200",
+            "https://images.pexels.com/photos/3/c.jpeg?w=800",
+            "https://images.pexels.com/photos/4/d.jpeg?w=800",
+            "https://images.pexels.com/photos/5/e.jpeg?w=800",
+            "https://images.pexels.com/photos/6/f.jpeg?w=800",
+        ]
+        try:
+            with _warnings.catch_warnings(record=True) as caught:
+                _warnings.simplefilter("always")
+                report = enforce_corporate_suite_imagery_policy(
+                    "business-coaching", template_slug="__test_coaching__"
+                )
+            self.assertFalse(report.pexels_only)
+            self.assertFalse(report.is_compliant)
+            messages = [
+                str(w.message)
+                for w in caught
+                if issubclass(w.category, UserWarning)
+            ]
+            self.assertTrue(any("imagery policy" in m for m in messages))
+        finally:
+            del preview_imagery.IMAGERY_CONFIG["business-coaching"]
+
+
+class CorporateSuiteRhythmContractTests(TestCase):
+    """Typography + rhythm + imagery-rhythm contracts introduced in
+    X.4a Step 1C. Every contract below fails loud when a future edit
+    reintroduces a pre-1C regression (80 px lead h1, hardcoded 100 px
+    section padding, photo-backed KPI band, typographic-only
+    leadership card without portrait hook).
+
+    All asserts are static-file reads — no DB, no client, same
+    pattern as CorporateSuiteThemeSafetyTests / CorporateSuiteChrome
+    ContractTests above.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        from pathlib import Path
+
+        from django.conf import settings
+
+        base = (
+            Path(settings.BASE_DIR)
+            / "templates"
+            / "live_templates"
+            / "business"
+            / "corporate-suite"
+        )
+        cls.base_html = (base / "_base.html").read_text(encoding="utf-8")
+        cls.home_html = (base / "home.html").read_text(encoding="utf-8")
+        cls.about_html = (base / "about.html").read_text(encoding="utf-8")
+        cls.services_html = (base / "services.html").read_text(encoding="utf-8")
+        cls.case_list_html = (base / "case_study_list.html").read_text(encoding="utf-8")
+
+    # ── Typography tokens ─────────────────────────────────────────
+
+    def test_type_scale_tokens_declared(self):
+        # CS-TYPE-04 · heading scale is governed by tokens so a future
+        # page file cannot drift into display-headline territory.
+        for token in (
+            "--fs-hero",
+            "--fs-lead",
+            "--fs-h2",
+            "--fs-h3",
+            "--fs-body-lg",
+            "--fs-eyebrow",
+            "--track-eyebrow",
+            "--copy-max",
+        ):
+            self.assertIn(
+                f"{token}:",
+                self.base_html,
+                f"type-scale token {token} missing from _base.html",
+            )
+
+    def test_rhythm_tokens_declared(self):
+        # CS-RHYTHM-01/06 · section rhythm is governed by tokens.
+        for token in (
+            "--space-section-y",
+            "--space-section-x",
+            "--space-band-y",
+            "--space-footer-y",
+        ):
+            self.assertIn(
+                f"{token}:",
+                self.base_html,
+                f"rhythm token {token} missing from _base.html",
+            )
+
+    def test_hero_h1_uses_fs_hero_token(self):
+        # CS-TYPE-04 · hero h1 is token-driven; no hardcoded 76/80 px.
+        import re
+
+        match = re.search(
+            r"\.cs-hero\s+\.left\s+h1\s*\{([^}]+)\}",
+            self.home_html,
+        )
+        self.assertIsNotNone(match, "hero h1 rule missing")
+        body = match.group(1)
+        self.assertIn("font-size: var(--fs-hero)", body)
+        # Ensure no regressed hardcoded px-size leaked back.
+        self.assertNotRegex(body, r"font-size:\s*76px")
+        self.assertNotRegex(body, r"font-size:\s*80px")
+
+    def test_lead_h1_uses_fs_lead_token(self):
+        # Inner-page lead sits UNDER the home hero. The pre-1C skin
+        # shipped 80 px here, overshooting CS-TYPE-04 ceiling AND
+        # inverting the hierarchy (lead bigger than hero).
+        import re
+
+        match = re.search(
+            r"\.cs-lead\s+h1\s*\{([^}]+)\}",
+            self.base_html,
+        )
+        self.assertIsNotNone(match, "lead h1 rule missing")
+        body = match.group(1)
+        self.assertIn("font-size: var(--fs-lead)", body)
+        self.assertNotRegex(body, r"font-size:\s*80px")
+
+    def test_section_base_padding_uses_rhythm_tokens(self):
+        # CS-RHYTHM-01 · `.cs-section` reaches for the tokens.
+        import re
+
+        match = re.search(
+            r"\.cs-section\s*\{([^}]+)\}",
+            self.base_html,
+        )
+        self.assertIsNotNone(match, "`.cs-section` rule missing")
+        body = match.group(1)
+        self.assertIn("padding: var(--space-section-y) var(--space-section-x)", body)
+
+    # ── Image-rhythm guardrails ──────────────────────────────────
+
+    def test_pillars_and_kpi_band_hide_any_img_descendant(self):
+        # CS-IMG-SEC-01 + CS-IMG-SEC-02 · photos forbidden inside
+        # pillars + KPI band. _base.html enforces this with a hard
+        # `display: none` rule so an accidental `<img>` leak does not
+        # ship on the live render.
+        self.assertIn(".cs-pillars .pillar img", self.base_html)
+        self.assertIn(".cs-kpi-band img", self.base_html)
+        # The rule body includes `display: none` for the group.
+        import re
+
+        match = re.search(
+            r"\.cs-pillars\s+\.pillar\s+img,[\s\S]*?\.cs-kpi-band\s+picture\s*\{([^}]+)\}",
+            self.base_html,
+        )
+        self.assertIsNotNone(match, "image-rhythm guardrail rule missing")
+        self.assertIn("display: none", match.group(1))
+
+    def test_leadership_card_supports_optional_portrait_primitive(self):
+        # CS-IMG-SEC-03 · the archetype skin renders an editorial
+        # 4:3 portrait whenever content supplies `partner.portrait`.
+        # Without it, the card degrades to typographic (compatible
+        # with every currently enrolled template).
+        self.assertIn(".cs-leadership .card .portrait", self.base_html)
+        self.assertIn("aspect-ratio: 4 / 3", self.base_html)
+        self.assertIn("{% if partner.portrait %}", self.home_html)
+
+    def test_cases_preview_supports_optional_thumb_primitive(self):
+        # CS-IMG-SEC-05 · case rows optionally render a slot-4/5
+        # thumbnail. The hero slot is never reused here.
+        self.assertIn(".cs-cases-preview .row .thumb", self.base_html)
+        self.assertIn("{% if post.thumb %}", self.home_html)
+
+    # ── Section rhythm consistency across page files ──────────────
+
+    def test_page_section_padding_uses_rhythm_tokens(self):
+        # Every chapter-class section on home/about/services
+        # references the rhythm tokens, not a hardcoded `100px 72px`.
+        # This guards against a future page silently regressing to
+        # a 48-px-padded feature-matrix shape (CS-RHYTHM-01).
+        for haystack, name in (
+            (self.home_html, "home.html"),
+            (self.about_html, "about.html"),
+            (self.services_html, "services.html"),
+            (self.case_list_html, "case_study_list.html"),
+        ):
+            self.assertIn(
+                "var(--space-section-y)",
+                haystack,
+                f"{name} does not reference --space-section-y rhythm token",
+            )
+            self.assertIn(
+                "var(--space-section-x)",
+                haystack,
+                f"{name} does not reference --space-section-x rhythm token",
+            )
+
+    def test_no_over_ceiling_hardcoded_heading_sizes_on_home(self):
+        # CS-TYPE-04 · home is the single most load-bearing page. A
+        # future regression that re-introduces 52/56/76/80 px hardcoded
+        # heading sizes must fail loud. 48 px (the H2 ceiling) is
+        # allowed for dark-section override in the KPI heading + other
+        # content titles but not for h1/h2 rules themselves.
+        import re
+
+        # Scan every `font-size: <n>px` rule on an h1/h2 selector line
+        # or within one of the `.cs-*` H2 rules we normalized to tokens.
+        for bad_px in (52, 56, 76, 80):
+            # The raw value must not appear as a `font-size` on the
+            # home page (tokens use no numeric literal in the font-size
+            # position — they read `font-size: var(--fs-h2)` etc.).
+            self.assertNotRegex(
+                self.home_html,
+                rf"font-size:\s*{bad_px}px",
+                f"home.html regresses to hardcoded {bad_px}px heading",
+            )

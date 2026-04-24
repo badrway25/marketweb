@@ -54,6 +54,55 @@
     --heading: '{{ theme.heading_font }}', Georgia, 'Times New Roman', serif;
     --body:    '{{ theme.body_font }}', system-ui, sans-serif;
 
+    /* CS-TYPE-04 · Restrained heading scale tokens (Step 1C).
+       The tokens below codify the CS-TYPE-04 ceilings for every heading
+       class so a future template cannot silently drift into 80-96 px
+       display headlines that read startup rather than advisory.
+
+         --fs-hero   → h1 on home hero (CS-TYPE-04 floor 44 · ceiling 72)
+         --fs-lead   → h1 on inner-page leads (restrained under hero)
+         --fs-h2     → section h2 (CS-TYPE-04 floor 32 · ceiling 48)
+         --fs-h3     → card / sub titles (CS-TYPE-04 floor 22 · ceiling 28)
+         --fs-body-lg → section intro + hero subhead copy
+         --fs-body    → default body copy
+         --fs-eyebrow → tracked-uppercase label runs
+         --track-eyebrow → canonical label letter-spacing
+         --copy-max   → paragraph max-width (CS-DENSITY-07 legibility)
+
+       These tokens are INTENTIONALLY non-responsive — the archetype
+       ships to desktop first and the responsive step (queued for Step
+       1D · AP2) will layer media-query overrides on top. Until that
+       step, every page renders with the desktop-class values. */
+    --fs-hero:     64px;
+    --fs-lead:     56px;
+    --fs-h2:       48px;
+    --fs-h3:       26px;
+    --fs-body-lg:  17px;
+    --fs-body:     16px;
+    --fs-eyebrow:  11px;
+    --track-eyebrow: 0.22em;
+    --copy-max:    64ch;
+
+    /* CS-RHYTHM-01/03/06 · Section rhythm tokens (Step 1C).
+       The archetype's editorial cadence comes from section padding, not
+       from inter-section margins (``padding IS the rhythm``). These
+       tokens let every ``.cs-*`` section reach for the same canonical
+       vertical + horizontal breath, so a future page file cannot
+       silently compress to 48 px to fit more content. Bands (KPI,
+       sectors, trust, footer) sit on tighter tokens because they are
+       editorial punctuation between chapter-class sections, not peers.
+
+         --space-section-y  → canonical chapter section padding (CS-RHYTHM-01)
+         --space-section-x  → canonical horizontal padding (CS-RHYTHM-01)
+         --space-band-y     → tighter band (KPI, sectors, trust)
+         --space-lead-bot   → page-lead bottom padding (cadence into next)
+         --space-footer-y   → footer top padding (cadence closer, §7) */
+    --space-section-y: 100px;
+    --space-section-x: 72px;
+    --space-band-y:    72px;
+    --space-lead-bot:  64px;
+    --space-footer-y:  96px;
+
     /* Premium forms (institutional · boxed paper, emerald focus) */
     --lf-bg:            var(--paper-3);
     --lf-bg-autofill:   var(--paper-3);
@@ -99,7 +148,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
-  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.62; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: var(--fs-body); line-height: 1.62; }
   img { max-width: 100%; display: block; }
   a { color: inherit; text-decoration: none; }
   h1, h2, h3, h4, h5 {
@@ -231,30 +280,36 @@
   }
 
   /* ============================================================
-     PAGE LEAD — eyebrow + huge serif headline + intro
+     PAGE LEAD — eyebrow + serif headline + intro
+     CS-TYPE-04 · h1 floor 44 · ceiling 72. The inner-page lead
+     intentionally sits UNDER the home hero (`--fs-lead` 56 vs
+     `--fs-hero` 64) so the home hero stays the biggest typographic
+     beat on the archetype — a regression the pre-1C skin shipped
+     at 80 px, over the ceiling and bigger than the hero itself.
   ============================================================ */
   .cs-lead {
-    padding: 96px 72px 64px; max-width: 1400px; margin: 0 auto;
+    padding: var(--space-section-y) var(--space-section-x) var(--space-lead-bot);
+    max-width: 1400px; margin: 0 auto;
   }
   .cs-lead .eyebrow {
     display: flex; align-items: center; gap: 18px;
-    font-family: var(--body); font-size: 11px; font-weight: 700;
-    letter-spacing: 0.22em; text-transform: uppercase;
+    font-family: var(--body); font-size: var(--fs-eyebrow); font-weight: 700;
+    letter-spacing: var(--track-eyebrow); text-transform: uppercase;
     color: var(--primary);
   }
   .cs-lead .eyebrow:before { content: ''; width: 36px; height: 1.5px; background: var(--accent); }
   .cs-lead h1 {
-    margin-top: 36px; font-size: 80px; line-height: 1.0;
-    letter-spacing: -0.025em; max-width: 16ch;
+    margin-top: 32px; font-size: var(--fs-lead); line-height: 1.04;
+    letter-spacing: -0.022em; max-width: 18ch;
   }
   .cs-lead h1 em { color: var(--accent); }
   .cs-lead .intro {
-    margin-top: 30px; max-width: 64ch;
-    font-family: var(--body); font-size: 18px; line-height: 1.65;
+    margin-top: 26px; max-width: var(--copy-max);
+    font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.65;
     color: var(--ink-soft);
   }
   .cs-lead .actions {
-    margin-top: 44px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center;
+    margin-top: 40px; display: flex; flex-wrap: wrap; gap: 24px; align-items: center;
   }
   /* CTA primitives · CS-CTA-01/03 · primary reads as outline-boxed
      boardroom button on cream paper (light-tier dominance via shape,
@@ -295,11 +350,19 @@
 
   /* ============================================================
      SECTION HELPERS — airy editorial chapters
+     CS-RHYTHM-01/06 · padding IS the rhythm; no inter-section
+     margins. Section-class wrappers should reach for
+     `--space-section-y` + `--space-section-x` so the cadence is
+     governed by two tokens, not six hardcoded magic numbers.
   ============================================================ */
-  .cs-section { padding: 96px 72px; max-width: 1400px; margin: 0 auto; }
+  .cs-section {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
   .cs-section.dark {
     background: var(--primary); color: var(--on-dark);
-    max-width: none; padding: 96px 72px;
+    max-width: none;
+    padding: var(--space-section-y) var(--space-section-x);
   }
   .cs-section.dark h2,
   .cs-section.dark h3,
@@ -329,23 +392,94 @@
      Scoping to the inline `em` keeps pull-quotes legal without letting a
      future <span class="accent"> paragraph escape the legibility rule. */
   .cs-kpi-band em, .cs-cta em, .cs-foot em { color: var(--accent); }
-  .cs-section .sec-label {
+  .cs-section .sec-label,
+  .cs-sec-label {
     font-family: var(--body); font-size: 10px; font-weight: 700;
     letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent);
   }
   .cs-section h2 {
-    margin-top: 14px; font-size: 48px; line-height: 1.08;
+    margin-top: 14px; font-size: var(--fs-h2); line-height: 1.08;
     max-width: 22ch; letter-spacing: -0.018em;
   }
   .cs-section .sec-intro {
-    margin-top: 20px; max-width: 64ch;
-    font-family: var(--body); font-size: 17px; line-height: 1.65;
+    margin-top: 20px; max-width: var(--copy-max);
+    font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.65;
     color: var(--ink-soft);
   }
   .cs-section.dark .sec-intro { color: var(--on-dark-2); }
+  /* CS-RHYTHM-05 · the italic-em restraint is the ONE emphasis
+     mechanism on section headings (same rule as hero h1 per
+     CS-TYPE-02). Locking this at the archetype level prevents a
+     future page file from reaching for uppercase or bolder weights
+     to signal importance. */
+  .cs-section h2 em,
+  .cs-section .head h2 em,
+  .cs-section .heading em { color: var(--accent); }
   .cs-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 56px 64px; }
   .cs-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px 56px; }
   .cs-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
+
+  /* ============================================================
+     IMAGE RHYTHM GUARDRAILS — CS-IMG-SEC-01 / CS-IMG-SEC-02 /
+     CS-IMG-RHYTHM-01 · the archetype's photographic cadence must
+     alternate photo-heavy and typographic-only sections. Two
+     failure modes we lock out at the archetype level:
+       (a) decorative photos on typographic sections (CS-IMG-AP-12) —
+           pillars and KPI band are text-led sections; any ``<img>``
+           that leaks in through a future content registry or a
+           skin-local override is hidden so the cadence holds.
+       (b) case-card thumbnails reusing the hero (CS-IMG-SEC-05) —
+           enforced by the `.cs-cases-preview .row .thumb` primitive
+           below, which the row only renders when content supplies a
+           slot-4/5 URL (NEVER slot 0).
+     This is an archetype-level hardening — it prevents AP12 from
+     ever shipping via a typo or a loose edit, without requiring
+     per-template police work.
+  ============================================================ */
+  .cs-pillars .pillar img,
+  .cs-pillars .pillar picture,
+  .cs-kpi-band img,
+  .cs-kpi-band picture { display: none !important; }
+
+  /* Optional editorial portrait for leadership cards · CS-IMG-SEC-03.
+     The archetype skin renders a portrait ONLY when the content
+     registry supplies ``partner.portrait`` (URL). Without a URL the
+     card degrades to the typographic-only shape (compatible with
+     every currently-enrolled template). When supplied, the portrait
+     sits on top of the card as a 4:3 editorial figure with
+     ``object-fit: cover`` so the image survives a responsive crop
+     (CS-IMG-CROP-02 · square-safe framing is the curator's job).
+     The `loading="lazy"` attribute is set on the <img> element in
+     home.html — do not add eager loading here (the portraits sit
+     below the fold on every viewport class). */
+  .cs-leadership .card .portrait {
+    display: block; width: 100%; aspect-ratio: 4 / 3;
+    margin-bottom: 28px;
+    background: var(--paper-2);
+    object-fit: cover; object-position: center;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* Optional editorial thumbnail for case-preview rows ·
+     CS-IMG-SEC-05 + CS-IMG-RHYTHM-01 · the home case-card grid
+     pulls slots 4 (detail) / 5 (ambient) rotated, never slot 0.
+     The thumb is square-cropped so a 3:2 or 16:9 source survives
+     at card scale without top-cropping to empty sky. */
+  .cs-cases-preview .row .thumb {
+    display: block; width: 80px; height: 60px;
+    background: var(--paper-2);
+    object-fit: cover; object-position: center;
+  }
+
+  /* Editorial seam · an optional hairline that closes one chapter
+     and opens the next. Use sparingly (twice per page max) to
+     signal a cadence change without inter-section margin (CS-
+     RHYTHM-06). The rule is neutral-tinted so it never fights the
+     accent budget (CS-PAL-05). */
+  .cs-section-seam {
+    max-width: 1400px; margin: 0 auto;
+    border-top: 1px solid var(--rule);
+  }
 
   /* ============================================================
      FOOTER — 4-col on primary · CS-FOOT-01/02/03 · premium pass.
@@ -362,7 +496,8 @@
   .cs-foot {
     margin-top: 24px;
     background: var(--primary); color: var(--on-dark);
-    padding: 96px 72px 40px; font-family: var(--body); font-size: 13px;
+    padding: var(--space-footer-y) var(--space-section-x) 40px;
+    font-family: var(--body); font-size: 13px;
   }
   .cs-foot .top {
     display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 56px;

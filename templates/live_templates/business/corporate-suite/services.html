@@ -1,8 +1,11 @@
 {% extends "live_templates/business/corporate-suite/_base.html" %}
 
 {% block extra_css %}
-  /* Services grid — 6 numbered practice cards */
-  .cs-services { padding: 72px 72px 100px; max-width: 1400px; margin: 0 auto; }
+  /* Services grid — 6 numbered practice cards (CS-IMG-SEC-07) */
+  .cs-services {
+    padding: var(--space-band-y) var(--space-section-x) var(--space-section-y);
+    max-width: 1400px; margin: 0 auto;
+  }
   .cs-services .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
   .cs-services .card {
     padding: 36px 36px 32px;
@@ -14,7 +17,7 @@
     font-family: var(--heading); font-size: 14px; font-weight: 700;
     color: var(--accent); letter-spacing: 0.04em;
   }
-  .cs-services .card h3 { font-size: 28px; line-height: 1.15; }
+  .cs-services .card h3 { font-size: var(--fs-h3); line-height: 1.15; }
   .cs-services .card .blurb { font-family: var(--body); font-size: 15px; line-height: 1.7; color: var(--ink-soft); }
   .cs-services .card .scope {
     list-style: none;
@@ -45,11 +48,12 @@
   /* Process strip — 4 numbered steps on dark band */
   .cs-process {
     background: var(--primary); color: var(--on-dark);
-    padding: 96px 72px; max-width: none;
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: none;
   }
   .cs-process .wrap { max-width: 1400px; margin: 0 auto; }
   .cs-process .head { padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.18); }
-  .cs-process .head h2 { color: var(--on-dark); font-size: 48px; max-width: 14ch; }
+  .cs-process .head h2 { color: var(--on-dark); font-size: var(--fs-h2); max-width: 16ch; }
   .cs-process .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
   .cs-process .step {
     padding: 24px 0 0;
@@ -67,11 +71,14 @@
     line-height: 1.65; color: var(--on-dark-2);
   }
 
-  /* Final CTA */
-  .cs-cta-svc { padding: 96px 72px; max-width: 1400px; margin: 0 auto; text-align: center; }
-  .cs-cta-svc h2 { font-size: 48px; line-height: 1.06; max-width: 22ch; margin: 0 auto; }
+  /* Final CTA — cadence closer (CS-CTA-05) */
+  .cs-cta-svc {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto; text-align: center;
+  }
+  .cs-cta-svc h2 { font-size: var(--fs-h2); line-height: 1.08; max-width: 22ch; margin: 0 auto; }
   .cs-cta-svc em { color: var(--accent); }
-  .cs-cta-svc .intro { margin: 22px auto 0; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; }
+  .cs-cta-svc .intro { margin: 22px auto 0; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; }
   .cs-cta-svc .actions { margin-top: 36px; display: flex; justify-content: center; gap: 24px; }
 {% endblock %}
 

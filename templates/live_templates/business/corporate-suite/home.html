@@ -25,12 +25,16 @@
     content: ''; width: 44px; height: 1.5px; background: var(--accent);
   }
   .cs-hero .left h1 {
-    margin-top: 36px; font-size: 76px; line-height: 1.02;
-    letter-spacing: -0.025em; max-width: 14ch;
+    /* CS-TYPE-04 · hero h1 ceiling is 72 px. Prior 76 sat over the
+       ceiling and pushed the home into display-headline territory.
+       `--fs-hero` (64 px) keeps the serif drama while staying inside
+       the restrained boardroom band the archetype is targeting. */
+    margin-top: 36px; font-size: var(--fs-hero); line-height: 1.02;
+    letter-spacing: -0.022em; max-width: 16ch;
   }
   .cs-hero .left .sub {
-    margin-top: 32px; max-width: 52ch;
-    font-family: var(--body); font-size: 18px; line-height: 1.62;
+    margin-top: 28px; max-width: 54ch;
+    font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.62;
     color: var(--ink-soft);
   }
   .cs-hero .left .actions { margin-top: 44px; display: flex; gap: 28px; align-items: center; }
@@ -82,11 +86,17 @@
     text-transform: none; letter-spacing: 0; font-weight: 700;
   }
 
-  /* Pillars — three numbered serif advisory practices */
-  .cs-pillars { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  /* Pillars — three numbered serif advisory practices
+     CS-IMG-SEC-01 · typographic section; _base.html hides any
+     ``<img>`` that leaks into a ``.cs-pillars .pillar`` to protect
+     the cadence (CS-IMG-RHYTHM-01 typographic beat). */
+  .cs-pillars {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
   .cs-pillars .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
-  .cs-pillars .head h2 { font-size: 52px; max-width: 14ch; }
-  .cs-pillars .head .intro { font-family: var(--body); font-size: 17px; line-height: 1.65; color: var(--ink-soft); max-width: 56ch; }
+  .cs-pillars .head h2 { font-size: var(--fs-h2); max-width: 16ch; }
+  .cs-pillars .head .intro { font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.65; color: var(--ink-soft); max-width: 56ch; }
   .cs-pillars .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
   .cs-pillars .pillar {
     padding: 28px 0 0 0; border-top: 2px solid var(--primary);
@@ -96,17 +106,20 @@
     color: var(--accent); letter-spacing: 0.04em;
   }
   .cs-pillars .pillar h3 {
-    margin-top: 14px; font-size: 28px; line-height: 1.18;
+    margin-top: 14px; font-size: var(--fs-h3); line-height: 1.18;
   }
   .cs-pillars .pillar p {
     margin-top: 18px; font-family: var(--body); font-size: 15px;
     line-height: 1.7; color: var(--ink-soft);
   }
 
-  /* KPI strip — dark navy band */
+  /* KPI strip — dark navy band
+     CS-IMG-SEC-02 · typographic-only section; _base.html hides any
+     ``<img>``/``<picture>`` descendants to protect the boardroom
+     cadence (photo-backed KPI bands read SaaS, not advisory). */
   .cs-kpi-band {
     background: var(--primary); color: var(--on-dark);
-    padding: 72px 72px;
+    padding: var(--space-band-y) var(--space-section-x);
   }
   .cs-kpi-band .row {
     max-width: 1400px; margin: 0 auto;
@@ -137,10 +150,10 @@
     color: var(--on-dark-3);
   }
 
-  /* Sectors ribbon */
+  /* Sectors ribbon — typographic seam between KPI band and trust */
   .cs-sectors {
     background: var(--paper-2); border-top: 1px solid var(--rule);
-    padding: 36px 72px; max-width: none;
+    padding: 36px var(--space-section-x); max-width: none;
   }
   .cs-sectors .row {
     max-width: 1400px; margin: 0 auto;
@@ -158,8 +171,11 @@
     background: rgba(15,23,42,0.24); display: inline-block;
   }
 
-  /* Trust band — clients ribbon */
-  .cs-trust { padding: 72px 72px; max-width: 1400px; margin: 0 auto; }
+  /* Trust band — industry-association marquee (CS-COMP-01) */
+  .cs-trust {
+    padding: var(--space-band-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
   .cs-trust .label {
     font-family: var(--body); font-size: 11px; font-weight: 700;
     letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute);
@@ -172,22 +188,39 @@
     letter-spacing: 0.12em; color: var(--ink); opacity: 0.62;
   }
 
-  /* Leadership — 3 portraits in airy cards */
-  .cs-leadership { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  /* Leadership — 3 portraits in airy cards
+     CS-IMG-SEC-03 · when the content registry supplies
+     ``partner.portrait`` (slot 2-3 URL from the imagery pool), the
+     card opens with an editorial 4:3 figure; without it the card
+     degrades to the typographic-only shape. This is the
+     archetype-level image-rhythm hook: no template is hand-tuned;
+     each just opts in by declaring ``portrait`` in its content
+     registry. See ``.cs-leadership .card .portrait`` primitive in
+     ``_base.html``. */
+  .cs-leadership {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
   .cs-leadership .head .label { color: var(--accent); }
-  .cs-leadership .head h2 { margin-top: 14px; font-size: 48px; max-width: 22ch; }
-  .cs-leadership .head .intro { margin-top: 20px; max-width: 64ch; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; }
+  .cs-leadership .head h2 { margin-top: 14px; font-size: var(--fs-h2); max-width: 22ch; }
+  .cs-leadership .head .intro { margin-top: 20px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; }
   .cs-leadership .grid { margin-top: 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
   .cs-leadership .card {
     background: var(--paper-3); border: 1px solid var(--rule);
     padding: 36px 32px; display: flex; flex-direction: column;
+    overflow: hidden;
   }
+  /* Portrait block resets the top padding so the 4:3 figure sits
+     flush against the card's top border — reads as an editorial
+     card opener rather than a sticker on a paper card. */
+  .cs-leadership .card:has(.portrait) { padding-top: 0; }
+  .cs-leadership .card:has(.portrait) .role { margin-top: 32px; }
   .cs-leadership .card .role {
     font-family: var(--body); font-size: 10px; font-weight: 700;
     letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
   }
   .cs-leadership .card h3 {
-    margin-top: 14px; font-size: 26px; line-height: 1.18;
+    margin-top: 14px; font-size: var(--fs-h3); line-height: 1.18;
     color: var(--primary);
   }
   .cs-leadership .card p {
@@ -208,11 +241,20 @@
     content: '· '; color: var(--accent); font-weight: 700;
   }
 
-  /* Cases preview — 3 case study strips */
-  .cs-cases-preview { padding: 100px 72px; max-width: 1400px; margin: 0 auto; }
+  /* Cases preview — 3 case study strips
+     CS-IMG-SEC-05 · rows optionally render a slot-4/5 editorial
+     thumbnail when ``post.thumb`` is supplied by the content
+     registry; hero slot 0 is NEVER reused here (the archetype-
+     level ``.cs-cases-preview .row .thumb`` primitive has fixed
+     80×60 crop and `object-fit: cover` so a reused hero would
+     read as a "we only had one photo" duplication). */
+  .cs-cases-preview {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
   .cs-cases-preview .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--rule); }
-  .cs-cases-preview .head h2 { font-size: 48px; max-width: 14ch; }
-  .cs-cases-preview .head .intro { font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; max-width: 56ch; }
+  .cs-cases-preview .head h2 { font-size: var(--fs-h2); max-width: 16ch; }
+  .cs-cases-preview .head .intro { font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; max-width: 56ch; }
   .cs-cases-preview .list { margin-top: 32px; display: flex; flex-direction: column; }
   .cs-cases-preview .row {
     display: grid; grid-template-columns: 80px 1.4fr 1fr 1fr 80px;
@@ -229,7 +271,12 @@
   .cs-cases-preview .row .title {
     font-family: var(--heading); font-size: 22px; font-weight: 600;
     color: var(--primary); line-height: 1.25;
+    display: flex; align-items: center; gap: 18px;
   }
+  /* Inline thumb (slot-4/5 detail/ambient · never slot 0). Hidden
+     by default so existing templates without `post.thumb` continue
+     to render as typographic rows. */
+  .cs-cases-preview .row .thumb { flex-shrink: 0; }
   .cs-cases-preview .row .meta {
     font-family: var(--body); font-size: 12px; font-weight: 600;
     letter-spacing: 0.10em; text-transform: uppercase;
@@ -242,16 +289,19 @@
   }
   .cs-cases-preview .row:hover .arrow { transform: translateX(6px); }
 
-  /* Final CTA band */
-  .cs-cta { background: var(--primary); color: var(--on-dark); padding: 100px 72px; }
+  /* Final CTA band — cadence closer (CS-CTA-05 · photo-less pause) */
+  .cs-cta {
+    background: var(--primary); color: var(--on-dark);
+    padding: var(--space-section-y) var(--space-section-x);
+  }
   .cs-cta .wrap {
     max-width: 1400px; margin: 0 auto;
     display: grid; grid-template-columns: 1fr 0.6fr; gap: 80px; align-items: end;
   }
   .cs-cta .label { color: var(--accent); font-family: var(--body); font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700; }
-  .cs-cta h2 { margin-top: 14px; font-size: 56px; line-height: 1.06; max-width: 22ch; color: var(--on-dark); }
+  .cs-cta h2 { margin-top: 14px; font-size: var(--fs-h2); line-height: 1.08; max-width: 22ch; color: var(--on-dark); }
   .cs-cta h2 em { color: var(--accent); }
-  .cs-cta .intro { margin-top: 22px; max-width: 56ch; font-family: var(--body); font-size: 17px; color: var(--on-dark-2); line-height: 1.65; }
+  .cs-cta .intro { margin-top: 22px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--on-dark-2); line-height: 1.65; }
   .cs-cta .actions { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
   .cs-cta .actions .cs-btn-primary { color: var(--on-dark); border-color: var(--accent); }
   .cs-cta .actions .cs-btn-primary:hover { background: var(--accent); color: var(--primary); }
@@ -352,6 +402,9 @@
   <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
     {% for partner in page_data.leadership %}
       <article class="card" data-lm="reveal">
+        {% if partner.portrait %}
+          <img class="portrait" src="{{ partner.portrait }}" alt="{{ partner.name }}" loading="lazy">
+        {% endif %}
         <div class="role">{{ partner.role }}</div>
         <h3>{{ partner.name }}</h3>
         <p>{{ partner.bio }}</p>
@@ -375,7 +428,10 @@
     {% for post in posts %}
       <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'case-studies' post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
         <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
-        <span class="title">{{ post.title }}</span>
+        <span class="title">
+          {% if post.thumb %}<img class="thumb" src="{{ post.thumb }}" alt="" loading="lazy">{% endif %}
+          {{ post.title }}
+        </span>
         <span class="meta">{{ post.category }}</span>
         <span class="meta">{{ post.year }} · {{ post.duration }}</span>
         <span class="arrow">→</span>

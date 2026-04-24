@@ -1,7 +1,10 @@
 {% extends "live_templates/business/corporate-suite/_base.html" %}
 
 {% block extra_css %}
-  .cs-cases-list { padding: 48px 72px 100px; max-width: 1400px; margin: 0 auto; }
+  .cs-cases-list {
+    padding: 48px var(--space-section-x) var(--space-section-y);
+    max-width: 1400px; margin: 0 auto;
+  }
   .cs-cases-list .intro-band {
     padding: 32px 0 48px;
     font-family: var(--body); font-size: 10px; font-weight: 700;
@@ -44,18 +47,20 @@
   }
   .cs-cases-list .row:hover .arrow { transform: translateX(6px); }
 
-  /* Final CTA */
+  /* Final CTA — cadence closer (CS-CTA-05) */
   .cs-cta-list {
-    background: var(--paper-2); padding: 80px 72px; max-width: none;
+    background: var(--paper-2);
+    padding: var(--space-footer-y) var(--space-section-x);
+    max-width: none;
     border-top: 1px solid var(--rule);
   }
   .cs-cta-list .wrap {
     max-width: 1400px; margin: 0 auto;
     display: grid; grid-template-columns: 1fr 0.5fr; gap: 64px; align-items: center;
   }
-  .cs-cta-list h2 { font-size: 40px; max-width: 22ch; line-height: 1.1; }
+  .cs-cta-list h2 { font-size: var(--fs-h2); max-width: 22ch; line-height: 1.1; }
   .cs-cta-list em { color: var(--accent); }
-  .cs-cta-list .intro { margin-top: 16px; font-family: var(--body); font-size: 17px; color: var(--ink-soft); line-height: 1.65; max-width: 56ch; }
+  .cs-cta-list .intro { margin-top: 16px; font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; max-width: var(--copy-max); }
 {% endblock %}
 
 {% block content %}

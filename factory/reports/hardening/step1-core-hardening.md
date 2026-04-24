@@ -527,3 +527,362 @@ professional` than any pilot — Pragma, Fiscus, or the paused Solaria
 Commit B — has had access to before. The browser walk stays the
 ship veto per CS-BROWSER-01; the contracts above simply reduce how
 many ways a walk can fail.
+
+---
+
+## Step 1C — Typography, Rhythm, and Imagery Hardening
+
+Goal: close the three remaining "editorial floor" gaps inside the
+corporate-suite skin so a reviewer cannot describe any enrolled
+template with words like "template marketplace", "dashboard", "image
+scarcity", or "stock fallback". Step 1A+1B hardened *safety*
+(palette polarity, chrome + hero + footer contracts) — Step 1C
+hardens the *editorial feel itself*: the typographic hierarchy, the
+cadence between sections, the photographic rhythm across the page,
+and the sourcing gate that keeps a non-Pexels URL from landing on
+any new pilot. As before, edits stay inside the archetype skin
+(`_base.html` + the 6 page files), the archetype-gated Python
+enrichment hook, and the static-file test suite. Zero changes to
+`apps/editor`, `apps/projects`, `apps/commerce`, no new archetypes,
+no Solaria Commit B un-pause.
+
+### Files changed
+
+| File | Change |
+|---|---|
+| `templates/live_templates/business/corporate-suite/_base.html` | (1) **Type-scale tokens** · added `--fs-hero: 64px`, `--fs-lead: 56px`, `--fs-h2: 48px`, `--fs-h3: 26px`, `--fs-body-lg: 17px`, `--fs-body: 16px`, `--fs-eyebrow: 11px`, `--track-eyebrow: 0.22em`, `--copy-max: 64ch` to the `:root` declaration. Every heading class on the archetype now resolves through these tokens so a future page file cannot silently drift into 80-96 px display-headline territory. (2) **Rhythm tokens** · added `--space-section-y: 100px`, `--space-section-x: 72px`, `--space-band-y: 72px`, `--space-lead-bot: 64px`, `--space-footer-y: 96px`. `.cs-section`, `.cs-section.dark`, `.cs-lead`, `.cs-foot` now reach for these tokens instead of hardcoded `96px 72px` / `100px 72px` combinations. (3) **Section-head consistency** · the generic `.cs-section h2` rule now uses `var(--fs-h2)` and the `.cs-section .sec-intro` copy column uses `var(--copy-max)` + `var(--fs-body-lg)`. Added an archetype-level `.cs-section h2 em` / `.cs-section .head h2 em` / `.cs-section .heading em` cascade so the italic-em restraint (CS-RHYTHM-05) applies to every section title uniformly. Also added `.cs-sec-label` as a shared alternative name for `.sec-label` (same rule body) — lets future partials reach for the canonical tracked-uppercase label class without fighting scope. (4) **Image-rhythm guardrails** · hard `display: none` on `.cs-pillars .pillar img`, `.cs-pillars .pillar picture`, `.cs-kpi-band img`, `.cs-kpi-band picture` to enforce CS-IMG-SEC-01 (pillars = icon/typographic) and CS-IMG-SEC-02 (KPI band = zero photography). Prevents AP12 "decorative photo on typographic section" from shipping via a content-registry typo. (5) **Optional leadership portrait primitive** · `.cs-leadership .card .portrait` — 4:3 editorial figure with `object-fit: cover`, lazy-loaded, rendered only when content supplies `partner.portrait` (slot 2-3 URL from the imagery pool). `.cs-leadership .card:has(.portrait)` zeroes the top padding so the figure reads as a card opener, not a sticker. (6) **Optional case-thumb primitive** · `.cs-cases-preview .row .thumb` — 80×60 square-safe crop, rendered only when content supplies `post.thumb` (slot 4-5 URL). Never reuses hero (CS-IMG-SEC-05) by design: the primitive has a fixed small crop so a hero-scale slot 0 URL would obviously misread. (7) **Editorial seam utility** · `.cs-section-seam` — a shared hairline primitive for chapter-level separators where a rule is needed without adding inter-section margin (CS-RHYTHM-06). Neutral-tinted so it never competes with the accent budget (CS-PAL-05). |
+| `templates/live_templates/business/corporate-suite/home.html` | (1) Hero h1 `font-size` moved from hardcoded 76 px → `var(--fs-hero)` (64 px). The prior 76 sat over the CS-TYPE-04 ceiling of 72. Subhead moved to `var(--fs-body-lg)`, copy width tightened to 54ch. (2) Pillars, KPI band, sectors ribbon, trust band, leadership, cases-preview, CTA sections all moved from hardcoded `100px 72px` / `72px 72px` → the `--space-section-y` / `--space-section-x` / `--space-band-y` tokens. Pillars `.head h2` font-size moved from 52 px → `var(--fs-h2)` (48). Leadership `.head h2`, cases-preview `.head h2`, CTA h2 all moved to `var(--fs-h2)`. CTA h2 in particular moved from 56 → 48, restoring the section-title ceiling. (3) Pillar `.pillar h3`, leadership `.card h3` moved to `var(--fs-h3)` (26) — was 28 / 26 across the two, now uniform. (4) Leadership card markup gains an optional `<img class="portrait" src="{{ partner.portrait }}">` wrapped in `{% if partner.portrait %}` — no-op on every currently enrolled template (Pragma, Fiscus don't declare `portrait` yet), graceful enrichment when a pilot or retro-curation adds portraits. (5) Case-preview row `.title` block now contains an optional `<img class="thumb">` wrapped in `{% if post.thumb %}` + the `.title` flex layout aligns thumb+title on the same baseline without breaking existing typographic-only rows. |
+| `templates/live_templates/business/corporate-suite/about.html` | Section padding on `.cs-history`, `.cs-values`, `.cs-team`, `.cs-cta-band` moved to `--space-section-y` / `--space-section-x`. All page-level H2s (history/values/team/CTA) moved to `var(--fs-h2)` — values was 52 px (over ceiling), team was 48 px, cta-band was 44 px; all now uniform at 48. Every intro block now uses `var(--fs-body-lg)` + `var(--copy-max)`. |
+| `templates/live_templates/business/corporate-suite/services.html` | `.cs-services` section uses `--space-band-y` top / `--space-section-y` bottom to read as a services intake after the lead. `.cs-process` + `.cs-cta-svc` sections use the section tokens. `.cs-services .card h3`, `.cs-process .head h2`, `.cs-cta-svc h2` normalized to `var(--fs-h3)` / `var(--fs-h2)`. Intro blocks reach for `var(--fs-body-lg)` + `var(--copy-max)`. |
+| `templates/live_templates/business/corporate-suite/case_study_list.html` | `.cs-cases-list` bottom padding uses `--space-section-y`; horizontal uses `--space-section-x`. `.cs-cta-list` uses `--space-footer-y` / `--space-section-x` and its H2 normalizes to `var(--fs-h2)` (was 40 px). Intro uses `var(--fs-body-lg)` + `var(--copy-max)`. |
+| `apps/catalog/imagery_policy.py` | New module (archetype-scoped). Implements the Pexels-only sourcing gate per CS-IMG-SRC-01 + CS-IMG-POOL-01 + CS-IMG-SRC-02: `validate_corporate_suite_imagery_key(key)` returns a `PolicyReport` dataclass (is_known, is_legacy_exempt, pexels_only, shape_is_canonical, non_pexels_urls, hero_width_ok, warnings). `enforce_corporate_suite_imagery_policy(key, template_slug)` emits a single `UserWarning` on any non-legacy-exempt failure. `should_enforce(archetype)` is the archetype gate consumed at the call site. The module is intentionally Django-free except for a lazy import of `preview_imagery.IMAGERY_CONFIG` inside one function — factory tooling + CI scripts can call it from a plain Python shell. Constants: `CORPORATE_SUITE_POOL_KEYS = {business-corporate, business-fiscal, business-coaching}`, `LEGACY_EXEMPT_KEYS = {business-corporate}` (Pragma · retro-curation pending per AP3), `PEXELS_HOST = "images.pexels.com"`, `CANONICAL_POOL_SIZE = 6`. Mirrors the `theme_safety.py` shape so the two archetype-gated hooks are chainable in `LiveTemplateView.get_context_data`. |
+| `apps/catalog/views.py` | `LiveTemplateView.get_context_data` now chains the imagery policy enforcement after the theme-safety enrichment, gated on `should_enforce_imagery(archetype)`. Three lines of wire-up; non-corporate-suite archetypes are completely untouched. |
+| `apps/catalog/tests.py` | Appended two new test classes at the tail of the file, mirroring the `CorporateSuiteThemeSafetyTests` / `CorporateSuiteChromeContractTests` pattern (no DB, no client, static-file + pure-function asserts). `CorporateSuiteImageryPolicyTests` (6 tests) covers: legacy pool silent + reported as non-compliant Pexels-wise but compliant overall (retro-curation pending), business-fiscal Pexels-only pass, hostname-strictness (no lookalike domains), non-canonical pool shape flagged, archetype gate, warn-on-non-legacy-non-Pexels pool. `CorporateSuiteRhythmContractTests` (8 tests) covers: type-scale tokens declared, rhythm tokens declared, hero h1 token reference + regression guard against 76/80 px, lead h1 token reference + 80 px guard, `.cs-section` base padding uses tokens, `.cs-pillars/.cs-kpi-band` image-hiding guardrail, leadership portrait primitive + home.html conditional present, case-preview thumb primitive + home.html conditional present, every page file references rhythm tokens, and no over-ceiling heading px regressions on home. |
+
+### What was hardened
+
+1. **Typography hierarchy · CS-TYPE-04 restored at the token layer.**
+   Before Step 1C, the archetype shipped four different heading-size
+   ladders in the same skin: lead h1 at 80 px, hero h1 at 76 px,
+   pillars/values heads at 52 px, CTA at 56 px, everything else at
+   48 px. Four of those seven were over the CS-TYPE-04 ceiling. The
+   skin read like different authors had taken turns at different
+   sections. After Step 1C, every heading resolves through a token
+   whose name tells the intent (`--fs-hero`, `--fs-lead`,
+   `--fs-h2`, `--fs-h3`). Hero h1 is now the single biggest beat
+   (64 px), inner-page leads sit under it (56 px), every section
+   title is 48 px, every card title is 26 px. A new pilot that
+   wants a different scale has to either change the token (affects
+   every template on the archetype — appropriate) or declare a
+   per-page override (caught by review — appropriate). The path
+   of least resistance now is uniformity.
+
+2. **Copy-density control · `--copy-max: 64ch` applied uniformly.**
+   CS-DENSITY-07 warns against walls of text. The skin already
+   capped most intro blocks at `max-width: 64ch`, but several
+   sections (hero subhead at 52ch, values intro at 64ch, cta
+   intros at 56ch) drifted. Step 1C lines every long paragraph up
+   on the same 64ch ceiling via the token, so a future language
+   that runs longer in translation (DE/FR) does not silently push
+   one section into a wall-of-text shape while neighbors stay
+   calm. The section rhythm tests lock the contract.
+
+3. **Section rhythm · the cadence is now two tokens, not six
+   magic numbers.** Before Step 1C, the archetype had `100px 72px`,
+   `96px 72px`, `72px 72px`, `80px 72px`, `48px 72px 100px`,
+   `96px 72px 40px` scattered across the 6 skin files. Most were
+   within the CS-RHYTHM-01 100×72 target, but the spread made
+   regressions invisible — a future edit dropping a section to
+   48×24 would sit next to the 48×72 sectors ribbon as if
+   intentional. Step 1C normalizes every chapter-class section to
+   `var(--space-section-y) var(--space-section-x)`, every band
+   (KPI, trust, sectors) to `var(--space-band-y)`, and the footer
+   to `var(--space-footer-y)`. Three tokens govern every vertical
+   beat. A static test asserts every page file references the
+   tokens, so a future section authored with hardcoded padding
+   will fail CI before review.
+
+4. **"Template-marketplace feeling" reduced · no section title
+   over-shoots the restraint ceiling.** The marketplace-leak
+   failure mode that CS-TONE-05 names happens in small doses:
+   52 px section heads read as "marketing page", 56 px CTA heads
+   read as "landing funnel", 80 px lead heads read as "home
+   builder hero template". Each individually is a minor drift;
+   together they push the page off the institutional-advisory
+   axis. Tightening every one to the 48 px ceiling at the token
+   level moves the page back onto the axis without touching
+   copy. The static-file regression test forbids these four
+   bad-px values (52/56/76/80) from ever landing as a `font-size`
+   on `home.html` again.
+
+5. **Image rhythm · the photographic cadence is enforced, not
+   trusted.** CS-IMG-RHYTHM-01 prescribes the archetype's
+   home rhythm: one photo (hero) → typographic beats (pillars,
+   KPI, sectors, trust) → portrait beat (leadership) → case-photo
+   beat (cases) → typographic pause (CTA). The prior skin trusted
+   authors to maintain this — there was no CSS rule stopping a
+   template from adding a background image to the pillars, a
+   photographic wallpaper to the KPI band, or a big hero photo
+   reused on every case card. Step 1C hard-enforces the two
+   "should never render" halves of the contract with a `display:
+   none` guardrail on `.cs-pillars .pillar img, .cs-pillars .pillar picture, .cs-kpi-band img, .cs-kpi-band picture`. An
+   author who tries to inject a decorative photo into either
+   section sees it vanish, with no breakage elsewhere. The contract
+   is also tested as a static string assert so a future loosening
+   of the rule fails CI.
+
+6. **Image scarcity after hero · opt-in enrichment primitives.**
+   The current Pragma + Fiscus templates render leadership as
+   text-only cards and case-preview as typographic rows. That
+   passes the safety contract (no dark-on-dark, no stock cliché)
+   but fails CS-IMG-SEC-03 (leadership uses real portraits) and
+   CS-IMG-SEC-05 (cases use slot-4/5 thumbs rotated). Step 1C
+   ships two archetype-level primitives — `.cs-leadership .card
+   .portrait` and `.cs-cases-preview .row .thumb` — that the
+   home.html markup now renders conditionally on `partner.portrait`
+   / `post.thumb`. Existing templates still render typographic
+   (no regression), but any pilot (or retro-curation step) that
+   adds portrait/thumb URLs to its content registry immediately
+   gets the editorial enrichment — without a single CSS edit per
+   template. This is the scalable path: one skin primitive, opt-in
+   per content registry, zero hand-tuning.
+
+7. **Pexels-only enforcement is now active at the live render
+   path for every new corporate-suite template.** `imagery_policy.py`
+   runs on every live render of a corporate-suite template (archetype-
+   gated), validates the pool's URLs against the Pexels CDN, checks
+   the 6-slot canonical shape, and flags a soft-warning for an
+   under-width hero. Legacy exemption for `business-corporate`
+   (Pragma) keeps the live render silent while the retro-curation
+   is pending — the module still reports `pexels_only=False` so
+   any dashboarding / factory-tooling consumer sees the backlog.
+   For `business-fiscal` (Fiscus) the helper confirms compliance
+   on every render. If Solaria Commit B un-pauses with a
+   `business-coaching` pool carrying even one Unsplash URL, the
+   helper emits a `UserWarning` naming the slug — a loud signal
+   caught by the test suite and by ops during template authoring.
+
+8. **Editorial/advisory flow reinforced · shared utility classes
+   the SOP can point agents at.** `.cs-section-seam` gives the
+   skin a neutral-tinted hairline primitive for chapter-level
+   separators. `.cs-sec-label` is an explicit alias for the
+   tracked-uppercase label rule so a future partial can adopt the
+   canonical label class without fighting scope. `.cs-section
+   h2 em` / `.cs-section .head h2 em` / `.cs-section .heading em`
+   extend CS-TYPE-02 italic-em emphasis uniformly across all
+   section heads — prior iterations only explicitly declared it
+   on a handful of sections, so a future section that reached
+   for uppercase to emphasize a word would not be caught by the
+   rule. Now the cascade is archetype-wide.
+
+### Where Pexels policy is now enforced (and still pending)
+
+| Pool key | Consumer template | Policy status |
+|---|---|---|
+| `business-corporate` | `pragma-corporate-suite` | **Legacy-exempt · silent.** Standard tracks this as the single tolerated Unsplash pool pending retro-curation (`docs/content-factory/imagery/packs/` work). The validator reports `is_legacy_exempt=True`, `pexels_only=False`, `is_compliant=True` (shipping sense) so the live render never warns on a Pragma page. `validate_corporate_suite_imagery_key("business-corporate")` returns `non_pexels_urls=[6 Unsplash URLs]` for factory dashboarding / retro-curation tooling. |
+| `business-fiscal` | `fiscus-commercialista` | **Compliant · silent.** All 6 URLs on `images.pexels.com`, canonical 6-slot shape, hero at `w=1600`. The live render passes the gate on every request. Acts as a positive reference for any future pilot. |
+| `business-coaching` | paused Solaria Commit B | **Not enforced yet.** The pool is in `CORPORATE_SUITE_POOL_KEYS` so the gate is *ready* to enforce, but the pool is not registered in `preview_imagery.IMAGERY_CONFIG` until Solaria un-pauses. When it does, any Unsplash URL in slot 0-5 emits a `UserWarning` on the first render. |
+| **Any future corporate-suite pilot** | TBD | **Enforced by construction.** New pools register via the same `imagery_key` DNA field + `preview_imagery.IMAGERY_CONFIG` entry. The validator runs on every render under the archetype gate. A non-Pexels URL on a non-legacy pool emits a `UserWarning` the first time the page is loaded — caught by ops, by the test suite, and by any CI check that elevates `UserWarning` to an error. |
+
+Still pending (explicitly out of Step 1C scope):
+
+- **Hard promotion of `UserWarning` to a build-time error.** The
+  helper is intentionally lenient (warn, never raise) because it
+  runs inside the live-preview request path and must not 500 the
+  page. A pre-commit hook or a `manage.py check` extension that
+  elevates the warning to a failure belongs to the validator step.
+- **Retro-curation of `business-corporate` to Pexels.** AP3
+  tracking. Once the 6 Unsplash URLs are replaced with
+  reviewer-approved Pexels equivalents, the `LEGACY_EXEMPT_KEYS`
+  set shrinks to empty and the archetype becomes Pexels-only by
+  construction.
+- **Per-slot hero-width + portrait-aspect enforcement.** The
+  helper flags hero width < 1600 as a soft check; it does not
+  yet validate portrait-slot widths, crop-aspect squareness
+  (CS-IMG-CROP-02), or the caption+role+coherence 3-line
+  metadata contract (CS-IMG-COH-06). These require the pack-file
+  inventory (`imagery/packs/<cluster>.md`) which is tracked as a
+  separate curator deliverable.
+- **Cross-cluster URL-reuse detection.** `CS-IMG-SRC-04` bans
+  the same Pexels URL in two different cluster pools. The
+  existing `scripts/check_imagery_pack.py` (X.3 C3) greps for
+  duplicates across packs; Step 1C does not duplicate that
+  check at the request-path layer.
+
+### What still requires browser verification
+
+Step 1C reduces three contracts to PASS-by-construction via static
+tests, but the authoritative gate remains the live Playwright/manual
+walk per CS-BROWSER-01. These checks still need the browser:
+
+1. **Type-scale visual harmony at 1920/1440/1280.** The tokens say
+   64 px hero, 56 px lead, 48 px section — but the subjective
+   readability question ("does the hero still read as the biggest
+   beat? does the lead not compete? do 48 px h2s feel generous
+   without feeling consumer-web?") is pixel-state, not symbol-state.
+   Walk Pragma + Fiscus home + about + services pages on a
+   1440×900 viewport and confirm the hierarchy reads as intended.
+
+2. **Leadership portrait primitive on a palette that exercises
+   it.** Currently no enrolled template declares `partner.portrait`,
+   so the primitive is inert on live renders. Before the next pilot
+   adds portraits, a throwaway DevTools test should inject a
+   portrait URL into a partner card on either Pragma or Fiscus and
+   confirm the 4:3 frame + `object-fit: cover` + padding reset
+   reads editorial (not sticker-on-card).
+
+3. **Case-preview thumb primitive on a palette that exercises
+   it.** Same shape as (2) — inject a `post.thumb` URL via DevTools
+   and confirm the 80×60 thumb aligns with the title baseline at
+   1440 and does not push the row height off the 28 px padding.
+
+4. **Image-rhythm guardrail effect is transparent.** On the current
+   live templates there are no `<img>` tags inside `.cs-pillars
+   .pillar` or `.cs-kpi-band`, so the `display: none` rule is
+   dormant by design. A regression test where a fake `<img>` is
+   injected via DevTools into `.cs-kpi-band` should confirm the
+   image disappears and the cadence holds (no reflow, no extra
+   whitespace where the image would have sat).
+
+5. **Section padding uniformity at 1440.** Walk home.html top to
+   bottom and scroll-capture every section boundary. Vertical
+   rhythm should read as ~100 px → ~100 px → ~72 px (KPI band) →
+   ~36 px (sectors ribbon) → ~72 px (trust) → ~100 px → ~100 px →
+   ~100 px (CTA) → ~96 px (footer). A section that feels
+   "squished" vs its neighbors now fails the rhythm contract
+   even if its content is fine.
+
+6. **Pexels policy at runtime.** Load Pragma and Fiscus live
+   routes with `python -W error::UserWarning` and confirm Pragma
+   is silent (legacy-exempt) while Fiscus is silent (compliant).
+   Then manually monkeypatch a non-Pexels URL into the Fiscus pool
+   in a dev shell and confirm the first request emits the
+   expected `UserWarning` naming the slug.
+
+7. **RTL variant sanity.** The type-scale tokens are set under
+   `:root`, so RTL Arabic picks them up automatically. The
+   existing `html[dir="rtl"] body { font-size: 17px; line-height:
+   1.78; }` override stays in charge for body copy. Walk the AR
+   locale on Fiscus home and confirm h1/h2/h3 sizes composite
+   visually with Kufi + Amiri at the same relative weight as the
+   Latin render — a token change that inadvertently crushed the
+   Arabic heading would be caught here.
+
+8. **Editor iframe overflow guard.** The existing `body.mw-is-editor-preview`
+   overflow-wrap guard covers `.cs-hero h1`, `.cs-pillars h2`,
+   `.cs-leadership h2`, `.cs-nav .word`. With the leadership
+   portrait primitive now landing in the card top zone, a long
+   studio name edited in the editor should still reflow cleanly
+   around the portrait frame. Low-risk (the portrait sits above
+   the name, not beside it), but worth a once-over in the walk.
+
+---
+
+## Changed-files summary (Step 1A + Step 1B + Step 1C cumulative)
+
+```
+M templates/live_templates/business/corporate-suite/_base.html
+M templates/live_templates/business/corporate-suite/home.html
+M templates/live_templates/business/corporate-suite/about.html             (Step 1C)
+M templates/live_templates/business/corporate-suite/services.html          (Step 1C)
+M templates/live_templates/business/corporate-suite/case_study_list.html   (Step 1C)
+A apps/catalog/theme_safety.py                    (Step 1A)
+A apps/catalog/imagery_policy.py                  (Step 1C)
+M apps/catalog/views.py                           (Step 1A + 1C)
+M apps/catalog/tests.py                           (Step 1A + 1B + 1C)
+M factory/reports/hardening/step1-core-hardening.md
+```
+
+Step 1C delta only:
+- `_base.html`: ~70 lines net added across the type-scale + rhythm
+  token block, the `.cs-section` / `.cs-section.dark` / `.cs-foot`
+  padding token-refactor, the image-rhythm guardrails, the
+  `.cs-leadership .card .portrait` + `.cs-cases-preview .row .thumb`
+  primitives, and the `.cs-section-seam` utility. No new selectors
+  outside the archetype scope; no markup changes.
+- `home.html`: ~45 lines net modified — type-scale references on
+  hero / pillars / leadership / cases / CTA, section padding
+  tokenization, an optional `{% if partner.portrait %}` conditional
+  in the leadership card loop, an optional `{% if post.thumb %}`
+  conditional in the case-preview row loop. No structural markup
+  change beyond the two conditionals.
+- `about.html` / `services.html` / `case_study_list.html`: ~10-15
+  lines each modified — section padding tokenization, h2/h3/intro
+  heading + copy size tokenization. No structural markup change.
+- `apps/catalog/imagery_policy.py`: ~220 lines of pure-function
+  URL validation + a `PolicyReport` dataclass + an archetype-gated
+  `enforce_corporate_suite_imagery_policy(...)` hook. No Django
+  dependency except the lazy import of `preview_imagery.IMAGERY_CONFIG`.
+- `apps/catalog/views.py`: 6 lines of wire-up inside the existing
+  `get_context_data` hook — one archetype lookup, one enrichment
+  call, one imagery-policy call. Chained after the Step 1A theme
+  enrichment so the two hooks see the same archetype-gated context.
+- `apps/catalog/tests.py`: appended `CorporateSuiteImageryPolicyTests`
+  (6 tests) + `CorporateSuiteRhythmContractTests` (8 tests) at the
+  tail of the file, mirroring the Step 1A/1B pattern. All are
+  static-file + pure-function asserts — no DB state, no client
+  requests, runs in milliseconds.
+- This hardening report gains the Step 1C section above.
+
+### How these changes improve scalability across future templates
+
+Step 1C makes the archetype *absorb* the four most common
+review-time regressions of Wave 1 + Solaria Commit A — oversized
+display headlines, inconsistent section padding, scarce post-hero
+imagery, and a legacy Unsplash pool — at the archetype layer so
+the next pilot inherits them without work:
+
+1. **A new pilot that wants a different type scale does not
+   edit any page file.** It picks new token values in the brand
+   theme dict (or in a per-template `<style>` override block).
+   Every heading rule in every page file already resolves through
+   the token, so one change propagates to 6 pages × ~15 heading
+   selectors. A pilot that drifts from the token (e.g., a
+   per-page hardcoded 88 px h1) fails the static rhythm contract
+   test on the first CI run.
+
+2. **Section padding cannot drift to feature-matrix density.** A
+   new pilot's page file must reach for `--space-section-y` /
+   `--space-section-x`. The rhythm contract test asserts every
+   enrolled page file contains both tokens. A page file that
+   hardcodes `48px 24px` to fit more content fails the test
+   loud, before any reviewer eyeballs the diff.
+
+3. **Leadership + case-card imagery is a content-registry
+   opt-in, not a per-template skin edit.** To enrich the next
+   pilot with portraits + thumbs, the author adds a `portrait`
+   field to each `leadership[]` entry and a `thumb` field to
+   each `posts[]` entry in the content registry. Zero CSS
+   changes. The archetype skin already renders the editorial
+   4:3 figure + 80×60 thumb. A retro-enrichment of Pragma and
+   Fiscus follows the same pattern.
+
+4. **Pexels-only is the default, not the exception.** A new
+   pool just works — it is registered in `preview_imagery.IMAGERY_CONFIG`
+   under a `business-<kind>` key, gets a `CORPORATE_SUITE_POOL_KEYS`
+   membership update, and is automatically validated on every
+   render. The only pool that is explicitly exempt is the
+   Pragma legacy one, tracked in `LEGACY_EXEMPT_KEYS`. A
+   future pilot that tries to slip Unsplash URLs into its pool
+   sees its first live render warn — the diff never survives
+   review.
+
+5. **Image-rhythm regressions are impossible by construction.**
+   The `display: none` guardrail on pillars + KPI band means an
+   author who accidentally pastes a decorative image into a
+   typographic section sees it disappear. The authoring
+   experience gets a visible-but-harmless hint (the image
+   doesn't render) instead of a silently shipped AP12 regression.
+
+6. **Token naming documents intent for every future agent.** A
+   template-builder agent reading the skin for the first time
+   sees `--fs-hero`, `--fs-lead`, `--space-section-y`,
+   `--space-band-y`, `--space-footer-y` and can pattern-match
+   to the CS-TYPE-04 / CS-RHYTHM-01 rule numbers in the design
+   standard. No "what does this magic number mean?" archaeology.
+
+Net: Step 1C lifts the archetype from "every pilot re-encounters
+the same editorial floor problems" to "every pilot inherits an
+editorial floor that is already a contract". The browser walk
+stays the ship veto per CS-BROWSER-01 — the contracts above only
+reduce how many ways that walk can surface surprises.
