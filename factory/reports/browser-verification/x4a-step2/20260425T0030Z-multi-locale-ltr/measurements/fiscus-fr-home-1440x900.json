@@ -1,0 +1,17 @@
+{
+  "url": "http://127.0.0.1:8732/templates/business/fiscus-commercialista/preview/?lang=fr",
+  "lang": "fr",
+  "dir": "ltr",
+  "title": "Fiscus — Cabinet",
+  "vp": "1440x900",
+  "sw": 1425,
+  "cw": 1425,
+  "hOverflow": false,
+  "h1Text": "L’application correcte de la norme, jamais l’artifice.",
+  "h1FontSize": "64px",
+  "h1Color": "rgb(31, 41, 55)",
+  "footerLegalAnchors": 3,
+  "footerPlaceholderHashes": 0,
+  "footerRealRoutes": 3,
+  "placeholderText": []
+}

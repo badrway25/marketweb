@@ -1,0 +1,21 @@
+{
+  "url": "http://127.0.0.1:8732/templates/business/fiscus-commercialista/preview/?lang=en",
+  "lang": "en",
+  "dir": "ltr",
+  "title": "Fiscus — Firm",
+  "vp": "1440x900",
+  "sw": 1425,
+  "cw": 1425,
+  "hOverflow": false,
+  "h1Text": "The correct filing, not the clever trick.",
+  "h1FontSize": "64px",
+  "h1Color": "rgb(31, 41, 55)",
+  "h1Distance": "343.2",
+  "h1Ratio": "12.86",
+  "navBg": "rgb(31, 41, 55)",
+  "footerBg": "rgb(31, 41, 55)",
+  "footerLegalAnchors": 3,
+  "footerPlaceholderHashes": 0,
+  "footerRealRoutes": 3,
+  "placeholderText": []
+}

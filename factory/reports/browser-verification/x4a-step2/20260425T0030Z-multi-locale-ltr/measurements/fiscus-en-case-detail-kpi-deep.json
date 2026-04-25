@@ -1,0 +1,252 @@
+{
+  "darkBlocks": 41,
+  "blockClasses": [
+    "mp-bar",
+    "mp-lang",
+    "mp-lang-list",
+    "wm",
+    "links"
+  ],
+  "samples": [
+    {
+      "tag": "A.mp-back",
+      "blockClass": "mp-bar",
+      "txt": "← Back to MarketWeb",
+      "color": "rgb(28, 61, 90)",
+      "bgColor": "rgb(10, 14, 26)",
+      "fontSize": "11px",
+      "distance": "81.4",
+      "ratio": "1.71"
+    },
+    {
+      "tag": "SPAN.mp-name",
+      "blockClass": "mp-bar",
+      "txt": "Full preview · Fiscus — Studio",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgb(10, 14, 26)",
+      "fontSize": "11px",
+      "distance": "387.5",
+      "ratio": "16.87"
+    },
+    {
+      "tag": "SPAN.mp-lang-label",
+      "blockClass": "mp-bar",
+      "txt": "Language",
+      "color": "rgba(238, 240, 243, 0.45)",
+      "bgColor": "rgb(10, 14, 26)",
+      "fontSize": "10px",
+      "distance": "387.5",
+      "ratio": "16.87"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-bar",
+      "txt": "IT",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgb(10, 14, 26)",
+      "fontSize": "10px",
+      "distance": "387.5",
+      "ratio": "16.87"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-bar",
+      "txt": "EN",
+      "color": "rgb(28, 61, 90)",
+      "bgColor": "rgb(10, 14, 26)",
+      "fontSize": "10px",
+      "distance": "81.4",
+      "ratio": "1.71"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-bar",
+      "txt": "FR",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgb(10, 14, 26)",
+      "fontSize": "10px",
+      "distance": "387.5",
+      "ratio": "16.87"
+    },
+    {
+      "tag": "SPAN.mp-lang-label",
+      "blockClass": "mp-lang",
+      "txt": "Language",
+      "color": "rgba(238, 240, 243, 0.45)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang",
+      "txt": "IT",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang",
+      "txt": "EN",
+      "color": "rgb(28, 61, 90)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "112.3",
+      "ratio": "1.86"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang",
+      "txt": "FR",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang",
+      "txt": "ES",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang",
+      "txt": "AR",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang-list",
+      "txt": "IT",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang-list",
+      "txt": "EN",
+      "color": "rgb(28, 61, 90)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "112.3",
+      "ratio": "1.86"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang-list",
+      "txt": "FR",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang-list",
+      "txt": "ES",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "mp-lang-list",
+      "txt": "AR",
+      "color": "rgba(238, 240, 243, 0.55)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "10px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "SPAN.crest",
+      "blockClass": "wm",
+      "txt": "F",
+      "color": "rgb(28, 61, 90)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "14px",
+      "distance": "112.3",
+      "ratio": "1.86"
+    },
+    {
+      "tag": "SPAN.",
+      "blockClass": "wm",
+      "txt": "Fiscus",
+      "color": "rgb(238, 240, 243)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "22px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "A.",
+      "blockClass": "links",
+      "txt": "Firm",
+      "color": "rgba(238, 240, 243, 0.72)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "A.",
+      "blockClass": "links",
+      "txt": "The firm",
+      "color": "rgba(238, 240, 243, 0.72)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "A.",
+      "blockClass": "links",
+      "txt": "Expertise",
+      "color": "rgba(238, 240, 243, 0.72)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "A.is-current",
+      "blockClass": "links",
+      "txt": "Engagements",
+      "color": "rgb(238, 240, 243)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    },
+    {
+      "tag": "A.",
+      "blockClass": "links",
+      "txt": "Contact",
+      "color": "rgba(238, 240, 243, 0.72)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "fontSize": "12px",
+      "distance": "416.3",
+      "ratio": "18.39"
+    }
+  ]
+}

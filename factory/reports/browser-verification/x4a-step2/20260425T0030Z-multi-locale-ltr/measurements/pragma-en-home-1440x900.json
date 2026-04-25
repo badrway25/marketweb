@@ -1,0 +1,46 @@
+{
+  "url": "http://127.0.0.1:8732/templates/business/pragma-corporate-suite/preview/?lang=en",
+  "lang": "en",
+  "dir": "ltr",
+  "title": "Pragma Advisors — Studio",
+  "viewport": {
+    "w": 1440,
+    "h": 900
+  },
+  "scrollWidth": 1440,
+  "clientWidth": 1440,
+  "horizontalOverflow": false,
+  "heroH1": {
+    "text": "Where the decisions that matter are made.",
+    "fontSize": "64px",
+    "color": "rgb(30, 41, 59)",
+    "bg": "238,240,243",
+    "distance": 341.6445521298415,
+    "ratio": "12.81"
+  },
+  "nav": {
+    "bg": "rgb(30, 41, 59)",
+    "links": 5,
+    "accentEls": 0
+  },
+  "footer": {
+    "bg": "rgb(30, 41, 59)",
+    "legalAnchors": 3,
+    "placeholderHashes": 0,
+    "realRoutes": 3
+  },
+  "heroImg": null,
+  "leadership": {
+    "portraits": 0,
+    "loaded": 0
+  },
+  "motion": {
+    "lmTotal": 26,
+    "lmStuck": 0
+  },
+  "placeholderText": [],
+  "voiceAnchor": {
+    "expected": "where the decisions that matter are made",
+    "found": true
+  }
+}

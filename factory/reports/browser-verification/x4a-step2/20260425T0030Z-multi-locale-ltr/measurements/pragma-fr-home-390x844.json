@@ -1,0 +1,10 @@
+{
+  "vp": "390x844",
+  "sw": 375,
+  "cw": 375,
+  "hOverflow": false,
+  "h1FontSize": "32px",
+  "h1Text": "Là où se prennent les décisions qui comptent.",
+  "navLinksDisplay": "none",
+  "drawerLabelDisplay": "flex"
+}

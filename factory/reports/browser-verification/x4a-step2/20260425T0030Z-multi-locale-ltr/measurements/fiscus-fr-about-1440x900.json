@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:8732/templates/business/fiscus-commercialista/preview/lo-studio/?lang=fr",
+  "lang": "fr",
+  "title": "Fiscus — Le cabinet",
+  "vp": "1440x900",
+  "sw": 1425,
+  "cw": 1425,
+  "hOverflow": false,
+  "h1Text": "Un cabinet d’expertise comptable et fiscale indépendant, vingt-deux années de pr",
+  "h1FontSize": "56px",
+  "footerLegalAnchors": 3,
+  "footerPlaceholderHashes": 0,
+  "footerRealRoutes": 3
+}

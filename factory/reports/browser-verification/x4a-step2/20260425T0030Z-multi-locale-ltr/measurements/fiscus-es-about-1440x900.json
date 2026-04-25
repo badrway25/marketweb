@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:8732/templates/business/fiscus-commercialista/preview/lo-studio/?lang=es",
+  "lang": "es",
+  "title": "Fiscus — El despacho",
+  "vp": "1440x900",
+  "sw": 1425,
+  "cw": 1425,
+  "hOverflow": false,
+  "h1Text": "Un despacho de asesoría fiscal independiente, veintidós años de práctica continu",
+  "h1FontSize": "56px",
+  "footerLegalAnchors": 3,
+  "footerPlaceholderHashes": 0,
+  "footerRealRoutes": 3
+}

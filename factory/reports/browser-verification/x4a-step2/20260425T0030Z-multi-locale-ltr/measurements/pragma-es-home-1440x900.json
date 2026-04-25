@@ -1,0 +1,22 @@
+{
+  "url": "http://127.0.0.1:8732/templates/business/pragma-corporate-suite/preview/?lang=es",
+  "lang": "es",
+  "dir": "ltr",
+  "title": "Pragma Advisors — Despacho",
+  "vp": "1440x900",
+  "sw": 1425,
+  "cw": 1425,
+  "hOverflow": false,
+  "h1Text": "Donde se toman las decisiones que importan.",
+  "h1FontSize": "64px",
+  "h1Distance": "341.6",
+  "h1Ratio": "12.81",
+  "footerLegalAnchors": 3,
+  "footerPlaceholderHashes": 0,
+  "footerRealRoutes": 3,
+  "voiceAnchor": {
+    "expected": "donde se toman las decisiones que importan",
+    "found": true
+  },
+  "placeholderText": []
+}

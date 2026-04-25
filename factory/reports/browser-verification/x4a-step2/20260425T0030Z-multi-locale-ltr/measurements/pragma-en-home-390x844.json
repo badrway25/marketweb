@@ -1,0 +1,11 @@
+{
+  "vp": "390x844",
+  "sw": 375,
+  "cw": 375,
+  "hOverflow": false,
+  "heroH1FontSize": "32px",
+  "heroGridCols": "375px",
+  "drawerLabelDisplay": "flex",
+  "navLinksDisplay": "none",
+  "navCtaSize": null
+}

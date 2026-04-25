@@ -1,0 +1,23 @@
+{
+  "url": "http://127.0.0.1:8732/templates/business/pragma-corporate-suite/preview/?lang=fr",
+  "lang": "fr",
+  "dir": "ltr",
+  "title": "Pragma Advisors — Cabinet",
+  "vp": "1440x900",
+  "sw": 1425,
+  "cw": 1425,
+  "hOverflow": false,
+  "h1Text": "Là où se prennent les décisions qui comptent.",
+  "h1FontSize": "64px",
+  "h1Color": "rgb(30, 41, 59)",
+  "h1Distance": "341.6",
+  "h1Ratio": "12.81",
+  "footerLegalAnchors": 3,
+  "footerPlaceholderHashes": 0,
+  "footerRealRoutes": 3,
+  "voiceAnchor": {
+    "expected": "là où se prennent les décisions qui comptent",
+    "found": true
+  },
+  "placeholderText": []
+}

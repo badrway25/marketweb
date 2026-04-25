@@ -1,0 +1,9 @@
+{
+  "vp": "390x844",
+  "sw": 375,
+  "cw": 375,
+  "hOverflow": false,
+  "h1FontSize": "28px",
+  "navLinksDisplay": "none",
+  "drawerLabelDisplay": "flex"
+}

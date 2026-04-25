@@ -298,7 +298,12 @@
     max-width: 1400px; margin: 0 auto;
     display: grid; grid-template-columns: 1fr 0.6fr; gap: 80px; align-items: end;
   }
-  .cs-cta .label { color: var(--accent); font-family: var(--body); font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700; }
+  /* CS-BLOCK-17 · palette-safe CTA-band eyebrow. Was `var(--accent)`.
+     Fiscus accent (#1C3D5A blu-notte) on primary (#1F2937 navy) composited
+     to distance 40 / ratio 1.3 — AP11 dark-on-dark. `--on-dark-2` keeps the
+     label legible on every corporate-suite palette; Pragma's emerald accent
+     intent carries through elsewhere (hero CTA arrow, italic ems on cream). */
+  .cs-cta .label { color: var(--on-dark-2); font-family: var(--body); font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700; }
   .cs-cta h2 { margin-top: 14px; font-size: var(--fs-h2); line-height: 1.08; max-width: 22ch; color: var(--on-dark); }
   .cs-cta h2 em { color: var(--accent); }
   .cs-cta .intro { margin-top: 22px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--on-dark-2); line-height: 1.65; }

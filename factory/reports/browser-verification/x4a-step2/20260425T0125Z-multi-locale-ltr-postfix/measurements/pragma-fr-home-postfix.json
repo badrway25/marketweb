@@ -1,0 +1,18 @@
+{
+  "url": "http://127.0.0.1:8733/templates/business/pragma-corporate-suite/preview/?lang=fr",
+  "hOverflow": false,
+  "h1Text": "Là où se prennent les décisions qui comptent.",
+  "voiceAnchorFR": true,
+  "mp_back": {
+    "ratio": "16.87",
+    "distance": "387.5"
+  },
+  "mp_pill_current": {
+    "ratio": "16.87",
+    "distance": "387.5"
+  },
+  "cs_crest": {
+    "ratio": "12.81",
+    "distance": "341.6"
+  }
+}

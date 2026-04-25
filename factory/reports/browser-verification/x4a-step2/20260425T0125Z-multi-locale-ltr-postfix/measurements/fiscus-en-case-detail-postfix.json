@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8733/templates/business/fiscus-commercialista/preview/casi-seguiti/pmi-manifattura-bilancio-revisione/?lang=en",
+  "mp_back": {
+    "selector": ".mp-bar .mp-back",
+    "color": "rgb(238, 240, 243)",
+    "bgWalked": "10,14,26",
+    "distance": "387.5",
+    "ratio": "16.87"
+  },
+  "mp_pill_current": {
+    "selector": ".mp-lang a.mp-lang-pill.is-current",
+    "color": "rgb(238, 240, 243)",
+    "bgWalked": "10,14,26",
+    "distance": "387.5",
+    "ratio": "16.87"
+  },
+  "cs_crest": {
+    "selector": ".cs-nav .wm .crest",
+    "color": "rgb(238, 240, 243)",
+    "bgWalked": "31,41,55",
+    "distance": "343.2",
+    "ratio": "12.86"
+  },
+  "case_kpi_num": {
+    "selector": ".cs-post .kpi-band .stat .num",
+    "color": "rgb(238, 240, 243)",
+    "bgWalked": "31,41,55",
+    "distance": "343.2",
+    "ratio": "12.86"
+  },
+  "case_kpi_lbl": {
+    "selector": ".cs-post .kpi-band .stat .lbl",
+    "color": "rgba(238, 240, 243, 0.72)",
+    "bgWalked": "31,41,55",
+    "distance": "343.2",
+    "ratio": "12.86"
+  }
+}

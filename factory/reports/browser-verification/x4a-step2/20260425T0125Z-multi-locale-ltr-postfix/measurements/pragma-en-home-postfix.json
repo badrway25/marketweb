@@ -1,0 +1,30 @@
+{
+  "url": "http://127.0.0.1:8733/templates/business/pragma-corporate-suite/preview/?lang=en",
+  "sw": 1440,
+  "cw": 1440,
+  "hOverflow": false,
+  "h1Text": "Where the decisions that matter are made.",
+  "h1FontSize": "64px",
+  "voiceAnchorEN": true,
+  "mp_back": {
+    "color": "rgb(238, 240, 243)",
+    "bgWalked": "10,14,26",
+    "distance": "387.5",
+    "ratio": "16.87"
+  },
+  "mp_pill_current": {
+    "color": "rgb(238, 240, 243)",
+    "bgWalked": "10,14,26",
+    "distance": "387.5",
+    "ratio": "16.87"
+  },
+  "cs_crest": {
+    "color": "rgb(238, 240, 243)",
+    "bgWalked": "30,41,59",
+    "distance": "341.6",
+    "ratio": "12.81"
+  },
+  "footerLegalAnchors": 3,
+  "footerPlaceholderHashes": 0,
+  "footerRealRoutes": 3
+}
