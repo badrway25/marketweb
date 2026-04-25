@@ -1,0 +1,34 @@
+{
+  "run_iso": "20260425T0837Z",
+  "scope": "RTL (AR) walk · Pragma + Fiscus · core viewports · per-page contract validation",
+  "viewports_walked_floor": ["1440x900", "1024x768", "768x1024", "390x844"],
+  "pragma": {
+    "home_1440":   { "html_dir": "rtl", "html_lang": "ar", "scrollWidth": 1425, "clientWidth": 1425, "overflow": false, "title": "Pragma Advisors — المكتب", "hero_h1": "حيث تُتَّخَذ القرارات التي تصنع الفرق.", "hero_h1_font_size": "64px", "hero_h1_font_family": "\"Noto Kufi Arabic\", Merriweather, Georgia, serif", "hero_h1_direction": "rtl", "hero_grid_cols": "805.422px 619.578px (1fr 1.3fr · RTL flip)", "voice_anchor_present": true, "kpi_num_font": "Merriweather (Latin)", "kpi_num_unicode_bidi": "isolate", "footer_brand_word_font": "Merriweather (Latin)", "footer_legal_count": 3, "footer_legal_real_routes": true },
+    "home_1024":   { "scrollWidth": 1009, "clientWidth": 1009, "overflow": false, "nav_links_display": "flex", "nav_burger_display": "none", "hero_grid_cols": "504.5px 504.5px" },
+    "home_768":    { "scrollWidth": 753,  "clientWidth": 753,  "overflow": false, "nav_links_display": "none", "nav_burger_display": "flex", "hero_grid_cols": "376.5px 376.5px", "hero_h1_font_size": "42px" },
+    "home_390":    { "scrollWidth": 375,  "clientWidth": 375,  "overflow": false, "nav_links_display": "none", "nav_burger_display": "flex", "hero_grid_cols": "375px (single column · stack)", "hero_h1_font_size": "32px", "mp_lang_pill_size": { "w": 44, "h": 44 } },
+    "about_1440":  { "scrollWidth": 1425, "clientWidth": 1425, "overflow": false, "title": "Pragma Advisors — من نحن", "h1": "بوتيك مستقل، اثنان وعشرون عاماً من التكليفات السرية.", "footer_legal_count": 3, "footer_legal_real_routes": true, "placeholder_text": false },
+    "services_1440":{ "scrollWidth": 1425, "clientWidth": 1425, "overflow": false, "title": "Pragma Advisors — الممارسات", "h1": "ست كفاءات، توقيع واحد.", "h1_direction": "rtl", "footer_legal_count": 3, "placeholder_text": false },
+    "cases_1440":  { "scrollWidth": 1425, "clientWidth": 1425, "overflow": false, "title": "Pragma Advisors — دراسات الحالة", "h1": "ثلاثة تكليفات، ثلاثة اتجاهات.", "row_count": 3, "placeholder_text": false },
+    "case_detail_1440": { "scrollWidth": 1425, "clientWidth": 1425, "overflow": false, "title": "Pragma Advisors — دراسات الحالة", "h1": "مجموعة تصنيع في بريشيا · خطة صناعية 2025-28", "kpi_num_font": "Merriweather (Latin)", "kpi_band_bg": "rgb(30,41,59) cream-on-navy", "placeholder_text": false },
+    "contact_1440":{ "scrollWidth": 1425, "clientWidth": 1425, "overflow": false, "title": "Pragma Advisors — تواصل", "h1": "ثلاثون دقيقة، أجندة محدودة، دون أي التزام.", "form_input_direction": "rtl", "placeholder_text": false }
+  },
+  "fiscus": {
+    "home_1440":   { "html_dir": "rtl", "html_lang": "ar", "scrollWidth": 1425, "clientWidth": 1425, "overflow": false, "title": "Fiscus — المكتب", "hero_h1": "الامتثال الصحيح، لا الحيلة الضريبية.", "hero_h1_font_size": "64px", "hero_h1_font_family": "\"Noto Kufi Arabic\", \"IBM Plex Serif\", Georgia, serif", "kpi_num_font": "IBM Plex Serif (Latin)", "kpi_num_unicode_bidi": "isolate", "footer_brand_word_font": "IBM Plex Serif (Latin)" },
+    "home_390":    { "scrollWidth": 375, "clientWidth": 375, "overflow": false, "hero_h1_font_size": "32px", "hero_h1_height_px": 70.375, "nav_links_display": "none", "nav_burger_display": "flex", "hero_grid_cols": "375px (single column · stack)" },
+    "about_1440":  { "overflow": false, "title": "Fiscus — عن المكتب", "h1": "مكتب استشارات ضريبية مستقل، اثنان وعشرون عاماً من الممارسة المستمرة.", "footer_legal_count": 3, "footer_legal_real_routes": true, "placeholder_text": false },
+    "services_1440":{ "overflow": false, "h1": "ستة مجالات اختصاص، توقيع واحد.", "placeholder_text": false },
+    "cases_1440":  { "overflow": false, "h1": "ثلاث حالات، ثلاثة مجالات اختصاص.", "row_count": 3, "placeholder_text": false },
+    "case_detail_1440": { "overflow": false, "h1": "شركة تصنيع صغيرة ومتوسطة في لومبارديا · إطار مراجعة قانونية", "kpi_num_font": "IBM Plex Serif (Latin)", "kpi_band_bg": "rgb(31,41,55) cream-on-navy", "placeholder_text": false },
+    "contact_1440":{ "overflow": false, "h1": "خمس وأربعون دقيقة، بأجندة مفتوحة، دون أي التزام.", "form_input_direction": "rtl", "placeholder_text": false }
+  },
+  "focus_visible_ar": {
+    "mp_lang_pill_focused": { "outline_color": "rgb(16,185,129)", "outline_style": "solid", "outline_width": "2px", "outline_offset": "4px", "note": "Pragma emerald accent ring · matches BRWS-CONTRAST-04 / E1 contract · survives RTL" },
+    "mp_back_focused": { "outline_style": "auto", "outline_color": "rgb(16,16,16)", "note": "Browser-default · same in LTR · pre-existing P2 deviation, not AR-specific" }
+  },
+  "console": {
+    "errors": 0,
+    "warnings": 0,
+    "note": "favicon.ico 404 surfaces on first navigation (waivable per Round 2 convention)"
+  }
+}

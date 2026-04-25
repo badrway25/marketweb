@@ -1,0 +1,383 @@
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Found 171 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: core, crispy_bootstrap5, crispy_forms, django_filters, drf_spectacular, editor, messages, pages, rest_framework, staticfiles
+  Apply all migrations: accounts, admin, auth, catalog, commerce, contenttypes, projects, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying catalog.0001_initial... OK
+  Applying catalog.0002_webtemplate_tier... OK
+  Applying catalog.0003_taxonomy_v2_schema... OK
+  Applying catalog.0004_taxonomy_v2_backfill... OK
+  Applying catalog.0005_taxonomy_v2_not_null... OK
+  Applying commerce.0001_initial... OK
+  Applying commerce.0002_alter_order_fulfillment_status_and_more... OK
+  Applying commerce.0003_commerce_v2... OK
+  Applying projects.0001_initial... OK
+  Applying projects.0002_projectasset... OK
+  Applying sessions.0001_initial...System check identified some issues:
+
+WARNINGS:
+business-corporate: (corporate_suite.W001) corporate-suite imagery pool 'business-corporate' is grandfathered under LEGACY_EXEMPT_KEYS and ships 6 non-Pexels url(s) pending AP3 retro-curation. The archetype accepts this; the gatekeeper must cite it explicitly (O7 precondition).
+
+System check identified 1 issue (0 silenced).
+test_profession_cluster_registered (apps.catalog.tests.AdminRegistrationTests.test_profession_cluster_registered) ... ok
+test_visual_style_registered (apps.catalog.tests.AdminRegistrationTests.test_visual_style_registered) ... ok
+test_webtemplate_admin_feature_flags_in_list_filter (apps.catalog.tests.AdminRegistrationTests.test_webtemplate_admin_feature_flags_in_list_filter) ... ok
+test_webtemplate_admin_surfaces_new_taxonomy_fields (apps.catalog.tests.AdminRegistrationTests.test_webtemplate_admin_surfaces_new_taxonomy_fields) ... ok
+test_backfill_covers_exactly_twenty_templates (apps.catalog.tests.BackfillContractTests.test_backfill_covers_exactly_twenty_templates) ... ok
+test_backfill_dict_and_seed_templates_dict_match (apps.catalog.tests.BackfillContractTests.test_backfill_dict_and_seed_templates_dict_match) ... ok
+test_feature_flag_field_list_is_consistent (apps.catalog.tests.BackfillContractTests.test_feature_flag_field_list_is_consistent) ... ok
+test_imagery_check_green_on_enrolled_state (apps.catalog.tests.CorporateSuiteBuildTimeCheckTests.test_imagery_check_green_on_enrolled_state) ... ok
+test_imagery_check_is_registered (apps.catalog.tests.CorporateSuiteBuildTimeCheckTests.test_imagery_check_is_registered) ... ok
+test_imagery_check_legacy_exempt_surfaces_as_warning_not_error (apps.catalog.tests.CorporateSuiteBuildTimeCheckTests.test_imagery_check_legacy_exempt_surfaces_as_warning_not_error) ... ok
+test_imagery_check_red_on_injected_non_pexels_url (apps.catalog.tests.CorporateSuiteBuildTimeCheckTests.test_imagery_check_red_on_injected_non_pexels_url) ... ok
+test_palette_check_green_on_enrolled_state (apps.catalog.tests.CorporateSuiteBuildTimeCheckTests.test_palette_check_green_on_enrolled_state) ... ok
+test_palette_check_is_registered (apps.catalog.tests.CorporateSuiteBuildTimeCheckTests.test_palette_check_is_registered) ... ok
+test_palette_check_red_on_injected_solaria_bug (apps.catalog.tests.CorporateSuiteBuildTimeCheckTests.test_palette_check_red_on_injected_solaria_bug) ... ok
+test_footer_legal_hrefs_are_not_placeholder_hashes (apps.catalog.tests.CorporateSuiteChromeContractTests.test_footer_legal_hrefs_are_not_placeholder_hashes) ... ok
+test_footer_legal_row_uses_on_dark_2_not_on_dark_3 (apps.catalog.tests.CorporateSuiteChromeContractTests.test_footer_legal_row_uses_on_dark_2_not_on_dark_3) ... ok
+test_footer_legal_row_wraps_links_in_legal_group (apps.catalog.tests.CorporateSuiteChromeContractTests.test_footer_legal_row_wraps_links_in_legal_group) ... ok
+test_footer_wordmark_uses_heading_font_and_premium_size (apps.catalog.tests.CorporateSuiteChromeContractTests.test_footer_wordmark_uses_heading_font_and_premium_size) ... ok
+test_hero_has_single_primary_and_single_ghost_cta (apps.catalog.tests.CorporateSuiteChromeContractTests.test_hero_has_single_primary_and_single_ghost_cta) ... ok
+test_hero_right_overlay_has_bottom_stop_at_or_above_072 (apps.catalog.tests.CorporateSuiteChromeContractTests.test_hero_right_overlay_has_bottom_stop_at_or_above_072) ... ok
+test_nav_active_underline_is_compact_centered_accent (apps.catalog.tests.CorporateSuiteChromeContractTests.test_nav_active_underline_is_compact_centered_accent) ... ok
+test_nav_links_have_dedicated_focus_visible (apps.catalog.tests.CorporateSuiteChromeContractTests.test_nav_links_have_dedicated_focus_visible) ... ok
+test_nav_phone_tag_is_not_accent_colored (apps.catalog.tests.CorporateSuiteChromeContractTests.test_nav_phone_tag_is_not_accent_colored) ... ok
+test_business_fiscal_is_pexels_only_and_compliant (apps.catalog.tests.CorporateSuiteImageryPolicyTests.test_business_fiscal_is_pexels_only_and_compliant) ... ok
+test_legacy_business_corporate_is_exempt_and_silent (apps.catalog.tests.CorporateSuiteImageryPolicyTests.test_legacy_business_corporate_is_exempt_and_silent) ... ok
+test_non_canonical_pool_shape_is_flagged (apps.catalog.tests.CorporateSuiteImageryPolicyTests.test_non_canonical_pool_shape_is_flagged) ... ok
+test_pexels_hostname_enforcement_uses_canonical_cdn (apps.catalog.tests.CorporateSuiteImageryPolicyTests.test_pexels_hostname_enforcement_uses_canonical_cdn) ... ok
+test_should_enforce_archetype_gate (apps.catalog.tests.CorporateSuiteImageryPolicyTests.test_should_enforce_archetype_gate) ... ok
+test_warn_on_non_pexels_non_legacy_pool (apps.catalog.tests.CorporateSuiteImageryPolicyTests.test_warn_on_non_pexels_non_legacy_pool) ... ok
+test_cases_preview_supports_optional_thumb_primitive (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_cases_preview_supports_optional_thumb_primitive) ... ok
+test_hero_h1_uses_fs_hero_token (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_hero_h1_uses_fs_hero_token) ... ok
+test_lead_h1_uses_fs_lead_token (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_lead_h1_uses_fs_lead_token) ... ok
+test_leadership_card_supports_optional_portrait_primitive (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_leadership_card_supports_optional_portrait_primitive) ... ok
+test_no_over_ceiling_hardcoded_heading_sizes_on_home (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_no_over_ceiling_hardcoded_heading_sizes_on_home) ... ok
+test_page_section_padding_uses_rhythm_tokens (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_page_section_padding_uses_rhythm_tokens) ... ok
+test_pillars_and_kpi_band_hide_any_img_descendant (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_pillars_and_kpi_band_hide_any_img_descendant) ... ok
+test_rhythm_tokens_declared (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_rhythm_tokens_declared) ... ok
+test_section_base_padding_uses_rhythm_tokens (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_section_base_padding_uses_rhythm_tokens) ... ok
+test_type_scale_tokens_declared (apps.catalog.tests.CorporateSuiteRhythmContractTests.test_type_scale_tokens_declared) ... ok
+test_contrast_ratio_symmetric_and_bounded (apps.catalog.tests.CorporateSuiteThemeSafetyTests.test_contrast_ratio_symmetric_and_bounded) ... ok
+test_enrich_is_noop_on_fields_outside_its_scope (apps.catalog.tests.CorporateSuiteThemeSafetyTests.test_enrich_is_noop_on_fields_outside_its_scope) ... ok
+test_enrich_never_raises_on_invalid_hex (apps.catalog.tests.CorporateSuiteThemeSafetyTests.test_enrich_never_raises_on_invalid_hex) ... ok
+test_enrich_warns_for_light_primary (apps.catalog.tests.CorporateSuiteThemeSafetyTests.test_enrich_warns_for_light_primary) ... ok
+test_primary_safety_fails_on_solaria_bug_palette (apps.catalog.tests.CorporateSuiteThemeSafetyTests.test_primary_safety_fails_on_solaria_bug_palette) ... ok
+test_primary_safety_pass_on_pragma_and_fiscus (apps.catalog.tests.CorporateSuiteThemeSafetyTests.test_primary_safety_pass_on_pragma_and_fiscus) ... ok
+test_relative_luminance_monotonic (apps.catalog.tests.CorporateSuiteThemeSafetyTests.test_relative_luminance_monotonic) ... ok
+test_should_enrich_only_on_corporate_suite (apps.catalog.tests.CorporateSuiteThemeSafetyTests.test_should_enrich_only_on_corporate_suite) ... ok
+test_facet_counts_shape (apps.catalog.tests.DiscoverySelectorTests.test_facet_counts_shape) ... ok
+test_get_templates_by_cluster (apps.catalog.tests.DiscoverySelectorTests.test_get_templates_by_cluster) ... ok
+test_get_templates_by_cluster_404_on_unknown (apps.catalog.tests.DiscoverySelectorTests.test_get_templates_by_cluster_404_on_unknown) ... ok
+test_get_templates_by_role (apps.catalog.tests.DiscoverySelectorTests.test_get_templates_by_role) ... ok
+test_get_templates_by_role_404_on_unknown (apps.catalog.tests.DiscoverySelectorTests.test_get_templates_by_role_404_on_unknown) ... ok
+test_get_templates_by_use_case (apps.catalog.tests.DiscoverySelectorTests.test_get_templates_by_use_case) ... ok
+test_get_templates_by_use_case_404_on_unknown (apps.catalog.tests.DiscoverySelectorTests.test_get_templates_by_use_case_404_on_unknown) ... ok
+test_listing_feature_flags_are_and_joined (apps.catalog.tests.DiscoverySelectorTests.test_listing_feature_flags_are_and_joined) ... ok
+test_listing_filter_by_audience (apps.catalog.tests.DiscoverySelectorTests.test_listing_filter_by_audience) ... ok
+test_listing_filter_by_cluster (apps.catalog.tests.DiscoverySelectorTests.test_listing_filter_by_cluster) ... ok
+test_listing_filter_by_feature_flag_has_shop (apps.catalog.tests.DiscoverySelectorTests.test_listing_filter_by_feature_flag_has_shop) ... ok
+test_listing_filter_by_multiple_clusters (apps.catalog.tests.DiscoverySelectorTests.test_listing_filter_by_multiple_clusters) ... ok
+test_listing_filter_by_price_tier (apps.catalog.tests.DiscoverySelectorTests.test_listing_filter_by_price_tier) ... ok
+test_listing_filter_by_style (apps.catalog.tests.DiscoverySelectorTests.test_listing_filter_by_style) ... ok
+test_listing_filter_by_unknown_feature_flag_is_ignored (apps.catalog.tests.DiscoverySelectorTests.test_listing_filter_by_unknown_feature_flag_is_ignored) ... ok
+test_listing_filter_by_use_case (apps.catalog.tests.DiscoverySelectorTests.test_listing_filter_by_use_case) ... ok
+test_typeahead_empty_query_returns_empty_pools (apps.catalog.tests.DiscoverySelectorTests.test_typeahead_empty_query_returns_empty_pools) ... ok
+test_typeahead_matches_cluster_alias (apps.catalog.tests.DiscoverySelectorTests.test_typeahead_matches_cluster_alias) ... ok
+test_typeahead_matches_role_label (apps.catalog.tests.DiscoverySelectorTests.test_typeahead_matches_role_label) ... ok
+test_typeahead_matches_template_name (apps.catalog.tests.DiscoverySelectorTests.test_typeahead_matches_template_name) ... ok
+test_typeahead_single_char_returns_empty_pools (apps.catalog.tests.DiscoverySelectorTests.test_typeahead_single_char_returns_empty_pools) ... ok
+test_cluster_detail_200 (apps.catalog.tests.DiscoveryViewTests.test_cluster_detail_200) ... ok
+test_cluster_detail_404_on_unknown (apps.catalog.tests.DiscoveryViewTests.test_cluster_detail_404_on_unknown) ... ok
+test_editor_untouched_invariant (apps.catalog.tests.DiscoveryViewTests.test_editor_untouched_invariant) ... ok
+test_fixed_prefix_paths_resolve_before_category_catchall (apps.catalog.tests.DiscoveryViewTests.test_fixed_prefix_paths_resolve_before_category_catchall) ... ok
+test_legacy_category_listing_200 (apps.catalog.tests.DiscoveryViewTests.test_legacy_category_listing_200) ... ok
+test_legacy_template_detail_200 (apps.catalog.tests.DiscoveryViewTests.test_legacy_template_detail_200) ... ok
+test_legacy_template_detail_exposes_pills (apps.catalog.tests.DiscoveryViewTests.test_legacy_template_detail_exposes_pills) ... ok
+test_legacy_template_list_200 (apps.catalog.tests.DiscoveryViewTests.test_legacy_template_list_200) ... ok
+test_listing_filter_by_cluster_query_string (apps.catalog.tests.DiscoveryViewTests.test_listing_filter_by_cluster_query_string) ... ok
+test_listing_filter_by_feature_query_string (apps.catalog.tests.DiscoveryViewTests.test_listing_filter_by_feature_query_string) ... ok
+test_role_discovery_200 (apps.catalog.tests.DiscoveryViewTests.test_role_discovery_200) ... ok
+test_role_discovery_404_on_unknown (apps.catalog.tests.DiscoveryViewTests.test_role_discovery_404_on_unknown) ... ok
+test_typeahead_endpoint_clamps_limit (apps.catalog.tests.DiscoveryViewTests.test_typeahead_endpoint_clamps_limit) ... ok
+test_typeahead_endpoint_empty_query_200 (apps.catalog.tests.DiscoveryViewTests.test_typeahead_endpoint_empty_query_200) ... ok
+test_typeahead_endpoint_returns_json (apps.catalog.tests.DiscoveryViewTests.test_typeahead_endpoint_returns_json) ... ok
+test_use_case_discovery_200 (apps.catalog.tests.DiscoveryViewTests.test_use_case_discovery_200) ... ok
+test_use_case_discovery_404_on_unknown (apps.catalog.tests.DiscoveryViewTests.test_use_case_discovery_404_on_unknown) ... ok
+test_all_mvp_templates_are_multi_page (apps.catalog.tests.FreshSeedChainBackfillTests.test_all_mvp_templates_are_multi_page) ... ok
+test_all_mvp_templates_are_rtl_enabled (apps.catalog.tests.FreshSeedChainBackfillTests.test_all_mvp_templates_are_rtl_enabled) ... ok
+test_cluster_category_matches_template_category (apps.catalog.tests.FreshSeedChainBackfillTests.test_cluster_category_matches_template_category) ... ok
+test_ecommerce_templates_have_shop_flag (apps.catalog.tests.FreshSeedChainBackfillTests.test_ecommerce_templates_have_shop_flag) ... ok
+test_every_mvp_template_has_profession_cluster (apps.catalog.tests.FreshSeedChainBackfillTests.test_every_mvp_template_has_profession_cluster) ... ok
+test_every_mvp_template_has_visual_style (apps.catalog.tests.FreshSeedChainBackfillTests.test_every_mvp_template_has_visual_style) ... ok
+test_medical_and_restaurant_templates_have_booking_flag (apps.catalog.tests.FreshSeedChainBackfillTests.test_medical_and_restaurant_templates_have_booking_flag) ... ok
+test_price_tier_populated_for_every_template (apps.catalog.tests.FreshSeedChainBackfillTests.test_price_tier_populated_for_every_template) ... ok
+test_representative_mapping_bottega_artisan_typographic_first (apps.catalog.tests.FreshSeedChainBackfillTests.test_representative_mapping_bottega_artisan_typographic_first) ... ok
+test_representative_mapping_luxe_fashion_magazine_hybrid (apps.catalog.tests.FreshSeedChainBackfillTests.test_representative_mapping_luxe_fashion_magazine_hybrid) ... ok
+test_representative_mapping_vertex_creative_editorial_warm (apps.catalog.tests.FreshSeedChainBackfillTests.test_representative_mapping_vertex_creative_editorial_warm) ... ok
+test_search_keywords_populated_for_every_template (apps.catalog.tests.FreshSeedChainBackfillTests.test_search_keywords_populated_for_every_template) ... ok
+test_second_seed_run_is_idempotent (apps.catalog.tests.FreshSeedChainBackfillTests.test_second_seed_run_is_idempotent) ... ok
+test_seeded_template_count_matches_seed_metadata (apps.catalog.tests.FreshSeedChainBackfillTests.test_seeded_template_count_matches_seed_metadata) ... ok
+test_specialist_cluster_is_shared_by_cardio_and_derm (apps.catalog.tests.FreshSeedChainBackfillTests.test_specialist_cluster_is_shared_by_cardio_and_derm) ... ok
+test_template_category_preserved_across_backfill (apps.catalog.tests.FreshSeedChainBackfillTests.test_template_category_preserved_across_backfill) ... ok
+test_home_200 (apps.catalog.tests.HomepageDiscoveryTests.test_home_200) ... ok
+test_home_category_chips_point_to_catalog_routes (apps.catalog.tests.HomepageDiscoveryTests.test_home_category_chips_point_to_catalog_routes) ... ok
+test_home_exposes_how_it_works_anchor (apps.catalog.tests.HomepageDiscoveryTests.test_home_exposes_how_it_works_anchor) ... ok
+test_home_exposes_typeahead_endpoint_hook (apps.catalog.tests.HomepageDiscoveryTests.test_home_exposes_typeahead_endpoint_hook) ... ok
+test_home_features_featured_templates (apps.catalog.tests.HomepageDiscoveryTests.test_home_features_featured_templates) ... ok
+test_home_includes_role_discovery_entries (apps.catalog.tests.HomepageDiscoveryTests.test_home_includes_role_discovery_entries) ... ok
+test_home_includes_use_case_entries (apps.catalog.tests.HomepageDiscoveryTests.test_home_includes_use_case_entries) ... ok
+test_home_search_form_submits_to_catalog_listing (apps.catalog.tests.HomepageDiscoveryTests.test_home_search_form_submits_to_catalog_listing) ... ok
+test_home_trust_counters_are_live_from_db (apps.catalog.tests.HomepageDiscoveryTests.test_home_trust_counters_are_live_from_db) ... ok
+test_home_trust_counters_render_in_html (apps.catalog.tests.HomepageDiscoveryTests.test_home_trust_counters_render_in_html) ... ok
+test_home_200_on_empty_db (apps.catalog.tests.HomepageEmptyDbSafetyTests.test_home_200_on_empty_db) ... ok
+test_home_trust_counters_zero_on_empty_db (apps.catalog.tests.HomepageEmptyDbSafetyTests.test_home_trust_counters_zero_on_empty_db) ... ok
+test_home_template_does_not_reach_into_live_templates (apps.catalog.tests.HomepageScopeInvariantTests.test_home_template_does_not_reach_into_live_templates) ... ok
+test_pages_views_does_not_import_editor (apps.catalog.tests.HomepageScopeInvariantTests.test_pages_views_does_not_import_editor) ... ok
+test_category_reverse_accessor_is_profession_clusters (apps.catalog.tests.ProfessionClusterTests.test_category_reverse_accessor_is_profession_clusters) ... ok
+test_defaults_are_sensible (apps.catalog.tests.ProfessionClusterTests.test_defaults_are_sensible) ... ok
+test_ordering_by_category_order_then_cluster_order_then_name (apps.catalog.tests.ProfessionClusterTests.test_ordering_by_category_order_then_cluster_order_then_name) ... ok
+test_slug_auto_generated_from_name (apps.catalog.tests.ProfessionClusterTests.test_slug_auto_generated_from_name) ... ok
+test_slug_is_globally_unique (apps.catalog.tests.ProfessionClusterTests.test_slug_is_globally_unique) ... ok
+test_str_includes_category_name (apps.catalog.tests.ProfessionClusterTests.test_str_includes_category_name) ... ok
+test_deterministic_across_repeated_calls (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_deterministic_across_repeated_calls)
+Two consecutive calls with the same args must return the same ... ok
+test_distinct_no_duplicate_slugs (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_distinct_no_duplicate_slugs)
+A template in cluster+style+category intersection must appear ... ok
+test_exclude_self_invariant (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_exclude_self_invariant)
+Every related set must never contain the source template itself. ... ok
+test_include_drafts_false_respected (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_include_drafts_false_respected)
+Draft tier templates MUST NOT appear in related results when ... ok
+test_include_drafts_true_widens_pool (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_include_drafts_true_widens_pool)
+With ``include_drafts=True`` (staff preview path), drafts are ... ok
+test_layer_ordering_cluster_beats_style_beats_category (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_layer_ordering_cluster_beats_style_beats_category)
+Explicit layer-priority sanity � with a fully-populated catalog ... ok
+test_limit_respected (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_limit_respected)
+Returned set never exceeds the requested limit. ... ok
+test_limit_zero_returns_empty (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_limit_zero_returns_empty) ... ok
+test_pragma_falls_back_gracefully (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_pragma_falls_back_gracefully)
+Pragma's cluster `corporate` has only Pragma; style ... ok
+test_return_shape_is_iterable_with_webtemplate_attrs (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_return_shape_is_iterable_with_webtemplate_attrs)
+Regression guard � views/templates iterate the result and read ... ok
+test_same_category_fallback_luxe_includes_bottega (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_same_category_fallback_luxe_includes_bottega)
+Luxe's cluster singleton + style singleton � category `ecommerce` ... ok
+test_same_cluster_priority_cardio_returns_derm_first (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_same_cluster_priority_cardio_returns_derm_first)
+Cardio + Derm share cluster `specialist` � Derm must be first. ... ok
+test_same_cluster_priority_derm_returns_cardio_first (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_same_cluster_priority_derm_returns_cardio_first)
+Symmetry � Derm's related starts with Cardio (same cluster). ... ok
+test_same_style_fallback_when_cluster_is_singleton (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_same_style_fallback_when_cluster_is_singleton)
+Villa's cluster `real-estate-luxury` is singleton; its style ... ok
+test_template_without_taxonomy_falls_back_to_category (apps.catalog.tests.RelatedTemplatesTaxonomyTests.test_template_without_taxonomy_falls_back_to_category)
+Defensive: the selector still walks the category fallback ... ok
+test_cluster_counts_per_category_match_taxonomy_contract (apps.catalog.tests.SeedProfessionClustersCommandTests.test_cluster_counts_per_category_match_taxonomy_contract) ... ok
+test_extra_categories_constant_declares_exactly_seven (apps.catalog.tests.SeedProfessionClustersCommandTests.test_extra_categories_constant_declares_exactly_seven) ... ok
+test_first_run_creates_fifty_two_clusters (apps.catalog.tests.SeedProfessionClustersCommandTests.test_first_run_creates_fifty_two_clusters) ... ok
+test_first_run_creates_seven_extra_macro_categories (apps.catalog.tests.SeedProfessionClustersCommandTests.test_first_run_creates_seven_extra_macro_categories) ... ok
+test_representative_sample_cluster_to_category_mapping (apps.catalog.tests.SeedProfessionClustersCommandTests.test_representative_sample_cluster_to_category_mapping) ... ok
+test_second_run_is_idempotent (apps.catalog.tests.SeedProfessionClustersCommandTests.test_second_run_is_idempotent) ... ok
+test_seed_constant_declares_exactly_fifty_two_clusters (apps.catalog.tests.SeedProfessionClustersCommandTests.test_seed_constant_declares_exactly_fifty_two_clusters) ... ok
+test_first_run_creates_twelve_styles (apps.catalog.tests.SeedVisualStylesCommandTests.test_first_run_creates_twelve_styles) ... ok
+test_representative_sample_mapping (apps.catalog.tests.SeedVisualStylesCommandTests.test_representative_sample_mapping) ... ok
+test_second_run_is_idempotent (apps.catalog.tests.SeedVisualStylesCommandTests.test_second_run_is_idempotent) ... ok
+test_seed_constant_declares_exactly_twelve_styles (apps.catalog.tests.SeedVisualStylesCommandTests.test_seed_constant_declares_exactly_twelve_styles) ... ok
+test_all_seeded_templates_have_profession_cluster (apps.catalog.tests.TaxonomyNotNullContractTests.test_all_seeded_templates_have_profession_cluster) ... ok
+test_all_seeded_templates_have_visual_style (apps.catalog.tests.TaxonomyNotNullContractTests.test_all_seeded_templates_have_visual_style) ... ok
+test_category_fk_still_required_unchanged (apps.catalog.tests.TaxonomyNotNullContractTests.test_category_fk_still_required_unchanged)
+X.3 Commit 5 does NOT touch ``category`` � legacy FK still ... ok
+test_cluster_category_invariant_preserved (apps.catalog.tests.TaxonomyNotNullContractTests.test_cluster_category_invariant_preserved)
+cluster.category == template.category � holds post-flip. ... ok
+test_create_with_both_fks_succeeds (apps.catalog.tests.TaxonomyNotNullContractTests.test_create_with_both_fks_succeeds)
+Positive control � ensures the flip didn't over-tighten. ... ok
+test_create_without_profession_cluster_raises (apps.catalog.tests.TaxonomyNotNullContractTests.test_create_without_profession_cluster_raises)
+Creating a WebTemplate without profession_cluster must fail ... ok
+test_create_without_visual_style_raises (apps.catalog.tests.TaxonomyNotNullContractTests.test_create_without_visual_style_raises) ... ok
+test_discovery_surfaces_no_regression (apps.catalog.tests.TaxonomyNotNullContractTests.test_discovery_surfaces_no_regression)
+End-to-end smoke at the selector level: the 3 X.2 Commit 4 ... ok
+test_migration_0005_is_schema_only (apps.catalog.tests.TaxonomyNotNullContractTests.test_migration_0005_is_schema_only)
+Guardrail � migration 0005 must contain only AlterField ... ok
+test_model_field_declarations_reflect_not_null (apps.catalog.tests.TaxonomyNotNullContractTests.test_model_field_declarations_reflect_not_null)
+The model definition itself must carry null=False on both ... ok
+test_seeded_count_unchanged_by_migration (apps.catalog.tests.TaxonomyNotNullContractTests.test_seeded_count_unchanged_by_migration)
+No seeded row may be lost by migration 0005's NOT NULL ... ok
+test_defaults_are_sensible (apps.catalog.tests.VisualStyleTests.test_defaults_are_sensible) ... ok
+test_ordering_by_order_then_slug (apps.catalog.tests.VisualStyleTests.test_ordering_by_order_then_slug) ... ok
+test_slug_is_unique (apps.catalog.tests.VisualStyleTests.test_slug_is_unique) ... ok
+test_str_is_label (apps.catalog.tests.VisualStyleTests.test_str_is_label) ... ok
+test_cluster_category_and_template_category_can_be_consistent (apps.catalog.tests.WebTemplateMetadataTests.test_cluster_category_and_template_category_can_be_consistent) ... ok
+test_feature_flags_roundtrip (apps.catalog.tests.WebTemplateMetadataTests.test_feature_flags_roundtrip) ... ok
+test_json_fields_accept_list_payloads (apps.catalog.tests.WebTemplateMetadataTests.test_json_fields_accept_list_payloads) ... ok
+test_legacy_category_fk_still_required (apps.catalog.tests.WebTemplateMetadataTests.test_legacy_category_fk_still_required) ... ok
+test_new_fields_default_values_match_migration_contract (apps.catalog.tests.WebTemplateMetadataTests.test_new_fields_default_values_match_migration_contract) ... ok
+test_price_tier_accepts_valid_choice (apps.catalog.tests.WebTemplateMetadataTests.test_price_tier_accepts_valid_choice) ... ok
+test_price_tier_choices_are_free_standard_premium (apps.catalog.tests.WebTemplateMetadataTests.test_price_tier_choices_are_free_standard_premium) ... ok
+test_profession_cluster_reverse_accessor_and_related_name (apps.catalog.tests.WebTemplateMetadataTests.test_profession_cluster_reverse_accessor_and_related_name) ... ok
+test_visual_style_reverse_accessor_and_related_name (apps.catalog.tests.WebTemplateMetadataTests.test_visual_style_reverse_accessor_and_related_name) ... ok
+
+----------------------------------------------------------------------
+Ran 171 tests in 6.008s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+ OK
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+
+0 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.

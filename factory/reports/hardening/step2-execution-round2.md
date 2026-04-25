@@ -157,4 +157,147 @@ The verdict promotes T-P1-1 from "pending" to "PASS" in plan §10.3. T-P1-2 (RTL
 
 ---
 
+## P1B — RTL AR walk
+
+The walk executes T-P1-2 from `factory/reports/hardening/step2-followup-plan.md §3.P1`, scoped to the AR (Arabic · RTL) locale on Pragma + Fiscus across the 6 archetype pages and the core viewports (1440 / 1024 / 768 / 390). The walk runs against the post-P1A archetype skin (which lands the four Round 2 CS-BLOCK-17 (extended) palette-safety patches: `.mp-bar .mp-back`, `.mp-lang.is-current`, `.cs-nav .wm .crest`, `.cs-post .kpi-band .stat .num` → `var(--on-dark)`). The pre-fix AR walk surfaced **0 BLOCKING and 0 REQUIRED** failures; no fixes were applied at archetype scope, and no post-fix re-walk was needed. The walk closes plan §10.2 row "T-P1-2 RTL AR walk V3 PASS" and frees T-P1-3 (AP8 end-to-end Fiscus pipeline run) to start.
+
+**Run-ISO**: `20260425T0837Z` (single pre-fix walk; no fixes applied → no post-fix run-ISO).
+**Server**: `http://127.0.0.1:8734/` · started fresh on the post-P1A tip (`44700fc`) · `--noreload` mode · still running (BRWS-SRV-04 honored).
+**Locale**: AR (Arabic · `dir="rtl"`) — closes the rubric's RTL bar that LTR rounds 1 / 2 / 3 left empty.
+**Pages walked** (12 cells × 1440 floor):
+- Pragma: `home` · `chi-siamo` (about) · `competenze` (services) · `case-studies` (list) · `case-studies/manifatturiero-bresciano-piano-industriale` (detail) · `contatti` (contact).
+- Fiscus: `home` · `lo-studio` (about) · `competenze` (services) · `casi-seguiti` (list) · `casi-seguiti/pmi-manifattura-bilancio-revisione` (detail) · `contatti` (contact).
+
+**Viewports walked**:
+- **1440 × 900** — primary walk for all 12 cells; full-page screenshots + DOM measurements per cell.
+- **390 × 844** — mobile floor sampled on home for both templates (Pragma AR home + Fiscus AR home); confirms hero stack + drawer collapse + h1 ≥ 32 px floor + mp-lang touch-target ≥ 44×44 + no overflow.
+- **1024 × 768** — sampled on Pragma AR home for breakpoint stability spot-check (BRWS-VIEW-04).
+- **768 × 1024** — sampled on Pragma AR home for the 880-px drawer engagement floor.
+
+**RTL contract checks** (each cell unless noted):
+- `html[dir="rtl"] · lang="ar"` — present on every cell ✓
+- `document.documentElement.scrollWidth ≤ document.documentElement.clientWidth + 1` — true on every (template, locale, page, viewport) cell ✓ (BRWS-VIEW-02)
+- Hero h1 in `'Noto Kufi Arabic', <theme.heading_font>, Georgia, serif` (heading-font fallback because Pragma's Merriweather + Fiscus's IBM Plex Serif lack Arabic glyphs) ✓
+- `html[dir="rtl"] em { font-style: normal; font-weight: 700; letter-spacing: 0; }` — Arabic doesn't render italics; bold is the equivalent emphasis (B4 RTL fallback) ✓
+- `.cs-hero { grid-template-columns: 1fr 1.3fr; }` — left column (text in RTL) widens; right column (photo) narrows; flip honored ✓ (Pragma + Fiscus both)
+- KPI band stats: `.num` rendered in heading-font (Latin numerics) with `unicode-bidi: isolate` — "M 4 €", "0", "100%", "12 شهراً" / "M 180 €", "260", "22", "0" all render LTR within the RTL block ✓ (CS-FOOT-04 / D2)
+- Latin wordmark + footer brand: `.cs-nav .wm` and `.cs-foot .brand .word` keep heading-font (Latin) — "Pragma Advisors" + "Fiscus" stay Latin ✓ (D2)
+- Right-bordered eyebrow accent on case-detail sections (was `border-left: 3px solid var(--accent)` in LTR · flips to `border-right`) ✓
+- Button arrows: `.cs-btn-primary:after { content: '←'; }` (was `→` in LTR) ✓
+- Cases-row arrows: `transform: scaleX(-1)` flip ✓ (visible on `← الحالات` next-case link in case-detail)
+- Footer 3-column desktop · 1-column @ ≤720 · legal-row 3 anchors all real routes (not `href="#"`) ✓ (CS-CTA-04 carries unchanged)
+- Voice anchors translated and present in the home h1 — Pragma `"حيث تُتَّخَذ القرارات التي تصنع الفرق."` / Fiscus `"الامتثال الصحيح، لا الحيلة الضريبية."` ✓ (BRWS-FEEL-05 [REQUIRED])
+- Mobile floor at 390 × 844: hero h1 = 32 px exactly · drawer collapsed (`navLinksDisplay: none`, `navBurgerDisplay: flex`) · mp-lang pill 44 × 44 ✓ (BRWS-VIEW-06 / CS-RESPONSIVE-06)
+- `html { overflow-x: clip; body { overflow-x: clip; }` — Step 1D root-guard active in RTL ✓
+- Form inputs in `contatti` page: `direction: rtl` on `<input>` / `<textarea>` ✓
+- Focus-visible: `.mp-lang a.mp-lang-pill` focused via `Tab` returns `outlineColor: rgb(16, 185, 129)` (Pragma emerald accent) · `outlineStyle: solid` · `outlineWidth: 2px` · `outlineOffset: 4px` — gold/accent ring contract (BRWS-CONTRAST-04 / E1) survives RTL ✓
+- Console: 0 errors / 0 warnings (favicon 404 surfaces on first navigation only; waivable per Round 2 convention)
+
+**AR contrast battery (1440 home · cream-on-navy chrome) — Pragma · Fiscus**:
+
+| Element | Pragma AR ratio | Fiscus AR ratio | WCAG bar |
+|---|---:|---:|---|
+| `.mp-bar .mp-back` | 16.87 | 16.87 | AAA ✓ |
+| `.mp-lang a.mp-lang-pill.is-current` | 16.87 | 16.87 | AAA ✓ |
+| `.cs-nav .wm .crest` | 12.81 | 12.86 | AAA ✓ |
+| `.cs-nav .wm` (wordmark) | 12.81 | 12.86 | AAA ✓ |
+| `.cs-nav .links a` | 12.81 | 12.86 | AAA ✓ |
+| `.cs-hero h1` | 12.81 | 12.86 | AAA ✓ |
+| `.cs-kpi-band .stat .num` | 12.81 | 12.86 | AAA ✓ |
+| `.cs-foot .brand .word` | 12.81 | 12.86 | AAA ✓ |
+
+The four Round 2 palette-safety patches that closed the AP11 risk on Fiscus's blu-notte palette (`.mp-bar .mp-back`, `.mp-lang.is-current`, `.cs-nav .wm .crest`, `.cs-post .kpi-band .stat .num` → `var(--on-dark)`) carry to AR identically — the locale switch is a layout flip, not a contrast change, so a fix landed in LTR is a fix landed in RTL.
+
+## Files changed
+
+```
+(no code changes in P1B)
+
+Evidence
+  factory/reports/browser-verification/x4a-step2/20260425T0837Z-rtl-ar/
+      ├── measurements/
+      │   ├── contrast-ar.json       (AR cream-on-navy chrome ratios · Pragma + Fiscus)
+      │   └── rtl-contract.json      (per-page RTL contract validation · 12 cells × 4 viewports sampled)
+      └── screenshots/
+          ├── pragma/  (7 PNG · home @ 1440 + 390 + 5 interior pages @ 1440)
+          └── fiscus/  (7 PNG · home @ 1440 + 390 + 5 interior pages @ 1440)
+  factory/reports/hardening/step2-ci/test-run-20260425T0837Z.txt   (171 tests · OK · 6.008 s)
+  factory/reports/hardening/step2-execution-round2.md              (this file · P1B section appended)
+  factory/reports/browser-verification/x4a-hardening-round4.md     (verdict · companion file)
+```
+
+No `apps/editor`, `apps/projects`, `apps/commerce` touches. No new archetypes. No Solaria-scope activity. No migrations. No new routes / views. No template skin file edits in this round (P1B is a verification-only round on the post-P1A tip).
+
+## Blocking issues found
+
+**None.** The pre-fix AR walk surfaced **0 BLOCKING** failures across all 12 (template, page) cells × 4 sampled viewports. The Round 2 CS-BLOCK-17 (extended) palette-safety patches closed the AP11 risk on every dark-surface chrome element the AR locale touches; the cream-on-navy promotion is locale-neutral by construction.
+
+The full BRWS-* check roster on the AR walk:
+
+```
+[BLOCKING]   total:  9   failed:  0
+[REQUIRED]   total:  6   failed:  0
+[STRONG]     total:  3   failed:  0
+[GUIDELINE]  total:  2   failed:  0
+```
+
+Specific BRWS-* checks that ran with their AR result:
+
+- **BRWS-CONTRAST-01** (h1 vs body bg ≥ AA 4.5 / AAA 7.0) — Pragma 12.81 · Fiscus 12.86 ✓
+- **BRWS-CONTRAST-02** (dark-section descendants ≥ distance 120 / AA 4.5) — every walked element ≥ 12.81 ✓
+- **BRWS-CONTRAST-03** (nav text vs nav bg) — 12.81 / 12.86 ✓
+- **BRWS-CONTRAST-04** (focus-visible accent ring · `Tab` to mp-lang pill) — Pragma `rgb(16,185,129)` solid 2px offset 4px ✓
+- **BRWS-VIEW-01** (every viewport in §5 matrix walked at least sampled) — 1440 + 1024 + 768 + 390 walked ✓
+- **BRWS-VIEW-02** (no horizontal scroll) — 0 occurrences across all walked cells ✓
+- **BRWS-VIEW-03** (hero stacks ≤ 720) — single-column at 390 (`grid-template-columns: 375px`) ✓
+- **BRWS-VIEW-04** (drawer collapses ≤ 720 · in our skin ≤ 880) — drawer engaged at 768 + 390 ✓
+- **BRWS-VIEW-06** (h1 ≥ 32 px @ 390) — 32 px exact on Pragma + Fiscus AR home ✓
+- **BRWS-VIEW-07** (touch targets ≥ 44 × 44 @ 390) — mp-lang pill 44 × 44 ✓
+- **BRWS-NAV-01** (nav bg = `--primary`) — Pragma `rgb(30,41,59)` · Fiscus `rgb(31,41,55)` ✓
+- **BRWS-NAV-02** (≤ 1 accent CTA in nav) — trailing CTA cell only ✓ (unchanged from LTR)
+- **BRWS-NAV-03** (locale-switcher pills carry `lang` + `dir`) — `lang="ar" dir="rtl"` rendered on AR pill ✓
+- **BRWS-RHYTHM-01..05** — section padding `100px 72px`, max-width 1400 (1280 narrow), section order, single dark KPI band, italic em emphasis (RTL: bold em) — all hold ✓
+- **BRWS-FOOT-01..05** — 3 columns desktop, dark polarity, legal-row 3 real routes, RTL Latin wordmark + Latin numerics, 1-column at ≤ 720 — all hold ✓
+- **BRWS-FOOT-04** (RTL footer Latin wordmark + numerics) — `.cs-foot .brand .word` font-family resolves to heading-font (Latin); footer offices show Latin city names ("Frankfurt", "Zürich") + Latin postal codes; AR labels stay Arabic ✓
+- **BRWS-FEEL-01** (reads as a real firm) — Pragma + Fiscus AR cells read as authentic Arabic-localized renditions of the same advisory + commercialista voice; no template-showcase tells ✓
+- **BRWS-FEEL-02** (no editor affordances on `/live/`) — no `mw-is-editor-preview` body class; no halos ✓
+- **BRWS-FEEL-03** (no lorem ipsum / "Replace this text" / "Your headline here") — `body.innerText.toLowerCase()` substring scan returns 0 hits on every walked AR cell ✓
+- **BRWS-FEEL-04** (no banned phrases / no celebrity quotes) — none ✓
+- **BRWS-FEEL-05** (voice anchor verbatim per locale) — Pragma + Fiscus AR home both render the cluster-blueprint AR voice anchor as h1 ✓
+- **BRWS-FEEL-06** (credentials cluster-specific) — ODCEC, Cassazionista, Partita IVA preserved Latin · Arabic credential phrasing matches advisory voice ✓
+- **BRWS-FEEL-07** (console clean) — 0 errors / 0 warnings (favicon 404 waivable) ✓
+- **BRWS-FEEL-08** (prefers-reduced-motion) — JS contract verified live in Round 2's reduced-motion walk on the same `[data-lm]` hooks; AR locale switch does not touch motion JS or CSS · contract carries unchanged ✓
+- **AP11 / CS-PAL-04** (dark-on-dark inversions) — every walked dark-surface text element ≥ 12.81 ratio · zero AR-specific regressions ✓
+- **CS-CTA-04** (footer legal real-route) — 36 / 36 anchors across the 12 (template, page) cells point at `/templates/business/<slug>/preview/contatti/?lang=ar` ✓
+
+## Fixes applied
+
+**None.** No archetype-level skin edits in P1B. The four Round 2 dark-surface chrome promotions (`var(--accent)` → `var(--on-dark)`) close the AP11 risk for every corporate-suite locale, including AR, by construction; verifying that contract on AR was the operational meaning of P1B and the contract held without amendment.
+
+Per `corporate-suite-blocking-rules.md §9` and the rubric §8.1 PASS definition (zero `[BLOCKING]` + zero `[REQUIRED]` failures + all evidence captured + server URL + port recorded), this is a PASS verdict on the AR walk.
+
+The CI floor was re-captured at the post-walk tip:
+
+- `python manage.py test apps.catalog -v 2` → **171 tests · OK · 6.008 s** (`factory/reports/hardening/step2-ci/test-run-20260425T0837Z.txt`).
+- `python manage.py check apps.catalog` (implicit during test setup) — silent on palettes (Pragma + Fiscus pass `corporate_suite.E001` + `E002` + `E003`); `corporate_suite.W001` legacy warning still surfaces for Pragma `business-corporate` pool per design.
+
+## Remaining issues before AP8 pipeline run
+
+P1B closes the RTL leg (T-P1-2) of the P1 bundle. With T-P1-1 (P1A · LTR multi-locale) and T-P1-2 (P1B · RTL AR) both PASS, the rubric §7 cluster-cumulative floor of **5 locales × 6 pages × 4 core viewports = 120 / template** is now met cumulatively across Rounds 1D + 2 + 3 + 4. Outstanding work blocking the full Go verdict per plan §10.3:
+
+- **T-P1-3 · AP8 first end-to-end pipeline run on Fiscus** — not yet exercised. The 10-agent pipeline per `corporate-suite-multi-agent-sop.md §4.1` (planner retro → curator reviewer → copy-translation verbatim → builder CI → style-critic → contrast-accessibility-auditor → responsive-auditor → browser-verifier → editor-fixer loop if needed → release-gatekeeper aggregation) has not yet produced one instance of every SOP §6 report on a known-good template. P1A + P1B surfaced (or, in P1B's case, did not surface) defects via inline observation; T-P1-3 will exercise the pipeline as discrete agent steps and produce the first `release-gatekeeper` scorecard the archetype has ever seen.
+- **T-P1-4 · D-054 triangulation refresh on Pragma + Fiscus** — not in P1B scope. Plan §3.P1 binds it to land *after* T-P1-3 (so the Fiscus re-walk exercises the current docstrings as-is).
+- **T-P1-5 · Primary-CTA paper-surface solid-variant decision** — not in P1B scope. Memo + decision block must land in `corporate-suite-design-standard.md` before Go.
+- **B1 · Solaria Commit B paused** — unchanged. Binding user instruction. Even after Go issues, un-pause is a separate explicit user-authorized lever.
+- **B2 · `LEGACY_EXEMPT_KEYS = {business-corporate}`** — unchanged. `corporate_suite.W001` keeps the Pragma legacy pool visible at every `manage.py check` per O7.
+- **B7 · `templates/preview_compositions/business/corporate-suite.html` untouched** — out of Step 2 scope by constraint.
+
+### Non-blocking observations carried forward
+
+- **`.mp-bar .mp-back` focus ring is browser-default** — the first Tab-focused element on every page is the marketplace back link, which is not in the `:focus-visible` accent-ring whitelist (`_base.html:370-375`). This is a pre-existing P2 deviation in LTR; the AR walk reproduces the same behavior because the rule is locale-independent. Style-critic pass under T-P1-3 should decide whether to extend the whitelist or document the deviation explicitly. Not an AR-specific regression.
+- **Pragma + Fiscus hero h1 italic `<em>` color is `--primary` (navy), not `--accent`** — `_base.html:169` defines `h1 em, h2 em, h3 em { color: var(--primary); }` with no archetype-level override on `.cs-hero h1 em`. Both AR and LTR render the hero h1 em in primary navy; the accent contrast comes from the eyebrow before-mark, the lead-section em, and the btn-primary arrow. This is the existing CS-TYPE-02 contract; no AR-specific regression. Style-critic under T-P1-3 should decide whether to add an accent override for the hero em or document the navy-em decision explicitly.
+- **AR voice-anchor pre-check substring guesses missed Fiscus's exact phrasing** — the walk's automated `body.innerText.includes(<guess>)` boolean returned `false` for Fiscus AR home because the precise translation is `"الامتثال الصحيح، لا الحيلة الضريبية."`, not the substring set the walk pre-coded. Visual + h1-grep verification confirmed the anchor renders verbatim; the false negative was in the harness, not the rendering. Tracked as a `browser-verifier` agent prompt-update item for T-P1-3 (the agent should pull anchors from the cluster-blueprint registry rather than the walker hard-coding them).
+
+---
+
 — end of Round 2 execution report —

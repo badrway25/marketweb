@@ -1,0 +1,27 @@
+{
+  "run_iso": "20260425T0837Z",
+  "scope": "RTL (AR) walk · Pragma + Fiscus · 1440 × 900 chrome",
+  "note": "Round 2 CS-BLOCK-17 (extended) palette-safety patches (.mp-bar .mp-back, .mp-lang.is-current, .cs-nav .wm .crest, .cs-post .kpi-band .stat .num) carry to AR cleanly; no AR-specific regression observed.",
+  "pragma_ar_home_1440": {
+    "mp_back":             { "fg": "rgb(238,240,243)", "bg": "rgb(10,14,26)",  "ratio": 16.87, "wcag": "AAA" },
+    "mp_lang_current":     { "fg": "rgb(238,240,243)", "bg": "rgb(10,14,26)",  "ratio": 16.87, "wcag": "AAA" },
+    "cs_nav_crest":        { "fg": "rgb(238,240,243)", "bg": "rgb(30,41,59)",  "ratio": 12.81, "wcag": "AAA" },
+    "cs_nav_word":         { "fg": "rgb(238,240,243)", "bg": "rgb(30,41,59)",  "ratio": 12.81, "wcag": "AAA" },
+    "cs_nav_link":         { "fg": "rgb(238,240,243)", "bg": "rgb(30,41,59)",  "ratio": 12.81, "wcag": "AAA" },
+    "cs_hero_h1":          { "fg": "rgb(30,41,59)",   "bg": "rgb(238,240,243)","ratio": 12.81, "wcag": "AAA" },
+    "cs_kpi_band_num":     { "fg": "rgb(238,240,243)", "bg": "rgb(30,41,59)",  "ratio": 12.81, "wcag": "AAA" },
+    "cs_kpi_band_lbl":     { "fg": "rgba(238,240,243,0.45)", "bg": "rgb(30,41,59)", "ratio_solid": 12.81, "note": "alpha 0.45 dim by design (visual hierarchy)" },
+    "cs_foot_brand_word":  { "fg": "rgb(238,240,243)", "bg": "rgb(30,41,59)",  "ratio": 12.81, "wcag": "AAA" },
+    "cs_foot_legal":       { "fg": "rgba(238,240,243,0.72)", "bg": "rgb(30,41,59)", "ratio_solid": 12.81, "note": "alpha 0.72 by design" }
+  },
+  "fiscus_ar_home_1440": {
+    "mp_back":             { "fg": "rgb(238,240,243)", "bg": "rgb(10,14,26)",  "ratio": 16.87, "wcag": "AAA" },
+    "mp_lang_current":     { "fg": "rgb(238,240,243)", "bg": "rgb(10,14,26)",  "ratio": 16.87, "wcag": "AAA" },
+    "cs_nav_crest":        { "fg": "rgb(238,240,243)", "bg": "rgb(31,41,55)",  "ratio": 12.86, "wcag": "AAA" },
+    "cs_nav_word":         { "fg": "rgb(238,240,243)", "bg": "rgb(31,41,55)",  "ratio": 12.86, "wcag": "AAA" },
+    "cs_nav_link":         { "fg": "rgb(238,240,243)", "bg": "rgb(31,41,55)",  "ratio": 12.86, "wcag": "AAA" },
+    "cs_hero_h1":          { "fg": "rgb(31,41,55)",   "bg": "rgb(238,240,243)","ratio": 12.86, "wcag": "AAA" },
+    "cs_kpi_band_num":     { "fg": "rgb(238,240,243)", "bg": "rgb(31,41,55)",  "ratio": 12.86, "wcag": "AAA" },
+    "cs_foot_brand_word":  { "fg": "rgb(238,240,243)", "bg": "rgb(31,41,55)",  "ratio": 12.86, "wcag": "AAA" }
+  }
+}
