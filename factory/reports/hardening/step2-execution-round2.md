@@ -159,10 +159,12 @@ The verdict promotes T-P1-1 from "pending" to "PASS" in plan §10.3. T-P1-2 (RTL
 
 ## P1B — RTL AR walk
 
-The walk executes T-P1-2 from `factory/reports/hardening/step2-followup-plan.md §3.P1`, scoped to the AR (Arabic · RTL) locale on Pragma + Fiscus across the 6 archetype pages and the core viewports (1440 / 1024 / 768 / 390). The walk runs against the post-P1A archetype skin (which lands the four Round 2 CS-BLOCK-17 (extended) palette-safety patches: `.mp-bar .mp-back`, `.mp-lang.is-current`, `.cs-nav .wm .crest`, `.cs-post .kpi-band .stat .num` → `var(--on-dark)`). The pre-fix AR walk surfaced **0 BLOCKING and 0 REQUIRED** failures; no fixes were applied at archetype scope, and no post-fix re-walk was needed. The walk closes plan §10.2 row "T-P1-2 RTL AR walk V3 PASS" and frees T-P1-3 (AP8 end-to-end Fiscus pipeline run) to start.
+The walk executes T-P1-2 from `factory/reports/hardening/step2-followup-plan.md §3.P1`, scoped to the AR (Arabic · RTL) locale on Pragma + Fiscus across the 6 archetype pages and the core viewports (1440 / 1024 / 768 / 390). The walk runs against the post-P1A archetype skin (which lands the four Round 2 CS-BLOCK-17 (extended) palette-safety patches: `.mp-bar .mp-back`, `.mp-lang.is-current`, `.cs-nav .wm .crest`, `.cs-post .kpi-band .stat .num` → `var(--on-dark)`). The pre-fix AR walk surfaced **0 BLOCKING and 0 REQUIRED** failures; no fixes were applied at archetype scope, and no post-fix re-walk was needed. A second independent re-verification walk on the post-P1A-merge tip `edcdbed` (run-ISO `20260425T1100Z`, server `:8735`) reproduced the identical PASS verdict — same 12 cells, same contract checks, same contrast ratios (16.87 / 12.81 / 12.86), 0 console errors, 0 console warnings — confirming that the Round 2 patches still carry to AR cleanly under the merged baseline. The walk closes plan §10.2 row "T-P1-2 RTL AR walk V3 PASS" and frees T-P1-3 (AP8 end-to-end Fiscus pipeline run) to start.
 
-**Run-ISO**: `20260425T0837Z` (single pre-fix walk; no fixes applied → no post-fix run-ISO).
-**Server**: `http://127.0.0.1:8734/` · started fresh on the post-P1A tip (`44700fc`) · `--noreload` mode · still running (BRWS-SRV-04 honored).
+**Run-ISO (initial)**: `20260425T0837Z` (single pre-fix walk; no fixes applied → no post-fix run-ISO).
+**Run-ISO (re-verification)**: `20260425T1100Z` (second independent walk on post-merge tip `edcdbed`; identical PASS verdict; companion evidence in `x4a-step2/20260425T1100Z-rtl-ar/` and `step2-ci/test-run-20260425T1100Z.txt`).
+**Server (initial)**: `http://127.0.0.1:8734/` · started fresh on the post-P1A tip (`44700fc`) · `--noreload` mode · stopped before re-verification.
+**Server (re-verification · still running)**: `http://127.0.0.1:8735/` · `python manage.py runserver 127.0.0.1:8735 --noreload` on tip `edcdbed` · still running for parallel user verification (BRWS-SRV-04 honored).
 **Locale**: AR (Arabic · `dir="rtl"`) — closes the rubric's RTL bar that LTR rounds 1 / 2 / 3 left empty.
 **Pages walked** (12 cells × 1440 floor):
 - Pragma: `home` · `chi-siamo` (about) · `competenze` (services) · `case-studies` (list) · `case-studies/manifatturiero-bresciano-piano-industriale` (detail) · `contatti` (contact).
@@ -211,9 +213,9 @@ The four Round 2 palette-safety patches that closed the AP11 risk on Fiscus's bl
 ## Files changed
 
 ```
-(no code changes in P1B)
+(no code changes in P1B · neither initial walk nor re-verification walk modified any source file)
 
-Evidence
+Evidence (initial walk)
   factory/reports/browser-verification/x4a-step2/20260425T0837Z-rtl-ar/
       ├── measurements/
       │   ├── contrast-ar.json       (AR cream-on-navy chrome ratios · Pragma + Fiscus)
@@ -222,8 +224,18 @@ Evidence
           ├── pragma/  (7 PNG · home @ 1440 + 390 + 5 interior pages @ 1440)
           └── fiscus/  (7 PNG · home @ 1440 + 390 + 5 interior pages @ 1440)
   factory/reports/hardening/step2-ci/test-run-20260425T0837Z.txt   (171 tests · OK · 6.008 s)
-  factory/reports/hardening/step2-execution-round2.md              (this file · P1B section appended)
-  factory/reports/browser-verification/x4a-hardening-round4.md     (verdict · companion file)
+
+Evidence (re-verification walk · post-merge tip edcdbed · run-ISO 20260425T1100Z)
+  factory/reports/browser-verification/x4a-step2/20260425T1100Z-rtl-ar/
+      ├── measurements/
+      │   ├── contrast-ar.json       (re-measured cream-on-navy chrome + focus-visible ring · Pragma + Fiscus)
+      │   └── rtl-contract.json      (re-validated per-page RTL contract · 16 cells incl mid-viewport spot-checks)
+      └── screenshots/
+          ├── pragma/  (7 PNG · home @ 1440 + 390 + 5 interior pages @ 1440)
+          └── fiscus/  (7 PNG · home @ 1440 + 390 + 5 interior pages @ 1440)
+  factory/reports/hardening/step2-ci/test-run-20260425T1100Z.txt   (171 tests · OK · 2.795 s)
+  factory/reports/hardening/step2-execution-round2.md              (this file · P1B re-verification appended)
+  factory/reports/browser-verification/x4a-hardening-round4.md     (verdict · companion file · re-verification noted at top)
 ```
 
 No `apps/editor`, `apps/projects`, `apps/commerce` touches. No new archetypes. No Solaria-scope activity. No migrations. No new routes / views. No template skin file edits in this round (P1B is a verification-only round on the post-P1A tip).
@@ -296,8 +308,28 @@ P1B closes the RTL leg (T-P1-2) of the P1 bundle. With T-P1-1 (P1A · LTR multi-
 
 - **`.mp-bar .mp-back` focus ring is browser-default** — the first Tab-focused element on every page is the marketplace back link, which is not in the `:focus-visible` accent-ring whitelist (`_base.html:370-375`). This is a pre-existing P2 deviation in LTR; the AR walk reproduces the same behavior because the rule is locale-independent. Style-critic pass under T-P1-3 should decide whether to extend the whitelist or document the deviation explicitly. Not an AR-specific regression.
 - **Pragma + Fiscus hero h1 italic `<em>` color is `--primary` (navy), not `--accent`** — `_base.html:169` defines `h1 em, h2 em, h3 em { color: var(--primary); }` with no archetype-level override on `.cs-hero h1 em`. Both AR and LTR render the hero h1 em in primary navy; the accent contrast comes from the eyebrow before-mark, the lead-section em, and the btn-primary arrow. This is the existing CS-TYPE-02 contract; no AR-specific regression. Style-critic under T-P1-3 should decide whether to add an accent override for the hero em or document the navy-em decision explicitly.
-- **AR voice-anchor pre-check substring guesses missed Fiscus's exact phrasing** — the walk's automated `body.innerText.includes(<guess>)` boolean returned `false` for Fiscus AR home because the precise translation is `"الامتثال الصحيح، لا الحيلة الضريبية."`, not the substring set the walk pre-coded. Visual + h1-grep verification confirmed the anchor renders verbatim; the false negative was in the harness, not the rendering. Tracked as a `browser-verifier` agent prompt-update item for T-P1-3 (the agent should pull anchors from the cluster-blueprint registry rather than the walker hard-coding them).
+- **AR voice-anchor pre-check substring guesses missed Fiscus's exact phrasing** — the walk's automated `body.innerText.includes(<guess>)` boolean returned `false` for Fiscus AR home because the precise translation is `"الامتثال الصحيح، لا الحيلة الضريبية."`, not the substring set the walk pre-coded. Visual + h1-grep verification confirmed the anchor renders verbatim; the false negative was in the harness, not the rendering. Tracked as a `browser-verifier` agent prompt-update item for T-P1-3 (the agent should pull anchors from the cluster-blueprint registry rather than the walker hard-coding them). The re-verification walker (run-ISO `20260425T1100Z`) explicitly updated the substring sentinel to `"الامتثال الصحيح"` and `"حيث تُتَّخَذ القرارات"` and observed `true` on both Fiscus AR + Pragma AR home; harness-side regression closed.
 
 ---
+
+## Re-verification verdict (run-ISO `20260425T1100Z` · tip `edcdbed`)
+
+A second independent Playwright MCP walk was executed on the post-P1A-merge tip `edcdbed`, with a fresh dev server at `http://127.0.0.1:8735/` (still running for parallel user verification). Same scope (12 cells = 2 templates × 6 pages × 1440 baseline + 4 mobile/breakpoint spot-checks), same contract battery, same evidence shape under `factory/reports/browser-verification/x4a-step2/20260425T1100Z-rtl-ar/`. Outcomes:
+
+- **PASS** verdict reproduced. 0 BLOCKING / 0 REQUIRED failures. No fixes applied.
+- Contrast ratios identical to the initial walk: `mp-back` 16.87 / `mp-lang.is-current` 16.87 / `cs-nav .wm .crest` 12.81 (Pragma) / 12.86 (Fiscus) / `cs-kpi-band .stat .num` 12.81 (Pragma) / 12.86 (Fiscus) — all AAA.
+- Case-detail KPI band re-measured cream-on-navy 12.81 (Pragma `€ 4 M`) / 12.86 (Fiscus `0`) AAA — S5 closure confirmed under the merged tip.
+- Hero h1 = 64 px @ 1440 / 32 px @ 390 on both AR home cells; hero grid flips to `805/619` cols at 1440 (text-narrower-on-right RTL), single-column `375 px` at 390.
+- `html[dir="rtl"]` + `html[lang="ar"]` confirmed on every cell; `body { direction: rtl }` confirmed.
+- No horizontal overflow at 1440 / 1024 / 768 / 390 on Pragma AR home; no overflow on any walked Fiscus AR cell.
+- Drawer engages at 768 + 390 (`navLinksDisplay: none, navBurgerDisplay: flex`); does not engage at 1024 (`flex / none`) — 880-px contract holds.
+- Footer legal: 36 / 36 anchors point at `?lang=ar` real routes across both templates.
+- Voice-anchors verbatim: Pragma `"حيث تُتَّخَذ القرارات التي تصنع الفرق."` ✓, Fiscus `"الامتثال الصحيح، لا الحيلة الضريبية."` ✓.
+- Focus-visible: `Tab → Tab → Tab` from `<body>` lands on the next-locale pill (Fiscus IT pill); `outline: 2px solid rgb(28, 61, 90)` (Fiscus blu-notte `--accent`) at `outline-offset: 4px` — BRWS-CONTRAST-04 contract holds in RTL.
+- Form input dirs at 1440 contact: text/textarea fields = `rtl`; email field = `rtl` on Fiscus / `ltr` on Pragma per per-template field markup; tel field = `ltr` on both (correct for Latin glyphs); 0 placeholder text.
+- Console: 0 errors / 0 warnings.
+- CI floor at the post-walk tip: `python manage.py test apps.catalog -v 2` → **171 tests · OK · 2.795 s** (`step2-ci/test-run-20260425T1100Z.txt`).
+
+The re-verification confirms the initial PASS verdict on the post-merge baseline. The Round 2 CS-BLOCK-17 (extended) palette-safety patches survive the LTR-merge unchanged on the AR locale; no archetype-level regression introduced by the P1A commit. T-P1-2 (RTL AR walk V3) is **closed PASS** under both walks; the cluster-cumulative §7 floor of 120 screenshots / template is met across Rounds 1D + 2 + 3 + 4 (initial) + 4 (re-verified).
 
 — end of Round 2 execution report —

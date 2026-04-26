@@ -1,0 +1,34 @@
+{
+  "run_iso": "20260425T1100Z",
+  "scope": "RTL (AR) contract validation · Pragma + Fiscus · 6 pages × 4 sampled viewports",
+  "server": "http://127.0.0.1:8735/",
+  "tip_at_walk_start": "edcdbed",
+  "force_reveal_used": true,
+  "force_reveal_note": "Global stylesheet '[data-lm], [data-lm] * { opacity:1!important; transform:none!important; visibility:visible!important; }' injected before each fullPage screenshot to flush IntersectionObserver-driven motion (per Round 3 convention; JS reduced-motion contract verified separately in 20260424T2346Z/reduced-motion/).",
+  "cells": [
+    { "tpl": "pragma", "loc": "ar", "page": "home",        "vw": 1440, "h1_text": "حيث تُتَّخَذ القرارات التي تصنع الفرق.", "h1_fontSize_px": 64, "h1_fontFamily": "Noto Kufi Arabic, Merriweather, Georgia, serif", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "hero_grid_cols": "805.422px 619.578px", "footer_legal_real_routes": 3, "footer_legal_hash_count": 0, "voice_anchor_verbatim": true, "console_errors": 0 },
+    { "tpl": "pragma", "loc": "ar", "page": "about",       "vw": 1440, "h1_text": "بوتيك مستقل، اثنان وعشرون عاماً من التكليفات السرية.", "h1_dir": "rtl", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "footer_legal_real_routes": 3, "footer_legal_hash_count": 0, "placeholder_lorem": false },
+    { "tpl": "pragma", "loc": "ar", "page": "services",    "vw": 1440, "h1_text": "ست كفاءات، توقيع واحد.", "h1_dir": "rtl", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "footer_legal_real_routes": 3, "footer_legal_hash_count": 0 },
+    { "tpl": "pragma", "loc": "ar", "page": "cases",       "vw": 1440, "h1_text": "ثلاثة تكليفات، ثلاثة اتجاهات.", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "footer_legal_real_routes": 3, "footer_legal_hash_count": 0 },
+    { "tpl": "pragma", "loc": "ar", "page": "case-detail", "vw": 1440, "h1_text": "مجموعة تصنيع في بريشيا · خطة صناعية 2025-28", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "kpi_band_present": true, "kpi_num_text": "€ 4 M", "kpi_num_color": "rgb(238,240,243)", "kpi_band_bg": "rgb(30,41,59)", "kpi_num_ratio_aaa": 12.81, "footer_legal_real_routes": 3, "footer_legal_hash_count": 0 },
+    { "tpl": "pragma", "loc": "ar", "page": "contact",     "vw": 1440, "h1_text": "ثلاثون دقيقة، أجندة محدودة، دون أي التزام.", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "form_inputs_count": 11, "form_inputs_dir_sample": "11 fields · text/textarea dir=rtl · email/tel inputs dir=ltr (correct for Latin glyphs)", "footer_legal_real_routes": 3, "footer_legal_hash_count": 0 },
+    { "tpl": "pragma", "loc": "ar", "page": "home",        "vw": 390,  "hero_h1_fontSize_px": 32, "hero_grid_cols": "375px", "scrollW": 375, "clientW": 375, "overflow_pass": true, "nav_links_display": "none", "nav_burger_display": "flex", "mp_lang_pill_w": 44, "mp_lang_pill_h": 44, "touch_target_44_pass": true },
+    { "tpl": "pragma", "loc": "ar", "page": "home",        "vw": 1024, "scrollW": 1009, "clientW": 1009, "overflow_pass": true, "nav_links_display": "flex", "nav_burger_display": "none", "note": "above 880-px drawer engagement floor" },
+    { "tpl": "pragma", "loc": "ar", "page": "home",        "vw": 768,  "scrollW": 753,  "clientW": 753,  "overflow_pass": true, "nav_links_display": "none", "nav_burger_display": "flex", "note": "below 880-px drawer engagement floor" },
+
+    { "tpl": "fiscus", "loc": "ar", "page": "home",        "vw": 1440, "h1_text": "الامتثال الصحيح، لا الحيلة الضريبية.", "h1_fontSize_px": 64, "h1_fontFamily": "Noto Kufi Arabic, IBM Plex Serif, Georgia, serif", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "hero_grid_cols": "805.422px 619.578px", "footer_legal_real_routes": 3, "footer_legal_hash_count": 0, "voice_anchor_verbatim": true, "console_errors": 0 },
+    { "tpl": "fiscus", "loc": "ar", "page": "about",       "vw": 1440, "h1_text": "مكتب استشارات ضريبية مستقل، اثنان وعشرون عاماً من الممارسة المستمرة.", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "footer_legal_real_routes": 3, "footer_legal_hash_count": 0 },
+    { "tpl": "fiscus", "loc": "ar", "page": "services",    "vw": 1440, "h1_text": "ستة مجالات اختصاص، توقيع واحد.", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "footer_legal_real_routes": 3, "footer_legal_hash_count": 0 },
+    { "tpl": "fiscus", "loc": "ar", "page": "cases",       "vw": 1440, "h1_text": "ثلاث حالات، ثلاثة مجالات اختصاص.", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "footer_legal_real_routes": 3, "footer_legal_hash_count": 0 },
+    { "tpl": "fiscus", "loc": "ar", "page": "case-detail", "vw": 1440, "h1_text": "شركة تصنيع صغيرة ومتوسطة في لومبارديا · إطار مراجعة قانونية", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "kpi_band_present": true, "kpi_num_text": "0", "kpi_num_color": "rgb(238,240,243)", "kpi_band_bg": "rgb(31,41,55)", "kpi_num_ratio_aaa": 12.86, "s5_closure_confirmed": true, "footer_legal_real_routes": 3, "footer_legal_hash_count": 0 },
+    { "tpl": "fiscus", "loc": "ar", "page": "contact",     "vw": 1440, "h1_text": "خمس وأربعون دقيقة، بأجندة مفتوحة، دون أي التزام.", "scrollW": 1425, "clientW": 1425, "overflow_pass": true, "form_inputs_count": 12, "form_inputs_dir_sample": "12 fields · text/email/textarea dir=rtl · tel input dir=ltr (correct for Latin glyphs)", "footer_legal_real_routes": 3, "footer_legal_hash_count": 0 },
+    { "tpl": "fiscus", "loc": "ar", "page": "home",        "vw": 390,  "hero_h1_fontSize_px": 32, "hero_grid_cols": "375px", "scrollW": 375, "clientW": 375, "overflow_pass": true, "nav_links_display": "none", "nav_burger_display": "flex", "mp_lang_pill_w": 44, "mp_lang_pill_h": 44, "touch_target_44_pass": true }
+  ],
+  "summary": {
+    "blocking_total": 9, "blocking_failed": 0,
+    "required_total": 6, "required_failed": 0,
+    "strong_total": 3, "strong_failed": 0,
+    "guideline_total": 2, "guideline_failed": 0,
+    "verdict": "PASS"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "run_iso": "20260425T1100Z",
+  "scope": "RTL (AR) walk · Pragma + Fiscus · 1440 × 900 chrome",
+  "server": "http://127.0.0.1:8735/",
+  "tip_at_walk_start": "edcdbed",
+  "note": "Round 2 CS-BLOCK-17 (extended) palette-safety patches (.mp-bar .mp-back, .mp-lang.is-current, .cs-nav .wm .crest, .cs-post .kpi-band .stat .num) carry to AR cleanly; no AR-specific regression observed.",
+  "pragma_ar_home_1440": {
+    "mp_back":             { "fg": "rgb(238,240,243)", "bg": "rgb(10,14,26)",  "ratio": 16.87, "wcag": "AAA" },
+    "mp_lang_current":     { "fg": "rgb(238,240,243)", "bg": "rgb(10,14,26)",  "ratio": 16.87, "wcag": "AAA" },
+    "cs_nav_crest":        { "fg": "rgb(238,240,243)", "bg": "rgb(30,41,59)",  "ratio": 12.81, "wcag": "AAA" },
+    "cs_kpi_band_num":     { "fg": "rgb(238,240,243)", "bg": "rgb(30,41,59)",  "ratio": 12.81, "wcag": "AAA" }
+  },
+  "pragma_ar_case_detail_1440": {
+    "kpi_band_num":        { "fg": "rgb(238,240,243)", "bg": "rgb(30,41,59)",  "ratio": 12.81, "wcag": "AAA", "sample_text": "€ 4 M" }
+  },
+  "fiscus_ar_home_1440": {
+    "mp_back":             { "fg": "rgb(238,240,243)", "bg": "rgb(10,14,26)",  "ratio": 16.87, "wcag": "AAA" },
+    "mp_lang_current":     { "fg": "rgb(238,240,243)", "bg": "rgb(10,14,26)",  "ratio": 16.87, "wcag": "AAA" },
+    "cs_nav_crest":        { "fg": "rgb(238,240,243)", "bg": "rgb(31,41,55)",  "ratio": 12.86, "wcag": "AAA" },
+    "cs_kpi_band_num":     { "fg": "rgb(238,240,243)", "bg": "rgb(31,41,55)",  "ratio": 12.86, "wcag": "AAA" }
+  },
+  "fiscus_ar_case_detail_1440": {
+    "kpi_band_num":        { "fg": "rgb(238,240,243)", "bg": "rgb(31,41,55)",  "ratio": 12.86, "wcag": "AAA", "sample_text": "0" }
+  },
+  "focus_visible_ring_ar": {
+    "tested_on": "fiscus-ar-home-1440 mp-lang-pill[IT]",
+    "outline_color": "rgb(28,61,90)",
+    "outline_style": "solid",
+    "outline_width": "2px",
+    "outline_offset": "4px",
+    "verdict": "BRWS-CONTRAST-04 contract holds in RTL · accent ring 2px solid offset 4px"
+  }
+}

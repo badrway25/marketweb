@@ -1,18 +1,23 @@
 # Corporate-suite X.4a Hardening · Round 4 · RTL AR Browser Verification
 
-**Verdict**: **PASS** (0 blocking · 0 required failures on Priority 1B scope · pre-fix walk · no fixes applied)
+**Verdict**: **PASS** (0 blocking · 0 required failures on Priority 1B scope · two independent walks · no fixes applied)
 **Archetype**: `corporate-suite`
 **Templates walked**: `pragma-corporate-suite`, `fiscus-commercialista`
 **Branch**: `phase-x4a-corporate-factory-hardening-followup`
-**Baseline tip at walk start**: `44700fc` (Step 2E P1A · multi-locale LTR walk + four-element CS-BLOCK-17 (extended) palette-safety patch).
-**Walk run-ISO**: `20260425T0837Z` (single pre-fix walk · no fix applied → no post-fix re-walk needed).
+**Baseline tip at re-verification walk**: `edcdbed` (Step 2E P1A bundle · committed). The original walk ran at `44700fc` (working tree of the same P1A bundle); both share the four-element CS-BLOCK-17 (extended) palette-safety patch.
+**Walk run-ISOs**:
+- `20260425T0837Z` — initial walk (server `:8734` · pre-fix corpus only · no post-fix needed because pre-fix was already PASS).
+- `20260425T1100Z` — **re-verification walk on the post-merge tip `edcdbed`** (server `:8735`); identical PASS verdict; 0 blocking / 0 required failures across the same 6 pages × 4 sampled viewports per template; same contract checks ran; same contrast ratios observed (16.87 / 12.81 / 12.86); the locale switch IT→AR remained a layout flip rather than a contrast change, so the Round 2 CS-BLOCK-17 (extended) patches still hold without amendment.
 **Reviewer**: Claude (Opus 4.7, Playwright MCP driver)
 **Walk type**: Playwright MCP (`mcp__plugin_playwright_playwright__*`).
-**Evidence**: `factory/reports/browser-verification/x4a-step2/20260425T0837Z-rtl-ar/`
-- `screenshots/pragma/`  — 7 PNG (Pragma AR home @ 1440 + 390 + 5 interior pages @ 1440)
-- `screenshots/fiscus/`  — 7 PNG (Fiscus AR home @ 1440 + 390 + 5 interior pages @ 1440)
-- `measurements/contrast-ar.json`   — cream-on-navy chrome contrast ratios per template
-- `measurements/rtl-contract.json`  — per-cell RTL contract validation (12 cells × sampled viewports)
+**Evidence**:
+- `factory/reports/browser-verification/x4a-step2/20260425T0837Z-rtl-ar/` — initial walk corpus
+  - `screenshots/pragma/`  — 7 PNG (Pragma AR home @ 1440 + 390 + 5 interior pages @ 1440)
+  - `screenshots/fiscus/`  — 7 PNG (Fiscus AR home @ 1440 + 390 + 5 interior pages @ 1440)
+  - `measurements/contrast-ar.json`   — cream-on-navy chrome contrast ratios per template
+  - `measurements/rtl-contract.json`  — per-cell RTL contract validation (12 cells × sampled viewports)
+- `factory/reports/browser-verification/x4a-step2/20260425T1100Z-rtl-ar/` — re-verification corpus (same shape; 14 PNG total · 7 / template; 2 measurement JSONs)
+- `factory/reports/hardening/step2-ci/test-run-20260425T1100Z.txt` — re-verification CI floor (171 tests · OK · 2.795 s)
 
 **Companion execution report**: `factory/reports/hardening/step2-execution-round2.md` (P1B section appended).
 
@@ -22,11 +27,12 @@
 
 ## Server
 
-- **URL (current)**: `http://127.0.0.1:8734/`
-- **Started at**: `2026-04-25T08:37Z` (fresh `python manage.py runserver 127.0.0.1:8734 --noreload` after stopping the stale `:8731` process from a prior session)
-- **Still running**: **yes** — the server remains running for parallel user verification at `http://127.0.0.1:8734/` until the user explicitly releases the walk (BRWS-SRV-04 honored).
-- **Restarts during walk**: 0 (no fixes applied → no restart needed)
-- **Earlier servers** — `http://127.0.0.1:8731/` (Round 1), `:8732/` (P1A pre-fix), `:8733/` (P1A post-fix) were stopped before this round began.
+- **URL (current · re-verification)**: `http://127.0.0.1:8735/`
+- **Started at**: `2026-04-25T11:00Z` (fresh `python manage.py runserver 127.0.0.1:8735 --noreload` on the post-P1A-merge tip `edcdbed`).
+- **Still running**: **yes** — the server remains running for parallel user verification at `http://127.0.0.1:8735/` until the user explicitly releases the walk (BRWS-SRV-04 honored).
+- **Restarts during re-verification walk**: 0 (no fixes applied → no restart needed).
+- **Initial-walk server**: `http://127.0.0.1:8734/` was used for run-ISO `20260425T0837Z` and stopped before this re-verification began (port freed; `:8735` is the only live process).
+- **Earlier servers** — `http://127.0.0.1:8731/` (Round 1), `:8732/` (P1A pre-fix), `:8733/` (P1A post-fix), `:8734/` (initial P1B) all stopped.
 
 ## Scope
 
@@ -266,10 +272,10 @@ T-P1-3 is the next-in-sequence item. Round 4 does not un-pause Solaria Commit B 
 
 The dev server remains at **http://127.0.0.1:8734/** and stays running until the user confirms parallel verification or explicitly releases the walk. Recommended parallel checks:
 
-- Open `http://127.0.0.1:8734/templates/business/pragma-corporate-suite/preview/?lang=ar` and confirm the hero text renders on the right (RTL flip), the photo on the left, with the voice anchor `"حيث تُتَّخَذ القرارات التي تصنع الفرق."` as the h1.
-- Open `http://127.0.0.1:8734/templates/business/fiscus-commercialista/preview/casi-seguiti/pmi-manifattura-bilancio-revisione/?lang=ar` and inspect the bottom KPI strip — `0 / 2 / 3 سنوات / 10 أسابيع` should read clean cream on dark navy (the Round 2 fix carries to AR unchanged).
+- Open `http://127.0.0.1:8735/templates/business/pragma-corporate-suite/preview/?lang=ar` and confirm the hero text renders on the right (RTL flip), the photo on the left, with the voice anchor `"حيث تُتَّخَذ القرارات التي تصنع الفرق."` as the h1.
+- Open `http://127.0.0.1:8735/templates/business/fiscus-commercialista/preview/casi-seguiti/pmi-manifattura-bilancio-revisione/?lang=ar` and inspect the bottom KPI strip — `0 / 2 / 3 سنوات / 10 أسابيع` should read clean cream on dark navy (the Round 2 fix carries to AR unchanged).
 - Switch via the marketplace pills between AR ↔ EN ↔ FR ↔ ES ↔ IT and confirm the layout flips polarity correctly each time (no horizontal-scroll on the transition; nav drawer behavior preserved).
 - At 390 × 844 in the same browser (DevTools device-mode) confirm the hero stacks, the drawer engages, the locale pills are 44 × 44.
-- Run `python manage.py test apps.catalog -v 2` locally; transcript should report `Ran 171 tests · OK · ~6 s` matching `factory/reports/hardening/step2-ci/test-run-20260425T0837Z.txt`.
+- Run `python manage.py test apps.catalog -v 2` locally; transcript should report `Ran 171 tests · OK · ~2-6 s` matching `factory/reports/hardening/step2-ci/test-run-20260425T1100Z.txt`.
 
-— end of Round 4 verdict —
+— end of Round 4 verdict (re-verified 20260425T1100Z @ tip edcdbed) —
