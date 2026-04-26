@@ -404,6 +404,38 @@ TEMPLATE_METADATA = {
         "has_rtl": True,
         "is_multi_page": True,
     },
+    # ── Wave 2 Pilot #2 · Phase X.4 (2026-04-21) ────────────────
+    # Second Content Factory pilot. Also rides corporate-suite
+    # archetype (shared shell with Pragma + Fiscus), but with
+    # coaching-specific voice (professional-warm · method-declared ·
+    # non-guru · non-therapy · non-consulting) + minimal-light
+    # visual style + warm-earth accent palette. Seeds at `tier:
+    # draft` — flipped to published_live only after Commit B + the
+    # full multi-locale walk. Re-introduced under controlled
+    # re-entry pass 1 (`phase-x4-solaria-controlled-reentry-pass1`).
+    "solaria-coaching": {
+        "cluster": "coaching",
+        "style": "minimal-light",
+        "price_tier": "standard",
+        "use_cases": [
+            "consultation-booking",
+            "generate-leads",
+            "b2b-credibility",
+        ],
+        "audience": ["smb", "freelance"],
+        "search_keywords": (
+            "coach coaching business-coach executive-coach "
+            "percorso-coaching icf team-coaching discovery-call "
+            "mentor accountability"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
 }
 
 _FEATURE_FLAG_FIELDS = (
@@ -554,6 +586,59 @@ SEED_TEMPLATES = [
             "typography": "IBM Plex Serif + IBM Plex Sans",
             "personality": "preciso, istituzionale, continuativo",
             "logo_concept": "Monogramma F geometrico in serif transitional su fondo avorio, filetto oro sottile che richiama la filigrana dei documenti fiscali",
+        },
+    },
+    # ── Wave 2 Pilot #2 · Solaria — Business Coaching ──────────
+    # Phase X.4 second pilot template. Reuses corporate-suite
+    # archetype (shared shell with Pragma + Fiscus) but with
+    # coaching-specific voice — professional-warm, method-declared,
+    # non-guru, non-therapy, non-consulting. Minimal-light visual
+    # style, warm-earth accent palette (ocra + terra), humanist
+    # typographic pair (Fraunces + Inter) distinct from Pragma
+    # (Merriweather + Inter) and Fiscus (IBM Plex Serif + Sans).
+    # Seeds at tier=draft via TEMPLATE_REGISTRY.json; flipped to
+    # published_live only after Commit B (locales + Playwright).
+    {
+        "name": "Solaria — Business Coaching",
+        "slug": "solaria-coaching",
+        "category_slug": "business",
+        "short_description": "Coaching professionale senza fuffa. Metodo dichiarato, percorso bounded, credenziali ICF verificabili, discovery call da 20-30 minuti gratuita.",
+        "description": (
+            "Solaria è il template per coach professionisti certificati (ICF, EMCC, AICP) che "
+            "vogliono smarcarsi dalla fuffa-guru e dalla confusione con la consulenza classica. "
+            "Voce professional-warm, palette minimal-light con accento warm-earth (ocra + terra), "
+            "tipografia humanist (Fraunces + Inter) — per chi vende un percorso misurato, non "
+            "una trasformazione in trenta giorni.\n\n"
+            "Include: homepage con voice anchor coaching-non-è-terapia, pagina metodo con "
+            "framework dichiarato (GROW, Co-Active, Immunity to Change) + codice deontologico "
+            "ICF, bio coach con ore erogate + certificazione tier (ACC/PCC/MCC), 2-4 percorsi "
+            "strutturati (executive, team, gruppo aziendale, sessione singola) con durata + "
+            "frequenza + formato, 3 casi anonimizzati con contesto + obiettivo + percorso + "
+            "risultato misurato, form discovery call con obiettivo in 1-2 righe e disponibilità "
+            "prossimi 7 giorni."
+        ),
+        "price": Decimal("79.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 4,
+        "brand": {
+            "brand_name": "Solaria — Business Coaching",
+            "tagline": "Metodo dichiarato, percorso misurato",
+            # Palette follows corporate-suite skin convention:
+            # primary = dark foreground text color (carbon)
+            # secondary = main brand accent (warm-earth ocra)
+            # accent = quieter secondary-accent (deep caramel)
+            # Body background comes from the skin default (cream/neutral);
+            # imagery pool + hero photo establish the warm-earth mood.
+            # Pragma primary=#1E293B (dark slate), Fiscus primary=#1F2937
+            # (dark gray), Solaria primary=#2B2A28 (warm dark carbon) —
+            # all three are dark, but Solaria's tone sits warmer.
+            # Build-time `corporate_suite.E001` enforces this polarity
+            # contract on every enrolled corporate-suite primary.
+            "palette": {"primary": "#2B2A28", "secondary": "#C8621A", "accent": "#8B5A2B"},
+            "typography": "Fraunces + Inter",
+            "personality": "professional-warm, metodico, misurato",
+            "logo_concept": "Cerchio solare stilizzato in ocra scuro su fondo avorio-crema con lettera S disegnata come una curva aperta che richiama un percorso con inizio e fine dichiarati; tipografia humanist-serif Fraunces",
         },
     },
     # ── Ristorante (2) ─────────────────────────────────────────

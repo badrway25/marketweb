@@ -2438,6 +2438,10 @@ from apps.catalog.template_content_fiscus_en import FISCUS_CONTENT_EN  # noqa: E
 from apps.catalog.template_content_fiscus_fr import FISCUS_CONTENT_FR  # noqa: E402
 from apps.catalog.template_content_fiscus_es import FISCUS_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_fiscus_ar import FISCUS_CONTENT_AR  # noqa: E402
+# Phase X.4 Wave 2 Pilot #2 — Solaria (re-introduced under controlled
+# re-entry pass 1 · phase-x4-solaria-controlled-reentry-pass1). IT-only
+# until pass 2 lands EN/FR/ES/AR.
+from apps.catalog.template_content_solaria import SOLARIA_CONTENT_IT  # noqa: E402
 
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
@@ -2618,6 +2622,14 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": FISCUS_CONTENT_FR,
         "es": FISCUS_CONTENT_ES,
         "ar": FISCUS_CONTENT_AR,
+    },
+    # Wave 2 Pilot #2 — Solaria (Phase X.4 · re-introduced under
+    # controlled re-entry pass 1, 2026-04-26). IT-only at pass 1;
+    # EN/FR/ES/AR deferred to pass 2 + 3. Tier stays `draft` so the
+    # public catalog count remains 21; staff preview reaches the
+    # live route via `?preview=1`.
+    "solaria-coaching": {
+        "it": SOLARIA_CONTENT_IT,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,

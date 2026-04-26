@@ -1314,6 +1314,69 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
     # + imagery driven (same chrome, different identity).
     # ─────────────────────────────────────────────────────────────
 
+    # ── W2-2) CORPORATE-SUITE — Solaria, business coaching ───────
+    # Third template on corporate-suite archetype (after Pragma
+    # + Fiscus). D-054 differentiation vs both siblings is content
+    # + palette + imagery-pool + typography + voice driven — zero
+    # skin-folder changes. Reviewer MUST verify 10/10 gates against
+    # both Pragma and Fiscus before the Commit B tier flip. Voice
+    # anchor: "Il coaching non è terapia e non è consulenza." The
+    # hero must contain "coaching" OR "percorso" + process verb
+    # (decidere / orientare / ripensare) — NEVER "trasforma / cambia".
+    "solaria-coaching": {
+        "archetype":          "corporate-suite",
+        "hero_style":         "split-conversation",
+        "navbar_style":       "minimal-warm",
+        "footer_style":       "sectors-ribbon",
+        "section_order":      ["nav", "editorial-hero", "advisory-pillars", "kpi-strip", "sectors-ribbon"],
+        "card_style":         "pillar-advisory",
+        "button_style":       "ghost-warm",
+        "density":            "airy",
+        "tone":               "professional-warm",
+        "imagery_direction":  "coaching-conversation",
+        "imagery_key":        "business-coaching",
+        "conversion_pattern": "discovery-call-booking",
+        "font_pairing":       ("Fraunces", "Inter"),
+        "content": {
+            "eyebrow":       "Business coaching · ICF · Milano · dal 2014",
+            "headline":      'Il coaching non è <em>terapia</em> e non è <em>consulenza</em>.',
+            "subhead":       "Percorsi di coaching individuali e di team per imprenditori, dirigenti in transizione e middle manager. Metodo dichiarato (GROW · Co-Active · Immunity to Change), cadenza concordata, inizio e fine dichiarati — senza trasformazioni in trenta giorni.",
+            "primary_cta":   "Prenota una discovery call",
+            "secondary_cta": "Il metodo",
+            "phone":         "+39 02 3663 4712",
+            "nav_links":     ["Il metodo", "Il coach", "Percorsi", "Casi", "Contatti"],
+            "meta_strip": [
+                ("Sede",              "Milano · Isola · anche online"),
+                ("Certificazione",    "ICF-PCC · EMCC"),
+                ("Ore erogate",       "2.400+ ore · 160+ coachee"),
+            ],
+            "hero_credit_left":  ("Direzione",        "Dott.ssa G. Loreti"),
+            "hero_credit_right": ("Certificazione",   "ICF-PCC dal 2017"),
+            "pillars_heading": "Tre percorsi, un solo metodo",
+            "pillars_label":   "Percorsi",
+            "pillars": [
+                ("01", "Executive 1:1",
+                 "Otto sessioni da 60 minuti, cadenza bisettimanale, obiettivo definito in primo incontro. "
+                 "Per dirigenti in transizione di ruolo, neo-promossi o in preparazione a un cambio di perimetro."),
+                ("02", "Team coaching",
+                 "Sei sessioni con il team (5-10 persone), più re-contracting a metà percorso. "
+                 "Per team di middle management in fase di crescita o integrazione post-riorganizzazione."),
+                ("03", "Gruppo aziendale",
+                 "Masterclass + percorso 1:1 per 3-8 persone dell'azienda cliente. "
+                 "Sponsor aziendale definito, obiettivi individuali + di sistema, follow-up trimestrale."),
+            ],
+            "kpi_heading": "Dodici anni di pratica certificata",
+            "kpi_strip": [
+                ("12",       "anni di pratica ICF"),
+                ("2.400+",   "ore di coaching erogate"),
+                ("160+",     "coachee seguiti"),
+                ("100%",     "percorsi con follow-up a 3 mesi"),
+            ],
+            "sectors_label": "Settori dei coachee",
+            "sectors": ["Tech & product", "Manifattura & industria", "Professional services", "Non-profit & scuola", "Health & vita"],
+        },
+    },
+
     # ── W2-1) CORPORATE-SUITE — Fiscus, studio tributario ────────
     "fiscus-commercialista": {
         "archetype":          "corporate-suite",

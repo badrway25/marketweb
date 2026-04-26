@@ -357,6 +357,33 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         # 5: ambient — law/regulation bookshelf (institutional reassurance)
         "https://images.pexels.com/photos/159832/justice-law-case-hearing-159832.jpeg?auto=compress&cs=tinysrgb&w=800",
     ],
+    # ─────────────────────────────────────────────────────────────
+    # business-coaching — Wave 2 Pilot #2 (Phase X.4 · Solaria).
+    # Sourced exclusively from `docs/content-factory/imagery/packs/
+    # coaching.md` (Pexels · CC0-compatible · X.3 C3 reviewer-
+    # verified · zero mountain-peak / motivational-quote / drawn-
+    # arrow cliché per blueprint §8 + §13). Pool shape matches
+    # Fiscus convention: [hero, feature, portrait-coach, portrait-
+    # coachee, detail-notebook, ambient-warm-office]. Zero URL
+    # overlap with business-fiscal or business-corporate pools.
+    # Solaria is NOT grandfathered under LEGACY_EXEMPT_KEYS — every
+    # URL must come from images.pexels.com (CS-IMG-SRC-01) and the
+    # build-time check `corporate_suite.E002` enforces this.
+    # ─────────────────────────────────────────────────────────────
+    "business-coaching": [
+        # 0: hero — two people conversing in bright office meeting (1:1)
+        "https://images.pexels.com/photos/7979456/pexels-photo-7979456.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        # 1: feature — man writing in notebook during indoor discussion
+        "https://images.pexels.com/photos/5756579/pexels-photo-5756579.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        # 2: portrait-coach — woman with clipboard, minimalist indoor
+        "https://images.pexels.com/photos/9064347/pexels-photo-9064347.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 3: portrait-coachee — confident businesswoman, arms crossed
+        "https://images.pexels.com/photos/12934369/pexels-photo-12934369.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 4: detail — open notebook with pen on wooden desk beside laptop
+        "https://images.pexels.com/photos/34601/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=800",
+        # 5: ambient — warm home-office with plants and ambient light
+        "https://images.pexels.com/photos/31236101/pexels-photo-31236101.jpeg?auto=compress&cs=tinysrgb&w=800",
+    ],
     "real-estate": [
         # 0: hero - luxury modern home exterior
         "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80&auto=format&fit=crop",

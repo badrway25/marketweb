@@ -4,15 +4,29 @@
   "last_updated": "2026-04-15",
   "phase_2g3_2_medical_second_wave": {
     "closed_in_session": 51,
-    "templates_flipped": ["salute-studio-medico", "benessere-centro-olistico", "famiglia-pediatria"],
-    "archetypes_activated": ["clinic", "wellness", "family"],
+    "templates_flipped": [
+      "salute-studio-medico",
+      "benessere-centro-olistico",
+      "famiglia-pediatria"
+    ],
+    "archetypes_activated": [
+      "clinic",
+      "wellness",
+      "family"
+    ],
     "decision": "D-080",
     "notes": "Medical category closes as 5/5 live (cardio + derm on specialist + salute on clinic + benessere on wellness + famiglia on family). First N=5 test of D-054 10-gate law on a multi-archetype category. Stub-files-first pattern introduced for locale wiring. Catalog 16/20."
   },
   "phase_2g3_6f_agency_live": {
     "closed_in_session": 49,
-    "templates_flipped": ["vertex-creative-agency", "aura-digital-studio"],
-    "archetypes_introduced": ["agency-creative-studio", "agency-digital-studio"],
+    "templates_flipped": [
+      "vertex-creative-agency",
+      "aura-digital-studio"
+    ],
+    "archetypes_introduced": [
+      "agency-creative-studio",
+      "agency-digital-studio"
+    ],
     "decision": "D-079",
     "notes": "Agency identity-crash (Session 16 CRITICO #5) closed. Category 2/2 live."
   },
@@ -23,7 +37,11 @@
       "category": "agency",
       "brand_name": "Vertex Studio",
       "tagline": "Dove la creatività incontra la strategia",
-      "palette": {"primary": "#0D0D0D", "secondary": "#6366F1", "accent": "#F59E0B"},
+      "palette": {
+        "primary": "#0D0D0D",
+        "secondary": "#6366F1",
+        "accent": "#F59E0B"
+      },
       "typography": "Space Grotesk + Inter + Fraunces",
       "personality": "editoriale, curatoriale, strategico",
       "archetype": "agency-creative-studio",
@@ -37,8 +55,22 @@
       "dna_phase": "2g3.6f",
       "session_closed": 49,
       "live_preview": true,
-      "live_pages": ["home", "studio", "capacita", "lavori", "lavori/<slug>", "manifesto", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "studio",
+        "capacita",
+        "lavori",
+        "lavori/<slug>",
+        "manifesto",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 79,
       "featured": true,
@@ -52,7 +84,11 @@
       "category": "agency",
       "brand_name": "Aura Creative",
       "tagline": "Design che parla da sé",
-      "palette": {"primary": "#1A1A2E", "secondary": "#E2E8F0", "accent": "#8B5CF6"},
+      "palette": {
+        "primary": "#1A1A2E",
+        "secondary": "#E2E8F0",
+        "accent": "#8B5CF6"
+      },
       "typography": "Plus Jakarta Sans + Inter + JetBrains Mono",
       "personality": "digitale, diretto, product-led",
       "archetype": "agency-digital-studio",
@@ -66,8 +102,22 @@
       "dna_phase": "2g3.6f",
       "session_closed": 49,
       "live_preview": true,
-      "live_pages": ["home", "studio", "capabilities", "lavori", "lavori/<slug>", "sprint", "brief"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "studio",
+        "capabilities",
+        "lavori",
+        "lavori/<slug>",
+        "sprint",
+        "brief"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 69,
       "featured": false,
@@ -81,7 +131,11 @@
       "category": "business",
       "brand_name": "Pragma Corp",
       "tagline": "Soluzioni concrete per il tuo business",
-      "palette": {"primary": "#1E293B", "secondary": "#3B82F6", "accent": "#10B981"},
+      "palette": {
+        "primary": "#1E293B",
+        "secondary": "#3B82F6",
+        "accent": "#10B981"
+      },
       "typography": "Inter + Merriweather",
       "personality": "professionale, autorevole, affidabile",
       "price": 89,
@@ -93,8 +147,21 @@
       "dna_phase": "2g2x.1",
       "session_closed": 32,
       "live_preview": true,
-      "live_pages": ["home", "chi-siamo", "competenze", "case-studies", "case-studies/<post>", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "chi-siamo",
+        "competenze",
+        "case-studies",
+        "case-studies/<post>",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "tier": "published_live",
       "tier_reason": "Phase 2g3.3 closed in Session 32 (Business live rollout). Phase 2g3.3b closed in Session 40 (Business i18n completion pass) — Pragma now ships in 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic. EN: FT/HBR institutional. FR: Les Echos vouvoiement + insecable spaces. ES: Cinco Días peninsular usted. AR: MSA boardroom register, Latin proper names, Latin digits. RTL CSS block on .cs-* selectors with conditional Amiri+Noto-Kufi font load. D-053 gate green, D-054 10/10 vs Elevate."
@@ -105,7 +172,11 @@
       "category": "business",
       "brand_name": "Elevate Tech",
       "tagline": "Lancia il tuo prodotto con impatto",
-      "palette": {"primary": "#0F172A", "secondary": "#7C3AED", "accent": "#22D3EE"},
+      "palette": {
+        "primary": "#0F172A",
+        "secondary": "#7C3AED",
+        "accent": "#22D3EE"
+      },
       "typography": "Satoshi + Inter",
       "personality": "moderno, energico, tech-forward",
       "price": 59,
@@ -117,8 +188,20 @@
       "dna_phase": "2g2x.1",
       "session_closed": 32,
       "live_preview": true,
-      "live_pages": ["home", "prodotto", "prezzi", "demo", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "prodotto",
+        "prezzi",
+        "demo",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "tier": "published_live",
       "tier_reason": "Phase 2g3.3 closed in Session 32 (Business live rollout). Phase 2g3.3b closed in Session 40 (Business i18n completion pass) — Elevate now ships in 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic. EN: TechCrunch/Linear/Figma SaaS direct (`you`). FR: Maddyness modern SaaS with anglicismes. ES: Xataka/K Fund peninsular `tú`. AR: Wamda modern startup MSA, Latin product names + Latin digits. RTL CSS block on .sl-* selectors with conditional Noto-Naskh+Noto-Kufi font load. Voice stays sharply distinct from Pragma's institutional advisory register."
@@ -129,7 +212,11 @@
       "category": "business",
       "brand_name": "Fiscus — Studio Tributario",
       "tagline": "L'adempimento corretto, non la trovata",
-      "palette": {"primary": "#1F2937", "secondary": "#B58F4A", "accent": "#1C3D5A"},
+      "palette": {
+        "primary": "#1F2937",
+        "secondary": "#B58F4A",
+        "accent": "#1C3D5A"
+      },
       "typography": "IBM Plex Serif + IBM Plex Sans",
       "personality": "preciso, istituzionale, continuativo",
       "price": 79,
@@ -141,11 +228,60 @@
       "dna_phase": "x4.1",
       "session_closed": 80,
       "live_preview": true,
-      "live_pages": ["home", "lo-studio", "competenze", "casi-seguiti", "casi-seguiti/<post>", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "lo-studio",
+        "competenze",
+        "casi-seguiti",
+        "casi-seguiti/<post>",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "tier": "published_live",
       "tier_reason": "Phase X.4 Wave 2 Pilot #1 closed in Session 80 (2026-04-20). Fiscus is the first pilot template produced by the Content Factory pipeline (X.3). Reuses corporate-suite archetype (Pragma's shell) but with commercialista-specific voice, dashboard-light visual style, warm-neutral palette + blu-notte accent, and financial-services cluster. 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic. Locale registers: IT commercialista Milan ODCEC, EN FT/HBR institutional tax-advisor, FR Les Echos/Agefi vouvoiement with espaces insecables, ES Cinco Días/Expansión peninsular usted, AR MSA Asharq al-Awsat boardroom with Latin digits + Latin proper names + Italian normative refs preserved with parenthetical Arabic clarification on first mention. D-053 gate green (131/131 catalog · 506/506 apps · 892/892 smoke with Fiscus included). D-054 10/10 vs Pragma: warm-neutral cream + blu-notte + gold filigrana palette (vs Pragma navy slate + emerald) + fiscal-desk imagery (vs Pragma boardroom) + IBM Plex Serif+Sans typographic pair (vs Pragma Merriweather+Inter) + voice anchor 'adempimento corretto, non la trovata' (vs Pragma 'decisioni che contano') + appointment-request CTA with P.IVA+CF+fascia oraria form (vs Pragma private-call NDA-ready form) + casi-seguiti routing nomenclature (vs Pragma case-studies) + ODCEC-iscritti commercialista-specific leadership + 6 fiscal practice areas + deadline-presidio narrative. Playwright MCP 8/8 checkpoints green. Voice stays sharply distinct from Pragma's institutional advisory register."
+    },
+    {
+      "slug": "solaria-coaching",
+      "name": "Solaria — Business Coaching",
+      "category": "business",
+      "brand_name": "Solaria — Business Coaching",
+      "tagline": "Metodo dichiarato, percorso misurato",
+      "palette": {
+        "primary": "#2B2A28",
+        "secondary": "#C8621A",
+        "accent": "#8B5A2B"
+      },
+      "typography": "Fraunces + Inter",
+      "personality": "professional-warm, metodico, misurato",
+      "price": 79,
+      "featured": false,
+      "status": "published",
+      "archetype": "corporate-suite",
+      "imagery_key": "business-coaching",
+      "font_pairing": "Fraunces + Inter",
+      "dna_phase": "x4.2",
+      "session_closed": null,
+      "live_preview": false,
+      "live_pages": [
+        "home",
+        "il-coach",
+        "percorsi",
+        "casi",
+        "contatti"
+      ],
+      "locales": [
+        "it"
+      ],
+      "rtl": false,
+      "tier": "draft",
+      "tier_reason": "Phase X.4 Wave 2 Pilot #2 (Solaria — Business Coaching) re-introduced under controlled re-entry pass 1 on phase-x4-solaria-controlled-reentry-pass1 (2026-04-26), after the corporate-suite archetype reached GO at tip 075e623 (final Step 2E P1E reassessment). Solaria is the third corporate-suite enrollee (after Pragma + Fiscus) with coaching-specific voice — professional-warm, method-declared, non-guru, non-therapy, non-consulting. Pass 1 ships IT-only content + minimal-light visual style + warm-earth accent palette (ocra + terra) + humanist Fraunces + Inter typography, plus the original Commit B palette polarity fix (primary=#2B2A28 dark warm carbon, the e8f38b5 → 6b70d56 incident class is contract-blocked by `corporate_suite.E001`). Stays `draft` so the public catalog count remains 21 and staff preview reaches the live route via `?preview=1`. Pass 2 will land the 4 additional locale trees (EN/FR/ES/AR) at shape-parity. Pass 3 is the full AP8 pipeline run on the now-enrolled Solaria with R-SOL-9 → R-SOL-15 floor enforcement (5-locale rubric matrix, O7 grandfather citation, reciprocal D-054 triangulation already encoded in this file's docstring at e8f38b5)."
     },
     {
       "slug": "gusto-fine-dining",
@@ -153,7 +289,11 @@
       "category": "restaurant",
       "brand_name": "Osteria Moderna",
       "tagline": "Tradizione e innovazione a tavola",
-      "palette": {"primary": "#2C1810", "secondary": "#D4A574", "accent": "#8B0000"},
+      "palette": {
+        "primary": "#2C1810",
+        "secondary": "#D4A574",
+        "accent": "#8B0000"
+      },
       "typography": "Playfair Display + Lato",
       "personality": "caldo, elegante, autentico",
       "archetype": "fine-dining",
@@ -163,8 +303,22 @@
       "tone": "editorial-chef",
       "conversion_pattern": "concierge-reservation",
       "live_preview": true,
-      "live_pages": ["home", "filosofia", "menu", "atmosfera", "diario", "diario/<post>", "prenota"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "filosofia",
+        "menu",
+        "atmosfera",
+        "diario",
+        "diario/<post>",
+        "prenota"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 59,
       "featured": true,
@@ -178,7 +332,11 @@
       "category": "restaurant",
       "brand_name": "Trattoria Da Nonna Rosa",
       "tagline": "Il sapore di casa, dal 1987",
-      "palette": {"primary": "#4A2C2A", "secondary": "#E8D5B7", "accent": "#C0392B"},
+      "palette": {
+        "primary": "#4A2C2A",
+        "secondary": "#E8D5B7",
+        "accent": "#C0392B"
+      },
       "typography": "Libre Baskerville + Source Sans 3 + Caveat",
       "personality": "caloroso, familiare, genuino",
       "archetype": "trattoria-warm",
@@ -190,8 +348,21 @@
       "dna_phase": "2g3.6",
       "session_closed": 48,
       "live_preview": true,
-      "live_pages": ["home", "menu", "storia", "forno", "eventi", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "menu",
+        "storia",
+        "forno",
+        "eventi",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 49,
       "featured": false,
@@ -205,7 +376,11 @@
       "category": "restaurant",
       "brand_name": "Brace Street Lab",
       "tagline": "Bruciato al fuoco vivo, servito al volo",
-      "palette": {"primary": "#0F0F0F", "secondary": "#FFE600", "accent": "#FF3D00"},
+      "palette": {
+        "primary": "#0F0F0F",
+        "secondary": "#FFE600",
+        "accent": "#FF3D00"
+      },
       "typography": "Big Shoulders Display + Inter + JetBrains Mono",
       "personality": "audace, brutalista, urbano, rapido",
       "archetype": "street-modern",
@@ -217,8 +392,21 @@
       "dna_phase": "2g3.6",
       "session_closed": 48,
       "live_preview": true,
-      "live_pages": ["home", "menu", "lab", "moments", "ordina", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "menu",
+        "lab",
+        "moments",
+        "ordina",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 65,
       "featured": false,
@@ -232,7 +420,11 @@
       "category": "medical",
       "brand_name": "SaluteVita Clinic",
       "tagline": "La tua salute, il nostro lavoro quotidiano",
-      "palette": {"primary": "#0B4F6C", "secondary": "#01BAEF", "accent": "#20BF55"},
+      "palette": {
+        "primary": "#0B4F6C",
+        "secondary": "#01BAEF",
+        "accent": "#20BF55"
+      },
       "typography": "Nunito Sans + Inter",
       "personality": "istituzionale, accessibile, rassicurante",
       "archetype": "clinic",
@@ -246,8 +438,22 @@
       "dna_phase": "2g3.2",
       "session_closed": 51,
       "live_preview": true,
-      "live_pages": ["home", "studio", "servizi", "prevenzione", "medici", "contatti", "prenota"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "studio",
+        "servizi",
+        "prevenzione",
+        "medici",
+        "contatti",
+        "prenota"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 69,
       "featured": true,
@@ -261,7 +467,11 @@
       "category": "medical",
       "brand_name": "Studio Armonia",
       "tagline": "Equilibrio fra corpo, mente e respiro",
-      "palette": {"primary": "#2D4A3E", "secondary": "#A7C4BC", "accent": "#D4A574"},
+      "palette": {
+        "primary": "#2D4A3E",
+        "secondary": "#A7C4BC",
+        "accent": "#D4A574"
+      },
       "typography": "Cormorant Garamond + Nunito",
       "personality": "sereno, sensoriale, olistico",
       "archetype": "wellness",
@@ -275,8 +485,22 @@
       "dna_phase": "2g3.2",
       "session_closed": 51,
       "live_preview": true,
-      "live_pages": ["home", "filosofia", "rituali", "ambienti", "professionisti", "contatti", "prenota"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "filosofia",
+        "rituali",
+        "ambienti",
+        "professionisti",
+        "contatti",
+        "prenota"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 59,
       "featured": false,
@@ -290,7 +514,11 @@
       "category": "medical",
       "brand_name": "Pediatria Famiglia Plus",
       "tagline": "Cresciamo insieme ai vostri bambini",
-      "palette": {"primary": "#4A2E2A", "secondary": "#FBD9B5", "accent": "#E97B5C"},
+      "palette": {
+        "primary": "#4A2E2A",
+        "secondary": "#FBD9B5",
+        "accent": "#E97B5C"
+      },
       "typography": "Quicksand + Nunito",
       "personality": "warm-family, protettivo, rassicurante",
       "archetype": "family",
@@ -304,8 +532,21 @@
       "dna_phase": "2g3.2",
       "session_closed": 51,
       "live_preview": true,
-      "live_pages": ["home", "studio", "visite", "crescita", "pediatre", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "studio",
+        "visite",
+        "crescita",
+        "pediatre",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 65,
       "featured": false,
@@ -319,7 +560,11 @@
       "category": "medical",
       "brand_name": "Studio Marani Cardiologia",
       "tagline": "Cardiologia clinica e secondi pareri",
-      "palette": {"primary": "#1c1612", "secondary": "#f7f3ee", "accent": "#9c2a2a"},
+      "palette": {
+        "primary": "#1c1612",
+        "secondary": "#f7f3ee",
+        "accent": "#9c2a2a"
+      },
       "typography": "Cormorant Garamond + Inter",
       "personality": "editoriale, prestigioso, sobrio",
       "archetype": "specialist",
@@ -329,8 +574,23 @@
       "tone": "prestigious",
       "conversion_pattern": "private-request",
       "live_preview": true,
-      "live_pages": ["home", "studio", "visite", "medici", "pubblicazioni", "pubblicazioni/<post>", "contatti", "richiedi-visita"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "studio",
+        "visite",
+        "medici",
+        "pubblicazioni",
+        "pubblicazioni/<post>",
+        "contatti",
+        "richiedi-visita"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 109,
       "featured": false,
@@ -344,7 +604,11 @@
       "category": "medical",
       "brand_name": "Studio Ricciardi Dermatologia",
       "tagline": "Dermatologia clinica, chirurgica ed estetica · Roma Veneto",
-      "palette": {"primary": "#1c1612", "secondary": "#f7f3ee", "accent": "#3d5437"},
+      "palette": {
+        "primary": "#1c1612",
+        "secondary": "#f7f3ee",
+        "accent": "#3d5437"
+      },
       "typography": "Bodoni Moda + Inter",
       "personality": "editoriale, meticoloso, estetico-clinico",
       "archetype": "specialist",
@@ -354,8 +618,23 @@
       "tone": "prestigious",
       "conversion_pattern": "private-request",
       "live_preview": true,
-      "live_pages": ["home", "studio", "visite", "medici", "pubblicazioni", "pubblicazioni/<post>", "contatti", "richiedi-visita"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "studio",
+        "visite",
+        "medici",
+        "pubblicazioni",
+        "pubblicazioni/<post>",
+        "contatti",
+        "richiedi-visita"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "archetype_reuse": true,
       "reuse_notes": "Second template on the `specialist` archetype. Reuses the same live_templates/medical/specialist/ skin as cardio-studio-specialistico — ZERO new HTML files. Differentiated via brand (Studio Ricciardi), accent (forest green #3d5437 vs cardio red #9c2a2a), font (Bodoni Moda vs Cormorant), and dermatology-specific content registry.",
@@ -371,7 +650,11 @@
       "category": "lawyer",
       "brand_name": "Studio Legale Ferri",
       "tagline": "Competenza e dedizione al servizio della giustizia",
-      "palette": {"primary": "#1A1A2E", "secondary": "#C5A55A", "accent": "#8B0000"},
+      "palette": {
+        "primary": "#1A1A2E",
+        "secondary": "#C5A55A",
+        "accent": "#8B0000"
+      },
       "typography": "Cormorant Garamond + Inter",
       "personality": "autorevole, classico, sobrio",
       "price": 69,
@@ -386,7 +669,11 @@
       "category": "lawyer",
       "brand_name": "Avv. Martini & Partners",
       "tagline": "Il diritto dalla tua parte",
-      "palette": {"primary": "#2D3748", "secondary": "#4299E1", "accent": "#ECC94B"},
+      "palette": {
+        "primary": "#2D3748",
+        "secondary": "#4299E1",
+        "accent": "#ECC94B"
+      },
       "typography": "DM Sans + Inter",
       "personality": "moderno, accessibile, trasparente",
       "price": 59,
@@ -401,7 +688,11 @@
       "category": "real-estate",
       "brand_name": "Domus Immobiliare",
       "tagline": "La casa dei tuoi sogni ti aspetta",
-      "palette": {"primary": "#1B2838", "secondary": "#2ECC71", "accent": "#E67E22"},
+      "palette": {
+        "primary": "#1B2838",
+        "secondary": "#2ECC71",
+        "accent": "#E67E22"
+      },
       "typography": "Poppins + Inter",
       "personality": "aspirazionale, affidabile, elegante",
       "archetype": "mass-market",
@@ -410,8 +701,22 @@
       "dna_phase": "2g3.7",
       "session_closed": 53,
       "live_preview": true,
-      "live_pages": ["home", "immobili", "immobili/<post>", "quartieri", "agenzia", "valutazione", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "immobili",
+        "immobili/<post>",
+        "quartieri",
+        "agenzia",
+        "valutazione",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 79,
       "featured": false,
@@ -425,7 +730,11 @@
       "category": "real-estate",
       "brand_name": "Villa Prestige",
       "tagline": "L'eccellenza nell'immobiliare di lusso",
-      "palette": {"primary": "#0A0A0A", "secondary": "#C9A96E", "accent": "#FFFFFF"},
+      "palette": {
+        "primary": "#0A0A0A",
+        "secondary": "#C9A96E",
+        "accent": "#FFFFFF"
+      },
       "typography": "Cormorant Garamond + Montserrat",
       "personality": "lussuoso, esclusivo, cinematografico",
       "price": 99,
@@ -440,7 +749,11 @@
       "category": "portfolio",
       "brand_name": "Chiara Studio",
       "tagline": "Ogni progetto racconta una storia",
-      "palette": {"primary": "#FAFAFA", "secondary": "#111111", "accent": "#FF6B6B"},
+      "palette": {
+        "primary": "#FAFAFA",
+        "secondary": "#111111",
+        "accent": "#FF6B6B"
+      },
       "typography": "Syne + Inter",
       "personality": "minimale, raffinato, personale",
       "price": 0,
@@ -466,7 +779,11 @@
       "category": "portfolio",
       "brand_name": "Pixel Photography",
       "tagline": "L'arte di catturare l'attimo",
-      "palette": {"primary": "#0A0A0A", "secondary": "#E0E0E0", "accent": "#FF4444"},
+      "palette": {
+        "primary": "#0A0A0A",
+        "secondary": "#E0E0E0",
+        "accent": "#FF4444"
+      },
       "typography": "Archivo + Inter",
       "personality": "drammatico, immersivo, professionale",
       "price": 49,
@@ -492,7 +809,11 @@
       "category": "ecommerce",
       "brand_name": "La Bottega di Martino",
       "tagline": "Fatto a mano, fatto col cuore",
-      "palette": {"primary": "#3E2723", "secondary": "#D7CCC8", "accent": "#FF8F00"},
+      "palette": {
+        "primary": "#3E2723",
+        "secondary": "#D7CCC8",
+        "accent": "#FF8F00"
+      },
       "typography": "Libre Baskerville + Nunito Sans",
       "personality": "artigianale, caldo, autentico",
       "archetype": "artisan-workshop",
@@ -505,8 +826,21 @@
       "dna_phase": "2g3.5",
       "session_closed": 41,
       "live_preview": true,
-      "live_pages": ["home", "shop", "product", "atelier", "journal", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "shop",
+        "product",
+        "atelier",
+        "journal",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 69,
       "featured": false,
@@ -520,7 +854,11 @@
       "category": "ecommerce",
       "brand_name": "Maison Luxe",
       "tagline": "Stile senza compromessi",
-      "palette": {"primary": "#000000", "secondary": "#F5F5F5", "accent": "#B8860B"},
+      "palette": {
+        "primary": "#000000",
+        "secondary": "#F5F5F5",
+        "accent": "#B8860B"
+      },
       "typography": "Cormorant Garamond + Montserrat",
       "personality": "lussuoso, minimale, sofisticato",
       "archetype": "fashion-editorial",
@@ -533,8 +871,21 @@
       "dna_phase": "2g3.5",
       "session_closed": 41,
       "live_preview": true,
-      "live_pages": ["home", "collezione", "product", "maison", "lookbook", "contatti"],
-      "locales": ["it", "en", "fr", "es", "ar"],
+      "live_pages": [
+        "home",
+        "collezione",
+        "product",
+        "maison",
+        "lookbook",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
       "rtl": true,
       "price": 89,
       "featured": false,

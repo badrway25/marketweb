@@ -671,6 +671,8 @@ class FreshSeedChainBackfillTests(TestCase):
             "juris-avvocato-moderno",
             # Wave 2 Pilot #1 — Fiscus (appointment-request CTA)
             "fiscus-commercialista",
+            # Wave 2 Pilot #2 — Solaria (discovery-call CTA · tier=draft)
+            "solaria-coaching",
         }
         actual = set(
             WebTemplate.objects.filter(has_booking=True).values_list(
