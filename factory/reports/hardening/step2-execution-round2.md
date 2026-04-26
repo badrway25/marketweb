@@ -332,4 +332,109 @@ A second independent Playwright MCP walk was executed on the post-P1A-merge tip 
 
 The re-verification confirms the initial PASS verdict on the post-merge baseline. The Round 2 CS-BLOCK-17 (extended) palette-safety patches survive the LTR-merge unchanged on the AR locale; no archetype-level regression introduced by the P1A commit. T-P1-2 (RTL AR walk V3) is **closed PASS** under both walks; the cluster-cumulative §7 floor of 120 screenshots / template is met across Rounds 1D + 2 + 3 + 4 (initial) + 4 (re-verified).
 
-— end of Round 2 execution report —
+---
+
+## P1C — AP8 first end-to-end pipeline run on Fiscus
+
+The walk executes T-P1-3 from `factory/reports/hardening/step2-followup-plan.md §3.P1`, scoped to the **first end-to-end exercise of the corporate-suite multi-agent pipeline** on the known-good Fiscus template (Phase X.4 Wave 2 Pilot #1 · Session 80 · already at `tier: published_live`). The run reuses the four-round X.4a hardening browser corpus as evidence base, applies one small archetype-level skin edit (`.mp-bar .mp-back` → gold-accent `:focus-visible` whitelist) to close the only outstanding Round 4 `[STRONG]` accessibility deviation, and produces all eight required pipeline reports under `factory/reports/scorecard/fiscus-pipeline-round1/`. The release-gatekeeper aggregator uses **blocking overrides not average-score optimism** and reaches verdict **PASS** at aggregate **4.9 / 5** with 0/18 blocking overrides triggered, 9/9 CRITICAL floors met, 0 `[REQUIRED]` failures outstanding, and 3 documented `[STRONG]` deviations. Fiscus is already `published_live`, so no registry edit issues — the PASS records the **AP8 pipeline as field-proven**, not a tier flip.
+
+**Run-ISO (P1C aggregator)**: `20260426T0757Z`
+**Server (carried from P1B re-verification)**: `http://127.0.0.1:8735/` · still running (BRWS-SRV-04 honored).
+**Baseline tip at execution start**: `e210b6b` (Step 2E P1B re-verification · committed). One archetype-skin edit applied this round on top of `e210b6b` (additive `:focus-visible` whitelist line in `_base.html`).
+**CI floor at post-fix tip**: `python manage.py test apps.catalog -v 2` → **171 tests · OK · 2.218 s** (`factory/reports/hardening/step2-ci/test-run-20260426T0757Z.txt`).
+**Reports produced** (8 deliverables under `factory/reports/scorecard/fiscus-pipeline-round1/`):
+
+```
+fiscus-pipeline-round1/
+├── build-report.md            (Builder · CI floor + palette + Pexels grep + voice anchor + D-054)
+├── style-critic.md            (D1, D2, D3-half, D5, D6, D7-structure, D8 — all 5)
+├── contrast-accessibility.md  (D4 = 5, D12 = 5 · O1/O17 NOT triggered)
+├── responsive-auditor.md      (D13 = 4 with §deviation · O2/O3 NOT triggered)
+├── browser-verifier.md        (D14 = 4 with §deviation · cluster-cumulative §7 floor met)
+├── release-gatekeeper.md      (Layer 1/2/3 aggregator · PASS · pipeline-proven framing)
+├── scorecard.md               (final 15-dim scorecard per scorecard §7 template)
+└── summary.md                 (one-paragraph + remaining-blocker punch list)
+```
+
+## Files changed
+
+```
+Code (archetype-level skin · within factory scope · single additive edit)
+  templates/live_templates/business/corporate-suite/_base.html
+      └── :focus-visible whitelist on line 370-377 — adds `.mp-bar .mp-back`
+          (gold-accent ring, solid 2px, offset 4px); closes Round 4 P2 deviation
+          where the marketplace back-link rendered browser-default outline.
+
+Evidence (this round)
+  factory/reports/scorecard/fiscus-pipeline-round1/                 (8 markdown files · all P1C deliverables)
+  factory/reports/hardening/step2-ci/test-run-20260426T0757Z.txt   (171 tests · OK · 2.218 s)
+  factory/reports/hardening/step2-execution-round2.md              (this file · P1C section appended)
+```
+
+No `apps/editor`, `apps/projects`, `apps/commerce` touches. No new archetypes. No Solaria-scope activity. No migrations. No new routes / views. The `_base.html` edit is the only code change and is purely additive (extends an existing CSS selector group; no rule semantics change).
+
+## Pipeline coverage matrix
+
+The P1C run produced one instance of every SOP §6 report shape on disk for the first time on the corporate-suite archetype:
+
+| Agent | Owns dimensions | Sub-report this round | Hard-veto outcome |
+|---|---|---|---|
+| `template-builder` | upstream (no scoring) | `build-report.md` | n/a · CI floor green; palette CS-PAL-01 PASS (Fiscus L*≈16.8, ΔL*≈80.8); Pexels grep clean for `business-fiscal`; W001 grandfather acknowledged for Pragma `business-corporate` |
+| `style-critic` | D1, D2, D3 (half), D5, D6, D7 (half), D8 | `style-critic.md` | n/a · CS-BLOCK-08/09/10/16 all clear |
+| `contrast-accessibility-auditor` | D4, D12 | `contrast-accessibility.md` | **O1 NO** · **O17 NO** (hard vetoes both clear) |
+| `responsive-auditor` | D13 | `responsive-auditor.md` | **O2 NO** · **O3 NO** (hard vetoes both clear) |
+| `imagery-curator-reviewer` | D9, D10, D11, D15 | folded inline into gatekeeper §3.1 / §4.3 (Step 3 prompt-revision item — see summary §4.1) | n/a · Pexels-only on `business-fiscal`; 3-second subject + mood-to-anchor PASS; zero cross-cluster URL reuse |
+| `copy-translation-agent` | D3 (half), D7 (half), D11/imagery-cross-check | folded inline into gatekeeper §3.1 / §4.3 (Step 3 prompt-revision item) | n/a · 5/5 voice anchor verbatim; cluster-specific credentials |
+| `browser-verifier` | D14 | `browser-verifier.md` | **O13 NO** · **O14 NO** · **O15 NO** · **O18 NO** |
+| `release-gatekeeper` | aggregation only | `release-gatekeeper.md` + `scorecard.md` + `summary.md` | aggregator verdict **PASS** · 0/18 blocking overrides · all 9 CRITICAL floors ≥ 4 · aggregate 4.9 |
+
+## Pragma legacy grandfather handling
+
+Per `step2-readiness-reassessment.md §S4` and `R-SOL-10` ("first scorecard must cite O7 grandfather explicitly"), this is the first scorecard the archetype has ever produced. The grandfather is cited in two places in `release-gatekeeper.md`:
+
+- §3.1 Override row O7: "**NO** for Fiscus (Fiscus `business-fiscal` 0 non-Pexels) … Pragma `business-corporate` is the documented grandfathered exception (`LEGACY_EXEMPT_KEYS = {business-corporate}`) → surfaces `corporate_suite.W001` warning silently per design; not a blocker"
+- §6 · E1: full prose paragraph noting the contract is honored, the W001 warning surfaces silently per design on every `manage.py check`, and the Pexels retro-pack (T-P2-1) remains deferrable-past-Solaria per plan §5.
+
+The `manage.py check catalog` output captured in `build-report.md §4.2` shows the W001 line verbatim. The first-scorecard-discipline contract is honored.
+
+## Fiscus contrast hotspots
+
+**None remain.** The readiness reassessment §S5 borderline observation on the Fiscus `.cs-post .kpi-band .stat .num` (case-detail outcome KPI, visually-phantom ~1.3 ratio) was closed by the Round 2 + Round 3 CS-BLOCK-17 (extended) cream-on-dark promotion (post-fix ratio 12.86 AAA). The contrast battery in `contrast-accessibility.md §4.1-4.4` re-confirms every Fiscus h1..h5 at AAA 12.86 across 5 locales and every dark-section descendant at AAA 12.86; nav AA on every state; gold focus-ring on every whitelisted interactive (now including `.mp-bar .mp-back` per this round's edit). The `summary.md §6` re-cites the closure explicitly.
+
+## Pipeline field-proven status
+
+**Yes — proven in the field on Fiscus.** This is the first time every agent prompt has been exercised end-to-end with concrete outputs for a real template. Three small but real value-adds the first run surfaced (per `summary.md §3`):
+
+1. The mp-back focus-visible deviation (carried Rounds 1D → 2 → 3 → 4) was finally surfaced as a discrete `[STRONG]` finding by the contrast-accessibility-auditor leg, the editor-fixer leg landed the 1-line whitelist edit, the gatekeeper recorded the closure — the AP8 loop working as designed on a real defect.
+2. The Pragma D-054 staleness vs Fiscus (S3) was correctly **NOT** flagged as O12 on Fiscus's scorecard (Fiscus's own docstring is correct) and instead escalated under §6.E2 of the gatekeeper aggregator — pipeline distinguishes scope correctly.
+3. The Pragma legacy Unsplash grandfather contract was honored on a real scorecard for the first time — load-bearing-by-design but until this round, untested in the field.
+
+Five Step 3 prompt-revision items surfaced (per `summary.md §4`): imagery-curator + copy-translation prompts may need an explicit "may fold inline if upstream walk already cited the contract" clause OR remain mandatory standalone reports; browser-verifier §7 floor wording per-template-per-walk vs cumulative; release-gatekeeper handshake template needs a no-op-flip variant for known-good templates; R-SOL-10 should reference "first AP8 scorecard regardless of subject template" not "first Solaria scorecard"; browser-verifier walker should pull voice anchors from the cluster-blueprint registry rather than hardcoding.
+
+## Server, scope, and verdict for P1C
+
+**Server**: `http://127.0.0.1:8735/` · still running on the Round 4 re-verification process · BRWS-SRV-04 honored.
+
+**Scope produced**: 1 template (Fiscus) · 8 SOP §6 report shapes · 1 archetype-level skin edit (additive `:focus-visible` whitelist) · 1 fresh CI transcript · 1 P1C narrative section in this file. No re-walk performed (corpus reused from Rounds 1D + 2 + 3 + 4); no fresh screenshots.
+
+**P1C verdict**: **PASS** (release-gatekeeper aggregator)
+
+- Layer 1 (blocking overrides): 0 / 18 triggered.
+- Layer 2 (critical floors): 9 / 9 met (D1=5, D2=5, D3=5, D4=5, D10=5, D11=5, D12=5, D13=4, D14=4).
+- Layer 3 (aggregate): avg **4.9** ≥ 4.3 floor; 0 `[REQUIRED]` outstanding; 3 documented `[STRONG]` deviations (per-template Fiscus PNG count, partial 8-viewport sweep on multi-locale, force-reveal capture-mechanism).
+- Final verdict: **PASS** · `status_tag: APPROVED-RETROACTIVE`.
+
+The verdict promotes T-P1-3 from "pending" to "PASS · pipeline field-proven on Fiscus" in plan §10.3. **Two remaining items** before the full Go verdict can issue: T-P1-4 (D-054 docstring refresh on Pragma + Fiscus, three-template-ready) and T-P1-5 (primary-CTA paper-surface solid-variant decision). Solaria Commit B remains paused (B1 unchanged); Go is not Solaria un-pause; un-pause is a separate explicit user-authorized lever (R-SOL-8).
+
+## Remaining issues before a true Go verdict
+
+P1C closes the AP8-pipeline-first-run leg (T-P1-3) of the P1 bundle. Outstanding work blocking the full Go verdict per plan §10.3:
+
+- **T-P1-4 · D-054 triangulation refresh on Pragma + Fiscus** — Pragma's docstring (`template_content_pragma.py:12-32`) still triangulates against **Elevate** (its archetype-era sibling at Session 32), not against Fiscus (admitted in Session 80). Fiscus's docstring is current (10/10 vs Pragma in `template_content_fiscus.py:14-39`). The refresh lands one block per template, three-template-ready (so future Solaria un-pause does not require a second refresh round). Plan §6.5 binds T-P1-4 to land **after** T-P1-3 — i.e., next.
+- **T-P1-5 · Primary-CTA paper-surface solid-variant decision** — Step 1B / Step 1D / Round 1 / Round 2 / Round 3 / Round 4 / Round 5 all deferred. A `§ decision` block in `factory/standards/corporate-suite-design-standard.md` is required regardless of direction (adopt `.cs-btn-primary--solid` OR formally waiver the outline-only reading as intentional).
+- **Optional polish** — a future consolidated Fiscus-only re-walk producing ≥ 120 PNGs in a single ISO directory under `factory/reports/browser-verification/fiscus-commercialista/<run-ISO>/` would lift D14 from 4 to 5 and close `§ deviation` 1 cleanly. Not gating per plan §10.3.
+- **B1** Solaria Commit B paused — unchanged. Even after Go issues, un-pause is a separate explicit user-authorized lever (R-SOL-8). Solaria's first walk inherits the AP8 pipeline this round just bootstrapped, including R-SOL-9 through R-SOL-15.
+- **B2** `LEGACY_EXEMPT_KEYS = {business-corporate}` — unchanged. `corporate_suite.W001` keeps the Pragma legacy pool visible at every `manage.py check` per O7. Pexels retro-pack (T-P2-1) deferrable-past-Solaria.
+- **B7** `templates/preview_compositions/business/corporate-suite.html` untouched — out of Step 2 scope.
+
+— end of Round 2 execution report (P1C appended · 20260426T0757Z @ tip e210b6b + 1 skin edit) —

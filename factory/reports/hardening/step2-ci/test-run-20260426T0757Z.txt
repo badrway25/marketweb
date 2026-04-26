@@ -1,0 +1,177 @@
+Found 171 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: core, crispy_bootstrap5, crispy_forms, django_filters, drf_spectacular, editor, messages, pages, rest_framework, staticfiles
+  Apply all migrations: accounts, admin, auth, catalog, commerce, contenttypes, projects, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying accounts.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying catalog.0001_initial... OK
+  Applying catalog.0002_webtemplate_tier... OK
+  Applying catalog.0003_taxonomy_v2_schema... OK
+  Applying catalog.0004_taxonomy_v2_backfill... OK
+  Applying catalog.0005_taxonomy_v2_not_null... OK
+  Applying commerce.0001_initial... OK
+  Applying commerce.0002_alter_order_fulfillment_status_and_more... OK
+  Applying commerce.0003_commerce_v2... OK
+  Applying projects.0001_initial... OK
+  Applying projects.0002_projectasset... OK
+  Applying sessions.0001_initial... OK
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+
+0 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+21 tier(s) updated. Catalog distribution: 21 published_live / 0 draft.
