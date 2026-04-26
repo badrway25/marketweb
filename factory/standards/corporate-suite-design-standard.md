@@ -314,6 +314,42 @@ Rules codify pattern B1, B2 and anti-patterns AP1, AP7, AP10, AP11.
 ### CS-CTA-05 [REQUIRED] · Final-section CTA is the cadence closer
 - **Rule**: home ends with a dark or tinted CTA section that restates the voice anchor and offers one primary action. This is the one place the voice anchor appears as a section headline.
 
+### § Decision · Primary CTA on paper surfaces — outline-only is intentional restraint (NOT a placeholder reading)
+
+**Phase**: X.4a · Step 2E P1D · **Date**: 2026-04-26 · **Status**: APPROVED · **Direction**: WAIVER (no `.cs-btn-primary--solid` modifier introduced)
+
+**Question carried forward from Step 1B → 1D → Round 1 → Round 2 → Round 3 → Round 4 → P1C**:
+On cream paper surfaces (hero, mid-page CTA contexts outside the dark `.cs-cta` band), the primary CTA renders as an outline-boxed button (`.cs-btn-primary { color: var(--primary); border: 1.5px solid var(--primary); }` per `_base.html:348-355`) rather than an accent-filled solid. Style-critic memos at Step 1B flagged this as "reads placeholder, not executive button" and proposed introducing a `.cs-btn-primary--solid` modifier (or a paper-scoped override keyed to `.cs-lead` / `.cs-hero`) so the primary on cream looks like a filled boardroom button.
+
+**Decision**: WAIVER — the outline-only primary on cream is the **intentional archetype contract** and is **not** a placeholder reading. No `.cs-btn-primary--solid` modifier is introduced. The skin contract at `_base.html:342-347` (the `/* CTA primitives · CS-CTA-01/03 · primary reads as outline-boxed boardroom button on cream paper (light-tier dominance via shape, not fill — keeps the accent budget for state and punctuation); ghost is a typographic-underline. The dark-section override in '.cs-cta .actions .cs-btn-primary' inverts the polarity so the same primitive reads correctly on either surface. */` comment) is now ratified at the standards layer.
+
+**Why this is the right call** (each row independently load-bearing):
+
+1. **Live-walk evidence supersedes the early style-critic memo.** The Step 1B "placeholder reading" was a single offline observation; four rounds of Playwright walks (Step 1D IT-LTR · Round 2 reduced-motion · Round 3 LTR multi-locale EN/FR/ES · Round 4 RTL AR + re-verification) and the AP8 first-run pipeline scorecard (`factory/reports/scorecard/fiscus-pipeline-round1/style-critic.md §5`) all rendered the cream-surface primary as outline-only and graded **D1 = 5 (reference-class)** with **zero** finding citing it as placeholder. A reading flagged once offline that **never recurred** under five distinct live-walk passes across two templates × five locales is a hypothesized defect, not an observed one.
+2. **Accent budget binding (CS-PAL-05) constrains the answer.** CS-PAL-05 caps accent-color hits at "≤ 2-3 per viewport." On the home above-the-fold, the existing accent budget already funds: (a) one trailing nav CTA, (b) the eyebrow before-mark, (c) the hero h1 italic `<em>`, (d) the `.cs-btn-primary:after` arrow glyph (accent-coloured via `_base.html:356`), and (e) the `:focus-visible` gold ring on tab-walk. Promoting the hero primary's body fill to accent would push the above-the-fold accent count to 4-5 hits — over budget and reading "decorative wash" rather than "punctuation." This is precisely the AP10/AP11 polarity-drift class the four-round hardening just closed; a solid-fill modifier would re-introduce the same risk class.
+3. **Tone alignment binding (CS-TONE-01).** CS-TONE-01 requires institutional-advisory polarity, not startup-tech. Outline-boxed buttons are the boardroom convention (Bain, BCG, McKinsey, Deloitte advisory pages all default to outline-or-letter primaries on cream stationery); accent-filled glow primaries are the SaaS funnel convention. The reading "outline = placeholder" is a SaaS-trained reflex; the reading "outline = institutional restraint" is the cluster-correct anchor.
+4. **Polarity inversion already exists where it matters (`_base.html:346`).** The dark-section override `.cs-cta .actions .cs-btn-primary { color: var(--on-dark); border-color: var(--accent); }` (defined at `home.html:311-313` for the home final-CTA band, recapped in the `_base.html:346` comment) already promotes the same primitive to a high-emphasis cream-on-navy button on every dark CTA band. The visitor's funnel-completion CTA (the cadence-closer, CS-CTA-05) reads as a confident filled boardroom button; the upstream hero/mid-page CTAs read as restraint-first outline buttons. The two states answer different jobs and the existing override pattern is the reason a separate `--solid` modifier is not needed.
+5. **Modifier proliferation has a cost.** Introducing `.cs-btn-primary--solid` would add a third CTA primitive (alongside `.cs-btn-primary` and `.cs-btn-ghost`); every page file would need a per-section decision rule for which primitive to use; every locale walk would need a new BRWS-* check verifying the right primitive landed in the right slot; the planner brief (CS-EXEC-02) would need a new D-054 gate ("CTA primitive choice"). The cost is non-zero and the offsetting evidence for the gain is absent.
+6. **Touch-target and focus-ring contracts are unaffected.** The waiver does not change `:focus-visible` (still gold accent ring, `_base.html:370-378`), does not change touch-target floors (CTAs already meet 44 × 44 at 390 per Round 3 + Round 4 measurements), and does not change the ghost-CTA waiver under `CS-CTA-03` (separate decision, P2 scope, unchanged here).
+
+**What this decision is NOT**:
+- It is **not** a license to use outline-only buttons everywhere. The dark `.cs-cta` band override (cream-on-navy fill via `border-color: var(--accent)`) remains the cadence-closer treatment and remains required by CS-CTA-05.
+- It is **not** a waiver of CS-CTA-01 (one primary CTA per viewport): outline-only does not mean optional or de-emphasized; it means restraint-as-emphasis. The button must still be the single dominant action per viewport.
+- It is **not** a waiver of the AAA contrast floor: outline + body color = `--primary` on cream = 12.81 / 12.86 ratio (verified across Pragma + Fiscus four-round corpus); the contract holds.
+- It is **not** retroactive — a future archetype (e.g., a startup-saas variant or a consumer-facing template) is free to choose accent-filled primaries; this decision binds **corporate-suite** specifically.
+
+**What changes**:
+- This `§ decision` block is the standards-layer ratification.
+- The skin comment at `_base.html:342-347` already encodes the intent; no skin edit required.
+- The `template-planner` agent's CS-EXEC-02 D-054 gate "CTA tone" continues to read CTA copy + position + bound-form composition (per `factory/agents/template-planner.md §3.2 row 10`) — primitive choice is **not** a D-054 differentiation gate.
+- The `style-critic` agent should **not** flag outline-only primary on cream as a `[STRONG]` deviation in future Fiscus / Pragma / Solaria scorecards. If a reviewer reaches for this finding again, this `§ decision` block is the reference.
+
+**Implementation footprint**: zero. No code changes, no test changes, no skin edits. The decision is a standards-layer ratification of the existing skin contract.
+
+**Anchor**: `CS-CTA-01` (one primary per viewport) · `CS-CTA-03` (secondary = ghost) · `CS-CTA-05` (cadence closer) · `CS-TONE-01` (institutional-advisory) · `CS-PAL-05` (accent as punctuation) · `_base.html:342-358` (skin contract) · `home.html:311-315` (dark-section polarity inversion).
+
+**Closes**: T-P1-5 from `factory/reports/hardening/step2-followup-plan.md §3.P1` and the open question carried at `factory/reports/hardening/step2-readiness-reassessment.md §S6`. Frees the archetype to advance from Conditional-Go to Go per plan §10.3 once T-P1-4 (D-054 triangulation refresh, this same Step 2E P1D) lands.
+
 ---
 
 ## 11 · Section composition rules

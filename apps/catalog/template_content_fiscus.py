@@ -1,6 +1,14 @@
 """Fiscus — Studio Tributario (business / corporate-suite archetype) content.
 
 Wave 2 Pilot #1 — Phase X.4 (Session 80, 2026-04-20).
+D-054 triangulation refresh — Phase X.4a Step 2E P1D (2026-04-26):
+this docstring is now three-template-ready (CS-EXEC-02 / CS-BLOCK-12 /
+O12) — triangulates against every on-archetype sibling, including
+Solaria as a placeholder column for the post-Commit-B un-pause future.
+The Pragma column was current at Session 80; the Solaria column is
+sourced from the paused Wave 2 Pilot #2 brief (e8f38b5 docstring +
+cluster_blueprints/coaching.md §5) and remains read-only until R-SOL-8
+un-pause.
 
 Editorial identity: independent Italian studio tributario based in Milan,
 founded 2003, iscritto ODCEC. Serves partite IVA, PMI manifattura, studi
@@ -11,32 +19,75 @@ normativa con pazienza, senza semplificare. Photo direction: scrivanie con
 documenti, portraits focalizzati in giacca senza cravatta, ambienti editorial
 con profondità di campo ridotta — mai "stock handshake" o grafici a torta.
 
-Differentiation vs Pragma (D-054 10-gate — recorded here for reviewers):
- 1. Hero image:        scrivania con documenti e laptop (business-fiscal[0])
-                       vs Pragma's boardroom long-table (business-corporate[0])
- 2. First-2 imagery:   fiscal desk + modern office interior (business-fiscal[0,1])
-                       vs Pragma boardroom + corporate atrium (business-corporate[0,1])
- 3. Silhouette:        55/45 split serif L + photo R + fiscal-calendar-strip
-                       vs Pragma KPI-strip over sectors-ribbon
- 4. Section order:     hero → pillars → kpi → fiscal-calendar → sectors → cases → cta
-                       vs Pragma hero → pillars → kpi → sectors → leadership → cases → cta
- 5. Primary CTA:       "Primo appuntamento" + P.IVA/CF form + fascia oraria
-                       vs Pragma "Fissa una call privata" + NDA-ready boardroom form
- 6. Block rhythm:      airy editorial chapters with document-centric details
-                       vs Pragma airy editorial chapters with board-portrait details
- 7. Macro tone:        warm-neutral cream + blu-notte accent + gold filigrana
-                       (institutional-fiscal, document-ready)
+Differentiation vs Pragma + Solaria-as-placeholder (D-054 10-gate —
+three-template-ready · CS-EXEC-02 · CS-BLOCK-12 · O12). Pragma is the
+currently-enrolled corporate-suite sibling (Session 32 live rollout,
+`tier: published_live`); Solaria is the paused Wave 2 Pilot #2 (Commit B
+held under binding user instruction · the placeholder column locks
+Fiscus's diff vector against the coaching cluster so an un-pause does
+not require a second refresh round):
+ 1. Cluster:           business-fiscal (commercialista presidio)
+                       vs Pragma business-corporate (boardroom advisory)
+                       vs Solaria business-coaching (executive 1:1 + team)
+ 2. Voice anchor:      "Ci occupiamo dell'adempimento corretto, non della
+                       trovata" — commercialista presidio · scadenze-first
+                       vs Pragma "Dove si prendono le decisioni che contano"
+                       — board advisory · strategy-first
+                       vs Solaria "Il coaching non è terapia e non è
+                       consulenza" — bounded percorso · method-declared
+ 3. Hero image:        scrivania con documenti e laptop (business-fiscal[0])
+                       vs Pragma boardroom long-table (business-corporate[0])
+                       vs Solaria 1:1 advisor seating in daylit room
+                       (business-coaching[0]) — no mountain peaks per AP9
+ 4. First-2 imagery:   fiscal desk + modern office interior
+                       (business-fiscal[0,1])
+                       vs Pragma boardroom + corporate atrium
+                       (business-corporate[0,1])
+                       vs Solaria coaching-1to1 + small-group session
+                       (business-coaching[0,1]) — adult-to-adult register
+ 5. Silhouette:        55/45 split serif L + photo R + fiscal-calendar-strip
+                       vs Pragma 55/45 split + KPI-strip over sectors-ribbon
+                       vs Solaria 55/45 split + percorso-cadenza-strip
+                       (inizio dichiarato → cadenza → fine dichiarata)
+ 6. Section order:     hero → pillars → kpi → fiscal-calendar → sectors →
+                       cases → cta
+                       vs Pragma hero → pillars → kpi → sectors → leadership
+                       → cases → cta
+                       vs Solaria hero → manifesto → percorsi → method-cadenza
+                       → cases → cta (no leadership block — single-coach focus)
+ 7. Primary CTA:       "Primo appuntamento" + P.IVA/CF form + fascia oraria
+                       vs Pragma "Fissa una call privata" + NDA-ready
+                       boardroom form
+                       vs Solaria "Prenota una discovery call" (20-30 min
+                       gratuita · ICF Code of Ethics referenced)
+ 8. Block rhythm:      airy editorial chapters with document-centric details
+                       vs Pragma airy editorial chapters with board-portrait
+                       details
+                       vs Solaria airy editorial chapters with method-cadence
+                       details (3 percorsi enumerated · bounded path)
+ 9. Macro tone:        warm-neutral cream + blu-notte accent + gold filigrana
+                       (institutional-fiscal · document-ready)
                        vs Pragma cream paper + navy slate + emerald accent
-                       (institutional-advisory, boardroom-ready)
- 8. Imagery direction: fiscal desks + tax documents + focused professional
-                       portraits (no tie, Italian SMB credibility)
-                       vs Pragma boardroom executives + corporate HQ facilities
- 9. Typography:        IBM Plex Serif + IBM Plex Sans (document-transitional)
-                       vs Pragma Merriweather + Inter (editorial-serif)
-10. Voice anchor:      "Ci occupiamo dell'adempimento corretto, non della
-                       trovata" — commercialista presidio, scadenze-first
-                       vs Pragma "Dove si prendono le decisioni che contano" —
-                       board advisory, strategy-first
+                       (institutional-advisory · boardroom-ready)
+                       vs Solaria minimal-light + warm-earth accent
+                       (professional-warm · non-guru · non-therapy)
+10. Typography +       IBM Plex Serif + IBM Plex Sans (document-transitional
+    credentials axis:  pair) · ODCEC Milano · Sezione A · Cassazionista ·
+                       Revisore Legale · P.IVA (commercialista licensure)
+                       vs Pragma Merriweather + Inter (editorial-serif) ·
+                       ODCEC + CONSOB n. (advisory licensure)
+                       vs Solaria Fraunces (humanist) + Inter · ICF-PCC ·
+                       EMCC Senior Practitioner · AICP — frameworks
+                       (GROW / Co-Active / ITC) named as frameworks,
+                       never as fake certifications
+
+Anti-drift binding: every gate above resolves to DIFF against both
+siblings (no row collapses Fiscus into a rename of Pragma or Solaria).
+A future Solaria un-pause keeps this triangulation valid as-is —
+Solaria's own docstring at e8f38b5 already encodes the reciprocal
+diff vs Fiscus; on un-pause its own refresh adds the reciprocal vs
+Pragma (R-SOL-11 · cite this file's refreshed docstring as the
+canonical Fiscus-side anchor).
 
 Page kinds:
 - home, about, services, case_study_list, case_study_detail, contact

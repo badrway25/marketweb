@@ -1,6 +1,13 @@
 """Pragma — Corporate Suite (business / corporate-suite archetype) content.
 
 Phase 2g3.3 — Business live rollout (Session 32, 2026-04-13).
+D-054 triangulation refresh — Phase X.4a Step 2E P1D (2026-04-26):
+this docstring is now three-template-ready (CS-EXEC-02 / CS-BLOCK-12 /
+O12) — triangulates against every on-archetype sibling, including
+Solaria as a placeholder column for the post-Commit-B un-pause future.
+Pre-refresh historical Pragma-vs-Elevate triangulation is preserved
+in git history at 1e46123 and earlier; Elevate is a different archetype
+(startup-saas) and is not a corporate-suite sibling.
 
 Editorial identity: institutional Italian corporate advisory firm based in
 Milan, with offices in Frankfurt and Zurich. Boardroom-grade B2B
@@ -9,27 +16,72 @@ companies. The voice is sober, formal, Anglo-Italian (Lei register, partner
 & cda vocabulary). Photo direction is boardroom + corporate HQ + executive
 portrait, never startup loft.
 
-Differentiation vs Elevate (10-gate D-054 — recorded here for reviewers):
- 1. Hero image:        boardroom long-table photo (business-corporate[0])
-                       vs Elevate's typographic-only manifesto (no big photo)
- 2. First-2 imagery:   boardroom + corporate atrium (business-corporate[0,1])
-                       vs Elevate product UI (business-startup[1,2])
- 3. Silhouette:        55/45 split serif L + photo R + KPI-strip
-                       vs Elevate centered manifesto + product mockup card
- 4. Section order:     hero → pillars → kpi → sectors → leadership → cases → cta
-                       vs Elevate banner → manifesto → mockup → metrics → pricing → shiplog
- 5. Primary CTA:       "Fissa una call privata" + private form + boardroom
-                       vs Elevate "Inizia gratis" + glow-pill + 14-day trial
- 6. Block rhythm:      airy editorial chapters (very-airy paddings)
-                       vs Elevate medium-density glow cards
- 7. Macro tone:        cream paper + navy + gold accent (institutional)
-                       vs Elevate dark cosmic gradient + cyan glow (growth-tech)
- 8. Imagery direction: boardroom executives + corporate facilities
-                       vs Elevate product dashboards + tech offices
+Differentiation vs Fiscus + Solaria-as-placeholder (D-054 10-gate —
+three-template-ready · CS-EXEC-02 · CS-BLOCK-12 · O12). Fiscus is the
+currently-enrolled corporate-suite sibling (Wave 2 Pilot #1, Session 80,
+`tier: published_live`); Solaria is the paused Wave 2 Pilot #2 (Commit B
+held under binding user instruction · the placeholder column locks
+Pragma's diff vector against the coaching cluster so an un-pause does
+not require a second refresh round):
+ 1. Cluster:           business-corporate (boardroom advisory)
+                       vs Fiscus business-fiscal (commercialista presidio)
+                       vs Solaria business-coaching (executive 1:1 + team)
+ 2. Voice anchor:      "Dove si prendono le decisioni che contano" —
+                       board advisory · strategy-first · decisional gravity
+                       vs Fiscus "L'adempimento corretto, non la trovata" —
+                       commercialista presidio · scadenze-first
+                       vs Solaria "Il coaching non è terapia e non è
+                       consulenza" — bounded percorso · method-declared
+ 3. Hero image:        boardroom long-table photo (business-corporate[0])
+                       vs Fiscus scrivania con documenti (business-fiscal[0])
+                       vs Solaria 1:1 advisor seating in daylit room
+                       (business-coaching[0]) — no mountain peaks per AP9
+ 4. First-2 imagery:   boardroom + corporate atrium (business-corporate[0,1])
+                       vs Fiscus fiscal desk + modern office interior
+                       (business-fiscal[0,1])
+                       vs Solaria coaching-1to1 + small-group session
+                       (business-coaching[0,1]) — adult-to-adult register
+ 5. Silhouette:        55/45 split serif L + photo R + KPI-strip over
+                       sectors-ribbon
+                       vs Fiscus 55/45 split + fiscal-calendar-strip over
+                       sectors-ribbon
+                       vs Solaria 55/45 split + percorso-cadenza-strip
+                       (inizio dichiarato → cadenza → fine dichiarata)
+ 6. Primary CTA:       "Fissa una call privata" + NDA-ready boardroom form
+                       vs Fiscus "Primo appuntamento" + P.IVA/CF form +
+                       fascia oraria
+                       vs Solaria "Prenota una discovery call" (20-30 min
+                       gratuita · ICF Code of Ethics referenced)
+ 7. Block rhythm:      airy editorial chapters with board-portrait details
+                       vs Fiscus airy editorial chapters with
+                       document-centric details
+                       vs Solaria airy editorial chapters with
+                       method-cadence details (3 percorsi enumerated)
+ 8. Macro tone:        cream paper + navy slate + emerald accent
+                       (institutional-advisory · boardroom-ready)
+                       vs Fiscus warm-neutral cream + blu-notte accent +
+                       gold filigrana (institutional-fiscal · document-ready)
+                       vs Solaria minimal-light + warm-earth accent
+                       (professional-warm · non-guru · non-therapy)
  9. Typography:        Merriweather (transitional serif) + Inter
-                       vs Elevate Manrope (geometric sans) + Inter
-10. Inner pages:       case studies + advisory pillars + 5-office presence
-                       vs Elevate pricing + ship log + integrations + demo
+                       vs Fiscus IBM Plex Serif + IBM Plex Sans
+                       (document-transitional pair)
+                       vs Solaria Fraunces (humanist) + Inter — never
+                       geometric-sans-on-headings per CS-TYPE-01
+10. Credentials axis:  ODCEC Milano · Cassazionista · CONSOB n. (advisory)
+                       vs Fiscus ODCEC Milano · Sezione A · Revisore
+                       Legale · P.IVA (commercialista licensure)
+                       vs Solaria ICF-PCC · EMCC Senior Practitioner ·
+                       AICP — frameworks GROW / Co-Active / ITC named
+                       as frameworks, never as fake certifications
+
+Anti-drift binding: every gate above resolves to DIFF against both
+siblings (no row collapses Pragma into a rename of Fiscus or Solaria).
+A future Solaria un-pause keeps this triangulation valid as-is —
+Solaria's own docstring at e8f38b5 already encodes the reciprocal
+diff vs Fiscus; on un-pause its own refresh adds the reciprocal
+vs Pragma (R-SOL-11 · cite this file's refreshed docstring as the
+canonical Pragma-side anchor).
 
 Page kinds:
 - home, about, services, case_study_list, case_study_detail, contact

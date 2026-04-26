@@ -437,4 +437,117 @@ P1C closes the AP8-pipeline-first-run leg (T-P1-3) of the P1 bundle. Outstanding
 - **B2** `LEGACY_EXEMPT_KEYS = {business-corporate}` — unchanged. `corporate_suite.W001` keeps the Pragma legacy pool visible at every `manage.py check` per O7. Pexels retro-pack (T-P2-1) deferrable-past-Solaria.
 - **B7** `templates/preview_compositions/business/corporate-suite.html` untouched — out of Step 2 scope.
 
-— end of Round 2 execution report (P1C appended · 20260426T0757Z @ tip e210b6b + 1 skin edit) —
+---
+
+## P1D — D-054 triangulation refresh + Primary-CTA paper-surface decision
+
+The work executes T-P1-4 and T-P1-5 from `factory/reports/hardening/step2-followup-plan.md §3.P1`, scoped to the **two remaining non-browser P1 items** required before the archetype can advance from Conditional-Go to Go (per `factory/reports/hardening/step2-readiness-reassessment.md §S3 + §S6`). T-P1-4 refreshes the Pragma + Fiscus module-docstring D-054 triangulations so each block triangulates against **every** on-archetype sibling (not just one), with a **Solaria-as-placeholder** column locked in so a future Commit B un-pause does not require a second refresh round (R-SOL-11 satisfied by anticipation). T-P1-5 closes the primary-CTA paper-surface question carried forward across Step 1B → Step 1D → Round 1 → Round 2 → Round 3 → Round 4 → P1C with a formal **WAIVER decision** in `factory/standards/corporate-suite-design-standard.md §10`: outline-only primary on cream is the intentional archetype contract, no `.cs-btn-primary--solid` modifier is introduced, zero code change. With T-P1-4 + T-P1-5 closed, the full P1 bundle (T-P1-1 PASS · T-P1-2 PASS · T-P1-3 PASS · T-P1-4 closed · T-P1-5 closed) clears the gate for a Go reassessment per plan §10.3.
+
+**Run-ISO (P1D)**: `20260426T0900Z`
+**Baseline tip at execution start**: `1e46123` (Step 2E P1C · pipeline scorecard committed) — direct descendant of `e210b6b` (P1B re-verification) + `709b54c` (Round 1) + `0727aad` (Step 1D).
+**Server**: not required for P1D (this round is docs/standards-only · no walk · no live render to verify · the existing Round 4 re-verification server at `http://127.0.0.1:8735/` remains available for any spot-check).
+**Driver**: Claude (Opus 4.7, sonnet-class context discipline). Planner-style triangulation refresh; standards-style decision-block authoring.
+**Binding constraints honoured**: no edits to `apps/editor`, `apps/projects`, `apps/commerce`; no new archetypes; Solaria Commit B remains paused (B1 unchanged); no Solaria-source files modified (R-SOL-3 honoured · the Solaria column in the refreshed docstrings is read-only metadata sourced from the `e8f38b5` paused docstring, not a write to Solaria); no skin edits (T-P1-5 decision is WAIVER · zero code footprint); every report lands under `factory/*` and the only code-tree edits land on the two `template_content_*.py` module docstrings (zero behavioural change · doc-comment-only).
+
+## Files changed
+
+```
+Code (docstring-only · zero behavioural change)
+  apps/catalog/template_content_pragma.py
+      └── module docstring lines 1-36 → 1-95 · D-054 triangulation refresh
+          (was: vs Elevate 10-gate; now: vs Fiscus + Solaria-as-placeholder
+          10-gate, three-template-ready · CS-EXEC-02 · CS-BLOCK-12 · O12)
+  apps/catalog/template_content_fiscus.py
+      └── module docstring lines 1-44 → 1-101 · D-054 triangulation
+          extension (was: vs Pragma 10-gate; now: vs Pragma + Solaria-as-
+          placeholder 10-gate, three-template-ready · CS-EXEC-02 ·
+          CS-BLOCK-12 · O12)
+
+Standards (decision block)
+  factory/standards/corporate-suite-design-standard.md
+      └── §10 · CS-CTA-05 followed by new `§ Decision · Primary CTA on paper
+          surfaces — outline-only is intentional restraint (NOT a placeholder
+          reading)` block · WAIVER · ratifies existing _base.html:342-347
+          skin contract · zero code change · closes T-P1-5
+
+Evidence
+  factory/reports/hardening/step2-ci/test-run-20260426T0900Z.txt
+      (171 tests · OK · 2.421 s · post-docstring-refresh tip)
+  factory/reports/hardening/step2-execution-round2.md
+      (this file · P1D section appended)
+```
+
+No `apps/editor`, `apps/projects`, `apps/commerce` touches. No new archetypes. No Solaria-source-file edits (T-P1-4's Solaria-as-placeholder column reads `e8f38b5` paused-commit metadata into Pragma's + Fiscus's docstrings; it does **not** write back to `apps/catalog/template_content_solaria*.py`). No migrations. No new routes / views. No template skin file edits. No CSS / JS modifications. No tests added or modified — the existing 171-test floor exercises both module imports and verifies docstring-only changes do not break the baseline.
+
+## What T-P1-4 closes (D-054 triangulation refresh)
+
+The pre-refresh state (cited in `step2-readiness-reassessment.md §S3` and `factory/reports/scorecard/fiscus-pipeline-round1/build-report.md §4.6`):
+
+- **Pragma** (`template_content_pragma.py:12-32`): triangulated only against **Elevate** (a different archetype — `startup-saas`, not `corporate-suite`). Zero corporate-suite siblings cited. CS-EXEC-02 / CS-BLOCK-12 / O12 require triangulation against **every** on-archetype sibling — Pragma was at **0 / 2** (Fiscus + Solaria expected, neither cited).
+- **Fiscus** (`template_content_fiscus.py:14-39`): triangulated against **Pragma**. CS-EXEC-02 satisfied at the time of Session 80 (Pragma was Fiscus's only on-archetype sibling, Solaria Commit B was paused), but **not** three-template-ready; a Solaria un-pause would surface Fiscus at **1 / 2** without this refresh.
+
+Post-refresh state:
+
+- **Pragma docstring** (`template_content_pragma.py:1-95` post-edit): the obsolete vs-Elevate block is replaced (with a one-line pointer back to `1e46123` git history for the historical decision trail) by a 10-gate triangulation that runs **vs Fiscus + vs Solaria-as-placeholder**. Every gate resolves to DIFF against both siblings. The 10 gates are: cluster · voice anchor · hero image · first-2 imagery · silhouette · primary CTA · block rhythm · macro tone · typography · credentials axis. The "anti-drift binding" trailer explicitly states: every gate resolves to DIFF, no row collapses Pragma into a rename, R-SOL-11 satisfied by anticipation (Solaria's own docstring at `e8f38b5` already encodes the reciprocal diff vs Fiscus; on un-pause its own refresh adds the reciprocal vs Pragma).
+- **Fiscus docstring** (`template_content_fiscus.py:1-101` post-edit): the existing 10-gate vs-Pragma triangulation is **extended** (not replaced — Pragma block still load-bearing) by adding the Solaria-as-placeholder column to every gate. Every gate now resolves to DIFF against both siblings. Same 10-gate axis as Pragma's refresh. Same anti-drift trailer.
+
+**Three-template-ready binding** (per plan §6.5 + R-SOL-11): on a future Solaria un-pause, the **only** D-054 work required is the Solaria-side reciprocal refresh (its own docstring adds the reciprocal vs Pragma column it currently lacks; it already triangulates vs Fiscus at `e8f38b5:apps/catalog/template_content_solaria.py:36-67`). Pragma and Fiscus do **not** need a second refresh — their Solaria column was sourced from `e8f38b5` + `cluster_blueprints/coaching.md §5` and locks the diff vector before un-pause. R-SOL-11 ("Solaria must refresh its own D-054 triangulation against both Pragma and Fiscus with the **refreshed** docstrings from T-P1-4") is now satisfiable as soon as un-pause issues — no Pragma + Fiscus second-refresh round required.
+
+**O12 trip-risk closed**: per `factory/standards/corporate-suite-blocking-rules.md §3` row O12 ("D-054 10-gate triangulated against EVERY sibling"), the next gatekeeper run on **any** corporate-suite template (Fiscus re-walk · Pragma re-walk · future Solaria walk · future fourth template) finds every enrolled docstring three-template-ready. The S3 risk class flagged in `step2-readiness-reassessment.md §S3` is closed.
+
+**Zero behavioural change**: docstrings are Python module-level string literals; they do not affect imports, dict construction, content rendering, test execution, or live walks. The 171-test floor passed pre-refresh (Round 5 P1C tip `e210b6b + 1 skin edit` → `1e46123`) and passes post-refresh (P1D tip · `20260426T0900Z` transcript captures **171 tests · OK · 2.421 s**). No regression surface.
+
+## What T-P1-5 closes (Primary-CTA paper-surface decision)
+
+The pre-decision state (cited in `step2-readiness-reassessment.md §S6` and the `factory/reports/scorecard/fiscus-pipeline-round1/summary.md §8 row 2`):
+
+- A style-critic memo at Step 1B (offline observation, pre-walk) flagged the cream-surface primary CTA as "reading placeholder, not executive button" because the primitive renders as outline-only (`.cs-btn-primary { color: var(--primary); border: 1.5px solid var(--primary); }` per `_base.html:348-355`).
+- The flag proposed introducing a `.cs-btn-primary--solid` modifier or a paper-scoped override keyed to `.cs-lead` / `.cs-hero` so the primary on cream surfaces would render as an accent-filled solid button.
+- Step 1B / Step 1D / Round 1 / Round 2 / Round 3 / Round 4 / P1C all **deferred** the call. The plan §3.P1 row T-P1-5 made the decision a hard precondition for Go (per §10.3): **"a `§ decision` block in `factory/standards/corporate-suite-design-standard.md` is required regardless of direction (adopt `.cs-btn-primary--solid` OR formally waiver the outline-only reading as intentional)."**
+
+Post-decision state (`factory/standards/corporate-suite-design-standard.md §10`, immediately after CS-CTA-05):
+
+- New `§ Decision · Primary CTA on paper surfaces — outline-only is intentional restraint (NOT a placeholder reading)` block.
+- **Direction**: **WAIVER** — no `.cs-btn-primary--solid` modifier introduced; zero code change.
+- **Rationale (six independently load-bearing rows)**: (1) live-walk evidence supersedes the early offline memo — five distinct walk passes across two templates × five locales × four rounds + the AP8 first-run scorecard graded D1 = 5 (reference-class) and zero finding cited the cream primary as placeholder; (2) accent budget binding (CS-PAL-05 ≤ 2-3 hits per viewport) — the existing accent budget is already fully spent above the fold (nav CTA + eyebrow before-mark + hero h1 italic em + btn arrow glyph + focus ring); promoting the body fill to accent would push the count to 4-5 and re-introduce AP10/AP11 polarity-drift risk; (3) tone alignment (CS-TONE-01 institutional-advisory not startup-tech) — outline-boxed buttons are the boardroom convention (Bain / BCG / McKinsey / Deloitte advisory pages all default to outline primaries on cream); (4) polarity inversion already exists where it matters (`home.html:311-313` `.cs-cta .actions .cs-btn-primary { color: var(--on-dark); border-color: var(--accent); }` promotes the same primitive to a high-emphasis cream-on-navy button on every dark CTA band, so the cadence-closer is filled while upstream CTAs are restraint-first); (5) modifier proliferation has a non-zero cost (third primitive · per-section choice rule · new BRWS-* check · new D-054 gate) and the offsetting evidence for the gain is absent; (6) touch-target + focus-ring + AAA-contrast contracts are all unaffected by the waiver.
+- **What this decision is NOT**: not a license for outline-only buttons everywhere · the dark-section `.cs-cta` band override remains required by CS-CTA-05 · CS-CTA-01 (one primary CTA per viewport) is unchanged · AAA contrast floor (12.81 / 12.86 ratio for `--primary` on cream on Pragma / Fiscus) is unchanged · the ghost-CTA 44 × 44 waiver under CS-CTA-03 is a separate P2 decision unchanged here · the waiver does **not** retroactively bind future archetypes (a startup-saas or consumer-facing skin remains free to choose accent-filled primaries).
+- **What changes downstream**: the `style-critic` agent should **not** flag outline-only primary on cream as a `[STRONG]` deviation in future Fiscus / Pragma / Solaria scorecards — if a reviewer reaches for this finding again, the `§ decision` block is the canonical reference. The `template-planner` D-054 gate "CTA tone" (per `factory/agents/template-planner.md §3.2 row 10`) continues to read CTA copy + position + bound-form composition — primitive choice is **not** a D-054 differentiation gate.
+
+**Implementation footprint**: zero. No code changes, no test changes, no skin edits. The decision is a standards-layer ratification of the existing skin contract at `_base.html:342-347` (the inline comment block that has documented the intent since the archetype landed; this round elevates it from skin-comment to standards-rule).
+
+## Triangulation status (post-P1D)
+
+- **Pragma**: 3-template-ready (vs Fiscus + vs Solaria-placeholder). DIFF on every gate against both siblings. CS-EXEC-02 / CS-BLOCK-12 / O12 satisfied for any future scorecard run.
+- **Fiscus**: 3-template-ready (vs Pragma + vs Solaria-placeholder). DIFF on every gate against both siblings. CS-EXEC-02 / CS-BLOCK-12 / O12 satisfied for any future scorecard run.
+- **Solaria** (paused): the `e8f38b5` docstring already encodes the reciprocal diff vs Fiscus; the reciprocal vs Pragma is the only outstanding refresh, scheduled for the post-un-pause sequence per R-SOL-11. **Not blocking the Go reassessment** because Solaria is not enrolled at the current tip.
+
+## CTA decision taken (post-P1D)
+
+- **Direction**: **WAIVER** (outline-only primary on cream is intentional restraint).
+- **Standards anchor**: `corporate-suite-design-standard.md §10 · § Decision · Primary CTA on paper surfaces`.
+- **Implementation footprint**: zero (existing skin contract ratified).
+- **Downstream agent binding**: style-critic must not re-raise the question; planner CTA-tone gate scope unchanged; gatekeeper has no new override to apply.
+
+## P1D verdict
+
+**PASS** (T-P1-4 + T-P1-5 both closed)
+
+- T-P1-4 D-054 triangulation refresh: **CLOSED** — Pragma + Fiscus docstrings are now three-template-ready; CS-EXEC-02 / CS-BLOCK-12 / O12 satisfied; R-SOL-11 satisfiable on Solaria un-pause without a second refresh round.
+- T-P1-5 Primary-CTA paper-surface decision: **CLOSED** with WAIVER direction; standards-layer ratification of existing skin contract; zero code footprint.
+- CI floor preserved: 171/171 tests OK · 2.421 s @ post-edit working tree (`step2-ci/test-run-20260426T0900Z.txt`).
+- No `apps/editor`, `apps/projects`, `apps/commerce` edits. No new archetypes. No Solaria-source-file edits. No skin edits.
+- Solaria Commit B remains paused (B1 unchanged · R-SOL-1 through R-SOL-7 honoured throughout).
+
+## Remaining issues before Go reassessment
+
+With the full P1 bundle now closed (T-P1-1 PASS multi-locale LTR · T-P1-2 PASS RTL AR + re-verification · T-P1-3 PASS AP8 first-run pipeline scorecard · T-P1-4 CLOSED D-054 refresh · T-P1-5 CLOSED CTA paper-surface decision), **no meaningful P1 blocker remains** before a Go reassessment per `factory/reports/hardening/step2-followup-plan.md §10.3`. Outstanding items remain at lower priority and **do not gate Go**:
+
+- **Optional polish (would lift D14 from 4 to 5)**: a future consolidated Fiscus-only re-walk producing ≥ 120 PNGs in a single ISO directory under `factory/reports/browser-verification/fiscus-commercialista/<run-ISO>/`. Per plan §10.3, the Go floor is "all 9 CRITICAL ≥ 4 AND avg ≥ 4.3 AND zero blocking AND zero required outstanding," all of which the P1C scorecard already meets. The consolidated re-walk is polish, not a Go precondition.
+- **B1 · Solaria Commit B paused** — unchanged by Go. Even after the Go reassessment issues, un-pause is a separate explicit user-authorized lever (R-SOL-8). Solaria's first walk inherits the AP8 pipeline this round bootstrapped, including R-SOL-9 → R-SOL-15. R-SOL-11 is now satisfiable without a second Pragma + Fiscus refresh round (this P1D delivers that).
+- **B2 · `LEGACY_EXEMPT_KEYS = {business-corporate}`** — unchanged. `corporate_suite.W001` keeps the Pragma legacy pool visible at every `manage.py check` per O7. T-P2-1 (Pexels retro-pack) deferrable-past-Solaria per plan §5.
+- **B7 · `templates/preview_compositions/business/corporate-suite.html` untouched** — out of Step 2 scope by constraint.
+- **Five Step 3 prompt-revision items** surfaced by P1C (per `factory/reports/scorecard/fiscus-pipeline-round1/summary.md §4`) — Step 3 work, not P1 / not Go-gating.
+
+The Go reassessment can now run against the post-P1D tip and is expected to issue **GO** per plan §10.3 (every P1 row closed; CI floor preserved at 171/171; no blocking overrides; cluster-cumulative §7 floor met; AP8 pipeline field-proven; D-054 three-template-ready; CTA paper-surface decision recorded). Solaria un-pause remains a separate explicit user-authorized lever after Go issues (R-SOL-8).
+
+— end of Round 2 execution report (P1D appended · 20260426T0900Z @ tip 1e46123 + 2 docstring edits + 1 standards-decision block · zero skin edits · zero behavioural change · 171/171 OK) —
