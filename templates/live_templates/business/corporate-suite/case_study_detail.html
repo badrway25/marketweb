@@ -153,7 +153,7 @@
 {% block content %}
 <article class="cs-post">
   <div class="breadcrumb">
-    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">← {{ page.label }}</a>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">← {{ page.label }}</a>
     <span class="sep">/</span>
     <span>{{ post.category }}</span>
   </div>
@@ -194,7 +194,7 @@
     <div class="item">{{ site.case_team_label }}<strong>{{ post.team }}</strong></div>
   </div>
 
-  <a class="next-case" href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">
+  <a class="next-case" href="{% url 'catalog:live_template_page' template.category.slug template.slug page.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">
     <div>
       <div class="lbl">{{ post.next_label }}</div>
       <div class="title">{{ page.label }}</div>

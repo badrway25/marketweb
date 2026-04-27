@@ -149,7 +149,7 @@
   <h2 data-lm="reveal-lg">{{ page_data.cta_heading }}</h2>
   <p class="intro" data-lm="reveal">{{ page_data.cta_intro }}</p>
   <div class="actions" data-lm="reveal">
-    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-primary">{{ page_data.cta_primary }}</a>
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-primary">{{ page_data.cta_primary }}</a>
   </div>
 </section>
 {% endblock %}

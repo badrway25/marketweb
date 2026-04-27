@@ -277,11 +277,15 @@
         "contatti"
       ],
       "locales": [
-        "it"
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
       ],
-      "rtl": false,
+      "rtl": true,
       "tier": "draft",
-      "tier_reason": "Phase X.4 Wave 2 Pilot #2 (Solaria — Business Coaching) re-introduced under controlled re-entry pass 1 on phase-x4-solaria-controlled-reentry-pass1 (2026-04-26), after the corporate-suite archetype reached GO at tip 075e623 (final Step 2E P1E reassessment). Solaria is the third corporate-suite enrollee (after Pragma + Fiscus) with coaching-specific voice — professional-warm, method-declared, non-guru, non-therapy, non-consulting. Pass 1 ships IT-only content + minimal-light visual style + warm-earth accent palette (ocra + terra) + humanist Fraunces + Inter typography, plus the original Commit B palette polarity fix (primary=#2B2A28 dark warm carbon, the e8f38b5 → 6b70d56 incident class is contract-blocked by `corporate_suite.E001`). Stays `draft` so the public catalog count remains 21 and staff preview reaches the live route via `?preview=1`. Pass 2 will land the 4 additional locale trees (EN/FR/ES/AR) at shape-parity. Pass 3 is the full AP8 pipeline run on the now-enrolled Solaria with R-SOL-9 → R-SOL-15 floor enforcement (5-locale rubric matrix, O7 grandfather citation, reciprocal D-054 triangulation already encoded in this file's docstring at e8f38b5)."
+      "tier_reason": "Phase X.4 Wave 2 Pilot #2 (Solaria — Business Coaching). Pass A (2026-04-26 · tip 24fdde5) lifted Italian premium distinctness above Pragma + Fiscus by wiring the corporate-suite `home.leadership[].portrait` and `cases[].thumb` hooks for the first time on this archetype, so Solaria home shows 5 coaching-pool images vs Pragma/Fiscus 1. Pass B (2026-04-26 · tip 3cdbef6) authored the four missing locale trees (EN/FR/ES/AR) at shape-parity with IT, with verbatim-in-translation voice anchor and real Arabic RTL via Noto Kufi heading swap on `<html dir=\"rtl\">` — bringing Solaria up to the 5-locale standard every other corporate-suite sibling already shipped. Pass C (2026-04-27) closed the staff-preview review-path leak: internal nav · footer · language switcher · mp-back hrefs now propagate `&preview=1` when the request was reached via the staff preview gate, so a staff reviewer can walk all 5 locales × 5 pages in a single session without 404s on every click. Solaria stays `tier=draft` deliberately — the public catalog count remains 21 / 22 and only an authenticated staff user with `?preview=1` can see Solaria. The public-flip cascade (tier draft → published_live · 6 hardcoded test count assertions · homepage trust counter · listing card surface) is held under separate user authorization and not part of Pass C; tier flip is a deliberate, evidence-gated next step, not an automatic consequence of Pass B parity."
     },
     {
       "slug": "gusto-fine-dining",

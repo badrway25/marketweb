@@ -306,7 +306,8 @@ class LiveTemplateView(TemplateView):
 
         # Tier gate (D-055). Drafts 404 on public access — authors can
         # still reach them via `?preview=1` when authenticated as staff.
-        include_drafts = _staff_preview_mode(request)
+        self.staff_preview = _staff_preview_mode(request)
+        include_drafts = self.staff_preview
         self.template_obj = selectors.get_template_detail(
             category_slug, slug, include_drafts=include_drafts
         )
@@ -485,4 +486,15 @@ class LiveTemplateView(TemplateView):
             else []
         )
         ctx["default_locale"]    = template_i18n.DEFAULT_LOCALE
+
+        # Phase X.4 Solaria Pass C — review-path legitimacy.
+        # When the current request reached this draft template through the
+        # staff `?preview=1` gate, internal links (nav · footer · language
+        # switcher · mp-back · category-listing) used to drop the flag and
+        # 404 on the next click. Exposing `staff_preview` lets the skin
+        # propagate the flag on every internal href so a staff reviewer can
+        # actually walk all 5 locales + 5 pages without losing access. For
+        # `published_live` templates the flag is False and every href stays
+        # untouched, so this is a strict superset of the prior behaviour.
+        ctx["staff_preview"] = self.staff_preview
         return ctx

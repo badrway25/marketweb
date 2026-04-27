@@ -1009,7 +1009,7 @@
 <body class="{% if preview_project %}mw-is-editor-preview{% endif %}">{% endspaceless %}
 
 <div class="mp-bar">
-  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
+  <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
   <span class="mp-name">{{ chrome.mp_preview_of }} · {{ template.name }}</span>
 
   {% if locale_switcher %}
@@ -1022,7 +1022,7 @@
         {% else %}
           {% url 'catalog:live_template_page' template.category.slug template.slug page.slug as lang_base_url %}
         {% endif %}
-        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% endif %}"
+        <a href="{{ lang_base_url }}{% if entry.code != default_locale %}?lang={{ entry.code }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}"
            class="mp-lang-pill{% if entry.is_current %} is-current{% endif %}"
            lang="{{ entry.code }}"
            dir="{% if entry.code == 'ar' %}rtl{% else %}ltr{% endif %}">
@@ -1033,7 +1033,7 @@
   </div>
   {% endif %}
 
-  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
+  <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
 </div>
 
 <nav class="cs-nav">
@@ -1048,9 +1048,9 @@
   <div class="links">
     {% for p in pages %}
       {% if p.slug == "home" %}
-        <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
+        <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="{% if page.slug == 'home' %}is-current{% endif %}">{{ p.label }}</a>
       {% else %}
-        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="{% if page.slug == p.slug %}is-current{% endif %}">{{ p.label }}</a>
       {% endif %}
     {% endfor %}
   </div>
@@ -1073,9 +1073,9 @@
       <h5>{{ site.foot_pages }}</h5>
       {% for p in pages %}
         {% if p.slug == "home" %}
-          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_home' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">{{ p.label }}</a>
         {% else %}
-          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ p.label }}</a>
+          <a href="{% url 'catalog:live_template_page' template.category.slug template.slug p.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">{{ p.label }}</a>
         {% endif %}
       {% endfor %}
     </div>
@@ -1100,9 +1100,9 @@
     {# individual templates can override via `site.privacy_href` /       #}
     {# `site.cookie_href` / `site.legal_href` (page slug string).         #}
     <span class="legal">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.privacy_href|default:'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.foot_privacy }}</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.cookie_href|default:'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.foot_cookie }}</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.legal_href|default:'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}">{{ chrome.foot_legal }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.privacy_href|default:'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">{{ chrome.foot_privacy }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.cookie_href|default:'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">{{ chrome.foot_cookie }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.legal_href|default:'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">{{ chrome.foot_legal }}</a>
     </span>
   </div>
 </footer>

@@ -464,8 +464,8 @@
     <h1>{{ page_data.headline|safe }}</h1>
     <p class="sub">{{ page_data.intro }}</p>
     <div class="actions">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-primary">{{ page_data.primary_cta }}</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-ghost">{{ page_data.secondary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-primary">{{ page_data.primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-ghost">{{ page_data.secondary_cta }}</a>
     </div>
     <div class="meta-strip" data-lm-stagger>
       {% for label, value in page_data.hero_meta_strip %}
@@ -573,7 +573,7 @@
   </div>
   <div class="list" data-lm-stagger data-lm-stagger-delay="80">
     {% for post in posts %}
-      <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'case-studies' post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" data-lm="reveal">
+      <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'case-studies' post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" data-lm="reveal">
         <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
         <span class="title">
           {% if post.thumb %}<img class="thumb" src="{{ post.thumb }}" alt="" loading="lazy">{% endif %}
@@ -595,8 +595,8 @@
       <p class="intro">{{ page_data.cta_intro }}</p>
     </div>
     <div class="actions" data-lm="reveal">
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-primary">{{ page_data.cta_primary }}</a>
-      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% endif %}" class="cs-btn-ghost">{{ page_data.cta_secondary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-primary">{{ page_data.cta_primary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-ghost">{{ page_data.cta_secondary }}</a>
     </div>
   </div>
 </section>
