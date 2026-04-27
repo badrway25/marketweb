@@ -2438,10 +2438,16 @@ from apps.catalog.template_content_fiscus_en import FISCUS_CONTENT_EN  # noqa: E
 from apps.catalog.template_content_fiscus_fr import FISCUS_CONTENT_FR  # noqa: E402
 from apps.catalog.template_content_fiscus_es import FISCUS_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_fiscus_ar import FISCUS_CONTENT_AR  # noqa: E402
-# Phase X.4 Wave 2 Pilot #2 — Solaria (re-introduced under controlled
-# re-entry pass 1 · phase-x4-solaria-controlled-reentry-pass1). IT-only
-# until pass 2 lands EN/FR/ES/AR.
+# Phase X.4 Wave 2 Pilot #2 — Solaria. IT authored under controlled
+# re-entry pass 1 (2026-04-26); Pass A added IT premium-distinctness;
+# Pass B (multilingual completion · 2026-04-26) ships full EN/FR/ES/AR
+# locale trees with verbatim-in-translation voice anchor and real RTL
+# behaviour for Arabic. Tier remains `draft` until Pass C public flip.
 from apps.catalog.template_content_solaria import SOLARIA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_solaria_en import SOLARIA_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_solaria_fr import SOLARIA_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_solaria_es import SOLARIA_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_solaria_ar import SOLARIA_CONTENT_AR  # noqa: E402
 
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
@@ -2624,12 +2630,18 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "ar": FISCUS_CONTENT_AR,
     },
     # Wave 2 Pilot #2 — Solaria (Phase X.4 · re-introduced under
-    # controlled re-entry pass 1, 2026-04-26). IT-only at pass 1;
-    # EN/FR/ES/AR deferred to pass 2 + 3. Tier stays `draft` so the
-    # public catalog count remains 21; staff preview reaches the
-    # live route via `?preview=1`.
+    # controlled re-entry pass 1, 2026-04-26 · Pass A IT distinctness
+    # then Pass B multilingual completion 2026-04-26). All 5 locales
+    # authored: voice anchor preserved verbatim-in-translation
+    # (CS-EXEC-01 / CS-BLOCK-11). Tier stays `draft` — public catalog
+    # count remains 21 — staff preview reaches the live route via
+    # `?preview=1` and exercises every locale via `?lang=xx`.
     "solaria-coaching": {
         "it": SOLARIA_CONTENT_IT,
+        "en": SOLARIA_CONTENT_EN,
+        "fr": SOLARIA_CONTENT_FR,
+        "es": SOLARIA_CONTENT_ES,
+        "ar": SOLARIA_CONTENT_AR,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,
