@@ -51,11 +51,14 @@ Each phase's exit gate is a binary: every template in scope clears, or the batch
 **Per template, output:**
 - `factory/reports/<archetype>/<template_slug>/intake.md` with every checklist field answered
 - `nearest_two_siblings` field populated and unambiguous
+- All five pre-build quick-checks (`design-orchestrator/workflows/pre-build-quick-checks.md`) resolved at intake: §0.5 reference-pack precondition · §3.1 palette warmth grid · §3.2 studio-name swap · §6.5 imagery feasibility · §7.1 content-volume estimate
 
 **Batch-level output:**
-- `factory/reports/batches/<batch_id>/intake-roster.md` listing every template, its cluster, its sub-cluster, its nearest siblings, and any user constraints
+- `factory/reports/batches/<batch_id>/intake-roster.md` listing every template, its cluster, its sub-cluster, its nearest siblings, any user constraints, AND the five pre-build quick-check verdicts per template (so the batch sees at-a-glance which templates are GO vs RESPEC vs HALT)
 
-**Exit gate:** every template has a complete intake checklist on file. No blanks. If a template cannot be filled out coherently, it is removed from this batch and queued for clarification.
+**Cluster precondition for the whole batch**: if the batch covers a non-corporate-suite cluster, every template in scope HALTS at intake §0.5 until that cluster's reference pack and distinctness matrix are on file. The batch's first action becomes "build the cluster's pack" (one-off pass, ~half day), then the templates resume intake. Do not run a multi-template batch in a cluster without its pack — distinctness collisions compound non-linearly across siblings designed against an empty grid.
+
+**Exit gate:** every template has a complete intake checklist on file with all five pre-build quick-checks PASS / GO / CONTINUE. No blanks. Any template stuck at HALT or RESPEC after one re-spec attempt is removed from this batch and queued for clarification.
 
 ### Phase 2 · Prioritisation
 
@@ -110,9 +113,10 @@ Order templates such that **the most distinctness-constrained template lands fir
 ### Phase 5 · Imagery
 
 **Input:** GO planner briefs · DNA entries.
-**Per template:** the imagery pack workflow from `template-orchestrator-master.md §A.3`.
+**Per template:** the imagery pack workflow from `template-orchestrator-master.md §A.3`, preceded by the imagery feasibility re-confirm at `template-orchestrator-master.md §A.2.5` (the orchestrator runs ONE Pexels search per declared subject and counts plausible candidates BEFORE the curator commits anything · `pre-build-quick-checks.md §3`).
 
 **Parallelism allowed:** YES, but with a hard discipline:
+- A.2.5 feasibility re-confirm runs PER TEMPLATE before that template enters curator hands · any slot ≤ 2 candidates returns to A.2 · do not parallel-curate a template whose subjects the orchestrator has not feasibility-cleared
 - BEFORE the curator commits any URL, run the cross-cluster URL grep against EVERY existing pool AND every other pack-in-flight in this batch
 - The grep has to be re-run AFTER each pack is committed, before the next pack commits
 - If two in-flight packs picked the same Pexels URL, the second-pack curator picks a different URL · no exceptions

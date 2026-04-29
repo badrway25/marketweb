@@ -4,7 +4,7 @@ The reusable intake form for every future template. Filled at workflow A.1 (sing
 
 This checklist captures the ANSWER to "what is this template, and what does it specifically refuse to be?" — BEFORE the planner spec, the imagery pack, or any code. A blank field here is an unanswered question the rest of the pass will fail to recover.
 
-Companion files: `next-template-brief-schema.md` (the planner contract this checklist feeds) · `corporate-suite-distinctness-matrix.md` (the matrix the brief scores against) · `template-orchestrator-master.md` (the master prompt this checklist precedes).
+Companion files: `next-template-brief-schema.md` (the planner contract this checklist feeds) · `corporate-suite-distinctness-matrix.md` (the matrix the brief scores against) · `template-orchestrator-master.md` (the master prompt this checklist precedes) · `pre-build-quick-checks.md` (the five micro-gates from §0.5, §3, §6.5, §7, §12 below — runs in ~15 minutes total).
 
 ---
 
@@ -13,6 +13,26 @@ Companion files: `next-template-brief-schema.md` (the planner contract this chec
 1. Copy this file to `factory/reports/<archetype>/<template_slug>/intake.md` at the start of a new template's workflow A pass.
 2. Fill every field. A blank or vague field ("modern", "premium", "professional") is a fail — the orchestrator will reject the intake and ask for specifics.
 3. The completed checklist is read by the planner at A.2 and becomes part of the template's permanent record.
+
+---
+
+## 0.5 · Cluster reference-pack precondition (run first · pre-build-quick-checks.md §1)
+
+Before filling anything else, confirm this template's cluster has the two reference files needed to triangulate distinctness. Without them, every downstream score is meaningless.
+
+```
+cluster:                          <copied from §1 below>
+cluster_reference_pack_exists:    <YES | NO · path: design-orchestrator/references/internal-baselines/<cluster>-reference-pack.md>
+cluster_distinctness_matrix_exists: <YES | NO · path: design-orchestrator/references/internal-baselines/<cluster>-distinctness-matrix.md>
+proceed_decision:                 <CONTINUE | HALT-build-pack-first | USER-WAIVER>
+```
+
+**Validation:**
+- [ ] Both files exist for this cluster, OR cluster is `corporate-suite` (the only cluster with a complete pack today)
+- [ ] If cluster is anything else and either file is missing, the pass HALTS at intake until the pack is built (separate one-off pass · same shape as the corporate-suite reference pack and matrix)
+- [ ] If a `USER-WAIVER` is recorded, paste the user's exact authorising sentence here verbatim
+
+**If decision is HALT**: stop the intake. Do not score §3 distinctness against an empty grid. The next pass builds the cluster's reference pack first; this template's intake resumes after.
 
 ---
 
@@ -75,6 +95,55 @@ stakeholder_first_30s_read:      <one sentence describing how a first-time visit
 - [ ] `palette_intent` is in the cluster's open palette territory
 - [ ] `hero_meta_strip_concept` is NOT one of the existing siblings' compositions
 - [ ] `stakeholder_first_30s_read` could not plausibly describe any existing sibling
+
+### 3.1 · Palette warmth/coolness conflict check (pre-build-quick-checks.md §2)
+
+Hex-distinct palettes can still read as siblings if the warm/cool topology matches. Fill this 2×3 grid for the proposed palette and for each existing sibling, then check overlap.
+
+```
+proposed_palette_temperature:
+  primary:    <warm | cool | neutral>
+  secondary:  <warm | cool | neutral>
+  accent:     <warm | cool | neutral>
+
+sibling_temperature_grids:
+  <sibling_1>:  primary=<...> · secondary=<...> · accent=<...>
+  <sibling_2>:  primary=<...> · secondary=<...> · accent=<...>
+  # repeat for every existing sibling
+
+overlap_count_per_sibling:
+  vs_<sibling_1>:   <0 | 1 | 2 | 3>
+  vs_<sibling_2>:   <0 | 1 | 2 | 3>
+
+palette_warmth_decision:    <PASS · CAUTION · RESPEC>
+```
+
+**Validation:**
+- [ ] Every existing sibling's temperature grid is filled (read it from the sibling's `template_dna.py` and the cluster reference pack §4)
+- [ ] If `overlap_count_per_sibling` is 2 or 3 against ANY sibling → **RESPEC** (flip secondary or accent temperature) before continuing
+- [ ] 0 or 1 overlap against every sibling → continue
+
+### 3.2 · "Remove the studio name" pre-test (pre-build-quick-checks.md §5)
+
+Write the proposed `stakeholder_first_30s_read` three times. If versions B and C still uniquely describe THIS template, the differentiation lives in the structure, not the brand-name lift.
+
+```
+A · with the studio name as written:
+    "<sentence>"
+
+B · with the studio name removed:
+    "[___] <sentence>"
+
+C · with the studio name swapped to a generic placeholder:
+    "Acme <cluster_label> <sentence>"
+
+studio_name_swap_verdict:    <PASS · RESPEC>
+```
+
+**Validation:**
+- [ ] B and C still uniquely describe this template (cannot be claimed by Pragma · Fiscus · Solaria · or any sibling) → PASS
+- [ ] B or C reads as a generic cluster description any sibling could claim → **RESPEC** (the voice anchor, palette, hero meta-strip, or section rhythm has to do more lifting)
+- [ ] This same test is re-run on the planner brief §10 single-page summary at A.2 sign-off
 
 ---
 
@@ -160,6 +229,27 @@ cross_cluster_grep_intent:    YES      # curator runs the grep before committing
 - [ ] `portrait_diversity_intent` is named explicitly
 - [ ] `sources_only` is `Pexels` (the only documented exception is Pragma legacy; no second exception without user-signed waiver)
 
+### 6.5 · Imagery feasibility quick-search (pre-build-quick-checks.md §3)
+
+Before A.3 commits any URL, the orchestrator runs ONE Pexels search per declared slot subject and counts plausible candidates. Five minutes of search beats a half-day of pack rework. Performed AFTER planner brief sign-off (A.2) but BEFORE the curator commits at A.3 — record the result here at intake so the brief inherits the feasibility envelope.
+
+```
+slot_feasibility:
+  hero:       search="<concrete keyword phrase>" · plausible_candidates=<count> · verdict=<GO · CAUTION · RESPEC>
+  feature:    search="<...>" · plausible_candidates=<count> · verdict=<...>
+  portrait:   search="<...>" · plausible_candidates=<count> · verdict=<...>
+  ambient:    search="<...>" · plausible_candidates=<count> · verdict=<...>
+  detail:     search="<...>" · plausible_candidates=<count> · verdict=<...>
+  closer:     search="<...>" · plausible_candidates=<count> · verdict=<...>
+
+overall_pack_feasibility:    <GO · CAUTION · RESPEC>
+```
+
+**Validation:**
+- [ ] Every slot has ≥ 5 plausible candidates → GO
+- [ ] Any slot has 3-4 candidates → CAUTION (continue, but flag the slot as "narrow pool")
+- [ ] Any slot has ≤ 2 candidates → **RESPEC the imagery direction** at A.2 before A.3 begins · do NOT enter A.3 with an infeasible slot
+
 ---
 
 ## 7 · Section rhythm
@@ -181,6 +271,34 @@ leadership_block:             <present | absent · with rationale tied to org_sc
 - [ ] `home_dark_band_count` is exactly 1
 - [ ] `pillars_count` and `kpi_count` are within their bands
 - [ ] If `leadership_block` is `absent`, the rationale references the org scale (Solaria precedent: solo-practitioner)
+
+### 7.1 · Content-volume estimate (pre-build-quick-checks.md §4)
+
+Estimate the home-page rendered word budget per beat. Locks the working envelope before A.4 copy authoring inherits it. Reference budget for corporate-suite (Pragma · Fiscus · Solaria averages); other clusters extrapolate from sibling renders ±20% for verticality.
+
+```
+word_budget_estimate:
+  hero_h1_plus_sub:        <25-45>
+  hero_meta_strip:         <30-60>
+  pillars:                 <240-400>     # 60-100 words per pillar body × 3 or 4
+  kpi_band:                <60-120>
+  mid_strip:               <120-240>
+  sectors_or_vertical:     <80-160>
+  leadership_block:        <0 if absent · 120-240 if present>
+  cases_or_proof:          <240-400>
+  cta_closer:              <40-80>
+
+home_total_estimate:       <sum>
+cluster_typical_range:     <e.g. corporate-suite: 1500-2500>
+volume_decision:           <CONTINUE · RESPEC-sparse · RESPEC-wall · RESPEC-skewed>
+top_heaviest_beat:         <beat name · % of total>
+```
+
+**Validation:**
+- [ ] `home_total_estimate` falls inside the cluster's typical range → CONTINUE
+- [ ] `home_total_estimate` < 70% of cluster floor → **RESPEC-sparse** (the page will read editorial-thin · rhythm flattens)
+- [ ] `home_total_estimate` > 130% of cluster ceiling → **RESPEC-wall** (CS-COMP-06 wall-of-text trip)
+- [ ] One beat takes > 50% of total → **RESPEC-skewed** (CS-RHYTHM-04 risk · two adjacent sections of similar function)
 
 ---
 
@@ -284,14 +402,19 @@ What this template IS:           <one sentence>
 What this template is NOT:       <one sentence — references siblings explicitly>
 
 Cluster:                         <cluster · sub_cluster_label>
+Cluster reference pack:          <CONTINUE · HALT · USER-WAIVER>     (§0.5)
 Nearest siblings:                <two named siblings>
 
 Voice positioning:               <stance · not in taken list>
 Palette intent:                  <family + warm/cool · in open territory>
+Palette warmth grid:             <PASS · CAUTION · RESPEC>           (§3.1)
+Studio-name swap pre-test:       <PASS · RESPEC>                      (§3.2)
 Typography intent:               <heading serif + body sans · in open territory>
 Hero meta-strip concept:         <fresh composition>
 Imagery direction:               <hero subject · not in taken list>
+Imagery feasibility:             <GO · CAUTION · RESPEC>              (§6.5)
 Section rhythm claim:            <mid-strip name · fresh>
+Content-volume estimate:         <CONTINUE · RESPEC-sparse · RESPEC-wall · RESPEC-skewed>  (§7.1)
 CTA personality:                 <conversion pattern + copy · not in taken list>
 
 Forbidden similarities locked:    <count of explicit anti-collision lines>
@@ -307,6 +430,8 @@ User must-avoids locked:          <count>
 Open questions for orchestrator:
   - <question or "none">
 ```
+
+The orchestrator REJECTS sign-off if any of the five pre-build quick-checks (§0.5 · §3.1 · §3.2 · §6.5 · §7.1) ends in HALT or RESPEC. The check has to be cleared (or, for §0.5, explicitly user-waived) before the planner brief can begin.
 
 The orchestrator signs off ONLY if every line is filled, no forbidden-similarity blocks are empty, and `Open questions` is either empty or contains questions that genuinely require user input rather than agent improvisation.
 

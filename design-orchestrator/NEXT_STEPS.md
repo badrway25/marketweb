@@ -4,13 +4,30 @@ This is the action plan that turns the rest of the folder from prose into a work
 
 ---
 
+## 0 · State as of 2026-04-29
+
+- Corporate-suite reference pack and distinctness matrix: **on file** (`design-orchestrator/references/internal-baselines/`).
+- First orchestrator dry run: **complete** (`design-orchestrator/dry-runs/candidate-01-*` · target `continua-stewardship` · 4th corporate-suite · family-office variant).
+- Dry-run hardening pass: **complete** (this commit) · five micro-gates added at intake / A.2 / A.2.5 (`workflows/pre-build-quick-checks.md`):
+  1. Cluster reference-pack availability precondition
+  2. Sibling palette warmth/coolness conflict warning
+  3. Imagery feasibility quick-search (pre-A.3)
+  4. Content-volume estimate
+  5. "Remove the studio name" pre-test (intake AND brief §10)
+- **Ready for: the first real corporate-suite build.** Likely candidate: `continua-stewardship` (the dry-run target was already vetted on paper).
+- **NOT ready for**: real builds in any other cluster (medical-specialist, restaurant, portfolio, ecommerce, real-estate, law, agency, startup-saas, medical-other) — those clusters do not have reference packs or distinctness matrices on file. Intake §0.5 HALTS those builds until their packs exist.
+
+---
+
 ## 1 · Adoption order
 
-1. **Read the folder once** — `README.md` → `ORCHESTRATOR.md` (including §6 anti-drift) → `TEMPLATE_FACTORY_MODEL.md` → `SKILL_USAGE_POLICY.md` → `BROWSER_QUALITY_GATE.md` → `DISTINCTNESS_RULES.md` + `DESIGN_SYSTEM_WORKFLOW.md` + `AGENT_ROSTER.md` on demand. ~30 min total.
-2. **Pick the next template pass to use it on** — most likely Solaria Pass D (LIVE flip cascade) or the next corporate-suite enrollee. Use the corresponding canonical workflow from `TEMPLATE_FACTORY_MODEL.md` end-to-end without skipping a step.
-3. **Capture the friction** — at the end of that pass, write a one-paragraph note: which step felt redundant, which felt missing, which gate caught a defect that would otherwise have shipped. That note is the input to the first revision of this folder.
+1. **Read the folder once** — `README.md` → `ORCHESTRATOR.md` (including §6 anti-drift) → `TEMPLATE_FACTORY_MODEL.md` → `SKILL_USAGE_POLICY.md` → `BROWSER_QUALITY_GATE.md` → `DISTINCTNESS_RULES.md` + `DESIGN_SYSTEM_WORKFLOW.md` + `AGENT_ROSTER.md` + `workflows/pre-build-quick-checks.md` on demand. ~35 min total.
+2. **Run the first real corporate-suite build** — likely `continua-stewardship` (the dry-run candidate). Use `prompts/template-orchestrator-master.md` end-to-end · clear all five pre-build quick-checks at intake · do not skip A.2.5.
+3. **Capture the friction** — at the end of that pass, write a one-paragraph note: which step felt redundant, which felt missing, which of the five new pre-build checks caught (or failed to catch) a defect that would otherwise have shipped. That note is the input to the next revision of this folder.
 4. **Revise once · then run the next pass** — refine the docs based on real friction, not speculative friction. Two passes between revisions is the cadence; revising every pass is process-spiral.
 5. **Defer everything else** — see §3 below.
+
+**Cluster expansion rule**: before the second cluster (medical-specialist · restaurant · etc.) gets its first real template build, run a one-off pass that produces that cluster's `reference-pack.md` and `distinctness-matrix.md` (same shape as the corporate-suite pair). The first real build in that cluster does not start before its pack lands. This is enforced by intake §0.5 HALT.
 
 ---
 
@@ -67,7 +84,7 @@ Each of these is a real, visible improvement. None is in scope today. Each waits
 
 Each entry: date · decision · rationale.
 
-- *(empty — first entry will be the friction note from Action 1)*
+- **2026-04-29 · five pre-build quick-checks codified** in `workflows/pre-build-quick-checks.md` and wired into intake checklist (§0.5 / §3.1 / §3.2 / §6.5 / §7.1) · master prompt (A.1 / A.2 / A.2.5 / §6 cluster note / §4 stop conditions 11-12) · single-template-workflow (§2 pre-build gates · §4 stop points 6-8) · batch-template-workflow (phase 1 cluster precondition · phase 5 feasibility re-confirm) · skill-usage-policy (pre-build A.2.5 note). Rationale: first dry run on `continua-stewardship` exposed five concrete weaknesses that would have shown up at A.7 walk if not gated upstream. Cost: ~15 min orchestrator time at intake. Closes: cross-cluster pack drift · hex-distinct-temp-identical palettes · Pexels-thin imagery directions · sparse/wall/skewed content rhythms · brand-name-leaning differentiation.
 
 ---
 

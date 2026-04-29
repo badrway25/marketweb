@@ -35,6 +35,7 @@ Before any tool call beyond reading, you MUST have read:
 3. `design-orchestrator/BROWSER_QUALITY_GATE.md` — what blocks a flip and what the walk must produce.
 4. `design-orchestrator/TEMPLATE_FACTORY_MODEL.md §3` — the nine-role spine for workflow A.
 5. `design-orchestrator/SKILL_USAGE_POLICY.md` — what to load, when, and what to refuse.
+5b. `design-orchestrator/workflows/pre-build-quick-checks.md` — the five micro-gates that fire at A.1 / A.2 / A.2.5. Read once; the intake checklist embeds them as fields you fill.
 6. `design-orchestrator/references/internal-baselines/corporate-suite-reference-pack.md` — what is already taken in this cluster (use the cluster's pack when one exists; corporate-suite is the only one today, others fall back to it as baseline).
 7. `design-orchestrator/references/internal-baselines/corporate-suite-distinctness-matrix.md` — the row-by-row matrix you will fill at A.2.
 8. `design-orchestrator/references/internal-baselines/next-template-brief-schema.md` — the planner-brief contract you will use at A.2.
@@ -67,15 +68,21 @@ These six together are the pass. Drop any one and the pass is incomplete.
 
 You will not author across roles. You will route to one role, wait for its report, gate it, then route to the next. The orchestrator does not collapse into the agents (`AGENT_ROSTER.md §2`). For each step below, the canonical agent file is in `factory/agents/<slug>.md`; read it before invoking.
 
-### A.1 · Intake (you · ~5 min)
+### A.1 · Intake (you · ~15-20 min)
 
-Output: a one-page intake note at `<report_root>/intake.md`. Fill the slots in §0 above plus:
-- two siblings nearest in palette/imagery/voice (for triangulation)
-- "this template is NOT" — three explicit anti-positions referencing existing siblings
-- planned locale list (start IT-only · D-102 cadence)
-- planned scope (pages · components · expected line budget)
+Use `design-orchestrator/workflows/template-intake-checklist.md` as the form. Output lands at `<report_root>/intake.md`. The checklist now includes the five pre-build quick-checks from `design-orchestrator/workflows/pre-build-quick-checks.md` — each closes a concrete failure mode the first dry run surfaced.
 
-Gate: the intake note exists, every slot is answered, and `nearest_two_siblings` is populated. If you cannot name the two nearest siblings without ambiguity, the cluster is too thin — fall back to corporate-suite as baseline and document the gap.
+Fill the slots in §0 above plus the checklist's:
+- §0.5 cluster reference-pack precondition (HALT if cluster ≠ corporate-suite and pack is missing)
+- §1-§4 identity, cluster context, desired differentiation, forbidden similarities
+- §3.1 palette warmth/coolness grid vs every existing sibling
+- §3.2 "remove the studio name" pre-test (three versions of the first-30s read)
+- §6.5 imagery feasibility quick-search (one Pexels search per slot · count plausible candidates)
+- §7.1 content-volume estimate vs cluster typical range
+
+Gate: the intake note exists, every checklist field is answered, and ALL five pre-build quick-checks resolve to CONTINUE / GO / PASS. Any HALT, RESPEC, or RESPEC-* verdict bounces the intake back before A.2 begins. The five checks together cost ~15 min; running them is cheaper than discovering their failure modes at A.7 walk.
+
+**Cluster precondition note**: corporate-suite is the only cluster with a complete reference pack and distinctness matrix today. For any other cluster, A.1 §0.5 HALTS and the next pass builds that cluster's reference pack first (one-off pass · same shape as `corporate-suite-reference-pack.md` + `corporate-suite-distinctness-matrix.md`). Real builds in non-corporate-suite clusters do not start until their pack and matrix are on file.
 
 ### A.2 · Plan (template-planner · ~30 min)
 
@@ -87,7 +94,13 @@ Skills loaded for this step (per `SKILL_USAGE_POLICY.md §2`):
 - `ui-ux-pro-max` searches: typography pairing, palette family, anti-pattern check
 - `taste-skill` (default) for premium-tone reference
 
-Gate: the brief's §6 distinctness scores all read ≥ 4/5 vs every existing sibling, the brief's §10 single-page summary is coherent and orchestrator-readable, and the AI-slop red-flag check is YES (clear). Any blank or vague field, any score < 4/5, any unwaivered hard prohibition (schema §2.1) → re-spec. Do not relax the gate.
+Gate: the brief's §6 distinctness scores all read ≥ 4/5 vs every existing sibling, the brief's §10 single-page summary is coherent and orchestrator-readable, the §10 summary survives the "remove the studio name" swap test (`pre-build-quick-checks.md §5` re-run on the planner expansion · not just the intake claim), and the AI-slop red-flag check is YES (clear). Any blank or vague field, any score < 4/5, any §10 swap-test fail, any unwaivered hard prohibition (schema §2.1) → re-spec. Do not relax the gate.
+
+### A.2.5 · Imagery feasibility re-confirm (you · ~5 min)
+
+Before routing to the imagery curator, re-run the imagery feasibility quick-search from `pre-build-quick-checks.md §3` against the planner brief's expanded subjects (which may have refined the intake's draft). The intake §6.5 result is provisional; the brief's expansion is what the curator will work from.
+
+Gate: every slot still returns ≥ 5 plausible Pexels candidates → A.3 begins. Any slot at ≤ 2 → return to A.2 to soften that slot's subject before the curator spends the half-day discovering the gap. CAUTION (3-4 candidates) is acceptable; flag the slot in the curator handoff so the curator does not over-constrain on the lead candidate.
 
 ### A.3 · Pack (imagery-curator · ~30-60 min)
 
@@ -166,6 +179,8 @@ The pass stops at any of the following. Stop means: do not proceed to the next r
 8. **Skill recommendation cited as binding.** Skills inform; standards bind (`SKILL_USAGE_POLICY.md §3 rule 1`). Re-express any skill finding against a rule ID before it counts.
 9. **The pass closes with more docs than visible product.** If the diff is mostly under `design-orchestrator/` or `factory/reports/` and the catalog has no new openable live URL, the pass was a process pass, not a product pass (`ORCHESTRATOR.md §6 rule 1`). Two consecutive process passes is a misallocation signal.
 10. **The pass tries to ship multiple locales.** Workflow A is IT-only (D-102). EN/FR/ES/AR are workflow C — see `template-multilingual-orchestrator.md`.
+11. **Cluster reference pack or distinctness matrix is missing for a non-corporate-suite cluster.** Intake §0.5 HALT. Build the pack first (separate one-off pass), then resume the template intake.
+12. **Any of the five pre-build quick-checks ends in HALT or RESPEC at intake sign-off.** §0.5 reference pack · §3.1 palette warmth grid · §3.2 studio-name swap · §6.5 imagery feasibility · §7.1 content-volume estimate. The check has to clear before the planner brief begins; relaxing it returns the failure to the live walk.
 
 When you stop, write the stop condition + cause + proposed re-route into `<report_root>/stop-<date>.md`. The next session reads it.
 
@@ -250,7 +265,7 @@ For corporate-suite as of 2026-04-29 the binding "must not repeat" set is:
 - "Casi seguiti" / "Casi anonimizzati" / "Case studies" as cases-list label without fresh framing
 - Solaria's "Aziende sponsor recenti" trust-band label
 
-**For other clusters** (medical-specialist, restaurant, portfolio, ecommerce, real-estate, law, agency, startup-saas, medical-other): until a per-cluster reference pack exists, the existing siblings' DNA entries + the corporate-suite list above (where structurally equivalent) are the must-not-repeat set. The first task in any new-cluster pass is to extract the cluster's must-not-repeat list from existing siblings before A.2 begins.
+**For other clusters** (medical-specialist, restaurant, portfolio, ecommerce, real-estate, law, agency, startup-saas, medical-other): a real build in any of these clusters does NOT start until that cluster has a per-cluster reference pack and distinctness matrix on file (`design-orchestrator/references/internal-baselines/<cluster>-reference-pack.md` + `<cluster>-distinctness-matrix.md`). The intake checklist §0.5 HALTS the pass otherwise. The next pass on a non-corporate-suite cluster builds the pack first (same shape as the corporate-suite pack · ~half-day pass) and the template build resumes after. Falling back to "corporate-suite list as baseline" was a dry-run-only convenience and is not authorised for a real build.
 
 When this pass closes, append this template's distinguishing claims to the cluster's reference pack §1 and distinctness matrix §1.1-§1.12 so the NEXT sibling reads them as must-not-repeat. The list is the cluster's monotonic memory.
 

@@ -58,6 +58,10 @@ ui-ux-pro-max: search domain=typography, query="<cluster> <tone>"
   → for AR-RTL: cross-check that an Arabic-capable family is included or that a swap rule exists
 ```
 
+### Pre-build · the imagery feasibility quick-check (A.2.5)
+
+The orchestrator runs the imagery feasibility quick-search itself (`workflows/pre-build-quick-checks.md §3`) — one direct Pexels search per declared slot subject, count plausible candidates. No skill is loaded for this; the curator agent is the one invoked at A.3 with the full pack workflow. Skipping this step and routing straight to the curator is the failure mode the dry run surfaced (curator spends a half-day discovering Pexels-thinness that 5 minutes of orchestrator search would have caught).
+
 ### Pre-build · I need to pick an art-direction baseline
 
 ```

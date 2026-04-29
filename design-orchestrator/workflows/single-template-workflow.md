@@ -71,10 +71,17 @@ For each template you walk through, every box must be checked before the next bo
 - [ ] Intake checklist filled · all fields answered · no blanks
 - [ ] Two nearest siblings named unambiguously
 - [ ] User constraints captured · explicit must-have / must-avoid
-- [ ] Cluster reference pack and distinctness matrix read
+- [ ] Cluster reference pack and distinctness matrix read (corporate-suite is the only cluster with these on file today; for any other cluster, build the pack FIRST per intake §0.5)
+- [ ] **Pre-build quick-checks** all clear (`workflows/pre-build-quick-checks.md`):
+  - [ ] §1 cluster reference-pack precondition: CONTINUE (or USER-WAIVER recorded)
+  - [ ] §2 palette warmth/coolness grid: PASS (0-1 cell overlap vs every sibling)
+  - [ ] §3 imagery feasibility quick-search: GO (every slot ≥ 5 plausible candidates)
+  - [ ] §4 content-volume estimate: CONTINUE (inside cluster typical range, no beat > 50%)
+  - [ ] §5 "remove the studio name" pre-test: PASS at intake §3.2 AND at planner brief §10
 - [ ] Planner brief filled to schema · §10 single-page summary coherent
 - [ ] Distinctness matrix scored ≥ 4/5 vs every existing sibling
 - [ ] AI-slop red-flag check clear
+- [ ] Imagery feasibility re-confirmed at A.2.5 against the brief's expanded subjects
 - [ ] Imagery pack drafted · curator-approved · 6 Pexels URLs
 - [ ] Cross-cluster URL grep clean
 
@@ -178,7 +185,13 @@ The single-template lifecycle most commonly halts at:
 
 5. **Release step 8 user-handshake HOLD.** The user sees the live page and notices something the rubric did not flag. Per the conservative-default policy, this HOLD is recorded without justification and routes to the appropriate B pass.
 
-These five account for the majority of stops; if a template stops at a different point, look first at whether the upstream gate was actually run with discipline.
+6. **Intake §0.5 HALT (cluster reference pack missing).** Cluster ≠ corporate-suite and the pack/matrix is not on file. Intake stops; the next pass builds the cluster's reference pack first.
+
+7. **Intake §3.1 palette warmth grid RESPEC.** Hex distinct but warmth topology overlaps a sibling on ≥ 2 roles. Re-shape secondary or accent temperature before continuing.
+
+8. **Intake §6.5 imagery feasibility RESPEC.** A slot returns ≤ 2 plausible Pexels candidates on the orchestrator's quick search. Soften that slot's subject at A.2 before A.3.
+
+These eight account for the majority of stops; if a template stops at a different point, look first at whether the upstream gate was actually run with discipline.
 
 ---
 
