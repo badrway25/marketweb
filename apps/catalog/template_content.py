@@ -2449,6 +2449,14 @@ from apps.catalog.template_content_solaria_fr import SOLARIA_CONTENT_FR  # noqa:
 from apps.catalog.template_content_solaria_es import SOLARIA_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_solaria_ar import SOLARIA_CONTENT_AR  # noqa: E402
 
+# Phase X.4 design-orchestrator first real candidate — Continua (4th
+# corporate-suite sibling · 1st family-office variant · pass 1 IT ·
+# 2026-04-29 · `phase-x4-design-orchestrator-hardening-v1`). IT-only
+# at draft tier (D-102 cadence). Multilingual rollout would land
+# through workflow C with verbatim-in-translation voice anchor +
+# real Arabic RTL — not in scope for pass 1.
+from apps.catalog.template_content_continua import CONTINUA_CONTENT_IT  # noqa: E402
+
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
 # Phase 2g3.4b — Chiara perfection pass (Session 37). Chiara now ships in 5
@@ -2642,6 +2650,13 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": SOLARIA_CONTENT_FR,
         "es": SOLARIA_CONTENT_ES,
         "ar": SOLARIA_CONTENT_AR,
+    },
+    # Phase X.4 design-orchestrator first real candidate — Continua
+    # (2026-04-29 · `phase-x4-design-orchestrator-hardening-v1`).
+    # Pass 1 IT-only · tier=draft · D-102 cadence · multilingual
+    # rollout through workflow C in a separate pass.
+    "continua-stewardship": {
+        "it": CONTINUA_CONTENT_IT,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,

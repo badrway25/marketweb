@@ -384,6 +384,57 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         # 5: ambient — warm home-office with plants and ambient light
         "https://images.pexels.com/photos/31236101/pexels-photo-31236101.jpeg?auto=compress&cs=tinysrgb&w=800",
     ],
+    # ─────────────────────────────────────────────────────────────
+    # business-stewardship — Phase X.4 design-orchestrator first
+    # real candidate (Continua · 4th corporate-suite sibling · 1st
+    # family-office variant · pass 1 IT · 2026-04-29). Pool follows
+    # the Pexels-only contract from URL #1 (CS-IMG-SRC-01 · no
+    # Unsplash carve-out) and the canonical 6-slot shape [hero,
+    # feature, portrait, portrait, detail, ambient]. Direction per
+    # `design-orchestrator/real-candidates/continua-build-brief.md
+    # §4`: object-led hero (zero people · cluster's first), oak
+    # partner-desk feature, 60s + 40s diverse stewards (closes the
+    # Solaria 30sCx2 demographic gap), wax-seal letterhead detail
+    # (replaces "documents" with stewardship object), slate
+    # stairwell ambient (NOT bookshelf · Fiscus reservation · NOT
+    # atrium · Pragma overlap · NOT warm meeting room · Solaria
+    # adjacency). Cross-cluster grep clean against business-
+    # corporate / business-fiscal / business-coaching at intake.
+    # ─────────────────────────────────────────────────────────────
+    "business-stewardship": [
+        # 0: hero — historic library room with rich wooden interiors,
+        #    partner desk in foreground, fireplace + brass details, ZERO
+        #    people · the cluster's first object-led hero. Curator-
+        #    verified live at A.3 re-curate (2026-04-29) after the
+        #    initial slot 0 candidate (Pexels 207658) returned a
+        #    "BACK TO SCHOOL" Scrabble-tile composition; this is the
+        #    binding slot 0.
+        "https://images.pexels.com/photos/36093623/pexels-photo-36093623.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        # 1: feature — black classic desk with leather chair next to
+        #    window in light study room (no people · oak feel · the
+        #    feature slot is also referenced by the Compliance Officer
+        #    portrait via build-brief §10 portrait_slot reframing note).
+        "https://images.pexels.com/photos/7045772/pexels-photo-7045772.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        # 2: portrait — senior steward · woman · white hair · coral suit
+        #    holding eyeglasses thoughtfully (institutional · 60s ·
+        #    Eleonora Marchesi · solves Solaria 30sCx2 demographic gap
+        #    on the senior side).
+        "https://images.pexels.com/photos/5333750/pexels-photo-5333750.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 3: portrait — Family Officer · mature businessman, arms crossed
+        #    in a modern office setting (40s · West African heritage ·
+        #    Tomas Okafor · explicit visible age + gender + ethnicity
+        #    variation vs slot 2).
+        "https://images.pexels.com/photos/7841828/pexels-photo-7841828.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 4: detail — elegant letter with red wax seal on a wooden desk
+        #    (suggesting traditional correspondence · NO tax documents ·
+        #    NO laptop · the "stewardship object" archival framing).
+        "https://images.pexels.com/photos/36824936/pexels-photo-36824936.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 5: ambient — marble stairway with golden banister in a classic
+        #    styled villa in daylight (NOT bookshelf · Fiscus reservation;
+        #    NOT atrium · Pragma overlap; NOT warm meeting room · Solaria
+        #    adjacency. "Building of substance" framing per the brief).
+        "https://images.pexels.com/photos/6587827/pexels-photo-6587827.jpeg?auto=compress&cs=tinysrgb&w=800",
+    ],
     "real-estate": [
         # 0: hero - luxury modern home exterior
         "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80&auto=format&fit=crop",

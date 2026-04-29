@@ -90,6 +90,7 @@ CORPORATE_SUITE_POOL_KEYS: frozenset[str] = frozenset({
     "business-corporate",   # Pragma · legacy Unsplash (AP3)
     "business-fiscal",      # Fiscus · Pexels (W2-1)
     "business-coaching",    # Solaria Commit B · paused (would be Pexels)
+    "business-stewardship", # Continua · Pexels (X.4 design-orchestrator pass 1)
 })
 
 PEXELS_HOST = "images.pexels.com"

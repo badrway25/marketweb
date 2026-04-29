@@ -413,6 +413,40 @@ TEMPLATE_METADATA = {
     # draft` — flipped to published_live only after Commit B + the
     # full multi-locale walk. Re-introduced under controlled
     # re-entry pass 1 (`phase-x4-solaria-controlled-reentry-pass1`).
+    # ── Phase X.4 design-orchestrator · Continua (2026-04-29) ──
+    # First real candidate produced by the design-orchestrator
+    # system. Reuses corporate-suite archetype (shared shell with
+    # Pragma + Fiscus + Solaria) but with stewardship-longitudinal
+    # voice (custodial · multi-generational · NOT decisional-
+    # gravity · NOT presidio · NOT bounded-method) + pine + pewter
+    # + brass palette + Crimson Pro + Public Sans typography.
+    # Seeds at `tier: draft` — IT-only at draft per the build brief
+    # (D-102 cadence); multilingual rollout via workflow C in a
+    # separate pass.
+    "continua-stewardship": {
+        "cluster": "corporate",
+        "style": "classic-serif",
+        "price_tier": "premium",
+        "use_cases": [
+            "consultation-booking",
+            "generate-leads",
+            "b2b-credibility",
+        ],
+        "audience": ["enterprise", "smb"],
+        "search_keywords": (
+            "family-office famiglie-imprenditoriali holding patrimonio "
+            "successione governance-familiare consiglio-di-famiglia "
+            "patto-familiare trustees stewardship multigenerazionale "
+            "trust fondazione"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
     "solaria-coaching": {
         "cluster": "coaching",
         "style": "minimal-light",
@@ -639,6 +673,63 @@ SEED_TEMPLATES = [
             "typography": "Fraunces + Inter",
             "personality": "professional-warm, metodico, misurato",
             "logo_concept": "Cerchio solare stilizzato in ocra scuro su fondo avorio-crema con lettera S disegnata come una curva aperta che richiama un percorso con inizio e fine dichiarati; tipografia humanist-serif Fraunces",
+        },
+    },
+    # ── X.4 design-orchestrator pass 1 · Continua — Family-Office Stewardship ──
+    # First real candidate produced by the design-orchestrator system
+    # (`phase-x4-design-orchestrator-hardening-v1`, 2026-04-29). 4th
+    # corporate-suite sibling · 1st family-office variant. Reuses the
+    # corporate-suite shell (Pragma + Fiscus + Solaria) but with
+    # stewardship-longitudinal voice, pine + pewter + brass palette
+    # (matrix §1.3 cool-secondary + warm-accent · the only OPEN warmth
+    # combo), Crimson Pro + Public Sans typography (closes the §1.4
+    # cluster-collapse Inter risk), and an object-led hero with zero
+    # people (the cluster's first). Seeds at tier=draft via
+    # TEMPLATE_REGISTRY.json. IT-only at draft; multilingual rollout
+    # via workflow C in a separate pass.
+    {
+        "name": "Continua — Family-Office Stewardship",
+        "slug": "continua-stewardship",
+        "category_slug": "business",
+        "short_description": "Family office multigenerazionale per la custodia del patrimonio familiare attraverso le generazioni. Consiglio di Famiglia, audit di continuità annuale, patto familiare a revisione triennale.",
+        "description": (
+            "Continua è il template per famiglie imprenditoriali, holding di "
+            "partecipazioni e fondazioni di famiglia che cercano un mandato "
+            "di custodia su orizzonte multigenerazionale — non un advisory "
+            "B2B trimestrale, non un commercialista presidio annuale, non "
+            "un coaching bounded. Voce stewardship-longitudinal, palette "
+            "deep pine + cool pewter + antique brass (la sola combinazione "
+            "warm-accent ancora non occupata nel cluster corporate-suite), "
+            "tipografia Crimson Pro + Public Sans (esplicitamente NOT Inter, "
+            "chiude il rischio di terzo uso che collassa il cluster).\n\n"
+            "Include: homepage con voice anchor «La continuità di una famiglia "
+            "si misura in generazioni», 4 presidi (Custodia patrimoniale, "
+            "Governance familiare, Successione strutturata, Compliance "
+            "fiduciaria), KPI band scura (mandato medio · generazioni in "
+            "carico · patrimonio in custodia · cadenza CdF), governance-cycle-strip "
+            "che nomina una CADENZA non un numero o una scadenza, profili "
+            "familiari come ribbon, Custodi del mandato (3 stewards 60s + "
+            "40s + 50s photo-present con diversità anagrafica + di genere + "
+            "di provenienza), 4 mandati in continuità con marker di durata "
+            "pluriennale, form scope familiare + orizzonte temporale + "
+            "struttura attuale (NO P.IVA + CF · NO NDA boardroom · NO ICF). "
+            "Whistleblowing link prominente in legal row (D.lgs. 24/2023)."
+        ),
+        "price": Decimal("89.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 5,
+        "brand": {
+            "brand_name": "Continua — Family-Office Stewardship",
+            "tagline": "Custodi del patrimonio familiare attraverso le generazioni",
+            # Palette per the matrix §1.3 cool-secondary + warm-accent OPEN
+            # combination · primary = deep pine (L* ≈ 21 · cream-safe),
+            # secondary = cool pewter, accent = antique brass (the load-
+            # bearing differentiator visible at ≥ 5 viewport touchpoints).
+            "palette": {"primary": "#0F3A30", "secondary": "#5A6E78", "accent": "#B0875E"},
+            "typography": "Crimson Pro + Public Sans",
+            "personality": "custodial, longitudinale, multi-generazionale",
+            "logo_concept": "Wordmark singolo «Continua» in Crimson Pro 500 con asta calligrafica dell'iniziale C che richiama il filetto di brass del navbar; preserva l'integrità Latin sotto RTL come da CS-NAV-06.",
         },
     },
     # ── Ristorante (2) ─────────────────────────────────────────

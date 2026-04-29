@@ -1428,6 +1428,75 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
             "sectors": ["Partite IVA & freelance", "PMI manifattura", "Studi professionali", "Wealth privato", "Immobiliare"],
         },
     },
+
+    # ── X.4D-OR1) CORPORATE-SUITE — Continua, family-office stewardship ──
+    # Phase X.4 design-orchestrator first real candidate (pass 1 IT,
+    # 2026-04-29). 4th corporate-suite sibling · 1st family-office
+    # variant · multi-generational governance positioning. Reuses
+    # the corporate-suite shell but with stewardship-specific voice
+    # (custodial · multi-decade horizon · NOT decisional gravity ·
+    # NOT presidio · NOT bounded-method), pine + pewter + brass
+    # palette (matrix §1.3 cool-secondary + warm-accent · the only
+    # OPEN warmth combo in the cluster), Crimson Pro + Public Sans
+    # typography (closes the §1.4 cluster-collapse risk · explicitly
+    # NOT Inter), object-led hero with zero people (the cluster's
+    # first), and a governance-cycle-strip mid-beat (the differentiator
+    # that names a CADENCE not a number/calendar/arc).
+    "continua-stewardship": {
+        "archetype":          "corporate-suite",
+        "hero_style":         "split-stewardship",
+        "navbar_style":       "solid-stewardship",
+        "footer_style":       "sectors-ribbon-continuita",
+        "section_order":      ["nav", "editorial-hero", "advisory-pillars", "kpi-strip", "governance-cycle-strip", "sectors-ribbon"],
+        "card_style":         "pillar-stewardship",
+        "button_style":       "ghost-stewardship",
+        "density":            "airy",
+        "tone":               "stewardship-longitudinal",
+        "imagery_direction":  "stewardship-archive-room",
+        "imagery_key":        "business-stewardship",
+        "conversion_pattern": "mandate-dialogue",
+        # Crimson Pro (heading · classical book-jacket ratios · strong italic
+        # carrying multi-generational time-horizon) + Public Sans (body ·
+        # public-trust association · gov-designed · explicitly NOT Inter).
+        "font_pairing":       ("Crimson Pro", "Public Sans"),
+        "content": {
+            "eyebrow":       "Family office · Milano · stewardship multigenerazionale",
+            "headline":      "La continuità di una famiglia si misura in <em>generazioni</em>.",
+            "subhead":       "Custodi del patrimonio familiare attraverso le generazioni. Una famiglia, un Consiglio di Famiglia, un mandato che non si misura in trimestri.",
+            "primary_cta":   "Avvia un dialogo di mandato",
+            "secondary_cta": "Lo studio di custodia",
+            "phone":         "+39 02 7600 4188",
+            "nav_links":     ["Lo studio", "Custodia", "Governance", "Mandati", "Contatti"],
+            "meta_strip": [
+                ("Mandato medio",     "18 anni"),
+                ("Generazioni in carico", "3"),
+                ("Riunioni CdF",      "4 / anno"),
+            ],
+            "hero_credit_left":  ("Custodi del mandato", "Iscrizione Albo Trustees"),
+            "hero_credit_right": ("Sede principale",     "Milano · Brera"),
+            "pillars_heading": "Quattro presidi, un solo mandato",
+            "pillars_label":   "Custodia",
+            "pillars": [
+                ("01", "Custodia patrimoniale",
+                 "Custodiamo il patrimonio familiare attraverso il ciclo di tre generazioni — asset finanziari, partecipazioni, immobili strumentali e di famiglia, nel rispetto del patto di famiglia in vigore."),
+                ("02", "Governance familiare",
+                 "Facilitazione del Consiglio di Famiglia, redazione e revisione del patto familiare, voting structures dei rami familiari, codici di comportamento e regolamenti interni."),
+                ("03", "Successione strutturata",
+                 "Pianificazione del passaggio multigenerazionale — donazioni, holding di famiglia, trust dedicati, formazione della generazione entrante prima del trasferimento di responsabilità."),
+                ("04", "Compliance fiduciaria",
+                 "Vigilanza fiduciaria continuativa, audit di continuità annuale, presidio normativo in evoluzione (D.lgs. 24/2023, Codice della Crisi, OAM) e custodia documentale a accesso controllato."),
+            ],
+            "kpi_heading": "Diciotto anni di mandati in continuità",
+            "kpi_strip": [
+                ("18",      "anni · orizzonte medio mandato"),
+                ("3",       "generazioni · famiglie in carico"),
+                ("€ 1.8 B", "patrimonio in custodia"),
+                ("4",       "riunioni CdF · anno"),
+            ],
+            "sectors_label": "Profili familiari",
+            "sectors": ["Famiglie imprenditoriali", "Holding di partecipazioni", "Fondazioni di famiglia", "Seconde generazioni in trasferimento", "Single family office estero"],
+        },
+    },
 }
 
 

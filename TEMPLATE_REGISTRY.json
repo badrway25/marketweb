@@ -288,6 +288,52 @@
       "tier_reason": "Phase X.4 Wave 2 Pilot #2 (Solaria — Business Coaching). Pass A (2026-04-26 · tip 24fdde5) lifted Italian premium distinctness above Pragma + Fiscus by wiring the corporate-suite `home.leadership[].portrait` and `cases[].thumb` hooks for the first time on this archetype, so Solaria home shows 5 coaching-pool images vs Pragma/Fiscus 1. Pass B (2026-04-26 · tip 3cdbef6) authored the four missing locale trees (EN/FR/ES/AR) at shape-parity with IT, with verbatim-in-translation voice anchor and real Arabic RTL via Noto Kufi heading swap on `<html dir=\"rtl\">`. Pass C (2026-04-27) closed the staff-preview review-path leak so a stakeholder can walk all 5 locales × 5 pages in a single session. Pass D · final release (2026-04-28) flipped tier draft → published_live after the user completed the human visual review and authorised the gatekeeper to decide on the evidence: 6/6 scorecard panels GREEN across A+B+C, all 9 critical dimensions ≥ 4, 0 / 18 blocking overrides triggered, AAA contrast across all locales, RTL working, voice anchor verbatim across 5 locales, build-time E001/E002/E003 silent on Solaria, 546/546 tests green pre-cascade. Public catalog count moves 21 → 22; trust counter moves 21+ → 22+; Solaria card surfaces under /templates/business/."
     },
     {
+      "slug": "continua-stewardship",
+      "name": "Continua — Family-Office Stewardship",
+      "category": "business",
+      "brand_name": "Continua — Family-Office Stewardship",
+      "tagline": "Custodi del patrimonio familiare attraverso le generazioni",
+      "palette": {
+        "primary": "#0F3A30",
+        "secondary": "#5A6E78",
+        "accent": "#B0875E"
+      },
+      "typography": "Crimson Pro + Public Sans",
+      "personality": "custodial, longitudinale, multi-generazionale",
+      "archetype": "corporate-suite",
+      "hero_style": "split-stewardship",
+      "navbar_style": "solid-stewardship",
+      "footer_style": "sectors-ribbon-continuita",
+      "card_style": "pillar-stewardship",
+      "button_style": "ghost-stewardship",
+      "density": "airy",
+      "tone": "stewardship-longitudinal",
+      "imagery_direction": "stewardship-archive-room",
+      "imagery_key": "business-stewardship",
+      "conversion_pattern": "mandate-dialogue",
+      "font_pairing": "Crimson Pro + Public Sans",
+      "dna_phase": "x4.design-orchestrator-pass-1",
+      "session_closed": null,
+      "live_preview": false,
+      "live_pages": [
+        "home",
+        "chi-siamo",
+        "custodia",
+        "mandati",
+        "mandati/<slug>",
+        "contatti"
+      ],
+      "locales": [
+        "it"
+      ],
+      "rtl": true,
+      "price": 89,
+      "featured": false,
+      "status": "draft",
+      "tier": "draft",
+      "tier_reason": "Phase X.4 design-orchestrator first real candidate (pass 1 IT, 2026-04-29 · `phase-x4-design-orchestrator-hardening-v1`). 4th corporate-suite sibling · 1st family-office variant. Build brief decision-locked at `design-orchestrator/real-candidates/continua-build-brief.md` with 5/5 distinctness vs Pragma + Fiscus + Solaria on the 4-of-5 axes gate (matrix §1 row-by-row at `…/continua-distinctness-proof.md`). Pass 1 ships IT-only at draft tier (D-102 cadence): pine + pewter + brass palette (matrix §1.3 cool-secondary + warm-accent · the only OPEN warmth combo), Crimson Pro + Public Sans typography (closes the §1.4 Inter-collapse risk), object-led hero with zero people (cluster's first), governance-cycle-strip mid-beat (cadence not number/calendar/arc), 60s + 40s + 50s leadership demographic (closes Solaria's 30sCx2 gap), `Mandati in continuità` cases shape with multi-year duration markers, `Avvia un dialogo di mandato` CTA, scope + orizzonte + struttura form gate (NOT P.IVA + CF · NOT NDA boardroom · NOT ICF-referenced). Multilingual rollout (EN/FR/ES/AR + AR RTL parity) gated to workflow C in a separate pass per `continua-browser-gate.md §6`. Public catalog count remains unchanged at draft; staff preview reaches the live route via `?preview=1`."
+    },
+    {
       "slug": "gusto-fine-dining",
       "name": "Gusto — Fine Dining",
       "category": "restaurant",

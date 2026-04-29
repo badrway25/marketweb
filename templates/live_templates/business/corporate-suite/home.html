@@ -97,7 +97,13 @@
   .cs-pillars .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
   .cs-pillars .head h2 { font-size: var(--fs-h2); max-width: 16ch; }
   .cs-pillars .head .intro { font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.65; color: var(--ink-soft); max-width: 56ch; }
-  .cs-pillars .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+  /* CS-DENSITY-02 within bound · pillars grid expands from 3-up to 4-up
+     when the content registry supplies 4 pillars (Continua's Custodia /
+     Governance / Successione / Compliance four-presidio composition).
+     `auto-fit` keeps the 3-pillar siblings (Pragma · Fiscus · Solaria)
+     rendering as 3 columns at desktop without churn — a 4th pillar
+     simply re-flows the row. */
+  .cs-pillars .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 48px; }
   .cs-pillars .pillar {
     padding: 28px 0 0 0; border-top: 2px solid var(--primary);
   }
@@ -148,6 +154,63 @@
     font-family: var(--body); font-size: 11px; font-weight: 600;
     letter-spacing: 0.16em; text-transform: uppercase;
     color: var(--on-dark-3);
+  }
+
+  /* Governance-cycle-strip — opt-in mid-beat between KPI band and
+     sectors ribbon. Renders only when the content registry supplies
+     `page_data.cycle_strip` (currently: Continua only · the 1st
+     family-office variant in the corporate-suite cluster). The
+     differentiator that names a CADENCE not a number, a calendar
+     event, or a session arc — three cells, cream paper, each a
+     (eyebrow · figure · context-line) triple. Risk 5 mitigation
+     binding (`continua-distinctness-proof.md §5 R5`): each cell
+     MUST carry the triple, never collapse to (label · figure). */
+  .cs-cycle {
+    background: var(--paper);
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
+  .cs-cycle .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--rule); }
+  .cs-cycle .head .label { color: var(--accent); }
+  .cs-cycle .head h2 { font-size: var(--fs-h2); max-width: 18ch; }
+  .cs-cycle .head h2 em { color: var(--accent); }
+  .cs-cycle .head .intro { font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; max-width: 56ch; }
+  .cs-cycle .grid { margin-top: 48px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 2px solid var(--primary); }
+  .cs-cycle .cell {
+    padding: 36px 32px 32px 0;
+    border-right: 1px solid var(--rule);
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .cs-cycle .cell:not(:first-child) { padding-left: 32px; }
+  .cs-cycle .cell:last-child { border-right: 0; padding-right: 0; }
+  /* Brass eyebrow tints — Risk 1 mitigation binding (build-brief §7
+     brass touchpoint inventory · #3). Brass MUST appear at ≥ 5
+     viewport touchpoints; the cycle eyebrow is one. */
+  .cs-cycle .cell .eyebrow {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-cycle .cell .figure {
+    font-family: var(--heading); font-size: 36px; font-weight: 600;
+    color: var(--primary); line-height: 1.06; letter-spacing: -0.018em;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .cs-cycle .cell .context {
+    font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: var(--ink-soft); max-width: 36ch;
+  }
+
+  @media (max-width: 1100px) {
+    .cs-cycle .head { grid-template-columns: 1fr; gap: 24px; }
+    .cs-cycle .grid { grid-template-columns: 1fr; gap: 0; }
+    .cs-cycle .cell {
+      padding: 28px 0;
+      border-right: 0; border-bottom: 1px solid var(--rule);
+    }
+    .cs-cycle .cell:not(:first-child) { padding-left: 0; }
+    .cs-cycle .cell:last-child { border-bottom: 0; }
+    .cs-cycle .cell .figure { font-size: 30px; }
   }
 
   /* Sectors ribbon — typographic seam between KPI band and trust */
@@ -512,6 +575,27 @@
   </div>
 </section>
 
+{% if page_data.cycle_strip %}
+<section class="cs-cycle">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label label">{{ page_data.cycle_label }}</div>
+      <h2>{{ page_data.cycle_heading|safe }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.cycle_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for eyebrow, figure, context in page_data.cycle_strip %}
+      <div class="cell" data-lm="reveal">
+        <div class="eyebrow">{{ eyebrow }}</div>
+        <div class="figure">{{ figure }}</div>
+        <p class="context">{{ context }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <section class="cs-sectors">
   <div class="row">
     <span class="label">{{ page_data.sectors_label }}</span>
@@ -591,7 +675,7 @@
   <div class="wrap">
     <div data-lm="reveal-lg">
       <div class="label">{{ page_data.cta_label }}</div>
-      <h2>{{ page_data.cta_heading }}</h2>
+      <h2>{{ page_data.cta_heading|safe }}</h2>
       <p class="intro">{{ page_data.cta_intro }}</p>
     </div>
     <div class="actions" data-lm="reveal">
