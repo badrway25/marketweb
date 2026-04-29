@@ -450,6 +450,17 @@ class LiveTemplateView(TemplateView):
             None,
         )
 
+        # Case-studies parent page slug — same pattern as blog_parent_slug, but
+        # for templates whose home preview-band links to per-post case-study
+        # detail pages. Each archetype names its case-study list page
+        # differently ('case-studies' for Pragma, 'mandati' for Continua,
+        # 'casi' for Solaria, 'casi-seguiti' for Fiscus, ...), so chrome must
+        # not hardcode any single value.
+        ctx["cases_parent_slug"] = next(
+            (p["slug"] for p in self.content["pages"] if p["kind"] == "case_study_list"),
+            None,
+        )
+
         # Theme tokens for CSS variable injection in the per-archetype _base
         # (already composed above so we can apply project overrides)
         ctx["theme"] = theme

@@ -657,7 +657,7 @@
   </div>
   <div class="list" data-lm-stagger data-lm-stagger-delay="80">
     {% for post in posts %}
-      <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug 'case-studies' post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" data-lm="reveal">
+      <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug cases_parent_slug post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" data-lm="reveal">
         <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
         <span class="title">
           {% if post.thumb %}<img class="thumb" src="{{ post.thumb }}" alt="" loading="lazy">{% endif %}
