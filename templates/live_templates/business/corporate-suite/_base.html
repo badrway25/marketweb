@@ -721,7 +721,21 @@
   html[dir="rtl"] .cs-post .next-case .lbl,
   html[dir="rtl"] .cs-post .kpi-band .stat .lbl,
   html[dir="rtl"] .mp-lang .mp-lang-label,
-  html[dir="rtl"] .mp-lang a.mp-lang-pill {
+  html[dir="rtl"] .mp-lang a.mp-lang-pill,
+  /* Phase X.4b Continua Pass B · LF-5 eyebrow surfaces. These chrome
+     labels are LF-5-specific (no Pragma/Fiscus equivalent), so they
+     were absent from the original CS-TYPE-05 reset list. Adding them
+     here keeps Arabic uppercase tracking flat across the LF-5 home. */
+  html[dir="rtl"] .cs-hero .frame .anchor .eyebrow,
+  html[dir="rtl"] .cs-hero .meta-strip .item,
+  html[dir="rtl"] .cs-hero .credit-row .credit,
+  html[dir="rtl"] .cs-cycle .cell .eyebrow,
+  html[dir="rtl"] .cs-pillars .pillar .num,
+  html[dir="rtl"] .cs-sectors .whistle,
+  html[dir="rtl"] .cs-leadership .card .station,
+  html[dir="rtl"] .cs-cases-preview .row .title .eyebrow,
+  html[dir="rtl"] .cs-cases-preview .row .horizon,
+  html[dir="rtl"] .cs-cases-preview .row .horizon strong {
     letter-spacing: 0;
   }
   /* Latin wordmark stays Latin — preserve brand legibility */

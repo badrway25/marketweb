@@ -324,7 +324,11 @@
         "contatti"
       ],
       "locales": [
-        "it"
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
       ],
       "rtl": true,
       "price": 89,

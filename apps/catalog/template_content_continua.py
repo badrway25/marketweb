@@ -103,6 +103,47 @@ from __future__ import annotations
 from typing import Any
 
 
+# ─── Pexels-only imagery pool · single source of truth ─────────────────
+# Phase X.4b Continua Pass B (multilingual rollout · 2026-04-30) extracts
+# the inline image URLs into module-level constants so each locale tree
+# (`continua_en/fr/es/ar`) imports the same Pexels frames. The `_POOL_*`
+# convention mirrors the Solaria Pass B precedent. Image substitution
+# across locales is forbidden — every locale must render the same frames
+# the IT walk approved at the LF-5 rebuild.
+_HERO_IMAGE = (
+    "https://images.pexels.com/photos/36093623/pexels-photo-36093623.jpeg"
+    "?auto=compress&cs=tinysrgb&w=1600"
+)
+_PILLAR_ICON_01 = (
+    "https://images.pexels.com/photos/4467737/pexels-photo-4467737.jpeg"
+    "?auto=compress&cs=tinysrgb&w=200"
+)
+_PILLAR_ICON_02 = (
+    "https://images.pexels.com/photos/5668887/pexels-photo-5668887.jpeg"
+    "?auto=compress&cs=tinysrgb&w=200"
+)
+_PILLAR_ICON_03 = (
+    "https://images.pexels.com/photos/1153213/pexels-photo-1153213.jpeg"
+    "?auto=compress&cs=tinysrgb&w=200"
+)
+_PILLAR_ICON_04 = (
+    "https://images.pexels.com/photos/3201588/pexels-photo-3201588.jpeg"
+    "?auto=compress&cs=tinysrgb&w=200"
+)
+_PORTRAIT_ELEONORA = (
+    "https://images.pexels.com/photos/5333750/pexels-photo-5333750.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
+_PORTRAIT_TOMAS = (
+    "https://images.pexels.com/photos/7841828/pexels-photo-7841828.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
+_PORTRAIT_GINEVRA = (
+    "https://images.pexels.com/photos/8424881/pexels-photo-8424881.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
+
+
 CONTINUA_CONTENT_IT: dict[str, Any] = {
     "pages": [
         {"slug": "home",          "label": "Lo studio",      "kind": "home"},
@@ -197,7 +238,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
         # laptop / human). The slot was re-curated live at A.3
         # (2026-04-29) when the initial candidate returned a Scrabble-
         # tile composition · curator-verified replacement.
-        "hero_image":              "https://images.pexels.com/photos/36093623/pexels-photo-36093623.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        "hero_image":              _HERO_IMAGE,
         # Hero credit overlay (NOT "Direzione, Anno fondazione" — that
         # composition was used twice already by Pragma + Fiscus).
         "hero_image_credit_left":  ("Custodi del mandato", "Iscrizione Albo Trustees"),
@@ -266,8 +307,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
                 # CS-IMG-SRC-01 (Pexels-only). The grayscale filter at
                 # the CSS layer flattens any incidental warm-tone in
                 # the source so the matrix reads as four sober marks.
-                "icon_image":
-                    "https://images.pexels.com/photos/4467737/pexels-photo-4467737.jpeg?auto=compress&cs=tinysrgb&w=200",
+                "icon_image": _PILLAR_ICON_01,
             },
             {
                 "num":   "02",
@@ -276,8 +316,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
                     "Consiglio di Famiglia trimestrale. Verbalizzazione "
                     "fiduciaria. Patto familiare a revisione triennale. "
                     "Voting structures dedicate per ramo.",
-                "icon_image":
-                    "https://images.pexels.com/photos/5668887/pexels-photo-5668887.jpeg?auto=compress&cs=tinysrgb&w=200",
+                "icon_image": _PILLAR_ICON_02,
             },
             {
                 "num":   "03",
@@ -286,8 +325,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
                     "Holding di famiglia, trust dedicati, donazioni "
                     "modulate. Programma biennale di formazione "
                     "tecnica della generazione entrante.",
-                "icon_image":
-                    "https://images.pexels.com/photos/1153213/pexels-photo-1153213.jpeg?auto=compress&cs=tinysrgb&w=200",
+                "icon_image": _PILLAR_ICON_03,
             },
             {
                 "num":   "04",
@@ -296,8 +334,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
                     "Audit di continuità ANC annuale. Presidio AML, "
                     "Codice della Crisi, D.lgs. 24/2023. Custodia "
                     "documentale a accesso controllato.",
-                "icon_image":
-                    "https://images.pexels.com/photos/3201588/pexels-photo-3201588.jpeg?auto=compress&cs=tinysrgb&w=200",
+                "icon_image": _PILLAR_ICON_04,
             },
         ],
 
@@ -413,7 +450,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
                 # Curator-verified at A.3 re-curate (2026-04-29) ·
                 # senior woman 60s · institutional · solves Solaria
                 # 30sCx2 demographic gap on the senior side.
-                "portrait": "https://images.pexels.com/photos/5333750/pexels-photo-5333750.jpeg?auto=compress&cs=tinysrgb&w=800",
+                "portrait": _PORTRAIT_ELEONORA,
             },
             {
                 "name":  "Tomas Okafor",
@@ -432,7 +469,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
                 # mature businessman 40s · West African heritage ·
                 # explicit visible age + gender + ethnicity variation
                 # vs Eleonora 60s slot · Mitigation §12 Warning 4.
-                "portrait": "https://images.pexels.com/photos/7841828/pexels-photo-7841828.jpeg?auto=compress&cs=tinysrgb&w=800",
+                "portrait": _PORTRAIT_TOMAS,
             },
             {
                 "name":  "Ginevra Conti",
@@ -452,7 +489,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
                 # warm-tone wardrobe contrast vs Eleonora's coral · keeps
                 # the 3-card row reading as 3 distinct demographics
                 # without re-using a portrait already in the slot 2-3 pair.
-                "portrait": "https://images.pexels.com/photos/8424881/pexels-photo-8424881.jpeg?auto=compress&cs=tinysrgb&w=800",
+                "portrait": _PORTRAIT_GINEVRA,
             },
         ],
 
