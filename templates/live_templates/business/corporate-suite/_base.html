@@ -307,6 +307,52 @@
     padding: 6px 12px;
   }
 
+  /* LF-5 · condensed-minimal-top nav. Chrome reads as archive-room
+     calm rather than boardroom presence. Same primary-bg polarity
+     (CS-BLOCK-16 holds), tighter wordmark, no phone-right cluster.
+     Compaction is the family-level structural hit; the rest of the
+     nav primitives (focus rings, current-link underline dot, drawer
+     at ≤880) inherit verbatim from the LF-1 baseline above. */
+  .cs-nav--lf5 {
+    height: 64px;
+    padding: 0 48px;
+  }
+  .cs-nav--lf5 .wm {
+    font-size: 19px; gap: 12px;
+  }
+  .cs-nav--lf5 .wm .crest {
+    width: 32px; height: 32px; font-size: 12px;
+  }
+  .cs-nav--lf5 .links {
+    margin-left: 48px; gap: 28px;
+    font-size: 11px; letter-spacing: 0.18em;
+  }
+
+  /* LF-5 · 4-col-with-whistleblowing footer. Replaces the offices
+     column with a whistleblowing channel column (D.lgs. 24/2023
+     surfaced as a first-class element, not buried in the legal row).
+     The column's eyebrow + channel name + note + email link sit on
+     the same primary-bg the rest of the footer runs on, so palette
+     chrome and AA rule on dark-section descendants are inherited
+     from `.cs-foot p, .cs-foot a` rules above. CS-FOOT-02 legal row
+     at the bottom keeps the existing whistleblowing legal link. */
+  .cs-foot-col--whistleblowing .cs-foot-whistle-eyebrow {
+    color: var(--accent);
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    padding: 0 0 6px;
+  }
+  .cs-foot-col--whistleblowing p {
+    max-width: 30ch;
+  }
+  .cs-foot-col--whistleblowing a {
+    color: var(--on-dark);
+    border-bottom: 1px solid rgba(238,240,243,0.24);
+  }
+  .cs-foot-col--whistleblowing a:hover {
+    color: var(--accent); border-bottom-color: var(--accent);
+  }
+
   /* ============================================================
      PAGE LEAD — eyebrow + serif headline + intro
      CS-TYPE-04 · h1 floor 44 · ceiling 72. The inner-page lead
@@ -1006,7 +1052,7 @@
   body.mw-is-editor-preview .cs-nav .word { max-width: 32ch; }
 </style>
 </head>
-<body class="{% if preview_project %}mw-is-editor-preview{% endif %}">{% endspaceless %}
+<body class="{% if preview_project %}mw-is-editor-preview{% endif %}{% if template.layout_family %} cs-lf-{{ template.layout_family|lower }}{% endif %}">{% endspaceless %}
 
 <div class="mp-bar">
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
@@ -1036,7 +1082,7 @@
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
 </div>
 
-<nav class="cs-nav">
+<nav class="cs-nav{% if template.layout_family == 'LF-5' %} cs-nav--lf5{% endif %}">
   <div class="wm">
     <span class="crest">{{ site.logo_initial }}</span>
     <span>{{ site.logo_word }}</span>
@@ -1054,10 +1100,12 @@
       {% endif %}
     {% endfor %}
   </div>
+  {% if template.layout_family != "LF-5" %}
   <div class="phone">
     <span class="tag">{{ site.tag }}</span>
     <span>{{ site.phone }}</span>
   </div>
+  {% endif %}
 </nav>
 
 {% block content %}{% endblock %}
@@ -1086,12 +1134,24 @@
       <p>{{ site.email }}</p>
       <p>{{ site.hours_compact }}</p>
     </div>
+    {% if template.layout_family == "LF-5" and site.whistleblowing_footer %}
+    <div class="col cs-foot-col--whistleblowing">
+      <h5>{{ site.whistleblowing_footer.heading }}</h5>
+      <p class="cs-foot-whistle-eyebrow">{{ site.whistleblowing_footer.eyebrow }}</p>
+      <p>{{ site.whistleblowing_footer.note }}</p>
+      {% if site.whistleblowing_footer.email %}<p><a href="mailto:{{ site.whistleblowing_footer.email }}">{{ site.whistleblowing_footer.email }}</a></p>{% endif %}
+      {% if site.whistleblowing_footer.policy_label and site.whistleblowing_footer.policy_href %}
+        <p><a href="{% url 'catalog:live_template_page' template.category.slug template.slug site.whistleblowing_footer.policy_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">{{ site.whistleblowing_footer.policy_label }}</a></p>
+      {% endif %}
+    </div>
+    {% else %}
     <div class="col">
       <h5>{{ site.foot_offices }}</h5>
       {% for row in site.offices_footer_rows %}
         <p>{{ row }}</p>
       {% endfor %}
     </div>
+    {% endif %}
   </div>
   <div class="bot">
     <span class="copy">© 2026 {{ site.logo_word }}{% if site.license %} · {{ site.license }}{% endif %}</span>

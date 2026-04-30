@@ -1,0 +1,181 @@
+{% comment %}
+LF-5 Stewardship Object-Hero · Continua home (IT pass). Section
+sequence D: cs-hero · cs-cycle · cs-pillars · cs-kpi-band · cs-sectors ·
+cs-leadership · cs-cases-preview · cs-cta. The trust marquee is
+intentionally absent from LF-5 — sectors absorbs its function. The
+cs-cycle moves from slot-4 to slot-2 (governance beat, not calendar).
+The pillars matrix is 2×2 with monochrome icons (4-pillar custodia
+matrix). Cases become a vertical timeline.
+{% endcomment %}<section class="cs-hero">
+  <div class="photo" role="img" aria-label="{{ page_data.hero_image_alt|default:page_data.eyebrow }}"></div>
+
+  <div class="credit-row">
+    <div class="credit">
+      {{ page_data.hero_image_credit_left.0 }}
+      <strong>{{ page_data.hero_image_credit_left.1 }}</strong>
+    </div>
+    <div class="credit right">
+      {{ page_data.hero_image_credit_right.0 }}
+      <strong>{{ page_data.hero_image_credit_right.1 }}</strong>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="anchor" data-lm="reveal-lg">
+      <div class="eyebrow">{{ page_data.eyebrow }}</div>
+      <h1>{{ page_data.headline|safe }}</h1>
+    </div>
+    <div class="body" data-lm="reveal">
+      <p class="sub">{{ page_data.intro }}</p>
+      <div class="actions">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-primary">{{ page_data.primary_cta }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-ghost">{{ page_data.secondary_cta }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-strip" data-lm-stagger>
+    {% for label, value in page_data.hero_meta_strip %}
+      <div class="item" data-lm="reveal">{{ label }}<strong>{{ value }}</strong></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-cycle">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label label">{{ page_data.cycle_label }}</div>
+      <h2>{{ page_data.cycle_heading|safe }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.cycle_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for eyebrow, figure, context in page_data.cycle_strip %}
+      <div class="cell" data-lm="reveal">
+        <div class="eyebrow">{{ eyebrow }}</div>
+        <div class="figure">{{ figure }}</div>
+        <p class="context">{{ context }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-pillars">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.pillars_label }}</div>
+      <h2>{{ page_data.pillars_heading|safe }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.pillars_intro }}</p>
+  </div>
+  <div class="matrix" data-lm-stagger data-lm-stagger-delay="120">
+    {% for pillar in page_data.pillars_matrix %}
+      <article class="pillar" data-lm="reveal">
+        <div class="icon">
+          {% if pillar.icon_image %}
+            <img src="{{ pillar.icon_image }}" alt="" loading="lazy">
+          {% endif %}
+        </div>
+        <div class="num">{{ pillar.num }} / {{ page_data.pillars_matrix|length }}</div>
+        <h3>{{ pillar.title }}</h3>
+        <p>{{ pillar.body }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-kpi-band">
+  <div class="row" data-lm-stagger>
+    <div class="heading" data-lm="reveal">{{ page_data.kpi_heading }}</div>
+    {% for num, label in page_data.kpi_strip %}
+      <div class="stat" data-lm="reveal">
+        <div class="num" data-lm="counter">{{ num }}</div>
+        <span class="lbl">{{ label }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-sectors">
+  <div class="row">
+    <span class="label">{{ page_data.sectors_label }}</span>
+    {% for sector in page_data.sectors %}
+      <span>{{ sector }}</span>
+      {% if not forloop.last %}<span class="dot"></span>{% endif %}
+    {% endfor %}
+    {% if page_data.whistleblowing %}
+      <span class="whistle">
+        {{ page_data.whistleblowing.eyebrow }}
+        <strong>{{ page_data.whistleblowing.channel_name }}</strong>
+      </span>
+    {% endif %}
+  </div>
+</section>
+
+<section class="cs-leadership">
+  <div class="head">
+    <div class="sec-label">{{ page_data.leadership_label }}</div>
+    <h2>{{ page_data.leadership_heading|safe }}</h2>
+    <p class="intro">{{ page_data.leadership_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for partner in page_data.leadership %}
+      <article class="card" data-lm="reveal">
+        {% if partner.portrait %}
+          <div class="pillar-photo">
+            <img src="{{ partner.portrait }}" alt="{{ partner.name }} — {{ partner.station }}" loading="lazy">
+          </div>
+        {% endif %}
+        <div class="body">
+          <div class="role">{{ partner.role }}</div>
+          <h3>{{ partner.name }}</h3>
+          {% if partner.station %}<div class="station">{{ partner.station }}</div>{% endif %}
+          <p>{{ partner.bio }}</p>
+          <ul class="creds">
+            {% for cred in partner.credentials %}<li>{{ cred }}</li>{% endfor %}
+          </ul>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-cases-preview">
+  <div class="head">
+    <div>
+      <div class="sec-label">{{ page_data.cases_label }}</div>
+      <h2>{{ page_data.cases_heading|safe }}</h2>
+    </div>
+    <p class="intro">{{ page_data.cases_intro }}</p>
+  </div>
+  <div class="timeline" data-lm-stagger data-lm-stagger-delay="80">
+    {% for entry in page_data.cases_timeline %}
+      <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug cases_parent_slug entry.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" data-lm="reveal">
+        <span class="year">{{ entry.year }}</span>
+        <span class="title">
+          <span class="eyebrow">{{ entry.eyebrow }}</span>
+          {{ entry.title }}
+        </span>
+        <span class="horizon">
+          <strong>{{ entry.horizon_label }}</strong>
+          {{ entry.horizon }}
+        </span>
+        <span class="arrow">→</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-cta">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <div class="label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading|safe }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div class="actions" data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-primary">{{ page_data.cta_primary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-ghost">{{ page_data.cta_secondary }}</a>
+    </div>
+  </div>
+</section>

@@ -268,6 +268,25 @@ class WebTemplate(TimestampedModel, SlugModel):
     demo_url = models.URLField(blank=True)
     featured = models.BooleanField(default=False, db_index=True)
     order = models.PositiveIntegerField(default=0)
+    # Phase X.4b · CS-LAYOUT-22 · the corporate-suite cluster's layout
+    # family (LF-1 Boardroom Vertical · LF-3 Compliance Calendar · LF-4
+    # Manifesto-First · LF-5 Stewardship Object-Hero · LF-2/LF-6 reserved).
+    # Empty string means "not classified" — every non-corporate-suite
+    # template stays empty; the dispatch in the corporate-suite shell
+    # treats an empty value as the LF-1 default (boardroom vertical) so
+    # the migration is strictly additive. The factory-side rule book is
+    # `factory/reports/hardening/corporate-suite-layout-variance-rules.md`.
+    layout_family = models.CharField(
+        max_length=8,
+        blank=True,
+        default="",
+        db_index=True,
+        help_text=(
+            "Corporate-suite layout family slot (LF-1..LF-6). Empty for "
+            "templates outside the corporate-suite cluster. Drives the "
+            "shared home shell's family dispatch."
+        ),
+    )
 
     class Meta:
         ordering = ["-featured", "order", "-created_at"]

@@ -1,0 +1,10 @@
+[
+  {"cls": "cs-hero",          "rect": {"x": 0,   "y": 122,  "w": 1905, "h": 686}},
+  {"cls": "cs-pillars",       "rect": {"x": 253, "y": 808,  "w": 1400, "h": 712}},
+  {"cls": "cs-kpi-band",      "rect": {"x": 0,   "y": 1520, "w": 1905, "h": 254}},
+  {"cls": "cs-sectors",       "rect": {"x": 0,   "y": 1774, "w": 1905, "h": 163}},
+  {"cls": "cs-trust",         "rect": {"x": 253, "y": 1936, "w": 1400, "h": 366}},
+  {"cls": "cs-leadership",    "rect": {"x": 253, "y": 2302, "w": 1400, "h": 850}},
+  {"cls": "cs-cases-preview", "rect": {"x": 253, "y": 3152, "w": 1400, "h": 747}},
+  {"cls": "cs-cta",           "rect": {"x": 0,   "y": 3898, "w": 1905, "h": 412}}
+]

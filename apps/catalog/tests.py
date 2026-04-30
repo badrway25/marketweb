@@ -1730,7 +1730,21 @@ class CorporateSuiteChromeContractTests(TestCase):
 
         base = Path(settings.BASE_DIR) / "templates" / "live_templates" / "business" / "corporate-suite"
         cls.base_html = (base / "_base.html").read_text(encoding="utf-8")
-        cls.home_html = (base / "home.html").read_text(encoding="utf-8")
+        # Phase X.4b · home.html is now a layout-family router. The
+        # boardroom-vertical hero/pillars/sections grammar that this
+        # contract test class enforces lives in _layouts/lf1/. We
+        # concatenate the LF-1 styles + content so the existing CS-NAV /
+        # CS-FOOT / CS-HERO contracts continue to bind to the family
+        # Pragma · Fiscus · Solaria still inhabit. LF-5 (Continua) is
+        # checked separately by the layout-family browser walk.
+        lf1 = base / "_layouts" / "lf1"
+        cls.home_html = (
+            (base / "home.html").read_text(encoding="utf-8")
+            + "\n"
+            + (lf1 / "styles.html").read_text(encoding="utf-8")
+            + "\n"
+            + (lf1 / "content.html").read_text(encoding="utf-8")
+        )
 
     # ── Nav contracts ────────────────────────────────────────────
 
@@ -2032,7 +2046,22 @@ class CorporateSuiteRhythmContractTests(TestCase):
             / "corporate-suite"
         )
         cls.base_html = (base / "_base.html").read_text(encoding="utf-8")
-        cls.home_html = (base / "home.html").read_text(encoding="utf-8")
+        # Phase X.4b · home.html is now the layout-family router; the
+        # LF-1 boardroom-vertical grammar that this rhythm-contract
+        # class scans for (cs-hero h1 token, optional portrait, optional
+        # thumb, rhythm-token padding) lives in _layouts/lf1/. We
+        # concatenate the layout's styles + content so the existing
+        # contracts continue to enforce the LF-1 shape Pragma · Fiscus ·
+        # Solaria still ship. LF-5 (Continua) carries its own contracts
+        # and is exercised by the browser-walk rubric, not here.
+        lf1 = base / "_layouts" / "lf1"
+        cls.home_html = (
+            (base / "home.html").read_text(encoding="utf-8")
+            + "\n"
+            + (lf1 / "styles.html").read_text(encoding="utf-8")
+            + "\n"
+            + (lf1 / "content.html").read_text(encoding="utf-8")
+        )
         cls.about_html = (base / "about.html").read_text(encoding="utf-8")
         cls.services_html = (base / "services.html").read_text(encoding="utf-8")
         cls.case_list_html = (base / "case_study_list.html").read_text(encoding="utf-8")

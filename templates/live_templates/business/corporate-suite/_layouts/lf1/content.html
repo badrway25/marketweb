@@ -1,0 +1,169 @@
+{% comment %}
+LF-1 / LF-3 / LF-4 home content (Pragma · Fiscus · Solaria). Section
+sequence A (LF-1 default) with the optional cs-cycle slot-4 cell that
+LF-3 (Fiscus calendar) was always meant to surface. The sequence and
+CSS are byte-equivalent to the pre-X.4b shared home.html so Pragma ·
+Fiscus · Solaria render unchanged after the LF-5 rebuild.
+{% endcomment %}<section class="cs-hero">
+  <div class="left" data-lm="reveal">
+    <div class="eyebrow">{{ page_data.eyebrow }}</div>
+    <h1>{{ page_data.headline|safe }}</h1>
+    <p class="sub">{{ page_data.intro }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-primary">{{ page_data.primary_cta }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-ghost">{{ page_data.secondary_cta }}</a>
+    </div>
+    <div class="meta-strip" data-lm-stagger>
+      {% for label, value in page_data.hero_meta_strip %}
+        <div class="item" data-lm="reveal">{{ label }}<strong>{{ value }}</strong></div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="right">
+    <div class="credit">
+      <div class="item">{{ page_data.hero_image_credit_left.0 }}<strong>{{ page_data.hero_image_credit_left.1 }}</strong></div>
+      <div class="item">{{ page_data.hero_image_credit_right.0 }}<strong>{{ page_data.hero_image_credit_right.1 }}</strong></div>
+    </div>
+  </div>
+</section>
+
+<section class="cs-pillars">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label">{{ page_data.pillars_label }}</div>
+      <h2>{{ page_data.pillars_heading }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.pillars_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="120">
+    {% for num, title, blurb in page_data.pillars %}
+      <article class="pillar" data-lm="reveal">
+        <div class="num">{{ num }} / {{ page_data.pillars|length }}</div>
+        <h3>{{ title }}</h3>
+        <p>{{ blurb }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-kpi-band">
+  <div class="row" data-lm-stagger>
+    <div class="heading" data-lm="reveal">{{ page_data.kpi_heading }}</div>
+    {% for num, label in page_data.kpi_strip %}
+      <div class="stat" data-lm="reveal">
+        <div class="num" data-lm="counter">{{ num }}</div>
+        <span class="lbl">{{ label }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% if page_data.cycle_strip %}
+<section class="cs-cycle">
+  <div class="head">
+    <div data-lm="reveal-lg">
+      <div class="sec-label label">{{ page_data.cycle_label }}</div>
+      <h2>{{ page_data.cycle_heading|safe }}</h2>
+    </div>
+    <p class="intro" data-lm="reveal">{{ page_data.cycle_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for eyebrow, figure, context in page_data.cycle_strip %}
+      <div class="cell" data-lm="reveal">
+        <div class="eyebrow">{{ eyebrow }}</div>
+        <div class="figure">{{ figure }}</div>
+        <p class="context">{{ context }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="cs-sectors">
+  <div class="row">
+    <span class="label">{{ page_data.sectors_label }}</span>
+    {% for sector in page_data.sectors %}
+      <span>{{ sector }}</span>
+      {% if not forloop.last %}<span class="dot"></span>{% endif %}
+    {% endfor %}
+  </div>
+  <div class="lm-logo-marquee" data-lm-media="logo-marquee" aria-hidden="true">
+    <div class="lm-logo-marquee-track">
+      {% for sector in page_data.sectors %}<span class="lm-logo-marquee-item">{{ sector }}</span>{% endfor %}
+      {% for sector in page_data.sectors %}<span class="lm-logo-marquee-item">{{ sector }}</span>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="cs-trust">
+  <div class="label">{{ page_data.trust_label }}</div>
+  <div class="logos">
+    {% for logo in page_data.trust_logos %}<span>{{ logo }}</span>{% endfor %}
+  </div>
+  <div class="lm-logo-marquee" data-lm-media="logo-marquee" aria-hidden="true">
+    <div class="lm-logo-marquee-track">
+      {% for logo in page_data.trust_logos %}<span class="lm-logo-marquee-item">{{ logo }}</span>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="cs-leadership">
+  <div class="head">
+    <div class="sec-label">{{ page_data.leadership_label }}</div>
+    <h2>{{ page_data.leadership_heading }}</h2>
+    <p class="intro">{{ page_data.leadership_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for partner in page_data.leadership %}
+      <article class="card" data-lm="reveal">
+        {% if partner.portrait %}
+          <img class="portrait" src="{{ partner.portrait }}" alt="{{ partner.name }}" loading="lazy">
+        {% endif %}
+        <div class="role">{{ partner.role }}</div>
+        <h3>{{ partner.name }}</h3>
+        <p>{{ partner.bio }}</p>
+        <ul class="creds">
+          {% for cred in partner.credentials %}<li>{{ cred }}</li>{% endfor %}
+        </ul>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-cases-preview">
+  <div class="head">
+    <div>
+      <div class="sec-label">{{ page_data.cases_label }}</div>
+      <h2>{{ page_data.cases_heading }}</h2>
+    </div>
+    <p class="intro">{{ page_data.cases_intro }}</p>
+  </div>
+  <div class="list" data-lm-stagger data-lm-stagger-delay="80">
+    {% for post in posts %}
+      <a class="row" href="{% url 'catalog:live_template_post' template.category.slug template.slug cases_parent_slug post.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" data-lm="reveal">
+        <span class="num">{{ forloop.counter|stringformat:"02d" }}</span>
+        <span class="title">
+          {% if post.thumb %}<img class="thumb" src="{{ post.thumb }}" alt="" loading="lazy">{% endif %}
+          {{ post.title }}
+        </span>
+        <span class="meta">{{ post.category }}</span>
+        <span class="meta">{{ post.year }} · {{ post.duration }}</span>
+        <span class="arrow">→</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cs-cta">
+  <div class="wrap">
+    <div data-lm="reveal-lg">
+      <div class="label">{{ page_data.cta_label }}</div>
+      <h2>{{ page_data.cta_heading|safe }}</h2>
+      <p class="intro">{{ page_data.cta_intro }}</p>
+    </div>
+    <div class="actions" data-lm="reveal">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-primary">{{ page_data.cta_primary }}</a>
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-ghost">{{ page_data.cta_secondary }}</a>
+    </div>
+  </div>
+</section>

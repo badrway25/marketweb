@@ -143,6 +143,23 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
             "Lugano · Riva Caccia (corrispondente fiduciario)",
             "Luxembourg · Boulevard Royal (corrispondente trustee)",
         ],
+        # Phase X.4b · LF-5 footer column. The whistleblowing channel
+        # (D.lgs. 24/2023) is surfaced as a first-class footer column,
+        # not buried in the legal row. CS-FOOT-02 legal row at the
+        # bottom of `_base.html` continues to carry the privacy /
+        # cookie / segnalazioni link — this column adds the channel's
+        # institutional identity (custodian + email + policy link).
+        "whistleblowing_footer": {
+            "heading":      "Segnalazioni",
+            "eyebrow":      "Canale interno · D.lgs. 24/2023",
+            "note":
+                "Canale cifrato gestito dal Compliance Officer. "
+                "Riservato a membri della famiglia in mandato e a "
+                "stewards Continua. Verbalizzazione fiduciaria.",
+            "email":        "whistleblowing@continua.it",
+            "policy_label": "Tutela del segnalante",
+            "policy_href":  "contatti",
+        },
         # Case study cross-page meta labels (rendered on case_study_list +
         # case_study_detail). Continua re-frames Pragma's "Practice / Anno /
         # Durata" toward "Profilo / Generazioni / Anni in mandato" to
@@ -194,9 +211,12 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
         ],
 
         # Pillars 4-up (CS-DENSITY-02 within bound · upper-band targeting
-        # for the §7.1 word budget · ~95w body each).
+        # for the §7.1 word budget · ~95w body each). Legacy 3-tuple
+        # shape preserved for backward compatibility with any consumer
+        # outside the LF-5 home (services page card scaffold etc.); the
+        # LF-5 home reads `pillars_matrix` instead.
         "pillars_label":   "Custodia",
-        "pillars_heading": "Quattro presidi, un solo mandato",
+        "pillars_heading": "Quattro presidi, <em>un solo</em> mandato",
         "pillars_intro":
             "Quattro pratiche che lavorano in continuità sullo stesso "
             "patrimonio. Non si paga per ciascun presidio separatamente — "
@@ -225,6 +245,62 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
              "e custodia documentale a accesso controllato sui registri di famiglia."),
         ],
 
+        # LF-5 2×2 matrix (CS-LAYOUT-04 = `2x2-with-image`). Each pillar
+        # carries a small monochrome icon image rendered at ≤80px with
+        # `filter: grayscale(1)` so palette chrome holds. Pexels-only,
+        # Albo-style object glyphs (deed seal, gavel-on-ledger, family
+        # tree on parchment, compliance binder). Body copy rewritten in
+        # tighter blurb cadence (≤44 char/line at desktop) so the icon
+        # + title + body cluster reads as one structural unit, not as
+        # the legacy numbered-grid pillar.
+        "pillars_matrix": [
+            {
+                "num":   "01",
+                "title": "Custodia patrimoniale",
+                "body":
+                    "Quattro strati custoditi simultaneamente — finanziario "
+                    "liquido, partecipazioni industriali, immobili strumentali "
+                    "e di famiglia — in coerenza con il patto familiare.",
+                # Object-led monochrome icon. Pexels frame curated for
+                # archive/seal/document subject — A.3 imagery floor at
+                # CS-IMG-SRC-01 (Pexels-only). The grayscale filter at
+                # the CSS layer flattens any incidental warm-tone in
+                # the source so the matrix reads as four sober marks.
+                "icon_image":
+                    "https://images.pexels.com/photos/4467737/pexels-photo-4467737.jpeg?auto=compress&cs=tinysrgb&w=200",
+            },
+            {
+                "num":   "02",
+                "title": "Governance familiare",
+                "body":
+                    "Consiglio di Famiglia trimestrale. Verbalizzazione "
+                    "fiduciaria. Patto familiare a revisione triennale. "
+                    "Voting structures dedicate per ramo.",
+                "icon_image":
+                    "https://images.pexels.com/photos/5668887/pexels-photo-5668887.jpeg?auto=compress&cs=tinysrgb&w=200",
+            },
+            {
+                "num":   "03",
+                "title": "Successione strutturata",
+                "body":
+                    "Holding di famiglia, trust dedicati, donazioni "
+                    "modulate. Programma biennale di formazione "
+                    "tecnica della generazione entrante.",
+                "icon_image":
+                    "https://images.pexels.com/photos/1153213/pexels-photo-1153213.jpeg?auto=compress&cs=tinysrgb&w=200",
+            },
+            {
+                "num":   "04",
+                "title": "Compliance fiduciaria",
+                "body":
+                    "Audit di continuità ANC annuale. Presidio AML, "
+                    "Codice della Crisi, D.lgs. 24/2023. Custodia "
+                    "documentale a accesso controllato.",
+                "icon_image":
+                    "https://images.pexels.com/photos/3201588/pexels-photo-3201588.jpeg?auto=compress&cs=tinysrgb&w=200",
+            },
+        ],
+
         # KPI band — the ONE dark band on home (CS-TONE-03). Mix of
         # duration + scope, NOT pure numeric — signals stewardship time-
         # axis, not B2B-advisory chest-thump.
@@ -237,11 +313,15 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
         ],
 
         # Governance-cycle-strip — the differentiator beat (build-brief
-        # §6 row 4). 3 cells, cream paper, each a (eyebrow · figure ·
-        # context-line) triple — NOT (label · figure). Names a CADENCE,
-        # not a number/calendar/arc. Mid-strip Mitigation §12 Warning 5.
-        "cycle_label":   "Ritmo di governance",
-        "cycle_heading": "La continuità ha una cadenza, non una scadenza.",
+        # §6 row 4 · LF-5 promotes it from slot-4 to slot-2 immediately
+        # after the hero). 3 cells, cream paper, each a (eyebrow ·
+        # figure · context-line) triple — NOT (label · figure). Names a
+        # CADENCE, not a number / calendar / session arc. Reframed as
+        # "Ciclo di governance" (was "Ritmo di governance") to mark
+        # the slot-2 promotion as a governance opening, not a mid-page
+        # cadence aside.
+        "cycle_label":   "Ciclo di governance",
+        "cycle_heading": "La continuità ha una <em>cadenza</em>, non una scadenza.",
         "cycle_intro":
             "Tre ritmi che governano il mandato — non KPI, non scadenze "
             "fiscali, non sessioni di coaching. Sono i battiti regolari "
@@ -275,9 +355,10 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
             "Single family office estero",
         ],
 
-        # Trust band — "Riconoscimenti istituzionali" (NOT Solaria's
-        # "Aziende sponsor recenti"). Real, anonymized but verifiable
-        # institutional badges (build-brief §8).
+        # Trust band — preserved for any non-LF-5 future re-routing,
+        # though LF-5's section sequence D drops the trust marquee
+        # (sectors band absorbs the function). Keep populated so
+        # multilingual locales keep tier-coverage parity.
         "trust_label":   "Riconoscimenti istituzionali",
         "trust_logos":   [
             "ALBO DEI TRUSTEES",
@@ -287,6 +368,17 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
             "ASSOCIAZIONE BANCHE FIDUCIARIE",
             "FAMILY OFFICE NETWORK ITALIA",
         ],
+
+        # LF-5 sectors-band whistleblowing eyebrow. The home-level
+        # whistleblowing flag surfaces D.lgs. 24/2023 visibly on the
+        # cream sectors ribbon so the channel reads as first-class
+        # custodial chrome, not a buried legal-row line. Channel
+        # address itself lives in `site.whistleblowing_footer` and in
+        # the contact page channel list.
+        "whistleblowing": {
+            "eyebrow":      "Tutela del segnalante",
+            "channel_name": "Canale interno · D.lgs. 24/2023",
+        },
 
         # Leadership — "Custodi del mandato" · photo-present · 3 stewards
         # spanning 40s · 50s · 60s + 2 women + 1 man + 3 visible
@@ -303,6 +395,12 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
             {
                 "name":  "Eleonora Marchesi",
                 "role":  "Senior Steward",
+                # LF-5 environmental anchor — names where the steward is
+                # photographed standing (vault · partner desk · CdF
+                # round-table). Shifts the read from "headshot" to
+                # "custodian of a room", which is what the family office
+                # actually sells. Empty string degrades to typographic.
+                "station": "Sala dell'archivio · Brera",
                 "bio":
                     "Trentacinque anni di pratica fiduciaria fra Milano e "
                     "Lugano. Iscritta all'Albo dei Trustees dal 2007, ha "
@@ -320,6 +418,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
             {
                 "name":  "Tomas Okafor",
                 "role":  "Family Officer",
+                "station": "Tavolo del Consiglio · sede principale",
                 "bio":
                     "Quattordici anni di pratica fra family office "
                     "anglosassoni e advisory continentale. STEP Affiliate "
@@ -338,6 +437,7 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
             {
                 "name":  "Ginevra Conti",
                 "role":  "Compliance Officer",
+                "station": "Studio del compliance · custodia documentale",
                 "bio":
                     "Ventidue anni nella vigilanza fiduciaria dei patrimoni "
                     "privati. OAM iscritta come mediatore creditizio dal "
@@ -358,13 +458,56 @@ CONTINUA_CONTENT_IT: dict[str, Any] = {
 
         # Cases preview — "Mandati in continuità" · multi-year duration
         # markers · 4 mandates with anonymized profiles (build-brief
-        # §6 row 7 + §8 cases shape).
+        # §6 row 7 + §8 cases shape). LF-5 reads `cases_timeline` (year
+        # + title + horizon vertical), not `posts` (numbered list-row).
         "cases_label":   "Mandati in continuità",
-        "cases_heading": "Quattro mandati, quattro generazioni, una sola cadenza.",
+        "cases_heading": "Quattro mandati, quattro generazioni, <em>una sola cadenza</em>.",
         "cases_intro":
             "Una selezione di mandati in continuità — non chiusi, ancora "
             "in carico. I nomi delle famiglie sono divulgati solo dietro "
             "patto di riservatezza fiduciaria.",
+
+        # LF-5 timeline (CS-LAYOUT-07 = `timeline`). Year-on-rail +
+        # mandate title + horizon column + arrow link to detail. The
+        # entries point at the same `posts` table that powers the
+        # case-study detail pages — slug parity is mandatory so the
+        # timeline rows reach `case_study_detail` exactly like the
+        # legacy `posts` iteration did. Keep timeline rows ordered by
+        # year of intake (oldest first reads as a custodial timeline).
+        "cases_timeline": [
+            {
+                "slug":          "famiglia-b-fondazione-di-famiglia",
+                "year":          "2011",
+                "eyebrow":       "Fondazione di famiglia",
+                "title":         "Famiglia B · 3ª generazione · ramo filantropico + industriale",
+                "horizon_label": "Orizzonte",
+                "horizon":       "15 anni in continuità · audit congiunto",
+            },
+            {
+                "slug":          "famiglia-a-quarta-generazione-holding-industriale",
+                "year":          "2014",
+                "eyebrow":       "Holding industriale",
+                "title":         "Famiglia A · 4ª generazione · sei rami familiari",
+                "horizon_label": "Orizzonte",
+                "horizon":       "12 anni · rinnovo del mandato 2034",
+            },
+            {
+                "slug":          "famiglia-d-single-family-office-estero",
+                "year":          "2017",
+                "eyebrow":       "Single family office",
+                "title":         "Famiglia D · custodia cross-border IT · CH · LU",
+                "horizon_label": "Orizzonte",
+                "horizon":       "9 anni · estensione AML 2030",
+            },
+            {
+                "slug":          "famiglia-c-trasferimento-intergenerazionale",
+                "year":          "2019",
+                "eyebrow":       "Trasferimento intergenerazionale",
+                "title":         "Famiglia C · 2ª → 3ª generazione · trust dedicati",
+                "horizon_label": "Orizzonte",
+                "horizon":       "Passaggio decennale · 2026 — 2029",
+            },
+        ],
 
         # Final CTA band before footer — restates voice anchor (build-
         # brief §6 row 8). Single filled-brass CTA on dark band.

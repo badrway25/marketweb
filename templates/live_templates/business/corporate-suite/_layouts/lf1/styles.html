@@ -1,0 +1,524 @@
+{% comment %}
+LF-1 Boardroom Vertical · LF-3 Compliance Calendar · LF-4 Manifesto-First.
+Three families share the same shell — they only differ in content and in
+the cs-cycle opt-in. LF-5 is the structural divergence and lives in
+../lf5/styles.html. Anything edited here cascades to Pragma · Fiscus ·
+Solaria; treat with care.
+{% endcomment %}
+  /* Hero — 55/45 split: serif drama LEFT + boardroom photo RIGHT.
+     CS-HERO-01/03/04/05/06 anchors · restraint-over-density + AAA h1
+     contrast on cream + one primary + one ghost CTA + meta-strip
+     credential anchors. Overlay gradient earns its keep only by
+     guaranteeing the credit line remains legible on any Pexels
+     frame slot 0 may supply (AP5 prevention · safety, not taste). */
+  .cs-hero {
+    display: grid; grid-template-columns: 1.3fr 1fr; min-height: 620px;
+    background: linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+    border-bottom: 1px solid var(--rule);
+  }
+  .cs-hero .left {
+    padding: 104px 56px 72px 72px; position: relative;
+    display: flex; flex-direction: column; justify-content: flex-start;
+  }
+  .cs-hero .left .eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--primary);
+  }
+  .cs-hero .left .eyebrow:before {
+    content: ''; width: 44px; height: 1.5px; background: var(--accent);
+  }
+  .cs-hero .left h1 {
+    /* CS-TYPE-04 · hero h1 ceiling is 72 px. Prior 76 sat over the
+       ceiling and pushed the home into display-headline territory.
+       `--fs-hero` (64 px) keeps the serif drama while staying inside
+       the restrained boardroom band the archetype is targeting. */
+    margin-top: 36px; font-size: var(--fs-hero); line-height: 1.02;
+    letter-spacing: -0.022em; max-width: 16ch;
+  }
+  .cs-hero .left .sub {
+    margin-top: 28px; max-width: 54ch;
+    font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.62;
+    color: var(--ink-soft);
+  }
+  .cs-hero .left .actions { margin-top: 44px; display: flex; gap: 28px; align-items: center; }
+  .cs-hero .left .meta-strip {
+    margin-top: auto; padding-top: 28px;
+    display: flex; gap: 48px;
+    border-top: 1px solid var(--rule);
+  }
+  .cs-hero .left .meta-strip .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--ink-mute);
+  }
+  .cs-hero .left .meta-strip .item strong {
+    display: block; margin-top: 10px;
+    font-family: var(--heading); font-size: 17px; color: var(--primary);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+  .cs-hero .right {
+    background-color: var(--paper-2);
+    /* Two-stop linear gradient (top slight dim · bottom deeper) earns
+       ~AA legibility for the credit overlay across any Pexels slot-0
+       frame the curator may land (bright board rooms, backlit desks,
+       neutral studio). Top stop at rgba(15,23,42,0.10) prevents a
+       raw crop from overpowering the paper-side transition; bottom
+       stop at rgba(15,23,42,0.74) guarantees the credit hairline +
+       tracked label + serif figure stay above AA on the busiest
+       photograph. `filter` keeps the editorial tone (Pragma warmth,
+       Fiscus restraint) without shifting hue. */
+    background-image:
+      linear-gradient(180deg, rgba(15,23,42,0.10) 0%, rgba(15,23,42,0) 34%, rgba(15,23,42,0.74) 100%),
+      url('{{ page_data.hero_image }}');
+    background-size: cover; background-position: center;
+    filter: grayscale(15%) contrast(1.04) brightness(0.97);
+    position: relative;
+  }
+  .cs-hero .right .credit {
+    position: absolute; left: 36px; right: 36px; bottom: 36px;
+    display: flex; justify-content: space-between; gap: 32px;
+    color: var(--on-dark); padding-top: 22px;
+    border-top: 1px solid rgba(238,240,243,0.42);
+  }
+  .cs-hero .right .credit .item {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase; color: var(--on-dark-2);
+  }
+  .cs-hero .right .credit .item strong {
+    display: block; margin-top: 8px;
+    font-family: var(--heading); font-size: 17px; color: var(--on-dark);
+    text-transform: none; letter-spacing: 0; font-weight: 700;
+  }
+
+  /* Pillars — three numbered serif advisory practices
+     CS-IMG-SEC-01 · typographic section; _base.html hides any
+     ``<img>`` that leaks into a ``.cs-pillars .pillar`` to protect
+     the cadence (CS-IMG-RHYTHM-01 typographic beat). */
+  .cs-pillars {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
+  .cs-pillars .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 56px; border-bottom: 1px solid var(--rule); }
+  .cs-pillars .head h2 { font-size: var(--fs-h2); max-width: 16ch; }
+  .cs-pillars .head .intro { font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.65; color: var(--ink-soft); max-width: 56ch; }
+  /* CS-DENSITY-02 within bound · pillars grid expands from 3-up to 4-up
+     when the content registry supplies 4 pillars (Continua's Custodia /
+     Governance / Successione / Compliance four-presidio composition).
+     `auto-fit` keeps the 3-pillar siblings (Pragma · Fiscus · Solaria)
+     rendering as 3 columns at desktop without churn — a 4th pillar
+     simply re-flows the row. */
+  .cs-pillars .grid { margin-top: 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 48px; }
+  .cs-pillars .pillar {
+    padding: 28px 0 0 0; border-top: 2px solid var(--primary);
+  }
+  .cs-pillars .pillar .num {
+    font-family: var(--heading); font-size: 14px; font-weight: 700;
+    color: var(--accent); letter-spacing: 0.04em;
+  }
+  .cs-pillars .pillar h3 {
+    margin-top: 14px; font-size: var(--fs-h3); line-height: 1.18;
+  }
+  .cs-pillars .pillar p {
+    margin-top: 18px; font-family: var(--body); font-size: 15px;
+    line-height: 1.7; color: var(--ink-soft);
+  }
+
+  /* KPI strip — dark navy band
+     CS-IMG-SEC-02 · typographic-only section; _base.html hides any
+     ``<img>``/``<picture>`` descendants to protect the boardroom
+     cadence (photo-backed KPI bands read SaaS, not advisory). */
+  .cs-kpi-band {
+    background: var(--primary); color: var(--on-dark);
+    padding: var(--space-band-y) var(--space-section-x);
+  }
+  .cs-kpi-band .row {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 0.9fr repeat(4, 1fr);
+    align-items: center; gap: 0;
+  }
+  .cs-kpi-band .heading {
+    font-family: var(--heading); font-size: 26px; font-weight: 700;
+    color: var(--on-dark); max-width: 14ch; line-height: 1.18;
+    padding-right: 32px; border-right: 1px solid rgba(255,255,255,0.18);
+  }
+  .cs-kpi-band .heading:before {
+    content: ''; display: block; width: 36px; height: 1.5px;
+    background: var(--accent); margin-bottom: 16px;
+  }
+  .cs-kpi-band .stat {
+    padding: 0 32px; border-right: 1px solid rgba(255,255,255,0.18);
+  }
+  .cs-kpi-band .stat:last-child { border-right: 0; }
+  .cs-kpi-band .stat .num {
+    font-family: var(--heading); font-size: 44px; font-weight: 700;
+    color: var(--on-dark); line-height: 1.0; letter-spacing: -0.018em;
+  }
+  .cs-kpi-band .stat .lbl {
+    display: block; margin-top: 10px;
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--on-dark-3);
+  }
+
+  /* Governance-cycle-strip — opt-in mid-beat between KPI band and
+     sectors ribbon. Renders only when the content registry supplies
+     `page_data.cycle_strip` (currently: Continua only · the 1st
+     family-office variant in the corporate-suite cluster). The
+     differentiator that names a CADENCE not a number, a calendar
+     event, or a session arc — three cells, cream paper, each a
+     (eyebrow · figure · context-line) triple. Risk 5 mitigation
+     binding (`continua-distinctness-proof.md §5 R5`): each cell
+     MUST carry the triple, never collapse to (label · figure). */
+  .cs-cycle {
+    background: var(--paper);
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
+  .cs-cycle .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--rule); }
+  .cs-cycle .head .label { color: var(--accent); }
+  .cs-cycle .head h2 { font-size: var(--fs-h2); max-width: 18ch; }
+  .cs-cycle .head h2 em { color: var(--accent); }
+  .cs-cycle .head .intro { font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; max-width: 56ch; }
+  .cs-cycle .grid { margin-top: 48px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 2px solid var(--primary); }
+  .cs-cycle .cell {
+    padding: 36px 32px 32px 0;
+    border-right: 1px solid var(--rule);
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .cs-cycle .cell:not(:first-child) { padding-left: 32px; }
+  .cs-cycle .cell:last-child { border-right: 0; padding-right: 0; }
+  /* Brass eyebrow tints — Risk 1 mitigation binding (build-brief §7
+     brass touchpoint inventory · #3). Brass MUST appear at ≥ 5
+     viewport touchpoints; the cycle eyebrow is one. */
+  .cs-cycle .cell .eyebrow {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-cycle .cell .figure {
+    font-family: var(--heading); font-size: 36px; font-weight: 600;
+    color: var(--primary); line-height: 1.06; letter-spacing: -0.018em;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .cs-cycle .cell .context {
+    font-family: var(--body); font-size: 14px; line-height: 1.65;
+    color: var(--ink-soft); max-width: 36ch;
+  }
+
+  @media (max-width: 1100px) {
+    .cs-cycle .head { grid-template-columns: 1fr; gap: 24px; }
+    .cs-cycle .grid { grid-template-columns: 1fr; gap: 0; }
+    .cs-cycle .cell {
+      padding: 28px 0;
+      border-right: 0; border-bottom: 1px solid var(--rule);
+    }
+    .cs-cycle .cell:not(:first-child) { padding-left: 0; }
+    .cs-cycle .cell:last-child { border-bottom: 0; }
+    .cs-cycle .cell .figure { font-size: 30px; }
+  }
+
+  /* Sectors ribbon — typographic seam between KPI band and trust */
+  .cs-sectors {
+    background: var(--paper-2); border-top: 1px solid var(--rule);
+    padding: 36px var(--space-section-x); max-width: none;
+  }
+  .cs-sectors .row {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 32px;
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .cs-sectors .label {
+    color: var(--accent); border-left: 2px solid var(--accent);
+    padding-left: 14px;
+  }
+  .cs-sectors .dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: rgba(15,23,42,0.24); display: inline-block;
+  }
+
+  /* Trust band — industry-association marquee (CS-COMP-01) */
+  .cs-trust {
+    padding: var(--space-band-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
+  .cs-trust .label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute);
+    text-align: center;
+  }
+  .cs-trust .logos {
+    margin-top: 24px; display: flex; justify-content: center;
+    flex-wrap: wrap; gap: 56px;
+    font-family: var(--heading); font-size: 16px; font-weight: 700;
+    letter-spacing: 0.12em; color: var(--ink); opacity: 0.62;
+  }
+
+  /* Leadership — 3 portraits in airy cards
+     CS-IMG-SEC-03 · when the content registry supplies
+     ``partner.portrait`` (slot 2-3 URL from the imagery pool), the
+     card opens with an editorial 4:3 figure; without it the card
+     degrades to the typographic-only shape. This is the
+     archetype-level image-rhythm hook: no template is hand-tuned;
+     each just opts in by declaring ``portrait`` in its content
+     registry. See ``.cs-leadership .card .portrait`` primitive in
+     ``_base.html``. */
+  .cs-leadership {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
+  .cs-leadership .head .label { color: var(--accent); }
+  .cs-leadership .head h2 { margin-top: 14px; font-size: var(--fs-h2); max-width: 22ch; }
+  .cs-leadership .head .intro { margin-top: 20px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; }
+  .cs-leadership .grid { margin-top: 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+  .cs-leadership .card {
+    background: var(--paper-3); border: 1px solid var(--rule);
+    padding: 36px 32px; display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  /* Portrait block resets the top padding so the 4:3 figure sits
+     flush against the card's top border — reads as an editorial
+     card opener rather than a sticker on a paper card. */
+  .cs-leadership .card:has(.portrait) { padding-top: 0; }
+  .cs-leadership .card:has(.portrait) .role { margin-top: 32px; }
+  .cs-leadership .card .role {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent);
+  }
+  .cs-leadership .card h3 {
+    margin-top: 14px; font-size: var(--fs-h3); line-height: 1.18;
+    color: var(--primary);
+  }
+  .cs-leadership .card p {
+    margin-top: 18px; font-family: var(--body); font-size: 14px;
+    line-height: 1.7; color: var(--ink-soft); flex: 1;
+  }
+  .cs-leadership .card .creds {
+    margin-top: 22px; padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    list-style: none;
+  }
+  .cs-leadership .card .creds li {
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--ink-mute);
+    padding: 4px 0;
+  }
+  .cs-leadership .card .creds li:before {
+    content: '· '; color: var(--accent); font-weight: 700;
+  }
+
+  /* Cases preview — 3 case study strips
+     CS-IMG-SEC-05 · rows optionally render a slot-4/5 editorial
+     thumbnail when ``post.thumb`` is supplied by the content
+     registry; hero slot 0 is NEVER reused here (the archetype-
+     level ``.cs-cases-preview .row .thumb`` primitive has fixed
+     80×60 crop and `object-fit: cover` so a reused hero would
+     read as a "we only had one photo" duplication). */
+  .cs-cases-preview {
+    padding: var(--space-section-y) var(--space-section-x);
+    max-width: 1400px; margin: 0 auto;
+  }
+  .cs-cases-preview .head { display: grid; grid-template-columns: 0.45fr 1fr; gap: 64px; align-items: end; padding-bottom: 48px; border-bottom: 1px solid var(--rule); }
+  .cs-cases-preview .head h2 { font-size: var(--fs-h2); max-width: 16ch; }
+  .cs-cases-preview .head .intro { font-family: var(--body); font-size: var(--fs-body-lg); color: var(--ink-soft); line-height: 1.65; max-width: 56ch; }
+  .cs-cases-preview .list { margin-top: 32px; display: flex; flex-direction: column; }
+  .cs-cases-preview .row {
+    display: grid; grid-template-columns: 80px 1.4fr 1fr 1fr 80px;
+    gap: 24px; padding: 28px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: center;
+    transition: background .2s ease;
+  }
+  .cs-cases-preview .row:hover { background: var(--paper-2); }
+  .cs-cases-preview .row .num {
+    font-family: var(--heading); font-size: 14px; color: var(--accent);
+    letter-spacing: 0.04em; font-weight: 700;
+  }
+  .cs-cases-preview .row .title {
+    font-family: var(--heading); font-size: 22px; font-weight: 600;
+    color: var(--primary); line-height: 1.25;
+    display: flex; align-items: center; gap: 18px;
+  }
+  /* Inline thumb (slot-4/5 detail/ambient · never slot 0). Hidden
+     by default so existing templates without `post.thumb` continue
+     to render as typographic rows. */
+  .cs-cases-preview .row .thumb { flex-shrink: 0; }
+  .cs-cases-preview .row .meta {
+    font-family: var(--body); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .cs-cases-preview .row .arrow {
+    font-family: var(--heading); font-size: 22px; color: var(--accent);
+    text-align: right;
+    transition: transform .2s ease;
+  }
+  .cs-cases-preview .row:hover .arrow { transform: translateX(6px); }
+
+  /* Final CTA band — cadence closer (CS-CTA-05 · photo-less pause) */
+  .cs-cta {
+    background: var(--primary); color: var(--on-dark);
+    padding: var(--space-section-y) var(--space-section-x);
+  }
+  .cs-cta .wrap {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 0.6fr; gap: 80px; align-items: end;
+  }
+  /* CS-BLOCK-17 · palette-safe CTA-band eyebrow. Was `var(--accent)`.
+     Fiscus accent (#1C3D5A blu-notte) on primary (#1F2937 navy) composited
+     to distance 40 / ratio 1.3 — AP11 dark-on-dark. `--on-dark-2` keeps the
+     label legible on every corporate-suite palette; Pragma's emerald accent
+     intent carries through elsewhere (hero CTA arrow, italic ems on cream). */
+  .cs-cta .label { color: var(--on-dark-2); font-family: var(--body); font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700; }
+  .cs-cta h2 { margin-top: 14px; font-size: var(--fs-h2); line-height: 1.08; max-width: 22ch; color: var(--on-dark); }
+  .cs-cta h2 em { color: var(--accent); }
+  .cs-cta .intro { margin-top: 22px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--on-dark-2); line-height: 1.65; }
+  .cs-cta .actions { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+  .cs-cta .actions .cs-btn-primary { color: var(--on-dark); border-color: var(--accent); }
+  .cs-cta .actions .cs-btn-primary:hover { background: var(--accent); color: var(--primary); }
+  .cs-cta .actions .cs-btn-primary:hover:after { color: var(--primary); }
+  .cs-cta .actions .cs-btn-ghost { color: var(--on-dark-2); border-color: var(--on-dark-3); }
+  .cs-cta .actions .cs-btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ============================================================
+     Home responsive hardening — Step 1D.
+       ≤ 1100 · pillars/leadership/cases restack to 2-col, hero
+                split eases to 1fr 1fr, KPI band condenses
+       ≤  880 · pillars/leadership 1-col, sectors ribbon wraps
+       ≤  720 · CS-HERO-07 hero stacks (text above photo), KPI
+                band 2x2, CTA wraps, case rows re-flow
+  ============================================================ */
+  @media (max-width: 1100px) {
+    .cs-hero { grid-template-columns: 1fr 1fr; min-height: 520px; }
+    .cs-hero .left { padding: 72px 32px 56px 40px; }
+    .cs-hero .left .meta-strip { gap: 28px; flex-wrap: wrap; }
+    .cs-hero .right .credit { left: 24px; right: 24px; bottom: 24px; gap: 20px; }
+    .cs-pillars .head { grid-template-columns: 1fr; gap: 24px; }
+    .cs-pillars .grid { grid-template-columns: repeat(2, 1fr); gap: 36px; }
+    .cs-kpi-band .row { grid-template-columns: 1fr repeat(2, 1fr); row-gap: 32px; }
+    .cs-kpi-band .heading {
+      grid-column: 1 / -1; padding-right: 0; border-right: 0;
+      padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.18);
+    }
+    .cs-kpi-band .stat { padding: 0 24px; }
+    .cs-leadership .grid { grid-template-columns: repeat(2, 1fr); gap: 36px; }
+    .cs-cases-preview .head { grid-template-columns: 1fr; gap: 24px; }
+    .cs-cases-preview .row { grid-template-columns: 48px 1.6fr 1fr 60px; }
+    .cs-cases-preview .row .meta:nth-of-type(2) { display: none; }
+    .cs-cta .wrap { grid-template-columns: 1fr; gap: 40px; }
+    .cs-cta .actions { flex-direction: row; flex-wrap: wrap; }
+  }
+
+  @media (max-width: 880px) {
+    .cs-hero { min-height: 480px; }
+    .cs-hero .left { padding: 56px 24px 48px 32px; }
+    .cs-hero .left h1 { max-width: 20ch; }
+    .cs-hero .left .sub { max-width: none; }
+    .cs-hero .right .credit { gap: 16px; }
+    .cs-hero .right .credit .item { font-size: 9px; }
+    .cs-hero .right .credit .item strong { font-size: 14px; }
+    .cs-pillars .grid { grid-template-columns: 1fr; gap: 28px; }
+    .cs-leadership .grid { grid-template-columns: 1fr; gap: 32px; }
+    .cs-leadership .card { padding: 28px 24px; }
+  }
+
+  @media (max-width: 720px) {
+    /* CS-HERO-07 · hero stacks text-above-photo at mobile. */
+    .cs-hero {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .cs-hero .left {
+      padding: 36px 20px 40px;
+      order: 1;
+    }
+    .cs-hero .left h1 {
+      margin-top: 24px;
+      /* CS-RESPONSIVE-03 · hero h1 ≥ 32 px floor · --fs-hero = 36 at ≤ 720. */
+      line-height: 1.1;
+      max-width: none;
+    }
+    .cs-hero .left .sub { margin-top: 20px; }
+    .cs-hero .left .actions {
+      margin-top: 28px; gap: 20px;
+      flex-wrap: wrap;
+    }
+    .cs-hero .left .meta-strip {
+      margin-top: 32px;
+      padding-top: 20px;
+      gap: 20px;
+    }
+    .cs-hero .right {
+      order: 2;
+      min-height: 280px;
+      aspect-ratio: 16 / 10;
+    }
+    .cs-hero .right .credit {
+      left: 18px; right: 18px; bottom: 18px;
+      padding-top: 16px;
+    }
+    .cs-pillars .head h2 { max-width: none; }
+    .cs-pillars .pillar { padding-top: 20px; }
+    /* CS-RESPONSIVE-04 · KPI band becomes a 2×N grid with 2 columns
+       so numerics keep their tabular rhythm without going single-file. */
+    .cs-kpi-band .row {
+      grid-template-columns: 1fr 1fr;
+      row-gap: 28px;
+    }
+    .cs-kpi-band .heading {
+      padding-bottom: 16px;
+      font-size: 22px;
+    }
+    .cs-kpi-band .stat {
+      padding: 0 16px;
+      border-right: 1px solid rgba(255,255,255,0.18);
+    }
+    .cs-kpi-band .stat:nth-child(2n+1) { border-right: 1px solid rgba(255,255,255,0.18); }
+    .cs-kpi-band .stat:nth-child(even) { border-right: 0; }
+    .cs-kpi-band .stat .num { font-size: 36px; }
+    .cs-sectors {
+      padding: 24px var(--space-section-x);
+    }
+    .cs-sectors .row { gap: 14px; font-size: 10px; letter-spacing: 0.14em; }
+    .cs-trust .logos { gap: 24px; font-size: 14px; }
+    .cs-leadership .head h2 { max-width: none; }
+    .cs-cases-preview .head h2 { max-width: none; }
+    .cs-cases-preview .row {
+      grid-template-columns: 36px 1fr 40px;
+      gap: 16px;
+      padding: 20px 0;
+      align-items: start;
+    }
+    .cs-cases-preview .row .title {
+      font-size: 17px; gap: 12px;
+    }
+    .cs-cases-preview .row .meta:first-of-type { display: none; }
+    .cs-cases-preview .row .meta:nth-of-type(2) {
+      display: block;
+      grid-column: 2 / 3;
+      font-size: 10px;
+    }
+    .cs-cases-preview .row .arrow {
+      align-self: center; font-size: 18px;
+    }
+    .cs-cta .wrap { gap: 28px; }
+    .cs-cta .actions { flex-direction: column; align-items: stretch; }
+    .cs-cta h2 { max-width: none; }
+    /* CS-CTA-01 touch targets ≥ 44 px at the hero/CTA button cluster. */
+    .cs-hero .left .cs-btn-primary,
+    .cs-cta .actions .cs-btn-primary {
+      padding: 14px 22px; min-height: 44px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .cs-hero .left { padding: 28px 16px 32px; }
+    .cs-hero .left .meta-strip { gap: 16px; }
+    .cs-hero .right { min-height: 220px; }
+    .cs-kpi-band .row { grid-template-columns: 1fr; }
+    .cs-kpi-band .stat,
+    .cs-kpi-band .stat:nth-child(2n+1),
+    .cs-kpi-band .stat:nth-child(even) { border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.14); padding: 16px 0; }
+    .cs-kpi-band .stat:last-child { border-bottom: 0; }
+  }
