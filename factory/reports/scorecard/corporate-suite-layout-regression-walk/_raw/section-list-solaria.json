@@ -1,0 +1,23 @@
+{
+  "url": "http://127.0.0.1:8042/templates/business/solaria-coaching/preview/?preview=1",
+  "title": "Solaria — Studio",
+  "body": "cs-lf-lf-4 lm-ready",
+  "nav_class": "cs-nav",
+  "nav_h": 76,
+  "phone_in_nav": true,
+  "footer_cols": 3,
+  "whistleblowing_in_footer": false,
+  "sections": [
+    { "name": "cs-hero",          "x": 0,   "y": 122,  "w": 1905, "h": 724 },
+    { "name": "cs-pillars",       "x": 253, "y": 846,  "w": 1400, "h": 660 },
+    { "name": "cs-kpi-band",      "x": 0,   "y": 1506, "w": 1905, "h": 254 },
+    { "name": "cs-sectors",       "x": 0,   "y": 1759, "w": 1905, "h": 213 },
+    { "name": "cs-trust",         "x": 253, "y": 1972, "w": 1400, "h": 366 },
+    { "name": "cs-leadership",    "x": 253, "y": 2338, "w": 1400, "h": 1305 },
+    { "name": "cs-cases-preview", "x": 253, "y": 3642, "w": 1400, "h": 886 },
+    { "name": "cs-cta",           "x": 0,   "y": 4528, "w": 1905, "h": 440 }
+  ],
+  "captured_by": "playwright-mcp · chromium · 1920x1080 · staff session",
+  "captured_at": "2026-04-30",
+  "note": "cs-manifesto / cs-percorsi / cs-cycle slot-5 are not present in the live render; cs-leadership renders 2-card. body class cs-lf-lf-4 is correctly dispatched but the LF-4 declared section sequence is not yet emitted by the LF-1 partial. This matches the pre-rebuild baseline byte-for-byte; it is a pre-existing declared-vs-rendered observation tracked outside this regression walk."
+}

@@ -1,0 +1,23 @@
+{
+  "url": "http://127.0.0.1:8042/templates/business/fiscus-commercialista/preview/?preview=1",
+  "title": "Fiscus — Studio",
+  "body": "cs-lf-lf-3 lm-ready",
+  "nav_class": "cs-nav",
+  "nav_h": 76,
+  "phone_in_nav": true,
+  "footer_cols": 3,
+  "whistleblowing_in_footer": false,
+  "sections": [
+    { "name": "cs-hero",          "x": 0,   "y": 122,  "w": 1905, "h": 751 },
+    { "name": "cs-pillars",       "x": 253, "y": 874,  "w": 1400, "h": 691 },
+    { "name": "cs-kpi-band",      "x": 0,   "y": 1564, "w": 1905, "h": 254 },
+    { "name": "cs-sectors",       "x": 0,   "y": 1818, "w": 1905, "h": 163 },
+    { "name": "cs-trust",         "x": 253, "y": 1980, "w": 1400, "h": 366 },
+    { "name": "cs-leadership",    "x": 253, "y": 2346, "w": 1400, "h": 942 },
+    { "name": "cs-cases-preview", "x": 253, "y": 3288, "w": 1400, "h": 798 },
+    { "name": "cs-cta",           "x": 0,   "y": 4086, "w": 1905, "h": 492 }
+  ],
+  "captured_by": "playwright-mcp · chromium · 1920x1080 · staff session",
+  "captured_at": "2026-04-30",
+  "note": "cs-cycle slot-4 cell does not currently render in Fiscus's live page_data — pre-existing observation tracked at the LF-5 rebuild. The render byte-matches the pre-rebuild baseline at continua-pass2-lf5/_baseline/section-list-fiscus.json."
+}

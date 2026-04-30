@@ -1,0 +1,22 @@
+{
+  "url": "http://127.0.0.1:8042/templates/business/pragma-corporate-suite/preview/?preview=1",
+  "title": "Pragma Advisors — Studio",
+  "body": "cs-lf-lf-1 lm-ready",
+  "nav_class": "cs-nav",
+  "nav_h": 76,
+  "phone_in_nav": true,
+  "footer_cols": 3,
+  "whistleblowing_in_footer": false,
+  "sections": [
+    { "name": "cs-hero",          "x": 0,   "y": 122,  "w": 1905, "h": 686 },
+    { "name": "cs-pillars",       "x": 253, "y": 808,  "w": 1400, "h": 712 },
+    { "name": "cs-kpi-band",      "x": 0,   "y": 1520, "w": 1905, "h": 254 },
+    { "name": "cs-sectors",       "x": 0,   "y": 1774, "w": 1905, "h": 163 },
+    { "name": "cs-trust",         "x": 253, "y": 1936, "w": 1400, "h": 366 },
+    { "name": "cs-leadership",    "x": 253, "y": 2302, "w": 1400, "h": 850 },
+    { "name": "cs-cases-preview", "x": 253, "y": 3152, "w": 1400, "h": 747 },
+    { "name": "cs-cta",           "x": 0,   "y": 3898, "w": 1905, "h": 412 }
+  ],
+  "captured_by": "playwright-mcp · chromium · 1920x1080 · staff session",
+  "captured_at": "2026-04-30"
+}

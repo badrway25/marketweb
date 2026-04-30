@@ -1,0 +1,23 @@
+{
+  "url": "http://127.0.0.1:8042/templates/business/continua-stewardship/preview/?preview=1",
+  "title": "Continua — Lo studio",
+  "body": "cs-lf-lf-5 lm-ready",
+  "nav_class": "cs-nav cs-nav--lf5",
+  "nav_h": 64,
+  "phone_in_nav": false,
+  "footer_cols": 4,
+  "whistleblowing_in_footer": true,
+  "sections": [
+    { "name": "cs-hero",          "x": 0,   "y": 104,  "w": 1905, "h": 720  },
+    { "name": "cs-cycle",         "x": 253, "y": 824,  "w": 1400, "h": 733  },
+    { "name": "cs-pillars",       "x": 253, "y": 1557, "w": 1400, "h": 933  },
+    { "name": "cs-kpi-band",      "x": 0,   "y": 2490, "w": 1905, "h": 254  },
+    { "name": "cs-sectors",       "x": 0,   "y": 2743, "w": 1905, "h": 164  },
+    { "name": "cs-leadership",    "x": 253, "y": 2907, "w": 1400, "h": 1370 },
+    { "name": "cs-cases-preview", "x": 253, "y": 4278, "w": 1400, "h": 1020 },
+    { "name": "cs-cta",           "x": 0,   "y": 5298, "w": 1905, "h": 468  }
+  ],
+  "captured_by": "playwright-mcp · chromium · 1920x1080 · staff session",
+  "captured_at": "2026-04-30",
+  "note": "Live render = LF-5 declaration on all 9 axes (object-overlay hero · slot-2 cycle · 2x2 pillars matrix · slot-4 KPI · pillar-photo leadership · timeline cases · 64px no-phone nav · 4-col-with-whistleblowing footer)."
+}
