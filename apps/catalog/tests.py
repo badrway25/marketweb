@@ -821,7 +821,7 @@ class DiscoverySelectorTests(_SeededCatalogMixin, TestCase):
         _, qs = selectors.get_listing_templates(
             feature_flags=["has_does_not_exist"]
         )
-        self.assertEqual(qs.count(), 22)
+        self.assertEqual(qs.count(), 23)
 
     def test_listing_filter_by_use_case(self):
         _, qs = selectors.get_listing_templates(
@@ -859,13 +859,13 @@ class DiscoverySelectorTests(_SeededCatalogMixin, TestCase):
         self.assertIn("features", counts)
         self.assertIn("total", counts)
         # Live catalog count — MVP 20 + Wave 2 pilots merged to date.
-        self.assertEqual(counts["total"], 22)
+        self.assertEqual(counts["total"], 23)
         # Sanity spot-checks on a few counts.
         self.assertEqual(counts["clusters"].get("specialist"), 2)
         # Wave 2: Fiscus adds financial-services cluster (was 0).
         self.assertEqual(counts["clusters"].get("financial-services"), 1)
         self.assertEqual(counts["price_tiers"].get("standard"), 9)
-        self.assertEqual(counts["features"].get("has_rtl"), 22)
+        self.assertEqual(counts["features"].get("has_rtl"), 23)
         self.assertEqual(counts["features"].get("has_shop"), 2)
 
     def test_typeahead_empty_query_returns_empty_pools(self):
@@ -1131,14 +1131,14 @@ class HomepageDiscoveryTests(_SeededCatalogMixin, TestCase):
         # Seeded DB: MVP 20 + Wave 2 pilots merged to date. 15 macro-
         # categories (8 MVP + 7 extras from seed_profession_clusters),
         # 52 profession clusters, 5 canonical locales.
-        self.assertEqual(counters["templates_live"], 22)
+        self.assertEqual(counters["templates_live"], 23)
         self.assertEqual(counters["categories_active"], 15)
         self.assertEqual(counters["clusters_active"], 52)
         self.assertEqual(counters["locales_supported"], 5)
 
     def test_home_trust_counters_render_in_html(self):
         body = self.response.content.decode("utf-8", "ignore")
-        self.assertIn("22+", body)   # templates_live
+        self.assertIn("23+", body)   # templates_live
         self.assertIn("52", body)    # clusters_active
         self.assertIn("professioni", body)
         self.assertIn("RTL", body)
@@ -1551,9 +1551,9 @@ class TaxonomyNotNullContractTests(_SeededCatalogMixin, TestCase):
         against the NULL-is-possible assumption that was removed).
         Live count reflects MVP 20 + Wave 2 pilots merged to date."""
         _, qs = selectors.get_listing_templates()
-        self.assertEqual(qs.count(), 22)
+        self.assertEqual(qs.count(), 23)
         counts = selectors.get_facet_counts(qs)
-        self.assertEqual(counts["total"], 22)
+        self.assertEqual(counts["total"], 23)
         self.assertGreater(len(counts["clusters"]), 0)
         self.assertGreater(len(counts["styles"]), 0)
 
