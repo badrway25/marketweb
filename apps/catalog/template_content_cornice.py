@@ -332,15 +332,15 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
         # NOT typographic-only like Pragma/Fiscus). Mitigation §12
         # Warning 4 binding: portrait MUST read environmental, NOT
         # headshot.
-        "leadership_label":   "STUDIO FOUNDER · ARCHITETTO",
-        "leadership_heading": "Marco <em>Roveri</em>",
-        "leadership_role":    "fondatore · responsabile editoriale dei fascicoli",
+        "leadership_label":   "STUDIO FOUNDER · ARCHITETTA",
+        "leadership_heading": "Marta <em>Roveri</em>",
+        "leadership_role":    "fondatrice · responsabile editoriale dei fascicoli",
         "leadership_caption": "Lo studio · interno · 2024",
         "leadership_portrait": _PORTRAIT_FOUNDER,
         "leadership_bio_paragraphs": [
-            "Marco Roveri ha aperto Cornice nel 2008, dopo dieci anni "
+            "Marta Roveri ha aperto Cornice nel 2008, dopo dieci anni "
             "di pratica tra Milano e Bologna in due studi di restauro "
-            "pubblico. Si è formato al Politecnico di Milano sotto la "
+            "pubblico. Si è formata al Politecnico di Milano sotto la "
             "cattedra di restauro architettonico, con un periodo di "
             "ricerca all'École Polytechnique de Lausanne sui caratteri "
             "stereotomici delle volte in pietra. Lavora a tempo pieno "
@@ -364,7 +364,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
             "Albo OAPPC · Iscritto Ordine degli Architetti di Milano N° 12.847",
             "CNAPPC · Consiglio Nazionale degli Architetti P.P.C.",
             "MIBAC · Qualifica per il restauro architettonico (D.M. 154/2017)",
-            "Politecnico di Milano · Professore a contratto · Cattedra di Restauro",
+            "Politecnico di Milano · Professoressa a contratto · Cattedra di Restauro",
         ],
         "leadership_secondary_cta_label": "Lo studio · biografia estesa",
         "leadership_secondary_cta_href":  "studio",
@@ -488,7 +488,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
         "eyebrow":   "LO STUDIO · ARCHIVIO · CV",
         "headline":  "Cornice · studio di architettura editoriale dal <em>2008</em>.",
         "intro":
-            "Milano. Un architetto fondatore, due collaboratori, "
+            "Milano. Un'architetta fondatrice, due collaboratori, "
             "novanta fascicoli aperti. Lavoriamo poco, e per intero.",
 
         "history_label":   "TAPPE DELLO STUDIO",
@@ -501,22 +501,22 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
             "civile, il restauro qualificato come pratica di lettura.",
         "history": [
             ("2008", "Fondazione",
-             "Marco Roveri apre Cornice in via Paoli a Milano, dopo "
+             "Marta Roveri apre Cornice in via Paoli a Milano, dopo "
              "dieci anni di collaborazione in due studi di restauro "
              "pubblico tra Milano e Bologna. La sede è scelta per "
              "una sola ragione: due locali su una corte interna, uno "
              "per il rilievo, uno per la scrittura."),
             ("2014", "Qualifica MIBAC restauro",
-             "Marco Roveri ottiene la qualifica per il restauro "
+             "Marta Roveri ottiene la qualifica per il restauro "
              "architettonico (D.M. 154/2017). Da quell'anno lo studio "
              "accetta commissioni di restauro su edifici vincolati ex "
              "Codice dei Beni Culturali e cura le pratiche con la "
              "Soprintendenza Belle Arti."),
             ("2017", "Cattedra al Politecnico di Milano",
-             "Marco Roveri viene nominato Professore a contratto sulla "
-             "Cattedra di Restauro al Politecnico di Milano. La pratica "
-             "didattica entra nel metodo dello studio: il rilievo, il "
-             "contesto e l'argomento si scrivono come tesi."),
+             "Marta Roveri viene nominata Professoressa a contratto "
+             "sulla Cattedra di Restauro al Politecnico di Milano. La "
+             "pratica didattica entra nel metodo dello studio: il "
+             "rilievo, il contesto e l'argomento si scrivono come tesi."),
             ("2019", "Palazzo Lignari · primo restauro pubblico",
              "Lo studio consegna il restauro della corte e del piano "
              "nobile di Palazzo Lignari a Bologna (sede culturale "
@@ -564,16 +564,16 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
         "team_label":   "STUDIO E COLLABORATORI",
         "team_heading": "Tre architetti, una sola sede.",
         "team_intro":
-            "Lo studio è formato da un architetto fondatore e due "
+            "Lo studio è formato da un'architetta fondatrice e due "
             "collaboratori. Lavoriamo a tempo pieno su tre o quattro "
             "commissioni in parallelo, mai di più. Le pratiche con "
             "Soprintendenza, gli uffici comunali e gli enti appaltanti "
             "vengono trattate in studio, non delegate.",
         "team": [
-            {"name": "Marco Roveri",
-             "role": "Studio Founder · Architetto",
+            {"name": "Marta Roveri",
+             "role": "Studio Founder · Architetta",
              "office": "Milano",
-             "bio": "Fondatore. Politecnico di Milano · cattedra di "
+             "bio": "Fondatrice. Politecnico di Milano · cattedra di "
                     "restauro architettonico · ricerca all'EPFL Lausanne "
                     "sui caratteri stereotomici delle volte in pietra. "
                     "Albo OAPPC Milano N° 12.847 · CNAPPC · qualifica "
@@ -593,7 +593,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
              "office": "Milano",
              "bio": "Architetto junior dal 2022. Politecnico di Milano "
                     "· tesi sulla cornice come dispositivo civile "
-                    "(relatore: Roveri). Albo OAPPC Milano. Si occupa "
+                    "(relatrice: Roveri). Albo OAPPC Milano. Si occupa "
                     "del rilievo digitale, del modello, e della "
                     "redazione grafica dei fascicoli. Co-autrice del "
                     "saggio sulla cornice (collana, 2024)."},
@@ -648,7 +648,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
                     "Tariffe minime CNAPPC · senza sconti percentuali",
                 ],
                 "duration": "Da rilievo a collaudo · 18-30 mesi",
-                "leader":   "Marco Roveri",
+                "leader":   "Marta Roveri",
             },
             {
                 "num":   "02",
@@ -669,13 +669,13 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
                     "Iscrizione CNAPPC verificabile",
                 ],
                 "duration": "Dipende dal bando · 2-9 mesi",
-                "leader":   "Marco Roveri",
+                "leader":   "Marta Roveri",
             },
             {
                 "num":   "03",
                 "title": "Restauro qualificato MIBAC",
                 "blurb":
-                    "Marco Roveri è abilitato al restauro "
+                    "Marta Roveri è abilitata al restauro "
                     "architettonico secondo il D.M. 154/2017. Lo "
                     "studio accetta commissioni di restauro su edifici "
                     "vincolati ex Codice dei Beni Culturali (D.lgs. "
@@ -689,7 +689,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
                     "Pubblicazione integrale in collana monografica",
                 ],
                 "duration": "24-48 mesi · vincoli inclusi",
-                "leader":   "Marco Roveri",
+                "leader":   "Marta Roveri",
             },
             {
                 "num":   "04",
@@ -710,7 +710,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
                     "Distribuzione musei + librerie specializzate",
                 ],
                 "duration": "Da incarico a stampa · 12-18 mesi",
-                "leader":   "Marco Roveri",
+                "leader":   "Marta Roveri",
             },
         ],
 
@@ -837,7 +837,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
                 ("5,2 M €",  "valore d'opera"),
                 ("2026",     "collaudo previsto"),
             ],
-            "lead_partner": "Marco Roveri · Studio Founder",
+            "lead_partner": "Marta Roveri · Studio Founder",
             "team":         "Architetto + 2 collaboratori · strutturista esterno · DL interna",
             "next_label":   "Fascicolo successivo",
         },
@@ -901,7 +901,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
                 ("19 mesi",  "durata cantiere"),
                 ("n. 38",    "fascicolo in collana"),
             ],
-            "lead_partner": "Marco Roveri · Studio Founder",
+            "lead_partner": "Marta Roveri · Studio Founder",
             "team":         "Architetto + 2 collaboratori · strutturista + DL interna",
             "next_label":   "Fascicolo successivo",
         },
@@ -972,7 +972,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
                 ("n. 31",    "fascicolo in collana 2020"),
                 ("MIBAC",    "qualifica restauro"),
             ],
-            "lead_partner": "Marco Roveri · Studio Founder",
+            "lead_partner": "Marta Roveri · Studio Founder",
             "team":         "Architetto + 2 collaboratori · restauratore esterno · DL interna",
             "next_label":   "Fascicolo successivo",
         },
@@ -1040,7 +1040,7 @@ CORNICE_CONTENT_IT: dict[str, Any] = {
                 ("192",      "pagine illustrate"),
                 ("200",      "copie numerate"),
             ],
-            "lead_partner": "Marco Roveri · Studio Founder",
+            "lead_partner": "Marta Roveri · Studio Founder",
             "team":         "Architetto + 2 collaboratori · co-edizione DAStU",
             "next_label":   "Fascicolo successivo",
         },

@@ -542,12 +542,21 @@ brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
     display: flex; flex-direction: column;
   }
   .cs-cases-magazine .card--hero .card-link { height: 100%; display: flex; flex-direction: column; }
+  /* Hero photo uses flex-grow to absorb the extra height the grid row
+     hands the hero (since `grid-row: 1 / 4` stretches the card to the
+     full height of the 3-card stack on the right). With `flex: 1` on
+     the thumb and no flex on the copy, the editorial spread reads:
+     dominant photo top, copy + meta anchored at the foot — same
+     baseline as the bottom of card-04 on the right (Casabella feel).
+     `min-height` keeps the photo large enough at narrow widths where
+     the grid row heights compress. CS-IMG-01 object-fit:cover on the
+     img keeps the photo cropped sensibly when the height grows. */
   .cs-cases-magazine .card--hero .thumb {
-    aspect-ratio: 16 / 9;
+    flex: 1;
+    min-height: 360px;
   }
   .cs-cases-magazine .card--hero .copy {
     padding: 40px 40px 44px;
-    flex: 1;
   }
   .cs-cases-magazine .card--hero .copy h3 {
     font-size: 32px;
@@ -806,69 +815,10 @@ brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
     .cs-cta-cream { padding: 44px 18px; }
   }
 
-  /* ============================================================
-     LF-2 nav variant · split-wordmark on cream
-     CS-NAV-01 (sticky-top primary-bg) DEMOTED at family level. The
-     LF-2 nav reads as an editorial-publication masthead, NOT a
-     boardroom-dark bar. Cream background · graphite link text · rust
-     accent on focus + active. The split-wordmark layout (line 1 =
-     CORNICE · line 2 = studio di architettura) lives below.
-  ============================================================ */
-  .cs-nav.cs-nav--lf2 {
-    background: var(--paper);
-    color: var(--ink);
-    height: 84px;
-    box-shadow:
-      0 1px 0 var(--rule) inset,
-      0 1px 0 var(--rule);
-  }
-  .cs-nav--lf2 .wm {
-    color: var(--ink);
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
-  }
-  .cs-nav--lf2 .wm .wm-line-1 {
-    font-family: var(--heading);
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    color: var(--primary);
-    text-transform: uppercase;
-    line-height: 1.1;
-  }
-  .cs-nav--lf2 .wm .wm-line-2 {
-    font-family: var(--body);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    color: var(--ink-soft);
-    text-transform: lowercase;
-    margin-top: 2px;
-  }
-  .cs-nav--lf2 .links {
-    color: var(--ink-soft);
-  }
-  .cs-nav--lf2 .links a:hover { color: var(--primary); }
-  .cs-nav--lf2 .links a.is-current { color: var(--primary); }
-  .cs-nav--lf2 .links a.is-current:after {
-    background: var(--accent);
-  }
-  .cs-nav--lf2 .links a:focus-visible {
-    outline-color: var(--accent);
-  }
-  .cs-nav--lf2 .phone {
-    color: var(--primary);
-  }
-  .cs-nav--lf2 .phone .tag {
-    color: var(--ink-mute);
-    border-color: var(--rule);
-  }
-  /* Hamburger lines on cream nav must read as graphite (was --on-dark) */
-  .cs-nav--lf2 .cs-nav-burger span { background: var(--primary); }
-  .cs-nav--lf2 .cs-nav-toggle:focus-visible ~ .cs-nav-burger {
-    outline-color: var(--accent);
-  }
+  /* LF-2 nav body styles (cream-paper masthead chrome) lifted to
+     `_base.html` at A.6 so every LF-2 page inherits the chrome (was
+     home-only when the rules lived here). See _base.html · the
+     `.cs-nav--lf2` block alongside `.cs-nav--lf5`. */
 
   {% if is_rtl %}
   /* LF-2 RTL handling — flip the 8/4 hero split, narrative side-rail

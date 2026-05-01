@@ -358,6 +358,69 @@
     outline: 2px solid var(--accent);
     outline-offset: 4px;
   }
+  /* LF-2 nav body · cream-paper masthead chrome (CS-NAV-01 demoted at
+     family level). Lifted from `_layouts/lf2/styles.html` at A.6 so
+     every LF-2 page (home, about, services, projects list, case
+     detail, contact) renders the same editorial-publication chrome.
+     Pre-A.6 these rules were home-only because the lf2 styles bundle
+     was included via the home dispatcher only; inner pages fell back
+     to the LF-1 dark-bar default. Now resident in _base so the chrome
+     class survives across the whole template. */
+  .cs-nav.cs-nav--lf2 {
+    background: var(--paper);
+    color: var(--ink);
+    height: 84px;
+    box-shadow:
+      0 1px 0 var(--rule) inset,
+      0 1px 0 var(--rule);
+  }
+  .cs-nav--lf2 .wm {
+    color: var(--ink);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .cs-nav--lf2 .wm .wm-line-1 {
+    font-family: var(--heading);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--primary);
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .cs-nav--lf2 .wm .wm-line-2 {
+    font-family: var(--body);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    text-transform: lowercase;
+    margin-top: 2px;
+  }
+  .cs-nav--lf2 .links {
+    color: var(--ink-soft);
+  }
+  .cs-nav--lf2 .links a:hover { color: var(--primary); }
+  .cs-nav--lf2 .links a.is-current { color: var(--primary); }
+  .cs-nav--lf2 .links a.is-current:after {
+    background: var(--accent);
+  }
+  .cs-nav--lf2 .links a:focus-visible {
+    outline-color: var(--accent);
+  }
+  .cs-nav--lf2 .phone {
+    color: var(--primary);
+  }
+  .cs-nav--lf2 .phone .tag {
+    color: var(--ink-mute);
+    border-color: var(--rule);
+  }
+  /* Hamburger lines on cream nav must read as graphite (was --on-dark) */
+  .cs-nav--lf2 .cs-nav-burger span { background: var(--primary); }
+  .cs-nav--lf2 .cs-nav-toggle:focus-visible ~ .cs-nav-burger {
+    outline-color: var(--accent);
+  }
   /* LF-2 footer column-content overrides · the 4-col-with-whistleblowing
      primitive is the same as LF-5 (pulled in via `.cs-foot-col--whistleblowing`
      above), but the LF-2 footer needs a bit of paragraph breathing on
