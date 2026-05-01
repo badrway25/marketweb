@@ -1,0 +1,164 @@
+{% comment %}
+LF-2 Editorial Spread (Cornice). 5th corporate-suite sibling · 1st
+LF-2 occupant. Section sequence B:
+
+  1. cs-hero (stacked-editorial · L1=stacked-editorial · full-bleed
+     photo TOP with credit overlay carrying 3-stat KPI tuple ·
+     8/4 split BELOW with h1 LEFT and side-quote RIGHT · L5=hero-overlay
+     so KPI lives in the photo's overlay and NO separate cs-kpi-band
+     is rendered · CS-TONE-03 demoted at family level)
+  2. cs-narrative (LF-2 L4=essay-with-anchors · 4-paragraph editorial
+     essay with rust drop-cap on para 1, three pull-quotes interspersed,
+     and a 4-link side-rail · replaces cs-pillars · LF-2 has no pillars)
+  3. cs-sectors (sentence-ribbon · 12 typologies · italic Cormorant
+     middot-separated · NO photos · NO logo marquee)
+  4. cs-leadership (LF-2 L6=single-portrait-feature · ONE founding-
+     architect masthead · large environmental portrait LEFT + h2 +
+     2-paragraph bio + 4 credentials RIGHT)
+  5. cs-cases-magazine (LF-2 L7=magazine-grid · 3+1 layout · 1 hero
+     card + 3 small cards · each card carries photo + eyebrow + h3 +
+     body + pill · NOT list-row · NOT timeline)
+  6. cs-cta (LF-2-specific cream-hairline closer · CREAM band NOT dark
+     · hairline graphite border top+bottom · centred copy · larger
+     Cormorant h2 restating voice anchor verbatim · single FILLED rust
+     CTA · CS-CTA-01 ratification 2026-04-26 polarity inversion)
+
+LF-2 has NO cs-pillars · NO separate cs-kpi-band · NO cs-cycle mid-
+strip · NO cs-trust marquee · NO list-row cases · NO timeline cases.
+The cluster invariants demoted at family level (CS-HERO-01 · CS-TONE-03
+· CS-RHYTHM-02 · CS-NAV-01 · CS-FOOT-01) are declared, not silent —
+see `factory/reports/hardening/corporate-suite-layout-divergence-plan.md
+§3` and `corporate-suite-layout-family-matrix.md §1` LF-2 row.
+{% endcomment %}<section class="cs-hero">
+  <div class="photo" role="img" aria-label="{{ page_data.hero_image_alt|default:page_data.eyebrow }}">
+    <div class="overlay" data-lm="reveal">
+      <div class="credit">
+        <div class="credit-line">{{ page_data.hero_image_credit_left.0 }}<strong>{{ page_data.hero_image_credit_left.1 }}</strong></div>
+      </div>
+      <div class="kpi-row" data-lm-stagger>
+        {% for label, value in page_data.hero_meta_strip %}
+          <div class="kpi" data-lm="reveal"><span class="num">{{ value }}</span><span class="lbl">{{ label }}</span></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="below">
+    <div class="left" data-lm="reveal-lg">
+      <div class="eyebrow">{{ page_data.eyebrow }}</div>
+      <h1>{{ page_data.headline|safe }}</h1>
+      <p class="sub">{{ page_data.intro }}</p>
+      <div class="actions">
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-primary">{{ page_data.primary_cta }}</a>
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.secondary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-ghost">{{ page_data.secondary_cta }}</a>
+      </div>
+    </div>
+    <aside class="right" data-lm="reveal">
+      <blockquote class="side-quote">{{ page_data.hero_side_quote|safe }}</blockquote>
+    </aside>
+  </div>
+</section>
+
+<section class="cs-narrative">
+  <div class="head">
+    <div class="sec-label">{{ page_data.narrative_label }}</div>
+  </div>
+  <div class="essay">
+    <div class="body">
+      {% for kind, text in page_data.narrative_blocks %}
+        {% if kind == "drop" %}
+          <p class="essay-para" data-lm="reveal"><span class="dropcap">{{ page_data.narrative_drop }}</span>{{ text }}</p>
+        {% elif kind == "quote" %}
+          <blockquote class="pull-quote" data-lm="reveal">{{ text|safe }}</blockquote>
+        {% else %}
+          <p class="essay-para" data-lm="reveal">{{ text }}</p>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <aside class="side-rail" data-lm-stagger>
+      {% for label, href in page_data.narrative_side_rail %}
+        <a href="{% url 'catalog:live_template_page' template.category.slug template.slug href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" data-lm="reveal">{{ label }}<span class="arrow">→</span></a>
+      {% endfor %}
+    </aside>
+  </div>
+</section>
+
+<section class="cs-sectors-ribbon">
+  <div class="head">
+    <div class="sec-label">{{ page_data.sectors_label }}</div>
+    <p class="lead" data-lm="reveal">{{ page_data.sectors_lead }}</p>
+  </div>
+  <div class="ribbon" data-lm="reveal">
+    {% for sector in page_data.sectors %}
+      <span class="seg">{{ sector }}</span>
+      {% if not forloop.last %}<span class="sep">·</span>{% endif %}
+    {% endfor %}
+  </div>
+  <p class="trailing" data-lm="reveal">{{ page_data.sectors_trailing }}</p>
+  <p class="counter" data-lm="reveal">{{ page_data.sectors_counter|safe }}</p>
+</section>
+
+<section class="cs-leadership-single">
+  <div class="head">
+    <div class="sec-label">{{ page_data.leadership_label }}</div>
+  </div>
+  <div class="grid">
+    <figure class="portrait-frame" data-lm="reveal-lg">
+      {% if page_data.leadership_portrait %}
+        <img src="{{ page_data.leadership_portrait }}" alt="{{ page_data.leadership_heading|striptags }}" loading="lazy">
+      {% endif %}
+      <figcaption>{{ page_data.leadership_caption }}</figcaption>
+    </figure>
+    <div class="body" data-lm="reveal">
+      <h2>{{ page_data.leadership_heading|safe }}</h2>
+      <p class="role">{{ page_data.leadership_role }}</p>
+      {% for para in page_data.leadership_bio_paragraphs %}
+        <p>{{ para }}</p>
+      {% endfor %}
+      <ul class="creds">
+        {% for cred in page_data.leadership_credentials %}<li>{{ cred }}</li>{% endfor %}
+      </ul>
+      <a class="secondary" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.leadership_secondary_cta_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">{{ page_data.leadership_secondary_cta_label }} <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="cs-cases-magazine">
+  <div class="head">
+    <div class="sec-label">{{ page_data.cases_label }}</div>
+    <p class="lead" data-lm="reveal">{{ page_data.cases_intro }}</p>
+  </div>
+  <div class="grid" data-lm-stagger data-lm-stagger-delay="100">
+    {% for card in page_data.cases_magazine %}
+      <article class="card card--{{ card.rank }}" data-lm="reveal">
+        <a class="card-link" href="{% url 'catalog:live_template_post' template.category.slug template.slug cases_parent_slug card.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">
+          <div class="thumb">
+            <img src="{{ card.photo }}" alt="{{ card.photo_alt }}" loading="lazy">
+          </div>
+          <div class="copy">
+            <span class="num">{{ card.num }}</span>
+            <span class="eyebrow">{{ card.eyebrow }}</span>
+            <h3>{{ card.title|safe }}</h3>
+            <p>{{ card.body }}</p>
+            <span class="pill">{{ card.pill }}</span>
+          </div>
+        </a>
+      </article>
+    {% endfor %}
+  </div>
+  <a class="trailing-link" href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cases_trailing_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}">{{ page_data.cases_trailing_label }} <span class="arrow">→</span></a>
+</section>
+
+<section class="cs-cta-cream">
+  <div class="wrap" data-lm="reveal-lg">
+    <div class="label">{{ page_data.cta_label }}</div>
+    <p class="intro">{{ page_data.cta_intro }}</p>
+    <h2>{{ page_data.cta_heading|safe }}</h2>
+    <p class="form-hint">{{ page_data.cta_form_hint }}</p>
+    <div class="actions">
+      <a href="{% url 'catalog:live_template_page' template.category.slug template.slug page_data.cta_primary_href %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-btn-primary cs-btn-primary--filled">{{ page_data.cta_primary }}</a>
+    </div>
+    <p class="closing">{{ page_data.cta_closing_line }}</p>
+    <p class="sub">{{ page_data.cta_sub_line }}</p>
+  </div>
+</section>

@@ -401,6 +401,69 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
     # adjacency). Cross-cluster grep clean against business-
     # corporate / business-fiscal / business-coaching at intake.
     # ─────────────────────────────────────────────────────────────
+    # ─────────────────────────────────────────────────────────────
+    # business-architecture — Phase X.5 Cornice (5th corporate-suite
+    # sibling · 1st architecture-firm variant · 1st LF-2 occupant ·
+    # 2026-04-30 · `phase-x5-cornice-a5-it-build`). Pool follows the
+    # Pexels-only contract from URL #1 (CS-IMG-SRC-01) and the canonical
+    # 6-slot shape [hero, feature, portrait, portrait, detail, ambient].
+    # Direction per `factory/reports/corporate-suite/cornice-architettura/
+    # planner-brief.md §4` and `factory/reports/imagery/cornice-architettura/
+    # pool-selection.md`: object-led golden-hour Italian portico hero
+    # (Bologna · zero people · architectural-shadow-line cinematic),
+    # scale-model + drafting feature, senior-mid-career environmental
+    # founding-architect portrait, mid-career collaboratore portrait,
+    # architectural-blueprint detail (still-life NOT desk-task),
+    # concrete-studio-wall ambient (NOT bookshelf · Fiscus reservation;
+    # NOT slate-stairwell · Continua adjacency; NOT atrium · Pragma
+    # overlap). Cross-cluster grep CLEAN against business-corporate /
+    # business-fiscal / business-coaching / business-stewardship at
+    # A.3 curator entry (2026-04-30 · 0/26 IDs overlap).
+    # ─────────────────────────────────────────────────────────────
+    "business-architecture": [
+        # 0: hero — sunlit corridor of an Italian portico in Bologna,
+        #    stone columns and ceiling at golden hour, zero people,
+        #    exterior architectural · Marcel Gierschick (Pexels 35715509).
+        #    Subject-class distinct from Continua's library reading-room
+        #    interior (exterior vs interior · stone vs mahogany ·
+        #    golden-hour vs daylight-contemplative · architectural-shadow
+        #    vs furniture-and-fireplace).
+        "https://images.pexels.com/photos/35715509/pexels-photo-35715509.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        # 1: feature — architectural scale model on a designer's
+        #    worktable with drawing tools and trace paper, raking
+        #    natural light, zero people, zero monitor · Tima
+        #    Miroshnichenko (Pexels 6614835). Workshop-editorial mood,
+        #    process-as-proof framing.
+        "https://images.pexels.com/photos/6614835/pexels-photo-6614835.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        # 2: portrait — senior architect (woman, white hair) reviewing
+        #    blueprints with pen at environmental home-office desk
+        #    · RDNE Stock project (Pexels 5915290). Binding triple
+        #    (senior-mid-career + drafting tools mid-ground + environmental-
+        #    NOT-studio-backdrop) cleared per planner-pre-cleared
+        #    widening (prebuild-quick-checks Ω·3). Closes Solaria 30sCx2
+        #    demographic gap on the senior side without invoking
+        #    Continua's 60s + 40s pair.
+        "https://images.pexels.com/photos/5915290/pexels-photo-5915290.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 3: portrait — mid-career architect (man, afro hair) reviewing
+        #    project blueprints at office desk · Tima Miroshnichenko
+        #    (Pexels 6615222). Demographic anti-collision vs slot 2
+        #    (different age + gender + ethnicity).
+        "https://images.pexels.com/photos/6615222/pexels-photo-6615222.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 4: detail — architectural blueprint / floor plan close-up,
+        #    intricate technical lines, single sheet macro still life
+        #    · Ivan S (Pexels 4458196). Subject-class distinct from
+        #    Fiscus's tax-document detail and from Continua's wax-seal
+        #    letterhead.
+        "https://images.pexels.com/photos/4458196/pexels-photo-4458196.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 5: ambient — architectural design studio wall with concrete
+        #    surface and pinned blueprints / models, industrial finish,
+        #    zero people · Jesus Rivera (Pexels 36809500). Material
+        #    palette pairs with Cornice's NEUTRAL primary + secondary
+        #    (graphite + pietra-serena) without fighting tokens. NOT
+        #    bookshelf (Fiscus) · NOT slate-stairwell (Continua) ·
+        #    NOT atrium (Pragma) · NOT warm meeting room (Solaria).
+        "https://images.pexels.com/photos/36809500/pexels-photo-36809500.jpeg?auto=compress&cs=tinysrgb&w=800",
+    ],
     "business-stewardship": [
         # 0: hero — historic library room with rich wooden interiors,
         #    partner desk in foreground, fireplace + brass details, ZERO

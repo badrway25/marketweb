@@ -1,0 +1,880 @@
+{% comment %}
+LF-2 Editorial Spread (Cornice). Distinct DOM scaffold:
+stacked-editorial hero (NOT 55/45 split · CS-HERO-01 demoted at family
+level), full-bleed photo TOP with credit overlay carrying 3-stat KPI
+tuple (L5=hero-overlay), 8/4 editorial split BELOW with h1 + side-quote,
+narrative essay with rust drop-cap and 3 pull-quotes (replaces pillars),
+sentence-ribbon sectors (italic Cormorant middot-separated), single-
+portrait leadership masthead (LF-2 L6 · ONE founding architect · NOT a
+3-card grid), 3+1 magazine-grid cases (LF-2 L7 · NOT list-row · NOT
+timeline), and a CREAM cta-closer with hairline graphite border + filled-
+rust button (CS-TONE-03 demoted at family level · zero dark band on home).
+
+The cluster invariants — cream paper, serif heading + sans body, italic-
+em on ONE word per heading, accent ≤3 hits per viewport, AAA h1, AA dark-
+section descendants, Pexels-only — hold verbatim from `_base.html`.
+Nothing in this file touches Pragma · Fiscus · Solaria · Continua.
+
+The accent token `--accent` is rust `#B7491F` for Cornice (NEUTRAL/
+NEUTRAL/WARM polarity · the only un-claimed cluster polarity per the
+intake matrix §1.3). Rust touchpoints visible at first scroll: drop-cap,
+pull-quote em-word, magazine-card numerals, cta-closer filled button +
+4-pt focus ring. Surface deployment is editorial-display first (drop-cap
++ pull-quote em + card numeral) — different surface class from Continua's
+brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
+{% endcomment %}
+
+  /* ============================================================
+     L1 hero · stacked-editorial
+     Full-bleed photo TOP (no 55/45 split) · credit-overlay with the
+     3-stat KPI tuple INSIDE the photo's bottom-left frame · cream
+     paper 8/4 split BELOW with h1 LEFT + side-quote RIGHT.
+     CS-HERO-01 (55/45) DEMOTED at family level per divergence plan §3.
+     CS-TONE-03 (one dark band on home) DEMOTED — KPI lives in the
+     overlay; no separate cs-kpi-band is rendered on this home.
+  ============================================================ */
+  .cs-hero {
+    position: relative;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+  }
+  .cs-hero .photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 24 / 11;          /* full-bleed editorial spread */
+    min-height: 420px;
+    background-image: url('{{ page_data.hero_image }}');
+    background-size: cover; background-position: center;
+    /* Two-stop gradient anchored to the bottom-left credit overlay so
+       the rust 3-stat KPI tuple stays AAA-legible irrespective of the
+       Pexels frame slot 0 supplies. The top 60% of the photo is left
+       fully transparent — the editorial-architectural subject is the
+       hero, not a scrim. */
+    isolation: isolate;
+  }
+  .cs-hero .photo::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(225deg, rgba(15,18,22,0) 0%, rgba(15,18,22,0) 52%, rgba(15,18,22,0.78) 100%);
+    pointer-events: none;
+  }
+  .cs-hero .photo .overlay {
+    position: absolute;
+    left: 56px; bottom: 40px; right: auto;
+    z-index: 2;
+    color: var(--on-dark);
+    max-width: 560px;
+    display: flex; flex-direction: column; gap: 22px;
+    pointer-events: none;
+  }
+  .cs-hero .overlay .credit .credit-line {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--on-dark);
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(238,240,243,0.42);
+  }
+  .cs-hero .overlay .credit .credit-line strong {
+    display: block; margin-top: 6px;
+    font-family: var(--heading); font-size: 16px; color: var(--on-dark);
+    text-transform: none; letter-spacing: 0; font-weight: 600;
+  }
+  /* In-overlay 3-stat KPI tuple · LF-2 L5=hero-overlay. The tuple
+     lives INSIDE the photo's bottom-left frame, NOT on a separate
+     dark band. Cormorant tabular-nums on cream type. */
+  .cs-hero .overlay .kpi-row {
+    display: flex; gap: 32px;
+  }
+  .cs-hero .overlay .kpi {
+    display: flex; flex-direction: column; gap: 6px;
+    min-width: 0; flex: 1;
+  }
+  .cs-hero .overlay .kpi .num {
+    font-family: var(--heading); font-size: 32px; font-weight: 600;
+    color: var(--on-dark); line-height: 1.0; letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .cs-hero .overlay .kpi .lbl {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--on-dark-2);
+  }
+
+  /* Below-photo 8/4 editorial split. LEFT 8-col (h1 + sub + actions)
+     · RIGHT 4-col (side-quote with hairline rust border-inline-start). */
+  .cs-hero .below {
+    max-width: 1400px; margin: 0 auto;
+    padding: 80px 72px 96px;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 72px;
+    align-items: start;
+  }
+  .cs-hero .below .left .eyebrow {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-mute);
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .cs-hero .below .left h1 {
+    margin-top: 28px;
+    font-size: var(--fs-hero);
+    line-height: 1.05;
+    letter-spacing: -0.022em;
+    max-width: 22ch;
+    font-weight: 500;
+  }
+  .cs-hero .below .left h1 em {
+    color: var(--accent);
+    font-style: italic; font-weight: 600;
+  }
+  .cs-hero .below .left .sub {
+    margin-top: 28px; max-width: 56ch;
+    font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .cs-hero .below .left .actions {
+    margin-top: 40px; display: flex; gap: 28px; align-items: center; flex-wrap: wrap;
+  }
+  /* Side-quote · 4-col editorial pull-quote with hairline rust border-
+     inline-start. Italic Cormorant on cream · em on the verb form
+     `argomenta` (CS-TYPE-02 single-em respected). The hairline border-
+     inline-start uses logical properties so RTL flips automatically. */
+  .cs-hero .below .right {
+    padding-inline-start: 40px;
+    border-inline-start: 2px solid var(--accent);
+    align-self: stretch;
+    display: flex; align-items: center;
+  }
+  .cs-hero .below .right .side-quote {
+    font-family: var(--heading);
+    font-size: 22px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.42;
+    color: var(--ink);
+    max-width: 30ch;
+    margin: 0;
+  }
+  .cs-hero .below .right .side-quote em {
+    color: var(--accent); font-style: italic; font-weight: 600;
+  }
+
+  /* ============================================================
+     L4 narrative · essay-with-anchors
+     4-paragraph editorial essay with rust drop-cap on para 1, three
+     pull-quotes interspersed, and a 4-link side-rail of anchor links.
+     LF-2 has no cs-pillars · this is the family's pillar-replacement.
+     The drop-cap is the LF-2 family typographic signature.
+  ============================================================ */
+  .cs-narrative {
+    max-width: 1400px; margin: 0 auto;
+    padding: var(--space-section-y) var(--space-section-x);
+  }
+  .cs-narrative .head {
+    padding-bottom: 36px;
+    border-bottom: 2px solid var(--primary);
+  }
+  .cs-narrative .head .sec-label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .cs-narrative .essay {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 72px;
+    align-items: start;
+  }
+  .cs-narrative .essay .body {
+    max-width: 64ch;
+  }
+  .cs-narrative .essay-para {
+    font-family: var(--body); font-size: 17px; line-height: 1.78;
+    color: var(--ink);
+    margin: 0 0 28px;
+  }
+  .cs-narrative .dropcap {
+    float: left;
+    font-family: var(--heading);
+    font-size: 84px;
+    line-height: 0.86;
+    font-weight: 500;
+    color: var(--accent);
+    padding-inline-end: 14px;
+    margin-top: 6px;
+    margin-bottom: -4px;
+    /* Drop-cap is the LF-2 family's editorial signature — present in
+       LF-2, absent in LF-1/3/4/5. Rust on cream is the only place a
+       large coloured letterform appears on the home. */
+  }
+  .cs-narrative .pull-quote {
+    margin: 36px 0 36px;
+    padding: 22px 0 22px;
+    border-top: 1px solid var(--accent);
+    border-bottom: 1px solid var(--accent);
+    font-family: var(--heading);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.42;
+    color: var(--ink);
+    max-width: 64ch;
+  }
+  .cs-narrative .pull-quote em {
+    color: var(--accent); font-style: italic; font-weight: 600;
+  }
+  /* Side-rail anchor list · sits sticky alongside the essay body so the
+     reader can jump to the studio / servizi / progetti / contatti
+     pages without losing the narrative thread. */
+  .cs-narrative .side-rail {
+    position: sticky; top: 100px;
+    display: flex; flex-direction: column;
+    border-block-start: 2px solid var(--primary);
+    padding-block-start: 24px;
+  }
+  .cs-narrative .side-rail a {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--body); font-size: 14px; font-weight: 600;
+    color: var(--ink);
+    transition: color .18s ease, border-color .18s ease;
+  }
+  .cs-narrative .side-rail a .arrow {
+    font-family: var(--heading); font-size: 18px;
+    color: var(--accent);
+    transition: transform .2s ease;
+  }
+  .cs-narrative .side-rail a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .cs-narrative .side-rail a:hover .arrow { transform: translateX(4px); }
+
+  /* ============================================================
+     Sectors-ribbon · sentence-shape, italic Cormorant
+     12 typology terms separated by middot. NOT a card-grid (Pragma
+     pillar-grid) · NOT a 2x2 matrix (Continua) · NOT a calendar
+     (Fiscus cs-cycle) · NOT a percorso (Solaria). The ribbon reads
+     as editorial prose, not as data.
+  ============================================================ */
+  .cs-sectors-ribbon {
+    max-width: 1100px; margin: 0 auto;
+    padding: var(--space-section-y) var(--space-section-x);
+    text-align: center;
+  }
+  .cs-sectors-ribbon .head .sec-label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .cs-sectors-ribbon .head .lead {
+    margin: 28px auto 0; max-width: 64ch;
+    font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.65;
+    color: var(--ink-soft);
+  }
+  .cs-sectors-ribbon .ribbon {
+    margin: 56px auto 0;
+    max-width: 880px;
+    font-family: var(--heading);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.5;
+    color: var(--ink);
+    letter-spacing: 0;
+  }
+  .cs-sectors-ribbon .ribbon .seg {
+    display: inline-block;
+  }
+  .cs-sectors-ribbon .ribbon .sep {
+    color: var(--accent);
+    margin: 0 12px;
+    font-style: normal;
+    font-weight: 600;
+  }
+  .cs-sectors-ribbon .trailing {
+    margin: 56px auto 0; max-width: 56ch;
+    font-family: var(--body); font-size: 15px; line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .cs-sectors-ribbon .counter {
+    margin: 24px auto 0; max-width: 56ch;
+    font-family: var(--heading);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .cs-sectors-ribbon .counter em {
+    color: var(--accent);
+    font-style: italic; font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============================================================
+     L6 leadership · single-portrait-feature
+     ONE founding-architect masthead. LARGE environmental portrait
+     LEFT (slot 2 · senior-mid-career architect with blueprints) +
+     h2 name + role-eyebrow + 2-paragraph bio + 4 credentials RIGHT.
+     NOT a 3-card grid (Continua's L6) · NOT typographic-only (Pragma's).
+     The single portrait carries the whole leadership read — Risk 4
+     mitigation is the curator's environmental composition + the bio's
+     architectural-firm specifics framing the photo as editorial
+     portrait, not LinkedIn headshot.
+  ============================================================ */
+  .cs-leadership-single {
+    background: var(--paper-2);
+    border-block: 1px solid var(--rule);
+  }
+  .cs-leadership-single .head {
+    max-width: 1400px; margin: 0 auto;
+    padding: var(--space-section-y) var(--space-section-x) 0;
+  }
+  .cs-leadership-single .head .sec-label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--primary);
+  }
+  .cs-leadership-single .grid {
+    max-width: 1400px; margin: 0 auto;
+    padding: 56px var(--space-section-x) var(--space-section-y);
+    display: grid;
+    grid-template-columns: 480px 1fr;
+    gap: 72px;
+    align-items: start;
+  }
+  .cs-leadership-single .portrait-frame {
+    margin: 0;
+    border: 1px solid var(--rule);
+    background: var(--paper-3);
+  }
+  .cs-leadership-single .portrait-frame img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: center;
+    /* Editorial mute · prevents Pexels colour saturation from pulling
+       the portrait into stock-headshot saturation. */
+    filter: grayscale(8%) contrast(1.04) brightness(0.97);
+  }
+  .cs-leadership-single .portrait-frame figcaption {
+    padding: 14px 18px;
+    font-family: var(--body); font-size: 12px;
+    font-style: italic;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--rule);
+  }
+  .cs-leadership-single .body {
+    padding-block-start: 6px;
+  }
+  .cs-leadership-single .body h2 {
+    font-size: var(--fs-h2);
+    font-weight: 500;
+    line-height: 1.06;
+    color: var(--primary);
+    letter-spacing: -0.018em;
+    max-width: 18ch;
+  }
+  .cs-leadership-single .body h2 em {
+    color: var(--accent); font-style: italic; font-weight: 600;
+  }
+  .cs-leadership-single .body .role {
+    margin-top: 12px;
+    font-family: var(--heading);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--ink-soft);
+  }
+  .cs-leadership-single .body p {
+    margin-top: 24px;
+    font-family: var(--body); font-size: 16px; line-height: 1.72;
+    color: var(--ink);
+    max-width: 56ch;
+  }
+  .cs-leadership-single .body .creds {
+    margin-top: 32px; padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    list-style: none;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .cs-leadership-single .body .creds li {
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+  }
+  .cs-leadership-single .body .creds li:before {
+    content: '· ';
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .cs-leadership-single .body .secondary {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 32px;
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 4px;
+    transition: color .18s ease, border-color .18s ease;
+  }
+  .cs-leadership-single .body .secondary:hover {
+    color: var(--accent); border-bottom-color: var(--accent);
+  }
+  .cs-leadership-single .body .secondary .arrow {
+    color: var(--accent); font-family: var(--heading); font-size: 16px;
+  }
+
+  /* ============================================================
+     L7 cases-magazine · 3+1 magazine-grid
+     1 hero card (large · 8-col) + 3 small cards (4-col stacked
+     right). Each card carries photo + eyebrow + h3 + body + pill.
+     CSS grid: 2-col with the hero card spanning 2 rows on the left
+     and the 3 small cards stacked on the right. NOT list-row
+     (Pragma/Fiscus/Solaria's L7) · NOT timeline (Continua's L7).
+     The magazine-grid is the LF-2 case-shape signature.
+  ============================================================ */
+  .cs-cases-magazine {
+    max-width: 1400px; margin: 0 auto;
+    padding: var(--space-section-y) var(--space-section-x);
+  }
+  .cs-cases-magazine .head {
+    padding-bottom: 36px;
+    border-bottom: 2px solid var(--primary);
+    display: grid;
+    grid-template-columns: 0.5fr 1fr;
+    gap: 56px;
+    align-items: end;
+  }
+  .cs-cases-magazine .head .sec-label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .cs-cases-magazine .head .lead {
+    font-family: var(--body); font-size: var(--fs-body-lg); line-height: 1.65;
+    color: var(--ink-soft);
+    max-width: 56ch;
+  }
+  .cs-cases-magazine .grid {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: repeat(3, auto);
+    gap: 36px;
+  }
+  .cs-cases-magazine .card {
+    background: var(--paper-3);
+    border: 1px solid var(--rule);
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .cs-cases-magazine .card:hover { border-color: var(--accent); }
+  .cs-cases-magazine .card-link {
+    display: block;
+    color: inherit;
+  }
+  .cs-cases-magazine .card .thumb {
+    overflow: hidden;
+    border-bottom: 1px solid var(--rule);
+  }
+  .cs-cases-magazine .card .thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    transition: transform .4s var(--lm-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+    filter: grayscale(6%) contrast(1.04);
+  }
+  .cs-cases-magazine .card:hover .thumb img { transform: scale(1.02); }
+  .cs-cases-magazine .card .copy {
+    padding: 32px 32px 36px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .cs-cases-magazine .card .copy .num {
+    font-family: var(--heading);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 24px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .cs-cases-magazine .card .copy .eyebrow {
+    font-family: var(--body); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .cs-cases-magazine .card .copy h3 {
+    font-family: var(--heading);
+    font-weight: 500;
+    color: var(--primary);
+    letter-spacing: -0.012em;
+    line-height: 1.18;
+    max-width: 24ch;
+  }
+  .cs-cases-magazine .card .copy h3 em {
+    color: var(--accent); font-style: italic; font-weight: 600;
+  }
+  .cs-cases-magazine .card .copy p {
+    font-family: var(--body); font-size: 15px; line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 56ch;
+  }
+  .cs-cases-magazine .card .copy .pill {
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--body); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink-mute);
+  }
+
+  /* Hero card · spans 3 rows on the left column. Photo dominates
+     above the copy, h3 reaches 32px serif drama, body is longer. */
+  .cs-cases-magazine .card--hero {
+    grid-column: 1 / 2;
+    grid-row: 1 / 4;
+    display: flex; flex-direction: column;
+  }
+  .cs-cases-magazine .card--hero .card-link { height: 100%; display: flex; flex-direction: column; }
+  .cs-cases-magazine .card--hero .thumb {
+    aspect-ratio: 16 / 9;
+  }
+  .cs-cases-magazine .card--hero .copy {
+    padding: 40px 40px 44px;
+    flex: 1;
+  }
+  .cs-cases-magazine .card--hero .copy h3 {
+    font-size: 32px;
+  }
+  .cs-cases-magazine .card--hero .copy p {
+    font-size: 16px;
+  }
+
+  /* Small cards · 3 stacked on the right column. Photo smaller, copy
+     tighter. */
+  .cs-cases-magazine .card--small {
+    grid-column: 2 / 3;
+  }
+  .cs-cases-magazine .card--small .thumb {
+    aspect-ratio: 16 / 9;
+  }
+  .cs-cases-magazine .card--small .copy {
+    padding: 24px 28px 28px;
+    gap: 10px;
+  }
+  .cs-cases-magazine .card--small .copy h3 {
+    font-size: 22px;
+  }
+  .cs-cases-magazine .card--small .copy p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .cs-cases-magazine .trailing-link {
+    margin-top: 36px;
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--body); font-size: 13px; font-weight: 600;
+    color: var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 4px;
+    transition: color .18s ease, border-color .18s ease;
+  }
+  .cs-cases-magazine .trailing-link:hover {
+    color: var(--accent); border-bottom-color: var(--accent);
+  }
+  .cs-cases-magazine .trailing-link .arrow {
+    color: var(--accent); font-family: var(--heading); font-size: 16px;
+  }
+
+  /* ============================================================
+     CTA closer · LF-2-specific cream-hairline
+     CREAM band (NOT dark — CS-TONE-03 demoted at family level · LF-2
+     declares zero dark bands on home). Hairline graphite border top
+     + bottom · centred copy · larger Cormorant h2 restating voice
+     anchor verbatim · single FILLED rust button (CS-CTA-01
+     ratification 2026-04-26 polarity inversion · the home's only
+     filled-rust element).
+  ============================================================ */
+  .cs-cta-cream {
+    background: var(--paper);
+    border-block-start: 1px solid var(--primary);
+    border-block-end: 1px solid var(--primary);
+    padding: 96px 72px;
+  }
+  .cs-cta-cream .wrap {
+    max-width: 880px; margin: 0 auto;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+  }
+  .cs-cta-cream .label {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .cs-cta-cream .intro {
+    font-family: var(--heading); font-style: italic; font-size: 18px;
+    color: var(--ink-soft); line-height: 1.5;
+    max-width: 56ch;
+  }
+  .cs-cta-cream h2 {
+    font-size: var(--fs-h2);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.018em;
+    color: var(--primary);
+    max-width: 22ch;
+  }
+  .cs-cta-cream h2 em {
+    color: var(--accent); font-style: italic; font-weight: 600;
+  }
+  .cs-cta-cream .form-hint {
+    font-family: var(--body); font-size: 14px; line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 60ch;
+    padding: 16px 24px;
+    border-block: 1px solid var(--rule);
+  }
+  .cs-cta-cream .actions {
+    margin-top: 8px;
+  }
+  /* LF-2-specific filled-rust button · CS-CTA-01 polarity inversion.
+     The closer is the home's third and final accent hit (after the
+     drop-cap and the magazine-card numerals); CS-PAL-05 ≤3 accent
+     hits per viewport binding holds because they never co-render. */
+  .cs-cta-cream .cs-btn-primary--filled {
+    background: var(--accent);
+    color: var(--on-dark);
+    border-color: var(--accent);
+    padding: 18px 36px;
+  }
+  .cs-cta-cream .cs-btn-primary--filled:after {
+    color: var(--on-dark);
+  }
+  .cs-cta-cream .cs-btn-primary--filled:hover {
+    background: var(--primary);
+    color: var(--on-dark);
+    border-color: var(--primary);
+    filter: none;
+  }
+  .cs-cta-cream .cs-btn-primary--filled:hover:after {
+    color: var(--accent);
+  }
+  .cs-cta-cream .closing {
+    font-family: var(--heading); font-style: italic; font-size: 16px;
+    color: var(--ink-soft);
+    max-width: 60ch; line-height: 1.5;
+  }
+  .cs-cta-cream .sub {
+    font-family: var(--body); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  /* ============================================================
+     LF-2 responsive matrix · 1280 / 1100 / 880 / 720 / 480
+       ≤ 1280 hero overlay padding eases · below split keeps 2-col
+       ≤ 1100 hero below stacks (h1 above side-quote) · narrative
+              side-rail below body · magazine 1-col with hero card
+              spanning full width
+       ≤  880 hero photo aspect 16:10 · narrative drop-cap 64px ·
+              leadership 1-col · cases all 1-col
+       ≤  720 hero overlay collapses inside primary band · below
+              padding compressed · sectors ribbon flexes · CTA
+              closer single-column
+       ≤  480 minimum spacing · h1 floor 32px · drop-cap 56px
+  ============================================================ */
+  @media (max-width: 1280px) {
+    .cs-hero .photo { min-height: 380px; }
+    .cs-hero .overlay { left: 40px; bottom: 28px; }
+    .cs-hero .below { padding: 64px 48px 80px; gap: 56px; }
+    .cs-hero .below .right { padding-inline-start: 32px; }
+    .cs-narrative .essay { gap: 48px; grid-template-columns: 1fr 240px; }
+    .cs-cases-magazine .grid { gap: 28px; }
+  }
+
+  @media (max-width: 1100px) {
+    .cs-hero .below {
+      grid-template-columns: 1fr;
+      gap: 36px;
+      padding: 56px 40px 72px;
+    }
+    .cs-hero .below .right {
+      padding-inline-start: 28px;
+      align-self: flex-start;
+    }
+    .cs-hero .below .right .side-quote { font-size: 20px; max-width: 56ch; }
+    .cs-hero .overlay .kpi-row { gap: 24px; }
+    .cs-narrative .essay {
+      grid-template-columns: 1fr;
+      gap: 56px;
+    }
+    .cs-narrative .side-rail {
+      position: static;
+      max-width: 480px;
+    }
+    .cs-leadership-single .grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .cs-leadership-single .portrait-frame {
+      max-width: 520px;
+    }
+    .cs-cases-magazine .head {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .cs-cases-magazine .grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
+    .cs-cases-magazine .card--hero,
+    .cs-cases-magazine .card--small {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+  }
+
+  @media (max-width: 880px) {
+    .cs-hero .photo {
+      aspect-ratio: 16 / 10;
+      min-height: 340px;
+    }
+    .cs-hero .overlay {
+      left: 28px; bottom: 22px;
+      max-width: calc(100% - 56px);
+    }
+    .cs-hero .overlay .kpi-row {
+      gap: 20px; flex-wrap: wrap;
+    }
+    .cs-hero .overlay .kpi .num { font-size: 26px; }
+    .cs-hero .below { padding: 48px 28px 56px; gap: 28px; }
+    .cs-narrative .essay { margin-top: 40px; gap: 40px; }
+    .cs-narrative .dropcap { font-size: 64px; padding-inline-end: 10px; }
+    .cs-narrative .pull-quote { font-size: 20px; padding: 18px 0; margin: 28px 0; }
+    .cs-sectors-ribbon .ribbon { font-size: 20px; }
+    .cs-sectors-ribbon .ribbon .sep { margin: 0 8px; }
+    .cs-cta-cream { padding: 72px 28px; }
+    .cs-cta-cream .form-hint { padding: 14px 20px; font-size: 13px; }
+  }
+
+  @media (max-width: 720px) {
+    .cs-hero .photo { aspect-ratio: 4 / 5; min-height: 0; }
+    .cs-hero .photo::after {
+      background: linear-gradient(180deg, rgba(15,18,22,0) 0%, rgba(15,18,22,0) 50%, rgba(15,18,22,0.82) 100%);
+    }
+    .cs-hero .overlay {
+      left: 20px; right: 20px; bottom: 18px;
+      max-width: none;
+    }
+    .cs-hero .overlay .kpi-row { gap: 16px; }
+    .cs-hero .overlay .kpi .num { font-size: 22px; }
+    .cs-hero .overlay .kpi .lbl { font-size: 9px; letter-spacing: 0.18em; }
+    .cs-hero .below { padding: 36px 22px 44px; gap: 24px; }
+    .cs-hero .below .right { padding-inline-start: 18px; }
+    .cs-hero .below .right .side-quote { font-size: 18px; }
+    .cs-narrative { padding: 56px 22px; }
+    .cs-narrative .essay { margin-top: 32px; gap: 32px; }
+    .cs-narrative .pull-quote { font-size: 18px; }
+    .cs-sectors-ribbon .ribbon { font-size: 18px; }
+    .cs-leadership-single .head { padding: 56px 22px 0; }
+    .cs-leadership-single .grid { padding: 36px 22px 56px; gap: 32px; }
+    .cs-leadership-single .body h2 { font-size: 26px; max-width: none; }
+    .cs-cases-magazine { padding: 56px 22px; }
+    .cs-cases-magazine .grid { gap: 20px; }
+    .cs-cases-magazine .card .copy { padding: 22px 22px 26px; }
+    .cs-cases-magazine .card--hero .copy { padding: 28px 22px 32px; }
+    .cs-cases-magazine .card--hero .copy h3 { font-size: 24px; }
+    .cs-cases-magazine .card--small .copy h3 { font-size: 19px; }
+    .cs-cta-cream { padding: 56px 22px; }
+    .cs-cta-cream .cs-btn-primary--filled { padding: 14px 22px; min-height: 44px; }
+  }
+
+  @media (max-width: 480px) {
+    .cs-hero .overlay { left: 14px; right: 14px; bottom: 14px; }
+    .cs-hero .below { padding: 28px 18px 36px; }
+    .cs-narrative { padding: 44px 18px; }
+    .cs-narrative .dropcap { font-size: 56px; }
+    .cs-narrative .pull-quote { font-size: 17px; padding: 14px 0; }
+    .cs-leadership-single .grid { padding: 28px 18px 44px; }
+    .cs-cases-magazine { padding: 44px 18px; }
+    .cs-cta-cream { padding: 44px 18px; }
+  }
+
+  /* ============================================================
+     LF-2 nav variant · split-wordmark on cream
+     CS-NAV-01 (sticky-top primary-bg) DEMOTED at family level. The
+     LF-2 nav reads as an editorial-publication masthead, NOT a
+     boardroom-dark bar. Cream background · graphite link text · rust
+     accent on focus + active. The split-wordmark layout (line 1 =
+     CORNICE · line 2 = studio di architettura) lives below.
+  ============================================================ */
+  .cs-nav.cs-nav--lf2 {
+    background: var(--paper);
+    color: var(--ink);
+    height: 84px;
+    box-shadow:
+      0 1px 0 var(--rule) inset,
+      0 1px 0 var(--rule);
+  }
+  .cs-nav--lf2 .wm {
+    color: var(--ink);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .cs-nav--lf2 .wm .wm-line-1 {
+    font-family: var(--heading);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--primary);
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .cs-nav--lf2 .wm .wm-line-2 {
+    font-family: var(--body);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    text-transform: lowercase;
+    margin-top: 2px;
+  }
+  .cs-nav--lf2 .links {
+    color: var(--ink-soft);
+  }
+  .cs-nav--lf2 .links a:hover { color: var(--primary); }
+  .cs-nav--lf2 .links a.is-current { color: var(--primary); }
+  .cs-nav--lf2 .links a.is-current:after {
+    background: var(--accent);
+  }
+  .cs-nav--lf2 .links a:focus-visible {
+    outline-color: var(--accent);
+  }
+  .cs-nav--lf2 .phone {
+    color: var(--primary);
+  }
+  .cs-nav--lf2 .phone .tag {
+    color: var(--ink-mute);
+    border-color: var(--rule);
+  }
+  /* Hamburger lines on cream nav must read as graphite (was --on-dark) */
+  .cs-nav--lf2 .cs-nav-burger span { background: var(--primary); }
+  .cs-nav--lf2 .cs-nav-toggle:focus-visible ~ .cs-nav-burger {
+    outline-color: var(--accent);
+  }
+
+  {% if is_rtl %}
+  /* LF-2 RTL handling — flip the 8/4 hero split, narrative side-rail
+     placement, and the side-quote border-inline-start. The logical
+     properties used throughout this file mean most flips are automatic;
+     a handful of explicit alignments keep the editorial rhythm honest. */
+  .cs-hero .overlay { left: auto; right: 56px; }
+  .cs-cases-magazine .grid { direction: rtl; }
+  {% endif %}

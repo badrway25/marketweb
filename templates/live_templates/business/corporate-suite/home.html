@@ -2,15 +2,19 @@
 
 {% comment %}
 Phase X.4b · CS-LAYOUT-22 / CS-LAYOUT-14 · home shell dispatches by
-template.layout_family. LF-5 (Continua stewardship) routes to the
-object-overlay scaffold; every other family (LF-1 / LF-3 / LF-4 ·
-Pragma / Fiscus / Solaria) routes to the boardroom-vertical scaffold,
-which is byte-equivalent to the pre-X.4b shared shell. The factory-side
-rule book is factory/reports/hardening/corporate-suite-layout-variance-rules.md.
+template.layout_family. LF-2 (Cornice editorial spread · Phase X.5)
+routes to the stacked-editorial scaffold; LF-5 (Continua stewardship)
+routes to the object-overlay scaffold; every other family (LF-1 /
+LF-3 / LF-4 · Pragma / Fiscus / Solaria) routes to the boardroom-
+vertical scaffold, which is byte-equivalent to the pre-X.4b shared
+shell. The factory-side rule book is `factory/reports/hardening/
+corporate-suite-layout-variance-rules.md`.
 {% endcomment %}
 
 {% block extra_css %}
-{% if template.layout_family == "LF-5" %}
+{% if template.layout_family == "LF-2" %}
+{% include "live_templates/business/corporate-suite/_layouts/lf2/styles.html" %}
+{% elif template.layout_family == "LF-5" %}
 {% include "live_templates/business/corporate-suite/_layouts/lf5/styles.html" %}
 {% else %}
 {% include "live_templates/business/corporate-suite/_layouts/lf1/styles.html" %}
@@ -18,7 +22,9 @@ rule book is factory/reports/hardening/corporate-suite-layout-variance-rules.md.
 {% endblock %}
 
 {% block content %}
-{% if template.layout_family == "LF-5" %}
+{% if template.layout_family == "LF-2" %}
+{% include "live_templates/business/corporate-suite/_layouts/lf2/content.html" %}
+{% elif template.layout_family == "LF-5" %}
 {% include "live_templates/business/corporate-suite/_layouts/lf5/content.html" %}
 {% else %}
 {% include "live_templates/business/corporate-suite/_layouts/lf1/content.html" %}

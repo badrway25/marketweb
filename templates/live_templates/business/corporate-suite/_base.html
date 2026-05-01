@@ -328,6 +328,41 @@
     font-size: 11px; letter-spacing: 0.18em;
   }
 
+  /* LF-2 · split-wordmark masthead nav (Cornice). CS-NAV-01 demoted
+     at family level — the LF-2 nav reads as an editorial-publication
+     masthead on cream paper, NOT a boardroom-dark bar. Trailing CTA
+     pill is filled rust on cream — the chrome's one accent hit per
+     CS-NAV-04 / CS-PAL-05. The body of the LF-2 nav rules lives in
+     `_layouts/lf2/styles.html`; this base block carries the chrome
+     constants that must outlast a layout-styles include reorder. */
+  .cs-nav-cta--lf2 {
+    margin-left: auto;
+    display: flex; align-items: center;
+  }
+  .cs-nav-cta--lf2 .cs-nav-cta-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 22px;
+    background: var(--accent);
+    color: var(--on-dark);
+    font-family: var(--body); font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border: 1.5px solid var(--accent);
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .cs-nav-cta--lf2 .cs-nav-cta-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--on-dark);
+  }
+  .cs-nav-cta--lf2 .cs-nav-cta-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  /* LF-2 footer column-content overrides · the 4-col-with-whistleblowing
+     primitive is the same as LF-5 (pulled in via `.cs-foot-col--whistleblowing`
+     above), but the LF-2 footer needs a bit of paragraph breathing on
+     wider screens so the legal content doesn't crowd into the column rule. */
+
   /* LF-5 · 4-col-with-whistleblowing footer. Replaces the offices
      column with a whistleblowing channel column (D.lgs. 24/2023
      surfaced as a first-class element, not buried in the legal row).
@@ -1096,10 +1131,18 @@
   <a href="{% url 'catalog:template_list_by_category' template.category.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="mp-back">{{ chrome.mp_other_business }}</a>
 </div>
 
-<nav class="cs-nav{% if template.layout_family == 'LF-5' %} cs-nav--lf5{% endif %}">
+<nav class="cs-nav{% if template.layout_family == 'LF-5' %} cs-nav--lf5{% elif template.layout_family == 'LF-2' %} cs-nav--lf2{% endif %}">
   <div class="wm">
+    {% if template.layout_family == "LF-2" %}
+    {# LF-2 split-wordmark masthead · CS-NAV-01 demoted at family level. #}
+    {# Line 1 = wordmark, line 2 = subtitle. Reads as a publication      #}
+    {# masthead (Casabella · Domus), not a corporate logotype.           #}
+    <span class="wm-line-1">{{ site.logo_word }}</span>
+    {% if site.logo_subtitle %}<span class="wm-line-2">{{ site.logo_subtitle }}</span>{% endif %}
+    {% else %}
     <span class="crest">{{ site.logo_initial }}</span>
     <span>{{ site.logo_word }}</span>
+    {% endif %}
   </div>
   <input type="checkbox" id="cs-nav-toggle" class="cs-nav-toggle" aria-label="{{ chrome.nav_menu|default:'Menu' }}">
   <label for="cs-nav-toggle" class="cs-nav-burger" aria-hidden="true">
@@ -1114,10 +1157,18 @@
       {% endif %}
     {% endfor %}
   </div>
-  {% if template.layout_family != "LF-5" %}
+  {% if template.layout_family != "LF-5" and template.layout_family != "LF-2" %}
   <div class="phone">
     <span class="tag">{{ site.tag }}</span>
     <span>{{ site.phone }}</span>
+  </div>
+  {% endif %}
+  {% if template.layout_family == "LF-2" %}
+  {# LF-2 trailing accent CTA · solid rust on cream · CS-NAV-04 (one  #}
+  {# accent CTA per nav) preserved. The button is the chrome's only  #}
+  {# filled-rust element (rust touchpoint #1 in the chrome class).    #}
+  <div class="phone cs-nav-cta--lf2">
+    <a href="{% url 'catalog:live_template_page' template.category.slug template.slug 'contatti' %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="cs-nav-cta-btn">{{ page_data.primary_cta|default:"Apri un fascicolo" }}</a>
   </div>
   {% endif %}
 </nav>
@@ -1148,7 +1199,11 @@
       <p>{{ site.email }}</p>
       <p>{{ site.hours_compact }}</p>
     </div>
-    {% if template.layout_family == "LF-5" and site.whistleblowing_footer %}
+    {% if template.layout_family == "LF-5" and site.whistleblowing_footer or template.layout_family == "LF-2" and site.whistleblowing_footer %}
+    {# LF-5 + LF-2 share the 4-col-with-whistleblowing footer shape   #}
+    {# (CS-FOOT-01 demoted at family level). The whistleblowing       #}
+    {# channel surfaces D.lgs. 24/2023 as a column-level disclosure   #}
+    {# rather than burying it in the legal row.                       #}
     <div class="col cs-foot-col--whistleblowing">
       <h5>{{ site.whistleblowing_footer.heading }}</h5>
       <p class="cs-foot-whistle-eyebrow">{{ site.whistleblowing_footer.eyebrow }}</p>

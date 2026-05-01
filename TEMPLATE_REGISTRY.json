@@ -338,6 +338,52 @@
       "tier_reason": "Phase X.4 Continua — Family-Office Stewardship · 4th corporate-suite sibling · 1st family-office variant · 23rd published_live template. Workflow A pass 1 (2026-04-29 · IT-only foundation) decision-locked the brief at `design-orchestrator/real-candidates/continua-build-brief.md` with 5/5 distinctness vs Pragma + Fiscus + Solaria on the 4-of-5 axes gate (pine + pewter + brass · Crimson Pro + Public Sans · object-led hero zero people · governance-cycle-strip mid-beat · 60s/40s/50s leadership). Workflow A.5 pass 1.5 review-lock (2026-04-29) restored DB↔registry parity and verified the legitimate D-055 staff-preview path. Workflow B LF-5 IT rebuild (2026-04-29) divergent layout-family closure: 9/9 vs Pragma · 8/9 vs Fiscus · 8/9 vs Solaria with zero pixel drift on frozen siblings. Workflow C pass B multilingual (2026-04-30 · tip 9759ac4) added the four locale trees (EN/FR/ES/AR) at shape-parity with IT, voice anchor verbatim-in-translation on the equivalent temporal noun (generazioni → generations · générations · generaciones · الأجيال) preserved across 25/25 italic-em hits, real Arabic RTL via Noto Kufi h1 + Amiri body + LF-5 letter-spacing reset extended additively in `_base.html` for all 9 LF-5 eyebrow surfaces. Workflow D release-decision (2026-04-30 · tip c319aeb) certified release-ready in principle: all 18 blocking overrides clear, all 9 critical dimensions ≥ 4, aggregate 4.97/5, AAA contrast (≥11:1) on hero+KPI+CTA+nav, 45/45 staff routes 200, anonymous tier-gate intact, 545/546 tests pass (sole failure pre-existing booking-flag · unrelated). Public flip (2026-04-30) flipped tier draft → published_live after the user completed the parallel-verification handshake and authorised the gatekeeper to apply the documented cascade: 7 tier-fact test assertions bumped 22 → 23, no template/source/HTML edits, dynamic trust counter inherits 22+ → 23+ from DB. Public catalog count moves 22 → 23; Continua card surfaces under /templates/business/ for anonymous visitors; staff-preview path (`?preview=1`) preserved as a no-op since the slug is now publicly reachable."
     },
     {
+      "slug": "cornice-architettura",
+      "name": "Cornice — Studio di Architettura",
+      "category": "business",
+      "brand_name": "Cornice — Studio di Architettura",
+      "tagline": "Architettura editoriale · committenze pubbliche e private · Milano dal 2008",
+      "palette": {
+        "primary": "#1F2226",
+        "secondary": "#C7BFB1",
+        "accent": "#B7491F"
+      },
+      "typography": "Cormorant Garamond + Source Sans 3",
+      "personality": "editoriale, curatoriale, autoriale",
+      "archetype": "corporate-suite",
+      "hero_style": "stacked-editorial-cornice",
+      "navbar_style": "split-wordmark-cornice",
+      "footer_style": "four-col-cornice",
+      "card_style": "magazine-card-cornice",
+      "button_style": "ghost-cornice",
+      "density": "airy-editorial",
+      "tone": "editorial-curatorial",
+      "imagery_direction": "architecture-editorial-built-form",
+      "imagery_key": "business-architecture",
+      "conversion_pattern": "project-dossier-submission",
+      "font_pairing": "Cormorant Garamond + Source Sans 3",
+      "dna_phase": "x5.cornice-a5-it-build",
+      "session_closed": null,
+      "live_preview": false,
+      "live_pages": [
+        "home",
+        "studio",
+        "servizi",
+        "progetti",
+        "progetti/<slug>",
+        "contatti"
+      ],
+      "locales": [
+        "it"
+      ],
+      "rtl": false,
+      "price": 89,
+      "featured": false,
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "Phase X.5 Cornice · A.5 build · IT-only · tier=draft (D-102 cadence). 5th corporate-suite sibling · 1st architecture-firm variant · 1st LF-2 (Editorial Spread) occupant. Validates the layout-family system per `factory/reports/hardening/corporate-suite-layout-divergence-plan.md §10 Step 6` — divergent home shell (stacked-editorial hero · zero dark band · narrative essay with drop-cap · single-portrait masthead · 3+1 magazine-grid cases · split-wordmark navbar on cream · 4-col footer with whistleblowing column) is structurally distinct from LF-1 / LF-3 / LF-4 / LF-5. Voice editorial-curatorial · architectural-discipline (NOT decisional gravity · NOT presidio · NOT bounded-method · NOT stewardship-longitudinal). Palette graphite + pietra-serena + terracotta-rust (NEUTRAL/NEUTRAL/WARM · the only un-claimed cluster polarity per intake §3.1). Cormorant Garamond + Source Sans 3 (closes the §1.4 cluster-collapse Inter risk). Voice anchor verbatim: «Ogni progetto è un argomento costruito, non un servizio reso» — italic on the curatorial noun `argomento`. Pexels-only imagery from URL #1 (CS-IMG-SRC-01) · `business-architecture` pool · cross-cluster grep CLEAN against business-corporate / business-fiscal / business-coaching / business-stewardship pools at A.3 curator entry (2026-04-30 · 0/26 IDs overlap). Tier stays `draft` — public catalog count remains 23 — anonymous visitors do NOT see Cornice; staff preview reaches the live route via `?preview=1`. Multilingual rollout (EN/FR/ES/AR) via workflow C in a separate pass; AR/RTL handling deferred to that pass per planner-brief §11. Public flip held for user-handshake on the live IT review."
+    },
+    {
       "slug": "gusto-fine-dining",
       "name": "Gusto — Fine Dining",
       "category": "restaurant",

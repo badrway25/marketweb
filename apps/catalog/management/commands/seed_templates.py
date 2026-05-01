@@ -447,6 +447,43 @@ TEMPLATE_METADATA = {
         "has_rtl": True,
         "is_multi_page": True,
     },
+    # ── Phase X.5 · Cornice (2026-04-30) · 5th corporate-suite sibling · ──
+    # 1st architecture-firm variant · 1st LF-2 (Editorial Spread)
+    # occupant. Reuses the corporate-suite shell (Pragma + Fiscus +
+    # Solaria + Continua) but routes home through `_layouts/lf2/` —
+    # stacked-editorial hero, narrative essay with drop-cap, single-
+    # portrait masthead, 3+1 magazine-grid cases, split-wordmark navbar,
+    # 4-col footer with whistleblowing column. Voice editorial-curatorial
+    # · architectural-discipline (NOT decisional gravity · NOT presidio
+    # · NOT bounded-method · NOT stewardship-longitudinal). Palette
+    # graphite + pietra-serena + terracotta-rust (NEUTRAL/NEUTRAL/WARM
+    # · the only un-claimed cluster polarity). Cormorant Garamond +
+    # Source Sans 3 (closes Inter cluster-collapse risk). Seeds at
+    # `tier: draft` (set in TEMPLATE_REGISTRY.json) — IT-only per
+    # D-102 cadence; multilingual rollout via workflow C.
+    "cornice-architettura": {
+        "cluster": "corporate",
+        "style": "classic-serif",
+        "price_tier": "premium",
+        "use_cases": [
+            "generate-leads",
+            "b2b-credibility",
+        ],
+        "audience": ["enterprise", "smb"],
+        "search_keywords": (
+            "studio-architettura architetto fascicolo committenza "
+            "rilievo restauro concorso paesaggio MIBAC OAPPC CNAPPC "
+            "Soprintendenza vincolo cantiere progetto monografia "
+            "collana editoriale autoriale"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": True,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
     "solaria-coaching": {
         "cluster": "coaching",
         "style": "minimal-light",
@@ -730,6 +767,73 @@ SEED_TEMPLATES = [
             "typography": "Crimson Pro + Public Sans",
             "personality": "custodial, longitudinale, multi-generazionale",
             "logo_concept": "Wordmark singolo «Continua» in Crimson Pro 500 con asta calligrafica dell'iniziale C che richiama il filetto di brass del navbar; preserva l'integrità Latin sotto RTL come da CS-NAV-06.",
+        },
+    },
+    # ── Phase X.5 · Cornice — Studio di Architettura (2026-04-30) ──
+    # 5th corporate-suite sibling · 1st architecture-firm variant ·
+    # 1st LF-2 (Editorial Spread) occupant. Validates the layout-family
+    # system (`factory/reports/hardening/corporate-suite-layout-divergence-
+    # plan.md §10 Step 6`). Reuses the corporate-suite shell but with a
+    # divergent home layout — stacked-editorial hero with KPI in photo
+    # overlay, narrative essay with drop-cap replacing pillars, single-
+    # portrait masthead, 3+1 magazine-grid cases, split-wordmark on
+    # cream navbar, 4-col footer with whistleblowing column. Palette
+    # graphite + pietra-serena + terracotta-rust (NEUTRAL/NEUTRAL/WARM).
+    # Cormorant Garamond + Source Sans 3 (closes the §1.4 cluster-
+    # collapse Inter risk). Seeds at `tier: draft` via
+    # TEMPLATE_REGISTRY.json. IT-only at A.5 build (D-102 cadence).
+    {
+        "name": "Cornice — Studio di Architettura",
+        "slug": "cornice-architettura",
+        "category_slug": "business",
+        "short_description": "Studio di architettura editoriale a Milano. Fascicolo monografico per ogni progetto, qualifica MIBAC restauro, committenze pubbliche e private dal 2008.",
+        "description": (
+            "Cornice è il template per studi di architettura italiani che "
+            "trattano ogni commissione come un argomento da costruire — "
+            "non come un servizio standardizzato. Progettato per studi "
+            "single-principal (un architetto fondatore + collaboratori), "
+            "voce editoriale-curatoriale, palette graphite + pietra-serena "
+            "+ terracotta-rust (la sola combinazione NEUTRAL/NEUTRAL/WARM "
+            "ancora libera nel cluster corporate-suite), tipografia "
+            "Cormorant Garamond + Source Sans 3 (esplicitamente NOT "
+            "Inter, chiude il rischio di terzo uso che collassa il "
+            "cluster).\n\n"
+            "Include: homepage editorial-spread con voice anchor «Ogni "
+            "progetto è un argomento costruito», fotografia hero a tutta "
+            "larghezza con tuple di tre statistiche in overlay, saggio "
+            "editoriale di quattro paragrafi con drop-cap e tre pull-quote, "
+            "ribbon di dodici tipologie d'intervento (residenziale, "
+            "pubblico, interno, paesaggio, restauro, concorso, culturale, "
+            "uffici, industriale, sanitario, scolastico, misto-uso), "
+            "masthead di leadership con singolo ritratto ambientale "
+            "dell'architetto fondatore e quattro credenziali Albo "
+            "OAPPC/CNAPPC/MIBAC, magazine-grid 3+1 di quattro fascicoli "
+            "rappresentativi (concorso pubblico vinto · edificio "
+            "residenziale · restauro pubblico · saggio in collana), "
+            "fascicolo progetto come form di ingresso (sito · tipologia "
+            "· cronoprogramma · documenti) — NO P.IVA + CF (collisione "
+            "Fiscus evitata). Whistleblowing come colonna di footer "
+            "(D.lgs. 24/2023). Navbar split-wordmark masthead 'CORNICE / "
+            "studio di architettura'."
+        ),
+        "price": Decimal("89.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 6,
+        "brand": {
+            "brand_name": "Cornice — Studio di Architettura",
+            "tagline": "Architettura editoriale · committenze pubbliche e private · Milano dal 2008",
+            # Palette · NEUTRAL/NEUTRAL/WARM (the only un-claimed cluster
+            # polarity per `intake.md §3.1`). primary = graphite (L* ≈ 12
+            # · cream-safe), secondary = pietra-serena (drafting-paper
+            # stone), accent = terracotta-rust (the load-bearing
+            # differentiator on display-typographic surfaces — explicitly
+            # not chrome-only like Continua's brass). Hex distance from
+            # every existing sibling palette > 0/3 cells on warmth grid.
+            "palette": {"primary": "#1F2226", "secondary": "#C7BFB1", "accent": "#B7491F"},
+            "typography": "Cormorant Garamond + Source Sans 3",
+            "personality": "editoriale, curatoriale, autoriale",
+            "logo_concept": "Wordmark split-line masthead «CORNICE / studio di architettura» — line 1 Cormorant Garamond uppercase letter-spacing 0.18em, line 2 Source Sans 3 lowercase. Reads come una testata di pubblicazione (Casabella · Domus), non come un brand corporativo. Preserva l'integrità Latin sotto RTL come da CS-NAV-06.",
         },
     },
     # ── Ristorante (2) ─────────────────────────────────────────

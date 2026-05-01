@@ -87,10 +87,11 @@ LEGACY_EXEMPT_KEYS: frozenset[str] = frozenset({
 # pack file lands; the validator uses the membership to decide whether to
 # run the policy at all.
 CORPORATE_SUITE_POOL_KEYS: frozenset[str] = frozenset({
-    "business-corporate",   # Pragma · legacy Unsplash (AP3)
-    "business-fiscal",      # Fiscus · Pexels (W2-1)
-    "business-coaching",    # Solaria Commit B · paused (would be Pexels)
-    "business-stewardship", # Continua · Pexels (X.4 design-orchestrator pass 1)
+    "business-corporate",    # Pragma · legacy Unsplash (AP3)
+    "business-fiscal",       # Fiscus · Pexels (W2-1)
+    "business-coaching",     # Solaria Commit B · paused (would be Pexels)
+    "business-stewardship",  # Continua · Pexels (X.4 design-orchestrator pass 1)
+    "business-architecture", # Cornice · Pexels (X.5 1st LF-2 occupant · 2026-04-30)
 })
 
 PEXELS_HOST = "images.pexels.com"

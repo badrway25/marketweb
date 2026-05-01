@@ -2466,6 +2466,13 @@ from apps.catalog.template_content_continua_fr import CONTINUA_CONTENT_FR  # noq
 from apps.catalog.template_content_continua_es import CONTINUA_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_continua_ar import CONTINUA_CONTENT_AR  # noqa: E402
 
+# Phase X.5 · Cornice (5th corporate-suite sibling · 1st architecture-
+# firm variant · 1st LF-2 occupant · 2026-04-30 ·
+# `phase-x5-cornice-a5-it-build`). IT-only at A.5 build (D-102 cadence);
+# multilingual rollout via workflow C in a separate pass. Tier stays
+# `draft` until user-handshake on the live IT review.
+from apps.catalog.template_content_cornice import CORNICE_CONTENT_IT  # noqa: E402
+
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
 # Phase 2g3.4b — Chiara perfection pass (Session 37). Chiara now ships in 5
@@ -2672,6 +2679,19 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": CONTINUA_CONTENT_FR,
         "es": CONTINUA_CONTENT_ES,
         "ar": CONTINUA_CONTENT_AR,
+    },
+    # Phase X.5 · Cornice (5th corporate-suite sibling · 1st LF-2
+    # occupant · 2026-04-30). IT-only at A.5 build · tier stays `draft`
+    # until user-handshake on the live IT review. The four other locale
+    # trees are intentionally omitted (workflow C will add EN/FR/ES/AR
+    # in a separate pass per D-102 cadence).
+    "cornice-architettura": {
+        "it": CORNICE_CONTENT_IT,
+        # EN/FR/ES/AR fall back to IT until workflow C lands them.
+        "en": CORNICE_CONTENT_IT,
+        "fr": CORNICE_CONTENT_IT,
+        "es": CORNICE_CONTENT_IT,
+        "ar": CORNICE_CONTENT_IT,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,

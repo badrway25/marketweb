@@ -1497,6 +1497,56 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
             "sectors": ["Famiglie imprenditoriali", "Holding di partecipazioni", "Fondazioni di famiglia", "Seconde generazioni in trasferimento", "Single family office estero"],
         },
     },
+
+    # ── X.5) CORPORATE-SUITE — Cornice, single-principal architecture studio ──
+    # Phase X.5 · A.5 build · 5th corporate-suite sibling · 1st
+    # architecture-firm variant · 1st LF-2 (Editorial Spread) occupant.
+    # Validates the layout-family system per
+    # `factory/reports/hardening/corporate-suite-layout-divergence-plan.md
+    # §10 Step 6`. Reuses the corporate-suite shell but routes home
+    # rendering through `_layouts/lf2/` (stacked-editorial hero · zero
+    # dark band · narrative essay with drop-cap · single-portrait
+    # masthead · 3+1 magazine-grid cases · split-wordmark navbar ·
+    # 4-col footer with whistleblowing column).
+    "cornice-architettura": {
+        "archetype":          "corporate-suite",
+        "hero_style":         "stacked-editorial-cornice",
+        "navbar_style":       "split-wordmark-cornice",
+        "footer_style":       "four-col-cornice",
+        "section_order":      ["nav", "stacked-editorial-hero", "essay-with-anchors", "sectors-ribbon", "single-portrait-feature", "magazine-grid-cases", "cta-closer-cream"],
+        "card_style":         "magazine-card-cornice",
+        "button_style":       "ghost-cornice",
+        "density":            "airy-editorial",
+        "tone":               "editorial-curatorial",
+        "imagery_direction":  "architecture-editorial-built-form",
+        "imagery_key":        "business-architecture",
+        "conversion_pattern": "project-dossier-submission",
+        # Cormorant Garamond (heading · classical book-jacket display
+        # ratios · architectural-monograph register · strong italic on
+        # the curatorial noun `argomento`) + Source Sans 3 (body ·
+        # editorial-clean · explicitly NOT Inter · NOT Plex Sans ·
+        # NOT Public Sans). Closes the matrix §1.4 cluster-collapse
+        # risk forward of Continua's Crimson + Public Sans choice.
+        "font_pairing":       ("Cormorant Garamond", "Source Sans 3"),
+        "content": {
+            "eyebrow":       "Studio di architettura · Milano · dal 2008",
+            "headline":      "Ogni progetto è un <em>argomento</em> costruito, non un servizio reso.",
+            "subhead":       "Studio di architettura editoriale · committenze pubbliche e private · novanta fascicoli aperti dal 2008.",
+            "primary_cta":   "Apri un fascicolo progetto",
+            "secondary_cta": "Lo studio · pubblicazioni",
+            "phone":         "+39 02 6610 4708",
+            "nav_links":     ["Studio", "Servizi", "Progetti", "Contatti"],
+            "meta_strip": [
+                ("Progetti realizzati", "47"),
+                ("Anni di pratica",     "18"),
+                ("Città italiane",      "6"),
+            ],
+            "hero_credit_left":  ("Bologna · portico restaurato · 2023", "fascicolo n. 31"),
+            "hero_credit_right": ("Sede dello studio",                   "Milano · via Paoli 9"),
+            "sectors_label": "Tipologie d'intervento",
+            "sectors": ["residenziale", "pubblico", "interno", "paesaggio", "restauro", "concorso", "culturale", "uffici", "industriale", "sanitario", "scolastico", "misto-uso"],
+        },
+    },
 }
 
 
