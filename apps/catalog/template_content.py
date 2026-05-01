@@ -2469,9 +2469,22 @@ from apps.catalog.template_content_continua_ar import CONTINUA_CONTENT_AR  # noq
 # Phase X.5 · Cornice (5th corporate-suite sibling · 1st architecture-
 # firm variant · 1st LF-2 occupant · 2026-04-30 ·
 # `phase-x5-cornice-a5-it-build`). IT-only at A.5 build (D-102 cadence);
-# multilingual rollout via workflow C in a separate pass. Tier stays
-# `draft` until user-handshake on the live IT review.
+# multilingual rollout via workflow C in a separate pass.
+# Phase X.5 Cornice workflow C (multilingual rollout · 2026-05-01 ·
+# `phase-x5-cornice-workflowC-multilingual`) ships full EN/FR/ES/AR
+# locale trees on top of the locked LF-2 Italian draft (A.6 review-
+# lock). Voice anchor preserved verbatim-in-translation across all 5
+# locales (the load-bearing italic moves with the equivalent
+# CURATORIAL noun: argomento → argument / argument / argumento /
+# حُجَّة). Real Arabic RTL via the corporate-suite chrome's `dir="rtl"`
+# layer; LF-2 scopes a Naskh heading swap inside `body.cs-lf-lf-2` per
+# planner-brief §11. Tier remains `draft` — public flip held for the
+# user-handshake gate (cluster R-SOL-8 / D-102 cadence).
 from apps.catalog.template_content_cornice import CORNICE_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_cornice_en import CORNICE_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_cornice_fr import CORNICE_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_cornice_es import CORNICE_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_cornice_ar import CORNICE_CONTENT_AR  # noqa: E402
 
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
@@ -2681,17 +2694,19 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "ar": CONTINUA_CONTENT_AR,
     },
     # Phase X.5 · Cornice (5th corporate-suite sibling · 1st LF-2
-    # occupant · 2026-04-30). IT-only at A.5 build · tier stays `draft`
-    # until user-handshake on the live IT review. The four other locale
-    # trees are intentionally omitted (workflow C will add EN/FR/ES/AR
-    # in a separate pass per D-102 cadence).
+    # occupant · 2026-04-30 IT build · 2026-05-01 multilingual workflow
+    # C). All 5 locales authored: voice anchor preserved verbatim-in-
+    # translation (CS-EXEC-01 / CS-BLOCK-11 · the load-bearing italic
+    # moves with the equivalent curatorial noun argomento → argument /
+    # argument / argumento / حُجَّة). Tier stays `draft` — public
+    # catalog count unchanged — staff preview reaches the live route
+    # via `?preview=1` and exercises every locale via `?lang=xx`.
     "cornice-architettura": {
         "it": CORNICE_CONTENT_IT,
-        # EN/FR/ES/AR fall back to IT until workflow C lands them.
-        "en": CORNICE_CONTENT_IT,
-        "fr": CORNICE_CONTENT_IT,
-        "es": CORNICE_CONTENT_IT,
-        "ar": CORNICE_CONTENT_IT,
+        "en": CORNICE_CONTENT_EN,
+        "fr": CORNICE_CONTENT_FR,
+        "es": CORNICE_CONTENT_ES,
+        "ar": CORNICE_CONTENT_AR,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,

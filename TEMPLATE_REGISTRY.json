@@ -374,14 +374,18 @@
         "contatti"
       ],
       "locales": [
-        "it"
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
       ],
-      "rtl": false,
+      "rtl": true,
       "price": 89,
       "featured": false,
       "status": "published",
       "tier": "draft",
-      "tier_reason": "Phase X.5 Cornice · A.5 build · IT-only · tier=draft (D-102 cadence). 5th corporate-suite sibling · 1st architecture-firm variant · 1st LF-2 (Editorial Spread) occupant. Validates the layout-family system per `factory/reports/hardening/corporate-suite-layout-divergence-plan.md §10 Step 6` — divergent home shell (stacked-editorial hero · zero dark band · narrative essay with drop-cap · single-portrait masthead · 3+1 magazine-grid cases · split-wordmark navbar on cream · 4-col footer with whistleblowing column) is structurally distinct from LF-1 / LF-3 / LF-4 / LF-5. Voice editorial-curatorial · architectural-discipline (NOT decisional gravity · NOT presidio · NOT bounded-method · NOT stewardship-longitudinal). Palette graphite + pietra-serena + terracotta-rust (NEUTRAL/NEUTRAL/WARM · the only un-claimed cluster polarity per intake §3.1). Cormorant Garamond + Source Sans 3 (closes the §1.4 cluster-collapse Inter risk). Voice anchor verbatim: «Ogni progetto è un argomento costruito, non un servizio reso» — italic on the curatorial noun `argomento`. Pexels-only imagery from URL #1 (CS-IMG-SRC-01) · `business-architecture` pool · cross-cluster grep CLEAN against business-corporate / business-fiscal / business-coaching / business-stewardship pools at A.3 curator entry (2026-04-30 · 0/26 IDs overlap). Tier stays `draft` — public catalog count remains 23 — anonymous visitors do NOT see Cornice; staff preview reaches the live route via `?preview=1`. Multilingual rollout (EN/FR/ES/AR) via workflow C in a separate pass; AR/RTL handling deferred to that pass per planner-brief §11. Public flip held for user-handshake on the live IT review."
+      "tier_reason": "Phase X.5 Cornice · workflow C multilingual rollout (2026-05-01) on top of the A.6 IT review-lock. 5 locales authored (it/en/fr/es/ar). Voice anchor preserved verbatim-in-translation: argomento → argument / argument / argumento / حُجَّة (the load-bearing italic moves with the equivalent CURATORIAL noun · CS-EXEC-01 / CS-BLOCK-11). Real Arabic RTL via corporate-suite `dir=rtl` chrome layer + LF-2-scoped Naskh heading swap inside `body.cs-lf-lf-2` (planner-brief §11 decision · cluster default Kufi preserved on every other RTL skin). LF-2 layout shape preserved exactly across all 5 locales (stacked-editorial hero · 8/4 split below · narrative essay with drop-cap · 3+1 magazine-grid cases · split-wordmark navbar on cream · 4-col footer with whistleblowing column). Tier stays `draft` — public catalog count remains 23 — anonymous visitors do NOT see Cornice; staff preview reaches the live route via `?preview=1` and exercises every locale via `?lang=xx`. Public flip held for the user-handshake on the multilingual walk (workflow D)."
     },
     {
       "slug": "gusto-fine-dining",
