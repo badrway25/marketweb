@@ -484,6 +484,50 @@ TEMPLATE_METADATA = {
         "has_rtl": True,
         "is_multi_page": True,
     },
+    # Phase X.6 · Causa (6th corporate-suite sibling · 1st evidence-
+    # led litigation-boutique variant · 2nd LF-2 occupant after
+    # Cornice · IT-only at A.5 build · tier=draft per D-102 cadence).
+    # Reuses the corporate-suite shell + LF-2 _layouts/lf2/ rendering
+    # path identical to Cornice (stacked-editorial hero · zero dark
+    # bands · narrative essay with drop-cap · single-portrait
+    # masthead · 3+1 magazine-grid cases · split-wordmark navbar ·
+    # 4-col footer with whistleblowing column). Voice forensic-
+    # publication · evidence-led · public-record register (NOT
+    # decisional-gravity Pragma · NOT presidio Fiscus · NOT bounded-
+    # method Solaria · NOT stewardship-longitudinal Continua · NOT
+    # curatorial-thesis Cornice). Palette bottle-green + bone +
+    # obsidian (full cool · matte-on-matte · zero metallic · the
+    # third polarity dimension per matrix §1.3). GT Sectra + Manrope
+    # (Inter explicitly forbidden per CS-LAYOUT-20). has_booking=False
+    # — litigation-shaped (parere-screening, NOT scheduled-booking) ·
+    # planner-brief §5 + copy-authoring §1 binding. Seeds at `tier:
+    # draft` (set in TEMPLATE_REGISTRY.json) — IT-only per D-102
+    # cadence; multilingual rollout via workflow C in a separate pass.
+    "causa-legale": {
+        "cluster": "corporate",
+        "style": "classic-serif",
+        "price_tier": "premium",
+        "use_cases": [
+            "generate-leads",
+            "b2b-credibility",
+        ],
+        "audience": ["enterprise", "smb"],
+        "search_keywords": (
+            "studio-legale avvocato cassazionista patrocinio "
+            "contenzioso evidenza giurisdizione massima ricorso "
+            "memoria fascicolo processuale appello primo-grado "
+            "legittimità sezioni-unite TAR commissione-tributaria "
+            "Albo Avvocati Milano ENCA Albo-CTU forense parere-"
+            "preliminare litigation"
+        ),
+        "has_shop": False,
+        "has_booking": False,
+        "has_portfolio": True,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
     "solaria-coaching": {
         "cluster": "coaching",
         "style": "minimal-light",
@@ -782,6 +826,91 @@ SEED_TEMPLATES = [
     # Cormorant Garamond + Source Sans 3 (closes the §1.4 cluster-
     # collapse Inter risk). Seeds at `tier: draft` via
     # TEMPLATE_REGISTRY.json. IT-only at A.5 build (D-102 cadence).
+    # ── Phase X.6 · Causa (6th corporate-suite sibling · 1st evidence-
+    # led Cassazionista litigation-boutique variant · 2nd LF-2
+    # occupant after Cornice). Reuses the corporate-suite shell +
+    # LF-2 home dispatch identical to Cornice. Voice forensic-
+    # publication · public-record register (NOT decisional-gravity
+    # Pragma · NOT presidio-with-scadenze Fiscus · NOT bounded-
+    # method Solaria · NOT stewardship-longitudinal Continua · NOT
+    # curatorial-thesis Cornice). Palette bottle-green + bone +
+    # obsidian (NEUTRAL/NEUTRAL/NEUTRAL on the warmth grid · third
+    # polarity dimension matte-on-matte without metallic · explicitly
+    # NOT graphite + pietra-serena + rust = Cornice claim). GT Sectra
+    # + Manrope (Inter explicitly forbidden per CS-LAYOUT-20). Seeds
+    # at `tier: draft` via TEMPLATE_REGISTRY.json. IT-only at A.5
+    # build (D-102 cadence); multilingual rollout via workflow C in
+    # a separate pass.
+    {
+        "name": "Causa — Studio Legale",
+        "slug": "causa-legale",
+        "category_slug": "business",
+        "short_description": "Studio legale di patrocinio editoriale a Milano. Cassazionista fondatore, ventotto sentenze citate dal 1995, quattordici massime in massimario interno, contenzioso in tutti i gradi fino alla Cassazione.",
+        "description": (
+            "Causa è il template per studi legali italiani che "
+            "trattano ogni causa come un'evidenza da incardinare — "
+            "non come un servizio difensivo standardizzato. "
+            "Progettato per studi single-principal Cassazionisti "
+            "(un avvocato fondatore + due associati + segreteria), "
+            "voce forensic-publication ed evidence-led, palette "
+            "bottle-green + bone + obsidian (la sola polarità "
+            "matte-on-matte con zero metallico ancora libera nel "
+            "cluster corporate-suite), tipografia GT Sectra + "
+            "Manrope (esplicitamente NOT Inter, chiude il rischio "
+            "di terzo uso che collassa il cluster).\n\n"
+            "Include: homepage editorial-spread con voice anchor "
+            "«Ogni sentenza è un'evidenza incardinata, non "
+            "un'opinione difesa», fotografia hero a tutta larghezza "
+            "su aula di tribunale vuota con tuple di tre statistiche "
+            "in overlay (28 sentenze citate · 14 voci in massimario "
+            "· 31 anni di patrocinio), saggio metodologico di quattro "
+            "paragrafi con drop-cap obsidian e tre pull-quote, "
+            "ribbon di dodici materie del contenzioso (penale "
+            "tributario, civile contrattualistica, amministrativo "
+            "regolatorio, contenzioso bancario, responsabilità "
+            "professionale, recupero crediti complesso, diritto "
+            "societario, tributario, esecuzioni, lavoro complesso, "
+            "CTU forense, ENCA mediation), masthead di leadership "
+            "con singolo ritratto ambientale del Cassazionista "
+            "fondatore e quattro credenziali Albo Avvocati Milano + "
+            "Cassazionista + ENCA mediatori + Albo CTU forense, "
+            "magazine-grid 3+1 di quattro decisioni rappresentative "
+            "(Cass. SS.UU. responsabilità professionale 2024 · "
+            "Cass. civ. III contenzioso bancario 2023 · TAR "
+            "Lombardia AGCOM 2022 · App. Milano tributario 2021), "
+            "parere preliminare come form di ingresso a 7 campi "
+            "(oggetto · grado · controparte · valore · urgenza · "
+            "evidenza · giurisdizione) — NO P.IVA + CF (collisione "
+            "Fiscus evitata) · NO budget bracket (collisione "
+            "Cornice evitata). Whistleblowing come colonna di "
+            "footer (D.lgs. 24/2023). Navbar split-wordmark "
+            "masthead 'CAUSA / studio legale'."
+        ),
+        "price": Decimal("89.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 7,
+        "brand": {
+            "brand_name": "Causa — Studio Legale",
+            "tagline": "Studio legale di patrocinio editoriale · Cassazionista fondatore · Milano dal 1995",
+            # Palette · NEUTRAL/NEUTRAL/NEUTRAL on the warmth grid
+            # (full cool · matte-on-matte · zero metallic). primary
+            # = bottle-green (L* ≤ 40 on cream · is_primary_safe_on_
+            # cream PASS · ≥6 ΔE distance from Continua pine
+            # `#0F3A30`), secondary = bone (warmer than Cornice
+            # pietra-serena `#cdc9c0` · cooler than Fiscus warm-
+            # neutral cream), accent = obsidian (deep neutral · zero
+            # metallic · body-typographic-only deployment surface
+            # · explicitly not chrome-metallic like Continua's
+            # brass). Third polarity dimension per `corporate-suite-
+            # distinctness-matrix.md §1.3` ("matte-on-matte without
+            # metallic").
+            "palette": {"primary": "#14342B", "secondary": "#F0EBE0", "accent": "#0B0A0E"},
+            "typography": "GT Sectra + Manrope",
+            "personality": "forensic, evidence-led, public-record",
+            "logo_concept": "Wordmark split-line masthead «CAUSA / studio legale» — line 1 GT Sectra uppercase letter-spacing 0.18em bottle-green ink, line 2 Manrope lowercase ink-soft. Reads come una testata di pubblicazione forense (Foro Italiano · Giurisprudenza Italiana), non come un brand corporativo. Preserva l'integrità Latin sotto RTL come da CS-NAV-06.",
+        },
+    },
     {
         "name": "Cornice — Studio di Architettura",
         "slug": "cornice-architettura",

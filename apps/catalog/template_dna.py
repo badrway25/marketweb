@@ -1547,6 +1547,90 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
             "sectors": ["residenziale", "pubblico", "interno", "paesaggio", "restauro", "concorso", "culturale", "uffici", "industriale", "sanitario", "scolastico", "misto-uso"],
         },
     },
+
+    # ── X.6) CORPORATE-SUITE — Causa, single-principal Cassazionista
+    #         litigation boutique (2nd LF-2 occupant after Cornice) ──
+    # Phase X.6 · A.5 build · 6th corporate-suite sibling · 1st
+    # evidence-led litigation-boutique variant · 2nd LF-2 (Editorial
+    # Spread) occupant. Validates the layout-family system at the
+    # second-occupant level per `factory/reports/causa/causa-planner-
+    # brief.md §2.4` (LF-2 family signatures inherited verbatim).
+    # Reuses the corporate-suite shell + LF-2 `_layouts/lf2/` rendering
+    # path identical to Cornice (stacked-editorial hero · zero dark
+    # bands · narrative essay with drop-cap · single-portrait masthead
+    # · 3+1 magazine-grid cases · split-wordmark navbar · 4-col footer
+    # with whistleblowing column · cream-hairline CTA closer).
+    #
+    # Voice: forensic-publication · evidence-led · public-record
+    # register, explicitly NOT decisional-gravity (Pragma) · NOT
+    # presidio-with-scadenze (Fiscus) · NOT bounded-method (Solaria)
+    # · NOT stewardship-longitudinal (Continua) · NOT curatorial-
+    # thesis (Cornice). Voice anchor noun `evidenza` on ONE em per
+    # heading (CS-EXEC-01 default · NOT Solaria's two-em pair).
+    #
+    # Palette: bottle-green primary + bone secondary + obsidian accent
+    # — full cool · matte-on-matte · zero metallic. Third polarity
+    # dimension per matrix §1.3 (`matte-on-matte without metallic` ·
+    # opposite of Continua's cool-with-warm-chrome-only-metallic and
+    # orthogonal to Cornice's neutral-with-warm-display-only-rust).
+    # Hex distance ≥6 ΔE from Continua pine `#0F3A30` enforced.
+    # Accent surface deployment: body-typographic-only (drop-cap ·
+    # pull-quote em · CTA fill optional · focus ring) — explicitly
+    # NOT chrome-metallic (Continua's brass deployment surface class).
+    #
+    # Typography: GT Sectra primary heading serif (forensic-publication
+    # register · NOT architectural-press Cormorant Garamond) · Source
+    # Serif Pro fallback declared at planner level. Manrope body sans
+    # · Inter explicitly forbidden per CS-LAYOUT-20 (3rd cluster use
+    # collapses body-sans differentiation).
+    #
+    # Imagery: NEW pool `business-legale` · Pexels-only · 6 URLs +
+    # 4 magazine-grid extras + backups. Cross-cluster grep CLEAN
+    # against business-corporate / business-architecture / business-
+    # fiscal / business-coaching / business-stewardship. Hero subject
+    # is empty courtroom interior (cool light · vertical timber + bone
+    # walls · zero people · interior architectural) — explicitly NOT
+    # Bologna golden-hour portico (Cornice) · NOT library reading-room
+    # mahogany (Continua) · NOT boardroom long-table (Pragma) · NOT
+    # tidy-desk-with-documents (Fiscus) · NOT 1:1 conversation
+    # (Solaria).
+    "causa-legale": {
+        "archetype":          "corporate-suite",
+        "hero_style":         "stacked-editorial-causa",
+        "navbar_style":       "split-wordmark-causa",
+        "footer_style":       "four-col-causa",
+        "section_order":      ["nav", "stacked-editorial-hero", "essay-with-anchors", "sectors-ribbon", "single-portrait-feature", "magazine-grid-cases", "cta-closer-cream"],
+        "card_style":         "magazine-card-causa",
+        "button_style":       "filled-bottle-green-causa",
+        "density":             "airy-forensic",
+        "tone":                "forensic-publication",
+        "imagery_direction":  "legal-courtroom-codex-chambers",
+        "imagery_key":        "business-legale",
+        "conversion_pattern": "parere-preliminare-screening",
+        # GT Sectra primary heading serif (with Source Serif Pro
+        # licence-fallback declared at planner-brief §9). Manrope body
+        # sans · NO fallback (Inter explicitly forbidden per CS-LAYOUT-
+        # 20 · 3rd cluster use collapses body-sans differentiation).
+        "font_pairing":       ("GT Sectra", "Manrope"),
+        "content": {
+            "eyebrow":       "Studio legale · Milano · dal 1995",
+            "headline":      "Ogni sentenza è un'<em>evidenza</em> incardinata, non un'opinione difesa.",
+            "subhead":       "Studio legale di patrocinio editoriale · Cassazionista fondatore · ventotto sentenze citate dal 1995.",
+            "primary_cta":   "Apri un parere preliminare",
+            "secondary_cta": "Studio · sede di Milano",
+            "phone":         "+39 02 7634 8210",
+            "nav_links":     ["Studio", "Materie", "Pubblicazioni", "Contenzioso", "Contatti"],
+            "meta_strip": [
+                ("Sentenze citate",    "28"),
+                ("Voci in massimario", "14"),
+                ("Anni di patrocinio", "31"),
+            ],
+            "hero_credit_left":  ("Aula di tribunale · interno · 2024", "Foro di Milano"),
+            "hero_credit_right": ("Sede dello studio",                   "Milano · via Borgonuovo 14"),
+            "sectors_label": "Materie del contenzioso",
+            "sectors": ["penale tributario", "civile contrattualistica", "amministrativo regolatorio", "contenzioso bancario", "responsabilità professionale", "recupero crediti complesso", "diritto societario", "tributario", "esecuzioni", "lavoro complesso", "CTU forense", "ENCA mediation"],
+        },
+    },
 }
 
 

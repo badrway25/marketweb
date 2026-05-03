@@ -420,6 +420,111 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
     # business-fiscal / business-coaching / business-stewardship at
     # A.3 curator entry (2026-04-30 · 0/26 IDs overlap).
     # ─────────────────────────────────────────────────────────────
+    # ─────────────────────────────────────────────────────────────
+    # business-legale — Phase X.6 Causa (6th corporate-suite sibling ·
+    # 1st evidence-led litigation-boutique variant · 2nd LF-2 occupant
+    # after Cornice · 2026-05-03 · `phase-x6-causa-a5-it-build`).
+    # Pool follows the Pexels-only contract from URL #1 (CS-IMG-SRC-01)
+    # and the canonical 6-slot shape [hero, feature, portrait, portrait,
+    # detail, ambient]. Direction per `factory/reports/causa/causa-
+    # imagery-pack.md §1` and `factory/reports/imagery/causa-legale/
+    # pool-selection.md`: empty courtroom interior hero (vertical timber
+    # + bone walls · cool light · zero people · architectural · the
+    # cluster's first interior chamber subject), open Italian law codex
+    # feature (NOT trace paper / drafting tools), senior Cassazionista
+    # in chambers portrait (60s · environmental · downward gaze on
+    # codex · binding-triple per planner §5), mid-career associata
+    # portrait (about-page only · demographic-distinct vs slot 2),
+    # codex page macro detail (NOT architectural floor plan · NOT tax
+    # form · NOT method-notebook · NOT wax-seal letterhead), vertical
+    # wall of leather-bound codex shelves ambient (NOT marble stairway
+    # with golden banister · Continua reservation; NOT concrete-studio-
+    # wall-with-blueprints · Cornice reservation; NOT atrium · Pragma
+    # overlap; NOT warm meeting room · Solaria adjacency). Cross-
+    # cluster grep CLEAN against business-corporate / business-
+    # architecture / business-fiscal / business-coaching / business-
+    # stewardship at A.3 curator entry (2026-05-03 · 0/26 IDs overlap)
+    # + reviewer-lgtm independent re-grep (`factory/reports/imagery/
+    # causa-legale/reviewer-lgtm.md`).
+    # ─────────────────────────────────────────────────────────────
+    "business-legale": [
+        # 0: hero — empty courtroom interior · vertical timber
+        #    wainscoting + bone-painted walls · daylight through high
+        #    clerestory windows · low-luminance judicial bench in mid-
+        #    ground · zero people · cool register · Pavel Danilyuk
+        #    (Pexels 17109985). The 1-second material read MUST be
+        #    cool timber + bone, NOT warm mahogany (Continua) and NOT
+        #    golden-hour stone (Cornice). The empty courtroom is the
+        #    chamber where evidence is incardinated · pairs with the
+        #    voice anchor `Ogni sentenza è un'evidenza incardinata`.
+        "https://images.pexels.com/photos/17109985/pexels-photo-17109985.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        # 1: feature — open Italian law codex on a wooden chambers
+        #    table · single tome · faint marginal annotations · cool
+        #    natural light raking from the left · zero hands · zero
+        #    laptop · EKATERINA BOLOVTSOVA (Pexels 6077368). Subject-
+        #    class distinct from Cornice's architectural scale model
+        #    on worktable (codex is text-on-paper · NOT model · NOT
+        #    drafting tools · NOT trace paper) and from Continua's
+        #    oak partner-desk feature (NOT mahogany · NOT correspondence
+        #    · NOT wax-seal). Doubles as the planner-pre-cleared backup
+        #    hero subject if slot 0 fails A.6 critique.
+        "https://images.pexels.com/photos/6077368/pexels-photo-6077368.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        # 2: portrait — senior man (60s · greying hair · horn-rimmed
+        #    eyeglasses · charcoal-grey three-piece suit · pen in hand)
+        #    seated 3/4 toward camera at a chambers desk · open codice
+        #    in mid-ground · vertical timber wainscoting and full
+        #    leather-bound-codex shelf in soft-focus background · cool
+        #    window-light · downward gaze on the codex page · working
+        #    posture · Pavel Danilyuk (Pexels 8101948). The R-LF2-1
+        #    binding triple (50s-or-senior + chambers-with-codices-mid-
+        #    ground + environmental-NOT-studio-backdrop) cleared on
+        #    this URL — the working posture (downward gaze + pen in
+        #    hand) avoids the LinkedIn-headshot collapse. Founder
+        #    identity locked at A.4 as Lorenzo Marchetti · masculine
+        #    · 60s · Cassazionista dal 2003 (R-LF2-2 mitigation per
+        #    Cornice's Marta-vs-Marco precedent · all 8 surfaces
+        #    agree on first commit).
+        "https://images.pexels.com/photos/8101948/pexels-photo-8101948.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 3: portrait — mid-career woman (30s-40s · dark hair pulled
+        #    back · navy blazer over white shirt · pen in hand · stack
+        #    of fascicoli at the right edge of frame) reading a codex
+        #    page at a chambers desk · timber wainscoting + codex
+        #    shelves in soft-focus · cool window-light · downward
+        #    focused gaze · August de Richelieu (Pexels 6325985).
+        #    Demographic anti-collision vs slot 2: different age
+        #    (30s-40s vs 60s · planner-brief §5 R-LF2-2 mitigation),
+        #    different gender (F vs M), different photographer. Slot 3
+        #    appears on about.html team-grid only · home masthead is
+        #    single-portrait per LF-2 L6.
+        "https://images.pexels.com/photos/6325985/pexels-photo-6325985.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 4: detail — close-up of a codex page · marbled-paper edge
+        #    visible at the top of frame · printed Italian legal text
+        #    in serif typography · faint pencil annotations in the
+        #    margin · single page · macro distance · still-life
+        #    composition · zero hands · EKATERINA BOLOVTSOVA (Pexels
+        #    6077381). Subject-class distinct from Cornice's
+        #    architectural blueprint (text-and-paper · NOT technical
+        #    line-work), from Fiscus's tax document (codex page · NOT
+        #    730/SPA/BILANCIO), from Solaria's method-notebook (printed
+        #    serif · NOT handwriting), and from Continua's wax-seal
+        #    letterhead (codex page · NO seal · NO envelope).
+        "https://images.pexels.com/photos/6077381/pexels-photo-6077381.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 5: ambient — vertical wall of leather-bound codex volumes ·
+        #    oak shelving · cool natural light from the left · faint
+        #    dust-line on the top shelf · zero people · zero ladder-
+        #    rail-with-brass-fittings · zero metallic dominance ·
+        #    Pixabay (Pexels 2128249). Material palette pairs with
+        #    Causa's full-cool matte-on-matte palette (bottle-green +
+        #    bone + obsidian) without fighting tokens. NOT slate
+        #    stairwell with golden banister (Continua slot 5 verbatim
+        #    reservation) · NOT concrete studio wall with blueprints
+        #    (Cornice slot 5 reservation) · NOT regulation-bookshelf
+        #    with explicit "JUSTICE" lettering (Fiscus slot 5
+        #    reservation · `pexels-photo-159832` reserved for
+        #    business-fiscal). Industrial-quiet active-practice library
+        #    register, NOT museum-piece display.
+        "https://images.pexels.com/photos/2128249/pexels-photo-2128249.jpeg?auto=compress&cs=tinysrgb&w=800",
+    ],
     "business-architecture": [
         # 0: hero — sunlit corridor of an Italian portico in Bologna,
         #    stone columns and ceiling at golden hour, zero people,

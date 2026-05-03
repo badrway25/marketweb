@@ -2486,6 +2486,18 @@ from apps.catalog.template_content_cornice_fr import CORNICE_CONTENT_FR  # noqa:
 from apps.catalog.template_content_cornice_es import CORNICE_CONTENT_ES  # noqa: E402
 from apps.catalog.template_content_cornice_ar import CORNICE_CONTENT_AR  # noqa: E402
 
+# Phase X.6 · Causa (6th corporate-suite sibling · 1st evidence-led
+# Cassazionista litigation-boutique variant · 2nd LF-2 occupant after
+# Cornice · 2026-05-03 · `phase-x6-causa-a5-it-build`). IT-only at A.5
+# build (D-102 cadence); multilingual rollout via workflow C in a
+# separate pass (5 locales · IT preserved + EN/FR/ES/AR · voice anchor
+# verbatim-in-translation on the public-record-evidence noun
+# evidenza → evidence / preuve / evidencia / دليل · LF-2-scoped Naskh
+# AR h1 swap inherited verbatim from Cornice's first-occupant binding).
+# Tier remains `draft` — public flip held until explicit user
+# handshake (R-SOL-8 / CS-BLOCK-13 / D-102 cadence).
+from apps.catalog.template_content_causa import CAUSA_CONTENT_IT  # noqa: E402
+
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
 # Phase 2g3.4b — Chiara perfection pass (Session 37). Chiara now ships in 5
@@ -2707,6 +2719,19 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": CORNICE_CONTENT_FR,
         "es": CORNICE_CONTENT_ES,
         "ar": CORNICE_CONTENT_AR,
+    },
+    # Phase X.6 · Causa (6th corporate-suite sibling · 2nd LF-2
+    # occupant · 2026-05-03 IT build). IT-only at A.5 build per D-102
+    # cadence — only the IT key is wired here; EN/FR/ES/AR land at
+    # workflow C in a separate pass with verbatim-in-translation on
+    # the public-record-evidence anchor (evidenza → evidence / preuve /
+    # evidencia / دليل). Tier stays `draft` — public catalog count
+    # unchanged at 24 — staff preview reaches the live route via
+    # `?preview=1`. Locale switcher will not advertise EN/FR/ES/AR for
+    # this slug at this build (D-068 honesty rule · `get_available_
+    # locales` returns ["it"] only).
+    "causa-legale": {
+        "it": CAUSA_CONTENT_IT,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,
