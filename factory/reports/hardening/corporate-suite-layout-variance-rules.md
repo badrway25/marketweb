@@ -121,10 +121,12 @@ Rules that bind the nine dimensions together into a layout-family identity.
 - Reuse of an occupied family is permitted **only** under DISTINCTNESS_RULES §5 option 3 (variant demotion), which requires explicit user approval and shared base assets.
 - **Failure mode**: two siblings both claiming LF-3. Catch at distinctness-matrix re-fill (column collision).
 
-### CS-LAYOUT-12 [BLOCKING] · Sibling pairs must differ on ≥4 of 9 layout dimensions
+### CS-LAYOUT-12 [BLOCKING] · Sibling pairs must differ on ≥4 of 9 layout dimensions · OR a documented in-family near-occupant relationship
 - For every existing sibling, the new sibling's L1–L9 tuple must differ on ≥4 of 9 dimensions. The two-sibling pair otherwise scores layout-collision regardless of how the skin axes score.
-- This is the layout analogue of the existing 4-of-5-axes rule in DISTINCTNESS_RULES §1.
-- **Failure mode**: a new sibling shares 7 of 9 layout dimensions with Pragma. Plan re-spec required.
+- **Exception (in-family near-occupant · added 2026-05-03)**: a pair that scores < 4/9 may be ACCEPTED if a § decision is filed at `corporate-suite-layout-family-matrix.md §6` documenting (a) the layout-shape adjacency is intentional (one family is structurally a single-cell addition to the other · e.g., LF-3 = LF-1 + slot-4 cycle), (b) the differentiation is carried at the skin layer at ≥ 5/5 on the DISTINCTNESS_RULES §1 axes (voice · palette · imagery · typography · structure), and (c) the orchestrator ratifies the exception at A.6 review-lock. **Currently filed**: Pragma↔Fiscus 2/9 (2026-05-03 · post-Cornice reference hardening pass).
+- **Single-exception ladder**: this exception is intended for a single validated pair per cluster (one cluster-level case where structural adjacency is genuinely intentional). A second pair triggers a § decision review on CS-LAYOUT-12 itself before acceptance — the exception is not a generalised relaxation.
+- This is the layout analogue of the existing 4-of-5-axes rule in DISTINCTNESS_RULES §1, with a documented exception ladder for in-family near-occupants.
+- **Failure mode**: a new sibling shares 7 of 9 layout dimensions with Pragma AND no § decision is filed. Plan re-spec required.
 
 ### CS-LAYOUT-13 [BLOCKING] · Sibling pairs MUST differ on at least one of L1, L2, L7
 - L1 (hero), L2 (section sequence), L7 (cases-preview shape) are the three highest-leverage wireframe-difference dimensions. At least one of these three MUST differ between any two siblings.

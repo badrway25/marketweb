@@ -657,7 +657,13 @@ class FreshSeedChainBackfillTests(TestCase):
         # Feature-flag sanity on medical + restaurant + lawyer + Wave 2
         # `consultation-booking` templates. Booking is the discovery-
         # relevant feature for all four groups. New Wave 2 booking
-        # templates register here as they land.
+        # templates register here as they land. Wave-2 stewardship
+        # / family-office siblings (Continua) carry has_booking=True
+        # by Wave-2 design intent — the family-office mandate-dialogue
+        # is structurally booking-shaped (custody-onboard) — and are
+        # included in this cohort. Cornice (architecture studio,
+        # fascicolo-bound intake) is intentionally NOT booking-shaped
+        # and stays at has_booking=False.
         booking_slugs = {
             "salute-studio-medico",
             "benessere-centro-olistico",
@@ -673,6 +679,13 @@ class FreshSeedChainBackfillTests(TestCase):
             "fiscus-commercialista",
             # Wave 2 Pilot #2 — Solaria (discovery-call CTA · tier=draft)
             "solaria-coaching",
+            # Wave 2 stewardship — Continua (mandate-dialogue / custody-
+            # onboard CTA · LF-5 family-office sibling). Re-cohorted
+            # 2026-05-03 by post-Cornice reference hardening pass P3 —
+            # closes the 545/546 noise floor surfaced across 8 prior
+            # corporate-suite passes (factory/reports/hardening/
+            # post-cornice-reference-hardening.md §P3).
+            "continua-stewardship",
         }
         actual = set(
             WebTemplate.objects.filter(has_booking=True).values_list(
