@@ -72,58 +72,71 @@ from __future__ import annotations
 from typing import Any
 
 
-# ─── Pexels-only imagery pool · single source of truth ─────────────────
-# Curator-approved at A.3 (factory/reports/imagery/causa-legale/
-# pool-selection.md · reviewer-lgtm.md · canonical pack
-# docs/content-factory/imagery/packs/business-litigation.md). Cross-
-# cluster grep CLEAN against business-corporate · business-architecture
-# · business-fiscal · business-coaching · business-stewardship pools.
-# The 6 primary slots follow the canonical [hero, feature, portrait,
-# portrait, detail, ambient] order; the 4 magazine-grid extras are
-# LF-2 specific (L7 needs 4 distinct case-card photos).
+# ─── Imagery placeholder · A.6 review-lock mitigation ─────────────────
+# At A.6 IT review-lock the 10 Pexels URLs from the A.3 imagery pack
+# were verified live in the browser sandbox and ALL resolved to wrong
+# subjects (group portraits of casual youths, a bowl of food, a half-
+# nude male model, a residential bay-window living-room, etc. — see
+# `factory/reports/causa/causa-a6-it-review-lock.md §3 F1`). The 4
+# slot-0 backups documented in `business-litigation.md §slot-0-hero
+# -backups` were also live-checked: backup 11 = palm tree · backup 12
+# = 404 · backup 13 = night cityscape · backup 14 (pre-cleared codex-
+# spread fallback) = 3-person warm-mahogany consultation. The entire
+# pack appears curator-hallucinated.
+#
+# Conservative narrow A.6 mitigation: substitute every photographic
+# surface (hero · feature · 2 portraits · detail · ambient · 4 case-
+# card photos) with a single inline SVG data URL that renders the
+# locked palette (bottle-green #14342B + bone #F0EBE0 + obsidian
+# #0B0A0E) as a gradient placeholder. The layout shape, typography,
+# copy, KPI tuple, voice anchor, navbar pill, and footer chrome all
+# remain reviewable; only the photographic content is HELD pending an
+# A.5b imagery re-curate (real Pexels search-and-verify pass).
+#
+# This mitigation touches CONTENT only (this file). It does NOT touch:
+#   apps/catalog/preview_imagery.py (the business-legale pool stays at
+#       the curator URLs · those URLs only feed the marketplace
+#       preview-tile composition · Causa is tier=draft so the catalog
+#       does not surface them publicly · A.5b will re-curate)
+#   apps/catalog/template_dna.py (the imagery_key indirection stays)
+#   apps/catalog/template_content.py (registry stays)
+#   any chrome / LF-2 family / sibling content
+#
+# The placeholder is bottle-green primary on bone secondary with a
+# faint obsidian rule at the bottom — visually unmistakable as an
+# imagery hold (NOT a real photo) so the user reviewing the IT draft
+# cannot mistake it for shipped content.
+# Base64-encoded so the SVG body contains zero <, >, ', or " characters
+# at the Django template-render layer (avoids HTML auto-escape mangling
+# the SVG markup when the data URL appears in CSS background-image).
+_IMAGERY_HOLD_PLACEHOLDER = (
+    "data:image/svg+xml;base64,"
+    "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAx"
+    "NjAwIDkwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxkZWZzPjxs"
+    "aW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9w"
+    "IG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxNDM0MkIiLz48c3RvcCBvZmZzZXQ9IjU1JSIg"
+    "c3RvcC1jb2xvcj0iIzFhM2UzNCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0i"
+    "IzBCMUExNCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxNjAwIiBo"
+    "ZWlnaHQ9IjkwMCIgZmlsbD0idXJsKCNnKSIvPjxyZWN0IHg9IjAiIHk9Ijg3MCIgd2lkdGg9"
+    "IjE2MDAiIGhlaWdodD0iMzAiIGZpbGw9IiMwQjBBMEUiIG9wYWNpdHk9IjAuNCIvPjx0ZXh0"
+    "IHg9IjgwMCIgeT0iNDU1IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXpl"
+    "PSIyOCIgZm9udC1zdHlsZT0iaXRhbGljIiBmaWxsPSIjRjBFQkUwIiBvcGFjaXR5PSIwLjU1"
+    "IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5pbWFnZXJ5IGhvbGQgJiMxODM7IEEuNWIgcmUtY3Vy"
+    "YXRlIHBlbmRpbmc8L3RleHQ+PC9zdmc+"
+)
+_HERO_COURTROOM_INTERIOR = _IMAGERY_HOLD_PLACEHOLDER
+_FEATURE_OPEN_CODEX = _IMAGERY_HOLD_PLACEHOLDER
+_PORTRAIT_FOUNDER = _IMAGERY_HOLD_PLACEHOLDER
+_PORTRAIT_ASSOCIATA = _IMAGERY_HOLD_PLACEHOLDER
+_DETAIL_CODEX_PAGE = _IMAGERY_HOLD_PLACEHOLDER
+_AMBIENT_CODEX_SHELVES = _IMAGERY_HOLD_PLACEHOLDER
 
-_HERO_COURTROOM_INTERIOR = (
-    "https://images.pexels.com/photos/17109985/pexels-photo-17109985.jpeg"
-    "?auto=compress&cs=tinysrgb&w=1600"
-)
-_FEATURE_OPEN_CODEX = (
-    "https://images.pexels.com/photos/6077368/pexels-photo-6077368.jpeg"
-    "?auto=compress&cs=tinysrgb&w=1200"
-)
-_PORTRAIT_FOUNDER = (
-    "https://images.pexels.com/photos/8101948/pexels-photo-8101948.jpeg"
-    "?auto=compress&cs=tinysrgb&w=800"
-)
-_PORTRAIT_ASSOCIATA = (
-    "https://images.pexels.com/photos/6325985/pexels-photo-6325985.jpeg"
-    "?auto=compress&cs=tinysrgb&w=800"
-)
-_DETAIL_CODEX_PAGE = (
-    "https://images.pexels.com/photos/6077381/pexels-photo-6077381.jpeg"
-    "?auto=compress&cs=tinysrgb&w=800"
-)
-_AMBIENT_CODEX_SHELVES = (
-    "https://images.pexels.com/photos/2128249/pexels-photo-2128249.jpeg"
-    "?auto=compress&cs=tinysrgb&w=800"
-)
-
-# Magazine-grid extras (LF-2 L7=magazine-grid · 3+1 layout)
-_CASE_HIGHCOURT_EXTERIOR = (
-    "https://images.pexels.com/photos/9489162/pexels-photo-9489162.jpeg"
-    "?auto=compress&cs=tinysrgb&w=1200"
-)
-_CASE_FASCICOLI_STACK = (
-    "https://images.pexels.com/photos/4427616/pexels-photo-4427616.jpeg"
-    "?auto=compress&cs=tinysrgb&w=800"
-)
-_CASE_BENCH_CHAIR = (
-    "https://images.pexels.com/photos/8730987/pexels-photo-8730987.jpeg"
-    "?auto=compress&cs=tinysrgb&w=800"
-)
-_CASE_CODEX_SPINE = (
-    "https://images.pexels.com/photos/6077326/pexels-photo-6077326.jpeg"
-    "?auto=compress&cs=tinysrgb&w=800"
-)
+# Magazine-grid extras (LF-2 L7=magazine-grid · 3+1 layout) — also
+# under A.6 imagery hold per F1 finding above.
+_CASE_HIGHCOURT_EXTERIOR = _IMAGERY_HOLD_PLACEHOLDER
+_CASE_FASCICOLI_STACK = _IMAGERY_HOLD_PLACEHOLDER
+_CASE_BENCH_CHAIR = _IMAGERY_HOLD_PLACEHOLDER
+_CASE_CODEX_SPINE = _IMAGERY_HOLD_PLACEHOLDER
 
 
 CAUSA_CONTENT_IT: dict[str, Any] = {
