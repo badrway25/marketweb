@@ -72,71 +72,130 @@ from __future__ import annotations
 from typing import Any
 
 
-# ─── Imagery placeholder · A.6 review-lock mitigation ─────────────────
-# At A.6 IT review-lock the 10 Pexels URLs from the A.3 imagery pack
-# were verified live in the browser sandbox and ALL resolved to wrong
-# subjects (group portraits of casual youths, a bowl of food, a half-
-# nude male model, a residential bay-window living-room, etc. — see
-# `factory/reports/causa/causa-a6-it-review-lock.md §3 F1`). The 4
-# slot-0 backups documented in `business-litigation.md §slot-0-hero
-# -backups` were also live-checked: backup 11 = palm tree · backup 12
-# = 404 · backup 13 = night cityscape · backup 14 (pre-cleared codex-
-# spread fallback) = 3-person warm-mahogany consultation. The entire
-# pack appears curator-hallucinated.
+# ─── Imagery · A.5b re-curate (Phase X.6 Step 5b) ──────────────────────
+# A.6 IT review-lock proved the original A.3 imagery pack was curator-
+# hallucinated: 8/8 sampled Pexels IDs resolved to wrong subjects (group
+# portraits of casual youths · a bowl of food · a half-nude male model ·
+# a residential bay-window living-room · a palm tree · a 404 · a night
+# cityscape · a 3-person warm-mahogany consultation). The pack was held
+# under a single bottle-green SVG placeholder pending re-curate — see
+# `factory/reports/causa/causa-a6-it-review-lock.md §3 F1`.
 #
-# Conservative narrow A.6 mitigation: substitute every photographic
-# surface (hero · feature · 2 portraits · detail · ambient · 4 case-
-# card photos) with a single inline SVG data URL that renders the
-# locked palette (bottle-green #14342B + bone #F0EBE0 + obsidian
-# #0B0A0E) as a gradient placeholder. The layout shape, typography,
-# copy, KPI tuple, voice anchor, navbar pill, and footer chrome all
-# remain reviewable; only the photographic content is HELD pending an
-# A.5b imagery re-curate (real Pexels search-and-verify pass).
+# A.5b re-curate (Phase X.6 Step 5b · 2026-05-04) replaced every URL
+# from scratch via live Pexels search + per-URL browser verification.
+# Each URL below was navigated directly in the Playwright sandbox AND
+# screenshotted before commit; captures live in
+# `factory/reports/imagery/causa-legale-a5b/captures/` and the per-slot
+# decision narrative is in `factory/reports/imagery/causa-legale-a5b/
+# pool-selection.md` + `reviewer-lgtm.md`. None of the new IDs overlap
+# with the 5 sibling pools (`business-{corporate,architecture,fiscal,
+# coaching,stewardship}`) or the 2 lawyer pools (`lawyer-{classic,
+# modern}`) — cross-cluster grep CLEAN at commit time.
 #
-# This mitigation touches CONTENT only (this file). It does NOT touch:
-#   apps/catalog/preview_imagery.py (the business-legale pool stays at
-#       the curator URLs · those URLs only feed the marketplace
-#       preview-tile composition · Causa is tier=draft so the catalog
-#       does not surface them publicly · A.5b will re-curate)
-#   apps/catalog/template_dna.py (the imagery_key indirection stays)
-#   apps/catalog/template_content.py (registry stays)
-#   any chrome / LF-2 family / sibling content
+# Pool key remains `business-legale`. URL format is the standard CS-IMG
+# -SRC-02 pexels-photo-<ID>.jpeg shape (verified-resolving for every
+# selected ID). Widths follow CS-IMG-PREM-02: hero=1600 · feature=1200
+# · portrait=800 · detail=800 · ambient=800 · magazine-hero=1200 ·
+# magazine-small=800.
 #
-# The placeholder is bottle-green primary on bone secondary with a
-# faint obsidian rule at the bottom — visually unmistakable as an
-# imagery hold (NOT a real photo) so the user reviewing the IT draft
-# cannot mistake it for shipped content.
-# Base64-encoded so the SVG body contains zero <, >, ', or " characters
-# at the Django template-render layer (avoids HTML auto-escape mangling
-# the SVG markup when the data URL appears in CSS background-image).
-_IMAGERY_HOLD_PLACEHOLDER = (
-    "data:image/svg+xml;base64,"
-    "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAx"
-    "NjAwIDkwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQgc2xpY2UiPjxkZWZzPjxs"
-    "aW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9w"
-    "IG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxNDM0MkIiLz48c3RvcCBvZmZzZXQ9IjU1JSIg"
-    "c3RvcC1jb2xvcj0iIzFhM2UzNCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0i"
-    "IzBCMUExNCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxNjAwIiBo"
-    "ZWlnaHQ9IjkwMCIgZmlsbD0idXJsKCNnKSIvPjxyZWN0IHg9IjAiIHk9Ijg3MCIgd2lkdGg9"
-    "IjE2MDAiIGhlaWdodD0iMzAiIGZpbGw9IiMwQjBBMEUiIG9wYWNpdHk9IjAuNCIvPjx0ZXh0"
-    "IHg9IjgwMCIgeT0iNDU1IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXpl"
-    "PSIyOCIgZm9udC1zdHlsZT0iaXRhbGljIiBmaWxsPSIjRjBFQkUwIiBvcGFjaXR5PSIwLjU1"
-    "IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5pbWFnZXJ5IGhvbGQgJiMxODM7IEEuNWIgcmUtY3Vy"
-    "YXRlIHBlbmRpbmc8L3RleHQ+PC9zdmc+"
+# This file is the only source touched by A.5b: it replaces the 10
+# `_IMAGERY_HOLD_PLACEHOLDER` substitutions with the verified Pexels
+# URLs. `apps/catalog/preview_imagery.py` (catalog tile pool) +
+# `apps/catalog/template_dna.py` (imagery_key indirection) +
+# `apps/catalog/template_content.py` (registry) + LF-2 chrome + sibling
+# content + TEMPLATE_REGISTRY.json + `docs/content-factory/imagery/
+# packs/business-litigation.md` (the original curator pack) are NOT
+# touched at A.5b — those edits would widen scope beyond the imagery
+# restore. The legacy curator pack remains under `business-litigation
+# .md` for archival; the live re-curate inputs feed the A.5b reports
+# directly.
+_HERO_COURTROOM_INTERIOR = (
+    # 33939830 · empty courtroom interior · St George's Hall, Liverpool
+    # · vertical timber wainscoting + bone-painted upper walls + cool
+    # daylight through skylights · low-luminance judicial bench mid-
+    # ground · zero people · the "litigation chamber" 1-second read.
+    "https://images.pexels.com/photos/33939830/pexels-photo-33939830.jpeg"
+    "?auto=compress&cs=tinysrgb&w=1600"
 )
-_HERO_COURTROOM_INTERIOR = _IMAGERY_HOLD_PLACEHOLDER
-_FEATURE_OPEN_CODEX = _IMAGERY_HOLD_PLACEHOLDER
-_PORTRAIT_FOUNDER = _IMAGERY_HOLD_PLACEHOLDER
-_PORTRAIT_ASSOCIATA = _IMAGERY_HOLD_PLACEHOLDER
-_DETAIL_CODEX_PAGE = _IMAGERY_HOLD_PLACEHOLDER
-_AMBIENT_CODEX_SHELVES = _IMAGERY_HOLD_PLACEHOLDER
+_FEATURE_OPEN_CODEX = (
+    # 35031603 · open Latin gothic codex spread · two-column legal/
+    # canonical text with red ornamental drop-letters · still life ·
+    # zero hands · cool register · the codex-spread feature surface.
+    "https://images.pexels.com/photos/35031603/pexels-photo-35031603.jpeg"
+    "?auto=compress&cs=tinysrgb&w=1200"
+)
+_PORTRAIT_FOUNDER = (
+    # 9572634 · senior man (60s · greying hair · eyeglasses) reading a
+    # leather-bound codex at a dark stone desk · floor-to-ceiling
+    # codex shelves dominate the background · downward focused gaze ·
+    # environmental composition · binding triple cleared (50s-or-
+    # senior + chambers-with-codices-mid-ground + environmental-NOT-
+    # studio-backdrop).
+    "https://images.pexels.com/photos/9572634/pexels-photo-9572634.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
+_PORTRAIT_ASSOCIATA = (
+    # 6077355 · mid-career woman in dark robe-style attire reading
+    # paper at wooden desk · massive vertical wood bookcase filled
+    # with leather-bound volumes dominates the frame · downward gaze
+    # · environmental · about-page team-grid only · demographic anti-
+    # collision vs slot 2 (gender + age + ethnicity all visibly
+    # distinct).
+    "https://images.pexels.com/photos/6077355/pexels-photo-6077355.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
+_DETAIL_CODEX_PAGE = (
+    # 1757852 · open antique codex on dark wooden surface · printed
+    # serif text · single page open · still life · shallow depth of
+    # field · zero hands · the codex-page-as-evidence detail surface.
+    "https://images.pexels.com/photos/1757852/pexels-photo-1757852.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
+_AMBIENT_CODEX_SHELVES = (
+    # 13095904 · vertical wall of vintage cloth-and-leather-bound
+    # volumes on tall wooden shelves · raking sunlight from the right
+    # · zero people · industrial-quiet active-practice register · the
+    # codex-shelves-as-active-archive ambient surface.
+    "https://images.pexels.com/photos/13095904/pexels-photo-13095904.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
 
-# Magazine-grid extras (LF-2 L7=magazine-grid · 3+1 layout) — also
-# under A.6 imagery hold per F1 finding above.
-_CASE_HIGHCOURT_EXTERIOR = _IMAGERY_HOLD_PLACEHOLDER
-_CASE_FASCICOLI_STACK = _IMAGERY_HOLD_PLACEHOLDER
-_CASE_BENCH_CHAIR = _IMAGERY_HOLD_PLACEHOLDER
-_CASE_CODEX_SPINE = _IMAGERY_HOLD_PLACEHOLDER
+# Magazine-grid extras (LF-2 L7=magazine-grid · 3+1 layout) — re-
+# curated alongside the primary 6 slots at A.5b. The hero card carries
+# the firm's lead landmark sentence; the 3 small cards carry supporting
+# public-record cases.
+_CASE_HIGHCOURT_EXTERIOR = (
+    # 31602788 · the actual Corte di Cassazione facade in Rome ·
+    # quadriga + classical sculptures + visible "CORTE DI CASSAZIONE"
+    # inscription on the cornice · the institutional ground for the
+    # firm's lead landmark Cassazione sentence card · zero people.
+    "https://images.pexels.com/photos/31602788/pexels-photo-31602788.jpeg"
+    "?auto=compress&cs=tinysrgb&w=1200"
+)
+_CASE_FASCICOLI_STACK = (
+    # 7654125 · close-up of stacked brown-paper fascicoli tied with
+    # white string · multiple bundles · cool light · zero hands · zero
+    # gavel · zero scales-icon · the work-product-scale evidence card.
+    "https://images.pexels.com/photos/7654125/pexels-photo-7654125.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
+_CASE_BENCH_CHAIR = (
+    # 11373602 · ornate empty judicial bench chair (high-back leather
+    # upholstery · carved wood frame with coat-of-arms cresting) ·
+    # vertical timber wainscoting in background · framed judicial-
+    # pantheon portraits visible · the seat-from-which-the-sentence-
+    # was-issued single-object surface · zero people.
+    "https://images.pexels.com/photos/11373602/pexels-photo-11373602.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
+_CASE_CODEX_SPINE = (
+    # 3927126 · close-up of leather-bound codex spines on shelf · gilt
+    # typography on dark leather (visible "DHAKA REPORTS · VOL II ·
+    # 2002") · the published-massima detail card · zero people · zero
+    # gavel · pairs with slot 5 ambient at a tighter scale.
+    "https://images.pexels.com/photos/3927126/pexels-photo-3927126.jpeg"
+    "?auto=compress&cs=tinysrgb&w=800"
+)
 
 
 CAUSA_CONTENT_IT: dict[str, Any] = {

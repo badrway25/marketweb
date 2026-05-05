@@ -656,10 +656,101 @@ Codifies AP2 gap. The current skin breaks below ~1100px because the hardening pa
 | CS-BROWSER-01 | Live browser walk is the ship gate |
 | CS-BROWSER-02 | Dev server URL + port in the walk log |
 | CS-BROWSER-03 | Tests-then-browser, browser has the veto |
+| CS-LF2-VAR-V1 | LF-2 second occupant adopts ≥3 within-cell sub-variants vs Cornice |
+| CS-LF2-VAR-V2 | LF-2 second occupant portrait composition diverges ≥2 axes vs Cornice |
+| CS-LF2-VAR-V3 | LF-2 second occupant CTA verb-class differs from Cornice's `Apri-X` |
+| CS-LF2-VAR-V4 | LF-2 second occupant KPI cell semantic class diverges ≥1 cell vs Cornice |
+| CS-LF2-VAR-V5 | LF-2 third occupant clears AC-V1..V4 vs BOTH Cornice AND the 2nd occupant |
 
 ---
 
-## 19 · Summary
+## 19 · LF-2 family-internal variance rules (CS-LF2-VAR-V1..V5)
+
+**Status**: ratified 2026-05-05 · Phase X.7d hardening · paper-only.
+**Source**: anti-clone-2.0 audit (`factory/reports/hardening/anti-clone-2.0-rules.md`) scored Cornice ↔ Causa = 21/54 with 3 critical-axis vetoes failed (CTA · motion · imagery). The correct fix is NOT family migration but LF-2 family-internal variance rules.
+**Ratification authorities**:
+- `factory/reports/hardening/lf2-family-internal-variance-rules.md` (the binding hardening report · all reasoning · 12 browser gates F2-VAR-1..12).
+- `design-orchestrator/references/internal-baselines/lf2-second-occupant-variance-contract.md` (the orchestrator-side intake contract · LF-2 claims registry · failure-mode catalog).
+- `design-orchestrator/references/internal-baselines/visible-distinctness-thresholds-v2.md §7` (the per-axis rubric · same AC-V1..V5 in table form).
+- `design-orchestrator/references/internal-baselines/cornice-lf2-reference-pack.md §4 AC-1..AC-16` (the negative companion · what NOT to copy verbatim — the AC-V rules are the positive companion: what MUST be diversified).
+
+**Cluster-context (why these rules exist here, not at the cluster-invariant layer)**:
+LF-2 is the only multi-occupancy layout family in the corporate-suite cluster today (Cornice 1st · Causa 2nd at `tier=draft`). The other 4 layout families (LF-1 Pragma · LF-3 Fiscus · LF-4 Solaria · LF-5 Continua) are single-occupancy and per-family AC-V rules are paper-deferred until a 2nd occupant proposes the family. CS-LF2-VAR-* binds LF-2 only; LF-{N}-VAR-* would be authored at each family's first 2nd-occupant intake.
+
+### CS-LF2-VAR-V1 [REQUIRED] · ≥ 3 within-cell sub-variants vs Cornice
+- **Rule**: a 2nd LF-2 occupant adopts ≥ 3 patterns from the LF-2 sub-variant pool that the 1st occupant (Cornice) does not ship: NAV-1 sticky-condensed-on-scroll · NAV-3 progress-bar-light-touch · EDIT-2 pull-quote-em-reveal-longer-delay · QUOTE-4 sticky-stack-rotate · EVID-2 attestation-chip-hover · EVID-3 case-citation-pop · EVID-5 provenance-tooltip · TIME-3 chronological-tick-horizontal · KPI-2 count-up animation. Cornice ships 0 of 9 (static LF-2 baseline).
+- **Why**: closes axis 18 (motion + page choreography critical-axis veto · floor 2) AND raises axis 9 (cases-preview · floor 2) AND axis 7 (KPI · floor 2) AND axis 17 (imagery register critical-axis veto · floor 2 · via EVID-5 · the only LF-2-internal axis-17 lever).
+- **Test at A.1 intake**: brief lists ≥ 3 chosen sub-variants. Test at A.5 build: builder wires ≥ 3 patterns. Test at A.6 review-lock: style-critic counts ≥ 3 rendered. Test at workflow C/D walk: F2-VAR-1 fires under both default-motion AND `prefers-reduced-motion: reduce`.
+- **Failure mode**: 2nd occupant ships 0-2 sub-variants OR ships only static-equivalent without the live motion (motion-mode leakage).
+- **Cross-reference**: `factory/reports/hardening/lf2-family-internal-variance-rules.md §4 AC-V1` · `factory/reports/hardening/premium-dynamic-pattern-library.md §2` (the 9 patterns in the pool).
+
+### CS-LF2-VAR-V2 [REQUIRED] · Portrait composition divergence ≥ 2 axes
+- **Rule**: a 2nd LF-2 occupant's leadership single-portrait composition diverges from the 1st occupant's on ≥ 2 of: subject posture · subject activity · room props · photographic register. Gender, ethnicity, age are NOT axes of distinctness for this rule.
+- **Why**: closes axis 8 (leadership) toward floor 2. Both occupants inherit AC-1's L6 = `single-portrait-feature` cell verbatim; divergence happens within the cell.
+- **Test at A.3 imagery curate**: pool selection brief declares the 4 axes vs Cornice (and Causa for the 3rd occupant). Test at A.6 review-lock: style-critic side-by-sides at 1280px and counts shared axes. Test at walk: F2-VAR-4 captures both portraits at 1280px and confirms ≥ 2 axes diverge.
+- **Failure mode**: portrait that overlaps Cornice on ≥ 3 of 4 axes.
+- **Cross-reference**: `factory/reports/hardening/lf2-family-internal-variance-rules.md §4 AC-V2` · `cornice-lf2-reference-pack.md §3 D6` (Cornice's load-bearing portrait composition).
+
+### CS-LF2-VAR-V3 [REQUIRED] · CTA inflection family divergence
+- **Rule**: a 2nd LF-2 occupant's CTA inflection family is non-`Apri-X` (Cornice's claim · `Apri un fascicolo progetto`). Open inside LF-2: `Sottometti-X` · `Richiedi-X` · `Visualizza-X` · `Esplora-X`. Forbidden inside LF-2 (claimed by other corporate-suite siblings): `Fissa-X` (Pragma) · `Primo + abstract noun` (Fiscus) · `Prenota-X` (Solaria) · `Avvia-X` (Continua).
+- **Why**: closes axis 13 (CTA mental model + inflection family) critical-axis veto floor 2. Same inflection family with same mental model is forbidden under anti-clone 2.0 v2.0 — a Cornice-cognate `Apri-X` produces axis 13 = 1 today (veto fail).
+- **Locale parity**: chosen verb-class propagates verbatim across 5 locales without collapsing onto Cornice's translation (`Apri / Open / Ouvrez / Abre / افتح` is forbidden in any locale).
+- **Test at A.4 copy author**: voice-anchor-lock declares verb-class. Test at A.6 review-lock: style-critic loops 25 routes (5 locales × 5 page kinds) and confirms primary CTA pill is non-Apri-cognate. Test at walk: F2-VAR-2 confirms.
+- **Failure mode**: any locale's primary CTA pill reads `Apri-X` cognate. Frozen-sibling regression check: Cornice still reads `Apri un fascicolo progetto` verbatim.
+- **Cross-reference**: `factory/reports/hardening/lf2-family-internal-variance-rules.md §4 AC-V3` · `cornice-lf2-reference-pack.md §4 AC-8` (Cornice's CTA semantic-family claim) · CS-CTA-02 (advisor's-voice CTA copy at cluster level).
+
+### CS-LF2-VAR-V4 [REQUIRED] · KPI cell semantic-class divergence ≥ 1 cell
+- **Rule**: a 2nd LF-2 occupant's hero-overlay KPI tuple shares the 3-cell SHAPE with Cornice (per AC-1 verbatim L5 inheritance — the family's L5 = `hero-overlay`) but diverges semantic class on ≥ 1 of the 3 cells. Closed registry of cell semantic classes: count · period-anchored · publication-anchored · achievement-anchored · year-range · regulatory-anchor (regulatory-anchor is taken by Fiscus L3 mid-strip · forbidden inside LF-2 KPI).
+- **Why**: closes axis 7 (KPI placement + cell shape) toward floor 2. Cornice's tuple `(novanta fascicoli · 2008 · 38 menzioni)` = (count · period · publication). A 2nd occupant tuple must NOT match all 3 classes.
+- **Test at A.5 build**: builder's KPI authoring brief declares each cell's semantic class. Test at A.6 review-lock: style-critic checks tuple semantic-shape vs Cornice. Test at walk: F2-VAR-3 parses rendered tuple and classifies each cell.
+- **Failure mode**: 3-cell tuple matches Cornice on all 3 semantic classes.
+- **Cross-reference**: `factory/reports/hardening/lf2-family-internal-variance-rules.md §4 AC-V4` · CS-DENSITY-04 (KPI band 3-or-4 stats at cluster level).
+
+### CS-LF2-VAR-V5 [REQUIRED] · Cumulative two-pair ladder for the 3rd LF-2 occupant
+- **Rule**: a 3rd LF-2 occupant clears CS-LF2-VAR-V1..V4 vs **both** Cornice AND the 2nd occupant (Causa post-retrofit). Two-pair scoring at A.1 intake; both pairs must clear 27/54 within-family threshold AND all 5 critical-axis vetoes ≥ floor.
+- **Sub-variant adoption** (V1 cumulative form): ≥ 3 sub-variants AND ≥ 1 of those is unused by both Cornice (ships 0) AND Causa (post-retrofit ships NAV-1 + KPI-2 + EVID-3 + TIME-3 + EVID-5 = 5). The open set for the 3rd occupant: NAV-3 · EDIT-2 · QUOTE-4 · EVID-2.
+- **Promoted from `[GUIDELINE]` → `[REQUIRED]`**: the priority plan paper-proposed AC-V5 as a guideline; ratification raises it to required because soft-guideline scoring lets the 3rd occupant pass selectively against one sibling while collapsing visibly against the other.
+- **Pre-condition**: the 3rd-occupant intake CANNOT open until the 2nd occupant (Causa) ships at hardening parity. PENDING-row Causa columns (per `lf2-second-occupant-variance-contract.md §3.2`) produce an unstable scoring matrix.
+- **Test at A.1 intake**: brief carries two pair matrices (vs Cornice · vs Causa). Test at workflow C/D walk: F2-VAR-6 + F2-VAR-7 fire (matrix vs Cornice + matrix vs Causa) AND F2-VAR-8 voice-anchor cognate ladder safety AND F2-VAR-9 audience-verb register check.
+- **Failure mode**: 3rd occupant passes one pair but not the other · OR one critical-axis veto fails on either pair.
+- **Cross-reference**: `factory/reports/hardening/lf2-family-internal-variance-rules.md §4 AC-V5` · `corporate-suite-retrofit-priority-plan.md §1 AC-V5` (the promotion path).
+
+### Pragma ↔ Fiscus 2.0-grandfathered exception · 2026-05-05
+
+Per `corporate-suite-retrofit-priority-plan.md §2`: Pragma ↔ Fiscus scored 22/54 under anti-clone 2.0 with 2 critical-axis vetoes failed (motion + imagery). Both `published_live` since the editor program era. Retrofit cost 5–10× higher than Causa's because of public-flip cascade undoing. The pair is accepted-as-grandfathered under the existing CS-LAYOUT-12 in-family near-occupant § decision (filed 2026-05-03 · 2/9 layout-axis exception) extended at 2.0 ratification:
+
+- The 2.0-grandfather applies ONLY to Pragma ↔ Fiscus.
+- It applies ONLY at the 2.0-veto layer (axis 18 motion · axis 17 imagery).
+- It does NOT apply to other corporate-suite pairs.
+- Re-evaluation triggers: catalog ≥ 50 templates · OR Pragma's Unsplash grandfather (W001) closure · OR Phase X.10+ batch retrofit pass.
+
+**Action**: NO retrofit. Document the carry-over.
+
+### How CS-LF2-VAR-* applies at each workflow gate
+
+| Gate | Rule(s) verified | Evidence written |
+|---|---|---|
+| A.0 territory-scout | LF-2 second-occupant prerequisites (P1-P7 per intake contract §2) | territory scout report includes LF-2 occupancy snapshot |
+| A.1 intake | CS-LF2-VAR-V1..V5 declared in brief · 18-axis matrix vs each existing LF-2 occupant | planner brief carries matrix |
+| A.2 plan | CS-LF2-VAR-V1..V5 + critical-axis veto check | plan re-spec on any veto fail |
+| A.3 imagery curate | CS-LF2-VAR-V2 portrait composition declaration | pool selection brief 4-axis declaration |
+| A.4 copy author | CS-LF2-VAR-V3 verb-class declaration · CS-LF2-VAR-V4 KPI tuple semantic shape declaration | voice-anchor-lock + KPI authoring brief |
+| A.5 build | CS-LF2-VAR-V1 sub-variants wired · CS-LF2-VAR-V4 KPI authored | builder declares chosen sub-variants in module docstring |
+| A.6 review-lock | all 5 rules verified rendered · 18-axis matrix vs Cornice (and Causa for 3rd) | review-lock report carries scored matrix |
+| Workflow C/D walk | F2-VAR-1..12 browser gates · 5 locales · 5 viewports · frozen siblings | walk-log.md per gate |
+| Release-gatekeeper at flip | aggregated 18-axis score in scorecard · all 5 critical-axis vetoes ≥ floor | scorecard panel |
+
+### Failure-mode summary
+
+A failure of any CS-LF2-VAR-* rule blocks tier flip. The failure-mode catalog (10 named modes F-LF2-V1..V10) lives in `lf2-second-occupant-variance-contract.md §7`. The most common at intake are:
+- F-LF2-V1 (V1 below 3 sub-variants): re-spec at A.0.
+- F-LF2-V4 (V3 verb-class is `Apri-X` or any taken class): copy-author re-spec.
+- F-LF2-V6 (18-axis matrix below 27/54 vs Cornice): re-route — likely candidate is LF-{NEW}.
+- F-LF2-V7 (critical-axis veto fail at intake): re-spec on the failing axis.
+
+---
+
+## 20 · Summary
 
 ### Core design principles (seven · in priority order)
 

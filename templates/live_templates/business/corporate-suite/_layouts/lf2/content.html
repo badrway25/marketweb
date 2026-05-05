@@ -37,7 +37,15 @@ see `factory/reports/hardening/corporate-suite-layout-divergence-plan.md
       </div>
       <div class="kpi-row" data-lm-stagger>
         {% for label, value in page_data.hero_meta_strip %}
-          <div class="kpi" data-lm="reveal"><span class="num">{{ value }}</span><span class="lbl">{{ label }}</span></div>
+          {# Phase X.7d slice 01 · KPI count-up token. The `data-lm="counter"` #}
+          {# on `.num` is structural — the live-motion runtime gates activation #}
+          {# on `body.cs-motion-counter-on`. LF-2 first occupant Cornice ships  #}
+          {# with `motion_profile = g2-editorial` (counter OFF · static); LF-2  #}
+          {# 2nd occupant Causa ships with `motion_profile = g2-editorial-     #}
+          {# counter` (counter ON · animates once-per-session) — the within-   #}
+          {# family differentiator per anti-clone-2.0-rules.md §4 pair 1 + the #}
+          {# corporate-suite-retrofit-priority-plan.md R5 retrofit.            #}
+          <div class="kpi" data-lm="reveal"><span class="num" data-lm="counter">{{ value }}</span><span class="lbl">{{ label }}</span></div>
         {% endfor %}
       </div>
     </div>

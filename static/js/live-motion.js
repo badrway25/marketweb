@@ -137,6 +137,19 @@
 
   // --- 3. Counters ----------------------------------------------------------
   function setupCounters() {
+    // Phase X.7d slice 01 · counter activation gate. The `data-lm="counter"`
+    // token is now a structural signal that does NOT drive animation by
+    // itself; activation is gated by the per-template `motion_profile`,
+    // propagated through `<body data-motion-kpi-animate="1">`. Templates
+    // whose motion gravity opts out (G2-editorial · G4-stewardship · G6-
+    // cinematic) ship without the attribute, the counter pass is skipped,
+    // and KPI numbers render statically — same final value, zero animation.
+    // The mapping from gravity to `kpi_animate` flag lives in
+    // `apps/catalog/template_dna.py · MOTION_PROFILES`. (Body data-
+    // attributes preferred over class names so the body-class shape stays
+    // available to other systems · per `_base.html` body class contract.)
+    if (document.body.getAttribute('data-motion-kpi-animate') !== '1') return;
+
     var counters = document.querySelectorAll('[data-lm="counter"]');
     if (!counters.length) return;
 

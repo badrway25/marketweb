@@ -128,6 +128,27 @@ Rules that bind the nine dimensions together into a layout-family identity.
 - This is the layout analogue of the existing 4-of-5-axes rule in DISTINCTNESS_RULES §1, with a documented exception ladder for in-family near-occupants.
 - **Failure mode**: a new sibling shares 7 of 9 layout dimensions with Pragma AND no § decision is filed. Plan re-spec required.
 
+### CS-LAYOUT-12b [BLOCKING] · Within-family second-occupant variance contract
+- **Rule**: when a 2nd (or later) occupant of an already-occupied layout family is admitted, the pair must clear the family's AC-V (anti-clone variance) rule set in addition to CS-LAYOUT-12. The AC-V rules govern within-cell diversification — what positively MUST differ inside cells the family inherits verbatim — whereas CS-LAYOUT-12 governs cross-family layout-cell divergence.
+- **Per-family AC-V sets are paper-deferred to first 2nd-occupant intake.** The first set ratified is **LF-2** (CS-LF2-VAR-V1..V5), authored 2026-05-05 in response to the anti-clone 2.0 audit's Cornice ↔ Causa 21/54 score with 3 critical-axis vetoes failed. LF-1 / LF-3 / LF-4 / LF-5 currently single-occupancy; their AC-V rules will be authored when their respective 2nd-occupant intakes propose the family.
+- **LF-2 binding** (CS-LF2-VAR-V1..V5):
+  - V1: 2nd occupant adopts ≥ 3 within-cell sub-variants vs Cornice's 0 (NAV-1 · NAV-3 · EDIT-2 · QUOTE-4 · EVID-2 · EVID-3 · EVID-5 · TIME-3 · KPI-2).
+  - V2: portrait composition diverges ≥ 2 axes (posture · activity · room props · photographic register).
+  - V3: CTA verb-class differs from Cornice's `Apri-X` (open: `Sottometti-X` · `Richiedi-X` · `Visualizza-X` · `Esplora-X`; forbidden inside LF-2: `Fissa-X` · `Primo + abstract noun` · `Prenota-X` · `Avvia-X` · cross-family-collision).
+  - V4: KPI cell semantic class diverges ≥ 1 cell (count · period-anchored · publication-anchored · achievement-anchored · year-range).
+  - V5: 3rd occupant clears V1..V4 vs BOTH Cornice AND the 2nd occupant (cumulative two-pair ladder).
+- **Anti-clone 2.0 critical-axis vetoes apply on top**: voice anchor (axis 12) ≥ 3 · CTA mental-model + inflection (axis 13) ≥ 2 · hero subject (axis 2) ≥ 2 · imagery register (axis 17) ≥ 2 · motion gravity + page choreography (axis 18) ≥ 2. A within-family pair scoring ≥ 27/54 total but failing any veto is "too related" regardless of total. Source: `factory/reports/hardening/anti-clone-2.0-rules.md §3` + `design-orchestrator/references/internal-baselines/visible-distinctness-thresholds-v2.md §3`.
+- **Threshold ladder** (per `anti-clone-2.0-rules.md §3`): cross-family pair ≥ 36/54 · near-occupant pair ≥ 30/54 (the CS-LAYOUT-12 § decision class · Pragma ↔ Fiscus) · within-family second-occupant pair ≥ 27/54 (the CS-LAYOUT-12b class · Cornice ↔ Causa target).
+- **Walk gates**: F2-VAR-1..12 (LF-2-specific) per `factory/reports/hardening/lf2-family-internal-variance-rules.md §6`. Future per-family sets author their own F{N}-VAR-* gate families.
+- **Pragma ↔ Fiscus 2.0-grandfathered exception** (filed 2026-05-05 · documented in `factory/standards/corporate-suite-design-standard.md §19`): the existing 2/9 near-occupant § decision is extended to cover the 2.0 critical-axis veto layer (axis 18 motion · axis 17 imagery) for this single pair only. Re-evaluation triggers: catalog ≥ 50 templates · OR Pragma's Unsplash grandfather (W001) closure · OR Phase X.10+ batch retrofit pass. NO Pragma or Fiscus retrofit at this pass.
+- **Failure mode**: a 2nd LF-2 occupant lands `tier=draft` shipping CS-LF2-VAR-V1..V4 below floor. Catch at A.1 intake (planner brief must declare AC-V values) AND at A.6 review-lock (style-critic re-runs 18-axis matrix vs each existing LF-2 occupant) AND at workflow C/D walk (F2-VAR-1..12).
+- **Cross-references**:
+  - `factory/reports/hardening/lf2-family-internal-variance-rules.md` (the binding hardening report).
+  - `design-orchestrator/references/internal-baselines/lf2-second-occupant-variance-contract.md` (orchestrator-side intake contract).
+  - `factory/standards/corporate-suite-design-standard.md §19 CS-LF2-VAR-V1..V5` (codified into standards stack).
+  - `factory/reports/hardening/corporate-suite-retrofit-priority-plan.md §1` (Causa retrofit R1-R6 · the implementation pass).
+  - `cornice-lf2-reference-pack.md §4 AC-1..AC-16` (the negative companion: what NOT to copy verbatim).
+
 ### CS-LAYOUT-13 [BLOCKING] · Sibling pairs MUST differ on at least one of L1, L2, L7
 - L1 (hero), L2 (section sequence), L7 (cases-preview shape) are the three highest-leverage wireframe-difference dimensions. At least one of these three MUST differ between any two siblings.
 - This rule prevents "diff on small dimensions only" — e.g., differing on footer + leadership + nav-condensed but staying same on hero + section order + cases shape, which would still produce the >90% bounding-box overlap the cluster is fixing.
@@ -232,6 +253,12 @@ Named failure modes the rules above are designed to catch. Each carries a diagno
 - **Trigger rule**: CS-LAYOUT-08 + CS-LAYOUT-14.
 - **Action**: walk fails.
 
+### F-LAYOUT-11 · Within-family second-occupant clone-drift (AC-V failure)
+- **Symptom**: a 2nd occupant of an already-occupied layout family ships at hardening parity but reads visibly clone-like vs the 1st occupant despite L1–L9 tuple inheritance being correct (per CS-LAYOUT-14).
+- **Cause**: AC-V (within-cell diversification) rules below floor — typical: ≤ 2 sub-variants adopted · CTA verb-class shared with 1st occupant · KPI semantic shape shared · portrait composition shared on ≥ 3 axes.
+- **Trigger rule**: CS-LAYOUT-12b + the family's CS-LF{N}-VAR-* set + the anti-clone 2.0 critical-axis vetoes (axis 13 CTA · axis 17 imagery · axis 18 motion).
+- **Action**: re-spec at A.0 territory-scout · OR if mid-build, retrofit per the family's variance contract (LF-2 case: `factory/reports/hardening/corporate-suite-retrofit-priority-plan.md §1` Causa R1-R6 path).
+
 ### F-LAYOUT-10 · Manifesto-replacement without omitted leadership
 - **Symptom**: LF-4 ships the manifesto replacing pillars but still renders an empty leadership card grid.
 - **Cause**: L4 was changed but L6 was not — partial layout-family implementation.
@@ -273,8 +300,8 @@ The capture overlays against every existing sibling's wireframe pair (LF-1 vs th
 
 | Workflow gate | Rules enforced | Evidence written |
 |---|---|---|
-| A.1 intake | CS-LAYOUT-10 · CS-LAYOUT-11 · CS-LAYOUT-13 | Brief declares layout family + L1–L9 tuple. |
-| A.2 plan | CS-LAYOUT-12 · CS-LAYOUT-13 | Plan re-spec on collision. Distinctness matrix updated to project the new column. |
+| A.1 intake | CS-LAYOUT-10 · CS-LAYOUT-11 · CS-LAYOUT-13 · CS-LAYOUT-12b (within-family second-occupant) | Brief declares layout family + L1–L9 tuple + AC-V values for within-family occupants. |
+| A.2 plan | CS-LAYOUT-12 · CS-LAYOUT-12b · CS-LAYOUT-13 | Plan re-spec on collision OR AC-V veto fail. Distinctness matrix updated to project the new column · within-family pair carries 18-axis matrix per `visible-distinctness-thresholds-v2.md`. |
 | A.3 pack | CS-LAYOUT-20 (imagery row only) | Pexels pack avoids URL overlap. |
 | A.4 build | CS-LAYOUT-01..09 · CS-LAYOUT-21 · CS-LAYOUT-22 | DOM matches family declaration. `cs-*` prefix maintained. Registry row carries `layout_family`. |
 | A.6 critique | All CS-LAYOUT-* | Style-critic does the side-by-side wireframe overlay and flags any F-LAYOUT-* trigger. |

@@ -9,7 +9,7 @@ from apps.catalog.imagery_policy import (
     enforce_corporate_suite_imagery_policy,
     should_enforce as should_enforce_imagery,
 )
-from apps.catalog.template_dna import get_dna
+from apps.catalog.template_dna import MOTION_PROFILES, get_dna
 from apps.catalog.theme_safety import enrich_corporate_suite_theme, should_enrich
 from apps.editor.rendering import apply_project_overrides
 from apps.projects.selectors import get_project_for_preview
@@ -430,6 +430,17 @@ class LiveTemplateView(TemplateView):
                 template_slug=self.template_obj.slug,
             )
 
+        # Phase X.7d slice 01 · motion-gravity propagation. The DNA's
+        # `motion_profile` key is an enum into `MOTION_PROFILES`; we look
+        # up the per-pattern flags and surface them as flat context keys
+        # so the chrome can opt patterns in/out via body classes without
+        # forking layout files. Templates without a declared profile
+        # default to "g3-institutional" (cluster's safe default) to keep
+        # the change strictly additive on archetypes that haven't yet
+        # been classified.
+        motion_profile = self.dna.get("motion_profile", "g3-institutional")
+        motion_config = MOTION_PROFILES.get(motion_profile, {})
+
         ctx["template"]  = self.template_obj
         ctx["brand"]     = brand
         ctx["dna"]       = self.dna
@@ -441,6 +452,8 @@ class LiveTemplateView(TemplateView):
         ctx["posts"]     = content.get("posts", [])
         ctx["post"]      = self.post
         ctx["preview_project"] = self.preview_project
+        ctx["motion_profile"] = motion_profile
+        ctx["motion_kpi_animate"] = bool(motion_config.get("kpi_animate", False))
 
         # Blog parent page slug — used by blog_list/blog_detail chrome templates
         # so they don't have to hardcode the per-template slug ('pubblicazioni',

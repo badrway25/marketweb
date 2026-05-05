@@ -186,6 +186,27 @@ DENSITY_PROFILES: dict[str, str] = {
     "very-airy": "Editorial scale — huge gaps, large type, max breathing room.",
 }
 
+# Phase X.7d slice 01 · the motion-gravity DNA dimension that
+# `factory/reports/hardening/premium-dynamic-pattern-library.md §1`
+# specified and `factory/reports/hardening/anti-clone-2.0-rules.md §3`
+# made a critical-axis-veto field. Each entry binds a gravity key to a
+# compact behavior bundle — the per-pattern flag (kpi_animate today;
+# nav_condense_on_scroll, hero_parallax, gallery_snap, magnetic_button,
+# ... in subsequent slices) is read at render time and propagated to a
+# body class so the per-template chrome can opt patterns in/out without
+# forking layout files. Templates without a `motion_profile` key fall
+# back to "g3-institutional" (the cluster's safe default) — strictly
+# additive · no-op for archetypes outside corporate-suite.
+MOTION_PROFILES: dict[str, dict[str, Any]] = {
+    "g1-safe-premium":     {"kpi_animate": False, "label": "Safe premium · institutional default"},
+    "g2-editorial":        {"kpi_animate": False, "label": "Editorial · static KPI · LF-2 1st-occupant register"},
+    "g2-editorial-counter":{"kpi_animate": True,  "label": "Editorial · with KPI count-up · LF-2 2nd-occupant differentiator"},
+    "g3-institutional":    {"kpi_animate": True,  "label": "Institutional · count-up enabled · LF-1/LF-3/LF-4 default"},
+    "g4-stewardship":      {"kpi_animate": False, "label": "Stewardship-restrained · static KPI · LF-5 default"},
+    "g5-sprint-console":   {"kpi_animate": True,  "label": "Sprint-console · digital-product"},
+    "g6-cinematic":        {"kpi_animate": False, "label": "Gallery-cinematic · static KPI"},
+}
+
 TONES: dict[str, str] = {
     "institutional":  "Authoritative, formal, third-person, evidence-led.",
     "warm-family":    "Personal, second-person, reassuring, child-friendly.",
@@ -977,6 +998,7 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "section_order":      ["nav", "editorial-hero", "advisory-pillars", "kpi-strip", "sectors-ribbon"],
         "card_style":         "pillar-advisory",
         "button_style":       "ghost-institutional",
+        "motion_profile":     "g3-institutional",  # Phase X.7d slice 01 · count-up KPI band ON (current behavior preserved)
         "density":            "airy",
         "tone":               "advisory-sober",
         "imagery_direction":  "executive-boardroom",
@@ -1331,6 +1353,7 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "section_order":      ["nav", "editorial-hero", "advisory-pillars", "kpi-strip", "sectors-ribbon"],
         "card_style":         "pillar-advisory",
         "button_style":       "ghost-warm",
+        "motion_profile":     "g3-institutional",  # Phase X.7d slice 01 · count-up KPI band ON (current behavior preserved)
         "density":            "airy",
         "tone":               "professional-warm",
         "imagery_direction":  "coaching-conversation",
@@ -1386,6 +1409,7 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "section_order":      ["nav", "editorial-hero", "advisory-pillars", "kpi-strip", "sectors-ribbon"],
         "card_style":         "pillar-advisory",
         "button_style":       "ghost-institutional",
+        "motion_profile":     "g3-institutional",  # Phase X.7d slice 01 · count-up KPI band ON (current behavior preserved)
         "density":            "airy",
         "tone":               "institutional-fiscal",
         "imagery_direction":  "fiscal-desk-documents",
@@ -1450,6 +1474,12 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "section_order":      ["nav", "editorial-hero", "advisory-pillars", "kpi-strip", "governance-cycle-strip", "sectors-ribbon"],
         "card_style":         "pillar-stewardship",
         "button_style":       "ghost-stewardship",
+        # Phase X.7d slice 01 · count-up KPI band OFF — stewardship register
+        # prefers stillness per `premium-dynamic-pattern-library.md §2.1
+        # KPI-2 cluster fit` (G4 stewardship is in the cluster-no-fit list).
+        # Behavior change vs. pre-slice state: LF-5 KPI cells previously
+        # animated count-up; now they render the final figure statically.
+        "motion_profile":     "g4-stewardship",
         "density":            "airy",
         "tone":               "stewardship-longitudinal",
         "imagery_direction":  "stewardship-archive-room",
@@ -1516,6 +1546,13 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "section_order":      ["nav", "stacked-editorial-hero", "essay-with-anchors", "sectors-ribbon", "single-portrait-feature", "magazine-grid-cases", "cta-closer-cream"],
         "card_style":         "magazine-card-cornice",
         "button_style":       "ghost-cornice",
+        # Phase X.7d slice 01 · count-up KPI overlay OFF — LF-2 1st-occupant
+        # editorial register prefers stillness per `premium-dynamic-pattern-
+        # library.md §2.1 KPI-2`. Cornice's KPI tuple lives in the hero photo
+        # bottom-left credit-overlay; static rendering preserves the magazine-
+        # spread feel. (Cornice already shipped static today via `data-lm=
+        # "reveal"` — this slice formalises the choice in DNA.)
+        "motion_profile":     "g2-editorial",
         "density":            "airy-editorial",
         "tone":               "editorial-curatorial",
         "imagery_direction":  "architecture-editorial-built-form",
@@ -1602,6 +1639,17 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "section_order":      ["nav", "stacked-editorial-hero", "essay-with-anchors", "sectors-ribbon", "single-portrait-feature", "magazine-grid-cases", "cta-closer-cream"],
         "card_style":         "magazine-card-causa",
         "button_style":       "filled-bottle-green-causa",
+        # Phase X.7d slice 01 · count-up KPI overlay ON — Causa's within-
+        # family differentiator vs Cornice per `corporate-suite-retrofit-
+        # priority-plan.md R5`. The hero KPI tuple `(28 sentenze · 14
+        # voci · 31 anni)` ticks from 0 once-per-session on viewport
+        # entry; reduced-motion equivalent shows the static final
+        # figures. Raises Causa↔Cornice axis-7 (KPI placement) score
+        # from 1 → 2 and contributes to axis-18 (motion + page
+        # choreography) score from 0 → 1 per `anti-clone-2.0-rules.md
+        # §4 pair 1`. Behavior change vs pre-slice state: LF-2 KPI cells
+        # were static; now they animate when the viewport enters.
+        "motion_profile":     "g2-editorial-counter",
         "density":             "airy-forensic",
         "tone":                "forensic-publication",
         "imagery_direction":  "legal-courtroom-codex-chambers",
