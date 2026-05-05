@@ -33,6 +33,7 @@ These come from the user's roadmap entry or from workflow A.1 intake.
 | `user_constraints` | explicit user must-have / must-avoid | "must include public-record proof · must not have any leadership-photo above the fold" |
 | `target_tier` | `draft` (D-102 default) | `draft` |
 | `pexels_pack_status` | `not started` / `curator briefed` / `pack drafted` / `pack reviewer-approved` | `curator briefed` |
+| `motion_profile` | one of the 7 enumerated values (`g1-safe-premium` · `g2-editorial` · `g2-editorial-counter` · `g3-institutional` · `g4-stewardship` · `g5-sprint-console` · `g6-cinematic`) · MUST be in the cluster's allowed-set per `motion-profile-catalog.md §3` · per CS-MOTION-DNA-01 | `g3-institutional` (Pragma-class) · `g2-editorial-counter` (LF-2 2nd-occupant) |
 
 ---
 

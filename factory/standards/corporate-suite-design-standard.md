@@ -750,7 +750,66 @@ A failure of any CS-LF2-VAR-* rule blocks tier flip. The failure-mode catalog (1
 
 ---
 
-## 20 · Summary
+## 20 · `motion_profile` DNA cell (CS-MOTION-DNA-01..04)
+
+**Status**: ratified 2026-05-05 · Phase X.7b hardening · paper-only · no apps/* edits this pass.
+**Source**: anti-clone-2.0 audit (`factory/reports/hardening/anti-clone-2.0-rules.md §1 axis 18 + §3 critical-axis veto`) named motion gravity + page choreography a critical-axis-veto field at floor 2 vs every sibling. The slice-01 implementation (`factory/reports/hardening/premium-dynamic-implementation-slice-01.md`) put the field on disk; the Phase X.7b plan (`factory/reports/hardening/motion-profile-dna-plan.md`) elevates it to a first-class DNA axis the planner declares at A.1 intake.
+**Ratification authorities**:
+- `factory/reports/hardening/motion-profile-dna-plan.md` (the binding 16-section plan · §1 enumerated values · §3 per-profile feel + safe pool · §4 per-cluster allowed-set · §5 anti-tacky red-lines · §6 reduced-motion fallback · §7 axis-18 scoring · §15 sibling-7 decision)
+- `design-orchestrator/references/internal-baselines/motion-profile-catalog.md` (planner-side table-driven reference · §3 cluster allowed-set · §4 sibling claim registry · §7 anti-tacky checklist for style-critic A.6 walk · §8 reduced-motion fallback for browser-verifier C/D walk)
+- `factory/reports/hardening/premium-dynamic-pattern-library.md` (the 12-family · 48-pattern source vocabulary · 6 motion gravities G1-G6)
+
+### CS-MOTION-DNA-01 [REQUIRED] · `motion_profile` is declared at A.1 intake from the cluster's allowed set
+- **Rule**: every new sibling brief carries `motion_profile` ∈ {`g1-safe-premium` · `g2-editorial` · `g2-editorial-counter` · `g3-institutional` · `g4-stewardship` · `g5-sprint-console` · `g6-cinematic`}. The cluster + layout-family triple selects the allowed subset per `motion-profile-catalog.md §3`.
+- **Why**: implicit motion was the only DNA dimension never declared at intake (the audit's gap #2). Naming the profile makes axis 18 scorable at A.2 plan-gate, A.6 review-lock, and workflow D flip.
+- **Test at A.1**: brief field filled with one of the 7 enumerated keys. Test at A.2: planner scores axis 18 vs every existing sibling (≥ 2 floor). Test at A.6: style-critic walks the per-profile anti-tacky checklist (catalog §7).
+- **Failure mode**: brief blank · brief outside cluster's allowed set · profile collides with an existing sibling claim (e.g., a 3rd LF-2 occupant declaring `g2-editorial-counter` would collide with Causa's claim and trigger AC-V5 cumulative-ladder re-spec).
+- **Cross-reference**: `motion-profile-dna-plan.md §4` (per-cluster allowed-set table) · `motion-profile-catalog.md §3` (planner-side lookup).
+
+### CS-MOTION-DNA-02 [REQUIRED] · LF-2 1st-occupant claims `g2-editorial`; 2nd-occupant claims `g2-editorial-counter`
+- **Rule**: LF-2 1st-occupant ALWAYS picks `g2-editorial` (zero motion-bundle flags · the static editorial signature · Cornice canonical). LF-2 2nd-occupant ALWAYS picks `g2-editorial-counter` (`kpi_animate` + `nav_condense_on_scroll` + `evid5_provenance` · the within-family differentiator · Causa canonical post-retrofit-slice-01). LF-2 3rd-occupant clears AC-V5 cumulative ladder vs both prior occupants per CS-LF2-VAR-V5.
+- **Why**: this is the same AC-V1 ≥3 sub-variant floor (per `lf2-family-internal-variance-rules.md §4`) read directly off the motion_profile bundle. The two profiles are adjacent under axis-18 scoring, producing pair-score 2 (clears the within-family critical-axis-veto floor).
+- **Test at A.5 build**: DNA entry's `motion_profile` value matches the occupancy slot · `MOTION_PROFILES` bundle flags propagate via body data-attributes per slice-01 contract.
+- **Failure mode**: 1st-occupant ships any motion-bundle flag set to True · 2nd-occupant ships fewer than 3 flags · either occupant picks a non-LF-2 profile.
+- **Cross-reference**: §19 CS-LF2-VAR-V1..V5 (the 5 LF-2 variance rules · this DNA cell carries V1's sub-variant counting at the bundle layer) · `motion-profile-dna-plan.md §3.2-§3.3` (per-profile feel + safe pool for both LF-2 profiles).
+
+### CS-MOTION-DNA-03 [BLOCKING] · `prefers-reduced-motion: reduce` is honored at the JS root for every profile
+- **Rule**: every motion-bundle flag's runtime gate sits AFTER the top-level `prefers-reduced-motion` short-circuit at `static/js/live-motion.js` line 50. Reduced-motion always wins. The static fallback per profile is enumerated in `motion-profile-dna-plan.md §6` (and `motion-profile-catalog.md §8` for the verifier).
+- **Why**: WCAG accessibility floor + the `[BLOCKING]` red-line at AT-X1 (cross-profile · binding for every profile). The user's information access is preserved; the FEEL is gracefully degraded.
+- **Test at workflow C/D walk**: browser-verifier walks every locale × viewport with `prefers-reduced-motion: reduce` enabled · captures static-equivalent screenshots · cross-references catalog §8 expected-behavior table.
+- **Failure mode**: any motion-bundle flag drives behavior under reduced-motion · any animation re-triggers on scroll-back inside a session (AT-X4 binding).
+- **Cross-reference**: `motion-profile-dna-plan.md §6` (per-profile static fallback) · `static/js/live-motion.js:50` (the runtime guarantee).
+
+### CS-MOTION-DNA-04 [REQUIRED] · 2.0-grandfather class for shared `g3-institutional` corporate-suite trio
+- **Rule**: Pragma · Fiscus · Solaria all declare `g3-institutional` with identical 1-flag bundle (`kpi_animate` only). The 3 cross-pairs (Pragma↔Fiscus · Pragma↔Solaria · Fiscus↔Solaria) score axis-18 = 0 each (identical profile + identical flag count). Per anti-clone-2.0 §3 critical-axis-veto floor 2, this is a v2.0 fail. The retrofit cost is 5-10× higher than Causa's (all three are `published_live` since pre-A.6 era). The trio is **2.0-grandfathered** under the existing CS-LAYOUT-12 in-family near-occupant § decision (filed 2026-05-03 · 2/9 layout-axis exception) extended at 2.0 ratification.
+- **Why**: the audit's S6 cluster-tropes operational rule (anti-clone-2.0 §5) names "fix at cluster level · ship a non-corporate-suite cluster" as the only resolution to shared-trope sameness. Per-pair retrofit inside the cluster is uneconomic for already-shipped templates.
+- **Scope of grandfather**: applies ONLY to the Pragma/Fiscus/Solaria trio. Does NOT extend to a 7th corporate-suite sibling. NO new sibling may join the grandfather class. Re-evaluation triggers: catalog ≥ 50 templates · OR Phase X.10+ batch retrofit pass · OR a new non-cs cluster ship that demonstrates the imagery + audience-verb diversification budget.
+- **Cross-reference**: §19 Pragma ↔ Fiscus 2.0-grandfathered exception (sibling subclass of this rule) · `motion-profile-dna-plan.md §7` (axis-18 scoring rubric · 15 corporate-suite pair scores enumerated · 11 of 15 clear · 4 trio pairs flagged).
+
+### How CS-MOTION-DNA-* applies at each workflow gate
+
+| Gate | Rule(s) verified | Evidence written |
+|---|---|---|
+| A.0 territory-scout | likely motion_profile per cluster + family · cluster's S6-readiness check | scout report includes profile prediction + S6 status |
+| A.1 intake | CS-MOTION-DNA-01 declared from cluster's allowed set + axis-18 matrix vs every existing sibling | brief field filled · matrix ≥ 2 cells per pair |
+| A.2 plan | CS-MOTION-DNA-01 + critical-axis veto check | plan re-spec on any veto fail |
+| A.5 build | CS-MOTION-DNA-02 LF-2 occupancy contract honored · DNA entry committed | source-file diff |
+| A.6 review-lock | per-profile anti-tacky checklist (catalog §7 · all YES) | review-lock report cites profile + flag count + checklist YES count |
+| Workflow C/D walk | CS-MOTION-DNA-03 reduced-motion walk · per-profile static-equivalent verified per catalog §8 | walk-log per profile · default-motion + reduced-motion screenshot pairs |
+| Release-gatekeeper at flip | aggregated axis-18 score in scorecard · all 5 v2.0 critical-axis vetoes ≥ floor 2 | scorecard panel motion-profile-summary |
+
+### Failure-mode summary
+
+A failure of any CS-MOTION-DNA-* rule blocks tier flip. The most common at intake are:
+- **F-MOTION-1**: brief outside cluster's allowed-profile set → re-route at A.1 (likely candidate is a different cluster · or the brief is mis-classified).
+- **F-MOTION-2**: 2nd LF-2 occupant declares `g2-editorial` instead of `g2-editorial-counter` → AC-V1 sub-variant floor breach · re-spec at A.0/A.1.
+- **F-MOTION-3**: profile collides with an existing sibling-claim (registry per `motion-profile-catalog.md §4`) → re-spec or re-route at A.1.
+- **F-MOTION-4**: reduced-motion walk produces non-static fallback for any animation-bearing flag → bug · block flip until JS gate is fixed.
+- **F-MOTION-5**: axis-18 score < 2 vs any sibling that is NOT in the 2.0-grandfather class → re-spec the failing axis (or pick a different profile from the cluster's allowed set).
+
+---
+
+## 21 · Summary
 
 ### Core design principles (seven · in priority order)
 

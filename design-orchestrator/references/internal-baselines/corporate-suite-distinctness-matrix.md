@@ -333,28 +333,74 @@ Pragma is still on Unsplash (business-corporate W001 grandfather). The 6th is Pe
 
 ---
 
-### 1.11 · Motion feel
+### 1.11 · Motion feel · the `motion_profile` DNA cell + axis-18 scoring
 
-| | Pragma | Cornice | Fiscus | Solaria | Continua |
-|---|---|---|---|---|---|
-| Motion budget | low · staggered reveals on scroll · marquee 110s | low · staggered reveals · NO marquee (LF-2 dropped trust-marquee) | low · staggered reveals · marquee 110s | low · staggered reveals · marquee 110s | low · staggered reveals · marquee 110s (sectors band carries whistleblowing) |
-| Reduced-motion coverage | implemented · `[data-lm]` paths | implemented · `[data-lm]` paths | implemented · `[data-lm]` paths | implemented · `[data-lm]` paths | implemented · `[data-lm]` paths |
-| Hero animation | text fade-in only | text fade-in only · no parallax on full-bleed photo | text fade-in only | text fade-in only | text fade-in only |
-| Marquee | logo association marquee, slow drift | NONE (dropped at LF-2) | logo association marquee, slow drift | sponsor names marquee, slow drift | sectors-with-whistleblowing band (no marquee · static) |
+**Status update · 2026-05-05 (Phase X.7b)**: motion is no longer a "cluster
+invariant" the way this row was originally framed. Slice 01 put a per-template
+`motion_profile` field on disk (`apps/catalog/template_dna.py · MOTION_PROFILES`)
+with a 3-flag bundle, and the Phase X.7b plan
+(`factory/reports/hardening/motion-profile-dna-plan.md`) elevates it to a
+first-class DNA dimension declared at A.1 intake. Anti-clone-2.0 axis 18
+(motion gravity + page choreography) is now a critical-axis-veto field at
+floor 2 vs every sibling per `factory/reports/hardening/anti-clone-2.0-rules.md
+§3`. The original "do not try" framing is superseded by the per-cluster
+allowed-set rule at `motion-profile-catalog.md §3`.
 
-**Already distinct**: three of five share marquee · Cornice and Continua dropped it for family-shape reasons (LF-2's editorial register doesn't tolerate a marquee · LF-5's stewardship register prefers static sectors). Otherwise motion is a cluster invariant — restraint is the brand.
+| | Pragma | Cornice | Fiscus | Solaria | Continua | Causa (LF-2 2nd-occupant) |
+|---|---|---|---|---|---|---|
+| `motion_profile` | `g3-institutional` | `g2-editorial` | `g3-institutional` | `g3-institutional` | `g4-stewardship` | `g2-editorial-counter` |
+| Bundle flags ON | `kpi_animate` | (none) | `kpi_animate` | `kpi_animate` | `nav_condense_on_scroll` | `kpi_animate` · `nav_condense_on_scroll` · `evid5_provenance` |
+| Hero animation | text fade-in only | text fade-in only · no parallax on full-bleed photo | text fade-in only | text fade-in only | text fade-in only | text fade-in only · provenance-tooltip on hover (EVID-5) |
+| KPI behavior | count-up at band-at-3 | static hero overlay | count-up at band-at-3 | count-up at band-at-4/5 | static band-at-4 (stewardship register fix) | count-up at hero overlay (within-family differentiator) |
+| Nav behavior | sticky-top static | split-wordmark static | sticky-top static | sticky-top static | sticky-condensed-on-scroll 76→56 | sticky-condensed-on-scroll 84→64 (LF-2 chrome distinction) |
+| Marquee | logo association marquee, slow drift 110s | NONE (dropped at LF-2) | logo association marquee, slow drift 110s | sponsor names marquee, slow drift 110s | sectors-with-whistleblowing band (static) | NONE (LF-2) |
+| Reduced-motion coverage | static fallback per `motion-profile-catalog.md §8` | static fallback | static fallback | static fallback | static fallback | static fallback (count-up → static · NAV-1 → fixed condensed · EVID-5 → static caption) |
 
-**Overlap risk**: motion is a cluster invariant — restraint is the brand. The 6th sibling cannot differentiate via motion. **Do not try.** Treat motion as a fixed cost; differentiation budget goes into palette, voice, imagery, structure.
+**Already distinct (post-Phase X.7b)**: 11 of 15 sibling pairs clear axis-18
+critical-axis veto floor (≥ 2). The 4 failing pairs are all inside the
+Pragma/Fiscus/Solaria trio (`g3-institutional` shared with identical 1-flag
+bundle); they are **2.0-grandfathered** per CS-MOTION-DNA-04 / design-standard
+§19 Pragma↔Fiscus exception, extended to the full trio. Cornice ↔ Causa
+clears 21/54 → 28/54 post-retrofit-slice-01.
 
-**Next sibling MUST**: inherit the existing motion vocabulary verbatim (low motion · staggered reveals · `prefers-reduced-motion` honored). Marquee is family-conditional (LF-2 = NONE · LF-5 = NONE/static · LF-1/3/4 = slow 110s). Do not add JS-driven physics, scroll-jacking, parallax beyond the existing `[data-lm]` paths.
+**Overlap risk · cross-pair guard**: a 7th corporate-suite sibling MUST NOT
+join the 2.0-grandfather class. Its `motion_profile` choice + bundle flags
+must produce axis-18 ≥ 2 vs every existing row above. The 5 LF families are
+1- or 2-occupancy; the 6 corporate-suite profiles are claimed across them
+(see `motion-profile-catalog.md §4` sibling-claim registry). Sibling-7
+opening is additionally gated by the audit's S6 cluster-tropes rule —
+ship a non-corporate-suite cluster FIRST (Phase X.7a) per anti-clone-2.0
+§5 + §11.
+
+**Next sibling MUST**: declare `motion_profile` at A.1 intake from the
+cluster's allowed-set (per `motion-profile-catalog.md §3`). For LF-2:
+1st-occupant claims `g2-editorial`, 2nd-occupant claims `g2-editorial-counter`,
+3rd-occupant clears AC-V5 cumulative ladder per CS-LF2-VAR-V5. For LF-1/3/4:
+default `g3-institutional` is the trio's grandfather-locked claim — a 7th
+corporate-suite sibling at any one of these LFs requires either a fresh
+LF + `g3-institutional` with motion-bundle delta OR an entirely different
+profile (`g1-safe-premium` is the only unclaimed corporate-suite option).
+Honor `prefers-reduced-motion: reduce` at the JS root per CS-MOTION-DNA-03.
 
 **Next sibling MUST NOT**:
-- Add hero video background
-- Add scroll-snap on home
-- Add lottie animations
-- Speed up the marquee below 90s
-- Add parallax on the LF-2 stacked-editorial full-bleed photo (Cornice walked clean without it)
-- Animate the LF-5 object-overlay h1 (Continua walked clean as static text)
+- Declare a `motion_profile` outside the cluster's allowed-set (orchestrator rejects the brief).
+- Ship any motion-bundle flag whose runtime gate sits BEFORE the reduced-motion short-circuit (CS-MOTION-DNA-03 binding).
+- Join the 2.0-grandfather class by picking `g3-institutional` with the trio's identical 1-flag bundle (CS-MOTION-DNA-04 binding).
+- Add hero video background (decorative-motion ban · pattern-library §1).
+- Add scroll-snap on home outside G6 cluster contexts.
+- Add lottie animations.
+- Speed up the marquee below 90s.
+- Add parallax outside G6 cluster contexts (CS-MEDIA-2 anti-tacky line AT-G6-1 binding).
+- Animate the LF-5 object-overlay h1 (Continua walked clean as static text · g4-stewardship register).
+- Re-trigger any once-per-session animation on scroll-back (cross-profile AT-X4 binding).
+
+**Cross-references**: `factory/reports/hardening/motion-profile-dna-plan.md`
+(the binding plan · 16 sections) · `design-orchestrator/references/internal-
+baselines/motion-profile-catalog.md` (planner-side reference · cluster
+allowed-set · sibling-claim registry · style-critic checklist · verifier
+fallback table) · `factory/standards/corporate-suite-design-standard.md §20`
+(CS-MOTION-DNA-01..04) · `factory/reports/hardening/anti-clone-2.0-rules.md
+§1 axis 18 + §3 critical-axis veto`.
 
 ---
 
