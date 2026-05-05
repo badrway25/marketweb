@@ -325,7 +325,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
         "intro":
             "Studio legale di patrocinio editoriale · Cassazionista "
             "fondatore · ventotto sentenze citate dal 1995.",
-        "primary_cta":   "Apri un parere preliminare",
+        "primary_cta":   "Sottometti un parere preliminare",
         "primary_href":  "contatti",
         "secondary_cta": "Studio · sede di Milano",
         "secondary_href":"studio",
@@ -344,6 +344,17 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
             "verticale e tinte bone · interno architettonico",
         "hero_image_credit_left":  ("Aula di tribunale · interno · 2024", "Foro di Milano"),
         "hero_image_credit_right": ("Sede dello studio", "Milano · via Borgonuovo 14"),
+        # Phase X.7d Causa retrofit slice 01 · EVID-5 provenance-
+        # tooltip body. Hover/focus on the hero photo reveals this
+        # panel; reduced-motion clients see it pinned visible. The
+        # within-family differentiator vs Cornice (which ships only a
+        # static credit-line). Per `factory/reports/hardening/causa-
+        # retrofit-slice-01.md §3 R6` and `lf2-family-internal-
+        # variance-rules.md §4 AC-V1`.
+        "hero_image_provenance":
+            "Pexels · CC0 · St George's Hall, Liverpool · n. 33939830",
+        "hero_image_provenance_aria":
+            "Provenienza fotografia · biblioteca Pexels · licenza CC0",
         # 3-stat KPI tuple inside the hero credit overlay (LF-2 L5).
         # Forensic-publication register: sentenze citate + voci in
         # massimario + anni di patrocinio. Anti-collision per copy-
@@ -470,7 +481,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
             ("Studio · l'avvocato fondatore",       "studio"),
             ("Materie · le dodici materie",          "materie"),
             ("Pubblicazioni · massimario interno",   "studio"),
-            ("Contatti · apri un parere preliminare", "contatti"),
+            ("Contatti · sottometti un parere preliminare", "contatti"),
         ],
 
         # Sectors-ribbon (typographic block · 12 materie del contenzioso
@@ -721,7 +732,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
             "Oggetto del contenzioso · grado di giudizio · controparte · "
             "fascia di valore · giurisdizione · evidenza preliminare "
             "allegabile. Risposta entro cinque giorni lavorativi.",
-        "cta_primary":   "Apri un parere preliminare",
+        "cta_primary":   "Sottometti un parere preliminare",
         "cta_primary_href": "contatti",
         "cta_closing_line":
             "Nessuna call di scoperta. Nessun mandato senza "
@@ -750,7 +761,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
         # Cornice's CTA copy onto Causa's navbar across all inner
         # pages, breaching planner-brief §13.7 hard ban on the
         # fascicolo / dossier mental model).
-        "primary_cta":  "Apri un parere preliminare",
+        "primary_cta":  "Sottometti un parere preliminare",
 
         # History strip — five structural choices, thirty-one years
         # of forensic-publication practice. Mirrors LF-2 about's
@@ -897,7 +908,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
             "negativo, la nota motivata viene comunque consegnata "
             "gratuitamente · senza addebito di screening · senza "
             "obbligo di mandato.",
-        "cta_primary":   "Apri un parere preliminare",
+        "cta_primary":   "Sottometti un parere preliminare",
         "cta_primary_href": "contatti",
     },
 
@@ -915,7 +926,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
             "materia entra in studio quando l'evidenza è "
             "incardinabile e la giurisprudenza è leggibile in cinque "
             "righe.",
-        "primary_cta":  "Apri un parere preliminare",
+        "primary_cta":  "Sottometti un parere preliminare",
 
         "svc_duration_label": "Foro · grado",
         "svc_leader_label":   "Patrocinio",
@@ -1173,7 +1184,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
             "entro cinque giorni lavorativi · entro quarantotto ore "
             "se l'urgenza è procedurale (termine in scadenza · "
             "udienza fissata).",
-        "cta_primary":   "Apri un parere preliminare",
+        "cta_primary":   "Sottometti un parere preliminare",
         "cta_primary_href": "contatti",
     },
 
@@ -1190,7 +1201,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
             "dalla Giurisprudenza Italiana, più gli altri "
             "contenziosi selezionati. Tutte registrate nel "
             "massimario interno entro sessanta giorni dal deposito.",
-        "primary_cta":  "Apri un parere preliminare",
+        "primary_cta":  "Sottometti un parere preliminare",
 
         "cases_label": "Quattro decisioni rappresentative · in dettaglio",
         "cases_intro":
@@ -1212,7 +1223,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
             "Deontologico Forense; la copia integrale del "
             "massimario interno si ottiene a copertura delle spese "
             "di stampa.",
-        "cta_primary":   "Apri un parere preliminare",
+        "cta_primary":   "Sottometti un parere preliminare",
         "cta_primary_href": "contatti",
     },
 
@@ -1596,13 +1607,13 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
     # NOT Solaria (discovery-call request). NOT Continua (mandate-
     # dialogue framing).
     "contatti": {
-        "eyebrow":  "APRI UN PARERE PRELIMINARE",
-        "headline": "Apri un <em>parere</em> preliminare — la prima pagina del patrocinio.",
+        "eyebrow":  "SOTTOMETTI UN PARERE PRELIMINARE",
+        "headline": "Sottometti un <em>parere</em> preliminare — la prima pagina del patrocinio.",
         "intro":
             "Lo studio risponde entro cinque giorni lavorativi · "
             "entro quarantotto ore se l'urgenza è procedurale "
             "(termine in scadenza · udienza fissata).",
-        "primary_cta":  "Apri un parere preliminare",
+        "primary_cta":  "Sottometti un parere preliminare",
 
         "form_label":   "PARERE PRELIMINARE",
         "form_heading": "Compila la scheda di screening",
@@ -1706,7 +1717,7 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
              "fields": ["grado", "controparte", "valore", "urgenza", "giurisdizione"]},
         ],
 
-        "form_submit_label": "Apri il parere preliminare",
+        "form_submit_label": "Sottometti il parere preliminare",
         "form_submit_note":
             "Lo studio leggerà la scheda entro cinque giorni "
             "lavorativi · entro quarantotto ore se l'urgenza è "

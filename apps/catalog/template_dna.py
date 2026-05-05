@@ -198,13 +198,20 @@ DENSITY_PROFILES: dict[str, str] = {
 # back to "g3-institutional" (the cluster's safe default) — strictly
 # additive · no-op for archetypes outside corporate-suite.
 MOTION_PROFILES: dict[str, dict[str, Any]] = {
-    "g1-safe-premium":     {"kpi_animate": False, "label": "Safe premium · institutional default"},
-    "g2-editorial":        {"kpi_animate": False, "label": "Editorial · static KPI · LF-2 1st-occupant register"},
-    "g2-editorial-counter":{"kpi_animate": True,  "label": "Editorial · with KPI count-up · LF-2 2nd-occupant differentiator"},
-    "g3-institutional":    {"kpi_animate": True,  "label": "Institutional · count-up enabled · LF-1/LF-3/LF-4 default"},
-    "g4-stewardship":      {"kpi_animate": False, "label": "Stewardship-restrained · static KPI · LF-5 default"},
-    "g5-sprint-console":   {"kpi_animate": True,  "label": "Sprint-console · digital-product"},
-    "g6-cinematic":        {"kpi_animate": False, "label": "Gallery-cinematic · static KPI"},
+    "g1-safe-premium":     {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Safe premium · institutional default"},
+    "g2-editorial":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Editorial · static KPI · LF-2 1st-occupant register"},
+    # Phase X.7d Causa retrofit slice 01 · the LF-2 second-occupant bundle.
+    # Adds NAV-1 (sticky-condensed-on-scroll · 84→64px · cream-paper polarity)
+    # and EVID-5 (provenance-tooltip on hero photo · hover/focus reveal) on
+    # top of the slice-00 KPI-2 count-up. Together with the already-shipped
+    # KPI-2 · NAV-1 + EVID-5 satisfy AC-V1 ≥3 within-cell sub-variants for
+    # the LF-2 second-occupant variance contract per
+    # `factory/reports/hardening/lf2-family-internal-variance-rules.md §4`.
+    "g2-editorial-counter":{"kpi_animate": True,  "nav_condense_on_scroll": True,  "evid5_provenance": True,  "label": "Editorial · with KPI count-up + sticky-condensed nav + provenance-tooltip · LF-2 2nd-occupant differentiator"},
+    "g3-institutional":    {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Institutional · count-up enabled · LF-1/LF-3/LF-4 default"},
+    "g4-stewardship":      {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Stewardship-restrained · static KPI · LF-5 default"},
+    "g5-sprint-console":   {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Sprint-console · digital-product"},
+    "g6-cinematic":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Gallery-cinematic · static KPI"},
 }
 
 TONES: dict[str, str] = {
@@ -1664,7 +1671,7 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
             "eyebrow":       "Studio legale · Milano · dal 1995",
             "headline":      "Ogni sentenza è un'<em>evidenza</em> incardinata, non un'opinione difesa.",
             "subhead":       "Studio legale di patrocinio editoriale · Cassazionista fondatore · ventotto sentenze citate dal 1995.",
-            "primary_cta":   "Apri un parere preliminare",
+            "primary_cta":   "Sottometti un parere preliminare",
             "secondary_cta": "Studio · sede di Milano",
             "phone":         "+39 02 7634 8210",
             "nav_links":     ["Studio", "Materie", "Pubblicazioni", "Contenzioso", "Contatti"],

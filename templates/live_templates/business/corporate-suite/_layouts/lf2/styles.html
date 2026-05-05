@@ -102,6 +102,66 @@ brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
     color: var(--on-dark-2);
   }
 
+  /* ============================================================
+     CS-LF2-VAR-V1 · EVID-5 provenance-tooltip · Causa retrofit
+     slice 01 (Phase X.7d). Cornice (LF-2 1st occupant) does not
+     ship EVID-5; Causa (LF-2 2nd occupant) ships it as an AC-V1
+     within-cell sub-variant. Hover/focus on the hero photo
+     reveals a small panel with photographer + license metadata
+     — the imagery-register critical-axis differentiator vs
+     Cornice's bare credit-line. Activation gated by
+     `body[data-motion-evid5="1"]` so non-Causa LF-2 occupants
+     and other layout families render no EVID-5 chrome.
+     Reduced-motion equivalent: panel is always visible (the
+     "static caption below" fallback per F2-VAR-1).
+  ============================================================ */
+  .cs-hero .overlay .provenance {
+    pointer-events: auto;          /* overlay parent has pointer-events:none — enable here for focus */
+    align-self: flex-start;
+    max-width: 360px;
+    padding: 10px 14px;
+    border: 1px solid rgba(238,240,243,0.32);
+    background: rgba(15,18,22,0.42);
+    backdrop-filter: blur(2px);
+    color: var(--on-dark);
+    display: flex; flex-direction: column; gap: 4px;
+    opacity: 1;                    /* default: panel visible (graceful baseline) */
+    transition: opacity .22s ease, transform .22s ease;
+  }
+  .cs-hero .overlay .provenance .provenance-label {
+    font-family: var(--body); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--on-dark-2);
+  }
+  .cs-hero .overlay .provenance .provenance-body {
+    font-family: var(--body); font-size: 11px; line-height: 1.45;
+    color: var(--on-dark);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+  /* JS-motion path · panel hidden by default and revealed on
+     hover/focus of the hero. The body class `lm-ready` is added
+     once the motion runtime initializes (and `lm-reduced` is
+     added immediately on prefers-reduced-motion). The selector
+     below activates ONLY when the runtime is live AND not
+     reduced — so non-JS clients and reduced-motion clients see
+     the static-visible baseline above. */
+  body.lm-ready:not(.lm-reduced)[data-motion-evid5="1"] .cs-hero .overlay .provenance {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  body.lm-ready:not(.lm-reduced)[data-motion-evid5="1"] .cs-hero:hover .provenance,
+  body.lm-ready:not(.lm-reduced)[data-motion-evid5="1"] .cs-hero:focus-within .provenance {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Focus-visible ring on the focusable provenance element ·
+     inherits the cluster's gold accent (E1) for cream surfaces. */
+  .cs-hero .overlay .provenance:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
   /* Below-photo 8/4 editorial split. LEFT 8-col (h1 + sub + actions)
      · RIGHT 4-col (side-quote with hairline rust border-inline-start). */
   .cs-hero .below {

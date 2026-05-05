@@ -69,6 +69,7 @@
     setupStaggers();
     setupCounters();
     setupMarquees();
+    setupNavCondense();
   }
 
   // --- 0. Alias normalization --------------------------------------------------
@@ -231,6 +232,43 @@
       else el.innerText = prefix + formatValue(target) + suffix;
     }
     requestAnimationFrame(frame);
+  }
+
+  // --- 3b. Nav condense-on-scroll ------------------------------------------
+  // Phase X.7d Causa retrofit slice 01 · NAV-1 sticky-condensed pattern.
+  // Profile-gated via `body[data-motion-nav-condense="1"]`; templates
+  // whose motion gravity opts out (every profile except `g2-editorial-
+  // counter` today) ship without the attribute and the listener is a
+  // no-op. Hysteresis thresholds 240/80 prevent flicker around the
+  // shrink boundary. Reduced-motion is already short-circuited at
+  // `init()` above; this function won't run when `lm-reduced` is set.
+  // CSS transition lives in corporate-suite/_base.html under
+  // `body[data-motion-nav-condense="1"] .cs-nav.cs-nav--lf2.is-shrunk`.
+  function setupNavCondense() {
+    if (document.body.getAttribute('data-motion-nav-condense') !== '1') return;
+    var nav = document.querySelector('nav.cs-nav');
+    if (!nav) return;
+
+    var SHRINK_AT = 240;
+    var GROW_AT = 80;
+    var ticking = false;
+
+    function update() {
+      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var shrunk = nav.classList.contains('is-shrunk');
+      if (!shrunk && y > SHRINK_AT) nav.classList.add('is-shrunk');
+      else if (shrunk && y < GROW_AT) nav.classList.remove('is-shrunk');
+      ticking = false;
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
   }
 
   // --- 4. Marquee duplication ----------------------------------------------

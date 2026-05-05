@@ -35,6 +35,21 @@ see `factory/reports/hardening/corporate-suite-layout-divergence-plan.md
       <div class="credit">
         <div class="credit-line">{{ page_data.hero_image_credit_left.0 }}<strong>{{ page_data.hero_image_credit_left.1 }}</strong></div>
       </div>
+      {# Phase X.7d Causa retrofit slice 01 · EVID-5 provenance-tooltip. #}
+      {# Profile-gated via `motion_evid5` (body[data-motion-evid5="1"]); #}
+      {# Cornice (LF-2 1st occupant) ships without it — Causa (LF-2 2nd #}
+      {# occupant) ships with it as an AC-V1 within-cell sub-variant     #}
+      {# per `factory/reports/hardening/lf2-family-internal-variance-    #}
+      {# rules.md §4 AC-V1`. The element is `tabindex="0"` so the        #}
+      {# hover-reveal is also keyboard-reachable; reduced-motion CSS     #}
+      {# pins it visible regardless of hover state.                      #}
+      {% if motion_evid5 and page_data.hero_image_provenance %}
+        <div class="provenance" tabindex="0" data-evid5
+             aria-label="{{ page_data.hero_image_provenance_aria|default:'Provenienza fotografia' }}">
+          <span class="provenance-label">PROVENIENZA</span>
+          <span class="provenance-body">{{ page_data.hero_image_provenance }}</span>
+        </div>
+      {% endif %}
       <div class="kpi-row" data-lm-stagger>
         {% for label, value in page_data.hero_meta_strip %}
           {# Phase X.7d slice 01 · KPI count-up token. The `data-lm="counter"` #}

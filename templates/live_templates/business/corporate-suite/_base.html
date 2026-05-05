@@ -421,6 +421,52 @@
   .cs-nav--lf2 .cs-nav-toggle:focus-visible ~ .cs-nav-burger {
     outline-color: var(--accent);
   }
+
+  /* ============================================================
+     CS-LF2-VAR-V1 · NAV-1 sticky-condensed-on-scroll · Causa
+     retrofit slice 01 (Phase X.7d). Cornice (LF-2 1st occupant)
+     ships static; Causa (LF-2 2nd occupant) ships condensed-on-
+     scroll as an AC-V1 within-cell differentiator. Activation
+     is gated by `body[data-motion-nav-condense="1"]` so the
+     pattern is profile-scoped (g2-editorial-counter only) and
+     reduced-motion + non-Causa LF-2 occupants render the static
+     baseline. Transition uses height + padding only — no
+     transform, no scroll-jacking, no autoplay. Per
+     `factory/reports/hardening/anti-clone-2.0-rules.md §6 nav
+     divergence` axis 10 ≥ 2/3 floor.
+  ============================================================ */
+  body[data-motion-nav-condense="1"] .cs-nav.cs-nav--lf2 {
+    transition: height .22s ease, box-shadow .22s ease;
+  }
+  body[data-motion-nav-condense="1"] .cs-nav.cs-nav--lf2.is-shrunk {
+    height: 64px;
+    box-shadow:
+      0 1px 0 var(--rule) inset,
+      0 1px 0 var(--rule),
+      0 6px 18px -16px rgba(0,0,0,0.18);
+  }
+  body[data-motion-nav-condense="1"] .cs-nav--lf2 .wm,
+  body[data-motion-nav-condense="1"] .cs-nav--lf2 .wm-line-1,
+  body[data-motion-nav-condense="1"] .cs-nav--lf2 .wm-line-2 {
+    transition: font-size .22s ease, margin-top .22s ease, opacity .22s ease;
+  }
+  body[data-motion-nav-condense="1"] .cs-nav.cs-nav--lf2.is-shrunk .wm-line-1 {
+    font-size: 18px;
+  }
+  body[data-motion-nav-condense="1"] .cs-nav.cs-nav--lf2.is-shrunk .wm-line-2 {
+    font-size: 10px;
+    margin-top: 0;
+    opacity: 0.7;
+  }
+  /* Reduced-motion equivalent · the user has asked for no motion, so
+     the nav stays at full height regardless of scroll position. JS
+     sees `body.lm-reduced` and skips the scroll listener; the rule
+     here defends against any race between class-add and scroll. */
+  body.lm-reduced .cs-nav.cs-nav--lf2.is-shrunk {
+    height: 84px;
+  }
+  body.lm-reduced .cs-nav.cs-nav--lf2.is-shrunk .wm-line-1 { font-size: 22px; }
+  body.lm-reduced .cs-nav.cs-nav--lf2.is-shrunk .wm-line-2 { font-size: 11px; margin-top: 2px; opacity: 1; }
   /* LF-2 footer column-content overrides · the 4-col-with-whistleblowing
      primitive is the same as LF-5 (pulled in via `.cs-foot-col--whistleblowing`
      above), but the LF-2 footer needs a bit of paragraph breathing on
@@ -1171,7 +1217,7 @@
   body.mw-is-editor-preview .cs-nav .word { max-width: 32ch; }
 </style>
 </head>
-<body class="{% if preview_project %}mw-is-editor-preview{% endif %}{% if template.layout_family %} cs-lf-{{ template.layout_family|lower }}{% endif %}"{% if motion_profile %} data-motion-profile="{{ motion_profile }}"{% endif %}{% if motion_kpi_animate %} data-motion-kpi-animate="1"{% endif %}>{% endspaceless %}
+<body class="{% if preview_project %}mw-is-editor-preview{% endif %}{% if template.layout_family %} cs-lf-{{ template.layout_family|lower }}{% endif %}"{% if motion_profile %} data-motion-profile="{{ motion_profile }}"{% endif %}{% if motion_kpi_animate %} data-motion-kpi-animate="1"{% endif %}{% if motion_nav_condense %} data-motion-nav-condense="1"{% endif %}{% if motion_evid5 %} data-motion-evid5="1"{% endif %}>{% endspaceless %}
 
 <div class="mp-bar">
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>
