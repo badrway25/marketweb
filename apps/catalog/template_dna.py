@@ -198,20 +198,25 @@ DENSITY_PROFILES: dict[str, str] = {
 # back to "g3-institutional" (the cluster's safe default) — strictly
 # additive · no-op for archetypes outside corporate-suite.
 MOTION_PROFILES: dict[str, dict[str, Any]] = {
-    "g1-safe-premium":     {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Safe premium · institutional default"},
-    "g2-editorial":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Editorial · static KPI · LF-2 1st-occupant register"},
-    # Phase X.7d Causa retrofit slice 01 · the LF-2 second-occupant bundle.
-    # Adds NAV-1 (sticky-condensed-on-scroll · 84→64px · cream-paper polarity)
-    # and EVID-5 (provenance-tooltip on hero photo · hover/focus reveal) on
-    # top of the slice-00 KPI-2 count-up. Together with the already-shipped
-    # KPI-2 · NAV-1 + EVID-5 satisfy AC-V1 ≥3 within-cell sub-variants for
-    # the LF-2 second-occupant variance contract per
+    "g1-safe-premium":     {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Safe premium · institutional default"},
+    "g2-editorial":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Editorial · static KPI · LF-2 1st-occupant register"},
+    # Phase X.7d Causa retrofit slice 01 + slice 02 · the LF-2 second-
+    # occupant bundle. Slice 01 added NAV-1 (sticky-condensed-on-scroll ·
+    # 84→64px · cream-paper polarity) + EVID-5 (provenance-tooltip on hero
+    # photo · hover/focus reveal) on top of the slice-00 KPI-2 count-up.
+    # Slice 02 layers EVID-3 (case-citation-pop on magazine cards · native
+    # `<details>` + summary so it's keyboard-accessible without JS · open-
+    # by-default under reduced-motion) and TIME-3 (chronological-tick-
+    # horizontal in the narrative essay · rail draws + ticks fade-in on
+    # viewport entry · one-shot · full-state under reduced-motion). Together
+    # KPI-2 + NAV-1 + EVID-5 + EVID-3 + TIME-3 = 5 within-cell sub-variants
+    # against Cornice's 0 — comfortably above the AC-V1 ≥3 floor per
     # `factory/reports/hardening/lf2-family-internal-variance-rules.md §4`.
-    "g2-editorial-counter":{"kpi_animate": True,  "nav_condense_on_scroll": True,  "evid5_provenance": True,  "label": "Editorial · with KPI count-up + sticky-condensed nav + provenance-tooltip · LF-2 2nd-occupant differentiator"},
-    "g3-institutional":    {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Institutional · count-up enabled · LF-1/LF-3/LF-4 default"},
-    "g4-stewardship":      {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Stewardship-restrained · static KPI · LF-5 default"},
-    "g5-sprint-console":   {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Sprint-console · digital-product"},
-    "g6-cinematic":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "label": "Gallery-cinematic · static KPI"},
+    "g2-editorial-counter":{"kpi_animate": True,  "nav_condense_on_scroll": True,  "evid5_provenance": True,  "evid3_citation": True,  "time3_chronotick": True,  "label": "Editorial · with KPI count-up + sticky-condensed nav + provenance-tooltip + case-citation-pop + chronological-tick · LF-2 2nd-occupant differentiator"},
+    "g3-institutional":    {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Institutional · count-up enabled · LF-1/LF-3/LF-4 default"},
+    "g4-stewardship":      {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Stewardship-restrained · static KPI · LF-5 default"},
+    "g5-sprint-console":   {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Sprint-console · digital-product"},
+    "g6-cinematic":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Gallery-cinematic · static KPI"},
 }
 
 TONES: dict[str, str] = {

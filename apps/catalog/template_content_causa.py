@@ -387,6 +387,28 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
         # · planner-brief §10 + §13.5 hard ban on Cornice's rust).
         "narrative_label":   "LO STUDIO · METODO PROBATORIO",
         "narrative_drop":    "L",
+        # Phase X.7d Causa retrofit slice 02 · TIME-3 chronological-tick-
+        # horizontal. Six structural milestones rendered as a horizontal
+        # rail above the essay; the rail draws left-to-right on viewport
+        # entry and the year-tags fade-in 80ms-staggered after the rail
+        # crosses each tick. Cornice (LF-2 1st occupant) does NOT ship
+        # TIME-3 — it remains a within-narrative differentiator for the
+        # LF-2 second-occupant per `factory/reports/hardening/lf2-family-
+        # internal-variance-rules.md §4 AC-V1` (one of the AC-V1 sub-
+        # variant adoptions counted toward the ≥3 floor). The six dates
+        # are a tightened subset of the full `studio.history` strip on
+        # the about page (1995/2003/2008/2018/2024) plus 2014 (first
+        # SS.UU. landmark · per priority plan §1 R3 brief) and the data
+        # mirrors the forensic-publication register — explicitly NOT
+        # Cornice's architectural milestone register.
+        "narrative_chronotick": [
+            ("1995", "Fondazione · Milano"),
+            ("2003", "Abilitazione Cassazionista"),
+            ("2008", "Prima massima in massimario"),
+            ("2014", "Prima rimessione SS.UU."),
+            ("2018", "Iscrizione Albo CTU forense"),
+            ("2024", "Quattordicesima massima · SS.UU. responsabilità professionale"),
+        ],
         # Pre-interleaved narrative blocks · paragraphs and pull-quotes
         # in render order (4 paragraphs · 3 quotes between them).
         # CS-TYPE-02 single italic em respected per heading-level
@@ -623,6 +645,28 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
                     "frontone classico con iscrizione latina · luce "
                     "fredda overcast",
                 "slug":     "cass-ssuu-responsabilita-consulente-fiscale-2024",
+                # Phase X.7d Causa retrofit slice 02 · EVID-3 case-citation-
+                # pop. Each magazine card carries a citation snippet — the
+                # massima literally as it appears (would appear) in the
+                # studio's massimario interno · forensic-publication
+                # register · italic-em on the principle invoked. Default-
+                # collapsed under non-reduced-motion (visitor clicks the
+                # `<summary>` to expand inline · NOT modal) · open by
+                # default under reduced-motion (set on init by live-
+                # motion.js so the static-with-collapse equivalent ships
+                # for accessibility). Cornice does NOT ship EVID-3; this
+                # is an AC-V1 sub-variant adoption per `factory/reports/
+                # hardening/lf2-family-internal-variance-rules.md §4`.
+                "citation_label": "Vedi la massima n. 14",
+                "citation":
+                    "Cass. SS.UU. n. 11237/2024 — La <em>responsabilità</em> "
+                    "professionale del consulente fiscale si incardina "
+                    "sull'evidenza preliminare di cui il professionista "
+                    "poteva e doveva essere a conoscenza al momento "
+                    "dell'incarico, riletta la prestazione come obbligazione "
+                    "di risultato circoscritto all'oggetto del mandato. "
+                    "Massima n. 14 del massimario interno · pubblicata "
+                    "Foro Italiano 2024.",
             },
             {
                 "rank":     "small",
@@ -652,6 +696,16 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
                     "registro · luce fredda da scrivania · macro · "
                     "zero persone",
                 "slug":     "cass-civ-iii-anatocismo-bancario-2023",
+                "citation_label": "Vedi la massima n. 11",
+                "citation":
+                    "Cass. civ. sez. III n. 28914/2023 — In tema di rimborso "
+                    "degli interessi <em>anatocistici</em> corrisposti su "
+                    "conto corrente bancario, l'onere probatorio del nesso "
+                    "eziologico fra capitalizzazione trimestrale e "
+                    "lievitazione del saldo grava sull'istituto bancario, "
+                    "conforme all'orientamento di legittimità consolidato "
+                    "dal 2014. Cassa con rinvio. Massima n. 11 del "
+                    "massimario interno.",
             },
             {
                 "rank":     "small",
@@ -680,6 +734,15 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
                     "in rovere · pannelli verticali in legno alle "
                     "spalle · luce fredda · zero persone",
                 "slug":     "tar-lombardia-agcom-proporzionalita-2022",
+                "citation_label": "Vedi la massima n. 9",
+                "citation":
+                    "TAR Lombardia sez. III n. 814/2022 — Annullamento del "
+                    "provvedimento sanzionatorio AGCOM per eccesso di "
+                    "potere e violazione del <em>principio</em> di "
+                    "proporzionalità della sanzione amministrativa "
+                    "pecuniaria, alla luce dell'orientamento del Consiglio "
+                    "di Stato sez. VI 4419/2019. Sentenza non appellata "
+                    "da AGCOM. Massima n. 9 del massimario interno.",
             },
             {
                 "rank":     "small",
@@ -706,6 +769,17 @@ CAUSA_CONTENT_IT: dict[str, Any] = {
                     "tipografia oro su pelle scura · numerazione "
                     "romana del volume · luce fredda morbida",
                 "slug":     "appello-milano-art-36bis-dpr-600-1973-2021",
+                "citation_label": "Vedi la massima n. 7",
+                "citation":
+                    "Corte d'Appello Milano sez. trib. n. 3187/2021 — "
+                    "Interpretazione restrittiva dell'art. 36-bis D.P.R. "
+                    "29 settembre 1973 n. 600 in materia di liquidazione "
+                    "automatizzata delle dichiarazioni dei redditi · il "
+                    "perimetro della <em>controversia</em> tributaria si "
+                    "limita ai meri errori materiali e di calcolo "
+                    "rilevabili dalla dichiarazione, esclusa ogni "
+                    "valutazione di merito. Sentenza riformata in appello. "
+                    "Massima n. 7 del massimario interno.",
             },
         ],
         "cases_trailing_label": "Tutto il contenzioso · cronologia 1995–2024",

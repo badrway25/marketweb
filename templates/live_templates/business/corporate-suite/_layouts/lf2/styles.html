@@ -224,6 +224,102 @@ brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
   }
 
   /* ============================================================
+     CS-LF2-VAR-V1 · TIME-3 chronological-tick-horizontal · Causa
+     retrofit slice 02 (Phase X.7d). Cornice (LF-2 1st occupant)
+     does not ship TIME-3; Causa (LF-2 2nd occupant) ships it as
+     an AC-V1 within-cell sub-variant. The strip sits between the
+     narrative head and essay grid, rendering 6 milestones along
+     a horizontal rail. Default-visible baseline (rail at scaleX
+     1 · ticks at opacity 1) keeps non-JS and reduced-motion
+     clients reading the milestones immediately; under live motion
+     the strip is gated to the hidden state and revealed by
+     `setupTime3()` on viewport entry. Activation is scoped under
+     `body[data-motion-time3="1"]` so non-Causa LF-2 occupants and
+     other layout families render no chronotick chrome.
+  ============================================================ */
+  .cs-narrative .chronotick {
+    margin-top: 56px;
+    padding: 24px 0 36px;
+    border-block: 1px solid var(--rule);
+  }
+  .cs-narrative .chronotick .rail {
+    height: 1px;
+    width: 100%;
+    background: var(--accent);
+    transform-origin: left center;
+    transform: scaleX(1);
+    margin-bottom: 24px;
+  }
+  .cs-narrative .chronotick .ticks {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 24px;
+  }
+  .cs-narrative .chronotick .tick {
+    display: flex; flex-direction: column; gap: 8px;
+    position: relative;
+    padding-top: 8px;
+  }
+  .cs-narrative .chronotick .tick .dot {
+    position: absolute;
+    top: -29px; left: 0;
+    width: 9px; height: 9px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--paper);
+  }
+  .cs-narrative .chronotick .tick .year {
+    font-family: var(--heading);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.05;
+    color: var(--accent);
+    letter-spacing: -0.012em;
+    font-variant-numeric: tabular-nums;
+  }
+  .cs-narrative .chronotick .tick .lbl {
+    font-family: var(--body);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.45;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    max-width: 22ch;
+  }
+  /* Live-motion gate · once the runtime initializes (and is NOT in
+     reduced-motion mode), the rail collapses to scaleX(0) and the
+     ticks fade to 0 + 6px translate. The intersection observer
+     adds `.is-drawn` on the rail's parent to play back the draw. */
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick .rail {
+    transform: scaleX(0);
+    transition: transform 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick .tick {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .42s ease, transform .42s ease;
+  }
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick.is-drawn .rail {
+    transform: scaleX(1);
+  }
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick.is-drawn .tick {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* 80ms-staggered tick reveal · the rail draw takes 1200ms so the
+     ticks layered on top spread between 220ms (slightly inside the
+     rail's first 18%) and 620ms (well within the draw). */
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick.is-drawn .tick:nth-child(1) { transition-delay: .22s; }
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick.is-drawn .tick:nth-child(2) { transition-delay: .30s; }
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick.is-drawn .tick:nth-child(3) { transition-delay: .38s; }
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick.is-drawn .tick:nth-child(4) { transition-delay: .46s; }
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick.is-drawn .tick:nth-child(5) { transition-delay: .54s; }
+  body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .cs-narrative .chronotick.is-drawn .tick:nth-child(6) { transition-delay: .62s; }
+
+  /* ============================================================
      L4 narrative · essay-with-anchors
      4-paragraph editorial essay with rust drop-cap on para 1, three
      pull-quotes interspersed, and a 4-link side-rail of anchor links.
@@ -645,6 +741,100 @@ brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
     line-height: 1.6;
   }
 
+  /* ============================================================
+     CS-LF2-VAR-V1 · EVID-3 case-citation-pop · Causa retrofit
+     slice 02 (Phase X.7d). Cornice (LF-2 1st occupant) does not
+     ship EVID-3; Causa (LF-2 2nd occupant) ships it as an AC-V1
+     within-cell sub-variant. The element is a native `<details>`
+     so keyboard navigation + screen-reader semantics work without
+     JS · the runtime opens it on init under reduced-motion to
+     ship the static "[collapse]" link equivalent. The pop sits
+     OUTSIDE the card-link `<a>` to avoid nested interactives.
+     Activation is scoped under `body[data-motion-evid3="1"]`.
+  ============================================================ */
+  .cs-cases-magazine .citation-pop {
+    border-top: 1px solid var(--rule);
+    margin: 0 32px;
+  }
+  .cs-cases-magazine .card--hero .citation-pop { margin: 0 40px; }
+  .cs-cases-magazine .card--small .citation-pop { margin: 0 28px; }
+  .cs-cases-magazine .citation-pop > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+    font-family: var(--body);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--ink);
+    transition: color .18s ease;
+  }
+  .cs-cases-magazine .citation-pop > summary::-webkit-details-marker { display: none; }
+  .cs-cases-magazine .citation-pop > summary::marker { content: ""; }
+  .cs-cases-magazine .citation-pop > summary:hover { color: var(--accent); }
+  .cs-cases-magazine .citation-pop > summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  .cs-cases-magazine .citation-pop > summary .indicator {
+    font-family: var(--heading);
+    font-style: normal;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--accent);
+    transition: transform .25s ease;
+    width: 1ch; display: inline-block; text-align: center;
+  }
+  .cs-cases-magazine .citation-pop[open] > summary .indicator {
+    transform: rotate(45deg);
+  }
+  .cs-cases-magazine .citation-pop[open] > summary .lbl::before {
+    content: "Chiudi · ";
+    color: var(--ink-soft);
+  }
+  .cs-cases-magazine .citation-pop[open] > summary .lbl {
+    /* When open, the label reads "Chiudi · Vedi la massima n. X" — the
+       prefix is purely typographic ::before pseudo (zero copy duplication)
+       and matches the F2-VAR-1 reduced-motion `[collapse]` semantics. */
+  }
+  .cs-cases-magazine .citation-pop > .citation-body {
+    padding: 4px 0 22px;
+    border-top: 1px dashed var(--rule);
+  }
+  .cs-cases-magazine .citation-pop > .citation-body p {
+    margin: 16px 0 0;
+    font-family: var(--heading);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.62;
+    color: var(--ink);
+    max-width: 56ch;
+  }
+  .cs-cases-magazine .citation-pop > .citation-body em {
+    color: var(--accent);
+    font-style: italic; font-weight: 600;
+  }
+  /* Modern browsers (Chrome 131+) animate the open/close transition via
+     ::details-content. Older browsers fall back to instant native open
+     — the interaction (click → inline expansion) is the differentiator,
+     not the transition timing. Reduced-motion clients are opened on
+     init by `setupEvid3Reduced()` so they see the citation expanded by
+     default (the static-with-collapse equivalent). */
+  @supports selector(::details-content) {
+    body.lm-ready:not(.lm-reduced)[data-motion-evid3="1"] .cs-cases-magazine .citation-pop::details-content {
+      transition: content-visibility .35s allow-discrete, opacity .35s ease, max-height .35s ease;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+    }
+    body.lm-ready:not(.lm-reduced)[data-motion-evid3="1"] .cs-cases-magazine .citation-pop[open]::details-content {
+      opacity: 1;
+      max-height: 64em;
+    }
+  }
+
   .cs-cases-magazine .trailing-link {
     margin-top: 36px;
     display: inline-flex; align-items: center; gap: 10px;
@@ -764,6 +954,8 @@ brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
     .cs-hero .below { padding: 64px 48px 80px; gap: 56px; }
     .cs-hero .below .right { padding-inline-start: 32px; }
     .cs-narrative .essay { gap: 48px; grid-template-columns: 1fr 240px; }
+    .cs-narrative .chronotick .ticks { gap: 18px; }
+    .cs-narrative .chronotick .tick .year { font-size: 20px; }
     .cs-cases-magazine .grid { gap: 28px; }
   }
 
@@ -787,6 +979,11 @@ brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
       position: static;
       max-width: 480px;
     }
+    .cs-narrative .chronotick .ticks {
+      grid-template-columns: repeat(3, 1fr);
+      row-gap: 28px;
+    }
+    .cs-narrative .chronotick .tick:nth-child(n+4) .dot { display: none; }
     .cs-leadership-single .grid {
       grid-template-columns: 1fr;
       gap: 48px;
@@ -824,6 +1021,13 @@ brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
     .cs-hero .overlay .kpi .num { font-size: 26px; }
     .cs-hero .below { padding: 48px 28px 56px; gap: 28px; }
     .cs-narrative .essay { margin-top: 40px; gap: 40px; }
+    .cs-narrative .chronotick { margin-top: 40px; padding: 18px 0 28px; }
+    .cs-narrative .chronotick .ticks { grid-template-columns: repeat(2, 1fr); row-gap: 24px; }
+    .cs-narrative .chronotick .tick .year { font-size: 18px; }
+    .cs-narrative .chronotick .tick .lbl { font-size: 10px; }
+    .cs-cases-magazine .citation-pop { margin: 0 22px; }
+    .cs-cases-magazine .card--hero .citation-pop { margin: 0 22px; }
+    .cs-cases-magazine .card--small .citation-pop { margin: 0 22px; }
     .cs-narrative .dropcap { font-size: 64px; padding-inline-end: 10px; }
     .cs-narrative .pull-quote { font-size: 20px; padding: 18px 0; margin: 28px 0; }
     .cs-sectors-ribbon .ribbon { font-size: 20px; }
@@ -849,6 +1053,10 @@ brass-only-in-chrome deployment, mitigating Warning 1 from intake §12.
     .cs-hero .below .right .side-quote { font-size: 18px; }
     .cs-narrative { padding: 56px 22px; }
     .cs-narrative .essay { margin-top: 32px; gap: 32px; }
+    .cs-narrative .chronotick .ticks { grid-template-columns: 1fr; row-gap: 18px; }
+    .cs-narrative .chronotick .tick { padding-top: 4px; }
+    .cs-narrative .chronotick .tick .dot { display: none; }
+    .cs-cases-magazine .citation-pop > .citation-body p { font-size: 15px; }
     .cs-narrative .pull-quote { font-size: 18px; }
     .cs-sectors-ribbon .ribbon { font-size: 18px; }
     .cs-leadership-single .head { padding: 56px 22px 0; }

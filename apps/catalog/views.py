@@ -460,6 +460,12 @@ class LiveTemplateView(TemplateView):
         # See `factory/reports/hardening/causa-retrofit-slice-01.md`.
         ctx["motion_nav_condense"] = bool(motion_config.get("nav_condense_on_scroll", False))
         ctx["motion_evid5"] = bool(motion_config.get("evid5_provenance", False))
+        # Phase X.7d Causa retrofit slice 02 · two more per-pattern flags
+        # for EVID-3 (case-citation-pop on LF-2 magazine cards) and TIME-3
+        # (chronological-tick-horizontal in the LF-2 narrative essay).
+        # See `factory/reports/hardening/causa-retrofit-slice-02.md`.
+        ctx["motion_evid3"] = bool(motion_config.get("evid3_citation", False))
+        ctx["motion_time3"] = bool(motion_config.get("time3_chronotick", False))
 
         # Blog parent page slug — used by blog_list/blog_detail chrome templates
         # so they don't have to hardcode the per-template slug ('pubblicazioni',

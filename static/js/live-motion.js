@@ -50,6 +50,12 @@
     var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) {
       body.classList.add('lm-ready', 'lm-reduced');
+      // Phase X.7d Causa retrofit slice 02 · EVID-3 reduced-motion fallback.
+      // Open every `<details data-evid3>` on init so the citation snippets
+      // ship as static "[collapse]" content per F2-VAR-1's reduced-motion
+      // contract. The full-motion init() path leaves them in the native
+      // closed state so the click-to-expand interaction reads correctly.
+      document.querySelectorAll('details[data-evid3]').forEach(function (d) { d.open = true; });
       return;
     }
 
@@ -70,6 +76,7 @@
     setupCounters();
     setupMarquees();
     setupNavCondense();
+    setupTime3();
   }
 
   // --- 0. Alias normalization --------------------------------------------------
@@ -269,6 +276,35 @@
 
     window.addEventListener('scroll', onScroll, { passive: true });
     update();
+  }
+
+  // --- 3c. TIME-3 chronological-tick ---------------------------------------
+  // Phase X.7d Causa retrofit slice 02 · TIME-3 chronological-tick-horizontal
+  // pattern. Profile-gated via `body[data-motion-time3="1"]`; only Causa's
+  // `g2-editorial-counter` profile opts in today. The CSS rule pair
+  // `body.lm-ready:not(.lm-reduced)[data-motion-time3="1"] .chronotick`
+  // hides the rail (scaleX 0) + ticks (opacity 0) by default; this
+  // observer adds `.is-drawn` on viewport entry to play back the rail
+  // draw + 80ms-staggered tick reveal. Once unobserved, no re-trigger
+  // — same one-shot semantics as setupCounters/setupReveals. Reduced-
+  // motion is already short-circuited at init() above; the CSS default-
+  // visible baseline carries the static milestone strip for those
+  // clients without further JS.
+  function setupTime3() {
+    if (document.body.getAttribute('data-motion-time3') !== '1') return;
+    var strips = document.querySelectorAll('[data-time3]');
+    if (!strips.length) return;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-drawn');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.25, rootMargin: '0px 0px -60px 0px' });
+
+    strips.forEach(function (el) { io.observe(el); });
   }
 
   // --- 4. Marquee duplication ----------------------------------------------

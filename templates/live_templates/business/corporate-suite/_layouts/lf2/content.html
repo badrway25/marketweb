@@ -86,6 +86,30 @@ see `factory/reports/hardening/corporate-suite-layout-divergence-plan.md
   <div class="head">
     <div class="sec-label">{{ page_data.narrative_label }}</div>
   </div>
+  {# Phase X.7d Causa retrofit slice 02 · TIME-3 chronological-tick.       #}
+  {# Profile-gated via `motion_time3` (body[data-motion-time3="1"]);       #}
+  {# Cornice (LF-2 1st occupant) ships without it — Causa (LF-2 2nd       #}
+  {# occupant) ships it as an AC-V1 within-cell sub-variant per           #}
+  {# `factory/reports/hardening/lf2-family-internal-variance-rules.md     #}
+  {# §4 AC-V1`. Default-visible (rail at full width · ticks at full       #}
+  {# opacity) so non-JS clients and reduced-motion clients see the        #}
+  {# static milestone strip; under live motion the strip starts hidden    #}
+  {# and is revealed on viewport entry by `setupTime3()`.                 #}
+  {% if motion_time3 and page_data.narrative_chronotick %}
+    <div class="chronotick" data-time3
+         aria-label="Cronologia editoriale dello studio">
+      <div class="rail" aria-hidden="true"></div>
+      <ol class="ticks">
+        {% for year, label in page_data.narrative_chronotick %}
+          <li class="tick">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="year">{{ year }}</span>
+            <span class="lbl">{{ label }}</span>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+  {% endif %}
   <div class="essay">
     <div class="body">
       {% for kind, text in page_data.narrative_blocks %}
@@ -166,6 +190,28 @@ see `factory/reports/hardening/corporate-suite-layout-divergence-plan.md
             <span class="pill">{{ card.pill }}</span>
           </div>
         </a>
+        {# Phase X.7d Causa retrofit slice 02 · EVID-3 case-citation-pop.   #}
+        {# Profile-gated via `motion_evid3` (body[data-motion-evid3="1"]); #}
+        {# Cornice (LF-2 1st occupant) ships without it — Causa (LF-2 2nd #}
+        {# occupant) ships it as an AC-V1 within-cell sub-variant per     #}
+        {# `factory/reports/hardening/lf2-family-internal-variance-       #}
+        {# rules.md §4 AC-V1`. Native `<details>` keeps the interaction   #}
+        {# accessible without JS (summary is keyboard-focusable, Enter    #}
+        {# toggles); under reduced-motion the runtime opens it on init    #}
+        {# so the static-with-collapse equivalent ships. The element      #}
+        {# sits OUTSIDE the card-link `<a>` so the citation toggle does   #}
+        {# not nest inside an interactive ancestor.                       #}
+        {% if motion_evid3 and card.citation %}
+          <details class="citation-pop" data-evid3>
+            <summary class="citation-toggle">
+              <span class="lbl">{{ card.citation_label|default:"Vedi la massima" }}</span>
+              <span class="indicator" aria-hidden="true">+</span>
+            </summary>
+            <div class="citation-body">
+              <p>{{ card.citation|safe }}</p>
+            </div>
+          </details>
+        {% endif %}
       </article>
     {% endfor %}
   </div>
