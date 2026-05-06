@@ -60,12 +60,14 @@ The planner brief carries the **canonical alias**; code keeps the
 | `kpi_animate` | KPI-2 count-up-on-view (§2.1) | ✓ | g2-editorial-counter · g3-institutional · g5-sprint-console |
 | `nav_condense_on_scroll` | NAV-1 sticky-condensed-on-scroll (§2.7) | ✓ | g2-editorial-counter · g4-stewardship (current Continua canonical) |
 | `evid5_provenance` | EVID-5 provenance-tooltip-image (§2.3) | ✓ | g2-editorial-counter |
+| `evid3_citation` | EVID-3 case-citation-pop (§2.3) | ✓ retrofit slice 02 | g2-editorial-counter |
+| `time3_chronotick` | TIME-3 chronological-tick-horizontal (§2.6) | ✓ retrofit slice 02 | g2-editorial-counter |
+| `card_lift_restrained` | MICRO-2 card-lift-restrained (§2.5) | ✓ Phase X.7b pass 1 | g1-safe-premium · g3-institutional · g5-sprint-console (paper opt-in · 0 templates flip today) |
+| `cinematic_fade` | MEDIA-1 cinematic-fade (§2.4) | ✓ Phase X.7b pass 1 | g6-cinematic (cluster signature · 0 templates declared today · ready for Phase X.7a intake) |
 | `nav_hide_on_scroll_down` | NAV-2 (§2.7) | paper | g5-sprint-console (declared) |
 | `scroll_progress_bar` | NAV-3 (§2.7) | paper | g5-sprint-console (declared) |
 | `hero_parallax` | MEDIA-2 parallax-restrained (§2.4) | paper | g6-cinematic (declared) |
 | `gallery_snap` | MEDIA-5 gallery-strip-snap (§2.4) | paper | g6-cinematic (declared) |
-| `cinematic_fade` | MEDIA-1 cinematic-fade (§2.4) | paper | g6-cinematic (declared) |
-| `card_lift_restrained` | MICRO-2 card-lift-restrained (§2.5) | paper | g1-safe-premium · g3-institutional · g5-sprint-console |
 | `magnetic_button` | MICRO-3 magnetic-button-restrained (§2.5) | paper | g5-sprint-console only |
 | `cursor_vignette` | MICRO-6 cursor-vignette (§2.5) | paper | g6-cinematic (dark-hero only) |
 | `live_data_kpi` | KPI-3 live-counter (§2.1) | paper · ops-gated | g5-sprint-console only · ops-config required |

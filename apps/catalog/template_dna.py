@@ -197,9 +197,27 @@ DENSITY_PROFILES: dict[str, str] = {
 # forking layout files. Templates without a `motion_profile` key fall
 # back to "g3-institutional" (the cluster's safe default) — strictly
 # additive · no-op for archetypes outside corporate-suite.
+# Phase X.7b motion_profile DNA elevation · implementation pass 1 (2026-05-06).
+# Two new bundle flags added on top of the slice-01/02 set:
+#   - `card_lift_restrained` · MICRO-2 in pattern library §2.5 · pure-CSS
+#     gate · ≤3px translate + ≤16px shadow · safe pool of g1/g3/g5 ·
+#     defaults to False on EVERY profile this pass (future opt-in per
+#     template; no current sibling flips it · zero visual regression).
+#   - `cinematic_fade` · MEDIA-1 in pattern library §2.4 · CSS+JS gate ·
+#     opacity 0.7 → 1, saturate 0.85 → 1, scale 1.04 → 1, 1200ms ease ·
+#     g6-cinematic claims the flag (cluster signature). Today no live
+#     template ships motion_profile=g6-cinematic, so the flag fires on
+#     zero rendered surfaces; the gate is wired and ready for the first
+#     Phase X.7a non-corporate-suite intake to declare g6 in its brief.
+# Both flags honor `prefers-reduced-motion: reduce` at the JS root + CSS
+# media query (belt-and-braces). Anti-tacky red-lines per profile §5 of
+# `factory/reports/hardening/motion-profile-dna-plan.md` are encoded as
+# CSS values (the system cannot render a flashier value without a code
+# edit). Adding a flag is purely additive: each new key defaults False
+# for every profile that doesn't opt in.
 MOTION_PROFILES: dict[str, dict[str, Any]] = {
-    "g1-safe-premium":     {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Safe premium · institutional default"},
-    "g2-editorial":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Editorial · static KPI · LF-2 1st-occupant register"},
+    "g1-safe-premium":     {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "card_lift_restrained": False, "cinematic_fade": False, "label": "Safe premium · institutional default"},
+    "g2-editorial":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "card_lift_restrained": False, "cinematic_fade": False, "label": "Editorial · static KPI · LF-2 1st-occupant register"},
     # Phase X.7d Causa retrofit slice 01 + slice 02 · the LF-2 second-
     # occupant bundle. Slice 01 added NAV-1 (sticky-condensed-on-scroll ·
     # 84→64px · cream-paper polarity) + EVID-5 (provenance-tooltip on hero
@@ -212,11 +230,22 @@ MOTION_PROFILES: dict[str, dict[str, Any]] = {
     # KPI-2 + NAV-1 + EVID-5 + EVID-3 + TIME-3 = 5 within-cell sub-variants
     # against Cornice's 0 — comfortably above the AC-V1 ≥3 floor per
     # `factory/reports/hardening/lf2-family-internal-variance-rules.md §4`.
-    "g2-editorial-counter":{"kpi_animate": True,  "nav_condense_on_scroll": True,  "evid5_provenance": True,  "evid3_citation": True,  "time3_chronotick": True,  "label": "Editorial · with KPI count-up + sticky-condensed nav + provenance-tooltip + case-citation-pop + chronological-tick · LF-2 2nd-occupant differentiator"},
-    "g3-institutional":    {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Institutional · count-up enabled · LF-1/LF-3/LF-4 default"},
-    "g4-stewardship":      {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Stewardship-restrained · static KPI · LF-5 default"},
-    "g5-sprint-console":   {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Sprint-console · digital-product"},
-    "g6-cinematic":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "label": "Gallery-cinematic · static KPI"},
+    # `card_lift_restrained` stays False on this profile per AT-G2C-4 (LF-2
+    # magazine-grid cards must stay still); `cinematic_fade` is anti-fit
+    # for editorial register.
+    "g2-editorial-counter":{"kpi_animate": True,  "nav_condense_on_scroll": True,  "evid5_provenance": True,  "evid3_citation": True,  "time3_chronotick": True,  "card_lift_restrained": False, "cinematic_fade": False, "label": "Editorial · with KPI count-up + sticky-condensed nav + provenance-tooltip + case-citation-pop + chronological-tick · LF-2 2nd-occupant differentiator"},
+    "g3-institutional":    {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "card_lift_restrained": False, "cinematic_fade": False, "label": "Institutional · count-up enabled · LF-1/LF-3/LF-4 default"},
+    "g4-stewardship":      {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "card_lift_restrained": False, "cinematic_fade": False, "label": "Stewardship-restrained · static KPI · LF-5 default"},
+    "g5-sprint-console":   {"kpi_animate": True,  "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "card_lift_restrained": False, "cinematic_fade": False, "label": "Sprint-console · digital-product"},
+    # Phase X.7b implementation pass 1 · `cinematic_fade` claimed by
+    # g6-cinematic as the cluster signature pattern. The gate is wired in
+    # CSS+JS this pass; no live template currently declares motion_profile
+    # = g6-cinematic, so the flag fires on zero surfaces today. The Phase
+    # X.7a candidate clusters (portfolio-cinematic Pixel · agency-creative-
+    # studio Vertex hero-only · ultra-luxury Villa · fashion-editorial
+    # Luxe) can pick this profile at intake and gain editorial rhythm with
+    # zero further code change.
+    "g6-cinematic":        {"kpi_animate": False, "nav_condense_on_scroll": False, "evid5_provenance": False, "evid3_citation": False, "time3_chronotick": False, "card_lift_restrained": False, "cinematic_fade": True,  "label": "Gallery-cinematic · static KPI · slow editorial fade-in on full-bleed photos"},
 }
 
 TONES: dict[str, str] = {

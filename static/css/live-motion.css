@@ -47,6 +47,35 @@
 
   /* Stagger unit (fallback; JS sets explicit per-child delay) */
   --lm-stagger:  70ms;
+
+  /* ----------------------------------------------------------------
+   * Phase X.7b motion_profile DNA · token namespace
+   * ----------------------------------------------------------------
+   * `--mp-*` tokens are the per-pattern parameters honored by the
+   * motion_profile gate rules below. They live on :root so every
+   * profile reads the same SAFE values; profile-scoped overrides
+   * via `body[data-motion-profile="..."]` selectors can tighten
+   * (never loosen) a value when a future cluster brief justifies it.
+   * The encoded values match the anti-tacky red-lines in §5 of
+   * `factory/reports/hardening/motion-profile-dna-plan.md`:
+   *   AT-G1-2: card-lift ≤ 3px · shadow ≤ 16px · opacity ≤ 0.10
+   *   AT-G6-2: cinematic-fade ≥ 1200ms · saturation start ≥ 0.85 ·
+   *            scale start ≤ 1.05
+   * The system cannot render a flashier value without a code edit.
+   * ---------------------------------------------------------------- */
+
+  /* MICRO-2 card-lift-restrained · safe-pool of g1/g3/g5 */
+  --mp-card-lift-y:        3px;
+  --mp-card-lift-shadow:   0 6px 16px -8px rgba(15, 18, 22, 0.10);
+  --mp-card-lift-dur:      var(--lm-dur-fast);
+  --mp-card-lift-ease:     var(--lm-ease-smooth);
+
+  /* MEDIA-1 cinematic-fade-on-view · g6-cinematic claim */
+  --mp-cinematic-dur:               1200ms;
+  --mp-cinematic-opacity-start:     0.7;
+  --mp-cinematic-saturation-start:  0.85;
+  --mp-cinematic-scale-start:       1.04;
+  --mp-cinematic-ease:              cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 /* ----------------------------------------------------------------------------
@@ -192,4 +221,113 @@ body.lm-reduced .lm-img-frame:hover .lm-img {
 }
 body.lm-reduced [data-lm="marquee"] .lm-marquee-track {
   animation: none;
+}
+
+/* ============================================================================
+ * Phase X.7b motion_profile DNA · implementation pass 1
+ * ============================================================================
+ *
+ * Two new bundle-flag gates on top of the slice-01/02 set:
+ *   - MICRO-2 `card_lift_restrained` · gated on
+ *     `body[data-motion-card-lift="1"]` · pure-CSS · ≤3px translate +
+ *     ≤16px shadow blur + ≤0.10 shadow alpha. Hooks any element with
+ *     `data-motion-card`.
+ *   - MEDIA-1 `cinematic_fade` · gated on
+ *     `body[data-motion-cinematic-fade="1"]` · CSS hidden state +
+ *     IntersectionObserver-driven `lm-fade-in` class added by JS on
+ *     viewport entry. Hooks any element with `data-motion-fade-in`.
+ *
+ * Both gates are off-by-default for every existing live template (no
+ * sibling has the body data-attribute set today). Gates fire only when
+ * a template's motion_profile bundle includes the corresponding flag,
+ * which propagates through the corporate-suite chrome to a body data-
+ * attribute. Reduced-motion short-circuits via three layers (belt +
+ * braces + suspenders): the JS root short-circuits at init() before
+ * setupCinematicFade() runs · `body.lm-reduced` clears the hidden
+ * states · the native @media query rule below clears them again for
+ * any client whose JS never executed.
+ * ============================================================================ */
+
+/* --- 1. MICRO-2 card-lift-restrained ------------------------------------ */
+/* Pure-CSS gate. The element gets the lift only on hover/focus AND only
+ * when its body opts into the flag. Reduced-motion neutralises the
+ * transform via a separate rule below. */
+
+body[data-motion-card-lift="1"] [data-motion-card] {
+  transition:
+    transform   var(--mp-card-lift-dur) var(--mp-card-lift-ease),
+    box-shadow  var(--mp-card-lift-dur) var(--mp-card-lift-ease);
+  will-change: transform, box-shadow;
+}
+
+body[data-motion-card-lift="1"] [data-motion-card]:hover,
+body[data-motion-card-lift="1"] [data-motion-card]:focus-within {
+  transform: translate3d(0, calc(-1 * var(--mp-card-lift-y)), 0);
+  box-shadow: var(--mp-card-lift-shadow);
+}
+
+/* --- 2. MEDIA-1 cinematic-fade-on-view ---------------------------------- */
+/* CSS holds the hidden state (low opacity + low saturation + slight
+ * scale-up) until JS adds `.lm-fade-in` on viewport entry. The transition
+ * carries the visitor from the dim → vivid state over 1200ms. NO-JS
+ * fallback: `body.lm-ready` is the gate, and JS adds it on init; if JS
+ * fails entirely, `body.lm-ready` never lands and the hidden state never
+ * activates — the page renders with photos at their natural full-saturation
+ * value (this preserves the no-blank-page contract from §1 of this file). */
+
+body.lm-ready[data-motion-cinematic-fade="1"] [data-motion-fade-in] {
+  opacity:    var(--mp-cinematic-opacity-start);
+  filter:     saturate(var(--mp-cinematic-saturation-start));
+  transform:  scale(var(--mp-cinematic-scale-start));
+  transform-origin: center center;
+  will-change: opacity, filter, transform;
+  transition:
+    opacity   var(--mp-cinematic-dur) var(--mp-cinematic-ease),
+    filter    var(--mp-cinematic-dur) var(--mp-cinematic-ease),
+    transform var(--mp-cinematic-dur) var(--mp-cinematic-ease);
+}
+
+body.lm-ready[data-motion-cinematic-fade="1"] [data-motion-fade-in].lm-fade-in {
+  opacity:   1;
+  filter:    saturate(1);
+  transform: scale(1);
+}
+
+/* --- 3. Reduced-motion short-circuits (belt + braces) ------------------- */
+/* AT-X1 / AT-G1-3 / AT-G6-2 binding red-lines: the visitor's OS preference
+ * always wins over the customer's profile choice, regardless of which
+ * mechanism (CSS @media or JS body class) catches it first. Both new
+ * gates degrade to fully-visible static rendering — same INFORMATION as
+ * the animated state, just no FEEL. */
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-motion-card-lift="1"] [data-motion-card] {
+    transition: none !important;
+  }
+  body[data-motion-card-lift="1"] [data-motion-card]:hover,
+  body[data-motion-card-lift="1"] [data-motion-card]:focus-within {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  body.lm-ready[data-motion-cinematic-fade="1"] [data-motion-fade-in] {
+    opacity:   1 !important;
+    filter:    none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+body.lm-reduced[data-motion-card-lift="1"] [data-motion-card] {
+  transition: none !important;
+}
+body.lm-reduced[data-motion-card-lift="1"] [data-motion-card]:hover,
+body.lm-reduced[data-motion-card-lift="1"] [data-motion-card]:focus-within {
+  transform: none !important;
+  box-shadow: none !important;
+}
+body.lm-reduced[data-motion-cinematic-fade="1"] [data-motion-fade-in] {
+  opacity:   1 !important;
+  filter:    none !important;
+  transform: none !important;
+  transition: none !important;
 }

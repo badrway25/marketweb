@@ -1217,7 +1217,7 @@
   body.mw-is-editor-preview .cs-nav .word { max-width: 32ch; }
 </style>
 </head>
-<body class="{% if preview_project %}mw-is-editor-preview{% endif %}{% if template.layout_family %} cs-lf-{{ template.layout_family|lower }}{% endif %}"{% if motion_profile %} data-motion-profile="{{ motion_profile }}"{% endif %}{% if motion_kpi_animate %} data-motion-kpi-animate="1"{% endif %}{% if motion_nav_condense %} data-motion-nav-condense="1"{% endif %}{% if motion_evid5 %} data-motion-evid5="1"{% endif %}{% if motion_evid3 %} data-motion-evid3="1"{% endif %}{% if motion_time3 %} data-motion-time3="1"{% endif %}>{% endspaceless %}
+<body class="{% if preview_project %}mw-is-editor-preview{% endif %}{% if template.layout_family %} cs-lf-{{ template.layout_family|lower }}{% endif %}"{% if motion_profile %} data-motion-profile="{{ motion_profile }}"{% endif %}{% if motion_kpi_animate %} data-motion-kpi-animate="1"{% endif %}{% if motion_nav_condense %} data-motion-nav-condense="1"{% endif %}{% if motion_evid5 %} data-motion-evid5="1"{% endif %}{% if motion_evid3 %} data-motion-evid3="1"{% endif %}{% if motion_time3 %} data-motion-time3="1"{% endif %}{% if motion_card_lift %} data-motion-card-lift="1"{% endif %}{% if motion_cinematic_fade %} data-motion-cinematic-fade="1"{% endif %}>{% endspaceless %}
 
 <div class="mp-bar">
   <a href="{% url 'catalog:template_detail' template.category.slug template.slug %}{% if locale != default_locale %}?lang={{ locale }}{% if staff_preview %}&preview=1{% endif %}{% elif staff_preview %}?preview=1{% endif %}" class="mp-back">{{ chrome.mp_back }}</a>

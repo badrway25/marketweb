@@ -77,6 +77,7 @@
     setupMarquees();
     setupNavCondense();
     setupTime3();
+    setupCinematicFade();
   }
 
   // --- 0. Alias normalization --------------------------------------------------
@@ -305,6 +306,39 @@
     }, { threshold: 0.25, rootMargin: '0px 0px -60px 0px' });
 
     strips.forEach(function (el) { io.observe(el); });
+  }
+
+  // --- 3d. MEDIA-1 cinematic-fade-on-view ----------------------------------
+  // Phase X.7b motion_profile DNA · implementation pass 1. Profile-gated
+  // via `body[data-motion-cinematic-fade="1"]`; only `g6-cinematic` opts
+  // in today (and no live template currently declares g6, so the
+  // observer is wired-but-dormant in production). The CSS rule pair
+  //   body.lm-ready[data-motion-cinematic-fade="1"] [data-motion-fade-in]
+  //   body.lm-ready[data-motion-cinematic-fade="1"] [data-motion-fade-in].lm-fade-in
+  // holds the hidden state (opacity 0.7 · saturate 0.85 · scale 1.04) by
+  // default and runs the 1200ms transition to (1 · 1 · 1) when this
+  // observer adds `.lm-fade-in` on viewport entry. One-shot: each element
+  // is unobserved on intersect — same semantics as setupReveals /
+  // setupCounters / setupTime3. Reduced-motion is already short-circuited
+  // at init() above; the CSS @media + body.lm-reduced rules also clear
+  // the hidden state for any client whose JS never executed. Threshold
+  // is 0.20 so the fade fires once 20% of the photo enters the viewport
+  // (matches setupReveals' editorial cadence).
+  function setupCinematicFade() {
+    if (document.body.getAttribute('data-motion-cinematic-fade') !== '1') return;
+    var targets = document.querySelectorAll('[data-motion-fade-in]');
+    if (!targets.length) return;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('lm-fade-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.20, rootMargin: '0px 0px -40px 0px' });
+
+    targets.forEach(function (el) { io.observe(el); });
   }
 
   // --- 4. Marquee duplication ----------------------------------------------

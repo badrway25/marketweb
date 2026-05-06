@@ -466,6 +466,19 @@ class LiveTemplateView(TemplateView):
         # See `factory/reports/hardening/causa-retrofit-slice-02.md`.
         ctx["motion_evid3"] = bool(motion_config.get("evid3_citation", False))
         ctx["motion_time3"] = bool(motion_config.get("time3_chronotick", False))
+        # Phase X.7b motion_profile DNA elevation · implementation pass 1.
+        # Two new bundle flags surfaced as flat context keys: MICRO-2
+        # `card_lift_restrained` (pure-CSS ≤3px hover lift on cards marked
+        # `data-motion-card`; safe pool of g1/g3/g5 profiles · default-
+        # False on every profile this pass) and MEDIA-1 `cinematic_fade`
+        # (CSS+JS observer on elements marked `data-motion-fade-in`;
+        # opacity 0.7 → 1 + saturate 0.85 → 1 + scale 1.04 → 1 over
+        # 1200ms; claimed by g6-cinematic as cluster signature). Both
+        # short-circuit to fully-visible at first paint when reduced-
+        # motion is requested. See
+        # `factory/reports/hardening/motion-profile-implementation-pass1.md`.
+        ctx["motion_card_lift"] = bool(motion_config.get("card_lift_restrained", False))
+        ctx["motion_cinematic_fade"] = bool(motion_config.get("cinematic_fade", False))
 
         # Blog parent page slug — used by blog_list/blog_detail chrome templates
         # so they don't have to hardcode the per-template slug ('pubblicazioni',
