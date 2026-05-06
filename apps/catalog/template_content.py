@@ -2489,14 +2489,23 @@ from apps.catalog.template_content_cornice_ar import CORNICE_CONTENT_AR  # noqa:
 # Phase X.6 · Causa (6th corporate-suite sibling · 1st evidence-led
 # Cassazionista litigation-boutique variant · 2nd LF-2 occupant after
 # Cornice · 2026-05-03 · `phase-x6-causa-a5-it-build`). IT-only at A.5
-# build (D-102 cadence); multilingual rollout via workflow C in a
-# separate pass (5 locales · IT preserved + EN/FR/ES/AR · voice anchor
-# verbatim-in-translation on the public-record-evidence noun
-# evidenza → evidence / preuve / evidencia / دليل · LF-2-scoped Naskh
-# AR h1 swap inherited verbatim from Cornice's first-occupant binding).
-# Tier remains `draft` — public flip held until explicit user
-# handshake (R-SOL-8 / CS-BLOCK-13 / D-102 cadence).
+# build (D-102 cadence). Phase X.6 Causa workflow C (multilingual
+# rollout · 2026-05-06 · `phase-x7e-lf2-variance-and-causa-retrofit`)
+# ships full EN/FR/ES/AR locale trees on top of the locked LF-2
+# Italian draft (A.6 review-lock + A.5b imagery re-curate +
+# anti-clone slice-01 + slice-02 + motion_profile DNA pass 1). Voice
+# anchor preserved verbatim-in-translation across all 5 locales (the
+# load-bearing italic moves with the equivalent PUBLIC-RECORD-EVIDENCE
+# noun: evidenza → evidence / preuve / evidencia / دليل). LF-2-scoped
+# Naskh AR h1 swap inherited verbatim from Cornice's first-occupant
+# binding (`html[dir="rtl"] body.cs-lf-lf-2` chrome selector). Tier
+# remains `draft` — public flip held until explicit user handshake
+# (R-SOL-8 / CS-BLOCK-13 / D-102 cadence).
 from apps.catalog.template_content_causa import CAUSA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_causa_en import CAUSA_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_causa_fr import CAUSA_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_causa_es import CAUSA_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_causa_ar import CAUSA_CONTENT_AR  # noqa: E402
 
 # Phase 2g3.4 — Portfolio live rollout (Session 34).
 #
@@ -2721,17 +2730,28 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "ar": CORNICE_CONTENT_AR,
     },
     # Phase X.6 · Causa (6th corporate-suite sibling · 2nd LF-2
-    # occupant · 2026-05-03 IT build). IT-only at A.5 build per D-102
-    # cadence — only the IT key is wired here; EN/FR/ES/AR land at
-    # workflow C in a separate pass with verbatim-in-translation on
-    # the public-record-evidence anchor (evidenza → evidence / preuve /
-    # evidencia / دليل). Tier stays `draft` — public catalog count
-    # unchanged at 24 — staff preview reaches the live route via
-    # `?preview=1`. Locale switcher will not advertise EN/FR/ES/AR for
-    # this slug at this build (D-068 honesty rule · `get_available_
-    # locales` returns ["it"] only).
+    # occupant · 2026-05-03 IT build · 2026-05-06 workflow C
+    # multilingual). All 5 locales authored: voice anchor preserved
+    # verbatim-in-translation (CS-EXEC-01 / CS-BLOCK-11 · the load-
+    # bearing italic moves with the equivalent public-record-evidence
+    # noun evidenza → evidence / preuve / evidencia / دليل). Slice-01
+    # (R1 Sottometti-X CTA + R4 NAV-1 + R6 EVID-5 provenance) and
+    # slice-02 (R2 EVID-3 case-citation-pop + R3 TIME-3 chronotick)
+    # propagate verbatim across locales (translator-binding contract
+    # per voice-anchor-lock §6 + planner-brief §11). LF-2-scoped Naskh
+    # AR h1 swap is the same chrome selector Cornice introduced at
+    # Pass C (`html[dir="rtl"] body.cs-lf-lf-2`); LF-5 Continua
+    # explicitly does NOT trigger the swap. Tier stays `draft` —
+    # public catalog count unchanged at 24 — staff preview reaches the
+    # live route via `?preview=1` and exercises every locale via
+    # `?lang=xx`. Workflow D public flip remains held until explicit
+    # user handshake.
     "causa-legale": {
         "it": CAUSA_CONTENT_IT,
+        "en": CAUSA_CONTENT_EN,
+        "fr": CAUSA_CONTENT_FR,
+        "es": CAUSA_CONTENT_ES,
+        "ar": CAUSA_CONTENT_AR,
     },
     "chiara-portfolio-creativo": {
         "it": CHIARA_CONTENT_IT,
