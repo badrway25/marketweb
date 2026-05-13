@@ -174,6 +174,102 @@
   }
 
   // ────────────────────────────────────────────────────────────
+  // T40 · First-run onboarding card
+  // Shown when the project was just created (cfg.justCreated) AND
+  // the user has not previously dismissed the card on this browser.
+  // Three step buttons (brand / hero / publish) delegate to the
+  // routers below — same path used by the command palette so we
+  // don't reimplement scroll/focus logic.
+  // ────────────────────────────────────────────────────────────
+  const ONBOARDING_DISMISSED_KEY = "marketweb-editor-onboarding-dismissed";
+
+  function isOnboardingDismissed() {
+    try { return localStorage.getItem(ONBOARDING_DISMISSED_KEY) === "1"; }
+    catch (e) { return false; }
+  }
+  function markOnboardingDismissed() {
+    try { localStorage.setItem(ONBOARDING_DISMISSED_KEY, "1"); } catch (e) {}
+  }
+
+  const onboardingCard = $("[data-ed-onboarding]");
+  if (onboardingCard && cfg.justCreated && !isOnboardingDismissed()) {
+    onboardingCard.hidden = false;
+  }
+
+  function dismissOnboarding() {
+    if (!onboardingCard || onboardingCard.hidden) return;
+    onboardingCard.classList.add("is-dismissing");
+    markOnboardingDismissed();
+    setTimeout(() => { onboardingCard.hidden = true; }, 240);
+  }
+
+  function expandGroup(groupEl) {
+    if (!groupEl) return;
+    // Groups use a button-head + body open/close pattern. The
+    // existing code keys the open state on a class on the section.
+    if (!groupEl.classList.contains("is-open")) {
+      const head = groupEl.querySelector(".ed-group-head");
+      if (head) head.click();
+    }
+    groupEl.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function onboardingGotoBrand() {
+    expandGroup(document.querySelector('.ed-group[data-group-id="brand"]'));
+  }
+  function onboardingGotoHero() {
+    const heroGroup = document.querySelector('.ed-group[data-group-id^="hero"]');
+    expandGroup(heroGroup);
+    if (!heroGroup) return;
+    // Headline field — schemas use dotted keys like "home.headline",
+    // "studio.headline", "landing.headline" depending on archetype. Match
+    // by key suffix (or exact "headline" for legacy) so the focus lands
+    // on the right field across all templates.
+    setTimeout(() => {
+      const headlineField = Array.from(
+        heroGroup.querySelectorAll(".ed-field[data-ed-key]")
+      ).find((f) => {
+        const k = f.getAttribute("data-ed-key") || "";
+        return k === "headline" || k.endsWith(".headline");
+      });
+      if (!headlineField) return;
+      const input = headlineField.querySelector("input, textarea");
+      if (!input) return;
+      // The group's scrollIntoView lands the group head at the
+      // viewport top, which leaves the headline field below the fold
+      // (eyebrow comes first). Scroll the field itself into view,
+      // then focus it — without this the focus() call lands on an
+      // off-screen element and screen-reader / visual cue is lost.
+      input.scrollIntoView({ behavior: "smooth", block: "center" });
+      input.focus();
+      if (typeof input.select === "function") input.select();
+    }, 380);  // wait for the expand transition + group scroll
+  }
+  function onboardingPulsePublish() {
+    const btn = document.querySelector(".ed-topbar .ed-btn.is-primary");
+    if (!btn) return;
+    btn.classList.add("is-onboarding-pulse");
+    btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "end" });
+    setTimeout(() => btn.classList.remove("is-onboarding-pulse"), 2900);
+  }
+
+  if (onboardingCard) {
+    const dismissBtn = onboardingCard.querySelector("[data-ed-onboarding-dismiss]");
+    if (dismissBtn) dismissBtn.addEventListener("click", dismissOnboarding);
+
+    onboardingCard.querySelectorAll("[data-ed-onboarding-step]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const step = btn.getAttribute("data-ed-onboarding-step");
+        if (step === "brand")   onboardingGotoBrand();
+        else if (step === "hero")   onboardingGotoHero();
+        else if (step === "publish") onboardingPulsePublish();
+        // The card stays visible after a step click — the user may
+        // want to consult the next step. Dismiss is explicit (X).
+      });
+    });
+  }
+
+  // ────────────────────────────────────────────────────────────
   // Autosave queue
   // ────────────────────────────────────────────────────────────
 

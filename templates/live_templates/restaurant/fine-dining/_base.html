@@ -391,6 +391,72 @@
     hyphens: auto;
   }
   body.mw-is-editor-preview .fd-nav .name { max-width: 32ch; }
+
+  /* ============================================================
+     SPRINT 1 · T12 · AP-1 · GUSTO CHROME RESPONSIVE
+     Scales chrome elements (.mp-bar, .fd-nav, .fd-lead,
+     .fd-section, .fd-foot) so inner pages (about, reservations)
+     stay credible on mobile/tablet. Hero responsiveness lives in
+     home.html + reservations.html. Desktop ≥1024 untouched.
+  ============================================================ */
+  @media (max-width: 1024px) {
+    .fd-nav { padding: 18px 32px; }
+    .fd-nav .left, .fd-nav .right { gap: 20px; font-size: 10px; }
+    .fd-lead { padding: 80px 40px 48px; }
+    .fd-lead h1 { font-size: 72px; }
+    .fd-lead .intro { font-size: 20px; }
+    .fd-section { padding: 64px 40px; }
+    .fd-section.alt { padding: 64px 40px; }
+    .fd-section h2 { font-size: 44px; }
+    .fd-foot { padding: 56px 40px 28px; }
+    .fd-foot .top { grid-template-columns: 1.4fr 1fr 1fr; gap: 36px; }
+  }
+  @media (max-width: 720px) {
+    .mp-bar { padding: 8px 16px; gap: 10px; font-size: 10px; letter-spacing: 0.14em; }
+    .fd-nav {
+      grid-template-columns: 1fr auto;
+      padding: 14px 20px; gap: 12px;
+    }
+    .fd-nav .left { display: none; }
+    .fd-nav .right { display: none; }
+    .fd-nav .logo { text-align: left; }
+    .fd-nav .logo .name { font-size: 22px; }
+    .fd-nav .logo .star { font-size: 8px; letter-spacing: 0.26em; }
+    .fd-lead { padding: 48px 22px 32px; }
+    .fd-lead .eyebrow { gap: 12px; font-size: 10px; letter-spacing: 0.20em; }
+    .fd-lead .eyebrow:before { width: 24px; }
+    .fd-lead h1 {
+      font-size: clamp(40px, 10vw, 60px);
+      max-width: none; margin-top: 22px;
+      line-height: 1.0;
+    }
+    .fd-lead .intro { margin-top: 22px; font-size: 17px; line-height: 1.55; }
+    .fd-lead .actions {
+      margin-top: 32px;
+      flex-direction: column; align-items: flex-start;
+      gap: 18px;
+    }
+    .fd-lead .gold-btn,
+    .fd-lead .ghost-btn { font-size: 11px; letter-spacing: 0.16em; }
+    .fd-section { padding: 48px 22px; }
+    .fd-section.alt { padding: 48px 22px; }
+    .fd-section h2 {
+      font-size: clamp(30px, 7.5vw, 42px);
+      line-height: 1.08; max-width: none;
+    }
+    .fd-section .sec-intro { font-size: 16px; line-height: 1.6; }
+    .fd-foot { padding: 40px 22px 24px; }
+    .fd-foot .top {
+      grid-template-columns: 1fr; gap: 28px;
+      padding-bottom: 28px;
+    }
+    .fd-foot .brand .word { font-size: 24px; }
+    .fd-foot .brand p { font-size: 15px; }
+    .fd-foot .bot {
+      flex-direction: column; align-items: flex-start;
+      gap: 8px; font-size: 10px;
+    }
+  }
 </style>
 </head>
 <body class="{% if preview_project %}mw-is-editor-preview{% endif %}">{% endspaceless %}

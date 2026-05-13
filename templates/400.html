@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+{% comment %}
+  T24 · 2026-05-11 · branded 400 Bad Request.
+  Same pattern as templates/404.html — renders inside the marketplace
+  chrome (navbar + footer + design system). Auto-picked by Django when
+  DEBUG=False; the dev profile still shows Django's yellow debug 400
+  view. No tech leaks, no stack traces, no exposed paths.
+
+  Trigger surfaces:
+    - DisallowedHost (CommonMiddleware) on a bogus Host header.
+    - SuspiciousOperation raised by any view.
+    - SetCookieError / RequestDataTooBig and similar suspicious-request
+      escalations from Django's request/middleware layer.
+{% endcomment %}
+
+{% block title %}Richiesta non valida{% endblock %}
+{% block meta_robots %}noindex, follow{% endblock %}
+{% block meta_description %}La richiesta inviata non è arrivata in un formato che possiamo elaborare. Torna alla home o sfoglia il catalogo dei template MarketWeb.{% endblock %}
+
+{% block extra_css %}
+<style>
+  .mw-error {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.25rem 5rem;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.10), transparent 55%),
+      radial-gradient(circle at 20% 90%, rgba(99, 102, 241, 0.08), transparent 50%);
+  }
+  .mw-error .wrap {
+    max-width: 640px;
+    text-align: center;
+  }
+  .mw-error .badge-code {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--mw-accent-dark, #b45309);
+    font-family: var(--mw-font-body, 'Inter'), system-ui, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .mw-error .badge-code .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--mw-accent, #f59e0b);
+  }
+  .mw-error h1 {
+    font-family: var(--mw-font-display, 'Plus Jakarta Sans'), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--mw-primary, #1B2A4A);
+    margin: 0 0 1.1rem;
+  }
+  .mw-error h1 em {
+    font-style: normal;
+    background: linear-gradient(120deg,
+      var(--mw-accent, #f59e0b),
+      var(--mw-accent-dark, #b45309));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .mw-error p.lead {
+    font-family: var(--mw-font-body, 'Inter'), system-ui, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--mw-neutral-600, #475569);
+    margin: 0 auto 2rem;
+    max-width: 38rem;
+  }
+  .mw-error .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.85rem;
+  }
+  .mw-error .actions .btn {
+    padding: 0.7rem 1.4rem;
+    font-weight: 600;
+  }
+  @media (max-width: 480px) {
+    .mw-error { padding: 3rem 1rem 4rem; min-height: 55vh; }
+    .mw-error .actions { flex-direction: column; align-items: stretch; }
+    .mw-error .actions .btn { width: 100%; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="mw-error">
+  <div class="wrap">
+    <span class="badge-code"><span class="dot"></span>Errore 400 · richiesta non valida</span>
+    <h1>La richiesta non è arrivata in un formato che possiamo <em>elaborare</em>.</h1>
+    <p class="lead">Probabilmente è solo un link modificato o un parametro fuori posto. Torna alla home o ricomincia dal catalogo — il resto del marketplace funziona normalmente.</p>
+    <div class="actions">
+      <a href="{% url 'pages:home' %}" class="btn btn-primary">
+        <i class="bi bi-house-door me-1"></i>Torna alla home
+      </a>
+      <a href="{% url 'catalog:template_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-collection me-1"></i>Sfoglia il catalogo
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -114,7 +114,7 @@ CASA_CONTENT_IT: dict[str, Any] = {
     # ═══════════════════════════════════════════════════════════════
     "home": {
         "eyebrow":  "Domus Immobiliare · Milano · Torino · Lombardia & Piemonte",
-        "headline": "La casa dei tuoi <em>sogni</em>, vicino a te.",
+        "headline": "Seicento case scelte a mano, <em>e un solo agente</em> dall'incontro al rogito.",
         "intro":
             "Oltre 600 immobili selezionati a mano fra Milano, Torino, il "
             "lago di Como e il Piemonte. Visite guidate anche la domenica, "

@@ -1456,3 +1456,182 @@ button { font-family: inherit; }
   .ed-frame-wrap[data-device="tablet"],
   .ed-frame-wrap[data-device="mobile"] { max-width: 100%; }
 }
+
+
+/* ──────────────────────────────────────────────────────────────────
+   T40 · First-run onboarding card
+   Lives between .ed-sidebar-search and .ed-sidebar-body. Persistent
+   (no auto-dismiss timer). The JS toggles `hidden` on/off based on
+   cfg.justCreated + localStorage. Premium look matching the .ed-*
+   design system tokens. No modal, no overlay.
+   ────────────────────────────────────────────────────────────────── */
+
+.ed-onboarding {
+  margin: 10px 14px 0;
+  padding: 14px 14px 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(245, 158, 11, 0.07) 0%,
+    rgba(245, 158, 11, 0.03) 100%
+  );
+  border: 1px solid var(--ed-accent-soft);
+  border-radius: var(--ed-radius);
+  box-shadow: var(--ed-shadow-xs);
+  position: relative;
+}
+.ed-root.is-sidebar-collapsed .ed-onboarding { display: none; }
+
+.ed-onboarding-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.ed-onboarding-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ed-accent);
+}
+.ed-onboarding-eyebrow i { font-size: 12px; }
+
+.ed-onboarding-dismiss {
+  width: 24px; height: 24px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--ed-radius-sm);
+  color: var(--ed-muted);
+  cursor: pointer;
+  transition: background 140ms, color 140ms;
+}
+.ed-onboarding-dismiss:hover {
+  background: rgba(13, 17, 23, 0.05);
+  color: var(--ed-ink);
+}
+.ed-onboarding-dismiss:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 2px var(--ed-focus);
+}
+
+.ed-onboarding-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ed-ink);
+}
+.ed-onboarding-lead {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ed-ink-3);
+}
+
+.ed-onboarding-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ed-onboarding-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--ed-paper);
+  border: 1px solid var(--ed-rule);
+  border-radius: var(--ed-radius-sm);
+  text-align: left;
+  cursor: pointer;
+  color: var(--ed-ink);
+  transition: border-color 140ms, transform 140ms, box-shadow 140ms;
+}
+.ed-onboarding-step:hover {
+  border-color: var(--ed-accent);
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.15);
+}
+.ed-onboarding-step:focus-visible {
+  outline: 0;
+  border-color: var(--ed-accent);
+  box-shadow: 0 0 0 3px var(--ed-focus);
+}
+.ed-onboarding-step:active { transform: translateY(1px); }
+
+.ed-onboarding-n {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--ed-ink);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ed-onboarding-step:hover .ed-onboarding-n,
+.ed-onboarding-step:focus-visible .ed-onboarding-n {
+  background: var(--ed-accent);
+}
+
+.ed-onboarding-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ed-onboarding-text strong {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--ed-ink);
+}
+.ed-onboarding-sub {
+  font-size: 11px;
+  color: var(--ed-muted);
+  margin-top: 1px;
+}
+
+.ed-onboarding-step > i.bi-arrow-right {
+  flex-shrink: 0;
+  color: var(--ed-muted-2);
+  font-size: 14px;
+  transition: color 140ms, transform 140ms;
+}
+.ed-onboarding-step:hover > i.bi-arrow-right {
+  color: var(--ed-accent);
+  transform: translateX(2px);
+}
+
+/* Smooth dismiss — slide-up + fade. JS removes [hidden] AFTER the
+   animation completes so screen readers don't keep announcing it. */
+.ed-onboarding.is-dismissing {
+  animation: ed-onboarding-out 220ms ease-in forwards;
+}
+@keyframes ed-onboarding-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+    margin-bottom: -100px;
+  }
+}
+
+/* When the JS pulse-highlights the Pubblica button (step 3), this
+   class is added briefly. */
+.ed-topbar .ed-btn.is-primary.is-onboarding-pulse {
+  animation: ed-pulse-publish 1.4s ease-out 2;
+  box-shadow: 0 0 0 0 var(--ed-accent);
+}
+@keyframes ed-pulse-publish {
+  0%   { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.55); }
+  60%  { box-shadow: 0 0 0 14px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}

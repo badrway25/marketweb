@@ -80,23 +80,36 @@
 
 /* Mobile menu overlay */
 @media (max-width: 991.98px) {
+  /* Sprint 1 · T12 · the drawer slides off-screen via `transform`
+     instead of `inset-inline-end: -100%`. The negative-inset approach
+     positioned the drawer outside the viewport correctly but its
+     bounding box still contributed to `documentElement.scrollWidth`
+     (~750px on a 390px viewport). `transform: translateX(...)` does
+     NOT contribute to scroll metrics, is GPU-accelerated, and
+     animates more smoothly. RTL is handled below via the `[dir="rtl"]`
+     attribute selector flipping the translate axis. */
   .mw-navbar .navbar-collapse {
     position: fixed;
     top: 0;
-    inset-inline-end: -100%;
+    inset-inline-end: 0;
     width: 80%;
     max-width: 320px;
     height: 100vh;
     background: var(--mw-neutral-0);
     box-shadow: var(--mw-shadow-2xl);
     padding: var(--mw-space-8) var(--mw-space-6);
-    transition: inset-inline-end var(--mw-transition-slow);
+    transform: translateX(100%);
+    transition: transform var(--mw-transition-slow);
     z-index: var(--mw-z-modal);
     overflow-y: auto;
   }
+  /* RTL: drawer enters from the left edge — flip translate sign. */
+  [dir="rtl"] .mw-navbar .navbar-collapse {
+    transform: translateX(-100%);
+  }
 
   .mw-navbar .navbar-collapse.show {
-    inset-inline-end: 0;
+    transform: translateX(0);
   }
 
   .mw-navbar .nav-link {

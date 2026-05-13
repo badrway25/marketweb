@@ -68,7 +68,7 @@ CASA_CONTENT_EN: dict[str, Any] = {
 
     "home": {
         "eyebrow":  "Domus Immobiliare · Milan · Turin · Lombardy & Piedmont",
-        "headline": "The home of your <em>dreams</em>, closer than you think.",
+        "headline": "Six hundred hand-picked homes, <em>one agent</em> from first viewing to closing.",
         "intro":
             "Over 600 hand-picked properties across Milan, Turin, Lake Como "
             "and Piedmont. Guided viewings on Sundays too, free valuation "

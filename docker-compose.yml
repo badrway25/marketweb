@@ -1,0 +1,70 @@
+# Sprint 0 · T5 · Local prod-shaped stack (web + db).
+#
+# This file is the LOCAL development convenience for running the app
+# under the prod settings profile against a real Postgres, the same
+# way a deploy will. It is NOT a production deploy descriptor — for
+# real deployments the `web` image alone is the unit; the database
+# lives somewhere else (managed Postgres / RDS / Cloud SQL).
+#
+# Bootstrap:
+#   1. cp .env.example .env
+#   2. Fill at minimum:
+#        DJANGO_SECRET_KEY=…  (any 50+ char string)
+#        DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+#        DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8000
+#        DATABASE_NAME=marketweb
+#        DATABASE_USER=marketweb
+#        DATABASE_PASSWORD=<choose>
+#        DATABASE_HOST=db
+#        DJANGO_SECURE_SSL_REDIRECT=0    # local stack is plain HTTP
+#        DJANGO_SECURE_HSTS_SECONDS=0    # disable HSTS on localhost
+#   3. docker compose up --build
+#   4. docker compose exec web python manage.py migrate
+#   5. docker compose exec web python manage.py createsuperuser
+#
+# Pure local dev (SQLite, runserver, no compose) is unchanged:
+#   python manage.py runserver
+#
+# Compose v2 (`docker compose ...`) is the supported syntax — the
+# legacy `version:` key is intentionally omitted (Compose v2 ignores it
+# and Compose v1 is EOL).
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-marketweb}
+      POSTGRES_USER: ${DATABASE_USER:-marketweb}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-marketweb}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-marketweb} -d ${DATABASE_NAME:-marketweb}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build: .
+    image: marketweb:local
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Hard override — compose intentionally points the prod profile
+      # at the `db` service hostname; the .env entry is informational.
+      DATABASE_HOST: db
+      DATABASE_PORT: "5432"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist user-uploaded media across restarts. Static files are
+      # baked into the image at build time (no separate volume).
+      - media_data:/app/media
+
+volumes:
+  db_data:
+  media_data:

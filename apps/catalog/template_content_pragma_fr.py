@@ -79,7 +79,7 @@ PRAGMA_CONTENT_FR: dict[str, Any] = {
         "secondary_href":"chi-siamo",
 
         # Right-hand boardroom photo + credit overlay
-        "hero_image":              "https://images.unsplash.com/photo-1542626991-cbc4e32524cc?w=1600&q=80&auto=format&fit=crop",
+        "hero_image":              "https://images.pexels.com/photos/6950031/pexels-photo-6950031.jpeg?auto=compress&cs=tinysrgb&w=1600",
         "hero_image_credit_left":  ("Photographie",  "Conseil industriel lombard · 2025"),
         "hero_image_credit_right": ("Année de fondation", "2004"),
         "hero_meta_strip": [

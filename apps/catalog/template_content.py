@@ -2384,6 +2384,42 @@ DERMATOLOGIA_CONTENT_IT: dict[str, Any] = {
 # `.fd-*` RTL CSS block in the fine-dining _base.html.
 # ---------------------------------------------------------------------------
 
+from apps.catalog.template_content_denti import DENTI_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_denti_en import DENTI_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_denti_fr import DENTI_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_denti_es import DENTI_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_denti_ar import DENTI_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_atto import ATTO_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_atto_en import ATTO_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_atto_fr import ATTO_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_atto_es import ATTO_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_atto_ar import ATTO_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_madou import MADOU_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_petro import PETRO_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_petro_en import PETRO_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_petro_fr import PETRO_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_petro_es import PETRO_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_petro_ar import PETRO_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_sapori import SAPORI_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_sapori_en import SAPORI_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_sapori_fr import SAPORI_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_sapori_es import SAPORI_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_sapori_ar import SAPORI_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_albergo import ALBERGO_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_albergo_en import ALBERGO_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_albergo_fr import ALBERGO_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_albergo_es import ALBERGO_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_albergo_ar import ALBERGO_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_podere import PODERE_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_podere_en import PODERE_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_podere_fr import PODERE_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_podere_es import PODERE_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_podere_ar import PODERE_CONTENT_AR  # noqa: E402
+from apps.catalog.template_content_gemma import GEMMA_CONTENT_IT  # noqa: E402
+from apps.catalog.template_content_madou_en import MADOU_CONTENT_EN  # noqa: E402
+from apps.catalog.template_content_madou_fr import MADOU_CONTENT_FR  # noqa: E402
+from apps.catalog.template_content_madou_es import MADOU_CONTENT_ES  # noqa: E402
+from apps.catalog.template_content_madou_ar import MADOU_CONTENT_AR  # noqa: E402
 from apps.catalog.template_content_cardio_i18n import (  # noqa: E402
     CARDIO_CONTENT_EN,
     CARDIO_CONTENT_FR,
@@ -2656,6 +2692,126 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "es": DERMATOLOGIA_CONTENT_ES,
         "ar": DERMATOLOGIA_CONTENT_AR,
     },
+    # T45 Wave 1 Pass-1 (2026-05-11) — Denti+Co IT build.
+    # T46 Wave 1 Pass-2 (2026-05-11) workflow C — 4 sub-agent parallel
+    # translators landed EN/FR/ES/AR at shape-parity with IT. Voice
+    # anchor "igiene" preserved verbatim-in-translation across all 5
+    # locales: hygiene (EN) · hygiène (FR) · higiene (ES) · النظافة
+    # الفموية (AR). RTL rendered via specialist-skin `html[dir="rtl"]`
+    # chrome (Amiri + Noto Kufi font load) · Latin proper names and
+    # press outlets preserved across AR via unicode-bidi isolate.
+    "denti-co-studio": {
+        "it": DENTI_CONTENT_IT,
+        "en": DENTI_CONTENT_EN,
+        "fr": DENTI_CONTENT_FR,
+        "es": DENTI_CONTENT_ES,
+        "ar": DENTI_CONTENT_AR,
+    },
+    # T47 Wave 1 Pass-3 (2026-05-12) — Atto IT build.
+    # T48 Wave 1 Pass-4 (2026-05-12) workflow C — 4 sub-agent parallel
+    # translators landed EN/FR/ES/AR at shape-parity with IT. Voice
+    # anchor "atto pubblico" preserved verbatim-in-translation across
+    # all 5 locales: public deed (EN, FT Law institutional register) ·
+    # acte authentique (FR, vous register Conseil Supérieur du Notariat
+    # gravity) · escritura pública (ES, peninsular usted El País
+    # institutional warmth) · الوثيقة الرسمية (AR, MSA premium notarial
+    # register, Latin proper names preserved + Latin digits per the
+    # classic-gold-AR house style established by Lex).
+    "atto-notai-associati": {
+        "it": ATTO_CONTENT_IT,
+        "en": ATTO_CONTENT_EN,
+        "fr": ATTO_CONTENT_FR,
+        "es": ATTO_CONTENT_ES,
+        "ar": ATTO_CONTENT_AR,
+    },
+    "madou-pasticceria": {
+        # T49 Wave 1 Pass-5 (2026-05-12) · IT-only draft build.
+        # T50 Wave 1 Pass-6 (2026-05-12) · multilingual rollout +
+        # public flip. 1st reuse of `fine-dining` archetype after
+        # Gusto (D-051 Option A: zero new HTML files). Voice anchor
+        # `lievitazione lenta` preserved verbatim-in-translation:
+        # IT lievitazione lenta · EN slow proofing · FR longue
+        # pousse · ES fermentación lenta · AR التخمير البطيء.
+        "it": MADOU_CONTENT_IT,
+        "en": MADOU_CONTENT_EN,
+        "fr": MADOU_CONTENT_FR,
+        "es": MADOU_CONTENT_ES,
+        "ar": MADOU_CONTENT_AR,
+    },
+    "petro-veterinario": {
+        # T51 Wave 1 Pass-7 (2026-05-12) · IT-only draft build.
+        # T52 Wave 1 Pass-8 (2026-05-12) · multilingual rollout +
+        # public flip. 4th reuse of `specialist` archetype after
+        # Cardio + Derm + Denti (D-051 Option A: zero new HTML files).
+        # Voice anchor `cura preventiva` preserved verbatim-in-
+        # translation: IT cura preventiva · EN preventive care ·
+        # FR médecine préventive · ES medicina preventiva · AR
+        # الطب الوقائي.
+        "it": PETRO_CONTENT_IT,
+        "en": PETRO_CONTENT_EN,
+        "fr": PETRO_CONTENT_FR,
+        "es": PETRO_CONTENT_ES,
+        "ar": PETRO_CONTENT_AR,
+    },
+    "sapori-di-langa": {
+        # T53 Wave 1 Pass-9 (2026-05-12) · IT-only draft build.
+        # T54 Wave 1 Pass-10 (2026-05-12) · multilingual rollout +
+        # public flip. 1st reuse of `artisan-workshop` archetype after
+        # Bottega (D-051 Option A: zero new HTML files). Voice anchor
+        # `vignaiolo indipendente` preserved verbatim-in-translation:
+        # IT vignaiolo indipendente · EN independent winegrower · FR
+        # vigneron indépendant · ES viticultor independiente · AR
+        # كَرَّام مستقل (MSA premium wine-merchant register · Latin
+        # proper names + Latin digits preserved via unicode-bidi
+        # isolate per atto T48 / madou T50 / petro T52 precedents).
+        "it": SAPORI_CONTENT_IT,
+        "en": SAPORI_CONTENT_EN,
+        "fr": SAPORI_CONTENT_FR,
+        "es": SAPORI_CONTENT_ES,
+        "ar": SAPORI_CONTENT_AR,
+    },
+    "albergo-borgo": {
+        # T56 Wave 2 Pass-1 (2026-05-12) · IT-only draft build.
+        # T57 Wave 2 Pass-2 (2026-05-13) · multilingual rollout +
+        # public flip. 1st reuse of `ultra-luxury-cinematic` archetype
+        # after Villa Prestige (D-051 Option A · zero new HTML files).
+        # 1st cross-category reuse in catalog history (skin folder
+        # lives at real-estate/, template lives at travel/).
+        # Voice anchor `ospitalità di borgo` preserved verbatim-in-
+        # translation: IT ospitalità di borgo · EN village hospitality
+        # · FR hospitalité de borgo · ES hospitalidad de borgo · AR
+        # ضيافة القرية الإيطالية (MSA premium hospitality register ·
+        # Latin proper names + Latin digits preserved via unicode-bidi
+        # isolate per atto T48 / madou T50 / petro T52 / sapori T54
+        # precedents).
+        "it": ALBERGO_CONTENT_IT,
+        "en": ALBERGO_CONTENT_EN,
+        "fr": ALBERGO_CONTENT_FR,
+        "es": ALBERGO_CONTENT_ES,
+        "ar": ALBERGO_CONTENT_AR,
+    },
+    "podere-agriturismo": {
+        # T59 Wave 2 Pass-3 (2026-05-13) · IT-only draft build.
+        # T60 Wave 2 Pass-4 (2026-05-13) · multilingual rollout +
+        # AAA palette hardening (#3A4B2E→#314020 · body 6.90→8.15:1
+        # AAA-normal) + public flip. 3rd reuse of artisan-workshop
+        # archetype after Bottega + Sapori (D-051 Option A · zero
+        # new HTML files). 2nd cross-category reuse after Albergo.
+        # Voice anchor `ospitalità contadina` preserved verbatim-
+        # in-translation: IT ospitalità contadina · EN farm
+        # hospitality · FR hospitalité paysanne · ES hospitalidad
+        # campesina · AR ضيافة المزرعة العائلية (MSA family-farm-
+        # hospitality register · Latin proper names + Latin digits
+        # preserved via unicode-bidi isolate per atto T48 / madou
+        # T50 / petro T52 / sapori T54 / albergo T57 precedents).
+        # Built strictly per artisan-workshop-shape-contract.md (T58)
+        # · 218 leaf paths × 5 locales · 0 silent drift bugs.
+        "it": PODERE_CONTENT_IT,
+        "en": PODERE_CONTENT_EN,
+        "fr": PODERE_CONTENT_FR,
+        "es": PODERE_CONTENT_ES,
+        "ar": PODERE_CONTENT_AR,
+    },
     "gusto-fine-dining": {
         "it": GUSTO_CONTENT_IT,
         "en": GUSTO_CONTENT_EN,
@@ -2780,6 +2936,20 @@ TEMPLATE_CONTENT: dict[str, dict[str, dict[str, Any]]] = {
         "fr": LUXE_CONTENT_FR,
         "es": LUXE_CONTENT_ES,
         "ar": LUXE_CONTENT_AR,
+    },
+    "gemma-gioielleria": {
+        # T61 Wave 2 Pass-5 (2026-05-13) · IT-only draft build.
+        # 1st reuse of `fashion-editorial` archetype after Luxe (D-051
+        # Option A · zero new HTML files). Same category as Luxe
+        # (ecommerce) · no skin_source_category override needed.
+        # Built strictly per Luxe canonical shape (239 leaf paths) +
+        # `fashion-editorial-shape-contract.md` authored DURING this
+        # build per T56 pattern. Voice anchor `gioielleria d'autore`
+        # distinct from Luxe's `maison di moda` register. Eleonora
+        # Gemma · gemmologa GIA · 4th generation (1908-) · ex-
+        # Buccellati 1996-2014 · Milano Brera · Place Vendôme Paris.
+        # Multilingual rollout deferred to T62 per D-102 cadence.
+        "it": GEMMA_CONTENT_IT,
     },
     "sapore-trattoria-pizzeria": {
         "it": SAPORE_CONTENT_IT,

@@ -50,7 +50,12 @@
   }
   .fd-hero .plate .plate-img {
     position: absolute; inset: 0;
-    background: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80') center/cover;
+    /* T49: hero plate URL threaded via page_data.hero_plate_url
+       so reuse templates (Madou pasticceria, future fine-dining
+       reuses) can swap the hero photo without forking the HTML.
+       Falls back to Gusto's original Unsplash URL when the key
+       is missing — Gusto continues to render unchanged. */
+    background: url('{{ page_data.hero_plate_url|default:"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80" }}') center/cover;
     filter: contrast(1.06) saturate(0.95) brightness(0.78);
     transform: scale(1.001);
     transition: transform 900ms cubic-bezier(0.33, 1.00, 0.68, 1), filter 900ms cubic-bezier(0.33, 1.00, 0.68, 1);
@@ -590,9 +595,31 @@
   }
 
   @media (max-width: 960px) {
+    .fd-hero {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .fd-hero .text { padding: 64px 40px 56px; }
+    .fd-hero .text h1 { font-size: 72px; }
+    .fd-hero .plate { min-height: 380px; }
     .fd-prod .grid { grid-template-columns: repeat(2, 1fr); }
     .fd-private .exp-grid { grid-template-columns: 1fr; }
     .fd-wine-inner { grid-template-columns: 1fr; gap: 36px; }
+  }
+  @media (max-width: 720px) {
+    .fd-hero .text { padding: 48px 22px 36px; }
+    .fd-hero .text h1 {
+      font-size: clamp(40px, 11vw, 64px);
+      max-width: none; margin-top: 28px;
+    }
+    .fd-hero .text p { font-size: 17px; margin-top: 26px; }
+    .fd-hero .text .actions {
+      flex-direction: column; align-items: flex-start;
+      gap: 18px; margin-top: 36px;
+    }
+    .fd-hero .text .pipe { display: none; }
+    .fd-hero .plate { min-height: 280px; }
+    .fd-prod .grid { grid-template-columns: 1fr; }
   }
 {% endblock %}
 

@@ -30,6 +30,20 @@
  * the marketplace catalog pages. See _base.html of each archetype.
  * ============================================================================ */
 
+/* Sprint 1 · T12 · cross-archetype safety net.
+ * Four archetypes ship with zero `@media (max-width:..)` breakpoints
+ * (lawyer/classic-gold, medical/specialist, restaurant/fine-dining,
+ * business/startup-saas-landing). On a 390px viewport their hero grids
+ * spill past the viewport and inflate `documentElement.scrollWidth` to
+ * ~900px. `overflow-x: clip` at the document root prevents an audit
+ * tool / Lighthouse / social scraper from reporting the false-positive
+ * horizontal scroll while the per-archetype responsive grammar
+ * matures. Archetypes that already define their own `html { overflow-x:
+ * clip }` (corporate-suite — see _base.html) are unaffected: the rule
+ * is identical, last declaration wins, no specificity conflict.  */
+html { overflow-x: clip; }
+body { overflow-x: clip; }
+
 :root {
   /* Durations — editorial cadence */
   --lm-dur-fast:   360ms;
@@ -110,6 +124,41 @@ body.lm-ready [data-lm="reveal-lg"].lm-in,
 body.lm-ready [data-lm="reveal-soft"].lm-in {
   opacity: 1;
   transform: translate3d(0, 0, 0);
+}
+
+/* ----------------------------------------------------------------------------
+ * Screenshot-safety fallback (Sprint 1 · T7)
+ * --------------------------------------------------------------------------
+ * Sprint 1 T7 audit found that headless screenshot tools (Playwright,
+ * Puppeteer, Lighthouse, Open Graph scrapers, social-card preview
+ * crawlers) capture full-page screenshots faster than the
+ * IntersectionObserver can promote every off-viewport reveal element
+ * to `.lm-in`. Result: live-template previews look "hero-only" in
+ * those captures even though the DOM has the full content. A real
+ * visitor never sees this — `.lm-in` typically lands within ≤ 500ms
+ * of the element entering the viewport.
+ *
+ * This animation runs ONLY on elements that are still un-revealed
+ * 3 s after the body went `lm-ready`. The selector explicitly
+ * excludes `.lm-in` so the IntersectionObserver-driven path remains
+ * the fast path for every interactive visitor; the keyframe target
+ * matches the `.lm-in` end state so a late-firing observer cannot
+ * cause a visible jump after the fallback already settled.
+ *
+ * `animation-fill-mode: forwards` keeps the final opacity / transform
+ * values after the keyframe finishes, so the element stays visible
+ * even if the observer never fires.
+ * -------------------------------------------------------------------------- */
+
+@keyframes lm-safety-fallback {
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+body.lm-ready [data-lm="reveal"]:not(.lm-in),
+body.lm-ready [data-lm="reveal-lg"]:not(.lm-in),
+body.lm-ready [data-lm="reveal-soft"]:not(.lm-in),
+body.lm-ready [data-lm-stagger]:not(.lm-in) > * {
+  animation: lm-safety-fallback var(--lm-dur-slow) var(--lm-ease) 3s forwards;
 }
 
 /* ----------------------------------------------------------------------------

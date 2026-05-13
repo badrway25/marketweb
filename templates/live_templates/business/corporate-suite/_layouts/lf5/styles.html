@@ -530,7 +530,8 @@ touches Pragma · Fiscus · Solaria.
     margin-top: 14px; font-size: var(--fs-h2); line-height: 1.08;
     max-width: 22ch; color: var(--on-dark);
   }
-  .cs-cta h2 em { color: var(--accent); }
+  /* AP-4 pass 2: italic em on dark CTA → safe-degrading token. */
+  .cs-cta h2 em { color: var(--accent-text-on-primary-safe); }
   .cs-cta .intro {
     margin-top: 22px; max-width: var(--copy-max);
     font-family: var(--body); font-size: var(--fs-body-lg);
@@ -543,7 +544,8 @@ touches Pragma · Fiscus · Solaria.
   .cs-cta .actions .cs-btn-primary:hover { background: var(--accent); color: var(--primary); }
   .cs-cta .actions .cs-btn-primary:hover:after { color: var(--primary); }
   .cs-cta .actions .cs-btn-ghost { color: var(--on-dark-2); border-color: var(--on-dark-3); }
-  .cs-cta .actions .cs-btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+  /* AP-4 pass 2: ghost hover text on dark CTA → safe-degrading token. */
+  .cs-cta .actions .cs-btn-ghost:hover { color: var(--accent-text-on-primary-safe); border-color: var(--accent); }
 
   /* ============================================================
      LF-5 responsive matrix · 1280 / 1100 / 880 / 720 / 480.

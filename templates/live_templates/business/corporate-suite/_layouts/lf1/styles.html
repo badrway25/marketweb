@@ -372,14 +372,18 @@ Solaria; treat with care.
      intent carries through elsewhere (hero CTA arrow, italic ems on cream). */
   .cs-cta .label { color: var(--on-dark-2); font-family: var(--body); font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-weight: 700; }
   .cs-cta h2 { margin-top: 14px; font-size: var(--fs-h2); line-height: 1.08; max-width: 22ch; color: var(--on-dark); }
-  .cs-cta h2 em { color: var(--accent); }
+  /* AP-4 pass 2: italic em inside CTA dark band uses the safe-degrading
+     token. See `_base.html` :root for the resolution rule. */
+  .cs-cta h2 em { color: var(--accent-text-on-primary-safe); }
   .cs-cta .intro { margin-top: 22px; max-width: var(--copy-max); font-family: var(--body); font-size: var(--fs-body-lg); color: var(--on-dark-2); line-height: 1.65; }
   .cs-cta .actions { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
   .cs-cta .actions .cs-btn-primary { color: var(--on-dark); border-color: var(--accent); }
   .cs-cta .actions .cs-btn-primary:hover { background: var(--accent); color: var(--primary); }
   .cs-cta .actions .cs-btn-primary:hover:after { color: var(--primary); }
   .cs-cta .actions .cs-btn-ghost { color: var(--on-dark-2); border-color: var(--on-dark-3); }
-  .cs-cta .actions .cs-btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+  /* AP-4 pass 2: ghost button hover text on dark CTA → safe-degrading
+     token; border keeps accent (decorative ≤ 1.5 px DS-15 sub-clause). */
+  .cs-cta .actions .cs-btn-ghost:hover { color: var(--accent-text-on-primary-safe); border-color: var(--accent); }
 
   /* ============================================================
      Home responsive hardening — Step 1D.

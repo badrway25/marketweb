@@ -686,6 +686,52 @@ class FreshSeedChainBackfillTests(TestCase):
             # corporate-suite passes (factory/reports/hardening/
             # post-cornice-reference-hardening.md §P3).
             "continua-stewardship",
+            # T45 Wave 1 Pass-1 — Denti+Co (booking-widget CTA · 3rd
+            # specialist reuse · cluster `dental`). Tier=draft until
+            # T46 multilingual rollout, but has_booking=True is
+            # registered at seed time and verified here.
+            "denti-co-studio",
+            # T47 Wave 1 Pass-3 — Atto Studio Notarile (primo-incontro-
+            # orientamento CTA · 1st classic-gold reuse · cluster
+            # `notary-commercialista`). Tier=draft until T48 multilingual
+            # + flip · has_booking=True at seed time (primo-incontro
+            # is structurally booking-shaped: appointment-form intake).
+            "atto-notai-associati",
+            # T49 Wave 1 Pass-5 — Madou Pasticceria Atelier (saturday-
+            # laminate-preorder CTA · 1st fine-dining reuse · cluster
+            # `bakery-pasticceria`). Tier=draft until T50 multilingual
+            # + flip · has_booking=True at seed time (Pre-ordina la
+            # sfoglia del sabato is structurally booking-shaped:
+            # pre-order intake with date/quantity/pickup-time form).
+            "madou-pasticceria",
+            # T51 Wave 1 Pass-7 — Petro Studio Veterinario (preventive-
+            # booking CTA · 4th specialist reuse · cluster `veterinary`).
+            # Tier=draft until T52 multilingual + flip · has_booking=True
+            # at seed time (Prenota una visita preventiva is structurally
+            # booking-shaped: appointment intake form with species/age).
+            "petro-veterinario",
+            # T56 Wave 2 Pass-1 — Borgo San Marco (book-a-stay CTA · 1st
+            # ultra-luxury-cinematic reuse · cluster `boutique-hotel` ·
+            # opens `travel` category). Tier=draft until T57 multilingual
+            # + flip · has_booking=True at seed time (Prenota il vostro
+            # soggiorno is structurally booking-shaped: 10-field
+            # accommodation request form with date/suite/package/allergies).
+            "albergo-borgo",
+            # T59 Wave 2 Pass-3 — Podere Le Querce (stay-and-take-home
+            # CTA · 3rd artisan-workshop reuse · cluster `bnb-agriturismo`
+            # · 2nd travel cluster · 2nd cross-category reuse).
+            # Tier=draft until T60 multilingual + flip · has_booking=True
+            # at seed time (Prenotate il soggiorno is booking-shaped:
+            # 7-field accommodation request form with date/guests/allergies).
+            "podere-agriturismo",
+            # T61 Wave 2 Pass-5 — Gemma · Atelier di Alta Gioielleria
+            # (private-viewing CTA · 1st fashion-editorial reuse after
+            # Luxe · cluster `jewelry` · ecommerce category · cross-cluster
+            # reuse). Tier=draft until T62 multilingual + flip ·
+            # has_booking=True at seed time (Prenotate una visita
+            # privata is booking-shaped: appointment intake with
+            # atelier/date/interest-pieces fields).
+            "gemma-gioielleria",
         }
         actual = set(
             WebTemplate.objects.filter(has_booking=True).values_list(
@@ -700,7 +746,28 @@ class FreshSeedChainBackfillTests(TestCase):
         )
 
     def test_ecommerce_templates_have_shop_flag(self):
-        shop_slugs = {"bottega-shop-artigianale", "luxe-fashion-store"}
+        # T53 (2026-05-12): Sapori di Langa joins the shop-enabled
+        # ecommerce roster as a draft tier (case-order-and-visit
+        # conversion pattern · `wine-food-boutique` cluster). The
+        # has_shop flag tracks catalog roster regardless of tier so
+        # the assertion includes draft rows.
+        # T59 (2026-05-13): Podere Le Querce joins the has_shop roster
+        # via dispensa contadina (8 farm products · stay-and-take-home
+        # conversion · cluster `bnb-agriturismo` · travel category).
+        # Note: has_shop tracks the shop FEATURE not the category —
+        # podere is in travel but ships a farm-shop dispensa surface.
+        # T61 (2026-05-13): Gemma · Atelier di Alta Gioielleria joins the
+        # has_shop roster — 8-SKU dispensa (anelli/collane/orecchini/
+        # bracciali/orologi/cesellati/diademi) within the ecommerce
+        # category · jewelry cluster · fashion-editorial archetype reuse
+        # after Luxe · tier=draft until T62 multilingual + flip.
+        shop_slugs = {
+            "bottega-shop-artigianale",
+            "luxe-fashion-store",
+            "sapori-di-langa",
+            "podere-agriturismo",
+            "gemma-gioielleria",
+        }
         actual = set(
             WebTemplate.objects.filter(has_shop=True).values_list(
                 "slug", flat=True
@@ -800,12 +867,19 @@ class DiscoverySelectorTests(_SeededCatalogMixin, TestCase):
         )
 
     def test_listing_filter_by_style(self):
+        # T57 (2026-05-13): Albergo-borgo joins the cinematic-fullbleed
+        # style cohort (visual_style=cinematic-fullbleed · 1st cross-
+        # category ultra-luxury-cinematic reuse after Villa).
         _, qs = selectors.get_listing_templates(
             style_slugs=["cinematic-fullbleed"]
         )
         self.assertEqual(
             set(qs.values_list("slug", flat=True)),
-            {"villa-immobili-lusso", "pixel-portfolio-fotografico"},
+            {
+                "villa-immobili-lusso",
+                "pixel-portfolio-fotografico",
+                "albergo-borgo",
+            },
         )
 
     def test_listing_filter_by_price_tier(self):
@@ -813,28 +887,53 @@ class DiscoverySelectorTests(_SeededCatalogMixin, TestCase):
         # Standard tier templates (X.2 baseline): Pragma + Sapore +
         # Brace + Salute + Benessere + Famiglia + Casa. Wave 2 adds
         # Fiscus (X.4) and Solaria (X.4 Pilot #2 · released 2026-04-28),
-        # making the standard-tier count 9.
-        self.assertEqual(qs.count(), 9)
+        # making the standard-tier count 9. T46 (2026-05-11) adds
+        # Denti+Co at € 75 standard tier, making the count 10. T52
+        # (2026-05-12) adds Petro at € 75 standard tier, making it 11.
+        # T60 (2026-05-13) adds Podere Le Querce at € 75 standard tier
+        # (3rd artisan-workshop reuse · agriturismo register), making
+        # the count 12.
+        self.assertEqual(qs.count(), 12)
         slugs = list(qs.values_list("slug", flat=True))
         self.assertIn("pragma-corporate-suite", slugs)
         self.assertIn("fiscus-commercialista", slugs)
         self.assertIn("solaria-coaching", slugs)
+        self.assertIn("denti-co-studio", slugs)
+        self.assertIn("petro-veterinario", slugs)
+        self.assertIn("podere-agriturismo", slugs)
 
     def test_listing_filter_by_feature_flag_has_shop(self):
+        # T54 (2026-05-12): Sapori di Langa joins the has_shop roster
+        # via wine-food-boutique cluster activation.
+        # T60 (2026-05-13): Podere Le Querce joins via dispensa
+        # contadina · stay-and-take-home conversion pattern.
         _, qs = selectors.get_listing_templates(feature_flags=["has_shop"])
         self.assertEqual(
             set(qs.values_list("slug", flat=True)),
-            {"bottega-shop-artigianale", "luxe-fashion-store"},
+            {
+                "bottega-shop-artigianale",
+                "luxe-fashion-store",
+                "sapori-di-langa",
+                "podere-agriturismo",
+            },
         )
 
     def test_listing_filter_by_unknown_feature_flag_is_ignored(self):
         # Unknown flag names are silently dropped — URL-driven filters
         # should stay resilient to typos without 500-ing. Count reflects
-        # all live templates (MVP 20 + Wave 2 pilots merged to date).
+        # all live templates (MVP 20 + Wave 2 pilots merged to date +
+        # T45 causa-legale flip 24→25 + T46 denti-co-studio flip 25→26
+        # + T48 atto-notai-associati flip 26→27 + T50 madou-pasticceria
+        # flip 27→28 + T52 petro-veterinario flip 28→29 +
+        # T54 sapori-di-langa flip 29→30 · closes Wave 1 +
+        # T57 albergo-borgo flip 30→31 · 1st cross-category reuse ·
+        # opens Wave 2 by activating `travel` category +
+        # T60 podere-agriturismo flip 31→32 · 3rd artisan-workshop
+        # reuse · 2nd cross-category · activates `bnb-agriturismo`).
         _, qs = selectors.get_listing_templates(
             feature_flags=["has_does_not_exist"]
         )
-        self.assertEqual(qs.count(), 24)
+        self.assertEqual(qs.count(), 32)
 
     def test_listing_filter_by_use_case(self):
         _, qs = selectors.get_listing_templates(
@@ -853,14 +952,24 @@ class DiscoverySelectorTests(_SeededCatalogMixin, TestCase):
         self.assertIn("elevate-startup-landing", slugs)
 
     def test_listing_feature_flags_are_and_joined(self):
-        # Bottega carries has_shop=True + has_blog=True; Luxe too.
-        # Cardio has has_booking=True but has_shop=False so it drops.
+        # Bottega + Luxe + Sapori + Podere all carry has_shop=True
+        # AND has_blog=True. Cardio has has_booking=True but has_shop=
+        # False so it drops.
+        # T54 (2026-05-12): Sapori di Langa joins the shop-and-blog
+        # roster after wine-food-boutique cluster activation.
+        # T60 (2026-05-13): Podere Le Querce joins via dispensa
+        # contadina + diario di campagna · agriturismo register.
         _, qs = selectors.get_listing_templates(
             feature_flags=["has_shop", "has_blog"]
         )
         self.assertEqual(
             set(qs.values_list("slug", flat=True)),
-            {"bottega-shop-artigianale", "luxe-fashion-store"},
+            {
+                "bottega-shop-artigianale",
+                "luxe-fashion-store",
+                "sapori-di-langa",
+                "podere-agriturismo",
+            },
         )
 
     def test_facet_counts_shape(self):
@@ -871,15 +980,69 @@ class DiscoverySelectorTests(_SeededCatalogMixin, TestCase):
         self.assertIn("price_tiers", counts)
         self.assertIn("features", counts)
         self.assertIn("total", counts)
-        # Live catalog count — MVP 20 + Wave 2 pilots merged to date.
-        self.assertEqual(counts["total"], 24)
+        # Live catalog count — MVP 20 + Wave 2 pilots merged to date +
+        # T45 causa-legale flip 24→25 + T46 denti-co-studio flip 25→26
+        # + T48 atto-notai-associati flip 26→27 + T50 madou-pasticceria
+        # flip 27→28 + T52 petro-veterinario flip 28→29 +
+        # T54 sapori-di-langa flip 29→30 (closes Wave 1) +
+        # T57 albergo-borgo flip 30→31 (opens Wave 2 · 1st cross-
+        # category ultra-luxury-cinematic reuse · activates the
+        # `travel` category for the first time) +
+        # T60 podere-agriturismo flip 31→32 (3rd artisan-workshop
+        # reuse · 2nd cross-category · activates `bnb-agriturismo`
+        # · 2nd travel cluster).
+        # Denti is the 3rd template on the `specialist` cluster (after
+        # Cardio + Derm), and the 1st template on the `dental` cluster.
+        # Atto is the 1st template on the `notary-commercialista`
+        # cluster. Madou is the 1st template on the
+        # `bakery-pasticceria` cluster (4th restaurant cluster).
+        # Petro is the 1st template on the `veterinary` cluster
+        # (4th medical cluster after multi-clinic/wellness-holistic/
+        # family-pediatric + specialist/dental).
+        # Sapori is the 1st template on the `wine-food-boutique`
+        # cluster (3rd ecommerce cluster after artisan-workshop=Bottega
+        # + fashion-editorial=Luxe).
+        # Albergo is the 1st template on the `boutique-hotel` cluster
+        # (1st of 3 travel clusters · opens the travel category).
+        # Podere is the 1st template on the `bnb-agriturismo` cluster
+        # (2nd travel cluster) · 3rd reuse of artisan-workshop archetype
+        # after Bottega + Sapori (skin source category = ecommerce).
+        self.assertEqual(counts["total"], 32)
         # Sanity spot-checks on a few counts.
+        # Specialist cluster groups templates on the `specialist`
+        # cluster slug (Cardio + Derm). Denti rides the same archetype
+        # but its cluster slug is `dental` (new cluster activated by T46).
+        # Petro rides the same archetype but its cluster slug is
+        # `veterinary` (new cluster activated by T52).
         self.assertEqual(counts["clusters"].get("specialist"), 2)
+        self.assertEqual(counts["clusters"].get("dental"), 1)
         # Wave 2: Fiscus adds financial-services cluster (was 0).
         self.assertEqual(counts["clusters"].get("financial-services"), 1)
-        self.assertEqual(counts["price_tiers"].get("standard"), 9)
-        self.assertEqual(counts["features"].get("has_rtl"), 24)
-        self.assertEqual(counts["features"].get("has_shop"), 2)
+        # T48: Atto activates `notary-commercialista` cluster (was 0).
+        self.assertEqual(counts["clusters"].get("notary-commercialista"), 1)
+        # T50: Madou activates `bakery-pasticceria` cluster (was 0).
+        self.assertEqual(counts["clusters"].get("bakery-pasticceria"), 1)
+        # T52: Petro activates `veterinary` cluster (was 0).
+        self.assertEqual(counts["clusters"].get("veterinary"), 1)
+        # T54: Sapori activates `wine-food-boutique` cluster (was 0).
+        self.assertEqual(counts["clusters"].get("wine-food-boutique"), 1)
+        # T57: Albergo activates `boutique-hotel` cluster (was 0).
+        self.assertEqual(counts["clusters"].get("boutique-hotel"), 1)
+        # T60: Podere activates `bnb-agriturismo` cluster (was 0).
+        self.assertEqual(counts["clusters"].get("bnb-agriturismo"), 1)
+        # Denti + Petro + Podere are `standard` price-tier (T60 bumps
+        # standard +1 from 11→12). Atto + Madou + Sapori + Albergo
+        # are `premium` price-tier.
+        self.assertEqual(counts["price_tiers"].get("standard"), 12)
+        # Podere carries `has_rtl=True` (AR locale landed in T60).
+        self.assertEqual(counts["features"].get("has_rtl"), 32)
+        # T54: Sapori joins has_shop roster (Bottega + Luxe + Sapori).
+        # T57 does not change has_shop (Albergo is has_booking=True,
+        # has_shop=False · hospitality not ecommerce).
+        # T60: Podere joins has_shop roster (dispensa contadina · 8
+        # farm products) — has_shop=True on stay-and-take-home
+        # conversion pattern. Set is now {Bottega, Luxe, Sapori, Podere}.
+        self.assertEqual(counts["features"].get("has_shop"), 4)
 
     def test_typeahead_empty_query_returns_empty_pools(self):
         payload = selectors.search_templates_typeahead("")
@@ -921,9 +1084,12 @@ class DiscoverySelectorTests(_SeededCatalogMixin, TestCase):
     def test_get_templates_by_role(self):
         role, qs = selectors.get_templates_by_role("avvocati")
         self.assertEqual(role["slug"], "avvocati")
+        # T48: Atto Studio Notarile lands on the lawyer category (same
+        # `avvocati` role mapping). Pre-T48 set was {Lex, Juris}; the
+        # role pool grows to 3 with the public flip of Atto.
         self.assertEqual(
             set(qs.values_list("slug", flat=True)),
-            {"lex-studio-legale", "juris-avvocato-moderno"},
+            {"lex-studio-legale", "juris-avvocato-moderno", "atto-notai-associati"},
         )
 
     def test_get_templates_by_role_404_on_unknown(self):
@@ -931,11 +1097,20 @@ class DiscoverySelectorTests(_SeededCatalogMixin, TestCase):
             selectors.get_templates_by_role("unknown-role")
 
     def test_get_templates_by_use_case(self):
+        # T54 (2026-05-12): Sapori di Langa carries `sell-online`
+        # use-case (case-order-and-visit conversion pattern).
+        # T60 (2026-05-13): Podere Le Querce carries `sell-online`
+        # use-case (stay-and-take-home conversion · dispensa contadina).
         use_case, qs = selectors.get_templates_by_use_case("sell-online")
         self.assertEqual(use_case["slug"], "sell-online")
         self.assertEqual(
             set(qs.values_list("slug", flat=True)),
-            {"bottega-shop-artigianale", "luxe-fashion-store"},
+            {
+                "bottega-shop-artigianale",
+                "luxe-fashion-store",
+                "sapori-di-langa",
+                "podere-agriturismo",
+            },
         )
 
     def test_get_templates_by_use_case_404_on_unknown(self):
@@ -1141,17 +1316,26 @@ class HomepageDiscoveryTests(_SeededCatalogMixin, TestCase):
 
     def test_home_trust_counters_are_live_from_db(self):
         counters = self.response.context["trust_counters"]
-        # Seeded DB: MVP 20 + Wave 2 pilots merged to date. 15 macro-
-        # categories (8 MVP + 7 extras from seed_profession_clusters),
-        # 52 profession clusters, 5 canonical locales.
-        self.assertEqual(counters["templates_live"], 24)
+        # Seeded DB: MVP 20 + Wave 2 pilots merged to date + T45
+        # causa-legale flip 24→25 + T46 denti-co-studio flip 25→26
+        # + T48 atto-notai-associati flip 26→27 + T50 madou-pasticceria
+        # flip 27→28 + T52 petro-veterinario flip 28→29 +
+        # T54 sapori-di-langa flip 29→30 (closes Wave 1) +
+        # T57 albergo-borgo flip 30→31 (opens Wave 2 · activates
+        # travel category for the first time) +
+        # T60 podere-agriturismo flip 31→32 (3rd artisan-workshop
+        # reuse · activates bnb-agriturismo cluster).
+        # 15 macro-categories (8 MVP + 7 extras from
+        # seed_profession_clusters), 52 profession clusters, 5
+        # canonical locales.
+        self.assertEqual(counters["templates_live"], 32)
         self.assertEqual(counters["categories_active"], 15)
         self.assertEqual(counters["clusters_active"], 52)
         self.assertEqual(counters["locales_supported"], 5)
 
     def test_home_trust_counters_render_in_html(self):
         body = self.response.content.decode("utf-8", "ignore")
-        self.assertIn("24+", body)   # templates_live
+        self.assertIn("32+", body)   # templates_live
         self.assertIn("52", body)    # clusters_active
         self.assertIn("professioni", body)
         self.assertIn("RTL", body)
@@ -1276,15 +1460,17 @@ class RelatedTemplatesTaxonomyTests(_SeededCatalogMixin, TestCase):
         )
 
     def test_pragma_falls_back_gracefully(self):
-        """Pragma's cluster `corporate` has only Pragma; style
-        `classic-serif` includes Lex (and the corporate-suite siblings
-        Continua + Cornice that share the same style); category `business`
-        has Elevate. Should return Lex + Elevate via the layered fallback
-        (no errors, no empties). Limit lifted to 4 post Cornice public flip
-        (X.5 · 2026-05-01) so both style-layer (Lex) and category-layer
-        (Elevate) candidates remain visible alongside the corporate-suite
-        style siblings — preserves the intent of the layered fallback."""
-        slugs = self._related_slugs("pragma-corporate-suite", limit=4)
+        """Pragma's cluster `corporate` now carries Pragma + Continua +
+        Cornice + Causa (4 templates post T45 Causa public flip);
+        style `classic-serif` includes Lex + Atto (post T48 atto-notai
+        public flip · classic-gold archetype reuse keeps classic-serif
+        style); category `business` has Elevate. Should return Lex +
+        Elevate via the layered fallback (no errors, no empties).
+        Limit lifted from 5 → 6 post T48 Atto public flip so both
+        style-layer (Lex + Atto) and category-layer (Elevate)
+        candidates remain visible alongside the 3 cluster siblings —
+        preserves the intent of the layered fallback."""
+        slugs = self._related_slugs("pragma-corporate-suite", limit=6)
         self.assertGreater(len(slugs), 0)
         self.assertIn("lex-studio-legale", slugs)
         self.assertIn("elevate-startup-landing", slugs)
@@ -1567,11 +1753,17 @@ class TaxonomyNotNullContractTests(_SeededCatalogMixin, TestCase):
         """End-to-end smoke at the selector level: the 3 X.2 Commit 4
         discovery helpers still work post-flip (no code path regressed
         against the NULL-is-possible assumption that was removed).
-        Live count reflects MVP 20 + Wave 2 pilots merged to date."""
+        Live count reflects MVP 20 + Wave 2 pilots merged to date +
+        T45 causa-legale flip 24→25 + T46 denti flip 25→26 + T48
+        atto-notai-associati flip 26→27 + T50 madou-pasticceria
+        flip 27→28 + T52 petro-veterinario flip 28→29 +
+        T54 sapori-di-langa flip 29→30 (closes Wave 1) +
+        T57 albergo-borgo flip 30→31 (opens Wave 2) +
+        T60 podere-agriturismo flip 31→32 (3rd artisan-workshop reuse)."""
         _, qs = selectors.get_listing_templates()
-        self.assertEqual(qs.count(), 24)
+        self.assertEqual(qs.count(), 32)
         counts = selectors.get_facet_counts(qs)
-        self.assertEqual(counts["total"], 24)
+        self.assertEqual(counts["total"], 32)
         self.assertGreater(len(counts["clusters"]), 0)
         self.assertGreater(len(counts["styles"]), 0)
 
@@ -1917,13 +2109,17 @@ class CorporateSuiteImageryPolicyTests(TestCase):
     """Pexels-only imagery sourcing contract for the corporate-suite
     archetype (CS-IMG-SRC-01).
 
-    The policy is archetype-gated and exempts the legacy
-    ``business-corporate`` pool (Pragma) from warnings while the
-    retro-curation is pending. Every other corporate-suite pool must
-    ship Pexels-only URLs, and the canonical 6-slot shape must hold.
+    Sprint 1 T13 (2026-05-10 · AP-2 closure) retired the legacy
+    ``business-corporate`` (Pragma) carve-out — the pool now ships
+    six curator-verified Pexels URLs and ``LEGACY_EXEMPT_KEYS`` is
+    empty in main. Every corporate-suite pool must ship Pexels-only
+    URLs and the canonical 6-slot shape must hold.
     """
 
-    def test_legacy_business_corporate_is_exempt_and_silent(self):
+    def test_business_corporate_is_pexels_compliant_post_t13(self):
+        """Pragma's ``business-corporate`` pool must be Pexels-only and
+        emit zero ``UserWarning`` from the policy helper after the
+        Sprint 1 T13 retro-curation."""
         import warnings as _warnings
 
         from apps.catalog.imagery_policy import (
@@ -1935,13 +2131,19 @@ class CorporateSuiteImageryPolicyTests(TestCase):
             report = enforce_corporate_suite_imagery_policy(
                 "business-corporate", template_slug="pragma-corporate-suite"
             )
-        self.assertTrue(report.is_legacy_exempt)
+        self.assertFalse(report.is_legacy_exempt)
         self.assertTrue(report.is_compliant)
-        # The pool ships non-Pexels URLs — we WANT the report to record
-        # that fact (the retro-curation backlog is visible) but the
-        # helper MUST stay silent on legacy, never warn on every render.
-        self.assertFalse(report.pexels_only)
+        self.assertTrue(report.pexels_only)
+        self.assertEqual(report.non_pexels_urls, [])
+        self.assertTrue(report.shape_is_canonical)
         self.assertEqual([w for w in caught if issubclass(w.category, UserWarning)], [])
+
+    def test_legacy_exempt_keys_is_empty_in_main(self):
+        """Forward-compat: the ``LEGACY_EXEMPT_KEYS`` frozenset stays
+        as the documented escape valve, but main MUST ship it empty."""
+        from apps.catalog.imagery_policy import LEGACY_EXEMPT_KEYS
+
+        self.assertEqual(LEGACY_EXEMPT_KEYS, frozenset())
 
     def test_business_fiscal_is_pexels_only_and_compliant(self):
         from apps.catalog.imagery_policy import validate_corporate_suite_imagery_key
@@ -2389,7 +2591,10 @@ class CorporateSuiteBuildTimeCheckTests(TestCase):
         finally:
             del preview_imagery.IMAGERY_CONFIG["business-coaching"]
 
-    def test_imagery_check_legacy_exempt_surfaces_as_warning_not_error(self):
+    def test_imagery_check_post_t13_emits_no_w001(self):
+        """Sprint 1 T13 retro-curated Pragma to Pexels and emptied
+        ``LEGACY_EXEMPT_KEYS`` — the imagery check must therefore emit
+        zero ``corporate_suite.W001`` warnings on a clean codebase."""
         from django.core.checks import Error, Warning as ChecksWarning
 
         from apps.catalog.checks import check_corporate_suite_imagery
@@ -2398,10 +2603,9 @@ class CorporateSuiteBuildTimeCheckTests(TestCase):
         errors = [f for f in findings if isinstance(f, Error)]
         warnings_ = [f for f in findings if isinstance(f, ChecksWarning)]
         self.assertEqual(errors, [])
-        # Pragma's business-corporate pool is legacy-exempt and ships
-        # non-Pexels URLs — we want a visible W001, not silence.
-        self.assertTrue(
-            any(getattr(w, "id", "") == "corporate_suite.W001" for w in warnings_),
-            f"Expected corporate_suite.W001 for business-corporate legacy pool, got: {warnings_}",
+        self.assertEqual(
+            [w for w in warnings_ if getattr(w, "id", "") == "corporate_suite.W001"],
+            [],
+            f"Expected zero corporate_suite.W001 after T13 retro-curation; got: {warnings_}",
         )
 

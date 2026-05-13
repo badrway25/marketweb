@@ -66,6 +66,31 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80&auto=format&fit=crop",
     ],
+    # T49 Wave 1 Pass-5 (2026-05-12) — bakery-pasticceria pool.
+    # Activates the `bakery-pasticceria` imagery key for Madou (1st
+    # fine-dining reuse) · zero URL overlap with `restaurant-fine`
+    # (Gusto), `restaurant-trattoria` (Sapore), or `restaurant-street`
+    # (Brace). All URLs from the X.3 curator pack
+    # `docs/content-factory/imagery/packs/bakery-pasticceria.md`
+    # (24 verified Pexels URLs, CC0-compatible). The first 6 are
+    # selected here per the IMAGERY_CONFIG convention (idx 0 hero,
+    # idx 1 feature, idx 2-5 gallery/cards). Tone: pasticceria
+    # vetrina, hands working pasta laminata, decoration in progress —
+    # zero overlap with plated-dish / wine-glass / restaurant-table.
+    "bakery-pasticceria": [
+        # 0: hero — vetrina di croissant in pasticceria (Rome)
+        "https://images.pexels.com/photos/19288569/pexels-photo-19288569.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        # 1: feature — pasticciera decorando un dolce a strati
+        "https://images.pexels.com/photos/16140003/pexels-photo-16140003.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        # 2: hands kneading dough close-up (laminato)
+        "https://images.pexels.com/photos/28183472/pexels-photo-28183472.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 3: vassoi di croissant artigianali in fila (Berlin bakery)
+        "https://images.pexels.com/photos/30853716/pexels-photo-30853716.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 4: macarons in fila, vetrina pasticceria
+        "https://images.pexels.com/photos/31000323/pexels-photo-31000323.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 5: pasticciere con grembiule mentre setaccia la farina
+        "https://images.pexels.com/photos/8477754/pexels-photo-8477754.jpeg?auto=compress&cs=tinysrgb&w=800",
+    ],
     "restaurant-trattoria": [
         # 0: hero — three pasta plates on a white tablecloth, sunny overhead
         "https://images.unsplash.com/photo-1481931098730-318b6f776db0?w=1600&q=80&auto=format&fit=crop",
@@ -159,6 +184,72 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&q=80&auto=format&fit=crop",
     ],
+    # T46 · Wave 1 Pass-2 · 2026-05-11 — dental pack curated from X.3
+    # `docs/content-factory/imagery/packs/dental.md` (23 verified Pexels
+    # URLs in the X.3 curator output). Selection criteria:
+    #   - 6 URLs covering hero · feature · portrait · detail roles
+    #   - zero overlap with cardio (Unsplash domain · red accent) or
+    #     derm (Unsplash · forest-green accent) pools — denti is the
+    #     first Pexels-pure pool in the specialist cluster
+    #   - bright clinical-mint coherence (matches denti accent #2BC4A4)
+    #   - NO close-up bocche aperte (T44 §6.1 binding · honors the
+    #     "no stock teeth close-up" rule)
+    #   - mix of equipment (operatory · sterile tools) and human
+    #     (dentist+patient consultation · oral-care demonstration)
+    #     reinforcing the booking-widget conversion pattern
+    "medical-dental": [
+        # 0: hero — bright modern dental office, green accents reinforce
+        # the mint #2BC4A4 brand color (Gene Wide · 4392×2932)
+        "https://images.pexels.com/photos/6473194/pexels-photo-6473194.jpeg"
+        "?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — dentist consulting patient (Jerussa Paredes · 4496×3000)
+        # reinforces consultation tone vs Cardio's lone clinician energy
+        "https://images.pexels.com/photos/12635375/pexels-photo-12635375.jpeg"
+        "?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2: portrait — dental professional demonstrating oral care (Cedric
+        # Fauntleroy · 5389×8083 portrait) reinforces hygiene narrative
+        "https://images.pexels.com/photos/4269363/pexels-photo-4269363.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=1200&fit=crop",
+        # 3: portrait — dentist performing dental care procedure (cottonbro
+        # studio · 4047×6070 portrait) hands+patient frame
+        "https://images.pexels.com/photos/6529057/pexels-photo-6529057.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=1200&fit=crop",
+        # 4: detail — sterile medical instruments on table (Ivan Babydov
+        # · 5760×3840) precision + cleanliness signal
+        "https://images.pexels.com/photos/7789678/pexels-photo-7789678.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 5: ambient — bright clean modern dental clinic room (Daniel
+        # Frank · 3888×2592) location/atmosphere shot
+        "https://images.pexels.com/photos/305567/pexels-photo-305567.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+    ],
+    # T51 · Wave 1 Pass-7 (2026-05-12) — Petro veterinary pool.
+    # 4th specialist reuse · cluster `veterinary`. All 6 URLs from
+    # the X.3 curator pack `docs/content-factory/imagery/packs/
+    # veterinary.md` (24 verified Pexels CC0 URLs). Zero URL overlap
+    # with medical-cardiology / medical-dermatology (Unsplash) or
+    # medical-dental (Pexels) — Pexels-pure veterinary photography
+    # signaling pet-clinic warmth + hands-on consultation tone.
+    "medical-veterinary": [
+        # 0: hero — vet examining Pomeranian dog (Tima Miroshnichenko)
+        "https://images.pexels.com/photos/6235648/pexels-photo-6235648.jpeg"
+        "?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — vet examining dog in clinical setting
+        "https://images.pexels.com/photos/7468978/pexels-photo-7468978.jpeg"
+        "?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2: portrait — vet with cat patient close-up
+        "https://images.pexels.com/photos/6235113/pexels-photo-6235113.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=1200&fit=crop",
+        # 3: portrait — vet performing health check on small animal
+        "https://images.pexels.com/photos/6234600/pexels-photo-6234600.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=1200&fit=crop",
+        # 4: detail — veterinary consultation cat stethoscope
+        "https://images.pexels.com/photos/7470779/pexels-photo-7470779.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 5: ambient — bright veterinary clinic consultation
+        "https://images.pexels.com/photos/6235244/pexels-photo-6235244.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+    ],
     # Benessere — holistic serene (sage green, candle light, ritual objects)
     "medical-wellness": [
         # 0: hero — tranquil massage room natural light (Anna Tarazevich)
@@ -203,6 +294,49 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.pexels.com/photos/5669602/pexels-photo-5669602.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
         "https://images.pexels.com/photos/5668854/pexels-photo-5668854.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
         "https://images.pexels.com/photos/1181345/pexels-photo-1181345.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+    ],
+    # T47 · Wave 1 Pass-3 · 2026-05-12 — `lawyer-notary` pool curated
+    # from X.3 `docs/content-factory/imagery/packs/notary-commercialista.md`
+    # (23 verified Pexels URLs · 8 hero + 5 portrait + 5 detail + 5 ambient).
+    # Selection criteria:
+    #   - 6 URLs covering hero · feature · portrait · detail roles
+    #   - zero overlap with `lawyer-classic` (Lex Pexels heritage-ink) or
+    #     `lawyer-modern` (Juris Pexels modern-advisory) pools — atto is
+    #     the first institutional-notarial pool in the lawyer cluster
+    #   - institutional gravity (codes · libraries · signing ceremonies)
+    #     reinforces the public-official register vs Lex's litigation-heritage
+    #     and Juris's startup-advisory atmospheres
+    #   - signing-ceremony imagery (1842502, 5235410) is unique to notary —
+    #     the moment the atto pubblico is attribuita pubblica fede
+    "lawyer-notary": [
+        # 0: hero — classic study room with shelves, gavel, Lady Justice
+        # figurine on green table (KATRIN BOLOVTSOVA · 5427×3618) ·
+        # institutional-archive coherence
+        "https://images.pexels.com/photos/6077091/pexels-photo-6077091.jpeg"
+        "?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop",
+        # 1: feature — hands signing wedding documents with microphone
+        # on table (Arif Syuhada · 5184×3456) · the signing-ceremony
+        # moment that anchors notarial work
+        "https://images.pexels.com/photos/5235410/pexels-photo-5235410.jpeg"
+        "?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+        # 2: detail — close-up Lady Justice figurine + scales · neutral
+        # institutional symbol (Sora Shimazaki · curated dual-purpose)
+        "https://images.pexels.com/photos/5669602/pexels-photo-5669602.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 3: detail — formal office reviewing documents with focus and
+        # intent (RDNE Stock project · 6448×4299) · "leggiamo bene
+        # prima di firmare" coherence
+        "https://images.pexels.com/photos/7841455/pexels-photo-7841455.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+        # 4: portrait — confident female notary/judge in formal robe in
+        # classic legal library (KATRIN BOLOVTSOVA · 5472×3648) ·
+        # institutional-gravity portrait coherence
+        "https://images.pexels.com/photos/6077124/pexels-photo-6077124.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=1200&fit=crop",
+        # 5: ambient — formal signing of documents at desk
+        # (Tomer Warschauer Nuni · 5520×3680) · ceremonial moment
+        "https://images.pexels.com/photos/1842502/pexels-photo-1842502.jpeg"
+        "?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
     ],
     "lawyer-modern": [
         # 0: hero — bright modern advisory meeting, natural light, diverse team
@@ -300,25 +434,75 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
     # `business` pool.
     #
     # business-corporate: institutional — boardroom meetings, corporate HQ
-    #     interiors, executive portraits, manufacturing facilities. Dark
-    #     daylight, serious mood. Photo-led composition (the boardroom hero
-    #     carries the whole above-the-fold mood).
+    #     interiors, executive portraits, conference details. Daylight,
+    #     serious mood. Photo-led composition (the boardroom hero carries
+    #     the whole above-the-fold mood). Sprint 1 T13 (2026-05-10)
+    #     retro-curated the pool to Pexels — see the per-slot rationale
+    #     just above the URL list, plus the legacy-exemption removal in
+    #     `apps/catalog/imagery_policy.py::LEGACY_EXEMPT_KEYS`.
     # business-startup:   product-led — laptop screens with dashboards,
     #     open-plan tech offices, code editors, bright tech interiors. The
     #     startup composition is typographic + mockup-card led (no big
     #     hero photo), so this pool mostly supplies accent tiles and
     #     background gradients — but the few places it does appear must
     #     still read as startup/product.
+    # ─────────────────────────────────────────────────────────────
+    # business-corporate · Pragma · Pexels retro-curation (Sprint 1
+    # T13 · 2026-05-10). Closes AP-2 — the pool no longer ships
+    # legacy Unsplash URLs and is removed from imagery_policy.
+    # LEGACY_EXEMPT_KEYS in the same pass. Every URL is sourced from
+    # `docs/content-factory/imagery/packs/professional-services.md`
+    # (X.3 Commit 3 curator-verified · Pexels API · Pexels License /
+    # CC0-compatible). Pool shape preserved canonical 6-slot
+    # `[hero, feature, portrait, portrait, detail, ambient]`.
+    #
+    # Identity preserved (boardroom-led advisory, not flattened
+    # toward Fiscus's tidy-desk presidio or Solaria's 1:1 coaching):
+    #   0 hero      — diverse modern board meeting · badged · serious
+    #                 daylight (anchor of Pragma's "boardroom advisory"
+    #                 voice). Werner Pfennig (Pexels 6950031).
+    #   1 feature   — empty modern conference room · glass walls ·
+    #                 architectural · zero people (Pragma's "corporate
+    #                 HQ glass interior" reservation, see Cornice +
+    #                 Continua + Causa cross-grep notes upstream).
+    #                 Mike van Schoonderwalt (Pexels 5511124).
+    #   2 portrait  — senior advisor · woman · blonde · black blouse ·
+    #                 direct gaze · pen in hands. Studio frame.
+    #                 Mikhail Nilov (Pexels 8871934).
+    #   3 portrait  — advisor · man · navy suit · red tie · arms crossed.
+    #                 Studio gradient. Demographic anti-collision vs
+    #                 slot 2 (M vs F · 30s vs 50s · different studio).
+    #                 artepixel prostudio (Pexels 28442317).
+    #   4 detail    — boardroom-in-progress detail · 4-person Asian
+    #                 strategy session · vertical-blinds skyscraper
+    #                 backdrop · serious. Recovers the "industrial
+    #                 facility / conference detail" framing of the
+    #                 prior Unsplash pool without the heavy machinery
+    #                 imagery. MART PRODUCTION (Pexels 7643998).
+    #   5 ambient   — woman in sophisticated walnut-paneled boardroom
+    #                 with TV · executive presence · Pragma's quiet
+    #                 institutional ambient. Mikhail Nilov (Pexels
+    #                 8847198).
+    #
+    # Cross-cluster grep CLEAN (zero photo-id overlap with siblings
+    # business-fiscal · business-coaching · business-stewardship ·
+    # business-architecture · business-legale · business-startup) —
+    # verified at curate-and-swap time (factory/reports/execution-
+    # 2026-05-10/SPRINT1_T13_AP2_PRAGMA_PEXELS.md §5).
+    # ─────────────────────────────────────────────────────────────
     "business-corporate": [
-        # 0: hero — boardroom long-table meeting, day-light, serious
-        "https://images.unsplash.com/photo-1542626991-cbc4e32524cc?w=1600&q=80&auto=format&fit=crop",
-        # 1: feature — corporate HQ atrium / glass interior
-        "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80&auto=format&fit=crop",
-        # 2-5: advisory portraits + industrial facility + conference detail
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1560439514-4e9645039924?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1664575602554-2087b04935a5?w=800&q=80&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1573497491208-6b1acb260507?w=800&q=80&auto=format&fit=crop",
+        # 0: hero — diverse modern board meeting, badged, serious
+        "https://images.pexels.com/photos/6950031/pexels-photo-6950031.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        # 1: feature — modern conference room, glass walls, no people
+        "https://images.pexels.com/photos/5511124/pexels-photo-5511124.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        # 2: portrait — senior advisor, blonde, black blouse, pen
+        "https://images.pexels.com/photos/8871934/pexels-photo-8871934.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 3: portrait — advisor, navy suit + red tie, arms crossed
+        "https://images.pexels.com/photos/28442317/pexels-photo-28442317.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 4: detail — Asian team strategy meeting, skyscraper backdrop
+        "https://images.pexels.com/photos/7643998/pexels-photo-7643998.jpeg?auto=compress&cs=tinysrgb&w=800",
+        # 5: ambient — woman in walnut-paneled boardroom, executive
+        "https://images.pexels.com/photos/8847198/pexels-photo-8847198.jpeg?auto=compress&cs=tinysrgb&w=800",
     ],
     "business-startup": [
         # 0: hero placeholder (unused as big hero — composition is typographic-led)
@@ -725,6 +909,100 @@ IMAGERY_CONFIG: dict[str, list[str]] = {
         "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80&auto=format&fit=crop",
+    ],
+    # T53 · Wave 1 Pass-9 (2026-05-12) — Sapori di Langa wine-food pool.
+    # 1st artisan-workshop reuse · cluster `wine-food-boutique` (opens
+    # for the first time). Curator pack `docs/content-factory/imagery/
+    # packs/wine-food-boutique.md` X.5 pending — interim pool uses 6
+    # public Unsplash CC0 URLs themed on Langhe terroir (vineyard rows
+    # + barrique cellar + wine pour + olive grove + bottle + tartufo).
+    # Zero URL overlap with `ecommerce` Unsplash fashion pool, the
+    # generic `restaurant` Pexels plated-dish pool, or `medical-
+    # veterinary` Pexels clinical pool — wine-photography-pure
+    # signaling terroir-curation + sommelier-pacato tone.
+    "wine-food-boutique": [
+        # 0: hero — Langhe-style vineyard rows on hillside at golden hour
+        "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — barrique wine cellar with wooden barrels in row
+        "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200&q=80&auto=format&fit=crop",
+        # 2: portrait — red wine glass with vineyard background
+        "https://images.unsplash.com/photo-1547595628-c61a29f496f0?w=800&q=80&auto=format&fit=crop",
+        # 3: portrait — wine bottle being held / labeled, terroir
+        "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=800&q=80&auto=format&fit=crop",
+        # 4: detail — olive grove silver leaves Mediterranean
+        "https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?w=800&q=80&auto=format&fit=crop",
+        # 5: ambient — wine pour into glass, dark moody bistro
+        "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&q=80&auto=format&fit=crop",
+    ],
+    # T56 · Wave 2 Pass-1 (2026-05-12) — Borgo San Marco travel pool.
+    # 1st ultra-luxury-cinematic reuse · cluster `boutique-hotel` (opens
+    # for the first time · `travel` category activation). Curator pack
+    # `docs/content-factory/imagery/packs/travel-boutique-hotel.md` X.5
+    # pending — interim pool uses 6 Unsplash CC0 URLs themed on Tuscan
+    # borgo hospitality (golden-hour courtyards + suite interiors +
+    # Val d'Orcia landscape + cisterna spa). Zero URL overlap with
+    # `realestate-villa` (Villa's gold-champagne-noir cinematic pool) —
+    # warm-tuscan-hospitality signal vs cold-cinematic-property signal.
+    "travel-boutique-hotel": [
+        # 0: hero — golden-hour Tuscan courtyard with cypress alley
+        "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — Val d'Orcia rolling landscape with poderi
+        "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=1200&q=80&auto=format&fit=crop",
+        # 2: portrait — boutique suite interior with travertine bathroom
+        "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80&auto=format&fit=crop",
+        # 3: portrait — borgo stone walls + pergolato di glicine
+        "https://images.unsplash.com/photo-1568822617270-2c1579f8dfe2?w=800&q=80&auto=format&fit=crop",
+        # 4: detail — restored cisterna spa with arched ceiling
+        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&q=80&auto=format&fit=crop",
+        # 5: ambient — Tuscan cypress road, classic Val d'Orcia view
+        "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&q=80&auto=format&fit=crop",
+    ],
+    # T59 · Wave 2 Pass-3 (2026-05-13) — Podere Le Querce agriturismo pool.
+    # 3rd artisan-workshop reuse · 2nd cross-category reuse · cluster
+    # `bnb-agriturismo` (opens for the first time · 2nd travel cluster).
+    # Curator pack `docs/content-factory/imagery/packs/agriturismo.md` X.5
+    # pending — interim pool uses 6 Unsplash CC0 URLs themed on Tuscan
+    # rural-family hospitality (long farm table · olive grove · Chianti
+    # vineyard · family kitchen · podere golden hour · cucina contadina).
+    # Zero URL overlap with `travel-boutique-hotel` (Albergo's cinematic
+    # luxury pool) or `ecommerce` (Bottega's artigiano pool) — warm-
+    # famiglia-contadina signal distinct from cinematic-borgo signal.
+    "travel-agriturismo": [
+        # 0: hero — golden-hour podere with stone courtyard + cypress
+        "https://images.unsplash.com/photo-1602941525521-46f6f1ab39ce?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — long Tuscan tavolata with family + wine glasses
+        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80&auto=format&fit=crop",
+        # 2: portrait — silver-leaved olive grove rows on hillside
+        "https://images.unsplash.com/photo-1567416661576-d8b6e92e63d2?w=800&q=80&auto=format&fit=crop",
+        # 3: portrait — Chianti Classico vineyard rows
+        "https://images.unsplash.com/photo-1547595628-c61a29f496f0?w=800&q=80&auto=format&fit=crop",
+        # 4: detail — rustic farm kitchen with cast iron pans
+        "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80&auto=format&fit=crop",
+        # 5: ambient — multigenerational family in farm courtyard
+        "https://images.unsplash.com/photo-1573497019418-b400bb3ab074?w=800&q=80&auto=format&fit=crop",
+    ],
+    # T61 · Wave 2 Pass-5 (2026-05-13) — Gemma jewelry-atelier pool.
+    # 1st fashion-editorial reuse · cluster `jewelry` (opens for the
+    # first time · 4th ecommerce cluster). Curator pack
+    # `docs/content-factory/imagery/packs/jewelry-atelier.md` X.5
+    # pending — interim pool uses 6 Unsplash CC0 URLs themed on alta
+    # gioielleria (atelier workbench · gem macro · goldsmith hands ·
+    # finished pezzo · Brera street · editorial portrait). Zero URL
+    # overlap with Luxe's `ecommerce` fashion pool — jewelry-macro
+    # signal distinct from fashion-editorial signal.
+    "jewelry-atelier": [
+        # 0: hero — goldsmith workbench with tools + brilliant macro
+        "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1600&q=80&auto=format&fit=crop",
+        # 1: feature — close-up loose gems on velvet
+        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1200&q=80&auto=format&fit=crop",
+        # 2: portrait — finished platinum jewelry piece on dark
+        "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80&auto=format&fit=crop",
+        # 3: portrait — goldsmith hands at the bench with magnifier
+        "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=800&q=80&auto=format&fit=crop",
+        # 4: detail — sapphire ring detail with castone
+        "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800&q=80&auto=format&fit=crop",
+        # 5: ambient — Brera Milan street with atelier shopfronts
+        "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80&auto=format&fit=crop",
     ],
 }
 

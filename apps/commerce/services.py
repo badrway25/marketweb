@@ -35,6 +35,8 @@ from apps.commerce.models import (
     Storefront,
 )
 from apps.commerce import payments
+from apps.core.audit import audited
+from apps.core.models import AuditLogEntry
 
 
 # ── Errors ─────────────────────────────────────────────────────────
@@ -302,8 +304,21 @@ def retry_payment(*, order: Order) -> PaymentIntent:
 
 # ── Seller operations ──────────────────────────────────────────────
 
+@audited(
+    action=AuditLogEntry.Action.ORDER_PAID,
+    target_arg="order",
+    metadata_args=("note",),
+)
 @transaction.atomic
 def mark_order_paid(*, order: Order, note: str = "") -> Order:
+    """Seller-side mark-as-paid for bank-transfer style flows.
+
+    T33 · the ``@audited`` decorator writes an explicit
+    ``order_paid`` AuditLogEntry on successful return, carrying the
+    seller's free-form ``note`` as metadata. The T31 signal still
+    fires the generic UPDATED row for the ``payment_status`` /
+    ``status`` field changes; the two rows are complementary.
+    """
     order.payment_status = Order.PaymentStatus.PAID
     if order.status == Order.Status.PENDING:
         order.status = Order.Status.CONFIRMED
@@ -326,6 +341,11 @@ def mark_order_paid(*, order: Order, note: str = "") -> Order:
     return order
 
 
+@audited(
+    action=AuditLogEntry.Action.ORDER_FULFILLMENT_CHANGED,
+    target_arg="order",
+    metadata_args=("fulfillment_status", "tracking_carrier", "tracking_number"),
+)
 @transaction.atomic
 def set_order_fulfillment(
     *,
@@ -334,6 +354,20 @@ def set_order_fulfillment(
     tracking_carrier: str = "",
     tracking_number: str = "",
 ) -> Order:
+    """Seller fulfillment state machine.
+
+    T35 · the ``@audited`` decorator writes an explicit
+    ``order_fulfillment_changed`` AuditLogEntry on successful
+    return, carrying the new fulfillment_status + the tracking
+    fields (when SHIPPED) as metadata. The T31 signal-driven
+    UPDATED row is also emitted (Order is in TRACKED_MODELS) —
+    the two are complementary, not duplicates.
+
+    Failure path: when ``fulfillment_status`` is not a valid
+    enum value, the function raises ``CommerceError`` BEFORE
+    ``order.save()`` — neither the signal-driven UPDATED row nor
+    the T35 explicit row is written.
+    """
     valid = {c for c, _ in Order.FulfillmentStatus.choices}
     if fulfillment_status not in valid:
         raise CommerceError(f"Unknown fulfillment status: {fulfillment_status}")
@@ -351,8 +385,21 @@ def set_order_fulfillment(
     return order
 
 
+@audited(
+    action=AuditLogEntry.Action.ORDER_CANCELLED,
+    target_arg="order",
+    metadata_args=("reason",),
+)
 @transaction.atomic
 def cancel_order(*, order: Order, reason: str = "") -> Order:
+    """Seller / admin order cancellation.
+
+    T33 · the ``@audited`` decorator writes an explicit
+    ``order_cancelled`` AuditLogEntry on successful return, carrying
+    the ``reason`` as metadata. The semantic event "this order was
+    cancelled BECAUSE X" would otherwise be lost — the T31 signal
+    only records the ``status`` field diff.
+    """
     if order.status in {Order.Status.DELIVERED, Order.Status.CANCELLED}:
         raise CommerceError("Order cannot be cancelled from its current status.")
 

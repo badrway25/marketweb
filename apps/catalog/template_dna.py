@@ -463,6 +463,98 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
     # ─────────────────────────────────────────────────────────────
 
     # ── L1) CLASSIC-GOLD — Lex, studio legale istituzionale ──────
+    # ── L1b) CLASSIC-GOLD (atto) — Wave 1 Pass-3 archetype reuse #1 ───
+    # T47 (2026-05-12) · 1st reuse of the `classic-gold` archetype after
+    # Lex's standalone instance. Reuses `templates/live_templates/lawyer/
+    # classic-gold/` skin verbatim (zero new HTML · same D-051 Option A
+    # pattern that validated Derm-on-specialist and Denti-on-specialist).
+    #
+    # D-054 axes diverse from Lex (target ≥ 8 · achieved 11):
+    #   brand           = Studio Notarile Conti–Sironi–Verri (3-notary
+    #                     association) vs Studio Legale Ferri (family-
+    #                     founded 1962 litigation boutique)
+    #   accent          = `#1F3A5F` notarial-archive ink-blue (cool,
+    #                     institutional) vs Lex `#C5A55A` ledger-gold
+    #                     (warm, prestige) · third polarity for the
+    #                     lawyer cluster
+    #   font            = Source Serif 4 + Public Sans (institutional)
+    #                     vs Lex Cormorant Garamond + Inter (editorial)
+    #   conversion      = `primo-incontro-orientamento` (free 30-min
+    #                     orienting meeting · no commitment) vs Lex
+    #                     `private-consultation` (paid retainer · NDA)
+    #   voice anchor    = `atto pubblico` (the public-faith deed) vs
+    #                     Lex `riservatezza` (confidentiality)
+    #   founder type    = 3 notai associati (collegiate · pubblici
+    #                     ufficiali) vs Lex Avv. Prof. Ferri (singolo
+    #                     fondatore · accademico)
+    #   geography       = Milano (single Distretto Notarile) vs Lex
+    #                     Roma + Milano (dual-foro litigation network)
+    #   imagery direction = `notarile-archivio-istituzionale` (codes,
+    #                     signing-ceremonies, public registries) vs
+    #                     Lex `legal-heritage-ink` (litigation, codici,
+    #                     gavel, robes)
+    #   service catalog = `atti` (rogiti, testamenti, costituzioni,
+    #                     mutui, donazioni, procure, autentiche) vs
+    #                     Lex `pratiche` (societario, famiglia, lavoro,
+    #                     penale d'impresa, contenzioso)
+    #   CTA verb        = "Richiedi un primo incontro" (notary blueprint
+    #                     §6 binding · no urgency) vs Lex "Richiedi una
+    #                     consulenza riservata" (private-retainer ask)
+    #   proof surface   = `Distretto Notarile di Milano · iscrizione al
+    #                     ruolo dal 2007/2014/2021` (institutional
+    #                     credentials) vs Lex `62 anni · 14 avvocati ·
+    #                     2.400+ cause · 96% esito favorevole` (firm
+    #                     KPIs)
+    "atto-notai-associati": {
+        "archetype":          "classic-gold",
+        "preview_archetype":  "classic-gold-notary",
+        "hero_style":         "split-archive-monogram",
+        "navbar_style":       "archive-monogram",
+        "footer_style":       "archive-institutional",
+        "section_order":      ["ink-nav", "ledger-hero", "atti-ledger", "notai-portraits", "registries", "contact-archive"],
+        "card_style":         "atto-area-ledger",
+        "button_style":       "serif-archive-border",
+        "density":            "airy",
+        "tone":               "institutional-notarile",
+        "imagery_direction":  "notarile-archivio-istituzionale — codici, ceremonie di firma, biblioteca legale, sigillo pubblico",
+        "imagery_key":        "lawyer-notary",
+        "conversion_pattern": "primo-incontro-orientamento",
+        "font_pairing":       ("Source Serif 4", "Public Sans"),
+        "content": {
+            "eyebrow":       "Studio Notarile Conti–Sironi–Verri · Milano · Distretto Notarile dal 2007",
+            "headline":      'L\'<em>atto pubblico</em>, redatto con la cura che la legge richiede.',
+            "subhead":       "Studio notarile associato di tre notai iscritti al ruolo del Distretto di Milano. Compravendite, successioni, costituzioni di società, mutui, donazioni, procure. Pubblica fede in italiano, inglese e francese.",
+            "primary_cta":   "Richiedi un primo incontro",
+            "secondary_cta": "Aree di atti",
+            "phone":         "+39 02 7641 1898",
+            "monogram":      "CSV",
+            "nav_links":     ["Lo Studio", "Aree di atti", "I Notai", "Pubblicazioni", "Contatti"],
+            "meta_strip": [
+                ("Sede unica",          "Milano · via Manin"),
+                ("Notai associati",     "3 · iscritti dal 2007/2014/2021"),
+                ("Lingue di rogito",    "italiano · inglese · francese"),
+            ],
+            "hero_credit_left":  ("Direzione",  "Notaio dott.ssa M.B. Conti"),
+            "hero_credit_right": ("Distretto",   "Notarile di Milano"),
+            "practice_label":    "Aree di atti",
+            "practice_heading":  "Sette tipologie d'atto, una sola <em>firma con pubblica fede.</em>",
+            "practice": [
+                ("01", "Compravendite & rogiti",         "Trasferimenti immobiliari residenziali, commerciali e industriali. Verifiche catastali e ipotecarie incluse."),
+                ("02", "Successioni & dichiarazioni",    "Apertura di successione, dichiarazione fiscale, divisioni ereditarie e tutela dei legittimari."),
+                ("03", "Atti societari",                 "Costituzioni, statuti, fusioni, scissioni, trasformazioni, delibere assembleari verbalizzate."),
+                ("04", "Mutui ipotecari",                "Atti di erogazione, accollo, frazionamento, cancellazione semplificata."),
+            ],
+            "stats_label": "Distretto Notarile di Milano",
+            "stats": [
+                ("3",      "notai iscritti al ruolo"),
+                ("17",     "anni dalla fondazione"),
+                ("4.200+", "atti rogati"),
+                ("3",      "lingue di rogito"),
+            ],
+            "publications": ["NOTARIATO", "RIVISTA DEL NOTARIATO", "GUIDA AL DIRITTO · NOTARIATO", "CNN NOTIZIE · CONSIGLIO NAZIONALE", "RIVISTA TRIMESTRALE DI DIRITTO E PROCEDURA"],
+        },
+    },
+
     "lex-studio-legale": {
         "archetype":          "classic-gold",
         "hero_style":         "split-ledger-monogram",
@@ -644,6 +736,83 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
             "valuation_label":   "Valutazione gratuita",
             "valuation_heading": "Quanto vale <em>casa tua</em>?",
             "valuation_intro":   "Ti richiamiamo entro 24 ore con una stima onesta e il piano per metterla sul mercato.",
+        },
+    },
+
+    # ── TRAVEL.2) ARTISAN-WORKSHOP reuse — Podere Le Querce ──────
+    # T59 Wave 2 Pass-3 (2026-05-13) · 3rd reuse of artisan-workshop
+    # archetype after Bottega + Sapori (D-051 Option A · zero new HTML
+    # files). 2nd cross-category reuse after Albergo (skin lives at
+    # ecommerce/, template lives at travel/ · `skin_source_category`
+    # required). Voice anchor `ospitalità contadina` (distinct from
+    # Bottega's `fatto a mano` and Sapori's `vignaiolo indipendente`).
+    # Palette deep oak-green + wheat-cream + harvest-copper (third
+    # polarity of artisan-workshop · zero RGB overlap with Bottega's
+    # walnut+cream+orange or Sapori's bordeaux+travertine+olive).
+    "podere-agriturismo": {
+        "archetype":          "artisan-workshop",
+        "preview_archetype":  "artisan-workshop-podere",
+        "skin_source_category": "ecommerce",
+        "hero_style":         "warm-photo-frame",
+        "navbar_style":       "warm-bar",
+        "footer_style":       "hours-warm",
+        "section_order":      ["warm-nav", "typographic-hero", "stamp-panel", "labeled-cards"],
+        "card_style":         "chalkboard-day",
+        "button_style":       "rustic-rounded",
+        "density":            "medium",
+        "tone":               "famiglia-che-ospita",
+        "imagery_direction":  "tuscan-agriturismo — golden-hour podere courtyards · long-table family meals · vineyard rows · olive grove · farm pantry products · multigenerational family portraits in kitchen",
+        "imagery_key":        "travel-agriturismo",
+        "conversion_pattern": "stay-and-take-home",
+        "font_pairing":       ("EB Garamond", "Source Sans 3"),
+        "content": {
+            "eyebrow":    "Agriturismo · Greve in Chianti · dal 1934",
+            "headline":   'Quattro generazioni in un podere. <em>Ospitalità contadina</em>, tutto l\'anno.',
+            "primary_cta":  "Prenotate il soggiorno",
+            "secondary_cta": "Visitate la dispensa",
+            "phone":       "+39 055 853 261",
+            "nav_links":   ["Il podere", "La dispensa", "Il prodotto", "La famiglia", "Diario", "Soggiorno"],
+        },
+    },
+
+    # ── TRAVEL.1) ULTRA-LUXURY-CINEMATIC reuse — Borgo San Marco ───
+    # T56 Wave 2 Pass-1 (2026-05-12) · 1st reuse of ultra-luxury-cinematic
+    # after Villa (D-051 Option A · zero new HTML files). Opens the
+    # `travel` category and `boutique-hotel` cluster. Differentiated from
+    # Villa via: palette (terracotta+travertine+olive vs gold-champagne+
+    # black+ivory), conversion pattern (book-a-stay vs private-viewing-
+    # for-purchase), persona (Vittoria Sernigi named hotel director vs
+    # anonymous advisory studio), product category (hospitality nights
+    # vs real-estate-sale dossier), voice anchor (`ospitalità di borgo`
+    # vs `dimora d'autore`).
+    "albergo-borgo": {
+        "archetype":          "ultra-luxury-cinematic",
+        "preview_archetype":  "ultra-luxury-cinematic-albergo",
+        # Skin folder lives under real-estate/ (Villa's origin · D-051
+        # Option A cross-category reuse · resolver consults this key
+        # via LiveTemplateView · T56 introduction).
+        "skin_source_category": "real-estate",
+        "hero_style":         "fullbleed-editorial-cover",
+        "navbar_style":       "cinematic-dark",
+        "footer_style":       "concierge-coords",
+        "section_order":      ["dark-nav", "fullbleed-hero", "signature-properties", "territory-ribbon", "private-advisor", "private-viewing-cta"],
+        "card_style":         "property-dossier",
+        "button_style":       "ghost-champagne",
+        "density":            "very-airy",
+        "tone":               "editorial-hospitality",
+        "imagery_direction":  "tuscan-relais-borgo — golden-hour borgo courtyards · suite interiors with travertine bathrooms · pergolato di glicine · UNESCO Val d'Orcia landscape · spa cisterna settecentesca",
+        "imagery_key":        "travel-boutique-hotel",
+        "conversion_pattern": "book-a-stay",
+        "font_pairing":       ("Cormorant Garamond", "Inter"),
+        "content": {
+            "eyebrow":       "Relais & Spa · Val d'Orcia · Pienza dal 1612",
+            "headline":      'Otto suite in un borgo del Seicento. <em>Ospitalità di borgo</em>, una sola stagione l\'anno.',
+            "primary_cta":   "Prenota il vostro soggiorno",
+            "secondary_cta": "Scoprite le suite",
+            "phone":         "+39 0578 748 124",
+            "nav_links":     ["Il borgo", "Le suite", "Il territorio", "La brigata", "Soggiorno", "Concierge"],
+            "hero_wordmark": "Borgo San Marco",
+            "hero_location": "Pienza · Siena · Toscana",
         },
     },
 
@@ -889,6 +1058,56 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         },
     },
 
+    # ── R1.bis) FINE-DINING reuse — pasticceria atelier ──────────
+    # T49 · Wave 1 Pass-5 (2026-05-12) · 1st reuse of `fine-dining`
+    # after Gusto · D-051 Option A: zero new HTML files. The archetype
+    # contract is identical to Gusto; only DNA + content + brand
+    # differentiate. Voice anchor `lievitazione lenta` (pastry-craft
+    # promise) replaces Gusto's `otto atti` tasting-menu anchor.
+    # Conversion `saturday-laminate-preorder` replaces concierge-
+    # reservation. Imagery direction `pasticceria-vetrina-laminate`
+    # consumes X.3 curator pack `bakery-pasticceria.md` verbatim.
+    "madou-pasticceria": {
+        "archetype":          "fine-dining",
+        "hero_style":         "editorial-plate",
+        "navbar_style":       "serif-centered",
+        "footer_style":       "concierge-press",
+        "section_order":      ["nav", "editorial-hero", "course-index", "concierge", "press"],
+        "card_style":         "course-index",
+        "button_style":       "ghost-gold-serif",
+        "density":            "very-airy",
+        "tone":               "editorial-pasticciera",
+        "imagery_direction":  "pasticceria-vetrina-laminate",
+        "imagery_key":        "bakery-pasticceria",
+        "conversion_pattern": "saturday-laminate-preorder",
+        "font_pairing":       ("Playfair Display", "Lato"),
+        "content": {
+            "eyebrow":       "Pasticceria Atelier · Torino Borgo Po · dal 2011",
+            "headline":      'Dodici ore di <em>lievitazione lenta,</em> una sfoglia che si lascia ascoltare.',
+            "subhead":       "Sfoglie laminate a freddo, lievitazione naturale con pasta madre rinfrescata ogni dodici ore, cremerie montate alla minuta. La vetrina cambia ogni giorno secondo quello che è uscito dal forno all'alba.",
+            "primary_cta":   "Pre-ordina la sfoglia del sabato",
+            "secondary_cta": "La pasticciera",
+            "phone":         "+39 011 8195 770",
+            "chef_name":     "Carla Madou",
+            "chef_role":     "Pasticciera atelier · classe 1979",
+            "courses": [
+                ("I",    "Croissant viennoise",         "12 ore di lievitazione · 64 strati · burro normanno",         "Caffè Etiopia Sidamo"),
+                ("II",   "Maritozzo con la panna",       "lievitazione naturale 24 h · panna fresca alla minuta",       "Cioccolata Madagascar 72%"),
+                ("III",  "Millefoglie alla nocciola",    "tre strati di sfoglia caramellata · chantilly nocciola IGP",  "Bicerin torinese"),
+                ("IV",   "Bignè al cioccolato Domori",   "pasta choux · ganache Criollo 80%",                           "Tè nero Darjeeling First Flush"),
+                ("V",    "Saint Honoré ai marroni",      "autunno · marroni IGP Cuneo · crema mousseline",              "Erbaluce passito Cieck"),
+            ],
+            "concierge": {
+                "label":  "Maestro lievitista",
+                "name":   "Tommaso Rinaldi",
+                "role":   "Responsabile pasta madre · rinfresco ogni 12 h",
+                "email":  "tommaso@madou-pasticceria.it",
+            },
+            "press": ["GAMBERO ROSSO PASTICCERIE", "DISSAPORE", "COOK CORRIERE", "IDENTITÀ DI PASTICCERIA", "VOGUE CIBO"],
+            "nav_links": ["Il forno", "Pasticceria", "Vetrina", "Diario", "Ordini"],
+        },
+    },
+
     # ── R2) TRATTORIA-WARM — family chalkboard ───────────────────
     "sapore-trattoria-pizzeria": {
         "archetype":          "trattoria-warm",
@@ -1002,6 +1221,47 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         },
     },
 
+    # ── EC.JEWELRY) FASHION-EDITORIAL reuse — Gemma Atelier ──────
+    # T61 Wave 2 Pass-5 (2026-05-13) · 1st reuse of fashion-editorial
+    # archetype after Luxe (D-051 Option A · zero new HTML files).
+    # Same category as Luxe (ecommerce) so no skin_source_category
+    # override needed. Differentiated from Luxe via: palette (pearl
+    # #0F0E14 + champagne-white #F1ECDF + rose-quartz #9F7373 vs
+    # Luxe noir+ivory+champagne-gold · zero overlap), persona
+    # (Eleonora Gemma named goldsmith family 1908- · 4 generations
+    # · GIA gemmologist · ex-Buccellati 18 years vs Luxe anonymous
+    # maison editor), font_pairing (Bodoni Moda + Inter Didone-
+    # influenced jewelry register vs Cormorant + Montserrat fashion
+    # register), voice anchor (gioielleria d'autore jewelry-auteurship
+    # register vs maison di moda fashion-maison register), conversion
+    # pattern (private-viewing-jewelry NDA-reciprocal appointment-
+    # only vs Luxe private-request fashion-RSVP), product domain
+    # (jewelry · gems · ateliers Milano-Paris vs fashion · capsules
+    # · ateliers Paris-Tokyo).
+    "gemma-gioielleria": {
+        "archetype":          "fashion-editorial",
+        "preview_archetype":  "fashion-editorial-gemma",
+        "hero_style":         "editorial-serif",
+        "navbar_style":       "minimal-serif",
+        "footer_style":       "centered-minimal",
+        "section_order":      ["nav", "editorial-cover", "edition-strip"],
+        "card_style":         "editorial-large",
+        "button_style":       "ghost-gold-serif",
+        "density":            "very-airy",
+        "tone":               "auteur-jeweler",
+        "imagery_direction":  "jewelry-atelier — close-up macro of brilliant cuts · goldsmith hands at the bench · filigree platinum casts · ceylon sapphires Muzo emeralds · palazzo Cusani Brera marble interior · editorial portrait at natural light",
+        "imagery_key":        "jewelry-atelier",
+        "conversion_pattern": "private-viewing-jewelry",
+        "font_pairing":       ("Bodoni Moda", "Inter"),
+        "content": {
+            "eyebrow":    "Atelier di Alta Gioielleria · Milano Brera · dal 1908",
+            "headline":   'Quattro generazioni a Brera. <em>Gioielleria d\'autore</em>, mai prodotta in serie.',
+            "primary_cta":  "Richiedete un appuntamento privato",
+            "phone":        "+39 02 8642 1170",
+            "nav_links":    ["Atelier", "Collezione", "Pezzo", "La casa Gemma", "Editoriale", "Concierge"],
+        },
+    },
+
     # ── E2) ARTISAN-WORKSHOP — warm cream bottega catalogue ─────
     "bottega-shop-artigianale": {
         "archetype":          "artisan-workshop",
@@ -1022,6 +1282,41 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
         "content": {
             "eyebrow":    "Catalogo autunno · edizione 47",
             "headline":   "Pezzi unici fatti in bottega.",
+        },
+    },
+
+    # ── E2b) ARTISAN-WORKSHOP — wine-food terroir enoteca ────────
+    # T53 Wave 1 Pass-9 (2026-05-12) · 1st reuse of artisan-workshop
+    # archetype after Bottega (D-051 Option A: zero new HTML files).
+    # Opens `wine-food-boutique` cluster. Differentiation from Bottega
+    # via D-054 12-axis scoreboard: bordeaux #4A1E1F + wax-paper cream
+    # #F2E9D8 + olive-green #6B7E47 palette (Bottega: cream + brick +
+    # walnut); IBM Plex Serif/Sans font pairing (Bottega: Libre Baskerville
+    # + Nunito Sans); terroir-curation register with vignaiolo voice
+    # anchor (Bottega: artigiano-curated artefacts); Cavalier dell'Ordine
+    # del Tartufo persona (Bottega: bottegaia of textile/leather).
+    # Imagery pool `wine-food-boutique` (NEW) consumes X.5 curator pack.
+    "sapori-di-langa": {
+        "archetype":          "artisan-workshop",
+        "preview_archetype":  "artisan-workshop-sapori",
+        "hero_style":         "warm-photo-frame",
+        "navbar_style":       "warm-bar",
+        "footer_style":       "hours-warm",
+        "section_order":      ["warm-nav", "typographic-hero", "stamp-panel", "labeled-cards"],
+        "card_style":         "chalkboard-day",
+        "button_style":       "rustic-rounded",
+        "density":            "medium",
+        "tone":               "terroir-curatorial",
+        "imagery_direction":  "wine-food-boutique — Langhe vineyards Nebbiolo dolcetto rows, cantina barrique, terroir bottles, hand labels, olive groves, white truffle, Castelmagno wheel, oste sommelier portraits",
+        "imagery_key":        "wine-food-boutique",
+        "conversion_pattern": "case-order-and-visit",
+        "font_pairing":       ("IBM Plex Serif", "IBM Plex Sans"),
+        "content": {
+            "eyebrow":       "Enoteca dei Vignaioli · Alba · dal 1987",
+            "headline":      'Vini di <em>vignaiolo indipendente</em> dalle Langhe del Barolo.',
+            "subhead":       "Quaranta vignaioli indipendenti delle Langhe, Roero e Monferrato. Cantine a conduzione familiare, lavorazione manuale in vigna, fermentazioni spontanee. Vino, olio EVO, castelmagno DOP, tartufo bianco di stagione.",
+            "primary_cta":   "Ordina la cassa del vignaiolo",
+            "phone":         "+39 0173 441 882",
         },
     },
 
@@ -1320,6 +1615,138 @@ TEMPLATE_DNA: dict[str, dict[str, Any]] = {
             "credit_right": ("Specialità", "Dermatologia"),
             "press": ["JAMA Dermatology", "British Journal of Dermatology", "Vanity Fair Wellness", "Corriere Salute", "Vogue Italia"],
             "nav_links": ["Studio", "Visite", "Pubblicazioni", "Contatti"],
+        },
+    },
+
+    # ── 4b) SPECIALIST (denti) — Wave 1 Pass-1 archetype reuse #3 ───
+    # Third template on the `specialist` archetype after Cardio + Derm.
+    # Reuses the same `templates/live_templates/medical/specialist/`
+    # skin verbatim (zero new HTML files · same D-051 Option A reuse
+    # pattern that validated Derm in Session 13).
+    # D-054 differentiation vs Cardio (red accent · cardiology private-
+    # request · Cormorant Garamond) and vs Derm (forest-green · derma-
+    # tology private-request · Bodoni Moda):
+    #   palette  = #0F2D40 deep clinical blue + #2BC4A4 fresh-mint accent
+    #              (third polarity · NOT red NOT green)
+    #   font     = DM Serif Display + Inter (editorial but distinctively
+    #              non-Cormorant non-Bodoni · clinical-bright contour)
+    #   voice    = "igiene" noun-em italic (vs cardio "scorciatoie",
+    #              derm "carta d'identità")
+    #   hero     = editorial-magazine variant (portrait-driven · Cardio
+    #              defaults to split-consultive · Derm to editorial-serif)
+    #   CTA      = "Prenota igiene" (booking-widget verb · Cardio + Derm
+    #              both use "Richiedi visita privata" private-request)
+    #   doctor   = Dr.ssa Chiara Vespa (female lead · gender diversity
+    #              vs male Cardio Marani)
+    #   city     = Milano Brera (NEW · Cardio = Roma Parioli · Derm =
+    #              Roma Veneto · second Italian metro added to specialist)
+    "denti-co-studio": {
+        "archetype":          "specialist",
+        "preview_archetype":  "specialist-denti",
+        "hero_style":         "editorial-magazine",
+        "navbar_style":       "minimal-serif",
+        "footer_style":       "centered-minimal",
+        "section_order":      ["nav", "editorial-hero", "drop-cap", "fields", "press", "footer"],
+        "card_style":         "editorial-large",
+        "button_style":       "ghost-underline",
+        "density":            "very-airy",
+        "tone":               "prestigious",
+        "imagery_direction":  "dental-clinical — operatory, patient-forward portraits, zero close-up bocche aperte",
+        # T46 Wave 1 Pass-2 (2026-05-11): switched from medical-cardiology
+        # placeholder to dedicated `medical-dental` Pexels pool. 6 URLs
+        # curated from docs/content-factory/imagery/packs/dental.md
+        # (X.3 curator output · 23 verified URLs available). Pool is
+        # Pexels-pure (zero overlap with cardio + derm which both ride
+        # Unsplash) and bright-clinic coherent with the #2BC4A4 mint
+        # brand accent.
+        "imagery_key":        "medical-dental",
+        "conversion_pattern": "booking-widget",
+        "font_pairing":       ("DM Serif Display", "Inter"),
+        "content": {
+            "eyebrow":       "Odontoiatria · Milano Brera",
+            "headline":      'L\'<em>igiene</em> non è un dettaglio. È il primo capitolo.',
+            "subhead":       "Igiene professionale, conservativa, implantologia e ortodonzia trasparente. Quattro dentisti associati, una sola cartella, controlli semestrali compresi nel piano annuale.",
+            "primary_cta":   "Prenota igiene",
+            "phone":         "+39 02 7770 4488",
+            "drop_cap":      "L",
+            "intro_paragraph": (
+                "a salute orale non si cura due volte all'anno: si sostiene "
+                "tutti i giorni. Per questo Denti+Co lavora a partire "
+                "dall'igiene — professionale, ripetibile, misurabile — "
+                "e costruisce intorno ad essa la conservativa, "
+                "l'implantologia, l'ortodonzia."
+            ),
+            "fields": [
+                ("01", "Igiene professionale semestrale", "Detartrasi sopra e sottogengivale, air-polishing e indice di sanguinamento. Inclusa nel piano annuale di mantenimento."),
+                ("02", "Implantologia & ortodonzia trasparente", "Impianti italiani Sweden+Martina, allineatori Invisalign e SmileLab per adulti, ortodonzia intercettiva 8-12 anni."),
+            ],
+            "hero_meta": [
+                ("Direzione clinica", "Dr.ssa C. Vespa"),
+                ("Esperienza", "12 anni"),
+                ("Igieni/anno", "3.400+"),
+            ],
+            "credit_left":  ("Studio",      "Milano · Brera"),
+            "credit_right": ("Specialità", "Odontoiatria associata"),
+            "press": ["Il Dentista Moderno", "Dental Tribune", "Bocca & Salute", "Corriere Salute", "Vanity Fair Italia"],
+            "nav_links": ["Studio", "Trattamenti", "Pubblicazioni", "Contatti"],
+        },
+    },
+
+    # ── 3.bis) SPECIALIST reuse — Veterinary studio ──────────────
+    # T51 · Wave 1 Pass-7 (2026-05-12) · 4th reuse of `specialist`
+    # archetype after Cardio + Derm + Denti · D-051 Option A: zero
+    # new HTML files. Cluster `veterinary` activates for the first
+    # time (was 0 templates). Voice anchor `cura preventiva`
+    # (load-bearing preventive-medicine veterinary register).
+    # Conversion `preventive-booking` (Prenota una visita preventiva)
+    # is the 3rd CTA verb-class for the specialist archetype after
+    # Cardio/Derm `private-request` and Denti `booking-widget`.
+    # Imagery direction `pet-clinic-warmth` consumes X.3 curator pack
+    # `veterinary.md` verbatim · zero URL overlap with cardio/derm
+    # (Unsplash) or dental (Pexels).
+    "petro-veterinario": {
+        "archetype":          "specialist",
+        "preview_archetype":  "specialist-petro",
+        "hero_style":         "split-consultive",
+        "navbar_style":       "minimal-serif",
+        "footer_style":       "centered-minimal",
+        "section_order":      ["nav", "editorial-hero", "drop-cap", "fields", "press", "footer"],
+        "card_style":         "editorial-large",
+        "button_style":       "ghost-underline",
+        "density":            "very-airy",
+        "tone":               "prestigious",
+        "imagery_direction":  "pet-clinic-warmth — veterinarian examining dog/cat/exotic pets, hands-on consultation, exam table, bright clinical interior",
+        "imagery_key":        "medical-veterinary",
+        "conversion_pattern": "preventive-booking",
+        "font_pairing":       ("Lora", "Inter"),
+        "content": {
+            "eyebrow":       "Medicina veterinaria · Padova Borgo Trento",
+            "headline":      'Gli animali non parlano. La <em>cura preventiva</em> ascolta prima.',
+            "subhead":       "Visite preventive annuali, vaccinazioni a calendario, diagnostica per immagini e chirurgia dei tessuti molli per cane, gatto e piccoli esotici. Tre veterinari associati, reperibilità notturna su chiamata.",
+            "primary_cta":   "Prenota una visita preventiva",
+            "phone":         "+39 049 6731 220",
+            "drop_cap":      "G",
+            "intro_paragraph": (
+                "li animali non descrivono il dolore: lo nascondono. "
+                "Il gatto si rifugia, il cane mangia di meno, il "
+                "coniglio smette di muoversi. Per questo da Petro "
+                "la medicina è soprattutto preventiva — visita "
+                "annuale completa, screening geriatrico semestrale "
+                "dai sette anni in su."
+            ),
+            "fields": [
+                ("01", "Visita preventiva annuale", "Esame obiettivo completo, peso/BCS, ascoltazione, palpazione, controllo dentale e calendario vaccinale. Quaranta minuti su appuntamento."),
+                ("02", "Chirurgia tessuti molli & diagnostica", "Sterilizzazione laparoscopica, asportazione neoformazioni con istologico, ecografia addominale e cardiaca in sede, Rx digitale Carestream."),
+            ],
+            "hero_meta": [
+                ("Direzione clinica", "Dr. M. Petro"),
+                ("Iscrizione", "OMV Padova 1428"),
+                ("Animali curati/anno", "4.200"),
+            ],
+            "credit_left":  ("Studio",     "Padova · Borgo Trento"),
+            "credit_right": ("Specialità", "Cane gatto esotici"),
+            "press": ["Veterinaria Italiana", "SCIVAC Bulletin", "Il Mondo del Cane", "QuattroZampe Mondadori", "Corriere Animali"],
+            "nav_links": ["Studio", "Visite", "Veterinari", "Diario clinico", "Contatti"],
         },
     },
 

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!--
+    MarketWeb favicon — matches the navbar `.brand-mark` users see live:
+    rounded square (8px corners), linear gradient indigo
+    #6366F1 (--mw-secondary) → #4F46E5 (--mw-secondary-dark),
+    subtle drop-shadow to mirror the navbar mark, white extra-bold
+    "M" letter centered. Single-file SVG — covers every desktop
+    browser + iOS Home Screen via apple-touch-icon.
+    T20+T21 · 2026-05-11.
+  -->
+  <defs>
+    <linearGradient id="brand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#312E81" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+  <rect x="1" y="1" width="30" height="30" rx="7" ry="7"
+        fill="url(#brand)" filter="url(#shadow)"/>
+  <text x="16" y="22" text-anchor="middle"
+        font-family="-apple-system, 'Segoe UI', 'Plus Jakarta Sans', Arial, sans-serif"
+        font-weight="800" font-size="18" fill="#ffffff" letter-spacing="-0.5">M</text>
+</svg>

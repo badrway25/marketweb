@@ -165,9 +165,29 @@
     border-color: rgba(238,240,255,0.6);
     background: rgba(238,240,255,0.08);
   }
+  @media (max-width: 1024px) {
+    .sl-hero { padding: 48px 24px 40px; }
+    .sl-hero h1 { font-size: 64px; letter-spacing: -0.03em; }
+  }
   @media (max-width: 720px) {
     .sl-demo-frame .overlay { padding: 24px; gap: 16px; }
     .sl-demo-frame { aspect-ratio: 4 / 3; }
+    .sl-hero { padding: 40px 22px 32px; }
+    .sl-hero h1 {
+      font-size: clamp(36px, 9vw, 52px);
+      letter-spacing: -0.025em;
+      margin-top: 22px;
+    }
+    .sl-hero .sub { font-size: 16px; margin-top: 22px; }
+    .sl-hero .actions {
+      margin-top: 28px;
+      flex-direction: column; gap: 14px;
+      width: 100%;
+    }
+    .sl-hero .actions .sl-btn,
+    .sl-hero .actions .sl-link { width: 100%; justify-content: center; }
+    .sl-hero .feature-pills { margin-top: 28px; gap: 8px; }
+    .sl-hero .feature-pills span { font-size: 10px; padding: 5px 10px; }
   }
 
   /* Trust band — wordmarks */

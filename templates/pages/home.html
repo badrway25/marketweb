@@ -2,7 +2,17 @@
 {% load static %}
 
 {% block title %}Home{% endblock %}
-{% block meta_description %}MarketWeb — Il marketplace italiano di template web premium. 200+ template professionali con editor visuale incluso, 5 lingue e supporto RTL nativo.{% endblock %}
+{% block meta_description %}MarketWeb — Il marketplace italiano di template web premium. Catalogo curato in espansione, editor visuale incluso, 5 lingue e supporto RTL nativo.{% endblock %}
+
+{# T43 · home OG/Twitter overrides — the default base "MarketWeb"
+   strings are too generic for social shares of the landing page.
+   The default JSON-LD (Organization + WebSite + SearchAction) from
+   the base template is already the right shape for home, no override
+   needed for jsonld. #}
+{% block og_title %}MarketWeb — Template Web Premium personalizzabili{% endblock %}
+{% block og_description %}Il marketplace italiano di template web premium. Catalogo curato in espansione, editor visuale incluso, 5 lingue e supporto RTL nativo.{% endblock %}
+{% block twitter_title %}MarketWeb — Template Web Premium personalizzabili{% endblock %}
+{% block twitter_description %}Il marketplace italiano di template web premium. Catalogo curato in espansione, editor visuale incluso, 5 lingue e supporto RTL nativo.{% endblock %}
 
 {% block body_class %}mw-page-home{% endblock %}
 

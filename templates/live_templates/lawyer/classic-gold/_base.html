@@ -442,6 +442,67 @@
     hyphens: auto;
   }
   body.mw-is-editor-preview .lx-nav .brand { max-width: 32ch; }
+
+  /* ============================================================
+     SPRINT 1 · T12 · AP-1 · LEX CHROME RESPONSIVE
+     Scales the chrome elements that live in _base.html
+     (.mp-bar, .lx-nav, .lx-lead, .lx-section, .lx-foot) so inner
+     pages (about/services/contact/team/blog) stay credible on
+     mobile and tablet. Hero responsiveness is page-local in
+     home.html (already has its own @media block at 880px).
+     Desktop ≥1024 untouched.
+  ============================================================ */
+  @media (max-width: 1024px) {
+    .lx-nav { padding: 0 32px; }
+    .lx-nav .links { gap: 24px; margin-left: 32px; }
+    .lx-lead { padding: 72px 40px 48px; }
+    .lx-lead:before { left: 40px; top: 72px; bottom: 56px; }
+    .lx-lead h1 { font-size: 64px; }
+    .lx-section { padding: 76px 40px; }
+    .lx-section.dark { padding: 76px 40px; }
+    .lx-section h2 { font-size: 44px; }
+    .lx-foot { padding: 64px 40px 36px; }
+    .lx-foot .top { grid-template-columns: 1.4fr 1fr 1fr; gap: 36px; }
+  }
+  @media (max-width: 720px) {
+    .mp-bar { padding: 8px 16px; gap: 10px; font-size: 10px; letter-spacing: 0.14em; }
+    .lx-nav {
+      height: auto; min-height: 64px; padding: 12px 20px;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .lx-nav .wm { font-size: 18px; gap: 12px; }
+    .lx-nav .wm .crest { width: 36px; height: 36px; font-size: 13px; }
+    .lx-nav .wm .crest:before, .lx-nav .wm .crest:after { display: none; }
+    .lx-nav .links { display: none; }
+    .lx-nav .phone { margin-left: auto; gap: 10px; font-size: 13px; }
+    .lx-nav .phone .tag { font-size: 8px; padding: 4px 8px; letter-spacing: 0.18em; }
+    .lx-lead { padding: 48px 22px 32px; }
+    .lx-lead:before { left: 22px; top: 48px; bottom: 32px; }
+    .lx-lead .inner { padding-left: 20px; }
+    .lx-lead .eyebrow { gap: 12px; font-size: 10px; letter-spacing: 0.20em; }
+    .lx-lead .eyebrow:before { width: 28px; }
+    .lx-lead h1 { font-size: clamp(38px, 9vw, 52px); margin-top: 24px; max-width: none; }
+    .lx-lead .intro { margin-top: 22px; font-size: 16px; line-height: 1.66; }
+    .lx-lead .actions { margin-top: 32px; gap: 16px; }
+    .lx-btn-primary { padding: 13px 22px; font-size: 14px; gap: 10px; }
+    .lx-btn-ghost { font-size: 11px; }
+    .lx-section { padding: 56px 22px; }
+    .lx-section.dark { padding: 56px 22px; }
+    .lx-section h2 { font-size: clamp(30px, 7vw, 40px); max-width: none; line-height: 1.1; }
+    .lx-section .sec-intro { margin-top: 18px; font-size: 15px; line-height: 1.66; }
+    .lx-foot { padding: 48px 22px 28px; }
+    .lx-foot .top {
+      grid-template-columns: 1fr; gap: 32px;
+      padding-bottom: 32px;
+    }
+    .lx-foot .brand .word { font-size: 22px; }
+    .lx-foot .bot {
+      flex-direction: column; align-items: flex-start;
+      gap: 8px; font-size: 10px;
+    }
+    [dir="rtl"] .lx-lead:before { right: 22px; left: auto; }
+    [dir="rtl"] .lx-lead .inner { padding-right: 20px; padding-left: 0; }
+  }
 </style>
 </head>
 <body class="{% if preview_project %}mw-is-editor-preview{% endif %}">{% endspaceless %}

@@ -295,7 +295,24 @@ class LiveTemplateView(TemplateView):
     is X-Frame-Options: DENY — overriding to SAMEORIGIN on THIS view
     only keeps clickjacking protection everywhere else while letting
     the customer see their overrides render live next to the form.
+
+    T43 · the preview surface is duplicate content of the template
+    detail page (``/templates/<cat>/<slug>/``) from a search-engine
+    perspective. We set ``X-Robots-Tag: noindex, follow`` on every
+    preview response so crawlers do NOT index the preview URLs but
+    still follow links back to the canonical surfaces. The detail
+    page remains the single indexable sales page per template.
     """
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        # T43 · attach the noindex header regardless of status code
+        # (200 / 404 from the inner gates). Returns early for any
+        # non-HttpResponse (defensive — TemplateView always returns
+        # one, but a future middleware injection could short-circuit).
+        if hasattr(response, "headers"):
+            response.headers.setdefault("X-Robots-Tag", "noindex, follow")
+        return response
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
@@ -350,8 +367,19 @@ class LiveTemplateView(TemplateView):
         else:
             self.post = None
 
+        # D-051 Option A · cross-category archetype reuse support.
+        # An archetype is authored once under its original category
+        # folder (`live_templates/<origin-cat>/<archetype>/`) and can
+        # be reused by templates that live in different categories.
+        # The DNA dict can declare `skin_source_category` to point
+        # the resolver at the origin folder. Surfaced by T56 (albergo-
+        # borgo · travel category · reuses ultra-luxury-cinematic
+        # whose skin folder lives under real-estate/). If unset, falls
+        # back to the template's own category (the legacy behavior
+        # used by every Wave 1 reuse, which stayed within-category).
+        skin_category = self.dna.get("skin_source_category", category_slug)
         self._resolved_template = (
-            f"live_templates/{category_slug}/{archetype}/{page_kind}.html"
+            f"live_templates/{skin_category}/{archetype}/{page_kind}.html"
         )
 
         # Project overlay (D-085 Phase A.1). When ?project=<uuid> is
@@ -419,11 +447,12 @@ class LiveTemplateView(TemplateView):
             )
 
         # Phase X.4a Step 1C · corporate-suite imagery-sourcing policy.
-        # Pexels-only (CS-IMG-SRC-01) is a blocking rule for every *new*
-        # template on this archetype, with a documented legacy exemption
-        # for the ``business-corporate`` pool (Pragma) pending retro-
-        # curation. Archetype-gated so non-corporate-suite renders are
-        # untouched. Emits a ``UserWarning`` on failure; never raises.
+        # Pexels-only (CS-IMG-SRC-01) is a blocking rule for every
+        # template on this archetype. Sprint 1 T13 (2026-05-10) retired
+        # the legacy ``business-corporate`` (Pragma) carve-out — see
+        # ``imagery_policy.LEGACY_EXEMPT_KEYS`` (empty in main).
+        # Archetype-gated so non-corporate-suite renders are untouched.
+        # Emits a ``UserWarning`` on failure; never raises.
         if should_enforce_imagery(archetype):
             enforce_corporate_suite_imagery_policy(
                 self.dna.get("imagery_key"),

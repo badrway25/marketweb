@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+{% comment %}
+  T24 · 2026-05-11 · branded 500 Server Error.
+
+  IMPORTANT — this template does NOT extend base.html.
+
+  Django renders 500 outside the normal template-context pipeline:
+  the request-context processors are NOT run (the request is in a
+  failed state, so resolving them could trigger another exception
+  loop). That means no `request`, no `user`, no `csrf_token`, no
+  `messages`, and — critically — no resolution of `{% static %}`
+  via the static-files-finder when the project is in DEBUG=False
+  and STATIC_ROOT has not been collected yet.
+
+  Two consequences for the design:
+    1. We render a self-contained HTML document with inlined CSS,
+       no Django URL reverse, no template inheritance.
+    2. Navigation links are hard-coded to "/" and "/templates/"
+       — these are the canonical roots of the marketplace and
+       never moved across sprints. {% url %} would risk a second
+       exception if a URLConf import is itself the source of the
+       500.
+
+  Auto-picked by Django when DEBUG=False; dev still shows the
+  yellow debug 500 (with traceback) so the dev workflow stays
+  intact. No tech leaks, no stack traces, no exposed paths.
+{% endcomment %}
+<html lang="it" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Si è verificato un problema temporaneo sul server di MarketWeb. Riprova tra qualche minuto.">
+  <meta name="robots" content="noindex, follow">
+  <title>Problema temporaneo — MarketWeb</title>
+
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="apple-touch-icon" href="/static/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* Inlined design-system tokens so the page renders coherently
+       even if the staticfiles backend is itself the cause of the
+       500. Tokens mirror the production values in
+       static/css/design-system.css — keep in sync if those move. */
+    :root {
+      --mw-primary: #1B2A4A;
+      --mw-accent: #F59E0B;
+      --mw-accent-dark: #B45309;
+      --mw-neutral-50: #f8fafc;
+      --mw-neutral-600: #475569;
+      --mw-neutral-900: #0f172a;
+      --mw-font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --mw-font-body: 'Inter', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: var(--mw-font-body);
+      color: var(--mw-neutral-900);
+      background:
+        radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.10), transparent 55%),
+        radial-gradient(circle at 20% 90%, rgba(99, 102, 241, 0.08), transparent 50%),
+        var(--mw-neutral-50);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+    }
+    .topbar .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-family: var(--mw-font-display);
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--mw-primary);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .topbar .brand-mark {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      box-shadow: 0 2px 4px rgba(49, 46, 129, 0.32);
+    }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 1.25rem 5rem;
+    }
+    .wrap {
+      max-width: 640px;
+      text-align: center;
+    }
+    .badge-code {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--mw-accent-dark);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .badge-code .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--mw-accent);
+    }
+    h1 {
+      font-family: var(--mw-font-display);
+      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--mw-primary);
+      margin: 0 0 1.1rem;
+    }
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(120deg, var(--mw-accent), var(--mw-accent-dark));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    p.lead {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--mw-neutral-600);
+      margin: 0 auto 2rem;
+      max-width: 38rem;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.85rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-primary {
+      background: var(--mw-primary);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--mw-primary);
+      border: 1.5px solid rgba(27, 42, 74, 0.2);
+    }
+    .btn-outline:hover {
+      background: rgba(27, 42, 74, 0.04);
+    }
+    footer {
+      padding: 1.2rem 1.5rem;
+      text-align: center;
+      color: var(--mw-neutral-600);
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(15, 23, 42, 0.06);
+    }
+    @media (max-width: 480px) {
+      main { padding: 3rem 1rem 4rem; }
+      .actions { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark">M</span>
+      <span>MarketWeb</span>
+    </a>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <span class="badge-code"><span class="dot"></span>Errore 500 · problema temporaneo</span>
+      <h1>Qualcosa è andato storto da parte <em>nostra</em>, non da parte tua.</h1>
+      <p class="lead">Stiamo già ricevendo il segnale del problema. Riprova tra qualche minuto, oppure torna alla home — il resto del marketplace dovrebbe funzionare normalmente.</p>
+      <div class="actions">
+        <a href="/" class="btn btn-primary">Torna alla home</a>
+        <a href="/templates/" class="btn btn-outline">Sfoglia il catalogo</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    © MarketWeb — template web premium
+  </footer>
+</body>
+</html>

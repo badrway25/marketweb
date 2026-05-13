@@ -6,16 +6,21 @@ This module only knows about the *corporate-suite* archetype. The
 project-wide imagery sourcing standard shipped on Pexels (Session 47 ·
 ``docs/content-factory/imagery/sources.md``), and the corporate-suite
 imagery standard (``factory/standards/corporate-suite-imagery-standard.md``)
-elevates ``Pexels-only`` to a ``[BLOCKING]`` rule for any *new* template
-on this archetype (``CS-IMG-SRC-01``). The single documented exception
-is the ``business-corporate`` pool (Pragma) which pre-dates the X.3
-curation protocol and carries legacy Unsplash URLs pending retro-curation.
+elevates ``Pexels-only`` to a ``[BLOCKING]`` rule for every template on
+this archetype (``CS-IMG-SRC-01``).
+
+The legacy ``business-corporate`` (Pragma) carve-out was retired on
+2026-05-10 (Sprint 1 · T13 · AP-2 closure pass) — the pool now ships
+six curator-verified Pexels URLs and ``LEGACY_EXEMPT_KEYS`` is empty.
+The structure is preserved for forward-compatibility (a new pilot may
+land before its retro-curation closes) but the project ships zero
+exemptions today.
 
 What the helper enforces
 ------------------------
 ``CS-IMG-SRC-01`` [BLOCKING] · every URL in a corporate-suite pool must
-come from ``images.pexels.com``. The only tolerated exception is the
-``business-corporate`` legacy pool.
+come from ``images.pexels.com``. ``LEGACY_EXEMPT_KEYS`` is the documented
+escape valve and must stay empty in main.
 
 ``CS-IMG-POOL-01`` [BLOCKING] · a corporate-suite pool ships exactly six
 URLs in the canonical ``[hero, feature, portrait, portrait, detail, ambient]``
@@ -37,8 +42,9 @@ dataclass carrying:
     - ``key``                : the pool lookup key
     - ``is_known``           : whether the pool is registered in
                                ``preview_imagery.IMAGERY_CONFIG``
-    - ``is_legacy_exempt``   : whether this key is the tolerated
-                               Unsplash legacy pool
+    - ``is_legacy_exempt``   : whether this key is enrolled in
+                               ``LEGACY_EXEMPT_KEYS`` (empty in main
+                               since Sprint 1 T13 / AP-2 closure)
     - ``pexels_only``        : True when every URL is on Pexels
     - ``shape_is_canonical`` : True when the pool ships exactly 6 URLs
     - ``non_pexels_urls``    : list of non-Pexels URLs (empty when safe)
@@ -73,21 +79,21 @@ from urllib.parse import parse_qs, urlparse
 
 CORPORATE_SUITE_ARCHETYPE = "corporate-suite"
 
-# The legacy Unsplash pool pre-dates the X.3 curation protocol. Standard
-# documents this as the ``only`` exception to the Pexels-only rule, with a
-# retro-curation step pending. The validator flags the pool as
-# ``is_legacy_exempt`` so reviewers see it in the pending-retro column
-# instead of the blocking column.
-LEGACY_EXEMPT_KEYS: frozenset[str] = frozenset({
-    "business-corporate",
-})
+# Pools enrolled here are reported as ``is_legacy_exempt`` so reviewers
+# see them in the pending-retro column instead of the blocking column.
+# Empty in main since Sprint 1 T13 (2026-05-10 · AP-2 closure):
+# Pragma's ``business-corporate`` pool was retro-curated to Pexels and
+# removed from this set. The frozenset is preserved as the documented
+# escape valve for any future pilot that lands before its curation
+# closes — but main MUST ship with this set empty.
+LEGACY_EXEMPT_KEYS: frozenset[str] = frozenset()
 
 # Every corporate-suite template resolves to one of these pool keys via
 # ``template_dna["imagery_key"]``. New pilots extend the list once their
 # pack file lands; the validator uses the membership to decide whether to
 # run the policy at all.
 CORPORATE_SUITE_POOL_KEYS: frozenset[str] = frozenset({
-    "business-corporate",    # Pragma · legacy Unsplash (AP3)
+    "business-corporate",    # Pragma · Pexels (Sprint 1 T13 retro-curation · 2026-05-10)
     "business-fiscal",       # Fiscus · Pexels (W2-1)
     "business-coaching",     # Solaria Commit B · paused (would be Pexels)
     "business-stewardship",  # Continua · Pexels (X.4 design-orchestrator pass 1)

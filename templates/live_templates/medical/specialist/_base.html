@@ -484,6 +484,68 @@
     hyphens: auto;
   }
   body.mw-is-editor-preview .sp-nav .brand { max-width: 32ch; }
+
+  /* ============================================================
+     SPRINT 1 · T12 · AP-1 · CARDIO CHROME RESPONSIVE
+     Scales chrome elements (.mp-bar, .sp-nav, .sp-lead,
+     .sp-section, .sp-foot, .sp-grid-*) for mobile/tablet so
+     inner pages stay credible. Hero responsiveness is handled
+     locally in home.html. Desktop ≥1024 untouched.
+  ============================================================ */
+  @media (max-width: 1024px) {
+    .sp-nav { padding: 18px 32px; }
+    .sp-nav .left, .sp-nav .right { gap: 22px; }
+    .sp-lead { padding: 72px 40px 48px; }
+    .sp-lead h1 { font-size: 56px; }
+    .sp-section { padding: 64px 40px; }
+    .sp-section.dark { padding: 64px 40px; }
+    .sp-foot { padding: 56px 40px 28px; }
+    .sp-foot .top { grid-template-columns: 1.4fr 1fr 1fr; gap: 36px; }
+    .sp-grid-2 { gap: 40px 44px; }
+    .sp-grid-3 { grid-template-columns: repeat(2, 1fr); gap: 36px 40px; }
+    .sp-grid-4 { grid-template-columns: repeat(3, 1fr); gap: 28px 30px; }
+  }
+  @media (max-width: 720px) {
+    .mp-bar { padding: 8px 16px; gap: 10px; font-size: 10px; letter-spacing: 0.14em; }
+    .sp-nav {
+      grid-template-columns: 1fr auto;
+      padding: 14px 20px; gap: 12px;
+    }
+    .sp-nav .left { display: none; }
+    .sp-nav .right { display: none; }
+    .sp-nav .logo { gap: 10px; }
+    .sp-nav .logo .crest { width: 32px; height: 32px; font-size: 13px; }
+    .sp-nav .logo .word { font-size: 18px; }
+    .sp-lead { padding: 48px 22px 32px; }
+    .sp-lead .eyebrow { gap: 12px; font-size: 10px; letter-spacing: 0.18em; }
+    .sp-lead .eyebrow:before { width: 24px; }
+    .sp-lead h1 {
+      font-size: clamp(34px, 8.5vw, 48px);
+      max-width: none; margin-top: 20px;
+      line-height: 1.05;
+    }
+    .sp-lead .intro { margin-top: 20px; font-size: 17px; line-height: 1.5; }
+    .sp-lead .meta-row { margin-top: 32px; gap: 18px; }
+    .sp-lead .gold-btn,
+    .sp-lead .ghost-btn { font-size: 11px; letter-spacing: 0.14em; }
+    .sp-section { padding: 48px 22px; }
+    .sp-section.dark { padding: 48px 22px; }
+    .sp-section h2 { font-size: clamp(28px, 7vw, 38px); line-height: 1.1; max-width: none; }
+    .sp-section .sec-intro { font-size: 15px; line-height: 1.6; }
+    .sp-grid-2 { grid-template-columns: 1fr; gap: 32px; }
+    .sp-grid-3 { grid-template-columns: 1fr; gap: 28px; }
+    .sp-grid-4 { grid-template-columns: 1fr 1fr; gap: 24px 18px; }
+    .sp-foot { padding: 40px 22px 24px; }
+    .sp-foot .top {
+      grid-template-columns: 1fr; gap: 28px;
+      padding-bottom: 28px;
+    }
+    .sp-foot .brand .word { font-size: 20px; }
+    .sp-foot .bot {
+      flex-direction: column; align-items: flex-start;
+      gap: 8px; font-size: 10px;
+    }
+  }
 </style>
 </head>
 <body class="{% if preview_project %}mw-is-editor-preview{% endif %}">{% endspaceless %}

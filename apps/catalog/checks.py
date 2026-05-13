@@ -21,11 +21,12 @@ What these checks enforce
 
 2. ``corporate_suite.E002`` (T-P0-2) — every registered pool in
    ``CORPORATE_SUITE_POOL_KEYS`` minus ``LEGACY_EXEMPT_KEYS`` must ship
-   Pexels-only URLs. The legacy exemption on ``business-corporate``
-   (Pragma) is reported as a ``Warning`` (``corporate_suite.W001``) so
-   the grandfathered state stays visible in the output without blocking
-   the gate — this mirrors the ``is_legacy_exempt = True`` policy the
-   Step 1C helper already encodes.
+   Pexels-only URLs. ``LEGACY_EXEMPT_KEYS`` is empty in main since
+   Sprint 1 T13 (AP-2 closure on 2026-05-10 · the legacy carve-out for
+   Pragma's ``business-corporate`` pool was retired). Any future pool
+   enrolled there is reported as ``corporate_suite.W001`` (Warning)
+   so the pending-retro state stays visible without blocking the
+   gate — but the project ships zero W001 today.
 
 Why static (not DB) is correct here
 -----------------------------------
@@ -51,6 +52,12 @@ from typing import Iterable
 
 from django.core.checks import Error, Warning as ChecksWarning
 
+from apps.catalog.cs_contrast_audit import (
+    LEGACY_AP4_PALETTE_EXEMPT_SLUGS,
+    WCAG_AA_BODY,
+    audit_chrome_for_ap4,
+    audit_enrolled_palettes,
+)
 from apps.catalog.imagery_policy import (
     CORPORATE_SUITE_ARCHETYPE,
     CORPORATE_SUITE_POOL_KEYS,
@@ -208,4 +215,163 @@ def check_corporate_suite_imagery(app_configs, **kwargs):  # noqa: ARG001
                     id="corporate_suite.E003",
                 )
             )
+    return findings
+
+
+# ---------------------------------------------------------------------------
+# Phase X.4b · AP-4 mechanical contrast enforcement
+# ---------------------------------------------------------------------------
+
+def check_corporate_suite_accent_contrast(app_configs, **kwargs):  # noqa: ARG001
+    """AP-4 pass 1 · Fail when an enrolled corporate-suite accent fails the
+    WCAG AA body floor against its own primary AND that palette is not on
+    the documented legacy exemption list.
+
+    Each defect surfaces as ``django.core.checks.Error`` with id
+    ``corporate_suite.E004``. Documented legacy debt surfaces as
+    ``django.core.checks.Warning`` with id ``corporate_suite.W003`` so it
+    stays visible on every ``manage.py check`` invocation without blocking
+    CI on the in-flight remediation.
+
+    Cross-references
+    ----------------
+    - DS-16 (factory design standard): never use ``--accent`` as text on
+      ``--primary``. The four chrome rules currently violating this for
+      Fiscus / Solaria / Cornice / Causa are the AP-4 baseline carried by
+      ``apps.catalog.cs_contrast_audit.KNOWN_AP4_BASELINE_SELECTORS``.
+    - BO-08 (factory scorecard override): ``color: var(--accent)`` used
+      as text on ``var(--primary)`` is an automatic override; the build-
+      time gate makes a *new* failing palette catch on this rule before
+      the gatekeeper walk is scheduled.
+    - BLOCK-11 (factory blocking-rules): WCAG AA body text on a sampled
+      pixel; the live-walk auditor still runs (BR-20) — this build-time
+      gate is the *upstream* sentinel.
+    """
+    findings: list[Error | ChecksWarning] = []
+    for f in audit_enrolled_palettes():
+        if f.passes_aa_text_floor:
+            continue
+        if f.is_legacy_exempt:
+            findings.append(
+                ChecksWarning(
+                    (
+                        f"corporate-suite template {f.slug!r} ships an accent "
+                        f"{f.accent!r} on primary {f.primary!r} with a contrast "
+                        f"ratio of {f.accent_on_primary:.2f}:1 (AA body floor "
+                        f"{WCAG_AA_BODY:.1f}:1). The palette accent is too "
+                        "weak to read as text on the dark band, but the "
+                        "chrome safe-degrades it via the "
+                        "`--accent-text-on-primary-safe` token (see "
+                        "apps.catalog.theme_safety) — italic emphasis on "
+                        "dark bands renders cream-on-dark instead of "
+                        "unreadable accent-on-dark. This Warning surfaces "
+                        "the palette weakness so it stays visible during "
+                        "review; no remediation blocks CI."
+                    ),
+                    obj=f.slug,
+                    id="corporate_suite.W003",
+                )
+            )
+            continue
+        findings.append(
+            Error(
+                (
+                    f"corporate-suite template {f.slug!r} ships an accent "
+                    f"{f.accent!r} that fails the AA body floor on its "
+                    f"primary {f.primary!r}: contrast ratio "
+                    f"{f.accent_on_primary:.2f}:1, required ≥ "
+                    f"{WCAG_AA_BODY:.1f}:1 (DS-16 / BO-08 / BLOCK-11). The "
+                    "archetype's chrome paints accent as text on dark "
+                    "bands (.cs-section.dark em, .cs-cta h2 em, .cs-foot "
+                    "em, .cs-foot-col--whistleblowing — see "
+                    "apps.catalog.cs_contrast_audit."
+                    "KNOWN_AP4_BASELINE_SELECTORS) so a failing accent "
+                    "lands as unreadable italic emphasis on the live "
+                    "skin. Pick an accent with ≥ 4.5:1 against primary, "
+                    "OR if the palette is intentional add the slug to "
+                    "LEGACY_AP4_PALETTE_EXEMPT_SLUGS together with a "
+                    "follow-up plan reference (the exemption surfaces as "
+                    "a visible Warning, not a silent pass)."
+                ),
+                hint=(
+                    "Tools: apps.catalog.cs_contrast_audit."
+                    "palette_pair_audit(slug, palette) returns every "
+                    "canonical pair (accent_on_primary, secondary_on_"
+                    "primary, accent_on_paper, ...). Pick a darker / "
+                    "brighter accent until accent_on_primary clears 4.5."
+                ),
+                obj=f.slug,
+                id="corporate_suite.E004",
+            )
+        )
+    return findings
+
+
+def check_corporate_suite_chrome_accent_text(app_configs, **kwargs):  # noqa: ARG001
+    """AP-4 pass 1 · Fail when the corporate-suite live chrome contains a
+    ``color: var(--accent)`` rule whose selector touches a known dark-band
+    class AND that selector is NOT pinned in
+    ``KNOWN_AP4_BASELINE_SELECTORS``.
+
+    Each *new* dark-band accent-text rule surfaces as
+    ``django.core.checks.Error`` with id ``corporate_suite.E005``. A
+    pinned baseline selector that no longer appears in the chrome
+    surfaces as ``django.core.checks.Warning`` ``corporate_suite.W004``
+    (a hint to clean up the baseline once a remediation pass deletes
+    one of the four documented sites — keeping the regression guard
+    accurate).
+
+    Cross-references
+    ----------------
+    - ``apps.catalog.cs_contrast_audit.audit_chrome_for_ap4`` — scanner.
+    - DS-16 / BR-20 / BO-08 / BLOCK-11 (same rules as E004).
+    """
+    findings: list[Error | ChecksWarning] = []
+    report = audit_chrome_for_ap4()
+    for finding in report.regressions:
+        findings.append(
+            Error(
+                (
+                    f"corporate-suite chrome contains a new dark-band "
+                    f"accent-text rule at {finding.file_path}:"
+                    f"{finding.line_no} — selector "
+                    f"{finding.normalised_selector!r}. DS-16 / BO-08 / "
+                    "BLOCK-11 — `color: var(--accent)` rendered as text "
+                    "on a dark band fails AA on multiple enrolled "
+                    "palettes (Fiscus / Solaria / Cornice / Causa). The "
+                    "AP-4 baseline pins exactly the four legacy "
+                    "selectors that already shipped this pattern; any "
+                    "new selector adds to the trap and must be lifted "
+                    "onto a safe-degrading token, removed, or — if the "
+                    "addition is deliberate — added to "
+                    "KNOWN_AP4_BASELINE_SELECTORS together with a "
+                    "follow-up entry in the AP-4 pass-2 plan."
+                ),
+                hint=(
+                    "If the rule is not text (e.g. it sets a "
+                    "border-color or outline-color), restate it as such — "
+                    "the scanner intentionally only flags the literal "
+                    "`color: var(--accent)` text declaration."
+                ),
+                obj=finding.normalised_selector,
+                id="corporate_suite.E005",
+            )
+        )
+    for stale in sorted(report.baseline_misses):
+        findings.append(
+            ChecksWarning(
+                (
+                    f"corporate-suite AP-4 baseline selector {stale!r} no "
+                    "longer appears in the chrome — the regression guard "
+                    "is now slightly over-strict. After verifying the "
+                    "selector was deleted intentionally (not renamed), "
+                    "remove it from "
+                    "apps.catalog.cs_contrast_audit."
+                    "KNOWN_AP4_BASELINE_SELECTORS so the baseline "
+                    "stays accurate."
+                ),
+                obj=stale,
+                id="corporate_suite.W004",
+            )
+        )
     return findings

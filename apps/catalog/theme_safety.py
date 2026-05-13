@@ -176,6 +176,21 @@ def enrich_corporate_suite_theme(
     out["primary_contrast"] = round(primary_contrast, 2)
     out["accent_on_primary_contrast"] = round(accent_on_primary, 2)
 
+    # Phase X.4b · AP-4 pass 2 — safe-degrading token for the six chrome
+    # selectors that paint accent text on a dark band (AP-4 baseline,
+    # see apps.catalog.cs_contrast_audit.KNOWN_AP4_BASELINE_SELECTORS).
+    # When the palette accent clears the AA body floor on its primary,
+    # the token resolves to var(--accent) — Pragma keeps its emerald
+    # italic emphasis. When the palette fails (Fiscus / Solaria /
+    # Cornice / Causa / Continua), the token degrades to var(--on-dark)
+    # so the same italic emphasis stays legible in cream on dark.
+    # Consumed by `_base.html` :root via {{ theme.accent_text_on_primary_safe }}.
+    out["accent_text_on_primary_safe"] = (
+        "var(--accent)"
+        if accent_on_primary >= WCAG_AA_BODY
+        else "var(--on-dark)"
+    )
+
     if warn and not is_safe:
         slug_suffix = f" for template {template_slug!r}" if template_slug else ""
         warnings.warn(

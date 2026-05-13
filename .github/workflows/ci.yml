@@ -1,0 +1,131 @@
+# Sprint 0 · T6 · CI baseline.
+#
+# What this gate enforces (must stay green to merge):
+#   1. Pip install completes against the pinned requirements.txt.
+#   2. `python manage.py check` is clean on the dev settings module.
+#   3. `python manage.py test apps.catalog` returns OK (205 tests as of
+#      Sprint 1 · T15; floor in CI is whatever the suite ships).
+#
+# What is intentionally NOT a blocking gate yet:
+#   - `ruff check .` — runs as a separate non-blocking job for visibility.
+#     The repo carries pre-existing lint debt (~24 ruff findings across
+#     apps/ + marketweb/, none security-relevant). Promoting ruff to
+#     blocking is a separate hygiene pass; doing it here would either
+#     fail Day-1 or silently auto-fix prod code as a side-effect of CI
+#     wiring. Both are wrong shapes for this baseline.
+#   - `manage.py check --deploy` against the prod profile — runs in a
+#     SEPARATE job with synthetic env so a misconfigured prod profile
+#     fires at PR time instead of at deploy time. Listed as continue-
+#     on-error today because the prod profile expects an HSTS-eligible
+#     hostname; downgrading to non-blocking until the deploy hostname
+#     is real.
+#   - The `docker build` smoke — verified locally in Sprint 0 · T5 but
+#     not yet wired into CI to keep the run minute budget low. Add via
+#     a `build-push-action` step in a follow-up pass when we actually
+#     want to publish the image to a registry.
+#
+# Triggers cover both push (incl. all `phase-*` branches the team
+# currently spins) and pull_request to main/master. PR-only gating is
+# avoided so the existing topic branches surface failures sooner.
+
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - "phase-*"
+      - "sprint-*"
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  # ── Job 1: BLOCKING gate — checks + test suite ──────────────────────
+  tests:
+    name: tests · python 3.13
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Django system check (dev profile)
+        run: python manage.py check
+
+      - name: Django test suite (apps.catalog)
+        run: python manage.py test apps.catalog --verbosity=1 --noinput
+
+  # ── Job 2: NON-BLOCKING — synthetic prod profile system check ───────
+  deploy-check:
+    name: deploy-check · prod profile (non-blocking)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    env:
+      DJANGO_SETTINGS_MODULE: marketweb.settings.prod
+      # Synthetic prod env — ENOUGH to make the prod profile importable.
+      # NOT representative of a real deployment.
+      DJANGO_SECRET_KEY: ci-synthetic-secret-key-${{ github.run_id }}-not-for-prod
+      DJANGO_ALLOWED_HOSTS: ci.example.com
+      DJANGO_CSRF_TRUSTED_ORIGINS: https://ci.example.com
+      DJANGO_ALLOW_SQLITE_PROD: "1"
+      DJANGO_SECURE_SSL_REDIRECT: "0"
+      DJANGO_SECURE_HSTS_SECONDS: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Django check --deploy (synthetic prod env)
+        run: python manage.py check --deploy
+
+  # ── Job 3: NON-BLOCKING — ruff lint surface ─────────────────────────
+  lint:
+    name: lint · ruff (non-blocking)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install ruff
+        run: pip install ruff==0.15.9
+
+      - name: Ruff check (apps/ + marketweb/)
+        # Surface the count without auto-fixing in CI — auto-fix in PR
+        # would mutate prod code as a CI side-effect. Run `ruff check
+        # --fix .` locally instead.
+        run: ruff check apps/ marketweb/ --output-format=github

@@ -548,6 +548,79 @@
   body.mw-is-editor-preview .mp-bar { display: none; }
   body.mw-is-editor-preview { padding-top: 0 !important; }
   .sl-nav .wm { max-width: 32ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ============================================================
+     SPRINT 1 · T12 · AP-1 · ELEVATE CHROME RESPONSIVE
+     Scales chrome elements (.mp-bar, .sl-nav, .sl-lead,
+     .sl-section, .sl-foot) so inner pages stay credible on
+     mobile/tablet. Hero responsiveness is page-local in
+     home.html and demo.html. Desktop ≥1024 untouched.
+  ============================================================ */
+  @media (max-width: 1024px) {
+    .sl-nav-wrap { padding: 24px 24px 0; }
+    .sl-nav { padding: 8px 8px 8px 22px; }
+    .sl-nav .wm { padding-right: 22px; margin-right: 22px; }
+    .sl-nav .links { gap: 22px; }
+    .sl-lead { padding: 64px 24px 48px; }
+    .sl-lead h1 { font-size: 60px; }
+    .sl-section { padding: 76px 24px; }
+    .sl-section h2 { font-size: 42px; }
+    .sl-foot { padding: 56px 24px 28px; }
+    .sl-foot .top { grid-template-columns: 1.4fr 1fr 1fr; gap: 36px; }
+  }
+  @media (max-width: 720px) {
+    .mp-bar { padding: 8px 16px; gap: 10px; font-size: 10px; letter-spacing: 0.14em; }
+    .sl-nav-wrap { padding: 18px 16px 0; }
+    .sl-nav {
+      width: 100%;
+      padding: 8px 8px 8px 16px;
+      border-radius: 999px;
+    }
+    .sl-nav .wm {
+      padding-right: 14px; margin-right: 12px;
+      font-size: 16px; gap: 8px;
+    }
+    .sl-nav .links { display: none; }
+    .sl-nav .cta {
+      margin-left: auto;
+      padding: 9px 18px; font-size: 11px;
+    }
+    .sl-lead { padding: 48px 22px 32px; }
+    .sl-lead .eyebrow {
+      padding: 7px 14px; gap: 10px;
+      font-size: 10px; letter-spacing: 0.08em;
+    }
+    .sl-lead h1 {
+      margin-top: 22px;
+      font-size: clamp(36px, 9vw, 52px);
+      letter-spacing: -0.025em; line-height: 1.04;
+    }
+    .sl-lead .intro { margin-top: 22px; font-size: 16px; line-height: 1.6; }
+    .sl-lead .actions {
+      margin-top: 28px;
+      flex-direction: column;
+      gap: 14px; width: 100%;
+    }
+    .sl-lead .actions .sl-btn,
+    .sl-lead .actions .sl-link { width: 100%; justify-content: center; }
+    .sl-btn { padding: 13px 24px; font-size: 13px; }
+    .sl-section { padding: 56px 22px; }
+    .sl-section h2 {
+      font-size: clamp(28px, 7vw, 38px);
+      line-height: 1.08; max-width: none;
+    }
+    .sl-section .sec-intro { font-size: 15px; line-height: 1.6; }
+    .sl-foot { padding: 40px 22px 24px; margin-top: 48px; }
+    .sl-foot .top {
+      grid-template-columns: 1fr; gap: 28px;
+      padding-bottom: 28px;
+    }
+    .sl-foot .brand .word { font-size: 22px; }
+    .sl-foot .bot {
+      flex-direction: column; align-items: flex-start;
+      gap: 8px; font-size: 10px;
+    }
+  }
 </style>
 </head>
 <body class="{% if preview_project %}mw-is-editor-preview{% endif %}">{% endspaceless %}

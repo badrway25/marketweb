@@ -51,6 +51,14 @@
        band. */
     --on-primary:      {{ theme.on_primary|default:"#eef0f3" }};
     --on-primary-soft: var(--on-dark-2);
+    /* Phase X.4b · AP-4 pass 2 — safe-degrading token for the six AP-4
+       baseline chrome selectors (italic em on dark bands). Resolves to
+       var(--accent) when the palette accent passes the AA body floor on
+       its primary (Pragma); degrades to var(--on-dark) when the accent
+       fails (Fiscus / Solaria / Cornice / Causa / Continua) so the
+       italic emphasis stays legible cream-on-dark. Computed by
+       theme_safety.enrich_corporate_suite_theme(...). */
+    --accent-text-on-primary-safe: {{ theme.accent_text_on_primary_safe|default:"var(--accent)" }};
     --heading: '{{ theme.heading_font }}', Georgia, 'Times New Roman', serif;
     --body:    '{{ theme.body_font }}', system-ui, sans-serif;
 
@@ -481,7 +489,11 @@
      from `.cs-foot p, .cs-foot a` rules above. CS-FOOT-02 legal row
      at the bottom keeps the existing whistleblowing legal link. */
   .cs-foot-col--whistleblowing .cs-foot-whistle-eyebrow {
-    color: var(--accent);
+    /* AP-4 pass 2: was `color: var(--accent)`. Lifted onto the
+       safe-degrading token so palettes whose accent fails AA on
+       primary (Fiscus / Solaria / Cornice / Causa / Continua) read
+       cream-on-dark, while Pragma keeps the emerald eyebrow. */
+    color: var(--accent-text-on-primary-safe);
     font-family: var(--body); font-size: 10px; font-weight: 700;
     letter-spacing: 0.22em; text-transform: uppercase;
     padding: 0 0 6px;
@@ -494,7 +506,9 @@
     border-bottom: 1px solid rgba(238,240,243,0.24);
   }
   .cs-foot-col--whistleblowing a:hover {
-    color: var(--accent); border-bottom-color: var(--accent);
+    /* AP-4 pass 2: text color lifted onto the safe-degrading token.
+       Border keeps the accent (decorative ≤ 1.5 px DS-15 sub-clause). */
+    color: var(--accent-text-on-primary-safe); border-bottom-color: var(--accent);
   }
 
   /* ============================================================
@@ -586,7 +600,10 @@
   .cs-section.dark h2,
   .cs-section.dark h3,
   .cs-section.dark h4 { color: var(--on-dark); }
-  .cs-section.dark em { color: var(--accent); }
+  /* AP-4 pass 2: italic emphasis on dark-section descendants now
+     resolves through the safe-degrading token. Pragma reads
+     emerald-italic; legacy AP-4 palettes degrade to cream. */
+  .cs-section.dark em { color: var(--accent-text-on-primary-safe); }
   /* CS-PAL-04 safety net · any descendant of a dark corporate-suite
      surface (`.cs-section.dark`, `.cs-kpi-band`, `.cs-cta`, `.cs-foot`,
      `.cs-nav`) must resolve text color against `--on-dark`, never against
@@ -610,7 +627,9 @@
   /* Generic accent-on-dark emphasis stays as punctuation, never body text.
      Scoping to the inline `em` keeps pull-quotes legal without letting a
      future <span class="accent"> paragraph escape the legibility rule. */
-  .cs-kpi-band em, .cs-cta em, .cs-foot em { color: var(--accent); }
+  /* AP-4 pass 2: italic em on KPI / CTA / footer dark bands lifted
+     onto the safe-degrading token (see _base.html `:root` declaration). */
+  .cs-kpi-band em, .cs-cta em, .cs-foot em { color: var(--accent-text-on-primary-safe); }
   .cs-section .sec-label,
   .cs-sec-label {
     font-family: var(--body); font-size: 10px; font-weight: 700;

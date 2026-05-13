@@ -29,6 +29,8 @@ from apps.editor.schema import (
     validate_key_path,
     validate_value,
 )
+from apps.core.audit import audited
+from apps.core.models import AuditLogEntry
 from apps.projects.models import (
     CustomerProject,
     ProjectAsset,
@@ -304,8 +306,22 @@ def save_design_token_edits(
 # Publish / revise
 # ---------------------------------------------------------------------------
 
+@audited(
+    action=AuditLogEntry.Action.PROJECT_PUBLISHED,
+    target_arg="project",
+)
 @transaction.atomic
 def publish_project(*, project: CustomerProject, editor) -> CustomerProject:
+    """Customer project publish transition (draft → published).
+
+    T35 · the ``@audited`` decorator writes an explicit
+    ``project_published`` AuditLogEntry on successful return.
+    ``CustomerProject`` is NOT in ``TRACKED_MODELS`` (the model is
+    customer-content, not staff-governance, so the T31 signal does
+    not run on it) — so this T35 explicit row is the ONLY audit
+    trail of the publish event. Pre-T35 this flow was invisible to
+    the audit feed.
+    """
     ProjectRevision.objects.create(
         project=project,
         reason=ProjectRevision.Reason.PUBLISH,
@@ -319,8 +335,17 @@ def publish_project(*, project: CustomerProject, editor) -> CustomerProject:
     return project
 
 
+@audited(
+    action=AuditLogEntry.Action.PROJECT_UNPUBLISHED,
+    target_arg="project",
+)
 @transaction.atomic
 def unpublish_project(*, project: CustomerProject, editor) -> CustomerProject:
+    """Customer project unpublish transition (published → draft).
+
+    T35 · same rationale as publish_project — the only audit trace
+    for the unpublish event lives in the T35 explicit row.
+    """
     ProjectRevision.objects.create(
         project=project,
         reason=ProjectRevision.Reason.UNPUBLISH,

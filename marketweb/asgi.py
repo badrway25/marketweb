@@ -11,6 +11,9 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marketweb.settings')
+# Sprint 0 · T1+T2+T3: ASGI defaults to the prod profile (same
+# rationale as wsgi.py). Override via env when running locally
+# under daphne/uvicorn for debugging.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'marketweb.settings.prod')
 
 application = get_asgi_application()

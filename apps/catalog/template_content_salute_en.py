@@ -64,7 +64,7 @@ SALUTE_CONTENT_EN: dict[str, Any] = {
 
     "home": {
         "eyebrow":   "Multi-specialty clinic · Milan Centrale · since 1998",
-        "headline":  'Your health, our <em>everyday</em> work.',
+        "headline":  'Booked in thirty seconds, <em>doctors you will want to see again</em>.',
         "subhead":
             "More than 40 specialists, joined-up diagnostic pathways and a "
             "patient experience designed to put you at ease from the very "

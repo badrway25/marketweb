@@ -65,7 +65,13 @@ def customer_signup(request):
         form = CustomerSignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            auth_login(request, user)
+            # T23 added a second auth backend (axes); when more than
+            # one is configured Django needs an explicit backend arg
+            # on direct `login()` calls (no ambiguity from `authenticate`).
+            auth_login(
+                request, user,
+                backend="django.contrib.auth.backends.ModelBackend",
+            )
             messages.success(
                 request,
                 f"Benvenuto, {user.username}! Il tuo account è pronto.",

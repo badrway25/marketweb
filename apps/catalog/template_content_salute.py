@@ -138,7 +138,7 @@ SALUTE_CONTENT_IT: dict[str, Any] = {
     # ─── HOME ────────────────────────────────────────────────────
     "home": {
         "eyebrow":   "Poliambulatorio · Milano Centrale · dal 1998",
-        "headline":  'La tua salute, il nostro <em>lavoro</em> quotidiano.',
+        "headline":  'Visita prenotata in trenta secondi, <em>medici che vorrai rivedere</em>.',
         "subhead":
             "Oltre 40 specialisti, percorsi diagnostici integrati e un'esperienza "
             "paziente pensata per metterti a tuo agio dal primo contatto. "

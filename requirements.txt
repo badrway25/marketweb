@@ -18,8 +18,43 @@ stripe==14.1.0
 celery==5.6.2
 django-celery-beat==2.9.0
 
-# Database (production)
-# psycopg2-binary==2.9.x  # uncomment for PostgreSQL
+# Database (production · enabled by Sprint 0 · T5+T6 · Docker/CI baseline)
+# psycopg ships a binary build that bundles libpq, so no apt libpq-dev
+# needed in the Dockerfile.
+psycopg[binary]==3.2.3
+
+# WSGI runtime (production · enabled by Sprint 0 · T5+T6)
+# Default entrypoint of the Dockerfile / docker-compose web service.
+gunicorn==23.0.0
+
+# Observability (production · enabled by T19 · Sentry SDK)
+# Init gated by SENTRY_DSN env var — stays dormant in dev/CI/local.
+# See marketweb/sentry.py + marketweb/settings/prod.py for wiring.
+sentry-sdk[django]==2.19.2
+
+# Static-file serving (production · enabled by T22 · WhiteNoise)
+# Wired only in marketweb/settings/prod.py (MIDDLEWARE + STORAGES).
+# Lets gunicorn alone serve /static/ with cache headers + gzip,
+# without requiring nginx in front. Dev uses Django's runserver
+# static autoserver (no WhiteNoise on the dev path).
+whitenoise==6.8.2
+
+# Auth brute-force protection (T23)
+# Wired in marketweb/settings/base.py (INSTALLED_APPS + AUTH_BACKENDS
+# + MIDDLEWARE + AXES_*). Locks out (IP, username) combos after N
+# failed attempts. Threshold + cool-off env-driven via AXES_*.
+django-axes==7.0.2
+
+# Admin 2FA · TOTP-based second factor on /admin/ (T27 · 2026-05-11)
+# Wires OTPAdminSite (replaces Django's default admin.site) so admin
+# login requires password + 6-digit TOTP code from an authenticator
+# app (Google Authenticator / Authy / 1Password / Bitwarden / ...).
+# Public /account/login/ is intentionally unaffected (customer 2FA
+# is out-of-scope this pass).
+# Bootstrap a superuser's TOTP device with:
+#     python manage.py setup_admin_totp <username>
+# See docs/bootstrap.md for the full enrollment workflow.
+django-otp==1.7.0
 
 # Dev tools
 black==26.3.1

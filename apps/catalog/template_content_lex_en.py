@@ -56,7 +56,7 @@ LEX_CONTENT_EN: dict[str, Any] = {
     # ════════════════════════════════════════════════════════════
     "home": {
         "eyebrow":    "Studio Legale Ferri · Rome · Milan · since 1962",
-        "headline":   "Competence, <em>discretion</em>, results.",
+        "headline":   "Sixty-two years at the bar, <em>one signature</em> on your file.",
         "intro":
             "We advise undertakings, families and professionals with "
             "a rigorous, tailored and discreet approach. Sixty-two "

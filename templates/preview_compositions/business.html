@@ -1,4 +1,63 @@
 {% extends "preview_compositions/_base.html" %}
+{% comment %}
+================================================================
+  ⚠ FROZEN — DO NOT USE FOR NEW TEMPLATES (AP-3 + AP-14 closure)
+  Sprint 1 · T14 · 2026-05-10
+================================================================
+
+This file is the LEGACY category-level fallback composition for the
+`business` slug. It is preserved under D-036 (DNA system is strictly
+additive — no deletion of additive fallbacks) but it MUST NOT be
+rendered for any published template. The two business templates that
+ship today (Pragma · `pragma-corporate-suite`, Elevate ·
+`elevate-startup-landing`) both have DNA entries and are routed to
+their per-archetype compositions by `_resolve_composition` in
+`apps/catalog/management/commands/generate_previews.py:43-57`:
+
+    business + corporate-suite        → business/corporate-suite.html
+    business + startup-saas-landing   → business/startup-saas-landing.html
+
+Rendering THIS file ships HARDCODED Pragma literals on top of any
+synthetic brand context — every future template that accidentally
+opts into the legacy fallback would display Pragma's CTA pill,
+client wordmarks, KPI strip, testimonial, and service cards under
+its own brand name. That is an identity-crash bug, not a styling
+issue.
+
+Hardcoded Pragma-bleed literals currently in this file (line refs):
+
+    :151  pill           "Consulenza strategica · B2B"
+    :159  clients label  "Hanno scelto Pragma"
+    :161-165 client logos NORDEA®, VECTRA, FINOVA, ATLAS, "+ 80"
+    :174  testimonial    Marco Bianchi · CEO, Vectra Industries
+    :178  testimonial q  "Hanno trasformato il nostro processo…"
+    :195-199 KPI strip   "200+ clienti", "15y", "98% ret.", "€45M"
+    :208-211 services    Pragma's 4 consulting service cards
+
+Verification contract (must hold AFTER any change to this file):
+
+    grep -n "Pragma\|pragmacorp\|Marco Bianchi" \
+      templates/preview_compositions/ \
+      | grep -v business.html
+    → must return empty (the literals stay quarantined here)
+
+If you are reviewing this file because you are about to ship a new
+business template:
+  1. STOP. Do not render through this composition.
+  2. Add a DNA entry for your template in `apps/catalog/template_dna.py`
+     under the matching archetype.
+  3. Render through `business/<archetype>.html` instead. If the
+     archetype-specific composition does not exist yet, create it
+     under that path — do NOT touch this file.
+
+Audit refs:
+  • factory/references/anti-pattern-library.md §AP-3 + §AP-14
+  • factory/reports/audit-2026-05-10/AUDIT_FULL_2026-05-10.md §H7 + §T14
+  • factory/reports/execution-2026-05-10/SPRINT1_T14_AP3_AP14_FROZEN_BANNER.md
+
+Status: FROZEN · Closure: AP-3 + AP-14 · Owner: AG-9 Fixer
+================================================================
+{% endcomment %}
 {% block extra_css %}
   .b-hero {
     position: absolute; inset: 0 0 320px 0;

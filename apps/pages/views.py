@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.urls import reverse
 from django.views.generic import TemplateView
 
@@ -7,6 +8,38 @@ from apps.catalog.models import (
     ProfessionCluster,
     WebTemplate,
 )
+
+
+# T43 · /robots.txt — dynamic so the Sitemap line is built from the
+# request host (no hardcoded domain). Crawlers are explicitly told to
+# stay out of the private surfaces (admin, accounts, editor,
+# projects, api) — these are NOT noindex-tagged at the response
+# level (some are LoginRequired and would 302 to /account/login/),
+# but the robots.txt disallow is the canonical signal to a
+# well-behaved crawler. Public catalog surfaces (templates listing,
+# detail, category) are NOT disallowed — they SHOULD be crawled.
+_ROBOTS_TEMPLATE = (
+    "User-agent: *\n"
+    "Disallow: /admin/\n"
+    "Disallow: /account/\n"
+    "Disallow: /editor/\n"
+    "Disallow: /projects/\n"
+    "Disallow: /api/\n"
+    "\n"
+    "Sitemap: {sitemap_url}\n"
+)
+
+
+def robots_txt(request):
+    """Render robots.txt with an absolute Sitemap URL.
+
+    Built absolutely so a crawler that picked up the file from a
+    canonical host (https://marketweb.example) can dereference
+    /sitemap.xml against the same origin without ambiguity.
+    """
+    sitemap_url = request.build_absolute_uri(reverse("django.contrib.sitemaps.views.sitemap"))
+    body = _ROBOTS_TEMPLATE.format(sitemap_url=sitemap_url)
+    return HttpResponse(body, content_type="text/plain")
 
 
 # X.2 Commit 5 · curated subsets surfaced on the homepage. Keeping

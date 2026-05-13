@@ -1,0 +1,84 @@
+# Sprint 0 · T5 · keep the build context small + safe.
+# Anything not listed here is COPY-ed into the image — keep this list
+# tight or the build-time cache misses for free.
+
+# VCS metadata
+.git
+.gitignore
+.gitattributes
+
+# Python build/cache artifacts
+__pycache__
+*.py[cod]
+*$py.class
+*.egg-info
+build/
+dist/
+.eggs/
+.pytest_cache
+.coverage
+htmlcov/
+.tox/
+.mypy_cache
+.ruff_cache
+
+# Virtualenvs
+.venv
+venv
+env
+
+# Local Django state · NEVER ship dev DB or regenerable caches
+db.sqlite3
+db.sqlite3-journal
+media/preview_imagery
+staticfiles
+static_collected
+
+# Local secrets · never bake into an image
+.env
+.env.local
+.env.production
+*.pem
+*.key
+
+# IDE / OS
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Browser-automation throwaway state
+.playwright-mcp
+.playwright-cli
+
+# Session / debug screenshots committed at the repo root
+*.png
+
+# Sub-projects that ship under their own pipeline
+design-orchestrator
+127-design
+
+# Factory governance + reports — large, not needed in the runtime
+factory
+
+# Long-form internal docs · reduce image size by ~5MB
+SESSION_LOG.md
+DECISIONS.md
+TODO_NEXT.md
+AGENT_HANDOFF.md
+PROFESSION_PRESET_TAXONOMY.md
+CATEGORY_ROADMAP.md
+CATALOG_EXPANSION_STRATEGY.md
+EDITOR_SCHEMA_BLUEPRINT.md
+BRAND_SYSTEM_GUIDELINES.md
+CONTENT_GUIDELINES.md
+ARCHITECTURE.md
+CLAUDE.md
+
+# Throwaway helper guard from Session 47 (mirrored from .gitignore)
+_pexels_helper.py
+_img_audit.html
+_verify.py
+media/pexels

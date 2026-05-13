@@ -4,6 +4,53 @@
 {% block title %}{{ template.name|default:"Template Detail" }}{% endblock %}
 {% block meta_description %}{{ template.short_description|default:"Scopri questo template web premium su MarketWeb. Personalizzabile, moderno e pronto all'uso." }}{% endblock %}
 
+{# T43 · template detail SEO ·························································
+   The detail page is the canonical sales surface for each template.
+   Preview URLs (``.../preview/``) carry ``X-Robots-Tag: noindex,
+   follow`` so authority consolidates here. OG/Twitter use the
+   template name + short_description; image uses the first
+   thumbnail/preview TemplateAsset when available. JSON-LD ships a
+   Product schema so Google can surface rich snippets (price, brand,
+   category) in the SERPs. #}
+{% block og_type %}product{% endblock %}
+{% block og_title %}{{ template.name }} — MarketWeb{% endblock %}
+{% block og_description %}{{ template.short_description|default:template.description|default:"Template web premium personalizzabile su MarketWeb." }}{% endblock %}
+{% block twitter_title %}{{ template.name }} — MarketWeb{% endblock %}
+{% block twitter_description %}{{ template.short_description|default:template.description|default:"Template web premium personalizzabile su MarketWeb." }}{% endblock %}
+
+{% block og_image %}{% with og_asset=template.assets.all|dictsort:"order"|first %}{% if og_asset and og_asset.file %}
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ og_asset.file.url }}">
+  <meta property="og:image:alt" content="{{ og_asset.alt_text|default:template.name }}">
+{% endif %}{% endwith %}{% endblock %}
+{% block twitter_image %}{% with tw_asset=template.assets.all|dictsort:"order"|first %}{% if tw_asset and tw_asset.file %}
+  <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ tw_asset.file.url }}">
+{% endif %}{% endwith %}{% endblock %}
+
+{% block jsonld %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ template.name|escapejs }}",
+  "description": "{{ template.short_description|default:template.description|default:""|escapejs }}",
+  "category": "{{ template.category.name|escapejs }}",
+  "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
+  {% if template.brand %}"brand": {
+    "@type": "Brand",
+    "name": "{{ template.brand.brand_name|escapejs }}"
+  },{% endif %}
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "EUR",
+    "price": "{{ template.price|stringformat:'.2f' }}",
+    "availability": "https://schema.org/InStock",
+    "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}"
+  }
+}
+</script>
+{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/catalog-facets.css' %}">
 {% endblock %}

@@ -65,7 +65,7 @@ SALUTE_CONTENT_FR: dict[str, Any] = {
 
     "home": {
         "eyebrow":   "Centre médical · Milan Centrale · depuis 1998",
-        "headline":  'Votre santé, notre <em>travail</em> quotidien.',
+        "headline":  'Rendez-vous en trente secondes, <em>des médecins que vous voudrez revoir</em>.',
         "subhead":
             "Plus de 40 spécialistes, des parcours diagnostiques coordonnés "
             "et une expérience patient pensée pour vous mettre à l'aise dès "

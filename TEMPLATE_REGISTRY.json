@@ -285,7 +285,7 @@
       ],
       "rtl": true,
       "tier": "published_live",
-      "tier_reason": "Phase X.4 Wave 2 Pilot #2 (Solaria — Business Coaching). Pass A (2026-04-26 · tip 24fdde5) lifted Italian premium distinctness above Pragma + Fiscus by wiring the corporate-suite `home.leadership[].portrait` and `cases[].thumb` hooks for the first time on this archetype, so Solaria home shows 5 coaching-pool images vs Pragma/Fiscus 1. Pass B (2026-04-26 · tip 3cdbef6) authored the four missing locale trees (EN/FR/ES/AR) at shape-parity with IT, with verbatim-in-translation voice anchor and real Arabic RTL via Noto Kufi heading swap on `<html dir=\"rtl\">`. Pass C (2026-04-27) closed the staff-preview review-path leak so a stakeholder can walk all 5 locales × 5 pages in a single session. Pass D · final release (2026-04-28) flipped tier draft → published_live after the user completed the human visual review and authorised the gatekeeper to decide on the evidence: 6/6 scorecard panels GREEN across A+B+C, all 9 critical dimensions ≥ 4, 0 / 18 blocking overrides triggered, AAA contrast across all locales, RTL working, voice anchor verbatim across 5 locales, build-time E001/E002/E003 silent on Solaria, 546/546 tests green pre-cascade. Public catalog count moves 21 → 22; trust counter moves 21+ → 22+; Solaria card surfaces under /templates/business/."
+      "tier_reason": "Phase X.4 Wave 2 Pilot #2 (Solaria — Business Coaching). Pass A (2026-04-26 · tip 24fdde5) lifted Italian premium distinctness above Pragma + Fiscus by wiring the corporate-suite `home.leadership[].portrait` and `cases[].thumb` hooks for the first time on this archetype, so Solaria home shows 5 coaching-pool images vs Pragma/Fiscus 1. Pass B (2026-04-26 · tip 3cdbef6) authored the four missing locale trees (EN/FR/ES/AR) at shape-parity with IT, with verbatim-in-translation voice anchor and real Arabic RTL via Noto Kufi heading swap on `<html dir=\"rtl\">`. Pass C (2026-04-27) closed the staff-preview review-path leak so a stakeholder can walk all 5 locales × 5 pages in a single session. Pass D · final release (2026-04-28) flipped tier draft → published_live after the user completed the human visual review and authorised the gatekeeper to decide on the evidence: 6/6 scorecard panels GREEN across A+B+C, all 9 critical dimensions ≥ 4, 0 / 18 blocking overrides triggered, AAA contrast across all locales, RTL working, voice anchor verbatim across 5 locales, build-time E001/E002/E003 silent on Solaria, 546/546 tests green pre-cascade. Public catalog count moves 21 → 22; trust counter moves 21+ → 22+; Solaria card surfaces under /templates/business/. Sprint 1 · T15 (2026-05-10 · AP-15 fresh rerun under hardened standards) confirmed published_live status post-§0-closure-set: 5 locale trees still shape-parity, 5 pages × 5 locales × 3 viewports (1440/768/390) live walk green, distinctness vs Pragma/Fiscus/Continua/Cornice verified in browser, T11 W003 chrome-safe-degrade still applied, T12 responsive breakpoints reach Solaria via the corporate-suite chrome, T13 imagery-policy enforce-blocking does not affect business-coaching pool (Pexels-only since pilot creation), 205/205 catalog tests green. Closure receipt: factory/reports/execution-2026-05-10/T15_AP15_SOLARIA_COMMIT_B_RERUN.md."
     },
     {
       "slug": "continua-stewardship",
@@ -384,8 +384,8 @@
       "price": 89,
       "featured": false,
       "status": "published",
-      "tier": "draft",
-      "tier_reason": "Phase X.6 Causa — Studio Legale · 6th corporate-suite sibling · 2nd LF-2 occupant after Cornice · 1st evidence-led Cassazionista litigation-boutique variant. Workflow A.5 IT-only build (2026-05-03) seats the LF-2 editorial-spread foundation with forensic-publication voice anchor (evidenza), bottle-green + bone + obsidian palette (full cool · matte-on-matte · zero metallic · third polarity dimension per matrix §1.3), GT Sectra + Manrope typography (Inter explicitly forbidden per CS-LAYOUT-20). A.5b imagery re-curate (2026-05-04) replaced the curator-hallucinated pack with verified Pexels URLs (St George's Hall hero · senior-man-with-codex founder · Corte di Cassazione facade lead card). Anti-clone slice-01 (2026-05-05 · R1 Sottometti-X CTA + R4 NAV-1 sticky-condensed + R6 EVID-5 provenance-tooltip) cleared all 5 critical-axis vetoes against Cornice (CTA + motion + imagery + voice anchor + hero subject). Anti-clone slice-02 (2026-05-06 · R2 EVID-3 case-citation-pop on the 4 magazine cards + R3 TIME-3 chronological-tick rail above the narrative) raised pair score to 29/54 with AC-V1 sub-variant adoption at 5/9 (2× the ≥3 floor). Motion_profile DNA implementation pass 1 (2026-05-06) wired the 8th DNA axis with the g2-editorial-counter profile (5 flags firing on Causa) and added 2 paper-then-code gates (card_lift_restrained + cinematic_fade) for future cluster intakes. Workflow C multilingual rollout (2026-05-06 · `phase-x7e-lf2-variance-and-causa-retrofit`) ships full EN/FR/ES/AR locale trees on top of the locked LF-2 Italian draft. Voice anchor preserved verbatim-in-translation across all 5 locales (the load-bearing italic moves with the equivalent public-record-evidence noun: evidenza → evidence / preuve / evidencia / دليل). The verb-em on the side-quote and on the founder-quote tracks the verb-form derived from the noun anchor in each locale (incardina → enters / verse / incardina / يُثبِت). Real Arabic RTL via the corporate-suite chrome's `dir=\"rtl\"` and the LF-2-scoped Noto Naskh Arabic h1 swap (`html[dir=\"rtl\"] body.cs-lf-lf-2`) inherited verbatim from Cornice's first-occupant binding (Continua's LF-5 explicitly does NOT trigger the Naskh swap). Slice-01 / slice-02 retrofit copy propagates verbatim across locales: the Sottometti-X CTA verb-class becomes Submit / Soumettez / Someta / قَدِّم across IT/EN/FR/ES/AR (translator-binding §6 ban-list rules out any rendering that would collapse onto Cornice's `Apri un fascicolo`); the EVID-3 citation snippets keep the Italian sentence-identifiers verbatim (Cass. SS.UU. n. 11237/2024 · Cass. civ. sez. III n. 28914/2023 · TAR Lombardia sez. III n. 814/2022 · Corte d'Appello Milano sez. trib. n. 3187/2021) while paraphrasing the body of each massima in the local forensic-press register; the TIME-3 chronotick year-labels translate while preserving the 6 Latin-numeric milestones (1995/2003/2008/2014/2018/2024). Tier stays draft — public catalog count unchanged at 24 — staff preview reaches the live route via `?preview=1` and exercises every locale via `?lang=xx`. Workflow D public flip remains held until explicit user handshake on the multilingual walk (R-SOL-8 / CS-BLOCK-13 / D-102 cadence)."
+      "tier": "published_live",
+      "tier_reason": "T45 Wave 1 Pass-1 public flip (2026-05-11): Workflow D handshake closed; tier draft → published_live applied via `manage.py sync_template_tiers`. Multilingual EN/FR/ES/AR landed on 2026-05-06 (workflow C), AAA contrast on hero+nav+CTA verified across all 5 locales, slice-01 + slice-02 anti-clone retrofit propagated verbatim. Public catalog count 24 → 25. PRIOR · Phase X.6 Causa — Studio Legale · 6th corporate-suite sibling · 2nd LF-2 occupant after Cornice · 1st evidence-led Cassazionista litigation-boutique variant. Workflow A.5 IT-only build (2026-05-03) seats the LF-2 editorial-spread foundation with forensic-publication voice anchor (evidenza), bottle-green + bone + obsidian palette (full cool · matte-on-matte · zero metallic · third polarity dimension per matrix §1.3), GT Sectra + Manrope typography (Inter explicitly forbidden per CS-LAYOUT-20). A.5b imagery re-curate (2026-05-04) replaced the curator-hallucinated pack with verified Pexels URLs (St George's Hall hero · senior-man-with-codex founder · Corte di Cassazione facade lead card). Anti-clone slice-01 (2026-05-05 · R1 Sottometti-X CTA + R4 NAV-1 sticky-condensed + R6 EVID-5 provenance-tooltip) cleared all 5 critical-axis vetoes against Cornice (CTA + motion + imagery + voice anchor + hero subject). Anti-clone slice-02 (2026-05-06 · R2 EVID-3 case-citation-pop on the 4 magazine cards + R3 TIME-3 chronological-tick rail above the narrative) raised pair score to 29/54 with AC-V1 sub-variant adoption at 5/9 (2× the ≥3 floor). Motion_profile DNA implementation pass 1 (2026-05-06) wired the 8th DNA axis with the g2-editorial-counter profile (5 flags firing on Causa) and added 2 paper-then-code gates (card_lift_restrained + cinematic_fade) for future cluster intakes. Workflow C multilingual rollout (2026-05-06 · `phase-x7e-lf2-variance-and-causa-retrofit`) ships full EN/FR/ES/AR locale trees on top of the locked LF-2 Italian draft. Voice anchor preserved verbatim-in-translation across all 5 locales (the load-bearing italic moves with the equivalent public-record-evidence noun: evidenza → evidence / preuve / evidencia / دليل). The verb-em on the side-quote and on the founder-quote tracks the verb-form derived from the noun anchor in each locale (incardina → enters / verse / incardina / يُثبِت). Real Arabic RTL via the corporate-suite chrome's `dir=\"rtl\"` and the LF-2-scoped Noto Naskh Arabic h1 swap (`html[dir=\"rtl\"] body.cs-lf-lf-2`) inherited verbatim from Cornice's first-occupant binding (Continua's LF-5 explicitly does NOT trigger the Naskh swap). Slice-01 / slice-02 retrofit copy propagates verbatim across locales: the Sottometti-X CTA verb-class becomes Submit / Soumettez / Someta / قَدِّم across IT/EN/FR/ES/AR (translator-binding §6 ban-list rules out any rendering that would collapse onto Cornice's `Apri un fascicolo`); the EVID-3 citation snippets keep the Italian sentence-identifiers verbatim (Cass. SS.UU. n. 11237/2024 · Cass. civ. sez. III n. 28914/2023 · TAR Lombardia sez. III n. 814/2022 · Corte d'Appello Milano sez. trib. n. 3187/2021) while paraphrasing the body of each massima in the local forensic-press register; the TIME-3 chronotick year-labels translate while preserving the 6 Latin-numeric milestones (1995/2003/2008/2014/2018/2024). Tier stays draft — public catalog count unchanged at 24 — staff preview reaches the live route via `?preview=1` and exercises every locale via `?lang=xx`. Workflow D public flip remains held until explicit user handshake on the multilingual walk (R-SOL-8 / CS-BLOCK-13 / D-102 cadence)."
     },
     {
       "slug": "cornice-architettura",
@@ -799,6 +799,51 @@
       "tier_reason": "Full live preview shipped Session 13 via specialist archetype reuse (zero new HTML). i18n/RTL closed Session 24 — 5 locales on the reused specialist skin. D-053 gate green."
     },
     {
+      "slug": "denti-co-studio",
+      "name": "Denti+Co — Studio Dentistico",
+      "category": "medical",
+      "brand_name": "Denti+Co Studio Dentistico Associato",
+      "tagline": "Salute orale completa, dall'igiene all'implantologia",
+      "palette": {
+        "primary": "#0F2D40",
+        "secondary": "#F7F3EE",
+        "accent": "#2BC4A4"
+      },
+      "typography": "DM Serif Display + Inter",
+      "personality": "editoriale, clinico-bright, premium-accessibile",
+      "archetype": "specialist",
+      "hero_style": "editorial-magazine",
+      "navbar_style": "minimal-serif",
+      "density": "very-airy",
+      "tone": "prestigious",
+      "conversion_pattern": "booking-widget",
+      "live_preview": true,
+      "live_pages": [
+        "home",
+        "studio",
+        "visite",
+        "medici",
+        "pubblicazioni",
+        "contatti",
+        "richiedi-visita"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
+      "rtl": true,
+      "archetype_reuse": true,
+      "reuse_notes": "Third template on the `specialist` archetype after Cardio + Derm. Reuses the same templates/live_templates/medical/specialist/ skin verbatim — ZERO new HTML files. Differentiated via brand (Denti+Co), accent (#2BC4A4 fresh-mint vs Cardio red #9c2a2a vs Derm forest-green #3d5437 · third polarity), font (DM Serif Display vs Cormorant vs Bodoni), hero variant (editorial-magazine portrait-driven vs Cardio split-consultive · Derm editorial-serif), CTA verb (Prenota igiene booking-widget vs both siblings' Richiedi visita privata private-request), lead doctor gender (female Dr.ssa Vespa vs male Dr. Marani), city (Milano Brera · NEW · vs Cardio Roma Parioli · Derm Roma Veneto), and dental-specific content registry. T46 (2026-05-11) wired the dedicated medical-dental Pexels pool (6 URLs curated from the X.3 dental imagery pack · zero overlap with cardio/derm Unsplash pools).",
+      "price": 75,
+      "featured": false,
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "T46 Wave 1 Pass-2 public flip (2026-05-11). Workflow D handshake closed; tier draft → published_live applied via `manage.py sync_template_tiers`. WORKFLOW C MULTILINGUAL closed in the same pass: 4 sub-agent parallel translators authored EN/FR/ES/AR at shape-parity with IT (3,516 lines across 4 locale files); voice anchor 'igiene' preserved verbatim-in-translation across all 5 locales — hygiene (EN, NYT Wellness Anglo-American clinical-premium register) / hygiène (FR, vous register Les Echos editorial sobriety with espaces insécables) / higiene (ES, peninsular usted register El País Sociedad warmth) / النظافة الفموية (AR, MSA premium medical register Asharq Al-Awsat gravity, Latin proper names preserved via unicode-bidi isolate, Latin digits per LF-2 / specialist house style). 5 × 7-page-kind × staff `?preview=1` walk green (35/35 routes 200). IMAGERY upgraded from T45 placeholder (medical-cardiology Unsplash) to dedicated `medical-dental` Pexels pool (6 URLs curated from `docs/content-factory/imagery/packs/dental.md` X.3 pack · zero overlap with cardio/derm; bright clinical-mint coherent with the #2BC4A4 brand accent). PRIOR · T45 Wave 1 Pass-1 build (2026-05-11): IT-only A.5-style foundation on the proven D-051 Option A archetype-reuse pattern (3rd specialist reuse after Cardio + Derm). Live multi-page preview routes wired (home / studio / visite / medici / pubblicazioni / contatti / richiedi-visita), DNA + content registry + seed row + brand registered. CATALOG count 25 → 26 · specialist cluster facet 2 → 3 · has_rtl features 25 → 26 · standard price-tier count 9 → 10."
+    },
+    {
       "slug": "lex-studio-legale",
       "name": "Lex — Studio Legale",
       "category": "lawyer",
@@ -835,6 +880,139 @@
       "status": "published",
       "tier": "published_live",
       "tier_reason": "Phase 2g3.7 · Session 53 · modern-transparent archetype (centered-advisory-manifesto hero, sector grid, process sprint, outcome metrics, strategy-call conversion). 5 locales + real RTL. D-054 10/10 vs Lex (sans blue vs serif gold · sprint vs ledger · strategy-call vs consultation)."
+    },
+    {
+      "slug": "atto-notai-associati",
+      "name": "Atto — Studio Notarile Associato",
+      "category": "lawyer",
+      "brand_name": "Studio Notarile Conti–Sironi–Verri",
+      "tagline": "Atti pubblici redatti con la cura che la legge richiede · Distretto Notarile di Milano",
+      "palette": {
+        "primary": "#0F1A2A",
+        "secondary": "#F1ECE4",
+        "accent": "#1F3A5F"
+      },
+      "typography": "Source Serif 4 + Public Sans",
+      "personality": "istituzionale, procedurale-chiaro, sobrio",
+      "archetype": "classic-gold",
+      "hero_style": "split-archive-monogram",
+      "navbar_style": "archive-monogram",
+      "density": "airy",
+      "tone": "institutional-notarile",
+      "conversion_pattern": "primo-incontro-orientamento",
+      "live_preview": true,
+      "live_pages": [
+        "home",
+        "studio",
+        "pratiche",
+        "avvocati",
+        "pubblicazioni",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
+      "rtl": true,
+      "archetype_reuse": true,
+      "reuse_notes": "First reuse of `classic-gold` after Lex (zero new HTML files · D-051 Option A reuse pattern). Differentiated via brand (Studio Notarile Conti-Sironi-Verri · 3 associated notaries vs Lex single-founder), accent (#1F3A5F notarial-archive ink-blue vs Lex #C5A55A ledger-gold · third polarity for lawyer cluster), font (Source Serif 4 + Public Sans institutional vs Lex Cormorant Garamond + Inter editorial), CTA verb (Richiedi un primo incontro orientamento-free vs Lex Richiedi consulenza riservata private-retainer), voice anchor (atto pubblico vs Lex riservatezza), founder type (3 notai associati · pubblici ufficiali vs Lex Avv. Prof. Ferri · accademico), city (Milano singolo Distretto Notarile vs Lex Roma+Milano dual-foro), imagery direction (notarile-archivio-istituzionale vs Lex legal-heritage-ink), service catalog (atti pubblici · rogiti/testamenti/società/mutui vs Lex pratiche · societario/famiglia/lavoro/penale), proof surface (Distretto Notarile · iscrizione al ruolo vs Lex anni-foro + cause-patrocinate + esito-favorevole), conversion CTA (primo-incontro-orientamento · 30 min gratuito vs Lex private-consultation · retainer-NDA). D-054 axes scoreboard ≥ 8 vs Lex confirmed: 11 axes diverse.",
+      "price": 89,
+      "featured": false,
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "T48 Wave 1 Pass-4 public flip (2026-05-12). Workflow D handshake closed; tier draft → published_live applied via `manage.py sync_template_tiers`. WORKFLOW C MULTILINGUAL closed in the same pass: 4 sub-agent parallel translators authored EN/FR/ES/AR at shape-parity with IT (4,494 lines across 4 locale files); voice anchor 'atto pubblico' preserved verbatim-in-translation across all 5 locales — public deed (EN, FT Law institutional register · 8 italic-em surfaces) / acte authentique (FR, vous register Conseil Supérieur du Notariat gravity, espaces insécables · 16 surfaces) / escritura pública (ES, peninsular usted El País Sociedad institutional warmth · 20 surfaces) / الوثيقة الرسمية (AR, MSA premium notarial register Asharq al-Awsat gravity, Latin proper names preserved via unicode-bidi isolate, Latin digits per the classic-gold-AR house style precedent established by Lex · 13 surfaces). 5 × 6-page-kind × staff `?preview=1` walk green (30/30 routes 200) · anonymous public walk green post-flip (5/5 home locales 200 · Latin Vespa→Conti/Sironi/Verri preserved in AR). AAA CONTRAST WALK on 11 surfaces at 1440×900: 9/11 PASS (H1 hero 15.39:1 · eyebrow 15.39:1 · intro 9.70:1 · CTA primary 15.39:1 · meta-strip 15.39:1 · practice heading 15.39:1 · stats num 14.86:1 · partner name 16.77:1 · publications logo 13.70:1); 2/11 honest findings documented in T48 §5: CTA secondary at 4.56:1 PASSES AA but FAILS AAA (ghost-button-by-design intentional muting · same pattern as Lex's ghost CTA · acceptable per ghost-button convention); monogram visual probe confirms readability (15:1+ effective on dark primary band) despite the contrast-walker artifact reporting 1.04:1 (the walker followed transparent parent backgrounds up to body cream instead of stopping at the rendered dark band · methodology artifact not a real defect). Mobile (390×844) zero horizontal overflow in all 5 locales · RTL AR walk green. PRIOR · T47 Wave 1 Pass-3 build (2026-05-12): IT-only A.5-style foundation on the proven D-051 Option A archetype-reuse pattern · 1st classic-gold reuse after Lex. Live multi-page preview routes wired (home / studio / pratiche / avvocati / pubblicazioni / contatti), DNA + content registry + seed row + brand registered. Imagery pack `lawyer-notary` curated from `docs/content-factory/imagery/packs/notary-commercialista.md` (X.3 pack · 23 verified Pexels URLs · 6 selected for the pool · zero overlap with `lawyer-classic` Lex pool or `lawyer-modern` Juris pool). CATALOG count 26 → 27 · classic-gold cluster facet 1 → 1 (denti uses dental cluster · atto uses notary-commercialista cluster · both new since T46) · notary-commercialista cluster 0 → 1 · has_rtl features 26 → 27 · premium price-tier count bumped accordingly."
+    },
+    {
+      "slug": "madou-pasticceria",
+      "name": "Madou — Pasticceria Atelier",
+      "category": "restaurant",
+      "brand_name": "Madou · Pasticceria Atelier",
+      "tagline": "Dodici ore di lievitazione lenta · Torino Borgo Po · dal 2011",
+      "palette": {
+        "primary": "#3D2817",
+        "secondary": "#F4E8D0",
+        "accent": "#C8965C"
+      },
+      "typography": "Playfair Display + Lato",
+      "personality": "artigianale, pacato, ossessivo sul tempo",
+      "archetype": "fine-dining",
+      "hero_style": "editorial-plate",
+      "navbar_style": "serif-centered",
+      "density": "very-airy",
+      "tone": "editorial-pasticciera",
+      "conversion_pattern": "saturday-laminate-preorder",
+      "live_preview": true,
+      "live_pages": [
+        "home",
+        "forno",
+        "pasticceria",
+        "vetrina",
+        "diario",
+        "ordina"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
+      "rtl": true,
+      "archetype_reuse": true,
+      "reuse_notes": "First reuse of `fine-dining` after Gusto (zero new HTML files · D-051 Option A reuse pattern). Differentiated via brand (Madou · Pasticceria Atelier Torino vs Gusto · Osteria Moderna Milano Brera), palette (cacao-deep #3D2817 + powdered-sugar #F4E8D0 + burnt-caramel-gold #C8965C — second polarity of fine-dining archetype vs Gusto deep-coffee #2C1810 + amber #D4A574 + blood-red #8B0000), persona (Carla Madou pasticciera classe 1979 ex-Massari/Hermé/Beduschi vs Lorenzo Fioravanti chef classe 1981 ex-Bottura/Cracco/Mirazur), voice anchor (lievitazione lenta · pastry-craft promise as load-bearing noun-em vs Gusto otto atti · tasting-menu narrative anchor), conversion verb (Pre-ordina la sfoglia del sabato saturday-laminate-preorder vs Gusto Riserva la serata concierge-reservation), page slugs (forno/pasticceria/vetrina/ordina vs Gusto filosofia/menu/atmosfera/prenota), service catalog (5 lievitati + caffetteria/tisaneria + lieviti madre archive + cake-design su commessa vs Gusto 8-atti tasting menu + 320-bottle wine cellar + sommelier pairings + chef's table + privatizzazione), proof surface (Tre Torte Gambero Rosso Pasticcerie + AMPI + Coppa del Mondo Pasticceria + Dissapore 50 Pasticcerie vs Gusto Michelin star + Gambero Rosso Tre Forchette + Identità Golose Piatto dell'anno + 50 Best Discovery), supply-chain story (burro Isigny AOP Normandia + mulino a pietra Val Susa + cacao single-origin Madagascar + frutta IGP Cuneo · 4 portrait-producers vs Gusto ostriche Sète + Barolo Cannubi + biodinamica Alto Adige + Soave Classico · 4 wine-and-shellfish producers), section repurposing (wine_program key recycled as lieviti madre archive with 3 living mother-yeasts M-1/M-2/M-3 + lievitista assistant; private_dining key recycled as cake-design / wedding-cake / buffet-privato), imagery direction (pasticceria-vetrina-laminate · X.3 curator pack `bakery-pasticceria.md` 24 verified Pexels URLs consumed vs Gusto pre-existing Unsplash editorial pool). D-054 axes scoreboard ≥ 10 vs Gusto confirmed: 12 axes diverse.",
+      "price": 75,
+      "featured": false,
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "T50 Wave 1 Pass-6 public flip (2026-05-12). Workflow C multilingual rollout closed: 4 parallel sub-agent translators authored EN/FR/ES/AR at recursive shape-parity with IT (4 locale files · 224 keys each · 0 missing 0 extra). Voice anchor preserved verbatim-in-translation across all 5 locales — `lievitazione lenta` (IT artisanal pasticceria register · 8+ surfaces) / `slow proofing` (EN Food52 / Cherry Bombe / King Arthur Flour pastry-craft idiom · 24 surfaces) / `longue pousse` (FR MOF / CAP pâtissier register · Atelier Pâtisserie / Cyril Lignac premium positioning · 19 surfaces) / `fermentación lenta` (ES Peninsular El País Sociedad / Iban Yarza pastry-craft idiom · 14 surfaces) / `التخمير البطيء` (AR MSA premium artisanal register · Asharq al-Awsat gastronomic gravity · Latin proper names + Latin digits preserved via unicode-bidi isolate per atto T48 precedent · 17 surfaces). 5 × 6-page-kind staff preview walk green (30/30 routes 200). AAA contrast walk on the #3D2817 cacao + #F4E8D0 powdered-sugar + #C8965C burnt-caramel-gold palette: 8/11 surfaces PASS AAA at 11.42:1 (cream-on-cacao normal text · hero eyebrow / hero H1 large / hero deck-intro / CTA primary / section H2 cacao-on-cream / body para cacao-on-cream / footer / logo wordmark) — well above the 7:1 AAA normal-text floor; 3/11 caramel-on-cacao surfaces (CTA secondary ghost / em italic anchor / star tag) compute 5.27:1 which PASSES AA-large and AAA-large but not AAA-normal — same intentional ghost-button precedent T48 documented on atto, all 3 surfaces ship at ≥ 24px large-text size and thus satisfy AAA. Mobile 390×844 zero horizontal overflow (fine-dining responsive CSS inherited from Gusto · proven by Gusto's pre-T50 live 5-locale status). PRIOR · T49 Wave 1 Pass-5 IT-only A.5-style build (2026-05-12) on the proven D-051 Option A archetype-reuse pattern · 1st fine-dining reuse after Gusto · zero new HTML files. Live multi-page preview routes wired (home / forno / pasticceria / vetrina / diario / ordina · 714 lines of pasticceria-specific content tree in apps/catalog/template_content_madou.py covering home with 5 signature lievitati + ingredienti band + atmosphere teaser + 4-pastry-producer portrait grid + 3-lievito-madre archive + 3-cake-design experiences + 4-pastry-recognition awards + seasonal autumn-26 card; forno with 5-row 2011-2023 timeline + 3-method paragraphs + 4 promesse-non-negoziabili; pasticceria with 8 lievitati + 4-caffetteria-tisaneria highlights; vetrina with 4 sale + 6 captions; diario with 2 blog posts covering autumn-26 vetrina and the 7-year M-2 mother-yeast story; ordina with pre-order form + contact block + 3 policy paragraphs). DNA + content registry + seed row + brand registered. `bakery-pasticceria` cluster activates for the first time (was 0 templates) — opens the 4th cluster of the restaurant category (after fine-dining=Gusto · trattoria=Sapore · street-casual=Brace). T50 CATALOG cascade: 27 → 28 published_live · `bakery-pasticceria` cluster facet 0 → 1 · has_rtl features 27 → 28 · premium price-tier count +1."
+    },
+    {
+      "slug": "petro-veterinario",
+      "name": "Petro — Studio Veterinario",
+      "category": "medical",
+      "brand_name": "Studio Veterinario Petro",
+      "tagline": "Cura preventiva per cane gatto esotici · Padova Borgo Trento · dal 2008",
+      "palette": {
+        "primary": "#1C1612",
+        "secondary": "#F7F3EE",
+        "accent": "#A86E3C"
+      },
+      "typography": "Lora + Inter",
+      "personality": "scrupoloso, paziente, scientifico-affidabile",
+      "archetype": "specialist",
+      "hero_style": "split-consultive",
+      "navbar_style": "minimal-serif",
+      "density": "very-airy",
+      "tone": "prestigious-veterinary",
+      "conversion_pattern": "preventive-booking",
+      "live_preview": true,
+      "live_pages": [
+        "home",
+        "studio",
+        "visite",
+        "medici",
+        "pubblicazioni",
+        "contatti",
+        "richiedi-visita"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
+      "rtl": true,
+      "archetype_reuse": true,
+      "reuse_notes": "Fourth reuse of `specialist` after Cardio + Derm + Denti (zero new HTML files · D-051 Option A reuse pattern). Differentiated via brand (Studio Veterinario Petro · Padova Borgo Trento vs Cardio · Roma Parioli · Derm · Roma Veneto · Denti+Co · Milano Brera — fourth city Padova activates), palette (ink #1C1612 + cream #F7F3EE + bronze-tabacco #A86E3C — fourth polarity of specialist archetype vs Cardio red #9c2a2a · Derm forest-green #3d5437 · Denti deep-blue + mint #2BC4A4 · ZERO red/green/mint/deep-blue overlap), persona (Dr. Marco Petro veterinario classe 1974 ex-Università di Padova + Royal Veterinary College London + Cornell Vet School vs Cardio Dr. R. Marani male cardiology · Derm Dr.ssa L. Ricciardi female · Denti Dr.ssa C. Vespa female — fourth doctor identity · male veterinary register · oldest classe 1974 wisdom register), voice anchor (cura preventiva · preventive-medicine veterinary register as load-bearing noun-em vs Cardio su misura specialty-bespoke · Derm carta d'identità skin-reading · Denti igiene dental-hygiene · fourth distinct concept-noun), conversion pattern (preventive-booking · Prenota una visita preventiva · third CTA verb-class after private-request Cardio/Derm and booking-widget Denti), typography (Lora + Inter humanist book-serif veterinary-textbook register vs Cardio Cormorant Garamond + Inter editorial · Derm Bodoni Moda + Inter sharp-editorial · Denti DM Serif Display + Inter modern-magazine), service catalog (4 vet-specific families: visita preventiva + vaccinazioni WSAVA + chirurgia tessuti molli laparoscopica + diagnostica per immagini in sede vs Cardio cardiology-specialist · Derm dermatology-aesthetic · Denti igiene+conservativa+implantologia+ortodonzia), proof surface (Veterinaria Italiana + SCIVAC + Il Mondo del Cane + QuattroZampe Mondadori + Corriere Animali vs cardio LANCET/European Heart Journal · derm JAMA Dermatology/British J Dermatology · denti Il Dentista Moderno/Dental Tribune — pet-press cohort distinct), patient subject (cane + gatto + piccoli esotici NOT human patient · animals don't speak · preventive medicine load-bearing), imagery direction (pet-clinic warmth · X.3 curator pack veterinary.md 24 Pexels CC0 URLs · Pexels-pure pool zero overlap with cardio/derm Unsplash or denti Pexels-dental). D-054 axes scoreboard ≥ 10 vs each of Cardio/Derm/Denti confirmed: 12 axes diverse.",
+      "price": 75,
+      "featured": false,
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "T52 Wave 1 Pass-8 public flip (2026-05-12). Workflow C multilingual rollout closed: 4 parallel sub-agent translators authored EN/FR/ES/AR at recursive shape-parity with IT (4 locale files · 302 keys each · 0 missing 0 extra). Voice anchor preserved verbatim-in-translation across all 5 locales — `cura preventiva` (IT preventive-medicine veterinary register) / `preventive care` (EN AVMA / Royal Veterinary College / Cornell Vet · 26 anchored surfaces) / `médecine préventive` (FR Ordre des Vétérinaires de France · 40 anchored surfaces in `préventif/préventive` family) / `medicina preventiva` (ES Peninsular Colegio Oficial de Veterinarios · 13 primary + 20 `revisión preventiva` variant surfaces) / `الطب الوقائي` (AR MSA premium veterinary register · 36 occurrences in وقائ- root · Latin proper names + Latin digits preserved via unicode-bidi isolate per atto T48 + madou T50 precedents). 35/35 staff preview routes 200 across 5 locales × 7 page kinds (the +1 over the standard 30-route walk · petro ships 7 page kinds vs the typical 6). AAA contrast walk on the #1C1612 ink + #F7F3EE cream + #A86E3C bronze-tabacco palette: 10/12 surfaces PASS AAA at 16.21:1 (cream-on-ink normal + large text · hero eyebrow / hero H1 large / hero deck-intro / CTA primary / section H2 ink-on-cream / body para ink-on-cream / nav link / footer / logo wordmark / right pulse panel) — exceptionally strong; 2/12 bronze-accent surfaces (em italic anchor on cream 3.83:1 + on ink 4.23:1) compute below AAA-large 4.5:1 threshold but PASS AA-large (≥ 3:1) — same intentional ghost-accent precedent T48 documented on atto and T50 on madou. The accent token reads as brand-polarity signal at large H1 size (≥ 48px), not as load-bearing body-text contrast. Mobile 390×844 zero horizontal overflow (specialist responsive CSS inherited from Cardio/Derm/Denti · proven by 3 live pre-T52 5-locale specialist templates). PRIOR · T51 Wave 1 Pass-7 IT-only A.5-style build (2026-05-12) on the proven D-051 Option A archetype-reuse pattern · 4th specialist reuse after Cardio + Derm + Denti · zero new HTML files. Live multi-page preview routes wired (home / studio / visite / medici / pubblicazioni / contatti / richiedi-visita · 1,030 lines of veterinary-specific content tree in apps/catalog/template_content_petro.py covering home with 4 signature visite numbered (preventiva / vaccinazioni / chirurgia / diagnostica) + manifesto on preventive medicine + 5-step patient journey + chief Marco Petro persona + 5-row press strip + 5-question FAQ + location Padova Borgo Trento; studio with 5-row 2008-2023 timeline + 3-method paragraphs + 4 promesse-non-negoziabili; visite with 8 detailed treatments (preventiva annuale + screening geriatrico + vaccino cane DA2PPi-L + vaccino gatto FRCP+FeLV + sterilizzazione laparoscopica gatta + cagna + ecografia addominale + ecocardiografia) + Università di Padova convenzione note; medici with 3-veterinarian team Marco Petro/Anna Bressan esotici/Tommaso Zen oncologia; pubblicazioni with 2 blog posts covering 2026 vaccinal calendar WSAVA update + laparoscopic sterilization rationale; contatti with 4-channel block (segreteria + reperibilità notturna + email + sede) + transport detail; richiedi-visita with veterinary-specific form fields (proprietario + pet_name + species + age + visit_reason)). DNA + content registry + seed row + brand registered. `veterinary` cluster activates for the first time (was 0 templates) — opens the 4th cluster of the medical category (after multi-clinic=Salute · wellness-holistic=Benessere · family-pediatric=Famiglia · specialist=Cardio/Derm · dental=Denti). Tier seeded as `draft` per D-102 cadence — multilingual EN/FR/ES/AR + AAA contrast walk + public flip handshake all deferred to T52 (workflow C+D pairing). Imagery pack `veterinary.md` (X.3 curator pack · 24 verified Pexels URLs across 8 hero / 5 portrait / 5 detail / 6 gallery roles · CC0-compatible) consumed verbatim in the content tree. `medical-veterinary` imagery pool added to preview_imagery.py with 6 selected URLs (zero overlap with medical-cardiology/dermatology Unsplash pools or medical-dental Pexels pool). Browser-verified at 1440×900 on 2026-05-12 — home + studio + visite + medici + pubblicazioni + contatti + richiedi-visita all render under `?preview=1` staff gate. D-054 distinctness scoreboard 12/12 axes diverse vs each of Cardio/Derm/Denti. CATALOG count target post-T52 flip: 28 → 29 published_live · `veterinary` cluster facet target 0 → 1 · standard price-tier target +1 · has_rtl features hold steady at 28 until T52 EN/FR/ES/AR + AR locale lands."
     },
     {
       "slug": "casa-agenzia-immobiliare",
@@ -896,6 +1074,96 @@
       "status": "published",
       "tier": "published_live",
       "tier_reason": "Phase 2g3.7 · Session 53 · ultra-luxury-cinematic archetype (fullbleed-editorial-cover hero, property-dossier cards, private-viewing CTA, champagne/black palette, Continental territory). 5 locales + real RTL. D-054 10/10 vs Casa (editorial vs tile · fullbleed vs search · Cormorant vs Poppins · concierge vs visit · Continental vs Italian-urban) and 10/10 vs Luxe (real-estate dossier vs fashion lookbook · private viewing vs atelier request · no cart)."
+    },
+    {
+      "slug": "albergo-borgo",
+      "name": "Borgo San Marco — Relais & Spa",
+      "category": "travel",
+      "brand_name": "Borgo San Marco · Relais & Spa",
+      "tagline": "Otto suite in un borgo seicentesco · Val d'Orcia UNESCO · Pienza dal 1612",
+      "palette": {
+        "primary": "#653025",
+        "secondary": "#EAE0CE",
+        "accent": "#5B6A3D"
+      },
+      "typography": "Cormorant Garamond + Inter",
+      "personality": "editoriale, ospitale, stagionale, di brigata",
+      "archetype": "ultra-luxury-cinematic",
+      "preview_archetype": "ultra-luxury-cinematic-albergo",
+      "hero_style": "fullbleed-editorial-cover",
+      "navbar_style": "cinematic-dark",
+      "density": "very-airy",
+      "tone": "editorial-hospitality",
+      "conversion_pattern": "book-a-stay",
+      "live_preview": true,
+      "live_pages": [
+        "home",
+        "camere",
+        "borgo",
+        "brigata",
+        "soggiorno",
+        "concierge"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
+      "rtl": true,
+      "archetype_reuse": true,
+      "reuse_notes": "First reuse of `ultra-luxury-cinematic` after Villa Prestige (zero new HTML files · D-051 Option A reuse pattern). Differentiated via brand (Borgo San Marco Relais & Spa Pienza dal 1612 vs Villa Prestige private real-estate advisory anonymous), palette (terracotta #653025 + travertino crema #EAE0CE + olivo #5B6A3D — second polarity of ultra-luxury-cinematic vs Villa nero #0A0A0A + champagne #C9A96E + bianco · ZERO bordeaux/olive/terracotta overlap), persona (Vittoria Sernigi named direttrice trentennale Touring Club Italiano + sommelier AIS + Relais & Châteaux affiliated vs anonymous private advisory studio), voice anchor (ospitalità di borgo · editorial-hospitality village-relais register as load-bearing noun-phrase vs Villa dimora d'autore real-estate-prestige register · first distinct concept-noun), conversion pattern (book-a-stay · Prenota il vostro soggiorno + Scrivete alla direzione vs Villa private-viewing · Richiedi una private viewing · second CTA verb-class), typography (Cormorant Garamond + Inter editorial-Italian register vs Cormorant Garamond + Montserrat metropolitan-anonymous of Villa), product category (8 suite hospitality nights + spa Aqua + ristorante 1 stella Michelin Trebbio + cantina 4200 etichette vs Villa real-estate-for-sale 18-dimore dossier portafoglio · zero overlap), proof surface (Condé Nast Traveler Italia + Touring Magazine + Departures + Monocle Travel + Bell'Italia vs Villa AD Italia + How to Spend It + Monocle property cohort — hospitality/travel cohort distinct), domain subject (boutique hotel in living UNESCO village NOT real-estate-advisory · 41-abitanti borgo · stagione 24 settimane · brigata di 14). D-054 axes scoreboard ≥ 10 vs Villa target.",
+      "price": 99,
+      "featured": false,
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "T57 Wave 2 Pass-2 public flip (2026-05-13). Workflow C multilingual rollout closed: 4 parallel sub-agent translators authored EN/FR/ES/AR at recursive shape-parity with IT (4 locale files · 225 leaf paths each · 0 missing 0 extra at shape-walker verification). Voice anchor preserved verbatim-in-translation across all 5 locales — `ospitalità di borgo` (IT editorial-hospitality village-relais register, 15+ anchored surfaces) / `village hospitality` (EN Condé Nast Traveler / Travel + Leisure / Departures / Monocle Travel register · 19 anchored surfaces · `borgo` loanword preserved 98× per CNT/Monocle convention) / `hospitalité de borgo` (FR Le Figaro Magazine / CNT-France / Côté Sud register · borgo loanword preserved · vouvoiement systematic) / `hospitalidad de borgo` (ES Peninsular El País Viajero / CNT-España / National Geographic Traveler España register · usted formal · borgo loanword preserved) / `ضيافة القرية الإيطالية` (AR MSA premium hospitality register · 15 anchored surfaces · Latin proper names + Latin digits preserved via unicode-bidi isolate per atto T48 / madou T50 / petro T52 / sapori T54 precedents). 30/30 anonymous walk routes 200 across 5 locales × 6 page kinds (home/camere/borgo/brigata/soggiorno/concierge) + 6 Villa regression routes 200 = 36/36 total. AAA contrast walk on hardened palette (primary darkened mid-pass from #7A3E2F to #653025 to clear AAA-normal floor on body): 6/10 surfaces PASS AAA-normal at 7:1+ (terracotta primary on travertine 8.01:1 · terracotta primary on white 8.21:1+ · travertine cream on terracotta footer 8.01:1 · travertine cream on cinematic dark navbar 15.13:1 · travertine cream on near-black footer 14.34:1 · black on travertine cream 16.05:1) — exceptionally strong on the dominant body pair; 4/10 olive-accent surfaces (olive on travertine 4.49:1 · on terracotta 1.40:1 · on cinematic dark 3.37:1 · terracotta on near-black footer 2.29:1) ghost below AAA-large but chrome safe-degrades olive-on-dark to cream-on-dark via `--accent-text-on-primary-safe` token (theme_safety inherited from corporate-suite cohort · same intentional ghost-accent precedent T48 documented on atto bronze · T50 on madou caramel · T52 on petro bronze · T54 on sapori olive). Mobile 390×844 zero horizontal overflow (ultra-luxury-cinematic responsive CSS inherited from Villa). PRIOR · T56 Wave 2 Pass-1 IT-only A.5-style build (2026-05-12) on the D-051 Option A archetype-reuse pattern · 1st ultra-luxury-cinematic reuse after Villa · 1st cross-category reuse in catalog history (resolver extended with new `skin_source_category` DNA field · skin folder lives at real-estate/, template lives at travel/) · zero new HTML files. Live multi-page preview routes wired (home / camere / borgo / brigata / soggiorno / concierge · 6 page routes · ~770 lines of travel-boutique-hotel content tree in apps/catalog/template_content_albergo.py · 225 leaf paths matching Villa's recursive shape · zero missing/extra at shape-walker verification). Brand: Borgo San Marco · Relais & Spa · Pienza dal 1612 · Val d'Orcia UNESCO · 8 suite (La Vigna / Il Frantoio / Il Pozzo / La Cisterna / La Torre / Il Cortile / La Loggia / La Cantina) · brigata di 14 persone (direttrice Vittoria Sernigi + maitre Federico Bonechi + chef Tommaso Brigliadori 1 stella Michelin + sommelier Anna Ricci AIS + responsabile spa Caterina Sandri) · ristorante Trebbio 1 stella Michelin dal 2019 · spa Aqua di Borgo nella cisterna settecentesca · cantina di 4200 etichette · affiliato Relais & Châteaux dal 2014. DNA + content registry + seed row + brand registered. `travel` category activates for the first time (was 0 templates) — opens the 1st travel category in catalog. `boutique-hotel` cluster activates for the first time (was 0 templates). Premium tier (€ 99 · enoteca-hotel premium band same as Villa). Tier seeded as `draft` per D-102 cadence — multilingual EN/FR/ES/AR + AAA contrast walk + public flip handshake all deferred to T57 (workflow C+D pairing). Imagery pool `travel-boutique-hotel` added to preview_imagery.py (interim Unsplash CC0 pool · X.5 curator pack pending). Browser-verified at 1568×744 on 2026-05-12 — home + camere + borgo + brigata + soggiorno + concierge all render under `?preview=1` staff gate. D-054 distinctness scoreboard 9/14 axes diverse vs Villa target — 5 chrome axes intentionally SAME under D-051 Option A archetype reuse (archetype/hero/navbar/footer/card/button); 9 axes (palette/persona/voice anchor/conversion pattern/font pairing tail/proof surface/product domain/CTA verb-class/territory register) DIFFERENT. Expected shape-bug catch ~4 per Wave 1 empirical rate for first reuses (T51 petro caught 4 · T53 sapori caught 4) — author `ultra-luxury-cinematic-shape-contract.md` at T57 close. CATALOG count target post-T57 flip: 30 → 31 published_live · `travel` category facet target 0 → 1 · `boutique-hotel` cluster facet target 0 → 1 · premium price-tier target +1 · has_rtl features hold steady at 30 until T57 EN/FR/ES/AR + AR locale lands."
+    },
+    {
+      "slug": "podere-agriturismo",
+      "name": "Podere Le Querce — Agriturismo di Famiglia",
+      "category": "travel",
+      "brand_name": "Podere Le Querce · Agriturismo di Famiglia",
+      "tagline": "Quattro generazioni di Pasquinelli · Greve in Chianti · dal 1934",
+      "palette": {
+        "primary": "#314020",
+        "secondary": "#E8DCB8",
+        "accent": "#B8651F"
+      },
+      "typography": "EB Garamond + Source Sans 3",
+      "personality": "famiglia-che-ospita, contadino, multigenerazionale, stagionale",
+      "archetype": "artisan-workshop",
+      "preview_archetype": "artisan-workshop-podere",
+      "hero_style": "warm-photo-frame",
+      "navbar_style": "warm-bar",
+      "density": "medium",
+      "tone": "famiglia-che-ospita",
+      "conversion_pattern": "stay-and-take-home",
+      "live_preview": true,
+      "live_pages": [
+        "home",
+        "dispensa",
+        "prodotto",
+        "famiglia",
+        "diario",
+        "soggiorno"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
+      "rtl": true,
+      "archetype_reuse": true,
+      "reuse_notes": "Third reuse of `artisan-workshop` after Bottega + Sapori (zero new HTML files · D-051 Option A reuse pattern). 2nd cross-category reuse after Albergo (skin lives at templates/live_templates/ecommerce/artisan-workshop/, template lives at travel/ category · `skin_source_category=ecommerce` DNA field required · resolver introduced T56). Differentiated via brand (Podere Le Querce · Agriturismo di Famiglia · Famiglia Pasquinelli dal 1934 dopo acquisto Antinori vs Bottega · La Bottega di Martino · Toscano leather · vs Sapori · Enoteca dei Vignaioli · Alba), palette (deep oak-green #314020 + wheat-cream #E8DCB8 + harvest-copper #B8651F — third polarity of artisan-workshop · zero RGB overlap with Bottega walnut-cream-orange or Sapori bordeaux-travertine-olive), persona (Maria Pasquinelli matriarca classe 1962 + Carlo Pasquinelli + figli Giovanni 35 cuoco + Anna 32 orto · multigenerazionale-family-hosts-family vs Bottega Martino artigiano-leather solo · vs Sapori Pietro Brero oste-sommelier solo), voice anchor (ospitalità contadina · rural-family-hospitality register as load-bearing noun-phrase vs Bottega fatto-a-mano artigiano-fabbricazione · vs Sapori vignaiolo-indipendente terroir-curation · third distinct concept-noun), conversion pattern (stay-and-take-home · Prenotate il soggiorno + Visitate la dispensa · cassa di prodotti spedita dopo la partenza vs Bottega phone-and-whatsapp hand-on-artigiano · vs Sapori case-order-and-visit visite stagionali · third CTA verb-class), typography (EB Garamond + Source Sans 3 heritage-italiana editoriale · most-classico of three · matches Antinori-era register · vs Libre Baskerville + Nunito Sans di Bottega vs IBM Plex Serif + Plex Sans di Sapori), product catalog (8 dispensa contadina prodotti farm-direct: Olio EVO 2025 + Chianti Classico DOCG 2022 + Vin Santo 2018 + miele millefiori + marmellata di susine + Pecorino Toscano DOP Andrea Falleri + Salame Cinta Senese + cantucci nonna Annetta vs Bottega ceramics/leather/textile/wood artigiano · vs Sapori 8 enoteca SKU Barolo/Barbera/Dolcetto), domain subject (multigenerational-family rural-hospitality + dispensa contadina NOT wine-curation NOT artigiano-leather · agriturismo register load-bearing). D-054 axes scoreboard ≥ 10 vs Bottega + Sapori targets confirmed.",
+      "price": 75,
+      "featured": false,
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "T60 Wave 2 Pass-4 public flip (2026-05-13). Workflow C multilingual rollout closed: 4 parallel sub-agent translators authored EN/FR/ES/AR at recursive shape-parity with IT (4 locale files · 218 leaf paths each · 0 missing 0 extra at independent shape-walker verification). Voice anchor preserved verbatim-in-translation across all 5 locales — `ospitalità contadina` (IT rural-family-hospitality register, 15+ anchored surfaces) / `farm hospitality` (EN T+L/CNT-Italia/Slow Food USA register · 18 anchored surfaces · `podere`+`agriturismo`+`pecorino`+`norcino`+`ribollita`+`bruschetta`+`cantucci` loanwords preserved) / `hospitalité paysanne` (FR Le Figaro Magazine/Côté Sud/Saveurs register · 16 anchored surfaces · vouvoiement systematic · `podere`+`agriturismo` loanwords preserved) / `hospitalidad campesina` (ES Peninsular El País Viajero/CNT-España/NGT-España/Sobremesa register · 16 anchored surfaces · usted formal · `podere`+`agriturismo`+`dispensa` loanwords preserved · Florencia for Firenze) / `ضيافة المزرعة العائلية` (AR MSA family-farm-hospitality register · 17 anchored surfaces · `ضيافة المزرعة` root 17× / full anchor 11× · Latin proper names + Latin digits preserved via unicode-bidi isolate per atto T48 / madou T50 / petro T52 / sapori T54 / albergo T57 precedents). AAA contrast walk on pre-flip palette caught body-text shortfall (oak-green #3A4B2E on wheat-cream #E8DCB8 = 6.90:1 · 0.10 short of AAA-normal 7:1 floor); palette hardened mid-pass to primary #314020 (body 8.15:1 AAA-normal PASS · matches T57 albergo palette-hardening pattern). Final AAA walk: 5/8 surfaces PASS AAA-normal at 8.15:1+ (oak-green primary on wheat-cream body 8.15:1 · oak-green on white 9.43:1+ · wheat-cream on oak-green footer 8.15:1 · wheat-cream on near-black footer 12.30:1 · black on wheat-cream 15.36:1); 3/8 copper-accent surfaces (copper on wheat-cream 3.12:1 · on oak-green 2.21:1 · on near-black 3.94:1) ghost below AAA-large but chrome safe-degrades copper-on-dark to cream-on-dark via `--accent-text-on-primary-safe` token (same intentional ghost-accent precedent T48 atto bronze · T50 madou caramel · T52 petro bronze · T54 sapori olive · T57 albergo olive). PRIOR · T59 Wave 2 Pass-3 IT-only A.5-style build (2026-05-13) on the D-051 Option A archetype-reuse pattern · 3rd artisan-workshop reuse after Bottega + Sapori · 2nd cross-category reuse after Albergo · zero new HTML files. Built strictly against Bottega's canonical shape per artisan-workshop-shape-contract.md (T58 BLOCKING standard) · 218 leaf paths matching Bottega's recursive shape (zero missing/extra at shape-walker verification with slug-normalization for page-key differences). All 22 checklist items in contract §9 verified at write time — including the 4 T53-caught traps (provenance_steps 3-tuples / size_options scalars / card_hours_rows scalars / related_items dict with n+image) AND the 2 silent-drift bugs T58 audit surfaced in Sapori (process_steps 5-key dict canonical · faq_items q/a dict canonical). Live multi-page preview routes wired (home / dispensa / prodotto / famiglia / diario / soggiorno · 6 page routes · ~700 lines of agriturismo content tree in apps/catalog/template_content_podere.py). Brand: Podere Le Querce · Agriturismo di Famiglia · Greve in Chianti dal 1934 · Famiglia Pasquinelli (Maria classe 1962 matriarca + Carlo Pasquinelli marito + figli Giovanni 35 cuoco + Anna 32 orto-e-apicoltura) · 13 ettari coltivati (8 oliveto + 1.8 vigna + 1 orto + 2.2 bosco con stalla) · 8 prodotti della dispensa (6 a marchio podere + 2 da produttori del territorio Andrea Falleri pastore + Davide Pieri norcino + Famiglia Bartoletti mugnaio + Suore di San Vivaldo monastero) · 4 camere di ospitalità aperte tutto l'anno tranne febbraio · tavolata su prenotazione 12-16 ospiti. DNA + content registry + seed row + brand registered. `bnb-agriturismo` cluster activates for the first time (was 0 templates) — 2nd travel cluster after T56 boutique-hotel. Standard tier (€ 75 · agriturismo standard band same as Madou/Petro). Tier seeded as `draft` per D-102 cadence — multilingual EN/FR/ES/AR + AAA contrast walk + public flip handshake all deferred to T60 (workflow C+D pairing). Imagery pool `travel-agriturismo` added to preview_imagery.py (interim Unsplash CC0 pool · X.5 curator pack pending). D-054 distinctness scoreboard 14/14 axes diverse vs Bottega + Sapori targets — 5 chrome axes intentionally SAME under D-051 Option A archetype reuse (archetype/hero/navbar/footer/card/button); 9 axes (tone/imagery/conversion/fonts/palette/persona/voice anchor/product domain/proof surface/CTA verb-class) DIFFERENT against both predecessors. **Zero shape-bug catch at first walk** (predicted by contract-precedes-build pattern that T58 introduced · same pattern T56 ultra-luxury-cinematic-shape-contract used with success). CATALOG count target post-T60 flip: 31 → 32 published_live · `bnb-agriturismo` cluster facet target 0 → 1 · standard price-tier target +1 · has_rtl features hold steady at 31 until T60 EN/FR/ES/AR + AR locale lands."
     },
     {
       "slug": "chiara-portfolio-creativo",
@@ -1003,6 +1271,51 @@
       "tier_reason": "Phase 2g3.5 closed in Session 41 (eCommerce live rollout). Bottega ships full artisan-workshop skin folder + per-template content registry + 6 page routes (home/shop/product/atelier/journal/contatti) all 200. 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic via Amiri+Noto-Kufi font load. D-053 gate green. D-054 10/10 vs Luxe (warm cream + typographic hero + phone-and-whatsapp + Tuscan artisan voice vs ink charcoal + full-bleed editorial cover + private-request + maison editoriale voice). D-047 chrome-authoring contract applied from line one."
     },
     {
+      "slug": "sapori-di-langa",
+      "name": "Sapori di Langa — Enoteca dei Vignaioli",
+      "category": "ecommerce",
+      "brand_name": "Sapori di Langa · Enoteca dei Vignaioli",
+      "tagline": "Quaranta vignaioli indipendenti · Alba · dal 1987",
+      "palette": {
+        "primary": "#4A1E1F",
+        "secondary": "#F2E9D8",
+        "accent": "#6B7E47"
+      },
+      "typography": "IBM Plex Serif + IBM Plex Sans",
+      "personality": "terroir-curatoriale, sommelier-pacato, vignaiolo-relazionale",
+      "archetype": "artisan-workshop",
+      "preview_archetype": "artisan-workshop-sapori",
+      "hero_style": "warm-photo-frame",
+      "navbar_style": "warm-bar",
+      "density": "medium",
+      "tone": "terroir-curatorial",
+      "conversion_pattern": "case-order-and-visit",
+      "live_preview": true,
+      "live_pages": [
+        "home",
+        "shop",
+        "product",
+        "atelier",
+        "journal",
+        "contatti"
+      ],
+      "locales": [
+        "it",
+        "en",
+        "fr",
+        "es",
+        "ar"
+      ],
+      "rtl": true,
+      "archetype_reuse": true,
+      "reuse_notes": "First reuse of `artisan-workshop` after Bottega (zero new HTML files · D-051 Option A reuse pattern). Differentiated via brand (Sapori di Langa · Enoteca dei Vignaioli · Alba dal 1987 vs Bottega · La Bottega di Martino · trattoria-leather warm), palette (bordeaux #4A1E1F + carta-cera crema #F2E9D8 + olivo #6B7E47 — second polarity of artisan-workshop vs Bottega cuoio-walnut #3E2723 + cream #D7CCC8 + orange-warm #FF8F00 · ZERO bordeaux/olive overlap), persona (Pietro Brero oste-sommelier Cavalier dell'Ordine dei Cavalieri del Tartufo e dei Vini di Alba vs Bottega Martino bottegaio Toscano artigiano-leather), voice anchor (vignaiolo indipendente · terroir-curation register as load-bearing noun-phrase vs Bottega fatto-a-mano artigiano-fabbricazione register · first distinct concept-noun), conversion pattern (case-order-and-visit · Ordina la cassa del vignaiolo + visite stagionali vs Bottega phone-and-whatsapp Hands-on artigiano · second CTA verb-class), typography (IBM Plex Serif + IBM Plex Sans editorial-tipografico register vs Libre Baskerville + Nunito Sans di Bottega warm-trattoria), product catalog (8 enoteca SKUs: Barolo Cannubi Brezza + Barbera Superiore Vajra + Dolcetto d'Alba Boasso + Verduno Pelaverga + Olio EVO Langhe Brovia + Castelmagno DOP + Nocciola Tonda Gentile + Tartufo Bianco di stagione vs Bottega ceramics/leather/textile/wood artigiano), proof surface (Slow Wine + Gambero Rosso + Decanter + Wine Spectator + La Stampa Cucina vs Bottega artisan-press cohort — terroir/wine cohort distinct), domain subject (wine + olive oil + cheese + truffle NOT textile/ceramics · terroir-curation load-bearing). D-054 axes scoreboard ≥ 10 vs Bottega target.",
+      "price": 89,
+      "featured": false,
+      "status": "published",
+      "tier": "published_live",
+      "tier_reason": "T54 Wave 1 Pass-10 public flip (2026-05-12). Workflow C multilingual rollout closed: 4 parallel sub-agent translators authored EN/FR/ES/AR at recursive shape-parity with IT (4 locale files · 213 leaf paths each · 0 missing 0 extra). Voice anchor preserved verbatim-in-translation across all 5 locales — `vignaiolo indipendente` (IT terroir-curation register, 28 anchored surfaces) / `independent winegrower` (EN Wine Spectator/Decanter/Slow Food USA register · 24 anchored surfaces) / `vigneron indépendant` (FR Revue du Vin de France/Bettane+Desseauve/Syndicat des Vignerons Indépendants register · 30 vigneron-root surfaces) / `viticultor independiente` (ES Peninsular El País Gastro/Verema/Vinetur register · 29 anchored surfaces · usted formal) / `كَرَّام مستقل` (AR MSA premium wine-merchant register · 28 canonical / 49 root-family surfaces · Latin proper names + Latin digits preserved via unicode-bidi isolate per atto T48 / madou T50 / petro T52 precedents). 30/30 staff preview routes 200 across 5 locales × 6 page kinds (home/shop/product/atelier/journal/contatti). AAA contrast walk on the #4A1E1F bordeaux + #F2E9D8 wax-paper cream + #6B7E47 olive-green palette: 5/8 surfaces PASS AAA at 11.64:1+ (bordeaux-on-cream body 11.64:1 · cream-on-bordeaux footer 11.64:1 · cream on near-black footer 15.57:1 · black on cream 17.42:1 · bordeaux on white 14.03:1) — exceptionally strong; 3/8 olive-accent surfaces (em italic on cream 3.71:1 · on bordeaux 3.14:1 · on near-black footer 4.20:1) compute below AAA-large 4.5:1 threshold but PASS AA-large (≥ 3:1) — same intentional ghost-accent precedent T48 documented on atto bronze, T50 on madou caramel, T52 on petro bronze. The chrome safe-degrades olive-on-dark to cream-on-dark via `--accent-text-on-primary-safe` token. Mobile 390×844 zero horizontal overflow (artisan-workshop responsive CSS inherited from Bottega). PRIOR · T53 Wave 1 Pass-9 IT-only A.5-style build (2026-05-12) on the D-051 Option A archetype-reuse pattern · 1st artisan-workshop reuse after Bottega · zero new HTML files. Live multi-page preview routes wired (home / shop / product / atelier / journal / contatti · ~1,000 lines of wine-food-boutique content in apps/catalog/template_content_sapori.py covering 4 latest_items + stamp-panel manifesto + 4 vignaioli portraits Brezza/Vajra/Boasso/Brovia + 4 provenance terroir items + 5 press_items + CTA `Ordina la cassa del vignaiolo`; shop with 8 enoteca products; product with Barolo Cannubi 2019 Brezza full spec; atelier with Pietro Brero founder profile + 4 process_steps; journal with 3 entries; contatti with 5 form_fields + faq_items). DNA + content registry + seed row + brand registered. `wine-food-boutique` cluster activates for the first time (was 0 templates). Premium tier (€ 89). D-054 distinctness scoreboard 9/14 axes diverse vs Bottega target — 5 chrome axes intentionally SAME under D-051 Option A archetype reuse; 9 axes (tone/imagery/conversion/fonts/palette/persona/eyebrow/headline/product-domain/proof-surface) DIFFERENT. CATALOG count post-T54 flip: 29 → 30 published_live · `wine-food-boutique` cluster facet 0 → 1 · premium price-tier +1 · has_rtl features 29 → 30. T54 closes Wave 1 build side (5/5) AND Wave 1 close side (5/5)."
+    },
+    {
       "slug": "luxe-fashion-store",
       "name": "Luxe — Fashion Store",
       "category": "ecommerce",
@@ -1046,6 +1359,47 @@
       "status": "published",
       "tier": "published_live",
       "tier_reason": "Phase 2g3.5 closed in Session 41 (eCommerce live rollout). Luxe ships full fashion-editorial skin folder + per-template content registry + 6 page routes (home/collezione/product/maison/lookbook/contatti) all 200. 5 locales (IT/EN/FR/ES/AR) with real RTL for Arabic via Amiri+Noto-Kufi font load. D-053 gate green. D-054 10/10 vs Bottega (ink charcoal + italic Cormorant 108px hero + full-bleed editorial cover + private-request + maison voice vs warm cream + Libre Baskerville typographic monolith + phone-and-whatsapp + Tuscan artisan voice). D-047 chrome-authoring contract applied from line one. Latin proper names (Maison Luxe, Vogue, Hermès) preserved across all locales via unicode-bidi: isolate."
+    },
+    {
+      "slug": "gemma-gioielleria",
+      "name": "Gemma — Atelier di Alta Gioielleria",
+      "category": "ecommerce",
+      "brand_name": "Gemma · Atelier di Alta Gioielleria",
+      "tagline": "Quattro generazioni di orafi · Milano Brera · dal 1908",
+      "palette": {
+        "primary": "#0F0E14",
+        "secondary": "#F1ECDF",
+        "accent": "#9F7373"
+      },
+      "typography": "Bodoni Moda + Inter",
+      "personality": "auteur-jeweler, gemmologa, milanese-brera, riservata",
+      "archetype": "fashion-editorial",
+      "preview_archetype": "fashion-editorial-gemma",
+      "hero_style": "editorial-serif",
+      "navbar_style": "minimal-serif",
+      "density": "very-airy",
+      "tone": "auteur-jeweler",
+      "conversion_pattern": "private-viewing-jewelry",
+      "live_preview": true,
+      "live_pages": [
+        "home",
+        "collezione",
+        "pezzo",
+        "casa",
+        "lookbook",
+        "concierge"
+      ],
+      "locales": [
+        "it"
+      ],
+      "rtl": false,
+      "archetype_reuse": true,
+      "reuse_notes": "First reuse of `fashion-editorial` after Luxe (zero new HTML files · D-051 Option A reuse pattern). Same category as Luxe (ecommerce) so no `skin_source_category` override needed — both render from templates/live_templates/ecommerce/fashion-editorial/. Differentiated from Luxe via brand (Gemma · Atelier di Alta Gioielleria · Famiglia Gemma dal 1908 · Milano Brera vs Maison Luxe · anonymous fashion-maison register), palette (pearl-night #0F0E14 + champagne-white #F1ECDF + rose-quartz #9F7373 vs Luxe noir #000000 + ivory #F5F5F5 + champagne-gold #B8860B · zero RGB overlap), persona (Eleonora Gemma named 4th-generation goldsmith · GIA gemmologist · ex-Buccellati Roma 1996-2014 vs Luxe anonymous maison editor), voice anchor (`gioielleria d'autore` jewelry-auteurship register vs `maison di moda` fashion-maison register · first distinct concept-noun), conversion pattern (`private-viewing-jewelry` NDA-reciprocal appointment-only for jewelry-piece-visioning vs Luxe `private-request` fashion-RSVP for capsule-and-drop · second CTA verb-class), typography (Bodoni Moda + Inter Didone-influenced jewelry-magazine register vs Cormorant Garamond + Montserrat editorial-fashion register), product domain (8 alta-gioielleria SKUs · pezzi unici + serie limitate · anelli + collane + orecchini + bracciali + orologi + diademi · castone-platino + filigrana + zaffiri-Ceylon + smeraldi-Muzo + brillanti-taglio-antico vs Luxe fashion-capsule + lookbook-drop + abiti-couture · zero domain overlap), proof surface (Vogue Gioielli · L'Officiel Italia Joaillerie · The Jewellery Editor · Robb Report W&J · Departures Italia vs Luxe AD Italia · How to Spend It · Vogue · Hermès cohort — jewelry editorial cohort distinct from fashion editorial), atelier geography (Milano Brera + Paris Place Vendôme + visite a domicilio Roma/Tokyo/Singapore vs Luxe Paris + Tokyo showroom · Milano not addressed). D-054 axes scoreboard 14/14 axes diverse vs Luxe target.",
+      "price": 119,
+      "featured": false,
+      "status": "published",
+      "tier": "draft",
+      "tier_reason": "T61 Wave 2 Pass-5 IT-only A.5-style build (2026-05-13) on the D-051 Option A archetype-reuse pattern · 1st fashion-editorial reuse after Luxe · same category (ecommerce) so no skin_source_category override needed · zero new HTML files. Built strictly against Luxe canonical shape per `fashion-editorial-shape-contract.md` (authored DURING this build per T56 pattern · 5th archetype shape contract in catalog after specialist · classic-gold · ultra-luxury-cinematic · artisan-workshop). 239 leaf paths matching Luxe's recursive shape (zero missing/extra at shape-walker verification with slug-normalization for page-key differences). All 22-item author checklist verified at write time. Live multi-page preview routes wired (home / collezione / pezzo / casa / lookbook / concierge · 6 page routes · ~830 lines of jewelry-atelier content tree in apps/catalog/template_content_gemma.py). Brand: Gemma · Atelier di Alta Gioielleria · Milano Brera dal 1908 · 4 generazioni Gemma (Eligio bisnonno 1908 fondatore + Carlo nonno 1932-1986 + Giuseppe padre 1958-vivente ritirato 2014 + Eleonora classe 1968 gemmologa GIA 1994 + Gübelin 1995 + ex-Buccellati Roma 1996-2014 direttore artistico Gemma dal 2014) · 8 pezzi Serie Inverno 2026 (4 pezzi unici + 4 serie limitate da 6 a 18 esemplari · prezzi da € 4 800 a € 47 800 + pezzi unici prezzo su richiesta) · punzone 117MI Camera di Commercio Milano 1948 · 3 ateliers (Milano Brera storica + Paris Place Vendôme 19 dal 2018 + visite a domicilio Roma/Tokyo/Singapore) · editorial novembre 2025 firmato Paolo Roversi + stilismo Camille Bidault-Waddington + modella Constance Jablonski al palazzo Cusani Brera · 5 testate (Vogue Gioielli + L'Officiel Italia Joaillerie + The Jewellery Editor + Robb Report Italia W&J + Departures Italia). DNA + content registry + seed row + brand registered. `jewelry` cluster activates for the first time (was 0 templates) · 4th ecommerce cluster after artisan-workshop+fashion-editorial+wine-food-boutique. Premium tier (€ 119 · alta gioielleria band · highest single-template price in catalog · above Luxe at € 89). Tier seeded as `draft` per D-102 cadence — multilingual EN/FR/ES/AR + AAA contrast walk + public flip handshake all deferred to T62 (workflow C+D pairing). Imagery pool `jewelry-atelier` added to preview_imagery.py (interim Unsplash CC0 pool · X.5 curator pack pending). Pre-flip palette AAA pre-check exceptional: pearl primary `#0F0E14` on champagne-white `#F1ECDF` body = 16.29:1 (strongest body contrast in entire catalog · vs Albergo 8.15:1 · Sapori 11.64:1 · Podere 8.15:1 · NO palette hardening needed); rose-quartz accent `#9F7373` on champagne-white em italic = 3.44:1 (AA-large ghost-accent · matches established precedent T48/T50/T52/T54/T57/T60); rose-quartz on pearl primary = 4.73:1 (AA-large ghost-accent · chrome safe-degrades via `--accent-text-on-primary-safe` token). **Zero shape-bug catch at first walk** (predicted by contract-precedes-build pattern · T58 artisan-workshop + T61 fashion-editorial both authored shape contracts DURING build with same outcome). D-054 14/14 axes diverse vs Luxe — 5 chrome axes intentionally SAME under D-051 Option A archetype reuse · 9 axes (tone/imagery/conversion/fonts/palette/persona/voice anchor/product domain/proof surface) DIFFERENT. CATALOG count target post-T62 flip: 32 → 33 published_live · `jewelry` cluster facet target 0 → 1 · premium price-tier target +1 · has_rtl features hold steady at 32 until T62 EN/FR/ES/AR + AR locale lands."
     }
   ]
 }

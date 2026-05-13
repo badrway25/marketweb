@@ -120,6 +120,68 @@
         </button>
       </div>
 
+      {% comment %}
+        T40 · first-run onboarding card. Visible only when the editor was just
+        opened from /projects/start/?template=<slug> (cfg.justCreated == true)
+        AND the user has never dismissed it on this browser. The three steps
+        delegate to the JS step router in live-editor.js so the buttons
+        expand/scroll/focus the right element.
+      {% endcomment %}
+      <aside class="ed-onboarding" data-ed-onboarding hidden
+             aria-label="Guida ai primi passi">
+        <header class="ed-onboarding-head">
+          <span class="ed-onboarding-eyebrow">
+            <i class="bi bi-stars" aria-hidden="true"></i>
+            Primi passi
+          </span>
+          <button type="button" class="ed-onboarding-dismiss"
+                  data-ed-onboarding-dismiss
+                  aria-label="Chiudi guida primi passi">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </header>
+        <h2 class="ed-onboarding-title">Inizia da qui</h2>
+        <p class="ed-onboarding-lead">
+          Le modifiche che fai qui appaiono in tempo reale nell'anteprima a destra.
+          Tre passi consigliati per rendere il template tuo:
+        </p>
+        <ol class="ed-onboarding-steps">
+          <li>
+            <button type="button" class="ed-onboarding-step"
+                    data-ed-onboarding-step="brand">
+              <span class="ed-onboarding-n">1</span>
+              <span class="ed-onboarding-text">
+                <strong>Personalizza il brand</strong>
+                <span class="ed-onboarding-sub">Nome, palette e tipografia</span>
+              </span>
+              <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="ed-onboarding-step"
+                    data-ed-onboarding-step="hero">
+              <span class="ed-onboarding-n">2</span>
+              <span class="ed-onboarding-text">
+                <strong>Riscrivi la headline</strong>
+                <span class="ed-onboarding-sub">La prima frase che vede chi entra</span>
+              </span>
+              <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="ed-onboarding-step"
+                    data-ed-onboarding-step="publish">
+              <span class="ed-onboarding-n">3</span>
+              <span class="ed-onboarding-text">
+                <strong>Pubblica quando sei pronto</strong>
+                <span class="ed-onboarding-sub">Bottone Pubblica in alto a destra</span>
+              </span>
+              <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+          </li>
+        </ol>
+      </aside>
+
       <div class="ed-sidebar-body">
 
         {# ── Groups with content fields ───────────────────────── #}

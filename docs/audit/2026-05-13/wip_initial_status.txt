@@ -1,0 +1,150 @@
+ M TEMPLATE_REGISTRY.json
+ M apps/accounts/views.py
+ M apps/catalog/apps.py
+ M apps/catalog/checks.py
+ M apps/catalog/imagery_policy.py
+ M apps/catalog/management/commands/seed_templates.py
+ M apps/catalog/preview_imagery.py
+ M apps/catalog/template_content.py
+ M apps/catalog/template_content_casa.py
+ M apps/catalog/template_content_casa_ar.py
+ M apps/catalog/template_content_casa_en.py
+ M apps/catalog/template_content_casa_es.py
+ M apps/catalog/template_content_casa_fr.py
+ M apps/catalog/template_content_lex.py
+ M apps/catalog/template_content_lex_ar.py
+ M apps/catalog/template_content_lex_en.py
+ M apps/catalog/template_content_lex_es.py
+ M apps/catalog/template_content_lex_fr.py
+ M apps/catalog/template_content_pragma.py
+ M apps/catalog/template_content_pragma_ar.py
+ M apps/catalog/template_content_pragma_en.py
+ M apps/catalog/template_content_pragma_es.py
+ M apps/catalog/template_content_pragma_fr.py
+ M apps/catalog/template_content_salute.py
+ M apps/catalog/template_content_salute_ar.py
+ M apps/catalog/template_content_salute_en.py
+ M apps/catalog/template_content_salute_es.py
+ M apps/catalog/template_content_salute_fr.py
+ M apps/catalog/template_dna.py
+ M apps/catalog/tests.py
+ M apps/catalog/theme_safety.py
+ M apps/catalog/views.py
+ M apps/commerce/services.py
+ M apps/core/admin.py
+ M apps/core/apps.py
+ M apps/core/models.py
+ M apps/core/tests.py
+ M apps/pages/views.py
+ M apps/projects/services.py
+ M manage.py
+ M marketweb/asgi.py
+ D marketweb/settings.py
+ M marketweb/urls.py
+ M marketweb/wsgi.py
+ M requirements.txt
+ M static/css/components.css
+ M static/css/design-system.css
+ M static/css/live-motion.css
+ M static/editor/live-editor.css
+ M static/editor/live-editor.js
+ M templates/base.html
+ M templates/catalog/template_detail.html
+ M templates/catalog/template_list.html
+ M templates/live_templates/business/corporate-suite/_base.html
+ M templates/live_templates/business/corporate-suite/_layouts/lf1/styles.html
+ M templates/live_templates/business/corporate-suite/_layouts/lf5/styles.html
+ M templates/live_templates/business/startup-saas-landing/_base.html
+ M templates/live_templates/business/startup-saas-landing/home.html
+ M templates/live_templates/lawyer/classic-gold/_base.html
+ M templates/live_templates/medical/specialist/_base.html
+ M templates/live_templates/medical/specialist/home.html
+ M templates/live_templates/restaurant/fine-dining/_base.html
+ M templates/live_templates/restaurant/fine-dining/home.html
+ M templates/pages/home.html
+ M templates/preview_compositions/business.html
+ M templates/projects/project_editor.html
+?? .dockerignore
+?? .env.example
+?? .github/workflows/ci.yml
+?? Dockerfile
+?? _verify_es_shape.py
+?? apps/accounts/management/__init__.py
+?? apps/accounts/management/commands/__init__.py
+?? apps/accounts/management/commands/setup_admin_totp.py
+?? apps/catalog/cs_contrast_audit.py
+?? apps/catalog/sitemaps.py
+?? apps/catalog/template_content_albergo.py
+?? apps/catalog/template_content_albergo_ar.py
+?? apps/catalog/template_content_albergo_en.py
+?? apps/catalog/template_content_albergo_es.py
+?? apps/catalog/template_content_albergo_fr.py
+?? apps/catalog/template_content_atto.py
+?? apps/catalog/template_content_atto_ar.py
+?? apps/catalog/template_content_atto_en.py
+?? apps/catalog/template_content_atto_es.py
+?? apps/catalog/template_content_atto_fr.py
+?? apps/catalog/template_content_denti.py
+?? apps/catalog/template_content_denti_ar.py
+?? apps/catalog/template_content_denti_en.py
+?? apps/catalog/template_content_denti_es.py
+?? apps/catalog/template_content_denti_fr.py
+?? apps/catalog/template_content_gemma.py
+?? apps/catalog/template_content_madou.py
+?? apps/catalog/template_content_madou_ar.py
+?? apps/catalog/template_content_madou_en.py
+?? apps/catalog/template_content_madou_es.py
+?? apps/catalog/template_content_madou_fr.py
+?? apps/catalog/template_content_petro.py
+?? apps/catalog/template_content_petro_ar.py
+?? apps/catalog/template_content_petro_en.py
+?? apps/catalog/template_content_petro_es.py
+?? apps/catalog/template_content_petro_fr.py
+?? apps/catalog/template_content_podere.py
+?? apps/catalog/template_content_podere_ar.py
+?? apps/catalog/template_content_podere_en.py
+?? apps/catalog/template_content_podere_es.py
+?? apps/catalog/template_content_podere_fr.py
+?? apps/catalog/template_content_sapori.py
+?? apps/catalog/template_content_sapori_ar.py
+?? apps/catalog/template_content_sapori_en.py
+?? apps/catalog/template_content_sapori_es.py
+?? apps/catalog/template_content_sapori_fr.py
+?? apps/catalog/tests_contrast.py
+?? apps/core/audit.py
+?? apps/core/management/__init__.py
+?? apps/core/management/commands/__init__.py
+?? apps/core/management/commands/backup_db.py
+?? apps/core/management/commands/export_audit_log.py
+?? apps/core/management/commands/prune_audit_log.py
+?? apps/core/management/commands/restore_drill.py
+?? apps/core/middleware.py
+?? apps/core/migrations/0001_initial.py
+?? apps/core/migrations/0002_alter_auditlogentry_action.py
+?? apps/core/migrations/0003_alter_auditlogentry_action.py
+?? apps/core/migrations/__init__.py
+?? docker-compose.yml
+?? docs/AUDIT_REPORT_2026-05-13_PHASE1_COMPARATIVE_BASELINE.md
+?? docs/audit/2026-05-13/wip_initial_status.txt
+?? docs/audit/2026-05-13/wip_modified_files.patch
+?? docs/bootstrap.md
+?? factory/reports/execution-2026-05-13/T61_WAVE2_PASS5_GEMMA_BUILD.md
+?? factory/standards/classic-gold-shape-contract.md
+?? factory/standards/fashion-editorial-shape-contract.md
+?? factory/standards/specialist-shape-contract.md
+?? marketweb/_error_triggers.py
+?? marketweb/middleware.py
+?? marketweb/security_headers.py
+?? marketweb/sentry.py
+?? marketweb/settings/__init__.py
+?? marketweb/settings/base.py
+?? marketweb/settings/dev.py
+?? marketweb/settings/prod.py
+?? static/favicon.svg
+?? templates/400.html
+?? templates/403.html
+?? templates/403_csrf.html
+?? templates/404.html
+?? templates/405.html
+?? templates/500.html
+?? templates/axes_lockout.html

@@ -700,6 +700,18 @@
 
   /* Mobile: collapse grids */
   @media (max-width: 960px) {
+    .sp-hero {
+      grid-template-columns: 1fr;
+      padding: 64px 40px 48px;
+      gap: 48px;
+    }
+    .sp-hero h1 { font-size: 64px; }
+    .sp-hero-em {
+      grid-template-columns: 1fr;
+      padding: 64px 40px 48px;
+    }
+    .sp-hero-em .portrait { min-height: 320px; }
+    .sp-hero-em .text h1 { font-size: 64px; }
     .sp-journey .steps { grid-template-columns: 1fr; gap: 36px; }
     .sp-journey .steps:before { display: none; }
     .sp-trust-inner { grid-template-columns: repeat(2, 1fr); }
@@ -707,6 +719,24 @@
     .sp-tabs .panel-grid { grid-template-columns: 1fr; gap: 36px; }
     .sp-compare .pair { grid-template-columns: 1fr; gap: 36px; }
     .sp-feed .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .sp-hero { padding: 48px 22px 32px; gap: 32px; }
+    .sp-hero h1 { font-size: clamp(36px, 9vw, 52px); max-width: none; }
+    .sp-hero .intro { font-size: 17px; }
+    .sp-hero .actions {
+      flex-direction: column; align-items: flex-start;
+      gap: 16px; margin-top: 32px;
+    }
+    .sp-hero .right { padding: 28px 24px; min-height: 0; }
+    .sp-hero-em { padding: 48px 22px 32px; }
+    .sp-hero-em .portrait { min-height: 260px; }
+    .sp-hero-em .text h1 { font-size: clamp(36px, 9vw, 52px); max-width: none; }
+    .sp-hero-em .actions {
+      flex-direction: column; align-items: flex-start; gap: 16px;
+    }
+    .sp-feed .grid { grid-template-columns: 1fr; }
+    .sp-trust-inner { grid-template-columns: 1fr; }
   }
 {% endblock %}
 

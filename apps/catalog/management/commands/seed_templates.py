@@ -217,6 +217,33 @@ TEMPLATE_METADATA = {
         "has_rtl": True,
         "is_multi_page": True,
     },
+    # Wave 1 Pass-1 (T45 · 2026-05-11) — Denti+Co Studio Dentistico.
+    # 3rd template on `specialist` archetype (zero new HTML). Cluster
+    # `dental` activates for the first time (was 0 templates). Price
+    # tier `standard` (€ 75) vs Cardio/Derm `premium` — wider audience
+    # reach, lower entry barrier.
+    "denti-co-studio": {
+        "cluster": "dental",
+        "style": "minimal-light",
+        "price_tier": "standard",
+        "use_cases": [
+            "appointment-booking",
+            "specialist-credibility",
+            "preventive-care",
+        ],
+        "audience": ["studio", "smb"],
+        "search_keywords": (
+            "dentista odontoiatra studio-dentistico igiene impianti "
+            "ortodonzia invisalign implantologia"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
     "dermatologia-elite-roma": {
         "cluster": "specialist",
         "style": "minimal-light",
@@ -251,6 +278,101 @@ TEMPLATE_METADATA = {
         "has_booking": True,
         "has_portfolio": False,
         "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    # T47 · Wave 1 Pass-3 (2026-05-12) — Studio Notarile Conti-Sironi-Verri.
+    # 1st reuse of `classic-gold` archetype after Lex (zero new HTML).
+    # Cluster `notary-commercialista` activates for the first time (was 0
+    # templates). Price tier `premium` (€ 89) — same band as Lex (€ 69)
+    # plus £20 institutional uplift. Seeds at tier=draft via
+    # TEMPLATE_REGISTRY.json — IT-only at T47 build (D-102 cadence);
+    # multilingual + flip via T47b or T48 depending on cadence.
+    "atto-notai-associati": {
+        "cluster": "notary-commercialista",
+        "style": "classic-serif",
+        "price_tier": "premium",
+        "use_cases": [
+            "primo-incontro-orientamento",
+            "notarial-authority",
+            "institutional-credibility",
+        ],
+        "audience": ["studio", "smb", "enterprise"],
+        "search_keywords": (
+            "notaio studio-notarile rogito testamento successione "
+            "compravendita costituzione-società atto-pubblico procura "
+            "donazione mutuo-ipotecario commercialista pubblico-ufficiale"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": False,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    # T49 · Wave 1 Pass-5 (2026-05-12) — Madou Pasticceria Atelier.
+    # 1st reuse of `fine-dining` archetype after Gusto (D-051 Option A:
+    # zero new HTML files). Cluster `bakery-pasticceria` activates for
+    # the first time (was 0 templates). Price tier `premium` (€ 75) —
+    # +€16 over Gusto's € 59 to signal pasticceria-atelier positioning.
+    # Seeds at tier=draft via TEMPLATE_REGISTRY.json — IT-only at T49
+    # build (D-102 cadence); multilingual + flip via T50.
+    "madou-pasticceria": {
+        "cluster": "bakery-pasticceria",
+        "style": "editorial-warm",
+        "price_tier": "premium",
+        "use_cases": [
+            "saturday-laminate-preorder",
+            "menu-online",
+            "brand-storytelling",
+        ],
+        "audience": ["smb"],
+        "search_keywords": (
+            "pasticceria atelier croissant maritozzo millefoglie saint-honore "
+            "lievitazione-lenta pasta-sfoglia lievito-madre pasticciere torino "
+            "wedding-cake cake-design pasticceria-artigianale"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": True,
+        "has_video": False,
+        # has_rtl=True per the D-098 invariant ("RTL is the catalog-
+        # wide default" — fine-dining chrome already supports RTL as
+        # proven by Gusto AR). AR locale lands in T50; the flag is
+        # forward-declared here so the catalog invariant holds at draft.
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    # T51 · Wave 1 Pass-7 (2026-05-12) — Studio Veterinario Petro.
+    # 4th reuse of `specialist` archetype after Cardio + Derm + Denti
+    # (D-051 Option A: zero new HTML files). Cluster `veterinary`
+    # activates for the first time (was 0 templates). Price tier
+    # `standard` (€ 75) — same band as Denti (specialist standard
+    # bracket). Seeds at tier=draft via TEMPLATE_REGISTRY.json —
+    # IT-only at T51 build (D-102 cadence); multilingual EN/FR/ES/AR
+    # + AAA walk + public flip happen in T52.
+    "petro-veterinario": {
+        "cluster": "veterinary",
+        "style": "minimal-light",
+        "price_tier": "standard",
+        "use_cases": [
+            "preventive-booking",
+            "appointment-booking",
+            "specialist-credibility",
+        ],
+        "audience": ["smb", "studio"],
+        "search_keywords": (
+            "veterinario veterinaria clinica-animali ambulatorio-veterinario "
+            "cane gatto coniglio furetto esotici vaccinazioni sterilizzazione "
+            "visita-preventiva cura-preventiva pet ecografia chirurgia padova"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": True,
         "has_video": False,
         "has_rtl": True,
         "is_multi_page": True,
@@ -306,6 +428,61 @@ TEMPLATE_METADATA = {
         "has_rtl": True,
         "is_multi_page": True,
     },
+    # ── T56 Wave 2 Pass-1 (2026-05-12) ─────────────────────────────
+    # `albergo-borgo` opens the `boutique-hotel` cluster (was 0 templates).
+    # 1st reuse of ultra-luxury-cinematic archetype after Villa.
+    # IT-only draft tier · multilingual rollout deferred to T57.
+    # ── T59 Wave 2 Pass-3 (2026-05-13) ─────────────────────────────
+    # `podere-agriturismo` opens the `bnb-agriturismo` cluster
+    # (was 0 templates). 3rd reuse of artisan-workshop archetype
+    # after Bottega + Sapori (D-051 Option A) · 2nd cross-category
+    # reuse. IT-only draft tier · multilingual deferred to T60.
+    "podere-agriturismo": {
+        "cluster": "bnb-agriturismo",
+        "style": "typographic-first",
+        "price_tier": "standard",
+        "use_cases": [
+            "appointment-booking",
+            "sell-online",
+            "brand-storytelling",
+        ],
+        "audience": ["smb", "freelance"],
+        "search_keywords": (
+            "agriturismo podere greve chianti famiglia ospitalita contadina "
+            "olio chianti-classico miele cinta-senese vendemmia raccolta "
+            "antinori toscana dispensa contadina firenze"
+        ),
+        "has_shop": True,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": True,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    "albergo-borgo": {
+        "cluster": "boutique-hotel",
+        "style": "cinematic-fullbleed",
+        "price_tier": "premium",
+        "use_cases": [
+            "lead-capture",
+            "premium-brand",
+            "appointment-booking",
+        ],
+        "audience": ["smb", "studio"],
+        "search_keywords": (
+            "albergo relais boutique-hotel ospitalità borgo toscana val-orcia "
+            "pienza siena unesco relais-chateaux concierge dimora seicento "
+            "michelin spa cantina vino brunello"
+        ),
+        "has_shop": False,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": True,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
     "chiara-portfolio-creativo": {
         "cluster": "designer-editorial",
         "style": "editorial-warm",
@@ -357,6 +534,35 @@ TEMPLATE_METADATA = {
         "has_rtl": True,
         "is_multi_page": True,
     },
+    # ── T53 Wave 1 Pass-9 (2026-05-12) ─────────────────────────────
+    # `sapori-di-langa` opens the new `wine-food-boutique` cluster.
+    # 1st archetype reuse of artisan-workshop after Bottega (D-051
+    # Option A: zero new HTML). IT-only draft tier; multilingual
+    # rollout deferred to T54 per D-102 cadence.
+    "sapori-di-langa": {
+        # Visual style reuses `typographic-first` (Bottega's style)
+        # — D-054 differentiation comes via palette (bordeaux+cream+
+        # olive vs walnut+cream+orange) + font pairing (IBM Plex
+        # Serif/Sans vs Libre Baskerville+Nunito Sans) + voice anchor
+        # + persona register, not via a new visual_style row.
+        "cluster": "wine-food-boutique",
+        "style": "typographic-first",
+        "price_tier": "premium",
+        "use_cases": ["sell-online", "case-order", "terroir-storytelling"],
+        "audience": ["smb", "freelance"],
+        "search_keywords": (
+            "vino langhe barolo barbera nebbiolo dolcetto vignaiolo enoteca "
+            "alba castelmagno olio-evo tartufo-bianco terroir sommelier "
+            "cassa-vignaiolo cantina indipendente"
+        ),
+        "has_shop": True,
+        "has_booking": False,
+        "has_portfolio": False,
+        "has_blog": True,
+        "has_video": False,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
     "luxe-fashion-store": {
         "cluster": "fashion-editorial",
         "style": "magazine-hybrid",
@@ -371,6 +577,36 @@ TEMPLATE_METADATA = {
         "has_portfolio": False,
         "has_blog": True,
         "has_video": True,
+        "has_rtl": True,
+        "is_multi_page": True,
+    },
+    # ── T61 Wave 2 Pass-5 (2026-05-13) ─────────────────────────────
+    # `gemma-gioielleria` opens the `jewelry` cluster (was 0 templates).
+    # 1st reuse of fashion-editorial archetype after Luxe (D-051 Option A).
+    # Same category as Luxe (ecommerce) · no skin_source_category needed.
+    # Premium tier (€ 119 · alta gioielleria band above Luxe). Seeds at
+    # tier=draft · multilingual + flip via T62.
+    "gemma-gioielleria": {
+        "cluster": "jewelry",
+        "style": "magazine-hybrid",
+        "price_tier": "premium",
+        "use_cases": [
+            "sell-online",
+            "luxury-brand",
+            "lookbook-campaigns",
+            "appointment-booking",
+        ],
+        "audience": ["smb", "studio"],
+        "search_keywords": (
+            "gioielleria atelier orafo alta-gioielleria pezzo-unico serie-limitata "
+            "milano brera buccellati GIA gemmologia castone filigrana brillante "
+            "platino oro zaffiro smeraldo private-viewing concierge eleonora gemma"
+        ),
+        "has_shop": True,
+        "has_booking": True,
+        "has_portfolio": False,
+        "has_blog": True,
+        "has_video": False,
         "has_rtl": True,
         "is_multi_page": True,
     },
@@ -1182,6 +1418,44 @@ SEED_TEMPLATES = [
             "logo_concept": "Monogramma R in serif maiuscolo con linea sottile sotto, verde-bosco su fondo carta",
         },
     },
+    # Wave 1 Pass-1 (T45 · 2026-05-11) · 3rd template on the `specialist`
+    # archetype (zero new HTML · D-051 Option A reuse pattern). Activates
+    # the `dental` cluster for the first time (was 0 templates). Price
+    # tier `standard` (€ 75) vs Cardio + Derm `premium` — broader audience
+    # reach. Seeds at tier=draft via TEMPLATE_REGISTRY.json — IT-only at
+    # T45 build (D-102 cadence); EN/FR/ES/AR + public flip via T46.
+    {
+        "name": "Denti+Co — Studio Dentistico",
+        "slug": "denti-co-studio",
+        "category_slug": "medical",
+        "short_description": "Editoriale e clinico per studi dentistici associati. Igiene, conservativa, implantologia e ortodonzia trasparente · Milano Brera.",
+        "description": (
+            "Denti+Co riutilizza l'archetipo editoriale Specialist con identità dedicata "
+            "agli studi dentistici associati di profilo premium. Palette deep-blue clinico "
+            "con accento fresh-mint (terza polarità del cluster · NON rosso NON verde), "
+            "tipografia DM Serif Display + Inter per una sensazione editoriale ma "
+            "distintamente clinica.\n\n"
+            "Include: homepage con headline incentrata sull'igiene come primo capitolo, "
+            "manifesto con drop cap, quattro trattamenti numerati (igiene / conservativa / "
+            "implantologia / ortodonzia trasparente), listino dettagliato con quattro tab, "
+            "percorso paziente in cinque step, direzione clinica con ritratto editoriale, "
+            "FAQ dental-specific, pagina trattamenti con costi dichiarati, pagina dentisti "
+            "con quattro associati, pubblicazioni divulgative, contatti Milano Brera, "
+            "modulo prenotazione igiene con cinque slot."
+        ),
+        "price": Decimal("75.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 6,
+        "brand": {
+            "brand_name": "Denti+Co Studio Dentistico Associato",
+            "tagline": "Salute orale completa, dall'igiene all'implantologia",
+            "palette": {"primary": "#0F2D40", "secondary": "#F7F3EE", "accent": "#2BC4A4"},
+            "typography": "DM Serif Display + Inter",
+            "personality": "editoriale, clinico-bright, premium-accessibile",
+            "logo_concept": "Wordmark «Denti+Co» con + in fresh-mint #2BC4A4 e indicatore sottile sotto · DM Serif Display per il marchio, Inter mono-spaziato per il claim · pulizia clinica con un solo accento non clinico-rosso non clinico-verde.",
+        },
+    },
     # ── Avvocato (2) ────────────────────────────────────────────
     {
         "name": "Lex — Studio Legale",
@@ -1231,6 +1505,142 @@ SEED_TEMPLATES = [
             "typography": "DM Sans + Inter",
             "personality": "moderno, accessibile, trasparente",
             "logo_concept": "Lettera M con colonne stilizzate, blu e grigio ardesia, design contemporaneo",
+        },
+    },
+    # T47 · Wave 1 Pass-3 (2026-05-12) · 1st classic-gold archetype reuse
+    # after Lex (zero new HTML · D-051 Option A reuse pattern). Activates
+    # the `notary-commercialista` cluster for the first time (was 0
+    # templates). Premium tier (€ 89). Seeds at tier=draft via
+    # TEMPLATE_REGISTRY.json — IT-only at T47 build (D-102 cadence);
+    # multilingual + public flip via a separate T48 pass if cadence holds.
+    {
+        "name": "Atto — Studio Notarile Associato",
+        "slug": "atto-notai-associati",
+        "category_slug": "lawyer",
+        "short_description": "Istituzionale e procedurale-chiaro per studi notarili associati. Rogiti, successioni, atti societari, mutui · Milano Distretto Notarile.",
+        "description": (
+            "Atto riutilizza l'archetipo classic-gold con identità istituzionale "
+            "dedicata agli studi notarili associati. Palette ink-blue d'archivio "
+            "con accento granata di sigillo (terza polarità del cluster lawyer · "
+            "vs Lex gold prestige · vs Juris blue advisory), tipografia Source "
+            "Serif 4 + Public Sans per una sensazione di pubblicazione forense "
+            "istituzionale.\n\n"
+            "Include: homepage con headline incentrata sull'atto pubblico, "
+            "meta-strip notarile (sede unica, notai associati, lingue di rogito), "
+            "sette tipologie d'atto numerate (rogiti / successioni / società / "
+            "mutui / donazioni / procure / autentiche), banda Distretto Notarile, "
+            "portrait dei tre notai associati con anno iscrizione al ruolo e "
+            "specializzazione, pubblicazioni notarili istituzionali, pagina "
+            "Lo Studio con timeline 2007-2025, Aree di Atti con dettaglio per "
+            "tipologia, I Notai con bio e iscrizione, modulo Richiedi un primo "
+            "incontro (orientativo · gratuito · non vincolante)."
+        ),
+        "price": Decimal("89.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 3,
+        "brand": {
+            "brand_name": "Studio Notarile Conti–Sironi–Verri",
+            "tagline": "Atti pubblici redatti con la cura che la legge richiede · Distretto Notarile di Milano",
+            "palette": {"primary": "#0F1A2A", "secondary": "#F1ECE4", "accent": "#1F3A5F"},
+            "typography": "Source Serif 4 + Public Sans",
+            "personality": "istituzionale, procedurale-chiaro, sobrio",
+            "logo_concept": "Wordmark «CSV» monogramma in Source Serif 4 small-caps su sfondo carta-archivio · sigillo notarile minimo in accent ink-blue · niente bilance né colonne né simboli avvocatura.",
+        },
+    },
+    # T49 · Wave 1 Pass-5 (2026-05-12) · 1st fine-dining archetype reuse
+    # after Gusto (D-051 Option A: zero new HTML files). Activates the
+    # `bakery-pasticceria` cluster for the first time (was 0 templates).
+    # Premium tier (€ 75). Seeds at tier=draft via TEMPLATE_REGISTRY.json —
+    # IT-only at T49 build (D-102 cadence); multilingual EN/FR/ES/AR +
+    # AAA walk + public flip happen in T50.
+    {
+        "name": "Madou — Pasticceria Atelier",
+        "slug": "madou-pasticceria",
+        "category_slug": "restaurant",
+        "short_description": "Pasticceria artigianale ad alta gamma · sfoglie laminate, lieviti madre, cake design su commessa · Torino Borgo Po.",
+        "description": (
+            "Madou riutilizza l'archetipo fine-dining con identità "
+            "pasticcera-atelier dedicata alle pasticcerie d'alta gamma. "
+            "Palette cacao-deep + crema-zucchero-a-velo + caramello "
+            "(seconda polarità dell'archetipo fine-dining · vs Gusto "
+            "coffee-amber-blood-red), tipografia Playfair Display + Lato "
+            "ereditata dall'archetipo per coerenza editoriale ma usata "
+            "con respiro pasticcero anziché ristorante.\n\n"
+            "Include: homepage con headline incentrata sulla lievitazione "
+            "lenta, meta-strip pasticceria (atelier, lieviti madre vivi, "
+            "filiera tracciabile), cinque lievitati signature della "
+            "settimana (croissant viennoise, maritozzo, millefoglie alla "
+            "nocciola, bignè cioccolato Domori, Saint Honoré ai marroni), "
+            "banda di otto referenze di pasticceria stagionale, archivio "
+            "dei tre lieviti madre vivi (M-1 sfoglia, M-2 panettoni, M-3 "
+            "brioche), eventi su misura (torta su commessa, wedding cake, "
+            "buffet privato), pagina Il Forno con timeline 2011-2025, "
+            "Pasticceria con dettaglio per lievitato e abbinamento "
+            "caffetteria/tisaneria, Vetrina con quindici metri di "
+            "esposizione lineare e quattro sale, modulo Pre-ordina la "
+            "sfoglia del sabato (ritiro al banco entro le 13:00)."
+        ),
+        "price": Decimal("75.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 4,
+        "brand": {
+            "brand_name": "Madou · Pasticceria Atelier",
+            "tagline": "Dodici ore di lievitazione lenta · Torino Borgo Po · dal 2011",
+            "palette": {"primary": "#3D2817", "secondary": "#F4E8D0", "accent": "#C8965C"},
+            "typography": "Playfair Display + Lato",
+            "personality": "artigianale, pacato, ossessivo sul tempo",
+            "logo_concept": "Wordmark «MD» monogramma serif piccolo in caramello su carta-zucchero-a-velo · niente forchette né piatti né stelle Michelin · estetica di pasticceria d'atelier, non di ristorante.",
+        },
+    },
+    # T51 · Wave 1 Pass-7 (2026-05-12) · 4th specialist archetype reuse
+    # after Cardio + Derm + Denti (D-051 Option A: zero new HTML files).
+    # Activates the `veterinary` cluster for the first time (was 0
+    # templates). Standard tier (€ 75 · same band as Denti). Seeds at
+    # tier=draft via TEMPLATE_REGISTRY.json — IT-only at T51 build
+    # (D-102 cadence); multilingual EN/FR/ES/AR + AAA walk + public
+    # flip via T52.
+    {
+        "name": "Petro — Studio Veterinario",
+        "slug": "petro-veterinario",
+        "category_slug": "medical",
+        "short_description": "Studio veterinario indipendente premium · medicina preventiva cane/gatto/esotici · chirurgia tessuti molli e diagnostica per immagini · Padova Borgo Trento.",
+        "description": (
+            "Petro riutilizza l'archetipo specialist con identità "
+            "veterinaria dedicata alla medicina di piccoli animali. "
+            "Palette ink + crema-paper + accento bronzo-tabacco "
+            "(quarta polarità del cluster specialist · vs Cardio "
+            "rosso clinico · Derm verde-bosco · Denti blu-menta), "
+            "tipografia Lora + Inter (humanist book serif veterinary-"
+            "textbook register vs Cormorant Cardio · Bodoni Derm · "
+            "DM Serif Display Denti).\n\n"
+            "Include: homepage con headline incentrata sulla cura "
+            "preventiva veterinaria, meta-strip clinica (sede, "
+            "iscrizione Albo, animali curati/anno), quattro famiglie "
+            "di intervento numerate (preventiva / vaccinazioni / "
+            "chirurgia tessuti molli / diagnostica), tabs trattamenti "
+            "con listino voci di routine, banda Università di Padova "
+            "+ convenzione Ospedale Veterinario Legnaro, portrait dei "
+            "tre veterinari associati (Marco Petro direttore + Anna "
+            "Bressan esotici + Tommaso Zen oncologia), diario clinico "
+            "con due post (calendario vaccinale 2026 + sterilizzazione "
+            "laparoscopica), pagina Studio con timeline 2008-2023, "
+            "Visite con dettaglio per famiglia, I Veterinari con bio "
+            "completi, modulo Prenota una visita preventiva con "
+            "campi specie/razza/età/motivo della visita."
+        ),
+        "price": Decimal("75.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 5,
+        "brand": {
+            "brand_name": "Studio Veterinario Petro",
+            "tagline": "Cura preventiva per cane gatto esotici · Padova Borgo Trento · dal 2008",
+            "palette": {"primary": "#1C1612", "secondary": "#F7F3EE", "accent": "#A86E3C"},
+            "typography": "Lora + Inter",
+            "personality": "scrupoloso, paziente, scientifico-affidabile",
+            "logo_concept": "Wordmark «P» serif Lora maiuscoletto · niente icone di cane o gatto · estetica di studio veterinario clinico premium, non di clinica catena.",
         },
     },
     # ── Immobiliare (2) ─────────────────────────────────────────
@@ -1284,6 +1694,100 @@ SEED_TEMPLATES = [
             "logo_concept": "Monogramma VP in oro su nero, serif elegante con spaziatura ampia",
         },
     },
+    # ── Travel (1) ──────────────────────────────────────────────
+    # T56 · Wave 2 Pass-1 (2026-05-12) · 1st reuse of ultra-luxury-cinematic
+    # archetype after Villa (D-051 Option A: zero new HTML files). Opens
+    # the `travel` category (was 0 templates) and `boutique-hotel` cluster.
+    # Premium tier (€ 99 · enoteca-hotel premium band same as Villa).
+    # Seeds at tier=draft via TEMPLATE_REGISTRY.json — IT-only at T56
+    # build (D-102 cadence) · multilingual EN/FR/ES/AR + AAA walk +
+    # public flip via T57.
+    {
+        "name": "Borgo San Marco — Relais & Spa",
+        "slug": "albergo-borgo",
+        "category_slug": "travel",
+        "short_description": "Relais affiliato Relais & Châteaux in un borgo del Seicento · Val d'Orcia UNESCO · otto suite · brigata di 14 · ospitalità di borgo.",
+        "description": (
+            "Borgo San Marco riusa l'archetipo ultra-luxury-cinematic con "
+            "identità di relais boutique in un borgo toscano del Seicento. "
+            "Palette terracotta + travertino crema + olivo (seconda polarità "
+            "dell'archetipo · vs Villa nero + champagne + bianco), tipografia "
+            "Cormorant Garamond + Inter (display serif Italian-editorial vs "
+            "Montserrat sans di Villa).\n\n"
+            "Include: homepage con hero cinematografico sul cortile + 6 suite "
+            "in evidenza con dossier editoriale, pagina Le suite con catalogo "
+            "filtrato per vista/letti/stagione di 8 stanze, pagina Il territorio "
+            "con 6 territori della Val d'Orcia (Pienza Brunello Bagno-Vignoni "
+            "Montepulciano Monte-Amiata Val-d'Orcia UNESCO), pagina La brigata "
+            "con direttrice Vittoria Sernigi + maitre Federico Bonechi + chef "
+            "stellato Tommaso Brigliadori + sommelier Anna Ricci + responsabile "
+            "spa Caterina Sandri, pagina Soggiorno con 5 tempi dell'esperienza "
+            "e 6 FAQ ricorrenti, pagina Concierge con form prenotazione 10 "
+            "campi + 3 sedi (ricevimento · cantina · spa)."
+        ),
+        "price": Decimal("99.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 1,
+        "brand": {
+            "brand_name": "Borgo San Marco · Relais & Spa",
+            "tagline": "Otto suite in un borgo seicentesco · Val d'Orcia UNESCO · Pienza dal 1612",
+            "palette": {"primary": "#653025", "secondary": "#EAE0CE", "accent": "#5B6A3D"},
+            "typography": "Cormorant Garamond + Inter",
+            "personality": "editoriale, ospitale, stagionale, di brigata",
+            "logo_concept": "Wordmark «Borgo San Marco» in Cormorant Garamond italic con piccolo monogramma «BSM» dentro un riquadro in terracotta · niente cipresso stilizzato né cupola · estetica di canonica seicentesca restaurata, non di resort né di hotel di catena.",
+        },
+    },
+    # T59 · Wave 2 Pass-3 (2026-05-13) · 3rd reuse of artisan-workshop
+    # archetype after Bottega + Sapori (D-051 Option A · zero new HTML
+    # files). 2nd cross-category reuse after Albergo. Opens the
+    # `bnb-agriturismo` cluster (was 0 templates) — 2nd travel cluster
+    # after boutique-hotel. Standard tier (€ 75 · agriturismo band).
+    # Seeds at tier=draft via TEMPLATE_REGISTRY · multilingual + flip
+    # via T60.
+    {
+        "name": "Podere Le Querce — Agriturismo di Famiglia",
+        "slug": "podere-agriturismo",
+        "category_slug": "travel",
+        "short_description": "Agriturismo di famiglia in Chianti Classico · 4 camere + dispensa contadina con 8 prodotti del podere · Famiglia Pasquinelli dal 1934.",
+        "description": (
+            "Podere Le Querce riusa l'archetipo artisan-workshop con "
+            "identità di agriturismo familiare in Chianti Classico. "
+            "Palette deep oak-green + wheat-cream + harvest-copper "
+            "(terza polarità dell'archetipo · vs Bottega walnut+cream+"
+            "orange · vs Sapori bordeaux+travertine+olive · zero "
+            "sovrapposizione di RGB primario), tipografia EB Garamond + "
+            "Source Sans 3 (heritage-italiana editoriale · vs Libre "
+            "Baskerville + Nunito di Bottega · vs IBM Plex Serif + Plex "
+            "Sans di Sapori).\n\n"
+            "Include: homepage con dispensa di 8 prodotti del podere "
+            "(olio EVO · Chianti Classico DOCG · Vin Santo · miele · "
+            "marmellata · pecorino · salame cinta senese · cantucci) + "
+            "4 produttori del territorio (pastore · mugnaio · norcino · "
+            "monastero) + 4 provenance items (oliveto · vigna · orto · "
+            "stalla); dispensa con filtro per produzione e cassa di "
+            "legno marchiata; product page con olio EVO 2025 in evidenza "
+            "(2.400 piante · spremitura entro 8 ore · 412 mg/kg "
+            "polifenoli); pagina famiglia con calendario stagionale "
+            "(primavera/estate/vendemmia/autunno-inverno) + Maria "
+            "Pasquinelli matriarca classe 1962 al timone dal 1985; diario "
+            "con 3 voci dalla campagna (vendemmia · raccolta olive · "
+            "prime arnie); soggiorno con form 7-campi e card hours + "
+            "5 FAQ ricorrenti."
+        ),
+        "price": Decimal("75.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 2,
+        "brand": {
+            "brand_name": "Podere Le Querce · Agriturismo di Famiglia",
+            "tagline": "Quattro generazioni di Pasquinelli · Greve in Chianti · dal 1934",
+            "palette": {"primary": "#314020", "secondary": "#E8DCB8", "accent": "#B8651F"},
+            "typography": "EB Garamond + Source Sans 3",
+            "personality": "famiglia-che-ospita, contadino, multigenerazionale, stagionale",
+            "logo_concept": "Wordmark «Podere Le Querce» in EB Garamond italic con piccolo simbolo di quercia stilizzata accanto · niente cipresso né mulino né tavolata · estetica di casa colonica toscana · NB la quercia è la pianta che dà il nome al podere (le querce secolari del bosco), non un cliché toscano generico.",
+        },
+    },
     # ── Portfolio (2) ───────────────────────────────────────────
     {
         "name": "Chiara — Portfolio Creativo",
@@ -1335,7 +1839,7 @@ SEED_TEMPLATES = [
             "logo_concept": "Diaframma di obiettivo stilizzato in bianco su nero, linee nette e precise",
         },
     },
-    # ── eCommerce (2) ───────────────────────────────────────────
+    # ── eCommerce (3) ───────────────────────────────────────────
     {
         "name": "Bottega — Shop Artigianale",
         "slug": "bottega-shop-artigianale",
@@ -1361,6 +1865,55 @@ SEED_TEMPLATES = [
             "logo_concept": "Mani che modellano argilla stilizzate in marrone caldo, tipografia serif classica",
         },
     },
+    # T53 · Wave 1 Pass-9 (2026-05-12) · 1st reuse of artisan-workshop
+    # archetype after Bottega (D-051 Option A: zero new HTML files).
+    # Opens new `wine-food-boutique` cluster (was 0 templates). Premium
+    # tier (€ 89 · enoteca premium pricing band). Seeds at tier=draft
+    # via TEMPLATE_REGISTRY.json — IT-only at T53 build (D-102 cadence);
+    # multilingual EN/FR/ES/AR + AAA walk + public flip via T54.
+    {
+        "name": "Sapori di Langa — Enoteca dei Vignaioli",
+        "slug": "sapori-di-langa",
+        "category_slug": "ecommerce",
+        "short_description": "Enoteca terroir-curatoriale premium · quaranta vignaioli indipendenti delle Langhe Roero Monferrato · vino olio EVO castelmagno tartufo bianco · Alba dal 1987.",
+        "description": (
+            "Sapori di Langa riutilizza l'archetipo artisan-workshop "
+            "con identità di enoteca-boutique dedicata ai vignaioli "
+            "indipendenti delle Langhe. Palette bordeaux #4A1E1F + "
+            "carta-cera crema + olivo (seconda polarità del cluster "
+            "artisan-workshop · vs Bottega cuoio-mattone-noce caldo "
+            "trattoria), tipografia IBM Plex Serif + IBM Plex Sans "
+            "(register editoriale-tipografico vs Libre Baskerville + "
+            "Nunito Sans di Bottega).\n\n"
+            "Include: homepage con headline incentrata sulla figura "
+            "del vignaiolo indipendente, stamp-panel «Cavalier dell'"
+            "Ordine dei Cavalieri del Tartufo» + «quarant'anni di "
+            "selezione» + «consegna in cassa di legno», catalogo "
+            "Cantina con 8 referenze (Barolo Cannubi Brezza · Barbera "
+            "Superiore Vajra · Dolcetto d'Alba Boasso · Verduno "
+            "Pelaverga · Olio EVO Langhe Brovia · Castelmagno DOP · "
+            "Nocciola Tonda Gentile · Tartufo Bianco di stagione), "
+            "scheda bottiglia Barolo Cannubi 2019 con info-rows "
+            "denominazione/annata/vinificazione/affinamento/gradazione, "
+            "size-options (bottiglia/magnum/jeroboam/cassa da 6), pagina "
+            "I vignaioli con portrait dei quattro produttori associati "
+            "(Carlo Brezza · Maria Vajra · Luigi Boasso · Anna Brovia), "
+            "Diario con tre voci di stagione (vendemmia / tartufo / "
+            "olio nuovo), visite stagionali in vigna con form prenotazione."
+        ),
+        "price": Decimal("89.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 3,
+        "brand": {
+            "brand_name": "Sapori di Langa · Enoteca dei Vignaioli",
+            "tagline": "Quaranta vignaioli indipendenti · Alba · dal 1987",
+            "palette": {"primary": "#4A1E1F", "secondary": "#F2E9D8", "accent": "#6B7E47"},
+            "typography": "IBM Plex Serif + IBM Plex Sans",
+            "personality": "terroir-curatoriale, sommelier-pacato, vignaiolo-relazionale",
+            "logo_concept": "Wordmark «Sapori di Langa» Plex Serif maiuscoletto su lozenge bordeaux con sigillo ceralacca olivo «SdL» · niente grappolo né bottiglia stilizzata · estetica di enoteca-tabernacolo dei vignaioli, non di wine-bar generalista né di cantina industriale.",
+        },
+    },
     {
         "name": "Luxe — Fashion Store",
         "slug": "luxe-fashion-store",
@@ -1384,6 +1937,55 @@ SEED_TEMPLATES = [
             "typography": "Cormorant Garamond + Montserrat",
             "personality": "lussuoso, minimale, sofisticato",
             "logo_concept": "Nome 'LUXE' in maiuscolo spaziato, serif sottile, con linea oro sottostante",
+        },
+    },
+    # T61 · Wave 2 Pass-5 (2026-05-13) · 1st reuse of fashion-editorial
+    # archetype after Luxe (D-051 Option A · zero new HTML files). Same
+    # category (ecommerce) so no `skin_source_category` override needed.
+    # Opens the `jewelry` cluster (was 0 templates) · 4th ecommerce
+    # cluster after artisan-workshop+fashion-editorial+wine-food-boutique.
+    # Premium tier (€ 119 · alta gioielleria band · highest in catalog
+    # above Luxe at € 89). Seeds at tier=draft · multilingual via T62.
+    {
+        "name": "Gemma — Atelier di Alta Gioielleria",
+        "slug": "gemma-gioielleria",
+        "category_slug": "ecommerce",
+        "short_description": "Atelier di alta gioielleria a Milano Brera · 4 generazioni di orafi dal 1908 · pezzi unici e serie limitate · Eleonora Gemma gemmologa GIA ex-Buccellati.",
+        "description": (
+            "Gemma riusa l'archetipo fashion-editorial con identità di atelier "
+            "di alta gioielleria. Palette pearl-night #0F0E14 + champagne-white "
+            "#F1ECDF + rose-quartz #9F7373 (seconda polarità dell'archetipo · "
+            "vs Luxe noir+ivory+champagne-gold · zero RGB overlap), tipografia "
+            "Bodoni Moda + Inter (Didone-influenced jewelry register vs "
+            "Cormorant Garamond + Montserrat fashion register di Luxe).\n\n"
+            "Include: homepage con hero atelier + 4 pezzi della Serie Inverno "
+            "2026 + manifesto «gioielleria d'autore» + atelier in cifre + "
+            "editoriale teaser firmato Paolo Roversi · stilismo Camille "
+            "Bidault-Waddington + drop metadata + private-CTA per commissione "
+            "su misura; collezione con filter-groups (categoria/materiale/"
+            "pietra-centrale) + 8 pezzi Serie Inverno (4 pezzi unici + 4 serie "
+            "limitate · prezzo su richiesta o esposto da € 4 800 a € 47 800); "
+            "pezzo featured anello «Cuneo» brillante 3,02 ct con scheda GIA + "
+            "10-row info + 5-row care + 4-step provenance + 4 related; pagina "
+            "casa Gemma con 4 generazioni (Eligio 1908 · Carlo 1932-1986 · "
+            "Giuseppe 1958- · Eleonora 1968 ex-Buccellati 1996-2014 + GIA + "
+            "Gübelin) + 3 ateliers (Milano Brera · Paris Place Vendôme · "
+            "visite a domicilio Roma/Tokyo/Singapore) + 5 press dict + "
+            "numbers; lookbook editoriale 4 studi al palazzo Cusani Brera "
+            "firmati Paolo Roversi novembre 2025; concierge con form 8-campi "
+            "+ 3 maison-cards + 5 faq."
+        ),
+        "price": Decimal("119.00"),
+        "is_free": False,
+        "featured": False,
+        "order": 3,
+        "brand": {
+            "brand_name": "Gemma · Atelier di Alta Gioielleria",
+            "tagline": "Quattro generazioni di orafi · Milano Brera · dal 1908",
+            "palette": {"primary": "#0F0E14", "secondary": "#F1ECDF", "accent": "#9F7373"},
+            "typography": "Bodoni Moda + Inter",
+            "personality": "auteur-jeweler, gemmologa, milanese-brera, riservata",
+            "logo_concept": "Wordmark «Gemma» in Bodoni Moda con sottolineatura tratteggiata e piccolo sigillo «117MI» (punzone Camera di Commercio Milano 1948) accanto · niente brillanti stilizzati né corone né flourish · estetica di atelier di famiglia · NB il sigillo «117MI» è il punzone Gemma reale registrato.",
         },
     },
 ]
