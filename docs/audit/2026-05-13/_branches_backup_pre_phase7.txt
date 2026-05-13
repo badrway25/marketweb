@@ -1,0 +1,159 @@
+# Backup pre Phase 7 (2026-05-13). Format: branch<TAB>sha<TAB>upstream<TAB>worktree_path
+master	bf1294301dbe17d1da35e89b9231f2b4eb17440e		C:/tmp/sitoBadr2/marketweb
+phase-2g2x-audit-differentiation	1afb26f797bcd560b031e6a893971137db94010e		
+phase-2g2x-business-hardening	1afb26f797bcd560b031e6a893971137db94010e		
+phase-2g2x-business-hardening-v2	b967e99120ede6e1be520f99c3ed8c1170f45ff6		
+phase-2g2x-live-preview-policy	79c8793277767c211aefba1d7fd9a52bfe4fa9fb		
+phase-2g2x-live-preview-policy-v2	ac385564dea6075e4ade7ce041dc4fd3e88f123d		
+phase-2g2x-medical-specialist-live-hardening-v2	0a5bcf27d5aee7a080d6fa827be35fb38a975ee9		C:/tmp/sitoBadr2/mw-medical-specialist-live-hardening-v2
+phase-2g2x-portfolio-hardening	b967e99120ede6e1be520f99c3ed8c1170f45ff6		
+phase-2g2x-portfolio-hardening-v2	79c8793277767c211aefba1d7fd9a52bfe4fa9fb		
+phase-2g2x-tier-migration-v2	0a5bcf27d5aee7a080d6fa827be35fb38a975ee9		
+phase-agency-live-rollout-v1	9cef9a74b6b8fbb1446208b65e2d7113f4db0fe2		C:/tmp/sitoBadr2/mw-agency-live-rollout-v1
+phase-agency-preview-pipeline-fix-v1	efbdce164a04d395a07805067cd52be0bc5998f3		
+phase-business-i18n-completion-v1	afb5b150e5712d71cfd9fb202bfe5b298799f1dc		
+phase-business-live-rollout-v1	019ebd871bfc856906ac62c82e8ab91c47e19a58		
+phase-catalog-expansion-strategy-v1	4381588740fb7a74138bf8357584f2ffc5af72f7		
+phase-catalog-stabilization-v1	d992516a30515d78ea0dce252184621abf2471b9		
+phase-commerce-completion-v2	26ef563c7c205662df28c900baa793e23cf06d0f		
+phase-ecommerce-commerce-foundation-v1	3e42a34e1202e5dc9687427f06198ea15746f015		
+phase-ecommerce-experience-hardening-v1	e660a9f33da5eff8196e7fc5afa2e8700a5b8805		
+phase-ecommerce-live-rollout-v1	f35b4e51c00c8f197dd840ee2268d6a7b95b79c6		C:/tmp/sitoBadr2/mw-ecommerce-live-rollout-v1
+phase-editor-a1-flow-fix-v1	aa06d0bb087fece8397af6ac48a2b50a9686b88e		C:/tmp/sitoBadr2/mw-editor-a1-flow-fix-v1
+phase-editor-a10-lex-classic-gold-v1	ddfb66d0ff0f0a6e8e819968bb588129796e30f6		
+phase-editor-a10-planning-law-family-v1	340d1d1100e7e54fa6f593c703cb28d7a1da83f3		
+phase-editor-a11-juris-modern-transparent-v1	287534b6065cde452651f85248d328cd56f84be5		
+phase-editor-a11-juris-planning-v1	8732ae959982fabdaba78788fd5790f015c62374		
+phase-editor-a12-casa-mass-market-v1	9757da7837097c84650ebf178ff8e8c50cb0a300		
+phase-editor-a12-real-estate-planning-v1	1660af4ef722d3ebadc4c1a7f99aa36864cece15		
+phase-editor-a12b-villa-planning-v1	3073b8352543bb7fcb098e294cb553a97dd493c4		
+phase-editor-a12b-villa-ultra-luxury-cinematic-v1	16d03d1c698cfe8d9f9bb94894080189f6554912		
+phase-editor-a13-chiara-editorial-designer-grid-v1	12984c987f283ccb7a39d9ca5387bd473a875eef		
+phase-editor-a13-portfolio-planning-v1	35367b4f2e6e5c02241d4891d8447c02cd5cabef		
+phase-editor-a13b-pixel-cinematic-photographer-v1	cecfa4e2f07f6a22aa6d3ee26ded82e9ae3ddd09		
+phase-editor-a14-sapore-trattoria-warm-v1	7a8e1c38cf46802e20016cc198353e80bb1223a9		
+phase-editor-a14b-brace-street-modern-v1	4fd677ba0dfb725bfc629441e4a7ab54e8f57063		
+phase-editor-a15-bottega-artisan-workshop-v1	7764f40e4fb8835dbc05387fe974915f806fffde		
+phase-editor-a15b-luxe-fashion-editorial-v1	246b0e557beb1fe111739bb3e981cb1047c06e57		
+phase-editor-a16-salute-clinic-v1	59be6828e2696fe4979c4fa61c7a2869a1bc0c8e		
+phase-editor-a16b-benessere-wellness-v1	4574efb94af72e18713b5e0cdb6c05f04690c17d		
+phase-editor-a16c-famiglia-family-v1	505862f1709ff8a19398af3f7555e9e2c4a874db		
+phase-editor-a17-aura-agency-digital-studio-v1	7e0a6bded01252ac7217f4d3675666e78404548d		
+phase-editor-a17b-elevate-startup-saas-v1	15482a9540fd2f5097942499430d2169d2528736		
+phase-editor-a2-5-multipage-coverage-search-fix-v1	8afeb23fad4289b9e39abebecb3b1f05212d50f3		
+phase-editor-a2-5-palette-jump-fix-v1	507cb0b703ed888431084e3e16c284704eff5a96	origin/phase-editor-a2-5-palette-jump-fix-v1	
+phase-editor-a2-5-stability-hardening-v1	c244d98a1993bfdbaa5d4f6b56bf8c6df63481de		
+phase-editor-a2-7-stabilization-ux-cleanup-v1	2986f7d418cad57480d14ce2671da1bbde61f843		
+phase-editor-a2-8-sidebar-hardening-jump-api-v1	689d38096dbe2ab7bd4a8367f6e74928fadf990c	origin/phase-editor-a2-8-sidebar-hardening-jump-api-v1	
+phase-editor-a3-true-repeater-v1	4d3c5e84ab307519db9d701ab31878466aec4d27		
+phase-editor-a3b-reorder-only-v1	2c5321680995adb0679865a35502420370baebf4		
+phase-editor-a3c-widen-repeater-v1	2b9929bd17a88ca62e11e3e2d92d5f83da24f158		
+phase-editor-a4-image-upload-v1	45e5f5b35fa35b73c08c637d528bb71c3d5f14ef		
+phase-editor-a5-orphan-asset-gc-v1	b753326bbe843533967a1f1892b25e960f40443a		
+phase-editor-a6-second-archetype-v1	4b9376cbbf9c43fe5ba5006973f10aee7276f1e3		
+phase-editor-a7-multilocale-v1	e4c2298cbd808320b28604a23b23399616373eea		
+phase-editor-a7b-pragma-multilocale-v1	d548588c6eaaa65df922ca600c097b2555914b81		
+phase-editor-a8-gusto-multilocale-v1	94772f2ed8bafc88588c64f516578ff76fef698b		
+phase-editor-a9-medical-specialist-v1	b9fe5bad61fca5383cf12cb91cb1c91dc2524507		
+phase-editor-field-targeting-fix-v1	c244d98a1993bfdbaa5d4f6b56bf8c6df63481de	origin/phase-editor-field-targeting-fix-v1	
+phase-editor-foundation-v1	aa06d0bb087fece8397af6ac48a2b50a9686b88e		
+phase-editor-full-coverage-v1	badb98aba8cb43ed5ee80f363008190c03d54bb4		C:/tmp/sitoBadr2/mw-editor-full-coverage-v1
+phase-editor-public-customize-v1	5f3cef8b481b52833b294b75dd9d826cc53875bd		
+phase-editor-scroll-media-fix-v1	1f4310b06ea81c644d8d0dd5a986154ca7a32a55		C:/tmp/sitoBadr2/mw-editor-scroll-media-fix-v1
+phase-editor-ux-live-preview-v1	1f4310b06ea81c644d8d0dd5a986154ca7a32a55		
+phase-gusto-i18n-rtl-v1	5a73e4d5696ed31198d019baf1fc5bca70c6461d		
+phase-i18n-dermatologia-v2	9043836ff59f8c1af6460c48d95420afacd78065		C:/tmp/sitoBadr2/mw-i18n-dermatologia-v2
+phase-i18n-pilot-cardio-v2	bcd53067d22dc3dbb0bbb15a4a58da160e7ff55d		
+phase-integration-baseline-v1	f4d58c46b6293beb027dc44fb6296b64296bbbcd		
+phase-integration-baseline-v10	b7338e5c86fae7a0110f7ed1da82a7d6254fd6c2		
+phase-integration-baseline-v11	4d1c78dbd8d911cc93c666ac7abd1dbfd3a0e84b		
+phase-integration-baseline-v12	afb54b5e2f565a5a50b0b699224667d7e1dc505f		
+phase-integration-baseline-v13	5ac088b78bafca34d21b96e9d58f66c69809e9ca		
+phase-integration-baseline-v14	79724db0afa7ff66848653d91fa43385104a0e10		
+phase-integration-baseline-v15	1e822945eb310c8aef23fb0a2be2db8c6b4bcfb2	origin/phase-integration-baseline-v15	
+phase-integration-baseline-v2	1d17d5a13cd557a5b45dd2267738c3023c546ccd		
+phase-integration-baseline-v3	7770e0fea26e5f4823e8ace77208590c588dcb65		
+phase-integration-baseline-v4	53993f100960c6014c4ef430a0101b85efe9c12d		
+phase-integration-baseline-v5	9df1b50cd2c1ddf59eeec8d9b43f53c1672d541c		
+phase-integration-baseline-v6	041ab4a8f5dcd7fe4faab8e1e149061f731e1dac		
+phase-integration-baseline-v7	a9942db5ce63db17c3aa431290f303e44823619b		
+phase-integration-baseline-v8	30bbd3ba5007073b01c888d3843422f3f79b701a		
+phase-integration-baseline-v9	a86372bab8cd54920900ffcb307d72adad6236bf		
+phase-law-realestate-live-rollout-v1	2fde0c8a935a731155c400f70f74e3059d46d695		
+phase-live-i18n-media-hardening-v1	fd3c385a79a390a4d49d3eadc56bf50958fdbaa2		
+phase-live-motion-media-pass-v1	eae40999a3e504e3cc097952709336dfadf1537f		
+phase-luxe-commerce-polish-v1	1b380592ab67bd969e2ba7a64db5d9ce7901634b		
+phase-medical-polish-fix-v1	623405b424871e79a8c70f2bddbcef9f3186b621		C:/tmp/sitoBadr2/mw-medical-polish-fix-v1
+phase-medical-second-wave-v1	728a0447e94042654a9d112be89f65bfcfd28bd6		
+phase-medical-specialist-premium-split-v1	4e26b3f4c4c736f83fb22c6183e82fed7de4e823		C:/tmp/sitoBadr2/mw-medical-specialist-premium-split-v1
+phase-motion-optin-medical-v1	9736da44ad68494308b5ea12063b61a4f3207891		
+phase-motion-pilot-gusto-v2	58f43f4700287f9a7bacb20cdbcfe4ab4e9e3b67		
+phase-pixel-perfection-pass-v1	9b5dd5791d4207df2ab6f28fc7725e749aedf885		
+phase-pixel-preview-coherence-fix-v1	9cedc5977467f36e08847723dde9e0bf2be2763a		
+phase-portfolio-live-rollout-v1	314a1169a5bc79d0730b5a219a92651ac40bd4ec		
+phase-pragma-hero-visibility-fix-v1	a067fbca20ba849d8c55e9f2595a2485d53e22c5		
+phase-premium-components-blueprint-v1	fec11f50b09bf87b771bfcff4ae35465554215ce		
+phase-premium-forms-polish-v1	38aca8bcdd3dea67fbacd34b652be432365b331f		
+phase-public-live-polish-v1	4224ce0d6afc240d1a3043395c8a0dc6d7dc4509		
+phase-restaurant-live-completion-v1	f7606291135c2dff39cbc5f86133aebe0fe47c43		
+phase-restaurant-polish-fix-v1	36fde5a1f23f2671218e378d5b0b77b303bddad3		
+phase-ultra-premium-live-v1	de39f1c67b6551f5a69002b2d04b727f13cd5aad		
+phase-x4-continua-build-brief	c45c52a67624e12ec1907656c6e7124b91fa4c60		
+phase-x4-continua-pass1-review-lock	fc790f3e9e53a36476f1284386aa0e22be61f731	origin/phase-x4-continua-pass1-review-lock	
+phase-x4-continua-passB-multilingual-lf5	9759ac4ebadef5fa1387809905e9b11489e77576	origin/phase-x4-continua-passB-multilingual-lf5	
+phase-x4-continua-public-flip	8b3ccc10bf9b55f3051f0fe7e1ced4cb89e5f38d	origin/phase-x4-continua-public-flip	
+phase-x4-continua-workflowD-release-decision	c319aeb9ad1de93dbaaddfd8616feb9e58ead492	origin/phase-x4-continua-workflowD-release-decision	
+phase-x4-corporate-suite-case-parent-fix	6eada4f17d0b14327d3a457fd0ecddc08aa6b39f	origin/phase-x4-corporate-suite-case-parent-fix	
+phase-x4-design-orchestrator-dry-run	0f1c2246c3b38ee2ab61d961ff81c88b3d8879e7		
+phase-x4-design-orchestrator-hardening-v1	d6cff90bffd8a563b7b9441f1ef3321ca50f652d		
+phase-x4-design-orchestrator-master-prompt	980182f3e6520a8543f1c8d86c119220354de586		
+phase-x4-design-orchestrator-matrix	80443dbbbc4b979a4d4c04f9c93690d4d0816dae		
+phase-x4-solaria-controlled-reentry-pass1	075e623d02fce15b14cb390925e2e6fb974edaf8		
+phase-x4-solaria-final-decision-wip	513651c6b86511eea14f75e833d29f090daebc93		
+phase-x4-solaria-passB-multilingual	69978857627642c0b75b8720eee79c5e194c1756	origin/phase-x4-solaria-passB-multilingual	
+phase-x4-solaria-passC-public-review	24fdde5cbe7b16caeaaf0139458263eef76a2195		
+phase-x4-solaria-user-visible-passA	3cdbef68ff11e7861142a9493b5c253ee09e6019		
+phase-x4-wave2-fiscus-commercialista-v1	06aaf126660ebb816ca7faaaf0df3b8be1a79273		
+phase-x4-wave2-solaria-coaching-v1	6b70d565a186b76988c5e453885a1de0d798e379		
+phase-x4a-corporate-factory-hardening-core	0727aad8de806aefe84299c40db8d330cc1e3b8e		
+phase-x4a-corporate-factory-hardening-followup	075e623d02fce15b14cb390925e2e6fb974edaf8	origin/phase-x4a-corporate-factory-hardening-followup	
+phase-x4a-corporate-factory-hardening-step0	921961f01ff71a9d12125ea76c9d762f7841b7a9		
+phase-x4a-solaria-controlled-reentry-plan	cf54efa8a3f5201d725992c663be1f7ccebfb07b		
+phase-x4b-continua-lf5-it-rebuild	26d8537dd9bc8fb773e67be6581b5a2743fe55a6	origin/phase-x4b-continua-lf5-it-rebuild	
+phase-x4b-corporate-suite-family-backfill	e3229ffe4a755aa50260b27c3b00c7136874dee4	origin/phase-x4b-corporate-suite-family-backfill	
+phase-x4b-corporate-suite-layout-divergence	0cad55b742881c097fdddc6245a30ebd1dab333e	origin/phase-x4b-corporate-suite-layout-divergence	
+phase-x4b-corporate-suite-layout-regression-walk	d8253e50d195beca29b3223295721f658a5b9d60	origin/phase-x4b-corporate-suite-layout-regression-walk	
+phase-x5-cornice-a3-imagery-curation	09e12f8e3b7191b9f53098cc55bbc99d397c108b	origin/phase-x5-cornice-a3-imagery-curation	
+phase-x5-cornice-a4-copy-authoring	6baaaaa67ccb4a13e913d1c82b671d42de42a063	origin/phase-x5-cornice-a4-copy-authoring	
+phase-x5-cornice-a5-it-build	80800c399334f0e1f32cfcaf785de07114af25e1	origin/phase-x5-cornice-a5-it-build	
+phase-x5-cornice-a6-it-review-lock	303fcb9e76cfd736025321af1412a913cff5e773	origin/phase-x5-cornice-a6-it-review-lock	
+phase-x5-cornice-postflip-consolidation	9c273d29af92a1b8e500f3c9c0ebd86ed021583d	origin/phase-x5-cornice-postflip-consolidation	
+phase-x5-cornice-public-flip	e95422f3aeb774547ce6719b3bae2ee239cd0863	origin/phase-x5-cornice-public-flip	
+phase-x5-cornice-step2-paper-promotion	17f50b3f637966caee5e033e9e6ae1957b5903e6	origin/phase-x5-cornice-step2-paper-promotion	
+phase-x5-cornice-workflowC-multilingual	4aef0410c7956eeb925bd8cb1da60d98783a1ec3	origin/phase-x5-cornice-workflowC-multilingual	
+phase-x5-cornice-workflowD-release-decision	ace224a6c56070e73472bd4c8e1ff7b3e23299dc	origin/phase-x5-cornice-workflowD-release-decision	
+phase-x5-lf2-fifth-sibling-pilot	0183aa2ae063acbce0d374968f6fa4c99111f8fb		
+phase-x5-post-cornice-reference-hardening	27a223511f35e6a6df56fb1db92f9a9cded0585d	origin/phase-x5-post-cornice-reference-hardening	
+phase-x6-causa-a3-imagery	0d292e1388f8b33f48a361bf114f2a752e30edfe	origin/phase-x6-causa-a3-imagery	
+phase-x6-causa-a4-copy	78af2feb4054d46ac05c3853219f18474d0b0cc7	origin/phase-x6-causa-a4-copy	
+phase-x6-causa-a5-it-build	dcf0f349583f6852c3b016be84d1170c453e92ef	origin/phase-x6-causa-a5-it-build	
+phase-x6-causa-a5b-imagery-recurate	34676d1c0906582558ce792c292e078031b2fc15		
+phase-x6-causa-a6-it-review-lock	34676d1c0906582558ce792c292e078031b2fc15	origin/phase-x6-causa-a6-it-review-lock	
+phase-x6-causa-step1-planner-brief	8f9c06cbc0cfe41b6ebcebb177efba844822be66	origin/phase-x6-causa-step1-planner-brief	
+phase-x6-premium-dynamic-personalization-hardening	34676d1c0906582558ce792c292e078031b2fc15		
+phase-x6-sixth-sibling-intake	e808b36d51b0cad5c9b1568d0832b0a0ce20f574	origin/phase-x6-sixth-sibling-intake	
+phase-x7e-lf2-variance-and-causa-retrofit	ab88d16c757711f689e36ec76e033fdafdbe62ba		C:/tmp/sitoBadr2/mw-integration-baseline-v15
+worktree-archetype-reuse-validation	bbcca51856f4b469ed240d013d3a4f8ed1ae5b00		
+worktree-backend-core	a552bda609e3ba80fdfcc6a59a2bdb9767c5e6ac		
+worktree-catalog-enhancements	6239d337dcddb7fee1d5824147822162c8d45f8a		
+worktree-catalog-integration	0b87713cdc690d3caba38d9de5071ea9a3e7534d		
+worktree-medical-pilot-fix	4fa872722be7b59c4e9fadc33095e9bf65506f40		
+worktree-premium-ui	9a3945c8d148b52e2648748d0d90e46fe2e7e6b1		
+worktree-preview-realism	6239d337dcddb7fee1d5824147822162c8d45f8a		C:/tmp/sitoBadr2/marketweb/.claude/worktrees/preview-realism
+worktree-real-preview-assets	79c5368413e21836e2593cfe517f6a37d518d3be		
+worktree-restaurant-template-pilot	8b3206aaeb90a04b82d061c0a4998c3685680f94		
+worktree-specialist-copy-abstraction	bcbd1378a543a3f98e283933ddb0f7410c7d1e7c		
+worktree-template-completeness-pilot	a8fd84fbae58186116dfdf2feeacf47b18556be6		
+worktree-template-dna-system	949e43ab51629d00c666f367ba6f8de6acc040c7		
+worktree-template-polish-fixes	4418869f183b69922ea2a1e6ba8db2a27a515d74		
+worktree-visual-polish-and-preview-fixes	22d1096490b62faf55e9bca67839ff4c7449c0a7		
