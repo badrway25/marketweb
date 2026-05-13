@@ -1,0 +1,10 @@
+﻿48	F401	[*] unused-import
+38	F541	[*] f-string-missing-placeholders
+20	E701	[ ] multiple-statements-on-one-line-colon
+13	E402	[ ] module-import-not-at-top-of-file
+13	F841	[ ] unused-variable
+ 7	E401	[*] multiple-imports-on-one-line
+ 5	E731	[ ] lambda-assignment
+ 3	E702	[ ] multiple-statements-on-one-line-semicolon
+Found 147 errors.
+[*] 93 fixable with the `--fix` option (18 hidden fixes can be enabled with the `--unsafe-fixes` option).
