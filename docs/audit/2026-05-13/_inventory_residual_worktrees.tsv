@@ -1,0 +1,13 @@
+path	branch	head	clean	n_dirty	n_untracked	merged	class
+marketweb	master	0599a35	DIRTY	1	1	MERGED	KEEP-MAIN
+marketweb/.claude/worktrees/preview-realism	worktree-preview-realism	6239d33	DIRTY	5	0	MERGED	DIRTY-NEEDS-STASH
+mw-agency-live-rollout-v1	phase-agency-live-rollout-v1	9cef9a7	DIRTY	8	8	MERGED	DIRTY-NEEDS-PATCH-BACKUP
+mw-ecommerce-live-rollout-v1	phase-ecommerce-live-rollout-v1	f35b4e5	DIRTY	1	1	MERGED	DIRTY-NEEDS-PATCH-BACKUP
+mw-editor-a1-flow-fix-v1	phase-editor-a1-flow-fix-v1	aa06d0b	DIRTY	5	0	MERGED	DIRTY-NEEDS-PATCH-BACKUP
+mw-editor-full-coverage-v1	phase-editor-full-coverage-v1	badb98a	CLEAN	0	0	NOT-MERGED	UNMERGED-NEEDS-REVIEW
+mw-editor-scroll-media-fix-v1	phase-editor-scroll-media-fix-v1	1f4310b	DIRTY	16	1	MERGED	DIRTY-NEEDS-PATCH-BACKUP
+mw-i18n-dermatologia-v2	phase-i18n-dermatologia-v2	9043836	CLEAN	0	0	NOT-MERGED	UNMERGED-NEEDS-REVIEW
+mw-integration-baseline-v15	phase-x7e-lf2-variance-and-causa-retrofit	ab88d16	CLEAN	0	0	MERGED	KEEP-V15-VENV
+mw-medical-polish-fix-v1	phase-medical-polish-fix-v1	623405b	DIRTY	1	2	MERGED	DIRTY-NEEDS-PATCH-BACKUP
+mw-medical-specialist-live-hardening-v2	phase-2g2x-medical-specialist-live-hardening-v2	0a5bcf2	DIRTY	8	1	MERGED	DIRTY-NEEDS-PATCH-BACKUP
+mw-medical-specialist-premium-split-v1	phase-medical-specialist-premium-split-v1	4e26b3f	CLEAN	0	0	NOT-MERGED	UNMERGED-NEEDS-REVIEW
