@@ -1,6 +1,6 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: startup-saas-landing   (business DNA — Phase 2g2x)
    FOR     : SaaS / startup conversion-first landing kits
    MOOD    : cosmic gradient (primary → secondary), neon accent
@@ -16,7 +16,8 @@
    - No hardcoded image URLs. The composition is photo-light on
      purpose — the few background accents pull from {{ imagery.N }}.
    - No literal sector names / employee names / client logos.
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   /* Deliberate visual opposite of corporate-suite: fully dark cosmic
      gradient, no photo-led hero, the product mockup card is the focal

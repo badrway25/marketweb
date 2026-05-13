@@ -1,6 +1,6 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: classic-gold   (lawyer DNA — Phase 2g3.7)
    FOR     : established Italian law firms, forensic-notarile
    MOOD    : deep ink + bordeaux + champagne gold, serif drama
@@ -16,7 +16,8 @@
    - Zero literal brand strings. Everything flows from dna.content.*
    - No hardcoded image URLs. All photos via {{ imagery.N }}
    - No literal partner names, years, or brand references.
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   body { background: #f5f0e6; color: #14141f; }
   .pv-frame { background: #f5f0e6; }

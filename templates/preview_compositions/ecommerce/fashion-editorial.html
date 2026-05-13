@@ -1,6 +1,6 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: fashion-editorial   (ecommerce DNA pilot)
    FOR     : high-fashion monobrand store, Maison-grade
    MOOD    : fully DARK ink black + warm gold — magazine cover
@@ -9,7 +9,8 @@
              headline RIGHT on charcoal
    NAVBAR  : minimal black bar, gold-underlined reserve link
    CARDS   : 3-up editorial product tiles with gold price labels
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   /* Luxe is fully dark — ink charcoal page, warm gold accents */
   body { background: #08070a; color: #f2ecdf; }

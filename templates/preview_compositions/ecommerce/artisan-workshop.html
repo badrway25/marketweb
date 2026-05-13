@@ -1,6 +1,6 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: artisan-workshop   (ecommerce DNA pilot)
    FOR     : single-city handmade store, bottega/workshop
    MOOD    : fully BRIGHT warm cream + terracotta + inked number
@@ -11,7 +11,8 @@
    NAVBAR  : warm cream bar with circular brand mark, old serif
    CARDS   : labeled product cards with "pezzo unico", handwritten
              provenance, artisan's name, sequential edition number
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   /* Bottega is fully BRIGHT warm cream — deliberate opposite of Luxe */
   body { background: #f6ecd8; color: #3b2a18; }

@@ -1,6 +1,6 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: fine-dining   (v2 — Session 10 redesign)
    FOR     : editorial tasting-menu venue (chef-led, prix fixe)
    MOOD    : DARK editorial — full-bleed plate close-up + cream
@@ -9,7 +9,8 @@
    NAVBAR  : centered serif wordmark on charcoal with thin gold rule
    CARDS   : minimal serif course list with dotted leader to wine
    CONVERS : single sticky concierge underline link, no widget
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   /* Override the white body — fine-dining is fully DARK */
   body { background: #0b0907; color: #f3e7c8; }

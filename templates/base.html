@@ -8,11 +8,12 @@
   <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
 
   <!-- Open Graph -->
-  {# T43 · canonical URL. Defaults to the request path on the current
+  {% comment %} T43 · canonical URL. Defaults to the request path on the current
      host, no query string — pages with a non-trivial canonical
      (e.g. detail page that aggregates multiple ?lang= variants)
      override this block. Crawlers consolidate authority on the
-     canonical URL even if duplicate paths exist. #}
+     canonical URL even if duplicate paths exist.
+  {% endcomment %}
   <link rel="canonical" href="{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endblock %}">
 
   <meta property="og:site_name" content="MarketWeb">
@@ -21,19 +22,21 @@
   <meta property="og:description" content="{% block og_description %}Template web premium, personalizzabili e pronti all'uso.{% endblock %}">
   <meta property="og:type" content="{% block og_type %}website{% endblock %}">
   <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
-  {# T43 · og:image is omitted by default — the project has no 1200×630
+  {% comment %} T43 · og:image is omitted by default — the project has no 1200×630
      master OG asset (favicon.svg is the only branded image, and SVG
      is unsupported by Facebook/LinkedIn/Twitter OG renderers). Pages
      that own a usable preview (template_detail with TemplateAsset)
-     override this block to emit the real image URL. #}
+     override this block to emit the real image URL.
+  {% endcomment %}
   {% block og_image %}{% endblock %}
 
-  {# T43 · Twitter card · mirrors the OG values for cards-aware
+  {% comment %} T43 · Twitter card · mirrors the OG values for cards-aware
      crawlers that don't accept Open Graph fallback. summary_large_image
      is the richest card format for marketplace surfaces. Pages that
      override og_title / og_description should override twitter_title /
      twitter_description with the same content (no auto-mirror — Django
-     template blocks don't reference each other's content cleanly). #}
+     template blocks don't reference each other's content cleanly).
+  {% endcomment %}
   <meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock %}">
   <meta name="twitter:title" content="{% block twitter_title %}MarketWeb{% endblock %}">
   <meta name="twitter:description" content="{% block twitter_description %}Template web premium, personalizzabili e pronti all'uso.{% endblock %}">
@@ -71,12 +74,13 @@
 
   {% block extra_css %}{% endblock %}
 
-  {# T43 · Structured data (JSON-LD). Default emits WebSite +
+  {% comment %} T43 · Structured data (JSON-LD). Default emits WebSite +
      Organization for the marketplace — every public page therefore
      advertises the brand to search engines + lets Google index the
      SearchAction (sitelinks search box). Detail / listing pages
      override this block to ADD a page-specific type (Product /
-     CollectionPage) alongside the base WebSite + Organization. #}
+     CollectionPage) alongside the base WebSite + Organization.
+  {% endcomment %}
   {% block jsonld %}
   <script type="application/ld+json">
   {

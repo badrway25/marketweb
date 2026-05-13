@@ -4,14 +4,15 @@
 {% block title %}{{ template.name|default:"Template Detail" }}{% endblock %}
 {% block meta_description %}{{ template.short_description|default:"Scopri questo template web premium su MarketWeb. Personalizzabile, moderno e pronto all'uso." }}{% endblock %}
 
-{# T43 · template detail SEO ·························································
+{% comment %} T43 · template detail SEO ·························································
    The detail page is the canonical sales surface for each template.
    Preview URLs (``.../preview/``) carry ``X-Robots-Tag: noindex,
    follow`` so authority consolidates here. OG/Twitter use the
    template name + short_description; image uses the first
    thumbnail/preview TemplateAsset when available. JSON-LD ships a
    Product schema so Google can surface rich snippets (price, brand,
-   category) in the SERPs. #}
+   category) in the SERPs.
+{% endcomment %}
 {% block og_type %}product{% endblock %}
 {% block og_title %}{{ template.name }} — MarketWeb{% endblock %}
 {% block og_description %}{{ template.short_description|default:template.description|default:"Template web premium personalizzabile su MarketWeb." }}{% endblock %}

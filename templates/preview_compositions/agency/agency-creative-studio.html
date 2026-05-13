@@ -1,5 +1,5 @@
 {% extends "preview_compositions/_base.html" %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: agency-creative-studio   (agency DNA — Phase 2g3.6f)
    FOR     : independent creative / brand / editorial studios
    MOOD    : cream paper page, serif italic drama, ink hairlines,
@@ -14,7 +14,8 @@
    - Zero literal brand strings. Everything flows from dna.content.*
    - No hardcoded image URLs (slot 0 comes from imagery pool).
    - No literal client names, project titles, publication names.
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   /* Cream paper page — deliberate visual opposite of agency-digital-studio.
      Vertex speaks editorial / concept / typographic — never KPI / sprint. */

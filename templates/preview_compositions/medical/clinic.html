@@ -1,13 +1,14 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: clinic
    FOR     : multi-specialty institutional clinics
    HERO    : split (text+booking widget L · photo R)
    NAVBAR  : solid colored bar with phone CTA
    CARDS   : 4-up icon grid
    FOOTER  : implicit corporate
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   .m-hero { position: absolute; top: 76px; left: 0; right: 0; height: 470px; display: flex; }
   .m-hero-text {

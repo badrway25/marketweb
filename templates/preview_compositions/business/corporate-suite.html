@@ -1,6 +1,6 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: corporate-suite   (business DNA — Phase 2g2x)
    FOR     : board advisory / management consulting / enterprise
    MOOD    : institutional navy + dove cream, photo-led hero with
@@ -15,7 +15,8 @@
    - Zero literal brand strings. Everything flows from dna.content.*
    - No hardcoded image URLs. All photos via {{ imagery.N }}
    - No literal sector lists / advisor names / quotes.
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   body { background: #eef0f3; color: #0f172a; }
   .pv-frame { background: #eef0f3; }

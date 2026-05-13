@@ -1,6 +1,6 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: ultra-luxury-cinematic  (real-estate DNA — Phase 2g3.7)
    FOR     : private-advisory / ultra-luxury property maisons
    MOOD    : fully dark #0a0a0a, editorial, image-first. The hero is
@@ -35,7 +35,8 @@
    fullbleed-dark-nav + fullbleed-hero + credit-bar spine, but the
    photographer EXIF is replaced with real-estate provenance dossier
    and filmstrip → property-dossier 2-col strip.
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   /* Fully dark editorial canvas — Villa Prestige signature */
   body { background: #0a0a0a; color: #f3efe7; }

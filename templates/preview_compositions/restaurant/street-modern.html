@@ -1,13 +1,14 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: street-modern
    FOR     : street food / fast casual / smashburger lab
    HERO    : product-cutout (giant display L · tilted product R)
    NAVBAR  : black floating pill with bright accent ORDER button
    CARDS   : product-grid (4-up with photo + price + Add)
    FOOTER  : delivery-strip (Glovo / Deliveroo / JustEat / Uber)
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   body { background: var(--secondary); color: var(--primary); }
   .pv-frame { background: var(--secondary); }

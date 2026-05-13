@@ -1,6 +1,6 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: cinematic-photographer   (portfolio DNA — Phase 2g2x)
    FOR     : photographers, visual storytellers, cinematographers
    MOOD    : fully dark, image-first, EXIF credit bar, film-strip
@@ -19,7 +19,8 @@
    - No hardcoded image URLs. All photos via {{ imagery.N }}.
    - No literal series titles, camera bodies, years, or publication
      names — every string comes from the content registry.
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   /* Deliberate visual opposite of editorial-designer-grid: fully dark
      #0a0a0a, image-first dominant fullbleed hero, monospaced credit

@@ -4,10 +4,11 @@
 {% block title %}{% if category %}{{ category.name }} — {% endif %}Template{% endblock %}
 {% block meta_description %}{% if category %}Template web professionali per {{ category.name }}{% else %}Esplora tutti i template web premium su MarketWeb{% endif %}. Personalizzabili, moderni e pronti all'uso.{% endblock %}
 
-{# T43 · listing SEO · CollectionPage schema with the page's template
+{% comment %} T43 · listing SEO · CollectionPage schema with the page's template
    set surfaced as an ItemList. Google surfaces this as a multi-row
    carousel in SERPs when the count is meaningful. OG/Twitter mirror
-   the page title/description so the social share is category-aware. #}
+   the page title/description so the social share is category-aware.
+{% endcomment %}
 {% block og_title %}{% if category %}Template per {{ category.name }} — MarketWeb{% else %}Tutti i template — MarketWeb{% endif %}{% endblock %}
 {% block og_description %}{% if category %}Template web professionali per {{ category.name }}. Personalizzabili, moderni e pronti all'uso su MarketWeb.{% else %}Esplora tutti i template web premium su MarketWeb. Catalogo curato in espansione.{% endif %}{% endblock %}
 {% block twitter_title %}{% if category %}Template per {{ category.name }} — MarketWeb{% else %}Tutti i template — MarketWeb{% endif %}{% endblock %}

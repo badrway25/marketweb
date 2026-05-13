@@ -1,6 +1,6 @@
 {% extends "preview_compositions/_base.html" %}
 {% load preview_extras %}
-{# ============================================================
+{% comment %} ============================================================
    ARCHETYPE: trattoria-warm   (v2 — Session 10 redesign)
    FOR     : family trattoria / pizzeria di quartiere
    MOOD    : SUN-BLEACHED cream — no dark bands, no chalkboard
@@ -9,7 +9,8 @@
    NAVBAR  : warm cream sticky bar + handwritten brand + phone CTA
    CARDS   : cream-paper recipe card with washi tape, daily menu
    FOOTER  : (none — paper card extends to bottom of viewport)
-============================================================ #}
+============================================================
+{% endcomment %}
 {% block extra_css %}
   /* warm sun-cream page bg — NO dark anywhere */
   body { background: #fff4da; color: #3a2118; }
