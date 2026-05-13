@@ -1,0 +1,51 @@
+﻿python.exe : C:\tmp\sitoBadr2\mw-integration-baseline-v15\marketweb\settings\__init__.py:36: RuntimeWarning: Using the 
+dev-only SECRET_KEY fallback. Set DJANGO_SECRET_KEY in your environment before any non-local run.
+Au caractère Ligne:1 : 100
++ ... 15"; $out = & "C:\tmp\sitoBadr2\mw-integration-baseline-v15\.venv-v15 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\tmp\sitoBadr... non-local run.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  from .dev import *  # noqa: F401,F403
+2026-05-13 13:04:30,011 INFO    axes.apps: AXES: BEGIN version 7.0.2, blocking by combination of ip_address and 
+username
+Creating test database for alias 'default'...
+
+System check identified some issues:
+
+WARNINGS:
+causa-legale: (corporate_suite.W003) corporate-suite template 'causa-legale' ships an accent '#0B0A0E' on primary 
+'#14342B' with a contrast ratio of 1.46:1 (AA body floor 4.5:1). The palette accent is too weak to read as text on the 
+dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+continua-stewardship: (corporate_suite.W003) corporate-suite template 'continua-stewardship' ships an accent '#B0875E' 
+on primary '#0F3A30' with a contrast ratio of 3.88:1 (AA body floor 4.5:1). The palette accent is too weak to read as 
+text on the dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+cornice-architettura: (corporate_suite.W003) corporate-suite template 'cornice-architettura' ships an accent '#B7491F' 
+on primary '#1F2226' with a contrast ratio of 3.03:1 (AA body floor 4.5:1). The palette accent is too weak to read as 
+text on the dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+fiscus-commercialista: (corporate_suite.W003) corporate-suite template 'fiscus-commercialista' ships an accent 
+'#1C3D5A' on primary '#1F2937' with a contrast ratio of 1.30:1 (AA body floor 4.5:1). The palette accent is too weak 
+to read as text on the dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+solaria-coaching: (corporate_suite.W003) corporate-suite template 'solaria-coaching' ships an accent '#8B5A2B' on 
+primary '#2B2A28' with a contrast ratio of 2.45:1 (AA body floor 4.5:1). The palette accent is too weak to read as 
+text on the dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+
+System check identified 5 issues (0 silenced).
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.094s
+
+OK
+Destroying test database for alias 'default'...
+
+Found 1 test(s).

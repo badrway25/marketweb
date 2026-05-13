@@ -1,0 +1,832 @@
+﻿python.exe : C:\tmp\sitoBadr2\mw-integration-baseline-v15\marketweb\settings\__init__.py:36: RuntimeWarning: Using the 
+dev-only SECRET_KEY fallback. Set DJANGO_SECRET_KEY in your environment before any non-local run.
+Au caractère Ligne:1 : 100
++ ... 15"; $out = & "C:\tmp\sitoBadr2\mw-integration-baseline-v15\.venv-v15 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\tmp\sitoBadr... non-local run.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  from .dev import *  # noqa: F401,F403
+2026-05-13 13:04:55,403 INFO    axes.apps: AXES: BEGIN version 7.0.2, blocking by combination of ip_address and 
+username
+Using existing test database for alias 'default'...
+
+System check identified some issues:
+
+WARNINGS:
+causa-legale: (corporate_suite.W003) corporate-suite template 'causa-legale' ships an accent '#0B0A0E' on primary 
+'#14342B' with a contrast ratio of 1.46:1 (AA body floor 4.5:1). The palette accent is too weak to read as text on the 
+dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+continua-stewardship: (corporate_suite.W003) corporate-suite template 'continua-stewardship' ships an accent '#B0875E' 
+on primary '#0F3A30' with a contrast ratio of 3.88:1 (AA body floor 4.5:1). The palette accent is too weak to read as 
+text on the dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+cornice-architettura: (corporate_suite.W003) corporate-suite template 'cornice-architettura' ships an accent '#B7491F' 
+on primary '#1F2226' with a contrast ratio of 3.03:1 (AA body floor 4.5:1). The palette accent is too weak to read as 
+text on the dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+fiscus-commercialista: (corporate_suite.W003) corporate-suite template 'fiscus-commercialista' ships an accent 
+'#1C3D5A' on primary '#1F2937' with a contrast ratio of 1.30:1 (AA body floor 4.5:1). The palette accent is too weak 
+to read as text on the dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+solaria-coaching: (corporate_suite.W003) corporate-suite template 'solaria-coaching' ships an accent '#8B5A2B' on 
+primary '#2B2A28' with a contrast ratio of 2.45:1 (AA body floor 4.5:1). The palette accent is too weak to read as 
+text on the dark band, but the chrome safe-degrades it via the `--accent-text-on-primary-safe` token (see 
+apps.catalog.theme_safety) — italic emphasis on dark bands renders cream-on-dark instead of unreadable accent-on-dark. 
+This Warning surfaces the palette weakness so it stays visible during review; no remediation blocks CI.
+
+System check identified 5 issues (0 silenced).
+.............................................................................2026-05-13 13:05:03,048 WARNING 
+django.request: Not Found: /templates/clusters/does-not-exist/
+..........2026-05-13 13:05:03,271 WARNING django.request: Not Found: /templates/for-role/nonexistent-role/
+.....2026-05-13 13:05:03,290 WARNING django.request: Not Found: /templates/for-use-case/unknown/
+Found 681 test(s).
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  solaria-coaching: draft -> published_live
+  continua-stewardship: draft -> published_live
+  causa-legale: draft -> published_live
+  cornice-architettura: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  denti-co-studio: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  atto-notai-associati: draft -> published_live
+  madou-pasticceria: draft -> published_live
+  petro-veterinario: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  albergo-borgo: draft -> published_live
+  podere-agriturismo: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  sapori-di-langa: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+32 tier(s) updated. Catalog distribution: 32 published_live / 1 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  solaria-coaching: draft -> published_live
+  continua-stewardship: draft -> published_live
+  causa-legale: draft -> published_live
+  cornice-architettura: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  denti-co-studio: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  atto-notai-associati: draft -> published_live
+  madou-pasticceria: draft -> published_live
+  petro-veterinario: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  albergo-borgo: draft -> published_live
+  podere-agriturismo: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  sapori-di-langa: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+32 tier(s) updated. Catalog distribution: 32 published_live / 1 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  solaria-coaching: draft -> published_live
+  continua-stewardship: draft -> published_live
+  causa-legale: draft -> published_live
+  cornice-architettura: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  denti-co-studio: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  atto-notai-associati: draft -> published_live
+  madou-pasticceria: draft -> published_live
+  petro-veterinario: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  albergo-borgo: draft -> published_live
+  podere-agriturismo: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  sapori-di-langa: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+32 tier(s) updated. Catalog distribution: 32 published_live / 1 draft.
+
+0 tier(s) updated. Catalog distribution: 32 published_live / 1 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  solaria-coaching: draft -> published_live
+  continua-stewardship: draft -> published_live
+  causa-legale: draft -> published_live
+  cornice-architettura: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  denti-co-studio: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  atto-notai-associati: draft -> published_live
+  madou-pasticceria: draft -> published_live
+  petro-veterinario: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  albergo-borgo: draft -> published_live
+  podere-agriturismo: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  sapori-di-langa: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+32 tier(s) updated. Catalog distribution: 32 published_live / 1 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  solaria-coaching: draft -> published_live
+  continua-stewardship: draft -> published_live
+  causa-legale: draft -> published_live
+  cornice-architettura: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  denti-co-studio: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  atto-notai-associati: draft -> published_live
+  madou-pasticceria: draft -> published_live
+  petro-veterinario: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  albergo-borgo: draft -> published_live
+  podere-agriturismo: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  sapori-di-langa: draft -> published_live
+.......................................................................................................................
+................2026-05-13 13:05:13,103 WARNING marketweb.audit: audit_alert action=deleted actor=system 
+target_ct=Accounts | user target=t31_del changes={} ip=-
+.2026-05-13 13:05:13,816 WARNING marketweb.audit: audit_alert action=role_changed actor=system target_ct=Accounts | 
+user target=t31_role changes={'is_staff': {'old': False, 'new': True}} ip=-
+................2026-05-13 13:05:16,020 INFO    axes.handlers.database: AXES: User login failed, running database 
+handler for failure.
+2026-05-13 13:05:16,021 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:15.297403+00:00
+2026-05-13 13:05:16,022 WARNING axes.handlers.database: AXES: New login failure by {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. Created new record in the 
+database.
+2026-05-13 13:05:16,783 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:16,783 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:16.026039+00:00
+2026-05-13 13:05:16,785 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:17,527 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:17,528 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:16.788552+00:00
+2026-05-13 13:05:17,530 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:17,530 WARNING axes.handlers.database: AXES: Locking out {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"} after repeated login 
+failures.
+2026-05-13 13:05:17,534 WARNING django.request: Too Many Requests: /account/login/
+2026-05-13 13:05:17,535 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:17,536 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:17.535015+00:00
+2026-05-13 13:05:17,538 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:17,539 WARNING axes.handlers.database: AXES: Locking out {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"} after repeated login 
+failures.
+2026-05-13 13:05:17,542 WARNING django.request: Too Many Requests: /account/login/
+.2026-05-13 13:05:19,146 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:19,147 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:18.282967+00:00
+2026-05-13 13:05:19,148 WARNING axes.handlers.database: AXES: New login failure by {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. Created new record in the 
+database.
+2026-05-13 13:05:19,898 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:19,899 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:19.151967+00:00
+2026-05-13 13:05:19,900 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+.2026-05-13 13:05:21,342 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:21,342 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:20.619021+00:00
+2026-05-13 13:05:21,343 WARNING axes.handlers.database: AXES: New login failure by {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. Created new record in the 
+database.
+2026-05-13 13:05:22,071 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:22,072 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:21.347709+00:00
+2026-05-13 13:05:22,074 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:22,808 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:22,809 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:22.077353+00:00
+2026-05-13 13:05:22,810 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:22,811 WARNING axes.handlers.database: AXES: Locking out {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"} after repeated login 
+failures.
+2026-05-13 13:05:22,814 WARNING django.request: Too Many Requests: /account/login/
+2026-05-13 13:05:22,815 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:22,816 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:22.815304+00:00
+2026-05-13 13:05:22,817 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:22,818 WARNING axes.handlers.database: AXES: Locking out {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"} after repeated login 
+failures.
+2026-05-13 13:05:22,820 WARNING django.request: Too Many Requests: /account/login/
+.2026-05-13 13:05:24,273 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:24,274 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:23.551528+00:00
+2026-05-13 13:05:24,275 WARNING axes.handlers.database: AXES: New login failure by {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. Created new record in the 
+database.
+2026-05-13 13:05:25,025 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:25,026 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:24.278421+00:00
+2026-05-13 13:05:25,027 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+.2026-05-13 13:05:26,487 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:26,488 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:25.763491+00:00
+2026-05-13 13:05:26,489 WARNING axes.handlers.database: AXES: New login failure by {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. Created new record in the 
+database.
+2026-05-13 13:05:27,234 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:27,234 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:26.493239+00:00
+2026-05-13 13:05:27,236 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:27,964 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:27,965 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:27.239356+00:00
+2026-05-13 13:05:27,966 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:27,967 WARNING axes.handlers.database: AXES: Locking out {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"} after repeated login 
+failures.
+2026-05-13 13:05:27,970 WARNING django.request: Too Many Requests: /account/login/
+2026-05-13 13:05:27,972 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:27,972 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:27.971517+00:00
+2026-05-13 13:05:27,974 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:27,974 WARNING axes.handlers.database: AXES: Locking out {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"} after repeated login 
+failures.
+2026-05-13 13:05:27,977 WARNING django.request: Too Many Requests: /account/login/
+.2026-05-13 13:05:29,499 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:29,500 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:28.756226+00:00
+2026-05-13 13:05:29,501 WARNING axes.handlers.database: AXES: New login failure by {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. Created new record in the 
+database.
+2026-05-13 13:05:30,217 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:30,217 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:29.505089+00:00
+2026-05-13 13:05:30,219 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:30,961 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:30,962 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:30.222322+00:00
+2026-05-13 13:05:30,963 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:30,964 WARNING axes.handlers.database: AXES: Locking out {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"} after repeated login 
+failures.
+2026-05-13 13:05:30,967 WARNING django.request: Too Many Requests: /account/login/
+.2026-05-13 13:05:32,435 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:32,436 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:31.690968+00:00
+2026-05-13 13:05:32,437 WARNING axes.handlers.database: AXES: New login failure by {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. Created new record in the 
+database.
+2026-05-13 13:05:33,178 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:33,178 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:32.441232+00:00
+2026-05-13 13:05:33,180 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:33,925 INFO    axes.handlers.database: AXES: User login failed, running database handler for failure.
+2026-05-13 13:05:33,926 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:33.184635+00:00
+2026-05-13 13:05:33,927 WARNING axes.handlers.database: AXES: Repeated login failure by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}. 
+Updated existing record in the database.
+2026-05-13 13:05:33,928 WARNING axes.handlers.database: AXES: Locking out {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"} after repeated login 
+failures.
+2026-05-13 13:05:33,931 WARNING django.request: Too Many Requests: /account/login/
+2026-05-13 13:05:35,442 INFO    axes.attempts: AXES: Cleaned up 0 expired access attempts from database that were 
+older than 2026-05-13 10:05:34.677413+00:00
+2026-05-13 13:05:35,442 INFO    axes.handlers.database: AXES: Successful login by {username: "********************", 
+ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"}.
+2026-05-13 13:05:35,442 INFO    axes.attempts: AXES: Reset 0 access attempts from database.
+2026-05-13 13:05:35,443 INFO    axes.handlers.database: AXES: Deleted 0 failed login attempts by {username: 
+"********************", ip_address: "********************", user_agent: "<unknown>", path_info: "/account/login/"} 
+from database.
+..............2026-05-13 13:05:35,531 WARNING marketweb.audit: audit_alert action=role_changed actor=alice@example.com 
+target_ct=Accounts | user target=alice (id=100) changes={'is_staff': {'old': False, 'new': True}} ip=10.0.0.1
+2026-05-13 13:05:35,531 WARNING marketweb.audit: audit_alert action=deleted actor=bob@example.com target_ct=Accounts | 
+user target=charlie (id=101) changes={} ip=10.0.0.2
+..............2026-05-13 13:05:40,857 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,861 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,865 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,867 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,869 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,870 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,872 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,874 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,877 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,879 WARNING django.request: Not Found: /it/
+..2026-05-13 13:05:40,885 WARNING django.request: Not Found: /this-path-does-not-exist-t37/
+.2026-05-13 13:05:40,887 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,889 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:40,892 WARNING django.request: Not Found: /it/
+.2026-05-13 13:05:41,158 WARNING marketweb.audit: audit_alert action=role_changed actor=t34-admin target_ct=None 
+target=t34-target changes={'is_staff': {'old': False, 'new': True}} ip=10.0.0.7
+....  Category 'travel' not found, skipping Borgo San Marco — Relais & Spa
+  Category 'travel' not found, skipping Podere Le Querce — Agriturismo di Famiglia
+  luxe-fashion-store: draft -> published_live
+
+32 tier(s) updated. Catalog distribution: 32 published_live / 1 draft.
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  solaria-coaching: draft -> published_live
+  continua-stewardship: draft -> published_live
+  causa-legale: draft -> published_live
+  cornice-architettura: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  denti-co-studio: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  atto-notai-associati: draft -> published_live
+  madou-pasticceria: draft -> published_live
+  petro-veterinario: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  albergo-borgo: draft -> published_live
+  podere-agriturismo: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  sapori-di-langa: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+
+32 tier(s) updated. Catalog distribution: 32 published_live / 1 draft.
+  Created: Agency
+  Created: Business
+  Created: Ristorante
+  Created: Medico
+  Created: Avvocato
+  Created: Immobiliare
+  Created: Portfolio
+  Created: eCommerce
+
+Done. 8 categories created.
+  Category created: Formazione
+  Category created: Eventi
+  Category created: Viaggi & ospitalità
+  Category created: Fitness & sport
+  Category created: Edilizia & design
+  Category created: Bellezza
+  Category created: Nonprofit
+  (7 macro-categories added inline.)
+  Created: Creative agency (agency)
+  Created: Digital & growth (agency)
+  Created: PR & comunicazione (agency)
+  Created: Freelance & studio indipendente (agency)
+  Created: Corporate (business)
+  Created: SaaS & landing prodotto (business)
+  Created: Servizi professionali (business)
+  Created: Servizi finanziari (business)
+  Created: Coaching & training (business)
+  Created: Fine dining (restaurant)
+  Created: Trattoria & pizzeria (restaurant)
+  Created: Street & casual (restaurant)
+  Created: Bar & bistrot (restaurant)
+  Created: Pasticceria & bakery (restaurant)
+  Created: Specialista medico (medical)
+  Created: Clinica multi-specialistica (medical)
+  Created: Wellness olistico (medical)
+  Created: Pediatria & famiglia (medical)
+  Created: Studio dentistico (medical)
+  Created: Veterinario (medical)
+  Created: Avvocato classico (lawyer)
+  Created: Avvocato moderno & tech (lawyer)
+  Created: Notaio & commercialista (lawyer)
+  Created: Immobiliare mass-market (real-estate)
+  Created: Immobiliare luxury (real-estate)
+  Created: Immobiliare commerciale (real-estate)
+  Created: Designer editoriale (portfolio)
+  Created: Fotografo (portfolio)
+  Created: Illustratore (portfolio)
+  Created: Videomaker & motion (portfolio)
+  Created: Atelier artigiano (ecommerce)
+  Created: Fashion editorial (ecommerce)
+  Created: Boutique vino & food (ecommerce)
+  Created: Gioielleria (ecommerce)
+  Created: Scuola & accademia (education)
+  Created: Corso online (education)
+  Created: Tutor & lingue (education)
+  Created: Wedding & location (events)
+  Created: Conferenze & corporate (events)
+  Created: Boutique hotel (travel)
+  Created: B&B & agriturismo (travel)
+  Created: Tour operator (travel)
+  Created: Palestra & functional (fitness)
+  Created: Personal trainer (fitness)
+  Created: Yoga & Pilates (fitness)
+  Created: Studio di architettura (construction)
+  Created: Interior design (construction)
+  Created: Imprese & artigiani edili (construction)
+  Created: Parrucchiere & barber (beauty)
+  Created: Spa & wellness (beauty)
+  Created: Charity & fondazione (nonprofit)
+  Created: Associazione culturale (nonprofit)
+
+Done. 52 profession clusters created, 0 already existed. Total in DB: 52.
+  Created: Editorial warm
+  Created: Editorial cool
+  Created: Editorial noir
+  Created: Dashboard dark
+  Created: Dashboard light
+  Created: Minimal light
+  Created: Minimal mono
+  Created: Bold display
+  Created: Cinematic fullbleed
+  Created: Typographic first
+  Created: Magazine hybrid
+  Created: Classic serif
+
+Done. 12 visual styles created, 0 already existed. Total in DB: 12.
+  Created: Vertex — Creative Agency (Vertex Studio)
+  Created: Aura — Digital Studio (Aura Creative)
+  Created: Pragma — Corporate Suite (Pragma Corp)
+  Created: Elevate — Startup Landing (Elevate Tech)
+  Created: Fiscus — Studio Tributario (Fiscus — Studio Tributario)
+  Created: Solaria — Business Coaching (Solaria — Business Coaching)
+  Created: Continua — Family-Office Stewardship (Continua — Family-Office Stewardship)
+  Created: Causa — Studio Legale (Causa — Studio Legale)
+  Created: Cornice — Studio di Architettura (Cornice — Studio di Architettura)
+  Created: Gusto — Fine Dining (Osteria Moderna)
+  Created: Sapore — Trattoria & Pizzeria (Trattoria Da Nonna Rosa)
+  Created: Brace — Street Food Lab (Brace Street Lab)
+  Created: Salute — Studio Medico (SaluteVita Clinic)
+  Created: Benessere — Centro Olistico (Studio Armonia)
+  Created: Famiglia — Studio Pediatrico (Pediatria Famiglia Plus)
+  Created: Cardio — Studio Specialistico (Studio Marani Cardiologia)
+  Created: Dermatologia Elite — Studio Ricciardi (Studio Ricciardi Dermatologia)
+  Created: Denti+Co — Studio Dentistico (Denti+Co Studio Dentistico Associato)
+  Created: Lex — Studio Legale (Studio Legale Ferri)
+  Created: Juris — Avvocato Moderno (Avv. Martini & Partners)
+  Created: Atto — Studio Notarile Associato (Studio Notarile Conti–Sironi–Verri)
+  Created: Madou — Pasticceria Atelier (Madou · Pasticceria Atelier)
+  Created: Petro — Studio Veterinario (Studio Veterinario Petro)
+  Created: Casa — Agenzia Immobiliare (Domus Immobiliare)
+  Created: Villa — Immobili di Lusso (Villa Prestige)
+  Created: Chiara — Portfolio Creativo (Chiara Studio)
+  Created: Pixel — Portfolio Fotografico (Pixel Photography)
+  Created: Bottega — Shop Artigianale (La Bottega di Martino)
+  Created: Sapori di Langa — Enoteca dei Vignaioli (Sapori di Langa · Enoteca dei Vignaioli)
+  Created: Luxe — Fashion Store (Maison Luxe)
+  Created: Gemma — Atelier di Alta Gioielleria (Gemma · Atelier di Alta Gioielleria)
+
+Done. 31 templates created.
+
+Syncing tiers from TEMPLATE_REGISTRY.json…
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  solaria-coaching: draft -> published_live
+  continua-stewardship: draft -> published_live
+  causa-legale: draft -> published_live
+  cornice-architettura: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  denti-co-studio: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  atto-notai-associati: draft -> published_live
+  madou-pasticceria: draft -> published_live
+  petro-veterinario: draft -> published_live
+.............2026-05-13 13:06:40,927 WARNING django.request: Bad Request: 
+/projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,933 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,941 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,947 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,952 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,958 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,962 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,968 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,974 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,980 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,986 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,992 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:40,998 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:41,004 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:41,009 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:41,014 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:41,026 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+2026-05-13 13:06:41,033 WARNING django.request: Bad Request: /projects/46514c84-8315-4d26-adde-e539e570d2e7/autosave/
+.2026-05-13 13:06:48,452 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,458 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,464 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,470 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,476 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,481 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,486 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,492 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,498 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,504 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,509 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,515 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,525 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,531 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,536 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,543 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,548 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,554 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,559 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,566 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+2026-05-13 13:06:48,573 WARNING django.request: Bad Request: /projects/141f65e3-9253-471c-8ab1-a60def7af565/autosave/
+........2026-05-13 13:06:57,045 WARNING django.request: Not Found: 
+/projects/758eebf2-2416-4203-89bf-e991c8ef3407/assets/upload/
+.2026-05-13 13:06:57,825 WARNING django.request: Content Too Large: 
+/projects/d21c76c3-75a6-4e5f-bb27-62b9c4710cd3/assets/upload/
+.........2026-05-13 13:07:07,485 WARNING django.request: Bad Request: 
+/projects/261c3253-8ef6-4c95-a481-c798529859bf/autosave/
+..............2026-05-13 13:07:30,222 WARNING django.request: Bad Request: 
+/projects/181c0cd4-7cb0-4ab4-a13c-f6478c9d6f19/autosave/
+...2026-05-13 13:07:33,054 WARNING django.request: Not Found: /projects/73ac3565-5123-4d5e-b7f7-a308e31d7573/editor/
+...........  Category 'travel' not found, skipping Borgo San Marco — Relais & Spa
+  Category 'travel' not found, skipping Podere Le Querce — Agriturismo di Famiglia
+.......................................................................................................................
+.......................................................................................................................
+......................................................................................
+----------------------------------------------------------------------
+Ran 681 tests in 183.096s
+
+OK
+Preserving test database for alias 'default'...
+
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  sapori-di-langa: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+  ? albergo-borgo (not in DB, skipped)
+  ? podere-agriturismo (not in DB, skipped)
+
+30 tier(s) updated. Catalog distribution: 30 published_live / 1 draft.
+  ? albergo-borgo (not in DB, skipped)
+  ? podere-agriturismo (not in DB, skipped)
+
+0 tier(s) updated. Catalog distribution: 30 published_live / 1 draft.
+  Created: Agency
+  Created: Business
+  Created: Ristorante
+  Created: Medico
+  Created: Avvocato
+  Created: Immobiliare
+  Created: Portfolio
+  Created: eCommerce
+
+Done. 8 categories created.
+  Category created: Formazione
+  Category created: Eventi
+  Category created: Viaggi & ospitalità
+  Category created: Fitness & sport
+  Category created: Edilizia & design
+  Category created: Bellezza
+  Category created: Nonprofit
+  (7 macro-categories added inline.)
+  Created: Creative agency (agency)
+  Created: Digital & growth (agency)
+  Created: PR & comunicazione (agency)
+  Created: Freelance & studio indipendente (agency)
+  Created: Corporate (business)
+  Created: SaaS & landing prodotto (business)
+  Created: Servizi professionali (business)
+  Created: Servizi finanziari (business)
+  Created: Coaching & training (business)
+  Created: Fine dining (restaurant)
+  Created: Trattoria & pizzeria (restaurant)
+  Created: Street & casual (restaurant)
+  Created: Bar & bistrot (restaurant)
+  Created: Pasticceria & bakery (restaurant)
+  Created: Specialista medico (medical)
+  Created: Clinica multi-specialistica (medical)
+  Created: Wellness olistico (medical)
+  Created: Pediatria & famiglia (medical)
+  Created: Studio dentistico (medical)
+  Created: Veterinario (medical)
+  Created: Avvocato classico (lawyer)
+  Created: Avvocato moderno & tech (lawyer)
+  Created: Notaio & commercialista (lawyer)
+  Created: Immobiliare mass-market (real-estate)
+  Created: Immobiliare luxury (real-estate)
+  Created: Immobiliare commerciale (real-estate)
+  Created: Designer editoriale (portfolio)
+  Created: Fotografo (portfolio)
+  Created: Illustratore (portfolio)
+  Created: Videomaker & motion (portfolio)
+  Created: Atelier artigiano (ecommerce)
+  Created: Fashion editorial (ecommerce)
+  Created: Boutique vino & food (ecommerce)
+  Created: Gioielleria (ecommerce)
+  Created: Scuola & accademia (education)
+  Created: Corso online (education)
+  Created: Tutor & lingue (education)
+  Created: Wedding & location (events)
+  Created: Conferenze & corporate (events)
+  Created: Boutique hotel (travel)
+  Created: B&B & agriturismo (travel)
+  Created: Tour operator (travel)
+  Created: Palestra & functional (fitness)
+  Created: Personal trainer (fitness)
+  Created: Yoga & Pilates (fitness)
+  Created: Studio di architettura (construction)
+  Created: Interior design (construction)
+  Created: Imprese & artigiani edili (construction)
+  Created: Parrucchiere & barber (beauty)
+  Created: Spa & wellness (beauty)
+  Created: Charity & fondazione (nonprofit)
+  Created: Associazione culturale (nonprofit)
+
+Done. 52 profession clusters created, 0 already existed. Total in DB: 52.
+  Created: Editorial warm
+  Created: Editorial cool
+  Created: Editorial noir
+  Created: Dashboard dark
+  Created: Dashboard light
+  Created: Minimal light
+  Created: Minimal mono
+  Created: Bold display
+  Created: Cinematic fullbleed
+  Created: Typographic first
+  Created: Magazine hybrid
+  Created: Classic serif
+
+Done. 12 visual styles created, 0 already existed. Total in DB: 12.
+  Created: Vertex — Creative Agency (Vertex Studio)
+  Created: Aura — Digital Studio (Aura Creative)
+  Created: Pragma — Corporate Suite (Pragma Corp)
+  Created: Elevate — Startup Landing (Elevate Tech)
+  Created: Fiscus — Studio Tributario (Fiscus — Studio Tributario)
+  Created: Solaria — Business Coaching (Solaria — Business Coaching)
+  Created: Continua — Family-Office Stewardship (Continua — Family-Office Stewardship)
+  Created: Causa — Studio Legale (Causa — Studio Legale)
+  Created: Cornice — Studio di Architettura (Cornice — Studio di Architettura)
+  Created: Gusto — Fine Dining (Osteria Moderna)
+  Created: Sapore — Trattoria & Pizzeria (Trattoria Da Nonna Rosa)
+  Created: Brace — Street Food Lab (Brace Street Lab)
+  Created: Salute — Studio Medico (SaluteVita Clinic)
+  Created: Benessere — Centro Olistico (Studio Armonia)
+  Created: Famiglia — Studio Pediatrico (Pediatria Famiglia Plus)
+  Created: Cardio — Studio Specialistico (Studio Marani Cardiologia)
+  Created: Dermatologia Elite — Studio Ricciardi (Studio Ricciardi Dermatologia)
+  Created: Denti+Co — Studio Dentistico (Denti+Co Studio Dentistico Associato)
+  Created: Lex — Studio Legale (Studio Legale Ferri)
+  Created: Juris — Avvocato Moderno (Avv. Martini & Partners)
+  Created: Atto — Studio Notarile Associato (Studio Notarile Conti–Sironi–Verri)
+  Created: Madou — Pasticceria Atelier (Madou · Pasticceria Atelier)
+  Created: Petro — Studio Veterinario (Studio Veterinario Petro)
+  Created: Casa — Agenzia Immobiliare (Domus Immobiliare)
+  Created: Villa — Immobili di Lusso (Villa Prestige)
+  Created: Chiara — Portfolio Creativo (Chiara Studio)
+  Created: Pixel — Portfolio Fotografico (Pixel Photography)
+  Created: Bottega — Shop Artigianale (La Bottega di Martino)
+  Created: Sapori di Langa — Enoteca dei Vignaioli (Sapori di Langa · Enoteca dei Vignaioli)
+  Created: Luxe — Fashion Store (Maison Luxe)
+  Created: Gemma — Atelier di Alta Gioielleria (Gemma · Atelier di Alta Gioielleria)
+
+Done. 31 templates created.
+
+Syncing tiers from TEMPLATE_REGISTRY.json…
+  vertex-creative-agency: draft -> published_live
+  aura-digital-studio: draft -> published_live
+  pragma-corporate-suite: draft -> published_live
+  elevate-startup-landing: draft -> published_live
+  fiscus-commercialista: draft -> published_live
+  solaria-coaching: draft -> published_live
+  continua-stewardship: draft -> published_live
+  causa-legale: draft -> published_live
+  cornice-architettura: draft -> published_live
+  gusto-fine-dining: draft -> published_live
+  sapore-trattoria-pizzeria: draft -> published_live
+  brace-street-food-lab: draft -> published_live
+  salute-studio-medico: draft -> published_live
+  benessere-centro-olistico: draft -> published_live
+  famiglia-pediatria: draft -> published_live
+  cardio-studio-specialistico: draft -> published_live
+  dermatologia-elite-roma: draft -> published_live
+  denti-co-studio: draft -> published_live
+  lex-studio-legale: draft -> published_live
+  juris-avvocato-moderno: draft -> published_live
+  atto-notai-associati: draft -> published_live
+  madou-pasticceria: draft -> published_live
+  petro-veterinario: draft -> published_live
+  casa-agenzia-immobiliare: draft -> published_live
+  villa-immobili-lusso: draft -> published_live
+  chiara-portfolio-creativo: draft -> published_live
+  pixel-portfolio-fotografico: draft -> published_live
+  bottega-shop-artigianale: draft -> published_live
+  sapori-di-langa: draft -> published_live
+  luxe-fashion-store: draft -> published_live
+  ? albergo-borgo (not in DB, skipped)
+  ? podere-agriturismo (not in DB, skipped)
+
+30 tier(s) updated. Catalog distribution: 30 published_live / 1 draft.
+  ? albergo-borgo (not in DB, skipped)
+  ? podere-agriturismo (not in DB, skipped)
+
+0 tier(s) updated. Catalog distribution: 30 published_live / 1 draft.
